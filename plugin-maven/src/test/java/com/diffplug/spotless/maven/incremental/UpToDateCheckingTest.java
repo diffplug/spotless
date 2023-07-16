@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,10 @@ import com.diffplug.spotless.maven.MavenRunner;
 
 class UpToDateCheckingTest extends MavenIntegrationHarness {
 
+	private static final String DISABLED_MESSAGE = "Up-to-date checking disabled";
+
 	@Test
-	void upToDateCheckingDisabledByDefault() throws Exception {
+	void upToDateCheckingEnabledByDefault() throws Exception {
 		writePom(
 				"<java>",
 				"  <googleJavaFormat/>",
@@ -41,18 +43,29 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 		List<File> files = writeUnformattedFiles(1);
 		String output = runSpotlessApply();
 
-		assertThat(output).doesNotContain("Up-to-date checking enabled");
+		assertThat(output).doesNotContain(DISABLED_MESSAGE);
 		assertFormatted(files);
 	}
 
 	@Test
-	void enableUpToDateChecking() throws Exception {
+	void explicitlyEnableUpToDateChecking() throws Exception {
 		writePomWithUpToDateCheckingEnabled(true);
 
 		List<File> files = writeUnformattedFiles(1);
 		String output = runSpotlessApply();
 
-		assertThat(output).contains("Up-to-date checking enabled");
+		assertThat(output).doesNotContain(DISABLED_MESSAGE);
+		assertFormatted(files);
+	}
+
+	@Test
+	void explicitlyDisableUpToDateChecking() throws Exception {
+		writePomWithUpToDateCheckingEnabled(false);
+
+		List<File> files = writeUnformattedFiles(1);
+		String output = runSpotlessApply();
+
+		assertThat(output).contains(DISABLED_MESSAGE);
 		assertFormatted(files);
 	}
 
@@ -63,7 +76,7 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 		List<File> files = writeUnformattedFiles(1);
 		String output = runSpotlessApply();
 
-		assertThat(output).contains("Up-to-date checking enabled");
+		assertThat(output).doesNotContain(DISABLED_MESSAGE);
 		assertFormatted(files);
 	}
 
@@ -76,39 +89,7 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 		List<File> files = writeUnformattedFiles(1);
 		String output = runSpotlessApply();
 
-		assertThat(output).contains("Up-to-date checking enabled");
-		assertFormatted(files);
-	}
-
-	private void writePomWithPluginManagementAndDependency() throws IOException {
-		setFile("pom.xml").toContent(createPomXmlContent("/pom-test-management.xml.mustache",
-				null,
-				null,
-				new String[]{
-						"<java>",
-						"  <googleJavaFormat/>",
-						"</java>",
-						"<upToDateChecking>",
-						"  <enabled>true</enabled>",
-						"</upToDateChecking>"},
-				new String[]{
-						"<dependencies>",
-						"  <dependency>",
-						"    <groupId>javax.inject</groupId>",
-						"    <artifactId>javax.inject</artifactId>",
-						"    <version>1</version>",
-						"  </dependency>",
-						"</dependencies>"}));
-	}
-
-	@Test
-	void disableUpToDateChecking() throws Exception {
-		writePomWithUpToDateCheckingEnabled(false);
-
-		List<File> files = writeUnformattedFiles(1);
-		String output = runSpotlessApply();
-
-		assertThat(output).doesNotContain("Up-to-date checking enabled");
+		assertThat(output).doesNotContain(DISABLED_MESSAGE);
 		assertFormatted(files);
 	}
 
@@ -123,7 +104,7 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 		List<File> files = writeUnformattedFiles(1);
 		String output = runSpotlessApply();
 
-		assertThat(output).contains("Up-to-date checking enabled");
+		assertThat(output).doesNotContain(DISABLED_MESSAGE);
 		assertFormatted(files);
 		assertThat(indexFile.getParent()).exists();
 		assertThat(indexFile).exists();
@@ -142,7 +123,7 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 		List<File> files = writeUnformattedFiles(1);
 		String output = runSpotlessApply();
 
-		assertThat(output).doesNotContain("Up-to-date checking enabled");
+		assertThat(output).contains(DISABLED_MESSAGE);
 		assertFormatted(files);
 		assertThat(indexFile.getParent()).exists();
 		assertThat(indexFile).doesNotExist();
@@ -214,6 +195,25 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 		assertSpotlessCheckSkipped(files, checkOutput3);
 	}
 
+	private void writePomWithPluginManagementAndDependency() throws IOException {
+		setFile("pom.xml").toContent(createPomXmlContent("/pom-test-management.xml.mustache",
+				null,
+				null,
+				new String[]{
+						"<java>",
+						"  <googleJavaFormat/>",
+						"</java>"},
+				new String[]{
+						"<dependencies>",
+						"  <dependency>",
+						"    <groupId>javax.inject</groupId>",
+						"    <artifactId>javax.inject</artifactId>",
+						"    <version>1</version>",
+						"  </dependency>",
+						"</dependencies>"},
+				null));
+	}
+
 	private void writePomWithUpToDateCheckingEnabled(boolean enabled) throws IOException {
 		writePom(
 				"<java>",
@@ -254,15 +254,15 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 	}
 
 	private String runSpotlessApply() throws Exception {
-		return mavenRunnerForGoal("apply").runNoError().output();
+		return mavenRunnerForGoal("apply").runNoError().stdOutUtf8();
 	}
 
 	private String runSpotlessCheck() throws Exception {
-		return mavenRunnerForGoal("check").runNoError().output();
+		return mavenRunnerForGoal("check").runNoError().stdOutUtf8();
 	}
 
 	private String runSpotlessCheckOnUnformattedFiles() throws Exception {
-		return mavenRunnerForGoal("check").runHasError().output();
+		return mavenRunnerForGoal("check").runHasError().stdOutUtf8();
 	}
 
 	private MavenRunner mavenRunnerForGoal(String goal) throws IOException {

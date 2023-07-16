@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,21 @@ package com.diffplug.spotless.pom;
 
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.*;
 
-public class SortPomTest {
+public class SortPomTest extends ResourceHarness {
 	@Test
 	public void testSortPomWithDefaultConfig() throws Exception {
 		SortPomCfg cfg = new SortPomCfg();
-		Provisioner provisioner = TestProvisioner.mavenCentral();
-		StepHarness harness = StepHarness.forStep(SortPomStep.create(cfg, provisioner));
-		harness.testResource("pom/pom_dirty.xml", "pom/pom_clean_default.xml");
+		FormatterStep step = SortPomStep.create(cfg, TestProvisioner.mavenCentral());
+		StepHarness.forStep(step).testResource("pom/pom_dirty.xml", "pom/pom_clean_default.xml");
+	}
+
+	@Test
+	public void testSortPomWithVersion() throws Exception {
+		SortPomCfg cfg = new SortPomCfg();
+		cfg.version = "3.2.1";
+		FormatterStep step = SortPomStep.create(cfg, TestProvisioner.mavenCentral());
+		StepHarness.forStep(step).testResource("pom/pom_dirty.xml", "pom/pom_clean_default.xml");
 	}
 }

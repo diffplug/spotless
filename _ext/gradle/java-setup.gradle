@@ -9,7 +9,7 @@ apply from: rootProject.file('gradle/java-setup.gradle')
 apply plugin: 'java-library'
 
 // Show warning locations, fail on warnings
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
 	options.compilerArgs << "-Xlint:unchecked"
 	options.compilerArgs << "-Xlint:deprecation"
 	options.compilerArgs << "-Werror"
@@ -22,4 +22,6 @@ dependencies {
 	testImplementation project(':testlib')
 }
 
-test { useJUnitPlatform() }
+tasks.withType(Test).configureEach {
+	useJUnitPlatform()
+}

@@ -1,2 +1,0 @@
-# Spotless formatter based on JDT version 4.7.1 (see https://projects.eclipse.org/projects/eclipse.jdt)
-com.diffplug.spotless:spotless-ext-eclipse-jdt:4.7.1

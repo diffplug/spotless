@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,10 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PrettierRestService {
-
-	private final SimpleRestClient restClient;
+public class PrettierRestService extends BaseNpmRestService {
 
 	PrettierRestService(String baseUrl) {
-		this.restClient = SimpleRestClient.forBaseUrl(baseUrl);
+		super(baseUrl);
 	}
 
 	public String resolveConfig(File prettierConfigPath, Map<String, Object> prettierConfigOptions) {
@@ -48,9 +46,4 @@ public class PrettierRestService {
 
 		return restClient.postJson("/prettier/format", jsonProperties);
 	}
-
-	public String shutdown() {
-		return restClient.post("/shutdown");
-	}
-
 }

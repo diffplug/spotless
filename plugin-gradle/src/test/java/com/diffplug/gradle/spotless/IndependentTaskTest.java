@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ class IndependentTaskTest extends GradleIntegrationHarness {
 				"",
 				"def underTest = new JavaExtension(spotless)",
 				"underTest.target file('test.java')",
-				"underTest.googleJavaFormat('1.2')",
+				"underTest.googleJavaFormat()",
 				"",
 				"def independent = underTest.createIndependentApplyTask('independent')");
 		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");

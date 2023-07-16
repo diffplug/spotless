@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,12 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
+		ImpactedFilesTracker counter = new ImpactedFilesTracker();
+
 		List<File> problemFiles = new ArrayList<>();
 		for (File file : files) {
 			if (upToDateChecker.isUpToDate(file.toPath())) {
+				counter.skippedAsCleanCache();
 				if (getLog().isDebugEnabled()) {
 					getLog().debug("Spotless will not check an up-to-date file: " + file);
 				}
@@ -51,12 +54,22 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					problemFiles.add(file);
+					counter.cleaned();
 				} else {
+					counter.checkedButAlreadyClean();
 					upToDateChecker.setUpToDate(file.toPath());
 				}
-			} catch (IOException e) {
+			} catch (IOException | RuntimeException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
 			}
+		}
+
+		// We print the number of considered files which is useful when ratchetFrom is setup
+		if (counter.getTotal() > 0) {
+			getLog().info(String.format("Spotless.%s is keeping %s files clean - %s needs changes to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
+					formatter.getName(), counter.getTotal(), counter.getCleaned(), counter.getCheckedButAlreadyClean(), counter.getSkippedAsCleanCache()));
+		} else {
+			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", formatter.getName()));
 		}
 
 		if (!problemFiles.isEmpty()) {

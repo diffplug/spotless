@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +41,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public final class ImportOrderStep {
 	private static final boolean WILDCARDS_LAST_DEFAULT = false;
+	private static final boolean SEMANTIC_SORT_DEFAULT = false;
+	private static final Set<String> TREAT_AS_PACKAGE_DEFAULT = Set.of();
+	private static final Set<String> TREAT_AS_CLASS_DEFAULT = Set.of();
 
 	private final String lineFormat;
 
@@ -55,27 +60,33 @@ public final class ImportOrderStep {
 	}
 
 	public FormatterStep createFrom(String... importOrder) {
-		return createFrom(WILDCARDS_LAST_DEFAULT, importOrder);
+		return createFrom(WILDCARDS_LAST_DEFAULT, SEMANTIC_SORT_DEFAULT, TREAT_AS_PACKAGE_DEFAULT,
+				TREAT_AS_CLASS_DEFAULT, importOrder);
 	}
 
-	public FormatterStep createFrom(boolean wildcardsLast, String... importOrder) {
+	public FormatterStep createFrom(boolean wildcardsLast, boolean semanticSort, Set<String> treatAsPackage,
+			Set<String> treatAsClass, String... importOrder) {
 		// defensive copying and null checking
 		List<String> importOrderList = requireElementsNonNull(Arrays.asList(importOrder));
-		return createFrom(wildcardsLast, () -> importOrderList);
+		return createFrom(wildcardsLast, semanticSort, treatAsPackage, treatAsClass, () -> importOrderList);
 	}
 
 	public FormatterStep createFrom(File importsFile) {
-		return createFrom(WILDCARDS_LAST_DEFAULT, importsFile);
+		return createFrom(WILDCARDS_LAST_DEFAULT, SEMANTIC_SORT_DEFAULT, TREAT_AS_PACKAGE_DEFAULT,
+				TREAT_AS_CLASS_DEFAULT, importsFile);
 	}
 
-	public FormatterStep createFrom(boolean wildcardsLast, File importsFile) {
+	public FormatterStep createFrom(boolean wildcardsLast, boolean semanticSort, Set<String> treatAsPackage,
+			Set<String> treatAsClass, File importsFile) {
 		Objects.requireNonNull(importsFile);
-		return createFrom(wildcardsLast, () -> getImportOrder(importsFile));
+		return createFrom(wildcardsLast, semanticSort, treatAsPackage, treatAsClass, () -> getImportOrder(importsFile));
 	}
 
-	private FormatterStep createFrom(boolean wildcardsLast, Supplier<List<String>> importOrder) {
+	private FormatterStep createFrom(boolean wildcardsLast, boolean semanticSort, Set<String> treatAsPackage,
+			Set<String> treatAsClass, Supplier<List<String>> importOrder) {
 		return FormatterStep.createLazy("importOrder",
-				() -> new State(importOrder.get(), lineFormat, wildcardsLast),
+				() -> new State(importOrder.get(), lineFormat, wildcardsLast, semanticSort, treatAsPackage,
+						treatAsClass),
 				State::toFormatter);
 	}
 
@@ -106,15 +117,23 @@ public final class ImportOrderStep {
 		private final List<String> importOrder;
 		private final String lineFormat;
 		private final boolean wildcardsLast;
+		private final boolean semanticSort;
+		private final TreeSet<String> treatAsPackage;
+		private final TreeSet<String> treatAsClass;
 
-		State(List<String> importOrder, String lineFormat, boolean wildcardsLast) {
+		State(List<String> importOrder, String lineFormat, boolean wildcardsLast, boolean semanticSort,
+				Set<String> treatAsPackage, Set<String> treatAsClass) {
 			this.importOrder = importOrder;
 			this.lineFormat = lineFormat;
 			this.wildcardsLast = wildcardsLast;
+			this.semanticSort = semanticSort;
+			this.treatAsPackage = treatAsPackage == null ? null : new TreeSet<>(treatAsPackage);
+			this.treatAsClass = treatAsClass == null ? null : new TreeSet<>(treatAsClass);
 		}
 
 		FormatterFunc toFormatter() {
-			return raw -> new ImportSorter(importOrder, wildcardsLast).format(raw, lineFormat);
+			return raw -> new ImportSorter(importOrder, wildcardsLast, semanticSort, treatAsPackage, treatAsClass)
+					.format(raw, lineFormat);
 		}
 	}
 }

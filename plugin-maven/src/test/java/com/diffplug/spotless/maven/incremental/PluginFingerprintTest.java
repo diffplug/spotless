@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.model.PluginManagement;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.ReaderFactory;
@@ -43,126 +46,22 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 	private static final String VERSION_1 = "1.0.0";
 	private static final String VERSION_2 = "2.0.0";
 
-	private static final String[] EXECUTION_1 = {
-			"<execution>",
-			"  <id>check</id>",
-			"  <goals>",
-			"    <goal>check</goal>",
-			"  </goals>",
-			"</execution>"
-	};
-	private static final String[] EXECUTION_2 = {};
-
-	private static final String[] CONFIGURATION_1 = {
-			"<googleJavaFormat>",
-			"  <version>1.2</version>",
-			"</googleJavaFormat>"
-	};
-	private static final String[] CONFIGURATION_2 = {
-			"<googleJavaFormat>",
-			"  <version>1.8</version>",
-			"  <reflowLongStrings>true</reflowLongStrings>",
-			"</googleJavaFormat>"
-	};
-
-	private static final String[] DEPENDENCIES_1 = {
-			"<dependencies>",
-			"  <dependency>",
-			"    <groupId>unknown</groupId>",
-			"    <artifactId>unknown</artifactId>",
-			"    <version>1.0</version>",
-			"  </dependency>",
-			"</dependencies>"
-	};
-	private static final String[] DEPENDENCIES_2 = {
-			"<dependencies>",
-			"  <dependency>",
-			"    <groupId>unknown</groupId>",
-			"    <artifactId>unknown</artifactId>",
-			"    <version>2.0</version>",
-			"  </dependency>",
-			"</dependencies>"
-	};
-
 	private static final List<Formatter> FORMATTERS = singletonList(formatter(formatterStep("default")));
 
 	@Test
-	void sameFingerprint() throws Exception {
-		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
-		String xml2 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
+	void sameFingerprintWhenVersionAndFormattersAreTheSame() throws Exception {
+		MavenProject project = mavenProject(VERSION_1);
 
-		MavenProject project1 = mavenProject(xml1);
-		MavenProject project2 = mavenProject(xml2);
-
-		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
-		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
+		PluginFingerprint fingerprint1 = PluginFingerprint.from(project, FORMATTERS);
+		PluginFingerprint fingerprint2 = PluginFingerprint.from(project, FORMATTERS);
 
 		assertThat(fingerprint1).isEqualTo(fingerprint2);
 	}
 
 	@Test
-	void sameFingerprintWithDependencies() throws Exception {
-		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1, DEPENDENCIES_1);
-		String xml2 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1, DEPENDENCIES_1);
-
-		MavenProject project1 = mavenProject(xml1);
-		MavenProject project2 = mavenProject(xml2);
-
-		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
-		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
-
-		assertThat(fingerprint1).isEqualTo(fingerprint2);
-	}
-
-	@Test
-	void differentFingerprintForDifferentDependencies() throws Exception {
-		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1, DEPENDENCIES_1);
-		String xml2 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1, DEPENDENCIES_2);
-
-		MavenProject project1 = mavenProject(xml1);
-		MavenProject project2 = mavenProject(xml2);
-
-		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
-		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
-
-		assertThat(fingerprint1).isNotEqualTo(fingerprint2);
-	}
-
-	@Test
-	void differentFingerprintForDifferentPluginVersion() throws Exception {
-		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
-		String xml2 = createPomXmlContent(VERSION_2, EXECUTION_1, CONFIGURATION_1);
-
-		MavenProject project1 = mavenProject(xml1);
-		MavenProject project2 = mavenProject(xml2);
-
-		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
-		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
-
-		assertThat(fingerprint1).isNotEqualTo(fingerprint2);
-	}
-
-	@Test
-	void differentFingerprintForDifferentExecution() throws Exception {
-		String xml1 = createPomXmlContent(VERSION_2, EXECUTION_1, CONFIGURATION_1);
-		String xml2 = createPomXmlContent(VERSION_2, EXECUTION_2, CONFIGURATION_1);
-
-		MavenProject project1 = mavenProject(xml1);
-		MavenProject project2 = mavenProject(xml2);
-
-		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
-		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
-
-		assertThat(fingerprint1).isNotEqualTo(fingerprint2);
-	}
-
-	@Test
-	void differentFingerprintForDifferentConfiguration() throws Exception {
-		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_2, CONFIGURATION_2);
-		String xml2 = createPomXmlContent(VERSION_1, EXECUTION_2, CONFIGURATION_1);
-
-		MavenProject project1 = mavenProject(xml1);
-		MavenProject project2 = mavenProject(xml2);
+	void differentFingerprintForDifferentPluginVersions() throws Exception {
+		MavenProject project1 = mavenProject(VERSION_1);
+		MavenProject project2 = mavenProject(VERSION_2);
 
 		PluginFingerprint fingerprint1 = PluginFingerprint.from(project1, FORMATTERS);
 		PluginFingerprint fingerprint2 = PluginFingerprint.from(project2, FORMATTERS);
@@ -172,11 +71,8 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 
 	@Test
 	void differentFingerprintForFormattersWithDifferentSteps() throws Exception {
-		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
-		String xml2 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
-
-		MavenProject project1 = mavenProject(xml1);
-		MavenProject project2 = mavenProject(xml2);
+		MavenProject project1 = mavenProject(VERSION_1);
+		MavenProject project2 = mavenProject(VERSION_1);
 
 		FormatterStep step1 = formatterStep("step1");
 		FormatterStep step2 = formatterStep("step2");
@@ -192,11 +88,8 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 
 	@Test
 	void differentFingerprintForFormattersWithDifferentLineEndings() throws Exception {
-		String xml1 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
-		String xml2 = createPomXmlContent(VERSION_1, EXECUTION_1, CONFIGURATION_1);
-
-		MavenProject project1 = mavenProject(xml1);
-		MavenProject project2 = mavenProject(xml2);
+		MavenProject project1 = mavenProject(VERSION_1);
+		MavenProject project2 = mavenProject(VERSION_1);
 
 		FormatterStep step = formatterStep("step");
 		List<Formatter> formatters1 = singletonList(formatter(LineEnding.UNIX, step));
@@ -216,7 +109,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	void failsWhenProjectDoesNotContainSpotlessPlugin() {
+	void failsForProjectWithoutSpotlessPlugin() {
 		MavenProject projectWithoutSpotless = new MavenProject();
 
 		assertThatThrownBy(() -> PluginFingerprint.from(projectWithoutSpotless, FORMATTERS))
@@ -224,7 +117,39 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 				.hasMessageContaining("Spotless plugin absent from the project");
 	}
 
-	private static MavenProject mavenProject(String xml) throws Exception {
+	@Test
+	void buildsFingerprintForProjectWithSpotlessPluginInBuildPlugins() {
+		MavenProject project = new MavenProject();
+		Plugin spotlessPlugin = new Plugin();
+		spotlessPlugin.setGroupId("com.diffplug.spotless");
+		spotlessPlugin.setArtifactId("spotless-maven-plugin");
+		spotlessPlugin.setVersion("1.2.3");
+		project.getBuild().addPlugin(spotlessPlugin);
+
+		PluginFingerprint fingerprint = PluginFingerprint.from(project, Collections.emptyList());
+
+		assertThat(fingerprint).isNotNull();
+	}
+
+	@Test
+	void buildsFingerprintForProjectWithSpotlessPluginInPluginManagement() {
+		MavenProject project = new MavenProject();
+		Plugin spotlessPlugin = new Plugin();
+		spotlessPlugin.setGroupId("com.diffplug.spotless");
+		spotlessPlugin.setArtifactId("spotless-maven-plugin");
+		spotlessPlugin.setVersion("1.2.3");
+		project.getBuild().addPlugin(spotlessPlugin);
+		PluginManagement pluginManagement = new PluginManagement();
+		pluginManagement.addPlugin(spotlessPlugin);
+		project.getBuild().setPluginManagement(pluginManagement);
+
+		PluginFingerprint fingerprint = PluginFingerprint.from(project, Collections.emptyList());
+
+		assertThat(fingerprint).isNotNull();
+	}
+
+	private MavenProject mavenProject(String spotlessVersion) throws Exception {
+		String xml = createPomXmlContent(spotlessVersion, new String[0], new String[0]);
 		return new MavenProject(readPom(xml));
 	}
 

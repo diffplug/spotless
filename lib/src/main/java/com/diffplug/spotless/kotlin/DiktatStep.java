@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,9 @@ public class DiktatStep {
 	// prevent direct instantiation
 	private DiktatStep() {}
 
-	private static final String DEFAULT_VERSION = "1.1.0";
+	private static final String MIN_SUPPORTED_VERSION = "1.2.1";
+
+	private static final String DEFAULT_VERSION = "1.2.5";
 	static final String NAME = "diktat";
 	static final String PACKAGE_DIKTAT = "org.cqfn.diktat";
 	static final String MAVEN_COORDINATE = PACKAGE_DIKTAT + ":diktat-rules:";
@@ -44,30 +46,25 @@ public class DiktatStep {
 	}
 
 	public static FormatterStep create(String versionDiktat, Provisioner provisioner) {
-		return create(versionDiktat, provisioner, Collections.emptyMap(), null);
+		return create(versionDiktat, provisioner, null);
 	}
 
 	public static FormatterStep create(String versionDiktat, Provisioner provisioner, @Nullable FileSignature config) {
-		return create(versionDiktat, provisioner, Collections.emptyMap(), config);
-	}
-
-	public static FormatterStep create(String versionDiktat, Provisioner provisioner, Map<String, String> userData, @Nullable FileSignature config) {
-		return create(versionDiktat, provisioner, false, userData, config);
+		return create(versionDiktat, provisioner, false, config);
 	}
 
 	public static FormatterStep createForScript(String versionDiktat, Provisioner provisioner, @Nullable FileSignature config) {
-		return createForScript(versionDiktat, provisioner, Collections.emptyMap(), config);
+		return create(versionDiktat, provisioner, true, config);
 	}
 
-	public static FormatterStep createForScript(String versionDiktat, Provisioner provisioner, Map<String, String> userData, @Nullable FileSignature config) {
-		return create(versionDiktat, provisioner, true, userData, config);
-	}
-
-	public static FormatterStep create(String versionDiktat, Provisioner provisioner, boolean isScript, Map<String, String> userData, @Nullable FileSignature config) {
+	public static FormatterStep create(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) {
+		if (BadSemver.version(versionDiktat) < BadSemver.version(MIN_SUPPORTED_VERSION)) {
+			throw new IllegalStateException("Minimum required Diktat version is " + MIN_SUPPORTED_VERSION + ", you tried " + versionDiktat + " which is too old");
+		}
 		Objects.requireNonNull(versionDiktat, "versionDiktat");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new DiktatStep.State(versionDiktat, provisioner, isScript, userData, config),
+				() -> new DiktatStep.State(versionDiktat, provisioner, isScript, config),
 				DiktatStep.State::createFormat);
 	}
 
@@ -79,14 +76,12 @@ public class DiktatStep {
 		private final boolean isScript;
 		private final @Nullable FileSignature config;
 		final JarState jar;
-		private final TreeMap<String, String> userData;
 
-		State(String versionDiktat, Provisioner provisioner, boolean isScript, Map<String, String> userData, @Nullable FileSignature config) throws IOException {
+		State(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) throws IOException {
 
 			HashSet<String> pkgSet = new HashSet<>();
 			pkgSet.add(MAVEN_COORDINATE + versionDiktat);
 
-			this.userData = new TreeMap<>(userData);
 			this.jar = JarState.from(pkgSet, provisioner);
 			this.isScript = isScript;
 			this.config = config;
@@ -98,8 +93,8 @@ public class DiktatStep {
 			}
 
 			Class<?> formatterFunc = jar.getClassLoader().loadClass("com.diffplug.spotless.glue.diktat.DiktatFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(boolean.class, Map.class);
-			return (FormatterFunc.NeedsFile) constructor.newInstance(isScript, userData);
+			Constructor<?> constructor = formatterFunc.getConstructor(boolean.class);
+			return (FormatterFunc.NeedsFile) constructor.newInstance(isScript);
 		}
 	}
 }

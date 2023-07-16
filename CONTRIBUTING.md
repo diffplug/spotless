@@ -1,6 +1,6 @@
 # Contributing to Spotless
 
-Pull requests are welcome, preferably against `main`.  Feel free to develop spotless any way you like.
+Pull requests are welcome, preferably against `main`.  Feel free to develop spotless any way you like, but if you like Eclipse and Gradle Buildship then [`gradlew equoIde` will install an IDE and set it up for you](https://github.com/equodev/equo-ide).
 
 ## How Spotless works
 
@@ -36,7 +36,7 @@ For the folders below in monospace text, they are published on maven central at 
 | `lib-extra` | Contains the optional parts of Spotless which require external dependencies.  `LineEnding.GIT_ATTRIBUTES` won't work unless `lib-extra` is available. |
 | `plugin-gradle` | Integrates spotless and all of its formatters into Gradle. |
 | `plugin-maven` | Integrates spotless and all of its formatters into Maven. |
-| _ext | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
+| `_ext` | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
 
 ## How to add a new FormatterStep
 
@@ -119,7 +119,7 @@ There are many great formatters (prettier, clang-format, black, etc.) which live
 
 Because of Spotless' up-to-date checking and [git ratcheting](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet), Spotless actually doesn't have to call formatters very often, so even an expensive shell call for every single invocation isn't that bad.  Anything that works is better than nothing, and we can always speed things up later if it feels too slow (but it probably won't).
 
-## How to enable the _ext projects
+## How to enable the `_ext` projects
 
 The `_ext` projects are disabled per default, since:
 
@@ -129,7 +129,7 @@ The `_ext` projects are disabled per default, since:
 
 The `_ext` can be activated via the root project property `com.diffplug.spotless.include.ext`.
 
-Activate the the property via command line, like for example:
+Activate the property via command line, like for example:
 
 ```
 gradlew -Pcom.diffplug.spotless.include.ext=true build
@@ -207,7 +207,7 @@ If it doesn't work, you can check the JitPack log at `https://jitpack.io/com/git
 
 ### Maven
 
-Run `./gradlew publishToMavenLocal` to publish this to your local repository. The maven plugin is not published to JitPack due to [jitpack/jitpack.io#4112](https://github.com/jitpack/jitpack.io/issues/4112).
+Run `./gradlew publishToMavenLocal` to publish this to your local repository. You can also use the JitPack artifacts, using the same principles as Gradle above.
 
 ## License
 

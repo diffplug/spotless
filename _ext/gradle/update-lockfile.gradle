@@ -1,5 +1,5 @@
 // Use file locking
-configurations.all {
+configurations.configureEach {
 	resolutionStrategy {
 		activateDependencyLocking()
 	}

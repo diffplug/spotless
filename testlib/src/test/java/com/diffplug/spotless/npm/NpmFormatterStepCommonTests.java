@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,22 @@ package com.diffplug.spotless.npm;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 import com.diffplug.spotless.ResourceHarness;
 
 public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 
 	protected NpmPathResolver npmPathResolver() {
-		return new NpmPathResolver(npmExecutable(), npmrc());
+		return new NpmPathResolver(npmExecutable(), nodeExecutable(), npmrc(), Collections.emptyList());
 	}
 
 	private File npmExecutable() {
-		return NpmExecutableResolver.tryFind().orElseThrow(() -> new IllegalStateException("cannot detect node binary"));
+		return NpmExecutableResolver.tryFind().orElseThrow(() -> new IllegalStateException("cannot detect npm binary"));
+	}
+
+	private File nodeExecutable() {
+		return NodeExecutableResolver.tryFindNextTo(npmExecutable()).orElseThrow(() -> new IllegalStateException("cannot detect node binary"));
 	}
 
 	private File npmrc() {
@@ -42,4 +47,14 @@ public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 		}
 		return this.buildDir;
 	}
+
+	private File projectDir = null;
+
+	protected File projectDir() throws IOException {
+		if (this.projectDir == null) {
+			this.projectDir = newFolder("project-dir");
+		}
+		return this.projectDir;
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.diffplug.spotless.java;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -25,14 +27,45 @@ import javax.annotation.Nullable;
 // which itself is licensed under the Apache 2.0 license.
 final class ImportSorterImpl {
 
-	private final List<String> template = new ArrayList<>();
+	private static final String CATCH_ALL_SUBGROUP = "";
+	private static final String STATIC_KEYWORD = "static ";
+	private static final String STATIC_SYMBOL = "\\#";
+	private static final String SUBGROUP_SEPARATOR = "|";
+
+	private final List<ImportsGroup> importsGroups;
 	private final Map<String, List<String>> matchingImports = new HashMap<>();
 	private final List<String> notMatching = new ArrayList<>();
 	private final Set<String> allImportOrderItems = new HashSet<>();
 	private final Comparator<String> ordering;
 
-	static List<String> sort(List<String> imports, List<String> importsOrder, boolean wildcardsLast, String lineFormat) {
-		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder, wildcardsLast);
+	// An ImportsGroup is a group of imports ; each group is separated by blank lines.
+	// A group is composed of subgroups : imports are sorted by subgroup.
+	private static class ImportsGroup {
+
+		private final List<String> subGroups;
+
+		public ImportsGroup(String importOrder) {
+			this.subGroups = Stream.of(importOrder.split("\\" + SUBGROUP_SEPARATOR, -1))
+					.map(this::normalizeStatic)
+					.collect(Collectors.toList());
+		}
+
+		private String normalizeStatic(String subgroup) {
+			if (subgroup.startsWith(STATIC_SYMBOL)) {
+				return subgroup.replace(STATIC_SYMBOL, STATIC_KEYWORD);
+			}
+			return subgroup;
+		}
+
+		public List<String> getSubGroups() {
+			return subGroups;
+		}
+	}
+
+	static List<String> sort(List<String> imports, List<String> importsOrder, boolean wildcardsLast,
+			boolean semanticSort, Set<String> treatAsPackage, Set<String> treatAsClass, String lineFormat) {
+		ImportSorterImpl importsSorter = new ImportSorterImpl(importsOrder, wildcardsLast, semanticSort, treatAsPackage,
+				treatAsClass);
 		return importsSorter.sort(imports, lineFormat);
 	}
 
@@ -40,43 +73,47 @@ final class ImportSorterImpl {
 		filterMatchingImports(imports);
 		mergeNotMatchingItems(false);
 		mergeNotMatchingItems(true);
-		mergeMatchingItems();
+		List<String> sortedImported = mergeMatchingItems();
 
-		return getResult(lineFormat);
+		return getResult(sortedImported, lineFormat);
 	}
 
-	private ImportSorterImpl(List<String> importOrder, boolean wildcardsLast) {
-		List<String> importOrderCopy = new ArrayList<>(importOrder);
-		normalizeStaticOrderItems(importOrderCopy);
-		putStaticItemIfNotExists(importOrderCopy);
-		template.addAll(importOrderCopy);
-		ordering = new OrderingComparator(wildcardsLast);
-		this.allImportOrderItems.addAll(importOrderCopy);
+	private ImportSorterImpl(List<String> importOrder, boolean wildcardsLast, boolean semanticSort,
+			Set<String> treatAsPackage, Set<String> treatAsClass) {
+		importsGroups = importOrder.stream().filter(Objects::nonNull).map(ImportsGroup::new).collect(Collectors.toList());
+		putStaticItemIfNotExists(importsGroups);
+		putCatchAllGroupIfNotExists(importsGroups);
+
+		if (semanticSort) {
+			ordering = new SemanticOrderingComparator(wildcardsLast, treatAsPackage, treatAsClass);
+		} else {
+			ordering = new LexicographicalOrderingComparator(wildcardsLast);
+		}
+
+		List<String> subgroups = importsGroups.stream().map(ImportsGroup::getSubGroups).flatMap(Collection::stream).collect(Collectors.toList());
+		this.allImportOrderItems.addAll(subgroups);
 	}
 
-	private static void putStaticItemIfNotExists(List<String> allImportOrderItems) {
-		boolean contains = false;
+	private void putStaticItemIfNotExists(List<ImportsGroup> importsGroups) {
+		boolean catchAllSubGroupExist = importsGroups.stream().anyMatch(group -> group.getSubGroups().contains(STATIC_KEYWORD));
+		if (catchAllSubGroupExist) {
+			return;
+		}
+
 		int indexOfFirstStatic = 0;
-		for (int i = 0; i < allImportOrderItems.size(); i++) {
-			String allImportOrderItem = allImportOrderItems.get(i);
-			if (allImportOrderItem.equals("static ")) {
-				contains = true;
-			}
-			if (allImportOrderItem.startsWith("static ")) {
+		for (int i = 0; i < importsGroups.size(); i++) {
+			boolean subgroupMatch = importsGroups.get(i).getSubGroups().stream().anyMatch(subgroup -> subgroup.startsWith(STATIC_KEYWORD));
+			if (subgroupMatch) {
 				indexOfFirstStatic = i;
 			}
 		}
-		if (!contains) {
-			allImportOrderItems.add(indexOfFirstStatic, "static ");
-		}
+		importsGroups.add(indexOfFirstStatic, new ImportsGroup(STATIC_KEYWORD));
 	}
 
-	private static void normalizeStaticOrderItems(List<String> allImportOrderItems) {
-		for (int i = 0; i < allImportOrderItems.size(); i++) {
-			String s = allImportOrderItems.get(i);
-			if (s.startsWith("\\#")) {
-				allImportOrderItems.set(i, s.replace("\\#", "static "));
-			}
+	private void putCatchAllGroupIfNotExists(List<ImportsGroup> importsGroups) {
+		boolean catchAllSubGroupExist = importsGroups.stream().anyMatch(group -> group.getSubGroups().contains(CATCH_ALL_SUBGROUP));
+		if (!catchAllSubGroupExist) {
+			importsGroups.add(new ImportsGroup(CATCH_ALL_SUBGROUP));
 		}
 	}
 
@@ -87,9 +124,7 @@ final class ImportSorterImpl {
 		for (String anImport : imports) {
 			String orderItem = getBestMatchingImportOrderItem(anImport);
 			if (orderItem != null) {
-				if (!matchingImports.containsKey(orderItem)) {
-					matchingImports.put(orderItem, new ArrayList<>());
-				}
+				matchingImports.computeIfAbsent(orderItem, key -> new ArrayList<>());
 				matchingImports.get(orderItem).add(anImport);
 			} else {
 				notMatching.add(anImport);
@@ -116,34 +151,14 @@ final class ImportSorterImpl {
 	 * not matching means it does not match any order item, so it will be appended before or after order items
 	 */
 	private void mergeNotMatchingItems(boolean staticItems) {
-		sort(notMatching);
-
-		int firstIndexOfOrderItem = getFirstIndexOfOrderItem(notMatching, staticItems);
-		int indexOfOrderItem = 0;
 		for (String notMatchingItem : notMatching) {
 			if (!matchesStatic(staticItems, notMatchingItem)) {
 				continue;
 			}
 			boolean isOrderItem = isOrderItem(notMatchingItem, staticItems);
-			if (isOrderItem) {
-				indexOfOrderItem = template.indexOf(notMatchingItem);
-			} else {
-				if (indexOfOrderItem == 0 && firstIndexOfOrderItem != 0) {
-					// insert before alphabetically first order item
-					template.add(firstIndexOfOrderItem, notMatchingItem);
-					firstIndexOfOrderItem++;
-				} else if (firstIndexOfOrderItem == 0) {
-					// no order is specified
-					if (template.size() > 0 && (template.get(template.size() - 1).startsWith("static"))) {
-						// insert N after last static import
-						template.add(ImportSorter.N);
-					}
-					template.add(notMatchingItem);
-				} else {
-					// insert after the previous order item
-					template.add(indexOfOrderItem + 1, notMatchingItem);
-					indexOfOrderItem++;
-				}
+			if (!isOrderItem) {
+				matchingImports.computeIfAbsent(CATCH_ALL_SUBGROUP, key -> new ArrayList<>());
+				matchingImports.get(CATCH_ALL_SUBGROUP).add(notMatchingItem);
 			}
 		}
 	}
@@ -153,76 +168,44 @@ final class ImportSorterImpl {
 		return contains && matchesStatic(staticItems, notMatchingItem);
 	}
 
-	/**
-	 * gets first order item from sorted input list, and finds out it's index in template.
-	 */
-	private int getFirstIndexOfOrderItem(List<String> notMatching, boolean staticItems) {
-		int firstIndexOfOrderItem = 0;
-		for (String notMatchingItem : notMatching) {
-			if (!matchesStatic(staticItems, notMatchingItem)) {
-				continue;
-			}
-			boolean isOrderItem = isOrderItem(notMatchingItem, staticItems);
-			if (isOrderItem) {
-				firstIndexOfOrderItem = template.indexOf(notMatchingItem);
-				break;
-			}
-		}
-		return firstIndexOfOrderItem;
-	}
-
 	private static boolean matchesStatic(boolean staticItems, String notMatchingItem) {
-		boolean isStatic = notMatchingItem.startsWith("static ");
+		boolean isStatic = notMatchingItem.startsWith(STATIC_KEYWORD);
 		return (isStatic && staticItems) || (!isStatic && !staticItems);
 	}
 
-	private void mergeMatchingItems() {
-		for (int i = 0; i < template.size(); i++) {
-			String item = template.get(i);
-			if (allImportOrderItems.contains(item)) {
-				// find matching items for order item
-				List<String> strings = matchingImports.get(item);
+	private List<String> mergeMatchingItems() {
+		List<String> template = new ArrayList<>();
+		for (ImportsGroup group : importsGroups) {
+			boolean groupIsNotEmpty = false;
+			for (String subgroup : group.getSubGroups()) {
+				List<String> strings = matchingImports.get(subgroup);
 				if (strings == null || strings.isEmpty()) {
-					// if there is none, just remove order item
-					template.remove(i);
-					i--;
 					continue;
 				}
+				groupIsNotEmpty = true;
 				List<String> matchingItems = new ArrayList<>(strings);
 				sort(matchingItems);
-
-				// replace order item by matching import statements
-				// this is a mess and it is only a luck that it works :-]
-				template.remove(i);
-				if (i != 0 && !template.get(i - 1).equals(ImportSorter.N)) {
-					template.add(i, ImportSorter.N);
-					i++;
-				}
-				if (i + 1 < template.size() && !template.get(i + 1).equals(ImportSorter.N)
-						&& !template.get(i).equals(ImportSorter.N)) {
-					template.add(i, ImportSorter.N);
-				}
-				template.addAll(i, matchingItems);
-				if (i != 0 && !template.get(i - 1).equals(ImportSorter.N)) {
-					template.add(i, ImportSorter.N);
-				}
-
+				template.addAll(matchingItems);
+			}
+			if (groupIsNotEmpty) {
+				template.add(ImportSorter.N);
 			}
 		}
 		// if there is \n on the end, remove it
-		if (template.size() > 0 && template.get(template.size() - 1).equals(ImportSorter.N)) {
+		if (!template.isEmpty() && template.get(template.size() - 1).equals(ImportSorter.N)) {
 			template.remove(template.size() - 1);
 		}
+		return template;
 	}
 
 	private void sort(List<String> items) {
 		items.sort(ordering);
 	}
 
-	private List<String> getResult(String lineFormat) {
+	private List<String> getResult(List<String> sortedImported, String lineFormat) {
 		List<String> strings = new ArrayList<>();
 
-		for (String s : template) {
+		for (String s : sortedImported) {
 			if (s.equals(ImportSorter.N)) {
 				strings.add(s);
 			} else {
@@ -257,30 +240,187 @@ final class ImportSorterImpl {
 		return null;
 	}
 
-	private static class OrderingComparator implements Comparator<String>, Serializable {
+	private static int compareWithWildcare(String string1, String string2, boolean wildcardsLast) {
+		int string1WildcardIndex = string1.indexOf('*');
+		int string2WildcardIndex = string2.indexOf('*');
+		boolean string1IsWildcard = string1WildcardIndex >= 0;
+		boolean string2IsWildcard = string2WildcardIndex >= 0;
+		if (string1IsWildcard == string2IsWildcard) {
+			return string1.compareTo(string2);
+		}
+		int prefixLength = string1IsWildcard ? string1WildcardIndex : string2WildcardIndex;
+		boolean samePrefix = string1.regionMatches(0, string2, 0, prefixLength);
+		if (!samePrefix) {
+			return string1.compareTo(string2);
+		}
+		return (string1IsWildcard == wildcardsLast) ? 1 : -1;
+	}
+
+	private static class LexicographicalOrderingComparator implements Comparator<String>, Serializable {
 		private static final long serialVersionUID = 1;
 
 		private final boolean wildcardsLast;
 
-		private OrderingComparator(boolean wildcardsLast) {
+		private LexicographicalOrderingComparator(boolean wildcardsLast) {
 			this.wildcardsLast = wildcardsLast;
 		}
 
 		@Override
 		public int compare(String string1, String string2) {
-			int string1WildcardIndex = string1.indexOf('*');
-			int string2WildcardIndex = string2.indexOf('*');
-			boolean string1IsWildcard = string1WildcardIndex >= 0;
-			boolean string2IsWildcard = string2WildcardIndex >= 0;
-			if (string1IsWildcard == string2IsWildcard) {
-				return string1.compareTo(string2);
-			}
-			int prefixLength = string1IsWildcard ? string1WildcardIndex : string2WildcardIndex;
-			boolean samePrefix = string1.regionMatches(0, string2, 0, prefixLength);
-			if (!samePrefix) {
-				return string1.compareTo(string2);
-			}
-			return (string1IsWildcard == wildcardsLast) ? 1 : -1;
+			return compareWithWildcare(string1, string2, wildcardsLast);
 		}
+	}
+
+	private static class SemanticOrderingComparator implements Comparator<String>, Serializable {
+		private static final long serialVersionUID = 1;
+
+		private final boolean wildcardsLast;
+		private final Set<String> treatAsPackage;
+		private final Set<String> treatAsClass;
+
+		private SemanticOrderingComparator(boolean wildcardsLast, Set<String> treatAsPackage,
+				Set<String> treatAsClass) {
+			this.wildcardsLast = wildcardsLast;
+			this.treatAsPackage = treatAsPackage;
+			this.treatAsClass = treatAsClass;
+		}
+
+		@Override
+		public int compare(String string1, String string2) {
+			/*
+			 * Ordering uses semantics of the import string by splitting it into package,
+			 * class name(s) and static member (for static imports) and then comparing by
+			 * each of those three substrings in sequence.
+			 *
+			 * When comparing static imports, the last segment in the dot-separated string
+			 * is considered to be the member (field, method, type) name.
+			 *
+			 * The first segment starting with an upper case letter is considered to be the
+			 * (first) class name. Since this comparator has no actual type information,
+			 * this auto-detection will fail for upper case package names and lower case
+			 * class names. treatAsPackage and treatAsClass can be used respectively to
+			 * provide hints to the auto-detection.
+			 */
+			if (string1.startsWith(STATIC_KEYWORD)) {
+				String[] split = splitFqcnAndMember(string1);
+				String fqcn1 = split[0];
+				String member1 = split[1];
+
+				split = splitFqcnAndMember(string2);
+				String fqcn2 = split[0];
+				String member2 = split[1];
+
+				int result = compareFullyQualifiedClassName(fqcn1, fqcn2);
+				if (result != 0)
+					return result;
+
+				return compareWithWildcare(member1, member2, wildcardsLast);
+			} else {
+				return compareFullyQualifiedClassName(string1, string2);
+			}
+		}
+
+		/**
+		 * Compares two fully qualified class names by splitting them into package and
+		 * (nested) class names.
+		 */
+		private int compareFullyQualifiedClassName(String fqcn1, String fqcn2) {
+			String[] split = splitPackageAndClasses(fqcn1);
+			String p1 = split[0];
+			String c1 = split[1];
+
+			split = splitPackageAndClasses(fqcn2);
+			String p2 = split[0];
+			String c2 = split[1];
+
+			int result = p1.compareTo(p2);
+			if (result != 0)
+				return result;
+
+			return compareWithWildcare(c1, c2, wildcardsLast);
+		}
+
+		/**
+		 * Splits the provided static import string into fully qualified class name and
+		 * the imported static member (field, method or type).
+		 */
+		private String[] splitFqcnAndMember(String importString) {
+			String s = importString.substring(STATIC_KEYWORD.length()).trim();
+
+			/*
+			 * Static imports always contain a member or wildcard and it's always the last
+			 * segment.
+			 */
+			int dot = s.lastIndexOf(".");
+			String fqcn = s.substring(0, dot);
+			String member = s.substring(dot + 1);
+			return new String[]{fqcn, member};
+		}
+
+		/**
+		 * Splits the fully qualified class name into package and class name(s).
+		 */
+		private String[] splitPackageAndClasses(String fqcn) {
+			String packageNames = null;
+			String classNames = null;
+
+			/*
+			 * The first segment that starts with an upper case letter starts the class
+			 * name(s), unless it matches treatAsPackage (then it's explicitly declared as
+			 * package via configuration). If no segment starts with an upper case letter
+			 * then the last segment must be a class name (unless the method input is
+			 * garbage).
+			 */
+			int dot = fqcn.indexOf('.');
+			while (dot > -1) {
+				int nextDot = fqcn.indexOf('.', dot + 1);
+				if (nextDot > -1) {
+					if (Character.isUpperCase(fqcn.charAt(dot + 1))) {
+						// if upper case, check if should be treated as package nonetheless
+						if (!treatAsPackage(fqcn.substring(0, nextDot))) {
+							packageNames = fqcn.substring(0, dot);
+							classNames = fqcn.substring(dot + 1);
+							break;
+						}
+					} else {
+						// if lower case, check if should be treated as class nonetheless
+						if (treatAsClass(fqcn.substring(0, nextDot))) {
+							packageNames = fqcn.substring(0, dot);
+							classNames = fqcn.substring(dot + 1);
+							break;
+						}
+					}
+				}
+
+				dot = nextDot;
+			}
+
+			if (packageNames == null) {
+				int i = fqcn.lastIndexOf(".");
+				packageNames = fqcn.substring(0, i);
+				classNames = fqcn.substring(i + 1);
+			}
+
+			return new String[]{packageNames, classNames};
+		}
+
+		/**
+		 * Returns whether the provided prefix matches any entry of
+		 * {@code treatAsPackage}.
+		 */
+		private boolean treatAsPackage(String prefix) {
+			// This would be the place to introduce wild cards or even regex matching.
+			return treatAsPackage != null && treatAsPackage.contains(prefix);
+		}
+
+		/**
+		 * Returns whether the provided prefix name matches any entry of
+		 * {@code treatAsClass}.
+		 */
+		private boolean treatAsClass(String prefix) {
+			// This would be the place to introduce wild cards or even regex matching.
+			return treatAsClass != null && treatAsClass.contains(prefix);
+		}
+
 	}
 }

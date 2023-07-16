@@ -76,7 +76,7 @@ public final class BundleController implements StaticBundleContext {
 		services.add(org.osgi.service.packageadmin.PackageAdmin.class, bundleLookup);
 		services.add(FrameworkWiring.class, bundleLookup);
 
-		//Redirect framework activator requests to the the org.eclipse.osgi bundle to this instance.
+		//Redirect framework activator requests to the org.eclipse.osgi bundle to this instance.
 		bundles.add(new SimpleBundle(systemBundle, ECLIPSE_LAUNCHER_SYMBOLIC_NAME, Bundle.ACTIVE));
 		FrameworkBundleRegistry.initialize(this);
 	}

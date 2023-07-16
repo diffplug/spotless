@@ -1,0 +1,86 @@
+# BUILDCACHE_USER
+# BUILDCACHE_PASS
+#   - rw access to buildcache.diffplug.com
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  sanityCheck:
+    name: spotlessCheck assemble testClasses
+    runs-on: ubuntu-latest
+    env:
+      buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
+      buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: 11
+      - name: gradle caching
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+      - name: spotlessCheck
+        run: ./gradlew spotlessCheck
+      - name: assemble testClasses
+        run: ./gradlew assemble testClasses
+  build:
+    needs: sanityCheck
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [maven, gradle]
+        jre: [11, 17]
+        os: [ubuntu-latest]
+        include:
+          # test windows at the diagonals of the above matrix
+          - kind: maven
+            jre: 11
+            os: windows-latest
+          - kind: gradle
+            jre: 17
+            os: windows-latest
+          # npm on linux only (crazy slow on windows)
+          - kind: npm
+            jre: 11
+            os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install JDK ${{ matrix.distribution }} ${{ matrix.java_version }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: ${{ matrix.jre }}
+      - name: gradle caching
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+      - name: build (maven-only)
+        if: matrix.kind == 'maven'
+        run: ./gradlew :plugin-maven:build -x spotlessCheck
+      - name: build (everything-but-maven)
+        if: matrix.kind == 'gradle'
+        run: ./gradlew build -x spotlessCheck -PSPOTLESS_EXCLUDE_MAVEN=true
+      - name: test npm
+        if: matrix.kind == 'npm'
+        run: ./gradlew testNpm
+      - name: junit result
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          check_name: JUnit ${{ matrix.kind }} ${{ matrix.jre }} ${{ matrix.os }}
+          report_paths: '*/build/test-results/*/TEST-*.xml'

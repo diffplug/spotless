@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,14 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildServiceRegistry;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.build.event.BuildEventsListenerRegistry;
+import org.gradle.work.DisableCachingByDefault;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.io.Files;
@@ -46,6 +47,7 @@ import com.diffplug.spotless.FormatterStep;
  * - When this "registerDependencies" task does its up-to-date check, it queries the task execution graph to see which
  *   SpotlessTasks are at risk of being executed, and causes them all to be evaluated safely in the root buildscript.
  */
+@DisableCachingByDefault(because = "This task coordinates the setup and execution of other tasks, and should not be cached")
 public abstract class RegisterDependenciesTask extends DefaultTask {
 	static final String TASK_NAME = "spotlessInternalRegisterDependencies";
 
@@ -63,8 +65,9 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		String compositeBuildSuffix = getName().substring(TASK_NAME.length()); // see https://github.com/diffplug/spotless/pull/1001
 		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
-		getTaskService().set(buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {}));
-		getBuildEventsListenerRegistry().onTaskCompletion(getTaskService());
+		taskService = buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {});
+		usesService(taskService);
+		getBuildEventsListenerRegistry().onTaskCompletion(taskService);
 		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
 	}
 
@@ -88,8 +91,13 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
 	}
 
+	// this field is stupid, but we need it, see https://github.com/diffplug/spotless/issues/1260
+	private Provider<SpotlessTaskService> taskService;
+
 	@Internal
-	abstract Property<SpotlessTaskService> getTaskService();
+	public Provider<SpotlessTaskService> getTaskService() {
+		return taskService;
+	}
 
 	@Inject
 	protected abstract BuildEventsListenerRegistry getBuildEventsListenerRegistry();

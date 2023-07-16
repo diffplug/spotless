@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ public interface FormatterStep extends Serializable {
 	 * @param rawUnix
 	 *            the content to format, guaranteed to have unix-style newlines ('\n'); never null
 	 * @param file
-	 *            the file which {@code rawUnix} was obtained from; never null. Pass an empty file using
-	 *            {@code new File("")} if and only if no file is actually associated with {@code rawUnix}
+	 *            the file which {@code rawUnix} was obtained from; never null. Pass the reference
+	 *            {@link Formatter#NO_FILE_SENTINEL} if and only if no file is actually associated with {@code rawUnix}
 	 * @return the formatted content, guaranteed to only have unix-style newlines; may return null
 	 *         if the formatter step doesn't have any changes to make
 	 * @throws Exception if the formatter step experiences a problem
@@ -53,8 +53,23 @@ public interface FormatterStep extends Serializable {
 	 *            java regular expression used to filter out files which content doesn't contain pattern
 	 * @return FormatterStep
 	 */
+	@Deprecated
 	public default FormatterStep filterByContentPattern(String contentPattern) {
-		return new FilterByContentPatternFormatterStep(this, contentPattern);
+		return filterByContent(OnMatch.INCLUDE, contentPattern);
+	}
+
+	/**
+	 * Returns a new {@code FormatterStep} which, observing the value of {@code formatIfMatches},
+	 * will only apply, or not, its changes to files which pass the given filter.
+	 *
+	 * @param onMatch
+	 *            determines if matches are included or excluded
+	 * @param contentPattern
+	 *            java regular expression used to filter in or out files which content contain pattern
+	 * @return FormatterStep
+	 */
+	public default FormatterStep filterByContent(OnMatch onMatch, String contentPattern) {
+		return new FilterByContentPatternFormatterStep(this, onMatch, contentPattern);
 	}
 
 	/**

@@ -61,7 +61,7 @@ public final class SpotlessEclipseFramework {
 		REGISTRY(org.eclipse.core.internal.registry.osgi.Activator.class),
 		/** Eclipse preferences always check whether this bundle has been activated before preference are set.*/
 		PREFERENCES(org.eclipse.core.internal.preferences.Activator.class),
-		/** The common runtime provides provides common services, like log and service adapters registry. */
+		/** The common runtime provides common services, like log and service adapters registry. */
 		COMMON(org.eclipse.core.internal.runtime.Activator.class);
 
 		private final Class<? extends BundleActivator> activatorClass;

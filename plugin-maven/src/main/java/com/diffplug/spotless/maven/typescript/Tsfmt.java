@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
-import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.maven.npm.AbstractNpmFormatterStepFactory;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.TsConfigFileType;
 import com.diffplug.spotless.npm.TsFmtFormatterStep;
 import com.diffplug.spotless.npm.TypedTsFmtConfigFile;
 
-public class Tsfmt implements FormatterStepFactory {
+public class Tsfmt extends AbstractNpmFormatterStepFactory {
 
 	@Parameter
 	private String tslintFile;
@@ -53,12 +53,6 @@ public class Tsfmt implements FormatterStepFactory {
 	private String tslintVersion;
 
 	@Parameter
-	private String npmExecutable;
-
-	@Parameter
-	private String npmrc;
-
-	@Parameter
 	private Map<String, String> config;
 
 	@Override
@@ -73,10 +67,6 @@ public class Tsfmt implements FormatterStepFactory {
 		if (tslintVersion != null) {
 			devDependencies.put("tslint", tslintVersion);
 		}
-
-		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
-
-		File npmrcFile = npmrc != null ? stepConfig.getFileLocator().locateFile(npmrc) : null;
 
 		TypedTsFmtConfigFile configFile;
 		Map<String, Object> configInline;
@@ -119,9 +109,11 @@ public class Tsfmt implements FormatterStepFactory {
 			throw onlyOneConfig();
 		}
 
-		File buildDir = stepConfig.getFileLocator().getBuildDir();
-		NpmPathResolver npmPathResolver = new NpmPathResolver(npm, npmrcFile, stepConfig.getFileLocator().getBaseDir());
-		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), buildDir, npmPathResolver, configFile, configInline);
+		File buildDir = buildDir(stepConfig);
+		File baseDir = baseDir(stepConfig);
+		File cacheDir = cacheDir(stepConfig);
+		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
+		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, cacheDir, npmPathResolver, configFile, configInline);
 	}
 
 	private static IllegalArgumentException onlyOneConfig() {

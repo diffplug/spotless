@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -143,17 +143,13 @@ public final class DiffMessageFormatter {
 				Objects.requireNonNull(runToFix, "runToFix");
 				Objects.requireNonNull(formatter, "formatter");
 				Objects.requireNonNull(problemFiles, "problemFiles");
-				DiffMessageFormatter diffFormater = new DiffMessageFormatter(this);
+				DiffMessageFormatter diffFormater = new DiffMessageFormatter(formatter, problemFiles);
 				return "The following files had format violations:\n"
 						+ diffFormater.buffer
 						+ runToFix;
 			} catch (IOException e) {
 				throw Errors.asRuntime(e);
 			}
-		}
-
-		String relativePath(File file) {
-			return formatter.getRootDir().relativize(file.toPath()).toString();
 		}
 	}
 
@@ -163,23 +159,30 @@ public final class DiffMessageFormatter {
 	private final StringBuilder buffer = new StringBuilder(MAX_CHECK_MESSAGE_LINES * 64);
 	private int numLines = 0;
 
-	private DiffMessageFormatter(Builder builder) throws IOException {
-		ListIterator<File> problemIter = builder.problemFiles.listIterator();
+	private final CleanProvider formatter;
+
+	private DiffMessageFormatter(CleanProvider formatter, List<File> problemFiles) throws IOException {
+		this.formatter = Objects.requireNonNull(formatter, "formatter");
+		ListIterator<File> problemIter = problemFiles.listIterator();
 		while (problemIter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
 			File file = problemIter.next();
-			addFile(builder.relativePath(file) + "\n" + DiffMessageFormatter.diff(builder, file));
+			addFile(relativePath(file) + "\n" + diff(file));
 		}
 		if (problemIter.hasNext()) {
-			int remainingFiles = builder.problemFiles.size() - problemIter.nextIndex();
+			int remainingFiles = problemFiles.size() - problemIter.nextIndex();
 			if (remainingFiles >= MAX_FILES_TO_LIST) {
 				buffer.append("Violations also present in ").append(remainingFiles).append(" other files.\n");
 			} else {
 				buffer.append("Violations also present in:\n");
 				while (problemIter.hasNext()) {
-					addIntendedLine(NORMAL_INDENT, builder.relativePath(problemIter.next()));
+					addIntendedLine(NORMAL_INDENT, relativePath(problemIter.next()));
 				}
 			}
 		}
+	}
+
+	private String relativePath(File file) {
+		return formatter.getRootDir().relativize(file.toPath()).toString();
 	}
 
 	private static final int MIN_LINES_PER_FILE = 4;
@@ -230,10 +233,10 @@ public final class DiffMessageFormatter {
 	 * look like if formatted using the given formatter. Does not end with any newline
 	 * sequence (\n, \r, \r\n).
 	 */
-	private static String diff(Builder builder, File file) throws IOException {
-		String raw = new String(Files.readAllBytes(file.toPath()), builder.formatter.getEncoding());
+	private String diff(File file) throws IOException {
+		String raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
-		String formatted = builder.formatter.getFormatted(file, rawUnix);
+		String formatted = formatter.getFormatted(file, rawUnix);
 		String formattedUnix = LineEnding.toUnix(formatted);
 
 		if (rawUnix.equals(formattedUnix)) {

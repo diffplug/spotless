@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,16 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
 
 class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String FILE_NO_LICENSE = "license/FileWithoutLicenseHeader.test";
-	private static final String package_ = "package ";
+	private static final String package_ = LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER;
 	private static final String HEADER_WITH_$YEAR = "This is a fake license, $YEAR. ACME corp.";
 	private static final String HEADER_WITH_RANGE_TO_$YEAR = "This is a fake license with range, 2009-$YEAR. ACME corp.";
+	private static final String HEADER_WITH_$FILE = "This is a fake license, $FILE. ACME corp.";
+	private static final String HEADER_WITH_$YEAR_$FILE = "This is a fake license, $FILE, $YEAR. ACME corp.";
 
 	@Test
 	void parseExistingYear() throws Exception {
@@ -122,6 +125,13 @@ class LicenseHeaderStepTest extends ResourceHarness {
 				.test(getTestResource("license/HasLicense.test"), getTestResource("license/MissingLicense.test"));
 	}
 
+	@Test
+	void should_skip_lines_matching_predefined_pattern() throws Throwable {
+		StepHarness.forStep(LicenseHeaderStep.headerDelimiter("<!--\n  -- This is a fake license header.\n  -- All rights reserved.\n  -->", "^(?!<!--|\\s+--).*$")
+				.withSkipLinesMatching("(?i)^(<\\?xml[^>]+>|<!doctype[^>]+>)$").build())
+				.testResource("license/SkipLines.test", "license/SkipLinesHasLicense.test");
+	}
+
 	private String licenceWithAddress() {
 		return "Copyright &#169; $YEAR FooBar Inc. All Rights Reserved.\n" +
 				" *\n" +
@@ -154,6 +164,16 @@ class LicenseHeaderStepTest extends ResourceHarness {
 
 	private String hasHeaderWithRangeAndWithYearTo(String toYear) throws IOException {
 		return hasHeaderYear(HEADER_WITH_RANGE_TO_$YEAR, toYear);
+	}
+
+	private String hasHeaderFileName(String license, String fileName) throws IOException {
+		return header(license).replace("$FILE", fileName) + getTestResource(FILE_NO_LICENSE);
+	}
+
+	private String hasHeaderYearFileName(String license, String year, String fileName) throws IOException {
+		return header(license)
+				.replace("$YEAR", year)
+				.replace("$FILE", fileName) + getTestResource(FILE_NO_LICENSE);
 	}
 
 	private static String currentYear() {
@@ -242,5 +262,53 @@ class LicenseHeaderStepTest extends ResourceHarness {
 		StepHarness.forStep(step).test(
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015").replace("FooBar Inc. All", "FooBar Inc.  All")),
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015")));
+	}
+
+	@Test
+	void should_apply_license_containing_filename_token() throws Exception {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$FILE), package_).build();
+		StepHarnessWithFile.forStep(this, step)
+				.test(new File("Test.java"), getTestResource(FILE_NO_LICENSE), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"))
+				.testUnaffected(new File("Test.java"), hasHeaderFileName(HEADER_WITH_$FILE, "Test.java"));
+	}
+
+	@Test
+	void should_update_license_containing_filename_token() throws Exception {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$FILE), package_).build();
+		StepHarnessWithFile.forStep(this, step)
+				.test(
+						new File("After.java"),
+						hasHeaderFileName(HEADER_WITH_$FILE, "Before.java"),
+						hasHeaderFileName(HEADER_WITH_$FILE, "After.java"));
+	}
+
+	@Test
+	void should_apply_license_containing_YEAR_filename_token() throws Exception {
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR_$FILE), package_).build();
+		StepHarnessWithFile.forStep(this, step)
+				.test(
+						new File("Test.java"),
+						getTestResource(FILE_NO_LICENSE),
+						hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java"))
+				.testUnaffected(
+						new File("Test.java"),
+						hasHeaderYearFileName(HEADER_WITH_$YEAR_$FILE, currentYear(), "Test.java"));
+	}
+
+	void noPackage() throws Throwable {
+		String header = header(getTestResource("license/TestLicense"));
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header, package_).build();
+		StepHarness.forStep(step)
+				.test(ResourceHarness.getTestResource("license/HelloWorld_java.test"), header + ResourceHarness.getTestResource("license/HelloWorld_java.test"))
+				.test(ResourceHarness.getTestResource("license/HelloWorld_withImport_java.test"), header + ResourceHarness.getTestResource("license/HelloWorld_withImport_java.test"));
+	}
+
+	// The following demonstrate the use of 'module' keyword
+	@Test
+	void moduleInfo() throws Throwable {
+		String header = header(getTestResource("license/TestLicense"));
+		FormatterStep step = LicenseHeaderStep.headerDelimiter(header, package_).build();
+		StepHarness.forStep(step)
+				.test(ResourceHarness.getTestResource("license/module-info.test"), header + ResourceHarness.getTestResource("license/module-info.test"));
 	}
 }

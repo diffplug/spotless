@@ -12,6 +12,7 @@ dependencies {
 	api "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 	api "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	api "org.assertj:assertj-core:${VER_ASSERTJ}"
+	api "org.mockito:mockito-core:$VER_MOCKITO"
 
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
@@ -21,22 +22,16 @@ dependencies {
 // we'll hold the testlib to a low standard (prize brevity)
 spotbugs { reportLevel = 'high' } // low|medium|high (low = sensitive to even minor mistakes)
 
-test {
-	useJUnitPlatform()
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
 	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
-		// for GJF https://github.com/diffplug/spotless/issues/834
+		// for Antlr4FormatterStepTest and KtLintStepTest
 		def args = [
-			'--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
-			'--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
-			'--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
-			'--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
-			'--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'
+			'--add-opens=java.base/java.lang=ALL-UNNAMED'
 		]
 		jvmArgs args
 	}
 }
-
-apply from: rootProject.file('gradle/special-tests.gradle')
 
 javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')

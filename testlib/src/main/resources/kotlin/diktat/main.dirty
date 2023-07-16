@@ -1,6 +1,6 @@
 package org.cqfn.diktat.example.gradle.multiproject
 /**
- * @return print.
+ * @return something
  */
 class Main {
 	/**
@@ -8,7 +8,7 @@ class Main {
 	 *
 	 */
 	fun foo() {
-		println(";")
-		println();
+		bar(";")
+		bar();
 	}
 }

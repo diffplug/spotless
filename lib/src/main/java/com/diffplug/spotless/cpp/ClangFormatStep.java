@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2022 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -75,14 +76,13 @@ public class ClangFormatStep {
 				"\n  mac:   brew install clang-format (TODO: how to specify version?)" +
 				"\n  linux: apt install clang-format  (try clang-format-{version} with dropped minor versions)" +
 				"\n    github issue to handle this better: https://github.com/diffplug/spotless/issues/673";
-		String exeAbsPath = ForeignExe.nameAndVersion("clang-format", version)
+		final ForeignExe exe = ForeignExe.nameAndVersion("clang-format", version)
 				.pathToExe(pathToExe)
 				.fixCantFind(howToInstall)
 				.fixWrongVersion(
 						"You can tell Spotless to use the version you already have with {@code clangFormat('{versionFound}')}" +
-								"or you can download the currently specified version, {version}.\n" + howToInstall)
-				.confirmVersionAndGetAbsolutePath();
-		return new State(this, exeAbsPath);
+								"or you can download the currently specified version, {version}.\n" + howToInstall);
+		return new State(this, exe);
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
@@ -91,23 +91,27 @@ public class ClangFormatStep {
 		// used for up-to-date checks and caching
 		final String version;
 		final @Nullable String style;
+		final transient ForeignExe exe;
 		// used for executing
-		final transient List<String> args;
+		private transient @Nullable List<String> args;
 
-		State(ClangFormatStep step, String exeAbsPath) {
+		State(ClangFormatStep step, ForeignExe pathToExe) {
 			this.version = step.version;
 			this.style = step.style;
-			args = new ArrayList<>(2);
-			args.add(exeAbsPath);
-			if (style != null) {
-				args.add("--style=" + style);
-			}
+			this.exe = Objects.requireNonNull(pathToExe);
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
-			String[] processArgs = args.toArray(new String[args.size() + 1]);
-			// add an argument to the end
-			processArgs[args.size()] = "--assume-filename=" + file.getName();
+			if (args == null) {
+				final List<String> tmpArgs = new ArrayList<>();
+				tmpArgs.add(exe.confirmVersionAndGetAbsolutePath());
+				if (style != null) {
+					tmpArgs.add("--style=" + style);
+				}
+				args = tmpArgs;
+			}
+			final String[] processArgs = args.toArray(new String[args.size() + 1]);
+			processArgs[processArgs.length - 1] = "--assume-filename=" + file.getName();
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), processArgs).assertExitZero(StandardCharsets.UTF_8);
 		}
 

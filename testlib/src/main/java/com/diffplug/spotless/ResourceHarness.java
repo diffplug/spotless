@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
@@ -54,7 +55,7 @@ public class ResourceHarness {
 	}
 
 	/** Returns a new child of the root folder. */
-	protected File newFile(String subpath) throws IOException {
+	protected File newFile(String subpath) {
 		return new File(rootFolder(), subpath);
 	}
 
@@ -85,16 +86,25 @@ public class ResourceHarness {
 	}
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
-	protected static String getTestResource(String filename) throws IOException {
-		URL url = ResourceHarness.class.getResource("/" + filename);
-		if (url == null) {
-			throw new IllegalArgumentException("No such resource " + filename);
+	protected static String getTestResource(String filename) {
+		Optional<URL> resourceUrl = getTestResourceUrl(filename);
+		if (resourceUrl.isPresent()) {
+			return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(resourceUrl.get(), StandardCharsets.UTF_8)));
 		}
-		return Resources.toString(url, StandardCharsets.UTF_8);
+		throw new IllegalArgumentException("No such resource " + filename);
+	}
+
+	protected static boolean existsTestResource(String filename) {
+		return getTestResourceUrl(filename).isPresent();
+	}
+
+	private static Optional<URL> getTestResourceUrl(String filename) {
+		URL url = ResourceHarness.class.getResource("/" + filename);
+		return Optional.ofNullable(url);
 	}
 
 	/** Returns Files (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
-	protected List<File> createTestFiles(String... filenames) throws IOException {
+	protected List<File> createTestFiles(String... filenames) {
 		List<File> files = new ArrayList<>(filenames.length);
 		for (String filename : filenames) {
 			files.add(createTestFile(filename));
@@ -103,7 +113,7 @@ public class ResourceHarness {
 	}
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
-	protected File createTestFile(String filename) throws IOException {
+	protected File createTestFile(String filename) {
 		return createTestFile(filename, UnaryOperator.identity());
 	}
 
@@ -111,39 +121,22 @@ public class ResourceHarness {
 	 * Returns a File (in a temporary folder) which has the contents, possibly processed, of the given file from the
 	 * src/test/resources directory.
 	 */
-	protected File createTestFile(String filename, UnaryOperator<String> fileContentsProcessor) throws IOException {
+	protected File createTestFile(String filename, UnaryOperator<String> fileContentsProcessor) {
 		int lastSlash = filename.lastIndexOf('/');
 		String name = lastSlash >= 0 ? filename.substring(lastSlash) : filename;
 		File file = newFile(name);
 		file.getParentFile().mkdirs();
-		Files.write(file.toPath(), fileContentsProcessor.apply(getTestResource(filename)).getBytes(StandardCharsets.UTF_8));
+		ThrowingEx.run(() -> Files.write(file.toPath(), fileContentsProcessor.apply(getTestResource(filename)).getBytes(StandardCharsets.UTF_8)));
 		return file;
 	}
 
-	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
-	protected void assertOnResources(FormatterStep step, String unformattedPath, String expectedPath) throws Throwable {
-		assertOnResources(rawUnix -> step.format(rawUnix, new File("")), unformattedPath, expectedPath);
-	}
-
-	/** Reads the given resource from "before", applies the step, and makes sure the result is "after". */
-	protected void assertOnResources(FormatterFunc step, String unformattedPath, String expectedPath) throws Throwable {
-		String unformatted = LineEnding.toUnix(getTestResource(unformattedPath)); // unix-ified input
-		String formatted = step.apply(unformatted);
-		// no windows newlines
-		assertThat(formatted).doesNotContain("\r");
-
-		// unix-ify the test resource output in case git screwed it up
-		String expected = LineEnding.toUnix(getTestResource(expectedPath)); // unix-ified output
-		assertThat(formatted).isEqualTo(expected);
-	}
-
 	@CheckReturnValue
-	protected ReadAsserter assertFile(String path) throws IOException {
+	protected ReadAsserter assertFile(String path) {
 		return new ReadAsserter(newFile(path));
 	}
 
 	@CheckReturnValue
-	protected ReadAsserter assertFile(File file) throws IOException {
+	protected ReadAsserter assertFile(File file) {
 		return new ReadAsserter(file);
 	}
 
@@ -176,7 +169,7 @@ public class ResourceHarness {
 		}
 	}
 
-	protected WriteAsserter setFile(String path) throws IOException {
+	protected WriteAsserter setFile(String path) {
 		return new WriteAsserter(newFile(path));
 	}
 
@@ -188,21 +181,25 @@ public class ResourceHarness {
 			this.file = file;
 		}
 
-		public File toLines(String... lines) throws IOException {
+		public File toLines(String... lines) {
 			return toContent(String.join("\n", Arrays.asList(lines)));
 		}
 
-		public File toContent(String content) throws IOException {
+		public File toContent(String content) {
 			return toContent(content, StandardCharsets.UTF_8);
 		}
 
-		public File toContent(String content, Charset charset) throws IOException {
-			Files.write(file.toPath(), content.getBytes(charset));
+		public File toContent(String content, Charset charset) {
+			ThrowingEx.run(() -> {
+				Files.write(file.toPath(), content.getBytes(charset));
+			});
 			return file;
 		}
 
-		public File toResource(String path) throws IOException {
-			Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8));
+		public File toResource(String path) {
+			ThrowingEx.run(() -> {
+				Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8));
+			});
 			return file;
 		}
 

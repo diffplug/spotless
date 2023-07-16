@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,9 @@
  */
 package com.diffplug.spotless.json.gson;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.io.File;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
@@ -27,73 +28,65 @@ import com.diffplug.spotless.json.JsonFormatterStepCommonTests;
 
 public class GsonStepTest extends JsonFormatterStepCommonTests {
 
-	private static final String DEFAULT_VERSION = "2.8.9";
+	private static final String DEFAULT_VERSION = "2.10.1";
 
 	@Test
-	void handlesComplexNestedObject() throws Exception {
+	void handlesComplexNestedObject() {
 		doWithResource("cucumberJsonSampleGson");
 	}
 
 	@Test
-	void handlesObjectWithNull() throws Exception {
+	void handlesObjectWithNull() {
 		doWithResource("objectWithNullGson");
 	}
 
 	@Test
 	void handlesInvalidJson() {
-		assertThatThrownBy(() -> doWithResource("invalidJson"))
-				.isInstanceOf(AssertionError.class)
-				.hasMessage("Unable to format JSON")
-				.hasRootCauseMessage("End of input at line 3 column 1 path $.a");
+		getStepHarness().testResourceExceptionMsg("json/invalidJsonBefore.json").isEqualTo("End of input at line 3 column 1 path $.a");
 	}
 
 	@Test
 	void handlesNotJson() {
-		assertThatThrownBy(() -> doWithResource("notJson"))
-				.isInstanceOf(AssertionError.class)
-				.hasMessage("Unable to format JSON")
-				.hasNoCause();
+		getStepHarness().testResourceExceptionMsg("json/notJsonBefore.json").isEqualTo("Unable to format JSON");
 	}
 
 	@Test
-	void handlesSortingWhenSortByKeyEnabled() throws Exception {
-		FormatterStep step = GsonStep.create(INDENT, true, false, DEFAULT_VERSION, TestProvisioner.mavenCentral());
-		StepHarness stepHarness = StepHarness.forStep(step);
-		stepHarness.testResource("json/sortByKeysBefore.json", "json/sortByKeysAfter.json");
+	void handlesSortingWhenSortByKeyEnabled() {
+		FormatterStep step = GsonStep.create(new GsonConfig(true, false, INDENT, DEFAULT_VERSION), TestProvisioner.mavenCentral());
+		StepHarness.forStep(step).testResource("json/sortByKeysBefore.json", "json/sortByKeysAfter.json");
 	}
 
 	@Test
-	void doesNoSortingWhenSortByKeyDisabled() throws Exception {
-		FormatterStep step = GsonStep.create(INDENT, false, false, DEFAULT_VERSION, TestProvisioner.mavenCentral());
+	void doesNoSortingWhenSortByKeyDisabled() {
+		FormatterStep step = GsonStep.create(new GsonConfig(false, false, INDENT, DEFAULT_VERSION), TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("json/sortByKeysBefore.json", "json/sortByKeysAfterDisabled.json");
 	}
 
 	@Test
-	void handlesHtmlEscapeWhenEnabled() throws Exception {
-		FormatterStep step = GsonStep.create(INDENT, false, true, DEFAULT_VERSION, TestProvisioner.mavenCentral());
+	void handlesHtmlEscapeWhenEnabled() {
+		FormatterStep step = GsonStep.create(new GsonConfig(false, true, INDENT, DEFAULT_VERSION), TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("json/escapeHtmlGsonBefore.json", "json/escapeHtmlGsonAfter.json");
 	}
 
 	@Test
-	void writesRawHtmlWhenHtmlEscapeDisabled() throws Exception {
-		FormatterStep step = GsonStep.create(INDENT, false, false, DEFAULT_VERSION, TestProvisioner.mavenCentral());
+	void writesRawHtmlWhenHtmlEscapeDisabled() {
+		FormatterStep step = GsonStep.create(new GsonConfig(false, false, INDENT, DEFAULT_VERSION), TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("json/escapeHtmlGsonBefore.json", "json/escapeHtmlGsonAfterDisabled.json");
 	}
 
 	@Test
 	void handlesVersionIncompatibility() {
-		FormatterStep step = GsonStep.create(INDENT, false, false, "1.7", TestProvisioner.mavenCentral());
-		StepHarness stepHarness = StepHarness.forStep(step);
-		assertThatThrownBy(() -> stepHarness.testResource("json/cucumberJsonSampleGsonBefore.json", "json/cucumberJsonSampleGsonAfter.json"))
+		FormatterStep step = GsonStep.create(new GsonConfig(false, false, INDENT, "1.7"), TestProvisioner.mavenCentral());
+		Assertions.assertThatThrownBy(() -> step.format("", new File("")))
 				.isInstanceOf(IllegalStateException.class)
 				.hasMessage("There was a problem interacting with Gson; maybe you set an incompatible version?");
 	}
 
 	@Override
 	protected FormatterStep createFormatterStep(int indent, Provisioner provisioner) {
-		return GsonStep.create(indent, false, false, DEFAULT_VERSION, provisioner);
+		return GsonStep.create(new GsonConfig(false, false, indent, DEFAULT_VERSION), provisioner);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,15 @@ package com.diffplug.spotless.maven;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.diffplug.common.base.Throwables;
-import com.diffplug.common.io.ByteStreams;
-import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.Jvm;
+import com.diffplug.spotless.ProcessRunner;
 
 /**
  * Harness for running a maven build, same idea as the
@@ -46,8 +40,8 @@ public class MavenRunner {
 
 	private File projectDir;
 	private String[] args;
-	private File localRepositoryDir;
 	private Map<String, String> environment = new HashMap<>();
+	private ProcessRunner runner;
 
 	public MavenRunner withProjectDir(File projectDir) {
 		this.projectDir = Objects.requireNonNull(projectDir);
@@ -59,8 +53,8 @@ public class MavenRunner {
 		return this;
 	}
 
-	public MavenRunner withLocalRepository(File localRepositoryDir) {
-		this.localRepositoryDir = localRepositoryDir;
+	public MavenRunner withRunner(ProcessRunner runner) {
+		this.runner = runner;
 		return this;
 	}
 
@@ -70,104 +64,25 @@ public class MavenRunner {
 		return this;
 	}
 
-	private Result run() throws IOException, InterruptedException {
+	private ProcessRunner.Result run() throws IOException, InterruptedException {
 		Objects.requireNonNull(projectDir, "Need to call withProjectDir() first");
 		Objects.requireNonNull(args, "Need to call withArguments() first");
 		// run maven with the given args in the given directory
-		String argsString = String.join(" ", Arrays.asList(args));
-		List<String> cmds = getPlatformCmds("-e -Dmaven.repo.local=" + localRepositoryDir + ' ' + argsString);
-		ProcessBuilder builder = new ProcessBuilder(cmds);
-		builder.directory(projectDir);
-		builder.environment().putAll(environment);
-		Process process = builder.start();
-		// slurp and return the stdout, stderr, and exitValue
-		Slurper output = new Slurper(process.getInputStream());
-		Slurper error = new Slurper(process.getErrorStream());
-		int exitValue = process.waitFor();
-		output.join();
-		error.join();
-		return new Result(exitValue, output.result(), error.result());
+		String argsString = "-e " + String.join(" ", Arrays.asList(args));
+		return runner.shellWinUnix(projectDir, environment, "mvnw " + argsString, "./mvnw " + argsString);
 	}
 
 	/** Runs the command and asserts that exit code is 0. */
-	public Result runNoError() throws IOException, InterruptedException {
-		Result result = run();
-		assertThat(result.exitValue()).as("Run without error %s", result).isEqualTo(0);
+	public ProcessRunner.Result runNoError() throws IOException, InterruptedException {
+		ProcessRunner.Result result = run();
+		assertThat(result.exitCode()).as("Run without error %s", result).isEqualTo(0);
 		return result;
 	}
 
 	/** Runs the command and asserts that exit code is not 0. */
-	public Result runHasError() throws IOException, InterruptedException {
-		Result result = run();
-		assertThat(result.exitValue()).as("Run with error %s", result).isNotEqualTo(0);
+	public ProcessRunner.Result runHasError() throws IOException, InterruptedException {
+		ProcessRunner.Result result = run();
+		assertThat(result.exitCode()).as("Run with error %s", result).isNotEqualTo(0);
 		return result;
-	}
-
-	public static class Result {
-		private final int exitValue;
-		private final String output;
-		private final String error;
-
-		public Result(int exitValue, String output, String error) {
-			super();
-			this.exitValue = exitValue;
-			this.output = Objects.requireNonNull(output);
-			this.error = Objects.requireNonNull(error);
-		}
-
-		public int exitValue() {
-			return exitValue;
-		}
-
-		public String output() {
-			return output;
-		}
-
-		public String error() {
-			return error;
-		}
-
-		@Override
-		public String toString() {
-			return "Result{" +
-					"exitValue=" + exitValue +
-					", output='" + output + '\'' +
-					", error='" + error + '\'' +
-					'}';
-		}
-	}
-
-	/** Prepends any arguments necessary to run a console command. */
-	private static List<String> getPlatformCmds(String cmd) {
-		if (FileSignature.machineIsWin()) {
-			return Arrays.asList("cmd", "/c", "mvnw " + cmd);
-		} else {
-			return Arrays.asList("/bin/sh", "-c", "./mvnw " + cmd);
-		}
-	}
-
-	private static class Slurper extends Thread {
-		private final InputStream input;
-		private volatile String result;
-
-		Slurper(InputStream input) {
-			this.input = Objects.requireNonNull(input);
-			start();
-		}
-
-		@Override
-		public void run() {
-			try {
-				ByteArrayOutputStream output = new ByteArrayOutputStream();
-				ByteStreams.copy(input, output);
-				result = output.toString(Charset.defaultCharset().name());
-			} catch (Exception e) {
-				result = Throwables.getStackTraceAsString(e);
-			}
-		}
-
-		public String result() {
-			return result;
-		}
 	}
 }

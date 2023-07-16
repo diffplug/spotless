@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.diffplug.spotless.maven.pom;
 
 import java.util.Set;
 
+import org.apache.maven.project.MavenProject;
+
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
@@ -29,7 +31,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  */
 public class Pom extends FormatterFactory {
 	@Override
-	public Set<String> defaultIncludes() {
+	public Set<String> defaultIncludes(MavenProject project) {
 		return ImmutableSet.of("pom.xml");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class GrEclipseTest extends MavenIntegrationHarness {
 		writePomWithGroovySteps(
 				"<greclipse>",
 				"  <file>${basedir}/greclipse.properties</file>",
-				"  <version>4.19.0</version>",
+				"  <version>4.25</version>",
 				"</greclipse>");
 		setFile("greclipse.properties").toResource("groovy/greclipse/format/greclipse.properties");
 	}

@@ -1,3 +1,14 @@
+apply plugin: 'dev.equo.ide'
+equoIde {
+	branding().title('Spotless').icon(file('_images/spotless_logo.png'))
+	welcome().openUrl('https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md')
+	gradleBuildship().autoImport('.')
+}
+
+repositories {
+	mavenCentral()
+}
+
 apply from: rootProject.file('gradle/java-publish.gradle')
 apply from: rootProject.file('gradle/changelog.gradle')
 allprojects {
@@ -5,9 +16,6 @@ allprojects {
 }
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
-repositories {
-	mavenCentral()
-}
 spotless {
 	groovyGradle {
 		target '*.gradle', 'gradle/*.gradle'

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,18 @@ package com.diffplug.spotless.maven.typescript;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.maven.project.MavenProject;
+
 import com.diffplug.spotless.maven.FormatterFactory;
 
 /**
  * A {@link FormatterFactory} implementation that corresponds to {@code <typescript>...</typescript>} configuration element.
  * <p>
- * It defines a formatter for typescript source files.
+ * It defines formatters for typescript source files.
  */
 public class Typescript extends FormatterFactory {
 	@Override
-	public Set<String> defaultIncludes() {
+	public Set<String> defaultIncludes(MavenProject project) {
 		return Collections.emptySet();
 	}
 
@@ -38,5 +40,13 @@ public class Typescript extends FormatterFactory {
 
 	public void addTsfmt(Tsfmt tsfmt) {
 		addStepFactory(tsfmt);
+	}
+
+	public void addEslint(EslintTs eslint) {
+		addStepFactory(eslint);
+	}
+
+	public void addRome(RomeTs rome) {
+		addStepFactory(rome);
 	}
 }

@@ -1,5 +1,6 @@
 plugins {
 	id 'java-library'
+	id 'io.github.davidburstrom.version-compatibility'
 }
 ext.artifactId = project.artifactIdLib
 version = rootProject.spotlessChangelog.versionNext
@@ -7,12 +8,19 @@ apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
 def NEEDS_GLUE = [
-	'sortPom',
-	'palantirJavaFormat',
+	// (alphabetic order please)
+	'cleanthat',
+	'diktat',
+	'flexmark',
+	'gherkin',
+	'googleJavaFormat',
+	'gson',
+	'jackson',
 	'ktfmt',
 	'ktlint',
-	'flexmark',
-	'diktat'
+	'palantirJavaFormat',
+	'scalafmt',
+	'sortPom'
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -22,46 +30,102 @@ for (glue in NEEDS_GLUE) {
 	}
 }
 
-dependencies {
-	compileOnly 'org.slf4j:slf4j-api:1.7.36'
-	// zero runtime reqs is a hard requirements for spotless-lib
-	// if you need a dep, put it in lib-extra
-	testImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
-	testImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
-	testImplementation "com.diffplug.durian:durian-testlib:$VER_DURIAN"
-
-	// used for pom sorting
-	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.0.0'
-	sortPomCompileOnly 'org.slf4j:slf4j-api:1.7.35'
-
-	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0'
-
-	String VER_KTFMT = '0.37'
-	ktfmtCompileOnly "com.facebook:ktfmt:$VER_KTFMT"
-	String VER_KTLINT_GOOGLE_JAVA_FORMAT = '1.7' // for JDK 8 compatibility
-	ktfmtCompileOnly("com.google.googlejavaformat:google-java-format") {
-		version {
-			strictly VER_KTLINT_GOOGLE_JAVA_FORMAT
+versionCompatibility {
+	adapters {
+		// (alphabetic order please)
+		namespaces.register('Cleanthat') {
+			versions = [
+				'2.1',
+			]
+			targetSourceSetName = 'cleanthat'
+		}
+		namespaces.register('KtLint') {
+			// as discussed at https://github.com/diffplug/spotless/pull/1475
+			// we will support no more than 2 breaking changes at a time = 3 incompatible versions
+			// we will try to drop down to only one version if a stable API can be maintained for a full year
+			versions = [
+				'0.48.0',
+				'0.49.0',
+				'0.50.0',
+			]
+			targetSourceSetName = 'ktlint'
 		}
 	}
+}
 
-	String VER_KTLINT='0.45.2'
-	ktlintCompileOnly "com.pinterest:ktlint:$VER_KTLINT"
-	ktlintCompileOnly "com.pinterest.ktlint:ktlint-core:$VER_KTLINT"
-	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-experimental:$VER_KTLINT"
-	ktlintCompileOnly "com.pinterest.ktlint:ktlint-ruleset-standard:$VER_KTLINT"
+tasks.named("check").configure {
+	dependsOn(tasks.named("testCompatibilityAdapters"))
+	dependsOn(tasks.named("testCompatibility"))
+}
 
-	String VER_DIKTAT = "1.1.0"
-	diktatCompileOnly "org.cqfn.diktat:diktat-rules:$VER_DIKTAT"
+dependencies {
+	compileOnly 'org.slf4j:slf4j-api:2.0.0'
+	testCommonImplementation 'org.slf4j:slf4j-api:2.0.0'
 
-	// used for markdown formatting
-	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
+	// zero runtime reqs is a hard requirements for spotless-lib
+	// if you need a dep, put it in lib-extra
+	testCommonImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
+	testCommonImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
+	testCommonImplementation "com.diffplug.durian:durian-testlib:$VER_DURIAN"
+
+	// GLUE CODE (alphabetic order please)
+	// cleanthat
+	String VER_CLEANTHAT='2.17'
+	cleanthatCompileOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
+	compatCleanthat2Dot1CompileAndTestOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
+	// diktat
+	diktatCompileOnly 'org.cqfn.diktat:diktat-rules:1.2.5'
+	// flexmark
+	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.0'
+	// gherkin
+	gherkinCompileOnly 'io.cucumber:gherkin-utils:8.0.2'
+	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.0'
+	// googleJavaFormat
+	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.17.0'
+	// gson
+	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
+	// jackson
+	String VER_JACKSON='2.14.2'
+	jacksonCompileOnly "com.fasterxml.jackson.core:jackson-databind:$VER_JACKSON"
+	jacksonCompileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$VER_JACKSON"
+	// ktfmt
+	ktfmtCompileOnly "com.facebook:ktfmt:0.44"
+	ktfmtCompileOnly("com.google.googlejavaformat:google-java-format") {
+		version {
+			strictly '1.7' // for JDK 8 compatibility
+		}
+	}
+	// ktlint oldest supported version
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
+	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
+	// ktlint previous supported version
+	compatKtLint0Dot49Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:0.49.0'
+	compatKtLint0Dot49Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.49.0'
+	compatKtLint0Dot49Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.0'
+	// ktlint latest supported version
+	compatKtLint0Dot50Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:0.50.0'
+	compatKtLint0Dot50Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.50.0'
+	compatKtLint0Dot50Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.0'
+	// palantirJavaFormat
+	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
+	// scalafmt
+	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:3.7.3"
+	// sortPom
+	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.2.1'
+	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
 }
 
 // we'll hold the core lib to a high standard
 spotbugs { reportLevel = 'low' } // low|medium|high (low = sensitive to even minor mistakes)
 
-test { useJUnitPlatform() }
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
+		// https://docs.gradle.org/7.5/userguide/upgrading_version_7.html#removes_implicit_add_opens_for_test_workers
+		jvmArgs "--add-opens=java.base/java.lang=ALL-UNNAMED"
+	}
+}
 
 jar {
 	for (glue in NEEDS_GLUE) {

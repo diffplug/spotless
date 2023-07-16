@@ -18,8 +18,7 @@ package com.diffplug.spotless.python;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -62,12 +61,11 @@ public class BlackStep {
 
 	private State createState() throws IOException, InterruptedException {
 		String trackingIssue = "\n  github issue to handle this better: https://github.com/diffplug/spotless/issues/674";
-		String exeAbsPath = ForeignExe.nameAndVersion("black", version)
+		ForeignExe exeAbsPath = ForeignExe.nameAndVersion("black", version)
 				.pathToExe(pathToExe)
 				.versionRegex(Pattern.compile("(?:black, version|black,|version) (\\S*)"))
 				.fixCantFind("Try running {@code pip install black=={version}}, or else tell Spotless where it is with {@code black().pathToExe('path/to/executable')}" + trackingIssue)
-				.fixWrongVersion("Try running {@code pip install --force-reinstall black=={version}}, or else specify {@code black('{versionFound}')} to Spotless" + trackingIssue)
-				.confirmVersionAndGetAbsolutePath();
+				.fixWrongVersion("Try running {@code pip install --force-reinstall black=={version}}, or else specify {@code black('{versionFound}')} to Spotless" + trackingIssue);
 		return new State(this, exeAbsPath);
 	}
 
@@ -76,15 +74,19 @@ public class BlackStep {
 		private static final long serialVersionUID = -1825662356883926318L;
 		// used for up-to-date checks and caching
 		final String version;
+		final transient ForeignExe exe;
 		// used for executing
-		final transient List<String> args;
+		private transient @Nullable String[] args;
 
-		State(BlackStep step, String exeAbsPath) {
+		State(BlackStep step, ForeignExe exeAbsPath) {
 			this.version = step.version;
-			this.args = Arrays.asList(exeAbsPath, "-");
+			this.exe = Objects.requireNonNull(exeAbsPath);
 		}
 
 		String format(ProcessRunner runner, String input) throws IOException, InterruptedException {
+			if (args == null) {
+				args = new String[]{exe.confirmVersionAndGetAbsolutePath(), "-"};
+			}
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
 		}
 

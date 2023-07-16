@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,14 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import com.diffplug.common.collect.ImmutableSortedMap;
@@ -43,30 +45,41 @@ public class KotlinGradleExtension extends FormatExtension {
 	}
 
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
-	public KotlinFormatExtension ktlint(String version) {
+	public KotlinFormatExtension ktlint(String version) throws IOException {
 		Objects.requireNonNull(version, "version");
-		return new KotlinFormatExtension(version, false, Collections.emptyMap());
+		File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
+		FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
+		return new KotlinFormatExtension(version, editorConfigPath, Collections.emptyMap(), Collections.emptyMap());
 	}
 
-	public KotlinFormatExtension ktlint() {
+	public KotlinFormatExtension ktlint() throws IOException {
 		return ktlint(KtLintStep.defaultVersion());
 	}
 
 	public class KotlinFormatExtension {
 
 		private final String version;
-		private boolean useExperimental;
+		@Nullable
+		private FileSignature editorConfigPath;
 		private Map<String, String> userData;
+		private Map<String, Object> editorConfigOverride;
 
-		KotlinFormatExtension(String version, boolean useExperimental, Map<String, String> config) {
+		KotlinFormatExtension(String version, FileSignature editorConfigPath, Map<String, String> config,
+				Map<String, Object> editorConfigOverride) {
 			this.version = version;
-			this.useExperimental = useExperimental;
+			this.editorConfigPath = editorConfigPath;
 			this.userData = config;
+			this.editorConfigOverride = editorConfigOverride;
 			addStep(createStep());
 		}
 
-		public KotlinFormatExtension setUseExperimental(boolean useExperimental) {
-			this.useExperimental = useExperimental;
+		public KotlinFormatExtension setEditorConfigPath(Object editorConfigPath) throws IOException {
+
+			if (editorConfigPath == null) {
+				this.editorConfigPath = null;
+			} else {
+				this.editorConfigPath = FileSignature.signAsList(getProject().file(editorConfigPath));
+			}
 			replaceStep(createStep());
 			return this;
 		}
@@ -79,8 +92,21 @@ public class KotlinGradleExtension extends FormatExtension {
 			return this;
 		}
 
+		public KotlinFormatExtension editorConfigOverride(Map<String, Object> editorConfigOverride) {
+			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
+			// representation.
+			this.editorConfigOverride = ImmutableSortedMap.copyOf(editorConfigOverride);
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
-			return KtLintStep.createForScript(version, provisioner(), useExperimental, userData);
+			return KtLintStep.createForScript(
+					version,
+					provisioner(),
+					editorConfigPath,
+					userData,
+					editorConfigOverride);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_11;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
@@ -34,7 +31,6 @@ class PalantirJavaFormatTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_11)
 	void specificJava11Version2() throws Exception {
 		writePomWithJavaSteps(
 				"<palantirJavaFormat>",

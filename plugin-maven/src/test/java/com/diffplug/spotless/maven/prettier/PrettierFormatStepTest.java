@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
-import com.diffplug.spotless.maven.MavenRunner.Result;
 import com.diffplug.spotless.maven.generic.Prettier;
 import com.diffplug.spotless.tag.NpmTest;
 
@@ -43,7 +43,7 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 		return path;
 	}
 
-	private Result runExpectingError(String kind, String suffix) throws IOException, InterruptedException {
+	private ProcessRunner.Result runExpectingError(String kind, String suffix) throws IOException, InterruptedException {
 		String path = prepareRun(kind, suffix);
 		return mavenRunner().withArguments("spotless:apply").runHasError();
 	}
@@ -102,8 +102,60 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 				"  <devDependencies><prettier>1.16.4</prettier></devDependencies>",
 				"</prettier>");
 
-		Result result = mavenRunner().withArguments("spotless:apply").runHasError();
-		assertThat(result.output()).contains(Prettier.ERROR_MESSAGE_ONLY_ONE_CONFIG);
+		ProcessRunner.Result result = mavenRunner().withArguments("spotless:apply").runHasError();
+		assertThat(result.stdOutUtf8()).contains(Prettier.ERROR_MESSAGE_ONLY_ONE_CONFIG);
+	}
+
+	/**
+	 * This test is to ensure that we can have multiple prettier instances in one spotless config.
+	 *
+	 * @see <a href="https://github.com/diffplug/spotless/issues/1162">Issue #1162 on github</a>
+	 */
+	@Test
+	void multiple_prettier_configs() throws Exception {
+		writePom(
+				formats(
+						groupWithSteps("format", including("php-example.php"),
+								"<prettier>",
+								"  <devDependencyProperties>",
+								"    <property>",
+								"      <name>prettier</name>",
+								"      <value>2.0.5</value>",
+								"    </property>",
+								"    <property>",
+								"      <name>@prettier/plugin-php</name>",
+								"      <value>0.14.2</value>",
+								"    </property>",
+								"  </devDependencyProperties>",
+								"  <config>",
+								"    <tabWidth>3</tabWidth>",
+								"    <parser>php</parser>",
+								"  </config>",
+								"</prettier>"),
+						groupWithSteps("java", including("JavaTest.java"),
+								"<prettier>",
+								"  <devDependencyProperties>",
+								"    <property>",
+								"      <name>prettier</name>",
+								"      <value>2.0.5</value>",
+								"    </property>",
+								"    <property>",
+								"      <name>prettier-plugin-java</name>",
+								"      <value>0.8.0</value>",
+								"    </property>",
+								"  </devDependencyProperties>",
+								"  <config>",
+								"    <tabWidth>4</tabWidth>",
+								"    <parser>java</parser>",
+								"  </config>",
+								"</prettier>")));
+
+		setFile("php-example.php").toResource("npm/prettier/plugins/php.dirty");
+		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
+		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
+
 	}
 
 	@Test
@@ -145,20 +197,28 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
 	void autodetect_npmrc_file() throws Exception {
-		setFile(".npmrc").toLines("registry=https://i.do.no.exist.com");
+		setFile(".npmrc").toLines(
+				"registry=https://i.do.not.exist.com",
+				"fetch-timeout=250",
+				"fetch-retry-mintimeout=250",
+				"fetch-retry-maxtimeout=250");
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
 				"  <prettierVersion>1.16.4</prettierVersion>",
 				"  <configFile>.prettierrc.yml</configFile>",
 				"</prettier>");
-		Result result = runExpectingError("typescript", suffix);
-		assertThat(result.output()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
+		ProcessRunner.Result result = runExpectingError("typescript", suffix);
+		assertThat(result.stdOutUtf8()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
 	}
 
 	@Test
 	void select_configured_npmrc_file() throws Exception {
-		setFile(".custom_npmrc").toLines("registry=https://i.do.no.exist.com");
+		setFile(".custom_npmrc").toLines(
+				"registry=https://i.do.not.exist.com",
+				"fetch-timeout=250",
+				"fetch-retry-mintimeout=250",
+				"fetch-retry-maxtimeout=250");
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
 				"<prettier>",
@@ -166,7 +226,7 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 				"  <configFile>.prettierrc.yml</configFile>",
 				"  <npmrc>${basedir}/.custom_npmrc</npmrc>",
 				"</prettier>");
-		Result result = runExpectingError("typescript", suffix);
-		assertThat(result.output()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
+		ProcessRunner.Result result = runExpectingError("typescript", suffix);
+		assertThat(result.stdOutUtf8()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
 	}
 }

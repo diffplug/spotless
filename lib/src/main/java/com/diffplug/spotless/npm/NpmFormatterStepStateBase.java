@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,9 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
+import com.diffplug.spotless.ThrowingEx;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -40,65 +41,66 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final Logger logger = LoggerFactory.getLogger(NpmFormatterStepStateBase.class);
 
+	private static final TimedLogger timedLogger = TimedLogger.forLogger(logger);
+
 	private static final long serialVersionUID = 1460749955865959948L;
 
-	@SuppressWarnings("unused")
-	private final FileSignature packageJsonSignature;
-
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	public final transient File nodeModulesDir;
+	protected final transient NodeServerLayout nodeServerLayout;
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient File npmExecutable;
+	public final NpmFormatterStepLocations locations;
 
 	private final NpmConfig npmConfig;
 
 	private final String stepName;
 
-	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, File buildDir, File npm) throws IOException {
+	private final transient NodeServeApp nodeServeApp;
+
+	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, NpmFormatterStepLocations locations) throws IOException {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
-		this.npmExecutable = npm;
-
-		NodeServerLayout layout = prepareNodeServer(buildDir);
-		this.nodeModulesDir = layout.nodeModulesDir();
-		this.packageJsonSignature = FileSignature.signAsList(layout.packageJsonFile());
+		this.locations = locations;
+		this.nodeServerLayout = new NodeServerLayout(locations.buildDir(), npmConfig.getPackageJsonContent());
+		this.nodeServeApp = new NodeServeApp(nodeServerLayout, npmConfig, locations);
 	}
 
-	private NodeServerLayout prepareNodeServer(File buildDir) throws IOException {
-		NodeServerLayout layout = new NodeServerLayout(buildDir, stepName);
-		NpmResourceHelper.assertDirectoryExists(layout.nodeModulesDir());
-		NpmResourceHelper.writeUtf8StringToFile(layout.packageJsonFile(),
-				this.npmConfig.getPackageJsonContent());
-		NpmResourceHelper
-				.writeUtf8StringToFile(layout.serveJsFile(), this.npmConfig.getServeScriptContent());
-		if (this.npmConfig.getNpmrcContent() != null) {
-			NpmResourceHelper.writeUtf8StringToFile(layout.npmrcFile(), this.npmConfig.getNpmrcContent());
-		} else {
-			NpmResourceHelper.deleteFileIfExists(layout.npmrcFile());
+	protected void prepareNodeServerLayout() throws IOException {
+		nodeServeApp.prepareNodeAppLayout();
+	}
+
+	protected void prepareNodeServer() throws IOException {
+		nodeServeApp.npmInstall();
+	}
+
+	protected void assertNodeServerDirReady() throws IOException {
+		if (needsPrepareNodeServerLayout()) {
+			// reinstall if missing
+			prepareNodeServerLayout();
 		}
-		FormattedPrinter.SYSOUT.print("running npm install");
-		runNpmInstall(layout.nodeModulesDir());
-		FormattedPrinter.SYSOUT.print("npm install finished");
-		return layout;
+		if (needsPrepareNodeServer()) {
+			// run npm install if node_modules is missing
+			prepareNodeServer();
+		}
 	}
 
-	private void runNpmInstall(File npmProjectDir) throws IOException {
-		new NpmProcess(npmProjectDir, this.npmExecutable).install();
+	protected boolean needsPrepareNodeServer() {
+		return nodeServeApp.needsNpmInstall();
+	}
+
+	protected boolean needsPrepareNodeServerLayout() {
+		return nodeServeApp.needsPrepareNodeAppLayout();
 	}
 
 	protected ServerProcessInfo npmRunServer() throws ServerStartException, IOException {
-		if (!this.nodeModulesDir.exists()) {
-			prepareNodeServer(NodeServerLayout.getBuildDirFromNodeModulesDir(this.nodeModulesDir));
-		}
-
+		assertNodeServerDirReady();
+		LongRunningProcess server = null;
 		try {
 			// The npm process will output the randomly selected port of the http server process to 'server.port' file
 			// so in order to be safe, remove such a file if it exists before starting.
-			final File serverPortFile = new File(this.nodeModulesDir, "server.port");
+			final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
 			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
-			Process server = new NpmProcess(this.nodeModulesDir, this.npmExecutable).start();
+			server = nodeServeApp.startNpmServeProcess();
 
 			// await the readiness of the http server - wait for at most 60 seconds
 			try {
@@ -119,7 +121,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			String serverPort = NpmResourceHelper.readUtf8StringFromFile(serverPortFile).trim();
 			return new ServerProcessInfo(server, serverPort, serverPortFile);
 		} catch (IOException | TimeoutException e) {
-			throw new ServerStartException(e);
+			throw new ServerStartException("Starting server failed." + (server != null ? "\n\nProcess result:\n" + ThrowingEx.get(server::result) : ""), e);
 		}
 	}
 
@@ -188,8 +190,8 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	protected static class ServerStartException extends RuntimeException {
 		private static final long serialVersionUID = -8803977379866483002L;
 
-		public ServerStartException(Throwable cause) {
-			super(cause);
+		public ServerStartException(String message, Throwable cause) {
+			super(message, cause);
 		}
 	}
 }
