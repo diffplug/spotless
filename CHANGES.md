@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.40.0] - 2023-07-17
 ### Added
 * Added support for Protobuf formatting based on [Buf](https://buf.build/). (#1208)
 * `enum OnMatch { INCLUDE, EXCLUDE }` so that `FormatterStep.filterByContent` can not only include based on the pattern but also exclude. ([#1749](https://github.com/diffplug/spotless/pull/1749))
