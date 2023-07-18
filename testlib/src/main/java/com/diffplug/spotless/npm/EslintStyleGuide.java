@@ -115,8 +115,8 @@ public enum EslintStyleGuide {
 
 	public String asMavenXmlStringMergedWith(Map<String, String> devDependencies) {
 		return mergedWith(devDependencies).entrySet().stream()
-				.map(entry -> "<" + entry.getKey() + ">" + entry.getValue() + "</" + entry.getKey() + ">")
-				.collect(Collectors.joining("", "<devDependencies>", "</devDependencies>"));
+				.map(entry -> String.format("<property><name>%s</name><value>%s</value></property>", entry.getKey(), entry.getValue()))
+				.collect(Collectors.joining("", "<devDependencyProperties>", "</devDependencyProperties>"));
 	}
 
 }
