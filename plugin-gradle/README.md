@@ -979,11 +979,11 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
 ```gradle
 spotless {
   java {
-    prettier(['prettier': '2.0.5', 'prettier-plugin-java': '0.8.0']).config(['parser': 'java', 'tabWidth': 4])
+    prettier(['prettier': '2.8.8', 'prettier-plugin-java': '2.2.0']).config(['parser': 'java', 'tabWidth': 4])
   }
   format 'php', {
     target 'src/**/*.php'
-    prettier(['prettier': '2.0.5', '@prettier/plugin-php': '0.14.2']).config(['parser': 'php', 'tabWidth': 3])
+    prettier(['prettier': '2.8.8', '@prettier/plugin-php': '0.19.6']).config(['parser': 'php', 'tabWidth': 3])
   }
 }
 ```

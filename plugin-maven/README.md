@@ -1047,11 +1047,11 @@ You can use prettier in any language-specific format, but usually you will be cr
         <devDependencyProperties>
           <property>
             <name>prettier</name>
-            <value>2.0.5</value>
+            <value>2.8.8</value>
           </property>
           <property>
             <name>@prettier/plugin-php</name> <!-- this could not be written in the simpler to write 'devDependencies' element. -->
-            <value>0.14.2</value>
+            <value>0.19.6</value>
           </property>
         </devDependencyProperties>
         <!-- Specify config file and/or inline config, the inline always trumps file -->
@@ -1097,8 +1097,8 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
 
       <prettier>
         <devDependencies>
-            <prettier>2.0.5</prettier>
-            <prettier-plugin-java>0.8.0</prettier-plugin-java>
+            <prettier>2.8.8</prettier>
+            <prettier-plugin-java>2.2.0</prettier-plugin-java>
         </devDependencies>
         <config>
             <tabWidth>4</tabWidth>
@@ -1118,11 +1118,11 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
         <devDependencyProperties>
           <property>
             <name>prettier</name>
-            <value>2.0.5</value>
+            <value>2.8.8</value>
           </property>
           <property>
             <name>@prettier/plugin-php</name>
-            <value>0.14.2</value>
+            <value>0.19.6</value>
           </property>
         </devDependencyProperties>
         <config>
