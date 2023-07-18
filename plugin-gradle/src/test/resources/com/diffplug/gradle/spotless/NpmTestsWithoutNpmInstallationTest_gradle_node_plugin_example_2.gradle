@@ -14,7 +14,7 @@ node {
     workDir = file("${buildDir}/nodejs")
 }
 def prettierConfig = [:]
-prettierConfig['printWidth'] = 50
+prettierConfig['printWidth'] = 20
 prettierConfig['parser'] = 'typescript'
 
 // the executable name
