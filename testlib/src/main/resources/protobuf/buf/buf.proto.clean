@@ -1,0 +1,5 @@
+message Testing {
+  required string field1 = 1;
+  required int32 field2 = 2;
+  optional string field3 = 3;
+}

@@ -25,41 +25,10 @@ import com.diffplug.spotless.TestProvisioner;
 
 class KtLintStepTest extends ResourceHarness {
 	@Test
-	void behavior() {
-		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo(
-						"Error on line: 1, column: 1\n" +
-								"rule: standard:no-wildcard-imports\n" +
-								"Wildcard import");
-	}
-
-	@Test
-	void works0_47_0() {
-		FormatterStep step = KtLintStep.create("0.47.0", TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
-						"rule: no-wildcard-imports\n" +
-						"Wildcard import");
-	}
-
-	@Test
-	void works0_47_1() {
-		FormatterStep step = KtLintStep.create("0.47.1", TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
-						"rule: no-wildcard-imports\n" +
-						"Wildcard import");
-	}
-
-	@Test
 	void works0_48_0() {
 		FormatterStep step = KtLintStep.create("0.48.0", TestProvisioner.mavenCentral());
 		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic-old.clean")
 				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
 						"rule: no-wildcard-imports\n" +
 						"Wildcard import");
@@ -69,7 +38,7 @@ class KtLintStepTest extends ResourceHarness {
 	void works0_48_1() {
 		FormatterStep step = KtLintStep.create("0.48.1", TestProvisioner.mavenCentral());
 		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic-old.clean")
 				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
 						"rule: no-wildcard-imports\n" +
 						"Wildcard import");
@@ -79,7 +48,7 @@ class KtLintStepTest extends ResourceHarness {
 	void works0_49_0() {
 		FormatterStep step = KtLintStep.create("0.49.0", TestProvisioner.mavenCentral());
 		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic-old.clean")
 				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
 						"rule: standard:no-wildcard-imports\n" +
 						"Wildcard import");
@@ -88,6 +57,26 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void works0_49_1() {
 		FormatterStep step = KtLintStep.create("0.49.1", TestProvisioner.mavenCentral());
+		StepHarnessWithFile.forStep(this, step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic-old.clean")
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: standard:no-wildcard-imports\n" +
+						"Wildcard import");
+	}
+
+	@Test
+	void works0_50_0() {
+		FormatterStep step = KtLintStep.create("0.50.0", TestProvisioner.mavenCentral());
+		StepHarnessWithFile.forStep(this, step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +
+						"rule: standard:no-wildcard-imports\n" +
+						"Wildcard import");
+	}
+
+	@Test
+	void behavior() {
+		FormatterStep step = KtLintStep.create(TestProvisioner.mavenCentral());
 		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.testResourceExceptionMsg("kotlin/ktlint/unsolvable.dirty").isEqualTo("Error on line: 1, column: 1\n" +

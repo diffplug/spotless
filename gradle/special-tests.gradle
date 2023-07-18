@@ -2,7 +2,8 @@ apply plugin: 'com.adarshr.test-logger'
 def special = [
 	'Npm',
 	'Black',
-	'Clang'
+	'Clang',
+	'Buf'
 ]
 
 boolean isCiServer = System.getenv().containsKey("CI")
