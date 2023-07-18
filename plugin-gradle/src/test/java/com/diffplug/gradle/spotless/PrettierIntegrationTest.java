@@ -33,7 +33,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"def prettierConfig = [:]",
-				"prettierConfig['printWidth'] = 50",
+				"prettierConfig['printWidth'] = 20",
 				"prettierConfig['parser'] = 'typescript'",
 				"spotless {",
 				"    format 'mytypescript', {",
@@ -44,7 +44,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
+		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
+		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
 	}
 
 	@Test
@@ -121,8 +121,8 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"prettierConfig['tabWidth'] = 4",
 				"prettierConfig['parser'] = 'java'",
 				"def prettierPackages = [:]",
-				"prettierPackages['prettier'] = '2.0.5'",
-				"prettierPackages['prettier-plugin-java'] = '0.8.0'",
+				"prettierPackages['prettier'] = '2.8.8'",
+				"prettierPackages['prettier-plugin-java'] = '2.2.0'",
 				"spotless {",
 				"    format 'java', {",
 				"        target 'JavaTest.java'",
@@ -145,7 +145,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"def prettierConfig = [:]",
 				"prettierConfig['tabWidth'] = 4",
 				"def prettierPackages = [:]",
-				"prettierPackages['prettier'] = '2.0.5'",
+				"prettierPackages['prettier'] = '2.8.8'",
 				"spotless {",
 				"    format 'java', {",
 				"        target 'JavaTest.java'",
@@ -169,8 +169,8 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"prettierConfig['tabWidth'] = 3",
 				"prettierConfig['parser'] = 'php'",
 				"def prettierPackages = [:]",
-				"prettierPackages['prettier'] = '2.0.5'",
-				"prettierPackages['@prettier/plugin-php'] = '0.14.2'",
+				"prettierPackages['prettier'] = '2.8.8'",
+				"prettierPackages['@prettier/plugin-php'] = '0.19.6'",
 				"spotless {",
 				"    format 'php', {",
 				"        target 'php-example.php'",
@@ -199,14 +199,14 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"prettierConfigPhp['tabWidth'] = 3",
 				"prettierConfigPhp['parser'] = 'php'",
 				"def prettierPackagesPhp = [:]",
-				"prettierPackagesPhp['prettier'] = '2.0.5'",
-				"prettierPackagesPhp['@prettier/plugin-php'] = '0.14.2'",
+				"prettierPackagesPhp['prettier'] = '2.8.8'",
+				"prettierPackagesPhp['@prettier/plugin-php'] = '0.19.6'",
 				"def prettierConfigJava = [:]",
 				"prettierConfigJava['tabWidth'] = 4",
 				"prettierConfigJava['parser'] = 'java'",
 				"def prettierPackagesJava = [:]",
-				"prettierPackagesJava['prettier'] = '2.0.5'",
-				"prettierPackagesJava['prettier-plugin-java'] = '0.8.0'",
+				"prettierPackagesJava['prettier'] = '2.8.8'",
+				"prettierPackagesJava['prettier-plugin-java'] = '2.2.0'",
 				"spotless {",
 				"    format 'php', {",
 				"        target 'php-example.php'",

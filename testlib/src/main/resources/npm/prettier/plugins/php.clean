@@ -27,17 +27,17 @@ abstract class ReallyReallyReallyLongClassName
    // variable doc
    public $test;
    public $other = 1;
-   public static $staticTest = ['hi'];
+   public static $staticTest = ["hi"];
    static $cache;
    protected static $_instance;
-   protected $fillable = ['title', 'requester_id', 'type', 'summary', 'proof'];
+   protected $fillable = ["title", "requester_id", "type", "summary", "proof"];
    protected $fillable2 = [
-      'title',
-      'description',
-      'requester_id',
-      'type',
-      'summary',
-      'proof',
+      "title",
+      "description",
+      "requester_id",
+      "type",
+      "summary",
+      "proof",
    ];
    protected $test = [
       //test
@@ -52,7 +52,7 @@ abstract class ReallyReallyReallyLongClassName
     *
     * @return \Some\Test
     */
-   public function __construct($test, $test_int = null, $test_string = 'hi')
+   public function __construct($test, $test_int = null, $test_string = "hi")
    {
       parent::__construct($test_int ?: 1);
       $this->other = $test_string;
@@ -108,7 +108,7 @@ abstract class ReallyReallyReallyLongClassName
 
    public function returnTypeTest(): string
    {
-      return 'hi';
+      return "hi";
    }
 
    final public static function bar()
@@ -125,17 +125,17 @@ abstract class ReallyReallyReallyLongClassName
 
    public function method1()
    {
-      return 'hi';
+      return "hi";
    }
 
    public function method2()
    {
-      return 'hi';
+      return "hi";
    }
 
    public function method3()
    {
-      return 'hi';
+      return "hi";
    }
 
    public function testReturn(?string $name): ?string
@@ -164,7 +164,7 @@ abstract class ReallyReallyReallyLongClassName
       string $bar,
       int $baz
    ): string {
-      return 'foo';
+      return "foo";
    }
 
    public function longLongAnotherFunctionOther(
@@ -172,7 +172,7 @@ abstract class ReallyReallyReallyLongClassName
       string $bar,
       int $baz
    ) {
-      return 'foo';
+      return "foo";
    }
 
    public function testReturnTypeDeclaration(): object
@@ -297,13 +297,13 @@ class field extends \models\base
 {
    protected function pre_save($input, $fields)
    {
-      $input['configs'] = json_encode(
+      $input["configs"] = json_encode(
          array_merge(
             $configs,
-            $field_type->process_field_config_from_user($input['definition'])
+            $field_type->process_field_config_from_user($input["definition"])
          )
       );
-      unset($input['definition']);
+      unset($input["definition"]);
    }
 }
 
@@ -311,8 +311,8 @@ class test
 {
    public function test_method()
    {
-      $customer = (object) ['name' => 'Bob'];
-      $job = (object) ['customer' => $customer];
+      $customer = (object) ["name" => "Bob"];
+      $job = (object) ["customer" => $customer];
 
       return "The customer for that job, {$job->customer->name} has an error that shows up after the line gets waaaaay toooo long.";
    }
@@ -488,9 +488,9 @@ class User
 {
    public int $id;
    public string $name;
-   public ?string $b = 'foo';
+   public ?string $b = "foo";
    private Foo $prop;
-   protected static string $static = 'default';
+   protected static string $static = "default";
 
    public function __construct(int $id, string $name)
    {

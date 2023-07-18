@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class JavaTest {
+
     private static final String NAME = "JavaTest";
 
     private List<String> strings = new ArrayList<>();
@@ -30,8 +31,8 @@ public class JavaTest {
         JavaTest javaTest = new JavaTest("1", "2", "3");
         System.out.println("joined: " + javaTest.join(','));
         StringBuilder builder = new StringBuilder();
-        javaTest.operateOn(
-            strings -> builder.append(String.join("---", strings))
+        javaTest.operateOn(strings ->
+            builder.append(String.join("---", strings))
         );
     }
 }

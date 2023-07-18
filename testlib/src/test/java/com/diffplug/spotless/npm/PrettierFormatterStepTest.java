@@ -128,7 +128,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 		@Test
 		void verifyPrettierErrorMessageIsRelayed() throws Exception {
 			FormatterStep formatterStep = PrettierFormatterStep.create(
-					PrettierFormatterStep.defaultDevDependenciesWithPrettier("2.0.5"),
+					PrettierFormatterStep.defaultDevDependenciesWithPrettier("2.8.8"),
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
