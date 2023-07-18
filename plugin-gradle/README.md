@@ -882,6 +882,7 @@ spotless {
   yaml {
     target 'src/**/*.yaml'                // you have to set the target manually
     jackson()                             // has its own section below
+    prettier()                            // has its own section below
   }
 }
 ```

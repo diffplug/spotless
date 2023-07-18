@@ -970,6 +970,7 @@ Uses Jackson for formatting.
     </includes>
 
     <jackson />    <!-- has its own section below -->
+    <prettier />   <!-- has its own section below -->
   </yaml>
 </configuration>
 ```
