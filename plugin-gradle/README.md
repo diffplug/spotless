@@ -811,6 +811,7 @@ spotless {
     gson()                                // has its own section below
     jackson()                             // has its own section below
     rome()                                // has its own section below
+    applyJsonPatch([])                    // has its own section below
   }
 }
 ```
@@ -872,6 +873,49 @@ spotless {
 }
 ```
 
+### applyJsonPatch
+
+Uses [zjsonpatch](https://github.com/flipkart-incubator/zjsonpatch) to apply [JSON Patches](https://jsonpatch.com/) as per [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902/) to JSON documents.
+
+This enables you to add, replace or remove properties at locations in the JSON document that you specify using [JSON Pointers](https://datatracker.ietf.org/doc/html/rfc6901/).
+
+In Spotless Gradle, these JSON patches are represented as a `List<Map<String, Object>>`, or a list of patch operations.
+
+Each patch operation must be a map with the following properties:
+
+* `"op"` - the operation to apply, one of `"replace"`, `"add"` or `"remove"`.
+* `"path"` - a JSON Pointer string, for example `"/foo"`
+* `"value"` - the value to `"add"` or `"replace"` at the specified path. Not needed for `"remove"` operations.
+
+For example, to apply the patch from the [JSON Patch homepage](https://jsonpatch.com/#the-patch):
+
+```gradle
+spotless {
+  json {
+    target 'src/**/*.json'
+    applyJsonPatch([
+      [op: 'replace', path: '/baz', value: 'boo'],
+      [op: 'add', path: '/hello', value: ['world']],
+      [op: 'remove', path: '/foo']
+    ])
+  }
+}
+```
+
+Or using the Kotlin DSL:
+
+```kotlin
+spotless {
+  json {
+    target("src/**/*.json")
+    applyJsonPatch(listOf(
+      mapOf("op" to "replace", "path" to "/baz", "value" to "boo"),
+      mapOf("op" to "add", "path" to "/hello", "value" to listOf("world")),
+      mapOf("op" to "remove", "path" to "/foo")
+    ))
+  }
+}
+```
 
 ## YAML
 
