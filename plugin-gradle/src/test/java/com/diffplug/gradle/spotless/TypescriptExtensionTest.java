@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.npm.EslintFormatterStep;
@@ -170,7 +169,6 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@Disabled("https://github.com/diffplug/spotless/issues/1756")
 	void useEslintXoStandardRules() throws IOException {
 		setFile(".eslintrc.js").toResource("npm/eslint/typescript/styleguide/xo/.eslintrc.js");
 		setFile("tsconfig.json").toResource("npm/eslint/typescript/styleguide/xo/tsconfig.json");
