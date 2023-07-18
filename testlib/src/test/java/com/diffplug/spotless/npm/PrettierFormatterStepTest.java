@@ -17,6 +17,7 @@ package com.diffplug.spotless.npm;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,9 +39,19 @@ class PrettierFormatterStepTest extends ResourceHarness {
 	@Nested
 	class PrettierFormattingOfFileTypesIsWorking extends NpmFormatterStepCommonTests {
 
-		@ParameterizedTest(name = "{index}: prettier can be applied to {0}")
+		@ParameterizedTest(name = "{index}: prettier 2.x can be applied to {0}")
 		@ValueSource(strings = {"html", "typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml"})
-		void formattingUsingConfigFile(String fileType) throws Exception {
+		void formattingUsingPrettier2WithConfigFile(String fileType) throws Exception {
+			runTestUsingPrettier(fileType, PrettierFormatterStep.defaultDevDependencies());
+		}
+
+		@ParameterizedTest(name = "{index}: prettier 3.x can be applied to {0}")
+		@ValueSource(strings = {"html", "typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml"})
+		void formattingUsingPrettier3WithConfigFile(String fileType) throws Exception {
+			runTestUsingPrettier(fileType, ImmutableMap.of("prettier", "3.0.0"));
+		}
+
+		private void runTestUsingPrettier(String fileType, Map<String, String> dependencies) throws Exception {
 			String filedir = "npm/prettier/filetypes/" + fileType + "/";
 
 			final File prettierRc = createTestFile(filedir + ".prettierrc.yml");
@@ -48,7 +59,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 			final String cleanFile = filedir + fileType + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
-					PrettierFormatterStep.defaultDevDependencies(),
+					dependencies,
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
