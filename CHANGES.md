@@ -10,6 +10,11 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Add support for `prettier` version `3.0.0` and newer. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1751](https://github.com/diffplug/spotless/issues/1751))
+* Fix npm install calls when npm cache is not up-to-date. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1750](https://github.com/diffplug/spotless/issues/1750))
+### Changes
+* Bump default `prettier` version to latest (v2) `2.8.1` -> `2.8.8`. ([#1760](https://github.com/diffplug/spotless/pull/1760))
 
 ## [2.40.0] - 2023-07-17
 ### Added
@@ -17,15 +22,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `enum OnMatch { INCLUDE, EXCLUDE }` so that `FormatterStep.filterByContent` can not only include based on the pattern but also exclude. ([#1749](https://github.com/diffplug/spotless/pull/1749))
 ### Fixed
 * Update documented default `semanticSort` to `false`. ([#1728](https://github.com/diffplug/spotless/pull/1728))
-* Add support for `prettier` version `3.0.0` and newer. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1751](https://github.com/diffplug/spotless/issues/1751))
-* Fix npm install calls when npm cache is not up-to-date. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1750](https://github.com/diffplug/spotless/issues/1750))
-
 ### Changes
 * Bump default `cleanthat` version to latest `2.13` -> `2.17`. ([#1734](https://github.com/diffplug/spotless/pull/1734))
 * Bump default `ktlint` version to latest `0.49.1` -> `0.50.0`. ([#1741](https://github.com/diffplug/spotless/issues/1741))
   * Dropped support for `ktlint 0.47.x` following our policy of supporting two breaking changes at a time.
   * Dropped support for deprecated `useExperimental` parameter in favor of the `ktlint_experimental` property.
-* Bump default `prettier` version to latest (v2) `2.8.1` -> `2.8.8`. ([#1760](https://github.com/diffplug/spotless/pull/1760))
 
 ## [2.39.0] - 2023-05-24
 ### Added
