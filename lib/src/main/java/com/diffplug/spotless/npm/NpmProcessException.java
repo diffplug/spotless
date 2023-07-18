@@ -21,7 +21,7 @@ import com.diffplug.spotless.ProcessRunner;
 
 public class NpmProcessException extends RuntimeException {
 	private static final long serialVersionUID = 6424331316676759525L;
-	private final ProcessRunner.Result result;
+	private final transient ProcessRunner.Result result;
 
 	public NpmProcessException(String message, ProcessRunner.Result result) {
 		super(message);
