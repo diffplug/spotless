@@ -16,7 +16,22 @@
 package com.diffplug.spotless.npm;
 
 public interface NpmProcessFactory {
-	NpmProcess createNpmInstallProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations);
+
+	enum OnlinePreferrence {
+		PREFER_OFFLINE("--prefer-offline"), PREFER_ONLINE("--prefer-online");
+
+		private final String option;
+
+		OnlinePreferrence(String option) {
+			this.option = option;
+		}
+
+		public String option() {
+			return option;
+		}
+	}
+
+	NpmProcess createNpmInstallProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations, OnlinePreferrence onlinePreferrence);
 
 	NpmLongRunningProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations);
 
