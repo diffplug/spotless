@@ -46,7 +46,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 		}
 
 		@ParameterizedTest(name = "{index}: prettier 3.x can be applied to {0}")
-		@ValueSource(strings = {"html", "typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml"})
+		@ValueSource(strings = {"html_prettier3", "typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml"})
 		void formattingUsingPrettier3WithConfigFile(String fileType) throws Exception {
 			runTestUsingPrettier(fileType, ImmutableMap.of("prettier", "3.0.0"));
 		}
