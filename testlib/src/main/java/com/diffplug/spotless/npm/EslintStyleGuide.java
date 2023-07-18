@@ -29,7 +29,9 @@ public enum EslintStyleGuide {
 		@Override
 		public @Nonnull Map<String, String> devDependencies() {
 			Map<String, String> dependencies = new LinkedHashMap<>();
-			dependencies.put("eslint-config-standard-with-typescript", "^36.1.0");
+			dependencies.put("@typescript-eslint/eslint-plugin", "^5.62.0");
+			dependencies.put("@typescript-eslint/parser", "^5.62.0");
+			dependencies.put("eslint-config-standard-with-typescript", "^36.0.1");
 			dependencies.put("eslint-plugin-import", "^2.27.5");
 			dependencies.put("eslint-plugin-n", "^16.0.1");
 			dependencies.put("eslint-plugin-promise", "^6.1.1");
