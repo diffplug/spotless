@@ -11,9 +11,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
-* Use latest versions of popular style guides for `eslint` tests to fix failing `useEslintXoStandardRules` test. ([#9999](https://github.com/diffplug/spotless/pull/9999), [#1756](https://github.com/diffplug/spotless/issues/1756))
+* Use latest versions of popular style guides for `eslint` tests to fix failing `useEslintXoStandardRules` test. ([#1761](https://github.com/diffplug/spotless/pull/1761), [#1756](https://github.com/diffplug/spotless/issues/1756))
 ### Changes
-* Bump default `eslint` version to latest `8.31.0` -> `8.45.0` ([#9999](https://github.com/diffplug/spotless/pull/9999))
+* Bump default `eslint` version to latest `8.31.0` -> `8.45.0` ([#1761](https://github.com/diffplug/spotless/pull/1761))
 
 ## [2.40.0] - 2023-07-17
 ### Added
