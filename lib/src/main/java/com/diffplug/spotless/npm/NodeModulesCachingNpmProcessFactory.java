@@ -58,8 +58,8 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 	}
 
 	@Override
-	public NpmProcess createNpmInstallProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations) {
-		NpmProcess actualNpmInstallProcess = StandardNpmProcessFactory.INSTANCE.createNpmInstallProcess(nodeServerLayout, formatterStepLocations);
+	public NpmProcess createNpmInstallProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations, OnlinePreferrence onlinePreferrence) {
+		NpmProcess actualNpmInstallProcess = StandardNpmProcessFactory.INSTANCE.createNpmInstallProcess(nodeServerLayout, formatterStepLocations, onlinePreferrence);
 		return new CachingNmpInstall(actualNpmInstallProcess, nodeServerLayout);
 	}
 

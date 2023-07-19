@@ -9,12 +9,12 @@ plugins {
 repositories { mavenCentral() }
 node {
     download = true
-    version = '18.13.0'
+    version = '18.16.1'
 	// when not setting an explicit `npmWorkDir`, the npm binary will be installed next to the node binary
     workDir = file("${buildDir}/nodejs")
 }
 def prettierConfig = [:]
-prettierConfig['printWidth'] = 50
+prettierConfig['printWidth'] = 20
 prettierConfig['parser'] = 'typescript'
 
 // the executable name

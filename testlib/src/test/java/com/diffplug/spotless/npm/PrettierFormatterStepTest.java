@@ -17,6 +17,7 @@ package com.diffplug.spotless.npm;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,13 +35,27 @@ import com.diffplug.spotless.tag.NpmTest;
 @NpmTest
 class PrettierFormatterStepTest extends ResourceHarness {
 
+	private static final String PRETTIER_VERSION_2 = PrettierFormatterStep.DEFAULT_VERSION;
+
+	private static final String PRETTIER_VERSION_3 = "3.0.0";
+
 	@NpmTest
 	@Nested
 	class PrettierFormattingOfFileTypesIsWorking extends NpmFormatterStepCommonTests {
 
-		@ParameterizedTest(name = "{index}: prettier can be applied to {0}")
+		@ParameterizedTest(name = "{index}: prettier 2.x can be applied to {0}")
 		@ValueSource(strings = {"html", "typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml"})
-		void formattingUsingConfigFile(String fileType) throws Exception {
+		void formattingUsingPrettier2WithConfigFile(String fileType) throws Exception {
+			runTestUsingPrettier(fileType, PrettierFormatterStep.defaultDevDependencies());
+		}
+
+		@ParameterizedTest(name = "{index}: prettier 3.x can be applied to {0}")
+		@ValueSource(strings = {"html_prettier3", "typescript", "json", "javascript-es5", "javascript-es6", "css", "scss", "markdown", "yaml"})
+		void formattingUsingPrettier3WithConfigFile(String fileType) throws Exception {
+			runTestUsingPrettier(fileType, ImmutableMap.of("prettier", "3.0.0"));
+		}
+
+		private void runTestUsingPrettier(String fileType, Map<String, String> dependencies) throws Exception {
 			String filedir = "npm/prettier/filetypes/" + fileType + "/";
 
 			final File prettierRc = createTestFile(filedir + ".prettierrc.yml");
@@ -48,7 +63,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 			final String cleanFile = filedir + fileType + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
-					PrettierFormatterStep.defaultDevDependencies(),
+					dependencies,
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
@@ -66,15 +81,16 @@ class PrettierFormatterStepTest extends ResourceHarness {
 	@Nested
 	class SpecificPrettierFormatterStepTests extends NpmFormatterStepCommonTests {
 
-		@Test
-		void parserInferenceBasedOnExplicitFilepathIsWorking() throws Exception {
+		@ParameterizedTest(name = "{index}: parser inference based on explicit filepath is working with prettier {0}")
+		@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+		void parserInferenceBasedOnExplicitFilepathIsWorking(String prettierVersion) throws Exception {
 			String filedir = "npm/prettier/filetypes/json/";
 
 			final String dirtyFile = filedir + "json.dirty";
 			final String cleanFile = filedir + "json.clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
-					PrettierFormatterStep.defaultDevDependencies(),
+					ImmutableMap.of("prettier", prettierVersion),
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
@@ -87,15 +103,16 @@ class PrettierFormatterStepTest extends ResourceHarness {
 			}
 		}
 
-		@Test
-		void parserInferenceBasedOnFilenameIsWorking() throws Exception {
+		@ParameterizedTest(name = "{index}: parser inference based on filename is working with prettier {0}")
+		@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+		void parserInferenceBasedOnFilenameIsWorking(String prettierVersion) throws Exception {
 			String filedir = "npm/prettier/filename/";
 
 			final String dirtyFile = filedir + "dirty.json";
 			final String cleanFile = filedir + "clean.json";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
-					PrettierFormatterStep.defaultDevDependencies(),
+					ImmutableMap.of("prettier", prettierVersion),
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
@@ -111,7 +128,7 @@ class PrettierFormatterStepTest extends ResourceHarness {
 		@Test
 		void verifyPrettierErrorMessageIsRelayed() throws Exception {
 			FormatterStep formatterStep = PrettierFormatterStep.create(
-					PrettierFormatterStep.defaultDevDependenciesWithPrettier("2.0.5"),
+					PrettierFormatterStep.defaultDevDependenciesWithPrettier("2.8.8"),
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
@@ -131,13 +148,13 @@ class PrettierFormatterStepTest extends ResourceHarness {
 
 		private static final String FILEDIR = "npm/prettier/config/";
 
-		void runFormatTest(PrettierConfig config, String cleanFileNameSuffix) throws Exception {
+		void runFormatTest(String prettierVersion, PrettierConfig config, String cleanFileNameSuffix) throws Exception {
 
 			final String dirtyFile = FILEDIR + "typescript.dirty";
 			final String cleanFile = FILEDIR + "typescript." + cleanFileNameSuffix + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
-					PrettierFormatterStep.defaultDevDependencies(),
+					ImmutableMap.of("prettier", prettierVersion),
 					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
@@ -150,20 +167,26 @@ class PrettierFormatterStepTest extends ResourceHarness {
 			}
 		}
 
-		@Test
-		void defaultsAreApplied() throws Exception {
-			runFormatTest(new PrettierConfig(null, ImmutableMap.of("parser", "typescript")), "defaults");
+		@ParameterizedTest(name = "{index}: defaults are applied with prettier {0}")
+		@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+		void defaultsAreApplied(String prettierVersion) throws Exception {
+			runFormatTest(prettierVersion, new PrettierConfig(null, ImmutableMap.of("parser", "typescript")), "defaults_prettier_" + major(prettierVersion));
 		}
 
-		@Test
-		void configFileOptionsAreApplied() throws Exception {
-			runFormatTest(new PrettierConfig(createTestFile(FILEDIR + ".prettierrc.yml"), null), "configfile");
+		@ParameterizedTest(name = "{index}: config file options are applied with prettier {0}")
+		@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+		void configFileOptionsAreApplied(String prettierVersion) throws Exception {
+			runFormatTest(prettierVersion, new PrettierConfig(createTestFile(FILEDIR + ".prettierrc.yml"), null), "configfile_prettier_" + major(prettierVersion));
 		}
 
-		@Test
-		void configFileOptionsCanBeOverriden() throws Exception {
-			runFormatTest(new PrettierConfig(createTestFile(FILEDIR + ".prettierrc.yml"), ImmutableMap.of("printWidth", 300)), "override");
+		@ParameterizedTest(name = "{index}: config file options can be overriden with prettier {0}")
+		@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+		void configFileOptionsCanBeOverriden(String prettierVersion) throws Exception {
+			runFormatTest(prettierVersion, new PrettierConfig(createTestFile(FILEDIR + ".prettierrc.yml"), ImmutableMap.of("printWidth", 300)), "override_prettier_" + major(prettierVersion));
 		}
 
+		private String major(String semVer) {
+			return semVer.split("\\.")[0];
+		}
 	}
 }
