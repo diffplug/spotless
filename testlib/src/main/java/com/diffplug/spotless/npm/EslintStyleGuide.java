@@ -29,9 +29,11 @@ public enum EslintStyleGuide {
 		@Override
 		public @Nonnull Map<String, String> devDependencies() {
 			Map<String, String> dependencies = new LinkedHashMap<>();
-			dependencies.put("eslint-config-standard-with-typescript", "^24.0.0");
-			dependencies.put("eslint-plugin-import", "^2.26.0");
-			dependencies.put("eslint-plugin-n", "^15.6.0");
+			dependencies.put("@typescript-eslint/eslint-plugin", "^5.62.0");
+			dependencies.put("@typescript-eslint/parser", "^5.62.0");
+			dependencies.put("eslint-config-standard-with-typescript", "^36.0.1");
+			dependencies.put("eslint-plugin-import", "^2.27.5");
+			dependencies.put("eslint-plugin-n", "^16.0.1");
 			dependencies.put("eslint-plugin-promise", "^6.1.1");
 			return dependencies;
 		}
@@ -41,7 +43,7 @@ public enum EslintStyleGuide {
 		public @Nonnull Map<String, String> devDependencies() {
 			Map<String, String> dependencies = new LinkedHashMap<>();
 			dependencies.put("eslint-config-xo", "^0.43.1");
-			dependencies.put("eslint-config-xo-typescript", "^0.55.1");
+			dependencies.put("eslint-config-xo-typescript", "^1.0.0");
 			return dependencies;
 		}
 	},
@@ -50,7 +52,7 @@ public enum EslintStyleGuide {
 		public @Nonnull Map<String, String> devDependencies() {
 			Map<String, String> dependencies = new LinkedHashMap<>();
 			dependencies.put("eslint-config-airbnb-base", "^15.0.0");
-			dependencies.put("eslint-plugin-import", "^2.26.0");
+			dependencies.put("eslint-plugin-import", "^2.27.5");
 			return dependencies;
 		}
 	},
@@ -66,9 +68,9 @@ public enum EslintStyleGuide {
 		@Override
 		public @Nonnull Map<String, String> devDependencies() {
 			Map<String, String> dependencies = new LinkedHashMap<>();
-			dependencies.put("eslint-config-standard", "^17.0.0");
-			dependencies.put("eslint-plugin-import", "^2.26.0");
-			dependencies.put("eslint-plugin-n", "^15.6.0");
+			dependencies.put("eslint-config-standard", "^17.1.0");
+			dependencies.put("eslint-plugin-import", "^2.27.5");
+			dependencies.put("eslint-plugin-n", "^16.0.1");
 			dependencies.put("eslint-plugin-promise", "^6.1.1");
 			return dependencies;
 		}
@@ -113,8 +115,8 @@ public enum EslintStyleGuide {
 
 	public String asMavenXmlStringMergedWith(Map<String, String> devDependencies) {
 		return mergedWith(devDependencies).entrySet().stream()
-				.map(entry -> "<" + entry.getKey() + ">" + entry.getValue() + "</" + entry.getKey() + ">")
-				.collect(Collectors.joining("", "<devDependencies>", "</devDependencies>"));
+				.map(entry -> String.format("<property><name>%s</name><value>%s</value></property>", entry.getKey(), entry.getValue()))
+				.collect(Collectors.joining("", "<devDependencyProperties>", "</devDependencyProperties>"));
 	}
 
 }

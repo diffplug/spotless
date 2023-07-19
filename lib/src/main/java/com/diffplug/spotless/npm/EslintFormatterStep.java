@@ -47,7 +47,7 @@ public class EslintFormatterStep {
 
 	public static final String NAME = "eslint-format";
 
-	public static final String DEFAULT_ESLINT_VERSION = "^8.31.0";
+	public static final String DEFAULT_ESLINT_VERSION = "^8.45.0";
 
 	public static Map<String, String> defaultDevDependenciesForTypescript() {
 		return defaultDevDependenciesTypescriptWithEslint(DEFAULT_ESLINT_VERSION);
@@ -55,9 +55,9 @@ public class EslintFormatterStep {
 
 	public static Map<String, String> defaultDevDependenciesTypescriptWithEslint(String eslintVersion) {
 		Map<String, String> dependencies = new LinkedHashMap<>();
-		dependencies.put("@typescript-eslint/eslint-plugin", "^5.47.0");
-		dependencies.put("@typescript-eslint/parser", "^5.47.0");
-		dependencies.put("typescript", "^4.9.4");
+		dependencies.put("@typescript-eslint/eslint-plugin", "^6.1.0");
+		dependencies.put("@typescript-eslint/parser", "^6.1.0");
+		dependencies.put("typescript", "^5.1.6");
 		dependencies.put("eslint", Objects.requireNonNull(eslintVersion));
 		return dependencies;
 	}
