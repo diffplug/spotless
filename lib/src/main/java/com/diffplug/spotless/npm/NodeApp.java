@@ -15,12 +15,17 @@
  */
 package com.diffplug.spotless.npm;
 
+import static com.diffplug.spotless.npm.NpmProcessFactory.OnlinePreferrence.PREFER_OFFLINE;
+import static com.diffplug.spotless.npm.NpmProcessFactory.OnlinePreferrence.PREFER_ONLINE;
+
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.diffplug.spotless.ProcessRunner;
 
 public class NodeApp {
 
@@ -83,6 +88,28 @@ public class NodeApp {
 
 	void npmInstall() {
 		timedLogger.withInfo("Installing npm dependencies for {} with {}.", this.nodeServerLayout, this.npmProcessFactory.describe())
-				.run(() -> npmProcessFactory.createNpmInstallProcess(nodeServerLayout, formatterStepLocations).waitFor());
+				.run(this::optimizedNpmInstall);
+	}
+
+	private void optimizedNpmInstall() {
+		try {
+			npmProcessFactory.createNpmInstallProcess(nodeServerLayout, formatterStepLocations, PREFER_OFFLINE).waitFor();
+		} catch (NpmProcessException e) {
+			if (!offlineInstallFailed(e.getResult())) {
+				throw e; // pass through
+			}
+			// if the npm install fails with message "No matching version found for <package>@<version>", we try again without the offline flag
+			npmProcessFactory.createNpmInstallProcess(nodeServerLayout, formatterStepLocations, PREFER_ONLINE).waitFor();
+		}
+	}
+
+	private boolean offlineInstallFailed(ProcessRunner.Result result) {
+		if (result == null) {
+			return false; // no result, something else must have happened
+		}
+		if (result.exitCode() == 0) {
+			return false; // all is well
+		}
+		return result.stdOutUtf8().contains("code ETARGET") && result.stdOutUtf8().contains("No matching version found for"); // offline install failed, needs online install
 	}
 }

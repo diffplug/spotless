@@ -34,13 +34,13 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 					"repositories { mavenCentral() }",
 					"node {",
 					"    download = true",
-					"    version = '18.13.0'",
-					"    npmVersion = '8.19.2'",
+					"    version = '18.16.1'",
+					"    npmVersion = '9.5.1'",
 					"    workDir = file(\"${buildDir}/nodejs\")",
 					"    npmWorkDir = file(\"${buildDir}/npm\")",
 					"}",
 					"def prettierConfig = [:]",
-					"prettierConfig['printWidth'] = 50",
+					"prettierConfig['printWidth'] = 20",
 					"prettierConfig['parser'] = 'typescript'",
 					"def npmExec = System.getProperty('os.name').toLowerCase().contains('windows') ? '/npm.cmd' : '/bin/npm'",
 					"def nodeExec = System.getProperty('os.name').toLowerCase().contains('windows') ? '/node.exe' : '/bin/node'",
@@ -59,7 +59,7 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 			// then run spotless using that node installation
 			final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 			Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
+			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
 		} catch (Exception e) {
 			printContents();
 			throw e;
@@ -79,7 +79,7 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 			setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 			final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 			Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
+			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
 		} catch (Exception e) {
 			printContents();
 			throw e;
@@ -93,7 +93,7 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 			setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 			final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 			Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
+			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
 		} catch (Exception e) {
 			printContents();
 			throw e;
@@ -111,11 +111,11 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 					"repositories { mavenCentral() }",
 					"node {",
 					"    download = true",
-					"    version = '18.13.0'",
+					"    version = '18.16.1'",
 					"    workDir = file(\"${buildDir}/nodejs\")",
 					"}",
 					"def prettierConfig = [:]",
-					"prettierConfig['printWidth'] = 50",
+					"prettierConfig['printWidth'] = 20",
 					"prettierConfig['parser'] = 'typescript'",
 					"def npmExec = System.getProperty('os.name').toLowerCase().contains('windows') ? '/npm.cmd' : '/bin/npm'",
 					"spotless {",
@@ -132,7 +132,7 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 			// then run spotless using that node installation
 			final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 			Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
+			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
 		} catch (Exception e) {
 			printContents();
 			throw e;
@@ -154,7 +154,7 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 					"    workDir = file(\"${buildDir}/nodejs\")",
 					"}",
 					"def prettierConfig = [:]",
-					"prettierConfig['printWidth'] = 50",
+					"prettierConfig['printWidth'] = 20",
 					"prettierConfig['parser'] = 'typescript'",
 					"def nodeExec = System.getProperty('os.name').toLowerCase().contains('windows') ? '/node.exe' : '/bin/node'",
 					"spotless {",
@@ -171,7 +171,7 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 			// then run spotless using that node installation
 			final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 			Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile.clean");
+			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
 		} catch (Exception e) {
 			printContents();
 			throw e;

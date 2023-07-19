@@ -32,8 +32,8 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 	}
 
 	@Override
-	public NpmProcess createNpmInstallProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations) {
-		return new NpmInstall(nodeServerLayout.nodeModulesDir(), formatterStepLocations);
+	public NpmProcess createNpmInstallProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations, OnlinePreferrence onlinePreferrence) {
+		return new NpmInstall(nodeServerLayout.nodeModulesDir(), formatterStepLocations, onlinePreferrence);
 	}
 
 	@Override
@@ -80,8 +80,11 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 
 	private static class NpmInstall extends AbstractStandardNpmProcess implements NpmProcess {
 
-		public NpmInstall(File workingDir, NpmFormatterStepLocations formatterStepLocations) {
+		private final OnlinePreferrence onlinePreferrence;
+
+		public NpmInstall(File workingDir, NpmFormatterStepLocations formatterStepLocations, OnlinePreferrence onlinePreferrence) {
 			super(workingDir, formatterStepLocations);
+			this.onlinePreferrence = onlinePreferrence;
 		}
 
 		@Override
@@ -91,7 +94,7 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 					"install",
 					"--no-audit",
 					"--no-fund",
-					"--prefer-offline");
+					onlinePreferrence.option());
 		}
 
 		@Override
@@ -103,7 +106,7 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 		public ProcessRunner.Result waitFor() {
 			try (ProcessRunner.LongRunningProcess npmProcess = doStart()) {
 				if (npmProcess.waitFor() != 0) {
-					throw new NpmProcessException("Running npm command '" + describe() + "' failed with exit code: " + npmProcess.exitValue() + "\n\n" + npmProcess.result());
+					throw new NpmProcessException("Running npm command '" + describe() + "' failed with exit code: " + npmProcess.exitValue() + "\n\n" + npmProcess.result(), npmProcess.result());
 				}
 				return npmProcess.result();
 			} catch (InterruptedException e) {
