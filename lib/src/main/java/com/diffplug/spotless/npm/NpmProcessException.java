@@ -15,14 +15,26 @@
  */
 package com.diffplug.spotless.npm;
 
+import javax.annotation.CheckForNull;
+
+import com.diffplug.spotless.ProcessRunner;
+
 public class NpmProcessException extends RuntimeException {
 	private static final long serialVersionUID = 6424331316676759525L;
+	private final transient ProcessRunner.Result result;
 
-	public NpmProcessException(String message) {
+	public NpmProcessException(String message, ProcessRunner.Result result) {
 		super(message);
+		this.result = result;
 	}
 
 	public NpmProcessException(String message, Throwable cause) {
 		super(message, cause);
+		this.result = null;
+	}
+
+	@CheckForNull
+	public ProcessRunner.Result getResult() {
+		return result;
 	}
 }
