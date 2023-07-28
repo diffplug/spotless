@@ -1526,6 +1526,13 @@ You can explicitly disable ratchet functionality by providing the value 'NONE':
 ```
 This is useful for disabling the ratchet functionality in child projects where the parent defines a ratchetFrom value.
 
+### Using `ratchetFrom` on CI systems
+
+Many popular CI systems (GitHub, GitLab, BitBucket, and Travis) use a "shallow clone". This means that `<ratchetFrom>origin/main</ratchetFrom>` will fail with `No such reference`. You can fix this by:
+
+- calling `git fetch origin main` before you call Spotless
+- disabling the shallow clone [like so](https://github.com/diffplug/spotless/issues/710)
+
 ## `spotless:off` and `spotless:on`
 
 Sometimes there is a chunk of code  which you have carefully handcrafted, and you would like to exclude just this one little part from getting clobbered by the autoformat. Some formatters have a way to do this, many don't, but who cares. If you setup your spotless like this:
