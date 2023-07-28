@@ -1326,6 +1326,15 @@ However, we strongly recommend that you use a non-local branch, such as a tag or
 
 This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 
+### Using ratchetFrom on CI systems
+
+If you are running Spotless on a CI system, make sure you do not have a shallow clone, or `ratchetFrom` will fail with `No such reference`. Many CI systems use a shallow clone by default for performance reasons. Here is how you turn off shallow clones for some common CI systems:
+
+* **GitHub Actions**: Ad `fetch-depth: 0` to `<action>.yml`
+* **GitLab CI**: Add `GIT_DEPTH: 0` under the `variables:` section of `.gitlab-ci.yml`
+* **BitBucket Pipelines**: Add `clone: depth: full` to the build step
+* **Travis**: Add `git: depth: false` in `travis.yml`
+
 ## `spotless:off` and `spotless:on`
 
 Sometimes there is a chunk of code  which you have carefully handcrafted, and you would like to exclude just this one little part from getting clobbered by the autoformat. Some formatters have a way to do this, many don't, but who cares.  If you setup your spotless like this:
