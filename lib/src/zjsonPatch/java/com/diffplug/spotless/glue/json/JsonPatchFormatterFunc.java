@@ -23,18 +23,18 @@ import com.flipkart.zjsonpatch.JsonPatch;
 
 import com.diffplug.spotless.FormatterFunc;
 
-public class ApplyJsonPatchFormatterFunc implements FormatterFunc {
+public class JsonPatchFormatterFunc implements FormatterFunc {
 	private final ObjectMapper objectMapper;
 	private final List<Map<String, Object>> patch;
 	private final String patchString;
 
-	public ApplyJsonPatchFormatterFunc(String patchString) {
+	public JsonPatchFormatterFunc(String patchString) {
 		this.objectMapper = new ObjectMapper();
 		this.patch = null;
 		this.patchString = patchString;
 	}
 
-	public ApplyJsonPatchFormatterFunc(List<Map<String, Object>> patch) {
+	public JsonPatchFormatterFunc(List<Map<String, Object>> patch) {
 		this.objectMapper = new ObjectMapper();
 		this.patch = patch;
 		this.patchString = null;

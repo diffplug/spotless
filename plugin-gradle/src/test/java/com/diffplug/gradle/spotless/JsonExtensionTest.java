@@ -158,7 +158,7 @@ class JsonExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void applyJsonPatchReplaceString() throws IOException {
+	void jsonPatchReplaceString() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'java'",
@@ -168,7 +168,7 @@ class JsonExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    json {",
 				"        target 'src/**/*.json'",
-				"        applyJsonPatch([[op: 'replace', path: '/abc', value: 'ghi']])",
+				"        jsonPatch([[op: 'replace', path: '/abc', value: 'ghi']])",
 				"        gson()",
 				"    }",
 				"}");
@@ -178,7 +178,7 @@ class JsonExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void applyJsonPatchReplaceWithObject() throws IOException {
+	void jsonPatchReplaceWithObject() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'java'",
@@ -188,7 +188,7 @@ class JsonExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    json {",
 				"        target 'src/**/*.json'",
-				"        applyJsonPatch([[op: 'replace', path: '/abc', value: [def: 'ghi']]])",
+				"        jsonPatch([[op: 'replace', path: '/abc', value: [def: 'ghi']]])",
 				"        gson()",
 				"    }",
 				"}");

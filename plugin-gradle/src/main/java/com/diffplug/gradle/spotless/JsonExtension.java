@@ -22,9 +22,9 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.json.ApplyJsonPatchStep;
 import com.diffplug.spotless.json.JacksonJsonConfig;
 import com.diffplug.spotless.json.JacksonJsonStep;
+import com.diffplug.spotless.json.JsonPatchStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
 import com.diffplug.spotless.json.gson.GsonStep;
 
@@ -75,12 +75,12 @@ public class JsonExtension extends FormatExtension {
 		return romeConfig;
 	}
 
-	public ApplyJsonPatchConfig applyJsonPatch(List<Map<String, Object>> patch) {
-		return new ApplyJsonPatchConfig(patch);
+	public JsonPatchConfig jsonPatch(List<Map<String, Object>> patch) {
+		return new JsonPatchConfig(patch);
 	}
 
-	public ApplyJsonPatchConfig applyJsonPatch(String zjsonPatchVersion, List<Map<String, Object>> patch) {
-		return new ApplyJsonPatchConfig(zjsonPatchVersion, patch);
+	public JsonPatchConfig jsonPatch(String zjsonPatchVersion, List<Map<String, Object>> patch) {
+		return new JsonPatchConfig(zjsonPatchVersion, patch);
 	}
 
 	public class SimpleConfig {
@@ -204,28 +204,28 @@ public class JsonExtension extends FormatExtension {
 		}
 	}
 
-	public class ApplyJsonPatchConfig {
+	public class JsonPatchConfig {
 		private String zjsonPatchVersion;
 		private List<Map<String, Object>> patch;
 
-		public ApplyJsonPatchConfig(List<Map<String, Object>> patch) {
+		public JsonPatchConfig(List<Map<String, Object>> patch) {
 			this(DEFAULT_ZJSONPATCH_VERSION, patch);
 		}
 
-		public ApplyJsonPatchConfig(String zjsonPatchVersion, List<Map<String, Object>> patch) {
+		public JsonPatchConfig(String zjsonPatchVersion, List<Map<String, Object>> patch) {
 			this.zjsonPatchVersion = zjsonPatchVersion;
 			this.patch = patch;
 			addStep(createStep());
 		}
 
-		public ApplyJsonPatchConfig version(String zjsonPatchVersion) {
+		public JsonPatchConfig version(String zjsonPatchVersion) {
 			this.zjsonPatchVersion = zjsonPatchVersion;
 			replaceStep(createStep());
 			return this;
 		}
 
 		private FormatterStep createStep() {
-			return ApplyJsonPatchStep.create(zjsonPatchVersion, patch, provisioner());
+			return JsonPatchStep.create(zjsonPatchVersion, patch, provisioner());
 		}
 	}
 }

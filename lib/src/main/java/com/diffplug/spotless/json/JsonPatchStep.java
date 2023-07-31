@@ -28,12 +28,12 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public class ApplyJsonPatchStep {
+public class JsonPatchStep {
 	// https://mvnrepository.com/artifact/com.flipkart.zjsonpatch/zjsonpatch
 	static final String MAVEN_COORDINATE = "com.flipkart.zjsonpatch:zjsonpatch";
 	static final String DEFAULT_VERSION = "0.4.14";
 
-	private ApplyJsonPatchStep() {}
+	private JsonPatchStep() {}
 
 	public static FormatterStep create(String patchString, Provisioner provisioner) {
 		return create(DEFAULT_VERSION, patchString, provisioner);
@@ -77,7 +77,7 @@ public class ApplyJsonPatchStep {
 		}
 
 		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.json.ApplyJsonPatchFormatterFunc");
+			Class<?> formatterFunc = jarState.getClassLoader().loadClass("com.diffplug.spotless.glue.json.JsonPatchFormatterFunc");
 			if (this.patch != null) {
 				Constructor<?> constructor = formatterFunc.getConstructor(List.class);
 				return (FormatterFunc) constructor.newInstance(patch);

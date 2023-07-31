@@ -18,14 +18,14 @@ package com.diffplug.spotless.maven.json;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.json.ApplyJsonPatchStep;
+import com.diffplug.spotless.json.JsonPatchStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 /**
- * A {@link FormatterStepFactory} implementation that corresponds to {@code <applyJsonPatch>...</applyJsonPatch>} configuration element.
+ * A {@link FormatterStepFactory} implementation that corresponds to {@code <jsonPatch>...</jsonPatch>} configuration element.
  */
-public class ApplyJsonPatch implements FormatterStepFactory {
+public class JsonPatch implements FormatterStepFactory {
 	private static final String DEFAULT_ZJSONPATCH_VERSION = "0.4.14";
 
 	@Parameter
@@ -36,6 +36,6 @@ public class ApplyJsonPatch implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		return ApplyJsonPatchStep.create(zjsonPatchVersion, patch, stepConfig.getProvisioner());
+		return JsonPatchStep.create(zjsonPatchVersion, patch, stepConfig.getProvisioner());
 	}
 }

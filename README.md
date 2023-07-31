@@ -89,7 +89,7 @@ lib('java.CleanthatJavaStep')                    +'{{yes}}       | {{yes}}      
 lib('json.gson.GsonStep')                        +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('json.JacksonJsonStep')                      +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('json.JsonSimpleStep')                       +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
-lib('json.ApplyJsonPatchStep')                   +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
+lib('json.JsonPatchStep')                        +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('kotlin.KtLintStep')                         +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('kotlin.KtfmtStep')                          +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('kotlin.DiktatStep')                         +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
@@ -141,7 +141,7 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`json.gson.GsonStep`](lib/src/main/java/com/diffplug/spotless/json/gson/GsonStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`json.JacksonJsonStep`](lib/src/main/java/com/diffplug/spotless/json/JacksonJsonStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`json.JsonSimpleStep`](lib/src/main/java/com/diffplug/spotless/json/JsonSimpleStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
-| [`json.ApplyJsonPatchStep`](lib/src/main/java/com/diffplug/spotless/json/ApplyJsonPatchStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
+| [`json.JsonPatchStep`](lib/src/main/java/com/diffplug/spotless/json/JsonPatchStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`kotlin.KtLintStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtLintStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`kotlin.KtfmtStep`](lib/src/main/java/com/diffplug/spotless/kotlin/KtfmtStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`kotlin.DiktatStep`](lib/src/main/java/com/diffplug/spotless/kotlin/DiktatStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |

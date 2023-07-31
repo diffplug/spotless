@@ -91,8 +91,8 @@ public class JsonTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void testFormatJson_ApplyJsonPatch_replaceString() throws Exception {
-		writePomWithJsonSteps("<applyJsonPatch><patch>[{\"op\":\"replace\",\"path\":\"/abc\",\"value\":\"ghi\"}]</patch></applyJsonPatch><gson/>");
+	public void testFormatJson_JsonPatch_replaceString() throws Exception {
+		writePomWithJsonSteps("<jsonPatch><patch>[{\"op\":\"replace\",\"path\":\"/abc\",\"value\":\"ghi\"}]</patch></jsonPatch><gson/>");
 
 		setFile("json_test.json").toResource("json/patchObjectBefore.json");
 
@@ -101,8 +101,8 @@ public class JsonTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void testFormatJson_ApplyJsonPatch_replaceWithObject() throws Exception {
-		writePomWithJsonSteps("<applyJsonPatch><patch>[{\"op\":\"replace\",\"path\":\"/abc\",\"value\":{\"def\":\"ghi\"}}]</patch></applyJsonPatch><gson/>");
+	public void testFormatJson_JsonPatch_replaceWithObject() throws Exception {
+		writePomWithJsonSteps("<jsonPatch><patch>[{\"op\":\"replace\",\"path\":\"/abc\",\"value\":{\"def\":\"ghi\"}}]</patch></jsonPatch><gson/>");
 
 		setFile("json_test.json").toResource("json/patchObjectBefore.json");
 
