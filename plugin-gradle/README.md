@@ -1370,6 +1370,13 @@ However, we strongly recommend that you use a non-local branch, such as a tag or
 
 This is especially helpful for injecting accurate copyright dates using the [license step](#license-header).
 
+### Using `ratchetFrom` on CI systems
+
+Many popular CI systems (GitHub, GitLab, BitBucket, and Travis) use a "shallow clone". This means that `ratchetFrom 'origin/main'` will fail with `No such reference`. You can fix this by:
+
+- calling `git fetch origin main` before you call Spotless
+- disabling the shallow clone [like so](https://github.com/diffplug/spotless/issues/710)
+
 ## `spotless:off` and `spotless:on`
 
 Sometimes there is a chunk of code  which you have carefully handcrafted, and you would like to exclude just this one little part from getting clobbered by the autoformat. Some formatters have a way to do this, many don't, but who cares.  If you setup your spotless like this:
