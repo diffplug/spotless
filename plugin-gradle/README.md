@@ -66,7 +66,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Rome](#rome))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Rome](#rome))
-  - [JSON](#json)
+  - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [rome](#rome), [jsonPatch](#jsonPatch))
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
   - Multiple languages

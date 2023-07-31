@@ -51,7 +51,7 @@ user@machine repo % mvn spotless:check
   - [Markdown](#markdown) ([flexmark](#flexmark))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Rome](#rome))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Rome](#rome))
-  - [JSON](#json)
+  - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [rome](#rome), [jsonPatch](#jsonPatch))
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
   - Multiple languages
