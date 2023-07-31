@@ -20,7 +20,8 @@ def NEEDS_GLUE = [
 	'ktlint',
 	'palantirJavaFormat',
 	'scalafmt',
-	'sortPom'
+	'sortPom',
+	'zjsonPatch',
 ]
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -114,6 +115,8 @@ dependencies {
 	// sortPom
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.2.1'
 	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
+	// zjsonPatch
+	zjsonPatchCompileOnly 'com.flipkart.zjsonpatch:zjsonpatch:0.4.14'
 }
 
 // we'll hold the core lib to a high standard

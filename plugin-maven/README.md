@@ -897,10 +897,11 @@ For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmr
       <include>src/**/*.json</include>
     </includes>
 
-    <simple />    <!-- has its own section below -->
-    <gson />      <!-- has its own section below -->
-    <jackson />   <!-- has its own section below -->
-    <rome />      <!-- has its own section below -->
+    <simple />         <!-- has its own section below -->
+    <gson />           <!-- has its own section below -->
+    <jackson />        <!-- has its own section below -->
+    <rome />           <!-- has its own section below -->
+    <jsonPatch />      <!-- has its own section below -->
   </json>
 </configuration>
 ```
@@ -957,6 +958,21 @@ Uses Jackson for formatting.
 
 <a name="applying-prettier-to-javascript--flow--typescript--css--scss--less--jsx--graphql--yaml--etc"></a>
 
+### jsonPatch
+
+Uses [zjsonpatch](https://github.com/flipkart-incubator/zjsonpatch) to apply [JSON Patches](https://jsonpatch.com/) as per [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902/) to JSON documents.
+
+This enables you to add, replace or remove properties at locations in the JSON document that you specify using [JSON Pointers](https://datatracker.ietf.org/doc/html/rfc6901/).
+
+For example, to apply the patch from the [JSON Patch homepage](https://jsonpatch.com/#the-patch):
+
+```xml
+<jsonPatch>[
+  { "op": "replace", "path": "/baz", "value": "boo" },
+  { "op": "add", "path": "/hello", "value": ["world"] },
+  { "op": "remove", "path": "/foo" }
+]</jsonPatch>
+```
 
 ## YAML
 
