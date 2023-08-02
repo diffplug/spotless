@@ -66,7 +66,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
 			task.init(taskService);
 			task.addStep(step);
-			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+			task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
 			task.setTarget(Collections.singletonList(file));
 			return task;
 		}
