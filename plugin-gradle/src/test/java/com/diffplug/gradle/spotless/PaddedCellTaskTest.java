@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
 			task.init(taskService);
 			task.addStep(step);
-			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+			task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
 			task.setTarget(Collections.singletonList(file));
 			return task;
 		}

@@ -40,6 +40,7 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskProvider;
@@ -925,7 +926,8 @@ public class FormatExtension {
 			steps.replaceAll(formatterStep -> formatterStep.filterByContent(OnMatch.EXCLUDE, targetExcludeContentPattern));
 		}
 		task.setSteps(steps);
-		task.setLineEndingsPolicy(getLineEndings().createPolicy(getProject().getProjectDir(), () -> totalTarget));
+		Directory projectDir = getProject().getLayout().getProjectDirectory();
+		task.setLineEndingsPolicy(getProject().provider(() -> getLineEndings().createPolicy(projectDir.getAsFile(), () -> totalTarget)));
 		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
 		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 		private SpotlessTaskImpl createFormatTask(String name) {
 			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
 			task.init(taskService);
-			task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+			task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
 			task.setTarget(Collections.singletonList(file));
 			return task;
 		}
@@ -100,7 +100,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 
 	private Bundle create(List<File> files) throws IOException {
 		Bundle bundle = new Bundle("underTest");
-		bundle.task.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+		bundle.task.setLineEndingsPolicy(bundle.project.provider(LineEnding.UNIX::createPolicy));
 		bundle.task.setTarget(files);
 		return bundle;
 	}
