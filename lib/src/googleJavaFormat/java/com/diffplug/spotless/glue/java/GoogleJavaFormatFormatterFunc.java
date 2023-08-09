@@ -29,6 +29,8 @@ import com.google.googlejavaformat.java.StringWrapper;
 
 import com.diffplug.spotless.FormatterFunc;
 
+// Used via reflection by the Gradle plugin.
+@SuppressWarnings("unused")
 public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 
 	@Nonnull
@@ -42,10 +44,13 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 
 	private final boolean reflowStrings;
 
-	public GoogleJavaFormatFormatterFunc(@Nonnull String version, @Nonnull String style, boolean reflowStrings) {
+	private final boolean reorderImports;
+
+	public GoogleJavaFormatFormatterFunc(@Nonnull String version, @Nonnull String style, boolean reflowStrings, boolean reorderImports) {
 		this.version = Objects.requireNonNull(version);
 		this.formatterStyle = Style.valueOf(Objects.requireNonNull(style));
 		this.reflowStrings = reflowStrings;
+		this.reorderImports = reorderImports;
 
 		this.formatter = new Formatter(JavaFormatterOptions.builder()
 				.style(formatterStyle)
@@ -57,10 +62,7 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 	public String apply(@Nonnull String input) throws Exception {
 		String formatted = formatter.formatSource(input);
 		String removedUnused = RemoveUnusedImports.removeUnusedImports(formatted);
-		// Issue #1679: we used to call ImportOrderer.reorderImports(String) here, but that is deprecated.
-		// Replacing the call with (the correct) reorderImports(String, Style) causes issues for Style.AOSP,
-		// so we force the style to GOOGLE for now (which is what the deprecated method did)
-		String sortedImports = ImportOrderer.reorderImports(removedUnused, Style.GOOGLE);
+		String sortedImports = ImportOrderer.reorderImports(removedUnused, reorderImports ? formatterStyle : Style.GOOGLE);
 		return reflowLongStrings(sortedImports);
 	}
 

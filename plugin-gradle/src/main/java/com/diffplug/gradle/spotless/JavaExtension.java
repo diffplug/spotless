@@ -173,6 +173,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		String groupArtifact;
 		String style;
 		boolean reflowLongStrings;
+		boolean reorderImports;
 
 		GoogleJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
@@ -207,13 +208,19 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		public GoogleJavaFormatConfig reorderImports(boolean reorderImports) {
+			this.reorderImports = reorderImports;
+			return this;
+		}
+
 		private FormatterStep createStep() {
 			return GoogleJavaFormatStep.create(
 					groupArtifact,
 					version,
 					style,
 					provisioner(),
-					reflowLongStrings);
+					reflowLongStrings,
+					reorderImports);
 		}
 	}
 
