@@ -20,11 +20,16 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.ForeignExe;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -88,20 +93,66 @@ public class ClangFormatStep {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class State implements Serializable {
 		private static final long serialVersionUID = -1825662356883926318L;
+		private static final String DOT_FILE_NAME  = ".clang-format";
 		// used for up-to-date checks and caching
 		final String version;
 		final @Nullable String style;
 		final transient ForeignExe exe;
+		final Set<File>     dotFiles;
+		FileSignature dotFileSig;
 		// used for executing
 		private transient @Nullable List<String> args;
 
-		State(ClangFormatStep step, ForeignExe pathToExe) {
+		State(ClangFormatStep step, ForeignExe pathToExe, @Nullable FileSignature sig) {
 			this.version = step.version;
 			this.style = step.style;
 			this.exe = Objects.requireNonNull(pathToExe);
+			this.dotFiles = new HashSet<>();
+			this.dotFileSig = sig;
 		}
 
+		State(ClangFormatStep step, ForeignExe pathToExe) {
+			this(step, pathToExe, null);
+		}
+
+		/**
+		 * If relevant, locates the `.clang-format` file that will be used as config
+		 * for clang-format and stores its signature in dotFile.
+		 * @param targetFile file to be formatted.
+		 */
+		private void resolveDotFile(File targetFile) throws IOException
+		{
+			// The dot file is irrelevant if a specific style other than "file" is supplied.
+			if (style != null && !style.equals("file")) {
+				return;
+			}
+
+			File directory = targetFile.getParentFile();
+			Optional<File> dotFile = Optional.empty();
+			while (dotFile.isEmpty() && readableDirectory(directory)) {
+				dotFile = Arrays.stream(directory.listFiles()).filter(file -> file.getName().equals(DOT_FILE_NAME)).findAny();
+				directory = directory.getParentFile();
+			}
+
+			System.out.println("dotFile: " + dotFile);
+			// Every target file can have a different .clang-format file (in theory).
+			// Keep track of the ones we've covered and build the sig as we go.
+			if (dotFile.isPresent() && !dotFiles.contains(dotFile.get())) {
+				dotFiles.add(dotFile.get());
+				dotFileSig = FileSignature.signAsSet(dotFiles);
+			}
+			System.out.println("Signature" + dotFileSig);
+		}
+
+
+		private static boolean readableDirectory(File directory)
+		{
+			return directory != null && directory.exists() && directory.isDirectory() && directory.canRead();
+		}
+
+
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
+			resolveDotFile(file);
 			if (args == null) {
 				final List<String> tmpArgs = new ArrayList<>();
 				tmpArgs.add(exe.confirmVersionAndGetAbsolutePath());
@@ -112,6 +163,7 @@ public class ClangFormatStep {
 			}
 			final String[] processArgs = args.toArray(new String[args.size() + 1]);
 			processArgs[processArgs.length - 1] = "--assume-filename=" + file.getAbsolutePath();
+			System.out.println(String.join(", ", processArgs));
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), processArgs).assertExitZero(StandardCharsets.UTF_8);
 		}
 
