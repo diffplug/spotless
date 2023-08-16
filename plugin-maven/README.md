@@ -1601,13 +1601,22 @@ By default, `spotless:check` is bound to the `verify` phase.  You might want to 
 
 ## Can I apply Spotless to specific files?
 
+There are two options:
+
+### Pattern
 You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
-
 ```
-cmd> mvn spotless:apply -DspotlessFiles=my/file/pattern.java,more/generic/.*-pattern.java
+cmd> mvn spotless:apply -DspotlessFiles="my/file/pattern\.java, more/generic/.*-pattern\.java"
 ```
-
 The patterns are matched using `String#matches(String)` against the absolute file path.
+
+### IDE Hook
+You can specify a single file by providing the `spotlessIdeHook` argument, which accepts the absolute path of the file.
+```
+cmd> mvn spotless:apply -DspotlessIdeHook="C:\my-project\src\main\java\com\example\Application.java"
+
+```
+This option ignores the ratchetFrom property.
 
 <a name="examples"></a>
 
