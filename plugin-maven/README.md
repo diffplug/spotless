@@ -1606,7 +1606,7 @@ There are two options:
 ### Pattern
 You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
 ```
-cmd> mvn spotless:apply -DspotlessFiles="my/file/pattern\.java, more/generic/.*-pattern\.java"
+cmd> mvn spotless:apply -DspotlessFiles="src.main.java.com.example.*, .+Config.*\.java"
 ```
 The patterns are matched using `String#matches(String)` against the absolute file path.
 
