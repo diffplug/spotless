@@ -187,9 +187,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
 
-	@Parameter(property = "spotlessIdeHook")
-	private String spotlessIdeHook;
-
 	@Parameter(property = LicenseHeaderStep.spotlessSetLicenseHeaderYearsFromGitHistory)
 	private String setLicenseHeaderYearsFromGitHistory;
 
@@ -254,10 +251,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<File> collectFiles(FormatterFactory formatterFactory, FormatterConfig config) {
-		if (!(spotlessIdeHook == null || spotlessIdeHook.isEmpty())) {
-			return fetchFileFromIdeHook();
-		}
-
 		Optional<String> ratchetFrom = formatterFactory.ratchetFrom(config);
 		try {
 			final List<File> files;
@@ -271,28 +264,19 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			}
 			final String[] includePatterns = this.filePatterns.split(",");
 			final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
-					.map(Pattern::compile)
-					.collect(Collectors.toList());
+				.map(Pattern::compile)
+				.collect(Collectors.toList());
 			final Predicate<File> shouldInclude = file -> compiledIncludePatterns
-					.stream()
-					.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
-							.matches());
+				.stream()
+				.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
+					.matches());
 			return files
-					.stream()
-					.filter(shouldInclude)
-					.collect(toList());
+				.stream()
+				.filter(shouldInclude)
+				.collect(toList());
 		} catch (IOException e) {
 			throw new PluginException("Unable to scan file tree rooted at " + baseDir, e);
 		}
-	}
-
-	private List<File> fetchFileFromIdeHook() {
-		File file = new File(spotlessIdeHook);
-		if (!file.isAbsolute()) {
-			throw new PluginException("Argument passed to spotlessIdeHook must be an absolute path");
-		}
-
-		return List.of(file);
 	}
 
 	private List<File> collectFilesFromGit(FormatterFactory formatterFactory, String ratchetFrom) {
@@ -399,5 +383,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			checker = UpToDateChecker.noop(project, indexFile, getLog());
 		}
 		return UpToDateChecker.wrapWithBuildContext(checker, buildContext);
+	}
+
+	protected File getBaseDir() {
+		return baseDir;
 	}
 }
