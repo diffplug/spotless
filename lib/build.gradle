@@ -77,7 +77,7 @@ dependencies {
 	// diktat
 	diktatCompileOnly 'org.cqfn.diktat:diktat-rules:1.2.5'
 	// flexmark
-	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.0'
+	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.8'
 	// gherkin
 	gherkinCompileOnly 'io.cucumber:gherkin-utils:8.0.2'
 	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.0'
