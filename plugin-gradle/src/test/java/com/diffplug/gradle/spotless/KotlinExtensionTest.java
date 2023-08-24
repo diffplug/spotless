@@ -15,7 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,13 +96,13 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        ktlint().setEditorConfigPath('" + invalidPath + "')",
+				"        ktlint().setEditorConfigPath('" + invalidPath.replace("\\", "\\\\") + "')",
 				"    }",
 				"}");
 		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
 		String buildOutput = gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput();
-		assertTrue(buildOutput.contains("EditorConfig file does not exist: "));
-		assertTrue(buildOutput.contains(invalidPath));
+		assertThat(buildOutput).contains("EditorConfig file does not exist: ");
+		assertThat(buildOutput).contains(invalidPath);
 	}
 
 	@Test
