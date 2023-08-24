@@ -264,16 +264,16 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			}
 			final String[] includePatterns = this.filePatterns.split(",");
 			final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
-				.map(Pattern::compile)
-				.collect(Collectors.toList());
+					.map(Pattern::compile)
+					.collect(Collectors.toList());
 			final Predicate<File> shouldInclude = file -> compiledIncludePatterns
-				.stream()
-				.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
-					.matches());
+					.stream()
+					.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
+							.matches());
 			return files
-				.stream()
-				.filter(shouldInclude)
-				.collect(toList());
+					.stream()
+					.filter(shouldInclude)
+					.collect(toList());
 		} catch (IOException e) {
 			throw new PluginException("Unable to scan file tree rooted at " + baseDir, e);
 		}
@@ -383,9 +383,5 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			checker = UpToDateChecker.noop(project, indexFile, getLog());
 		}
 		return UpToDateChecker.wrapWithBuildContext(checker, buildContext);
-	}
-
-	protected File getBaseDir() {
-		return baseDir;
 	}
 }

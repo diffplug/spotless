@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,14 @@
  */
 package com.diffplug.spotless.maven;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.ByteStreams;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
 
 class IdeHook {
 
@@ -31,48 +30,45 @@ class IdeHook {
 		System.err.println("IS CLEAN");
 	}
 
-	static void performHook(Iterable<File> projectFiles, String path, Formatter formatter, File projectDir, String ratchetFrom, boolean spotlessIdeHookUseStdIn, boolean spotlessIdeHookUseStdOut) {
+	//No need to check ratchet (using isClean()) as it is performed in Gradle's IDE hook, since we have already gathered the available git files from ratchet.
+	static void performHook(Iterable<File> projectFiles, Formatter formatter, String path, boolean spotlessIdeHookUseStdIn, boolean spotlessIdeHookUseStdOut) {
 		File file = new File(path);
 		if (!file.isAbsolute()) {
 			System.err.println("Argument passed to spotlessIdeHook must be an absolute path");
 			return;
 		}
-		if (projectContainsFile(projectFiles, file)) {
-			try {
-				if (ratchetFrom != null) {
-					GitRatchetMaven ratchet = GitRatchetMaven.instance();
-					if (ratchet.isClean(projectDir, ratchet.rootTreeShaOf(projectDir, ratchetFrom), file)) {
-						dumpIsClean();
-						return;
-					}
-				}
-				byte[] bytes;
-				if (spotlessIdeHookUseStdIn) {
-					bytes = ByteStreams.toByteArray(System.in);
-				} else {
-					bytes = Files.readAllBytes(file.toPath());
-				}
-				PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file, bytes);
-				if (dirty.isClean()) {
-					dumpIsClean();
-				} else if (dirty.didNotConverge()) {
-					System.err.println("DID NOT CONVERGE");
-					System.err.println("Run 'spotlessDiagnose' for details https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md");
-				} else {
-					System.err.println("IS DIRTY");
-					if (spotlessIdeHookUseStdOut) {
-						dirty.writeCanonicalTo(System.out);
-					} else {
-						dirty.writeCanonicalTo(file);
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace(System.err);
-				throw Errors.asRuntime(e);
-			} finally {
-				System.err.close();
-				System.out.close();
+
+		if (!projectContainsFile(projectFiles, file)) {
+			return;
+		}
+
+		try {
+			byte[] bytes;
+			if (spotlessIdeHookUseStdIn) {
+				bytes = ByteStreams.toByteArray(System.in);
+			} else {
+				bytes = Files.readAllBytes(file.toPath());
 			}
+			PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file, bytes);
+			if (dirty.isClean()) {
+				dumpIsClean();
+			} else if (dirty.didNotConverge()) {
+				System.err.println("DID NOT CONVERGE");
+				System.err.println("See details https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md");
+			} else {
+				System.err.println("IS DIRTY");
+				if (spotlessIdeHookUseStdOut) {
+					dirty.writeCanonicalTo(System.out);
+				} else {
+					dirty.writeCanonicalTo(file);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace(System.err);
+			throw Errors.asRuntime(e);
+		} finally {
+			System.err.close();
+			System.out.close();
 		}
 	}
 

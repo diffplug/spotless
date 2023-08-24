@@ -18,16 +18,13 @@ package com.diffplug.spotless.maven;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.List;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
-
-import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Performs formatting of all source files according to configured formatters.
@@ -46,8 +43,8 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
-		if(isIdeHook()) {
-			IdeHook.performHook(files, spotlessIdeHook, formatter, getBaseDir(), null, spotlessIdeHookUseStdIn, spotlessIdeHookUseStdOut);
+		if (isIdeHook()) {
+			IdeHook.performHook(files, formatter, spotlessIdeHook, spotlessIdeHookUseStdIn, spotlessIdeHookUseStdOut);
 			return;
 		}
 
@@ -90,14 +87,5 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 	private boolean isIdeHook() {
 		return !(spotlessIdeHook == null || spotlessIdeHook.isEmpty());
-	}
-
-	private List<File> fetchFileFromIdeHook() {
-		File file = new File(spotlessIdeHook);
-		if (!file.isAbsolute()) {
-			throw new PluginException("Argument passed to spotlessIdeHook must be an absolute path");
-		}
-
-		return List.of(file);
 	}
 }
