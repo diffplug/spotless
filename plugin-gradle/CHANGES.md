@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Fix npm install calls when npm cache is not up-to-date. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1750](https://github.com/diffplug/spotless/issues/1750))
 * Fix configuration cache failure when using LineEnding.GIT_ATTRIBUTES ([#1644](https://github.com/diffplug/spotless/issues/1644))
 * Fix configuration cache failure when formatting proto files with Buf. ([#1779]https://github.com/diffplug/spotless/pull/1779))
+* Check if EditorConfig file exist for Ktlint. ([#1788](https://github.com/diffplug/spotless/pull/1788)
 ### Changes
 * Bump default `eslint` version to latest `8.31.0` -> `8.45.0` ([#1761](https://github.com/diffplug/spotless/pull/1761))
 * Bump default `prettier` version to latest (v2) `2.8.1` -> `2.8.8`. ([#1760](https://github.com/diffplug/spotless/pull/1760))
