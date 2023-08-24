@@ -85,11 +85,15 @@ public class KotlinExtension extends FormatExtension implements HasBuiltinDelimi
 			addStep(createStep());
 		}
 
-		public KotlinFormatExtension setEditorConfigPath(Object editorConfigFile) throws IOException {
-			if (editorConfigFile == null) {
+		public KotlinFormatExtension setEditorConfigPath(Object editorConfigPath) throws IOException {
+			if (editorConfigPath == null) {
 				this.editorConfigPath = null;
 			} else {
-				this.editorConfigPath = FileSignature.signAsList(getProject().file(editorConfigFile));
+				File editorConfigFile = getProject().file(editorConfigPath);
+				if (!editorConfigFile.exists()) {
+					throw new IllegalArgumentException("EditorConfig file does not exist: " + editorConfigFile);
+				}
+				this.editorConfigPath = FileSignature.signAsList(editorConfigFile);
 			}
 			replaceStep(createStep());
 			return this;
