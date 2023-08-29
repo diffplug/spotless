@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 * Bump default `eslint` version to latest `8.31.0` -> `8.45.0` ([#1761](https://github.com/diffplug/spotless/pull/1761))
 * Bump default `prettier` version to latest (v2) `2.8.1` -> `2.8.8`. ([#1760](https://github.com/diffplug/spotless/pull/1760))
+* Bump default `greclipse` version to latest `4.27` -> `4.28`. ([#1775](https://github.com/diffplug/spotless/pull/1775))
 
 ## [2.38.0] - 2023-07-17
 ### Added
