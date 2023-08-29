@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +35,16 @@ public class GoogleJavaFormat implements FormatterStepFactory {
 	@Parameter
 	private Boolean reflowLongStrings;
 
+	@Parameter
+	private Boolean reorderImports;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : GoogleJavaFormatStep.defaultGroupArtifact();
 		String version = this.version != null ? this.version : GoogleJavaFormatStep.defaultVersion();
 		String style = this.style != null ? this.style : GoogleJavaFormatStep.defaultStyle();
 		boolean reflowLongStrings = this.reflowLongStrings != null ? this.reflowLongStrings : GoogleJavaFormatStep.defaultReflowLongStrings();
-		return GoogleJavaFormatStep.create(groupArtifact, version, style, config.getProvisioner(), reflowLongStrings);
+		boolean reorderImports = this.reorderImports != null ? this.reorderImports : GoogleJavaFormatStep.defaultReorderImports();
+		return GoogleJavaFormatStep.create(groupArtifact, version, style, config.getProvisioner(), reflowLongStrings, reorderImports);
 	}
 }

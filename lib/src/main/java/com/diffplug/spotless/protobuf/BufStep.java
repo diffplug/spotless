@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -61,13 +62,12 @@ public class BufStep {
 		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
 	}
 
-	private State createState() throws IOException, InterruptedException {
+	private State createState() {
 		String instructions = "https://docs.buf.build/installation";
-		String exeAbsPath = ForeignExe.nameAndVersion("buf", version)
+		ForeignExe exeAbsPath = ForeignExe.nameAndVersion("buf", version)
 				.pathToExe(pathToExe)
 				.versionRegex(Pattern.compile("(\\S*)"))
-				.fixCantFind("Try following the instructions at " + instructions + ", or else tell Spotless where it is with {@code buf().pathToExe('path/to/executable')}")
-				.confirmVersionAndGetAbsolutePath();
+				.fixCantFind("Try following the instructions at " + instructions + ", or else tell Spotless where it is with {@code buf().pathToExe('path/to/executable')}");
 		return new State(this, exeAbsPath);
 	}
 
@@ -76,19 +76,23 @@ public class BufStep {
 		private static final long serialVersionUID = -1825662356883926318L;
 		// used for up-to-date checks and caching
 		final String version;
+		final transient ForeignExe exe;
 		// used for executing
-		final transient List<String> args;
+		private transient @Nullable List<String> args;
 
-		State(BufStep step, String exeAbsPath) {
+		State(BufStep step, ForeignExe exeAbsPath) {
 			this.version = step.version;
-			this.args = Arrays.asList(exeAbsPath, "format");
+			this.exe = Objects.requireNonNull(exeAbsPath);
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
-			String[] processArgs = args.toArray(new String[args.size() + 1]);
-			// add an argument to the end
-			processArgs[args.size()] = file.getAbsolutePath();
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), processArgs).assertExitZero(StandardCharsets.UTF_8);
+			if (args == null) {
+				args = Arrays.asList(
+						exe.confirmVersionAndGetAbsolutePath(),
+						"format",
+						file.getAbsolutePath());
+			}
+			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {

@@ -5,13 +5,17 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Add a `jsonPatch` step to `json` formatter configurations. This allows patching of JSON documents using [JSON Patches](https://jsonpatch.com). ([#1753](https://github.com/diffplug/spotless/pull/1753))
-* Add support for Eclipse 4.28 to the Groovy formatter. ([#1775](https://github.com/diffplug/spotless/pull/1775))
+* Support GJF own import order. ([#1780](https://github.com/diffplug/spotless/pull/1780))
 ### Fixed
-* Add support for `prettier` version `3.0.0` and newer. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1751](https://github.com/diffplug/spotless/issues/1751))
-* Fix npm install calls when npm cache is not up-to-date. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1750](https://github.com/diffplug/spotless/issues/1750))
+* Add support for `prettier` version `3.0.0` and newer. ([#1760](https://github.com/diffplug/spotless/pull/1760), [#1751](https://github.com/diffplug/spotless/issues/1751))
+* Fix npm install calls when npm cache is not up-to-date. ([#1760](https://github.com/diffplug/spotless/pull/1760), [#1750](https://github.com/diffplug/spotless/issues/1750))
+* Fix configuration cache failure when using LineEnding.GIT_ATTRIBUTES ([#1644](https://github.com/diffplug/spotless/issues/1644))
+* Fix configuration cache failure when formatting proto files with Buf. ([#1779](https://github.com/diffplug/spotless/pull/1779))
+* Check if EditorConfig file exist for Ktlint. ([#1788](https://github.com/diffplug/spotless/pull/1788))
 ### Changes
 * Bump default `eslint` version to latest `8.31.0` -> `8.45.0` ([#1761](https://github.com/diffplug/spotless/pull/1761))
 * Bump default `prettier` version to latest (v2) `2.8.1` -> `2.8.8`. ([#1760](https://github.com/diffplug/spotless/pull/1760))
+* Add support for Eclipse 4.28 to the Groovy formatter. ([#1775](https://github.com/diffplug/spotless/pull/1775))
 
 ## [6.20.0] - 2023-07-17
 ### Added

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class FormatTaskTest extends ResourceHarness {
 	void createTask() {
 		Project project = TestProvisioner.gradleProject(rootFolder());
 		spotlessTask = project.getTasks().create("spotlessTaskUnderTest", SpotlessTaskImpl.class);
-		spotlessTask.setLineEndingsPolicy(LineEnding.UNIX.createPolicy());
+		spotlessTask.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
 		spotlessTask.init(GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
 			@Override
 			public BuildServiceParameters.None getParameters() {

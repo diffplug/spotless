@@ -5,10 +5,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Add a `jsonPatch` step to `json` formatter configurations. This allows patching of JSON documents using [JSON Patches](https://jsonpatch.com). ([#1753](https://github.com/diffplug/spotless/pull/1753))
-* Add support for Eclipse 4.28 to the Groovy formatter. ([#1775](https://github.com/diffplug/spotless/pull/1775))
 ### Fixed
-* Add support for `prettier` version `3.0.0` and newer. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1751](https://github.com/diffplug/spotless/issues/1751))
-* Fix npm install calls when npm cache is not up-to-date. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1750](https://github.com/diffplug/spotless/issues/1750))
+* Add support for `prettier` version `3.0.0` and newer. ([#1760](https://github.com/diffplug/spotless/pull/1760), [#1751](https://github.com/diffplug/spotless/issues/1751))
+* Fix npm install calls when npm cache is not up-to-date. ([#1760](https://github.com/diffplug/spotless/pull/1760), [#1750](https://github.com/diffplug/spotless/issues/1750))
 ### Changes
 * Bump default `eslint` version to latest `8.31.0` -> `8.45.0` ([#1761](https://github.com/diffplug/spotless/pull/1761))
 * Bump default `prettier` version to latest (v2) `2.8.1` -> `2.8.8`. ([#1760](https://github.com/diffplug/spotless/pull/1760))
@@ -23,6 +22,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `ktlint` version to latest `0.49.1` -> `0.50.0`. ([#1741](https://github.com/diffplug/spotless/issues/1741))
   * Dropped support for `ktlint 0.47.x` following our policy of supporting two breaking changes at a time.
   * Dropped support for deprecated `useExperimental` parameter in favor of the `ktlint_experimental` property.
+* Support GJF own import order. ([#1780](https://github.com/diffplug/spotless/pull/1780))
 
 ## [2.37.0] - 2023-05-24
 ### Added
