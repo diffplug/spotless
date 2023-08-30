@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Add a `jsonPatch` step to `json` formatter configurations. This allows patching of JSON documents using [JSON Patches](https://jsonpatch.com). ([#1753](https://github.com/diffplug/spotless/pull/1753))
 * Support GJF own import order. ([#1780](https://github.com/diffplug/spotless/pull/1780))
+* Added support for `google-java-format`'s `skip-javadoc-formatting` option ([#1793](https://github.com/diffplug/spotless/pull/1793))
 ### Fixed
 * Use latest versions of popular style guides for `eslint` tests to fix failing `useEslintXoStandardRules` test. ([#1761](https://github.com/diffplug/spotless/pull/1761), [#1756](https://github.com/diffplug/spotless/issues/1756))
 * Add support for `prettier` version `3.0.0` and newer. ([#1760](https://github.com/diffplug/spotless/pull/1760), [#1751](https://github.com/diffplug/spotless/issues/1751))
