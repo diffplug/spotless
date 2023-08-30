@@ -2,6 +2,7 @@ import mylib.UsedA;
 import mylib.UsedB;
 
 public class Java {
+  /** Some javadoc. */
   public static void main(String[] args) {
     System.out.println(
         "A very very very very very very very very very very very very very very very very very"

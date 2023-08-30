@@ -45,4 +45,30 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"googleJavaFormat()");
 		checkRunsThenUpToDate();
 	}
+
+	@Test
+	void integrationWithSkipJavadocFormatting() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"    java {",
+				"        target file('test.java')",
+				"        googleJavaFormat('1.12.0').skipJavadocFormatting()",
+				"    }",
+				"}");
+
+		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormattedSkipJavadocFormatting.test");
+
+		checkRunsThenUpToDate();
+		replace("build.gradle",
+				"googleJavaFormat('1.12.0')",
+				"googleJavaFormat()");
+		checkRunsThenUpToDate();
+	}
 }
