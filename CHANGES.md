@@ -12,7 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 
 ### Changes
-* Bump default `flexmark` version to latest `0.64.0` -> `0.64.6`.
+* Bump default `flexmark` version to latest `0.64.0` -> `0.64.6`. ([#1801](https://github.com/diffplug/spotless/pull/1801))
 
 ## [2.41.0] - 2023-08-29
 ### Added
