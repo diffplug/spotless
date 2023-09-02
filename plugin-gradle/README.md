@@ -62,6 +62,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
   - [FreshMark](#freshmark) aka markdown
+  - [FlexMark](#flexmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Rome](#rome))
@@ -569,6 +570,25 @@ spotless {
     properties {
       it.put('key', 'value')				// specify other properties manually
     }
+  }
+}
+```
+
+## Flexmark
+
+`com.diffplug.gradle.spotless.FlexmarkExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.21.0/com/diffplug/gradle/spotless/FreshMarkExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/FlexmarkExtension.java)
+
+[homepage](https://github.com/vsch/flexmark-java). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/markdown/Flexmark.java). Flexmark is a flexible Commonmark/Markdown parser that can be used to format Markdown files. It supports different [flavors of Markdown](https://github.com/vsch/flexmark-java#markdown-processor-emulation) and [many formatting options](https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options).
+
+Currently, none of the available options can be configured yet. It uses only the default options together with `COMMONMARK` as `FORMATTER_EMULATION_PROFILE`.
+
+To apply flexmark to all of the `.md` files in your project, use this snippet:
+
+```gradle
+spotless {
+  flexmark {
+    target '**/*.md' // you have to set the target manually
+    flexmarkFormatter() // or flexmarkFormatter('0.64.6') // version is optional
   }
 }
 ```
