@@ -17,7 +17,9 @@ package com.diffplug.spotless.npm;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PrettierRestService extends BaseNpmRestService {
 
@@ -31,6 +33,16 @@ public class PrettierRestService extends BaseNpmRestService {
 			jsonProperties.put("prettier_config_path", prettierConfigPath.getAbsolutePath());
 		}
 		if (prettierConfigOptions != null) {
+			// Prettier 3.x plugins support
+			if (prettierConfigOptions.get("plugins") instanceof List) {
+				try {
+					var pluginArray = (List<String>) prettierConfigOptions.get("plugins");
+					var pluginsJson = pluginArray.stream().map(e -> '"' + e + '"').collect(Collectors.joining(",", "[", "]"));
+					prettierConfigOptions.put("plugins", JsonRawValue.wrap(pluginsJson));
+				} catch (ClassCastException e) {
+					throw new IllegalArgumentException("Only values of type 'List<String>' are supported for plugins.");
+				}
+			}
 			jsonProperties.put("prettier_config_options", SimpleJsonWriter.of(prettierConfigOptions).toJsonRawValue());
 
 		}

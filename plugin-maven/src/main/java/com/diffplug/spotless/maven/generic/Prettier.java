@@ -85,6 +85,11 @@ public class Prettier extends AbstractNpmFormatterStepFactory {
 						if (Boolean.TRUE.toString().equalsIgnoreCase(entry.getValue()) || Boolean.FALSE.toString().equalsIgnoreCase(entry.getValue())) {
 							return new AbstractMap.SimpleEntry<>(entry.getKey(), Boolean.parseBoolean(entry.getValue()));
 						}
+						// Prettier v3 - plugins config will be a comma delimited list of plugins
+						if (entry.getKey().equals("plugins")) {
+							List<String> values = entry.getValue().isEmpty() ? List.of() : Arrays.asList(entry.getValue().split(","));
+							return new AbstractMap.SimpleEntry<>(entry.getKey(), values);
+						}
 						return entry;
 					})
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));

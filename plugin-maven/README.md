@@ -1074,6 +1074,8 @@ You can use prettier in any language-specific format, but usually you will be cr
         <configFile>${project.basedir}/path/to/configfile</configFile>
         <config>
             <useTabs>true</useTabs>
+            <!-- Prettier v3 Only - Comma Delimited -->
+            <plugins>@prettier/plugin-php</plugins>
         </config>
       </prettier>
     </format>
