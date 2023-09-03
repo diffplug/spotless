@@ -1121,6 +1121,7 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
         <config>
             <tabWidth>4</tabWidth>
             <parser>java</parser>
+            <plugins>prettier-plugin-java</plugins><!-- this is only for prettier 3.0.0 and above: an additional 'plugins' config element is required -->
         </config>
       </prettier>
     </format>
@@ -1146,6 +1147,7 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
         <config>
             <tabWidth>3</tabWidth>
             <parser>php</parser>
+            <plugins>@prettier/plugin-php</plugins><!-- this is only for prettier 3.0.0 and above: an additional 'plugins' config element is required -->
         </config>
       </prettier>
     </format>
