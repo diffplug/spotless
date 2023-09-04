@@ -22,22 +22,12 @@ import javax.inject.Inject;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.markdown.FlexmarkStep;
 
-public class FlexmarkExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
+public class FlexmarkExtension extends FormatExtension {
 	static final String NAME = "flexmark";
 
 	@Inject
 	public FlexmarkExtension(SpotlessExtension spotless) {
 		super(spotless);
-	}
-
-	@Override
-	public LicenseHeaderConfig licenseHeader(String licenseHeader) {
-		return licenseHeader(licenseHeader, null);
-	}
-
-	@Override
-	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
-		return licenseHeaderFile(licenseHeaderFile, null);
 	}
 
 	public FlexmarkFormatterConfig flexmarkFormatter() {

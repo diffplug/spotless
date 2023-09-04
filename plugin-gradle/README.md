@@ -62,7 +62,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
   - [FreshMark](#freshmark) aka markdown
-  - [FlexMark](#flexmark) aka markdown
+  - [Flexmark](#flexmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Rome](#rome))
