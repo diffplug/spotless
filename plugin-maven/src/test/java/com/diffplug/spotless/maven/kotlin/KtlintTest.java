@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,13 @@ class KtlintTest extends MavenIntegrationHarness {
 
 	@Test
 	void testKtlintEditorConfigOverride() throws Exception {
-		writePomWithKotlinSteps("<ktlint><editorConfigOverride><ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma><ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site></editorConfigOverride></ktlint>");
+		writePomWithKotlinSteps("<ktlint>\n" +
+				"  <editorConfigOverride>\n" +
+				"    <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>\n" +
+				"    <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>\n" +
+				"    <ktlint_code_style>intellij_idea</ktlint_code_style>\n" +
+				"  </editorConfigOverride>\n" +
+				"</ktlint>");
 
 		String path = "src/main/kotlin/Main.kt";
 		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
