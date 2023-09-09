@@ -31,8 +31,7 @@ public class PrettierRestService extends BaseNpmRestService {
 			jsonProperties.put("prettier_config_path", prettierConfigPath.getAbsolutePath());
 		}
 		if (prettierConfigOptions != null) {
-			jsonProperties.put("prettier_config_options", SimpleJsonWriter.of(prettierConfigOptions).toJsonRawValue());
-
+			jsonProperties.put("prettier_config_options", JsonWriter.of(prettierConfigOptions).toJsonRawValue());
 		}
 		return restClient.postJson("/prettier/config-options", jsonProperties);
 	}

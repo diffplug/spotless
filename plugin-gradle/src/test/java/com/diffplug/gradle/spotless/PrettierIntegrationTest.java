@@ -19,14 +19,22 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
 class PrettierIntegrationTest extends GradleIntegrationHarness {
-	@Test
-	void useInlineConfig() throws IOException {
+
+	private static final String PRETTIER_VERSION_2 = PrettierFormatterStep.DEFAULT_VERSION;
+
+	private static final String PRETTIER_VERSION_3 = "3.0.3";
+
+	@ParameterizedTest(name = "{index}: useInlineConfig with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void useInlineConfig(String prettierVersion) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -38,17 +46,25 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mytypescript', {",
 				"        target 'test.ts'",
-				"        prettier().config(prettierConfig)",
+				"        prettier('" + prettierVersion + "').config(prettierConfig)",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
+		switch (prettierVersion) {
+		case PRETTIER_VERSION_2:
+			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
+			break;
+		case PRETTIER_VERSION_3:
+			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_3.clean");
+			break;
+		}
 	}
 
-	@Test
-	void verifyCleanSpotlessCheckWorks() throws IOException {
+	@ParameterizedTest(name = "{index}: verifyCleanSpotlessCheckWorks with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void verifyCleanSpotlessCheckWorks(String prettierVersion) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -60,19 +76,20 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mytypescript', {",
 				"        target 'test.ts'",
-				"        prettier().config(prettierConfig)",
+				"        prettier('" + prettierVersion + "').config(prettierConfig)",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
-		BuildResult spotlessCheckFailsGracefully = gradleRunner().withArguments("--stacktrace", "spotlessCheck").buildAndFail();
+		final BuildResult spotlessCheckFailsGracefully = gradleRunner().withArguments("--stacktrace", "spotlessCheck").buildAndFail();
 		Assertions.assertThat(spotlessCheckFailsGracefully.getOutput()).contains("> The following files had format violations:");
 
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		gradleRunner().withArguments("--stacktrace", "spotlessCheck").build();
 	}
 
-	@Test
-	void useFileConfig() throws IOException {
+	@ParameterizedTest(name = "{index}: useFileConfig with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void useFileConfig(String prettierVersion) throws IOException {
 		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc.yml");
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -82,17 +99,25 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mytypescript', {",
 				"        target 'test.ts'",
-				"        prettier().configFile('.prettierrc.yml')",
+				"        prettier('" + prettierVersion + "').configFile('.prettierrc.yml')",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
+		switch (prettierVersion) {
+		case PRETTIER_VERSION_2:
+			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
+			break;
+		case PRETTIER_VERSION_3:
+			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_3.clean");
+			break;
+		}
 	}
 
-	@Test
-	void chooseParserBasedOnFilename() throws IOException {
+	@ParameterizedTest(name = "{index}: chooseParserBasedOnFilename with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void chooseParserBasedOnFilename(String prettierVersion) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -101,7 +126,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'webResources', {",
 				"        target 'dirty.*'",
-				"        prettier()",
+				"        prettier('" + prettierVersion + "')",
 				"    }",
 				"}");
 		setFile("dirty.json").toResource("npm/prettier/filename/dirty.json");
@@ -110,8 +135,20 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		assertFile("dirty.json").sameAsResource("npm/prettier/filename/clean.json");
 	}
 
-	@Test
-	void useJavaCommunityPlugin() throws IOException {
+	@ParameterizedTest(name = "{index}: useJavaCommunityPlugin with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void useJavaCommunityPlugin(String prettierVersion) throws IOException {
+		var prettierPluginJava = "";
+		var prettierConfigPluginsStr = "";
+		switch (prettierVersion) {
+		case PRETTIER_VERSION_2:
+			prettierPluginJava = "2.1.0"; // last version to support v2
+			break;
+		case PRETTIER_VERSION_3:
+			prettierPluginJava = "2.3.0"; // latest to support v3
+			prettierConfigPluginsStr = "prettierConfig['plugins'] = ['prettier-plugin-java']";
+			break;
+		}
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -120,9 +157,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"def prettierConfig = [:]",
 				"prettierConfig['tabWidth'] = 4",
 				"prettierConfig['parser'] = 'java'",
+				prettierConfigPluginsStr,
 				"def prettierPackages = [:]",
-				"prettierPackages['prettier'] = '2.8.8'",
-				"prettierPackages['prettier-plugin-java'] = '2.2.0'",
+				"prettierPackages['prettier'] = '" + prettierVersion + "'",
+				"prettierPackages['prettier-plugin-java'] = '" + prettierPluginJava + "'",
 				"spotless {",
 				"    format 'java', {",
 				"        target 'JavaTest.java'",
@@ -135,8 +173,42 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
 	}
 
-	@Test
-	void suggestsMissingJavaCommunityPlugin() throws IOException {
+	@ParameterizedTest(name = "{index}: useJavaCommunityPluginFileConfig with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void useJavaCommunityPluginFileConfig(String prettierVersion) throws IOException {
+		var prettierPluginJava = "";
+		switch (prettierVersion) {
+		case PRETTIER_VERSION_2:
+			prettierPluginJava = "2.1.0"; // last version to support v2
+			break;
+		case PRETTIER_VERSION_3:
+			prettierPluginJava = "2.3.0"; // latest to support v3
+			break;
+		}
+		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc_java_plugin.yml");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"def prettierPackages = [:]",
+				"prettierPackages['prettier'] = '" + prettierVersion + "'",
+				"prettierPackages['prettier-plugin-java'] = '" + prettierPluginJava + "'",
+				"spotless {",
+				"    format 'java', {",
+				"        target 'JavaTest.java'",
+				"        prettier(prettierPackages).configFile('.prettierrc.yml')",
+				"    }",
+				"}");
+		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
+	}
+
+	@ParameterizedTest(name = "{index}: suggestsMissingJavaCommunityPlugin with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void suggestsMissingJavaCommunityPlugin(String prettierVersion) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -145,7 +217,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"def prettierConfig = [:]",
 				"prettierConfig['tabWidth'] = 4",
 				"def prettierPackages = [:]",
-				"prettierPackages['prettier'] = '2.8.8'",
+				"prettierPackages['prettier'] = '" + prettierVersion + "'",
 				"spotless {",
 				"    format 'java', {",
 				"        target 'JavaTest.java'",
@@ -158,8 +230,20 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		Assertions.assertThat(spotlessApply.getOutput()).contains("prettier-plugin-java");
 	}
 
-	@Test
-	void usePhpCommunityPlugin() throws IOException {
+	@ParameterizedTest(name = "{index}: usePhpCommunityPlugin with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void usePhpCommunityPlugin(String prettierVersion) throws IOException {
+		var prettierPluginPhp = "";
+		var prettierConfigPluginsStr = "";
+		switch (prettierVersion) {
+		case PRETTIER_VERSION_2:
+			prettierPluginPhp = "0.19.7"; // last version to support v2
+			break;
+		case PRETTIER_VERSION_3:
+			prettierPluginPhp = "0.20.1"; // latest to support v3
+			prettierConfigPluginsStr = "prettierConfig['plugins'] = ['@prettier/plugin-php']";
+			break;
+		}
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -168,9 +252,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"def prettierConfig = [:]",
 				"prettierConfig['tabWidth'] = 3",
 				"prettierConfig['parser'] = 'php'",
+				prettierConfigPluginsStr,
 				"def prettierPackages = [:]",
-				"prettierPackages['prettier'] = '2.8.8'",
-				"prettierPackages['@prettier/plugin-php'] = '0.19.6'",
+				"prettierPackages['prettier'] = '" + prettierVersion + "'",
+				"prettierPackages['@prettier/plugin-php'] = '" + prettierPluginPhp + "'",
 				"spotless {",
 				"    format 'php', {",
 				"        target 'php-example.php'",
@@ -188,8 +273,25 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	 *
 	 * @see <a href="https://github.com/diffplug/spotless/issues/1162">Issue #1162 on github</a>
 	 */
-	@Test
-	void usePhpAndJavaCommunityPlugin() throws IOException {
+	@ParameterizedTest(name = "{index}: usePhpAndJavaCommunityPlugin with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void usePhpAndJavaCommunityPlugin(String prettierVersion) throws IOException {
+		var prettierPluginJava = "";
+		var prettierPluginPhp = "";
+		var prettierConfigPluginsJavaStr = "";
+		var prettierConfigPluginsPhpStr = "";
+		switch (prettierVersion) {
+		case PRETTIER_VERSION_2:
+			prettierPluginJava = "2.1.0"; // last version to support v2
+			prettierPluginPhp = "0.19.7"; // last version to support v2
+			break;
+		case PRETTIER_VERSION_3:
+			prettierPluginJava = "2.3.0"; // latest to support v3
+			prettierPluginPhp = "0.20.1"; // latest to support v3
+			prettierConfigPluginsJavaStr = "prettierConfigJava['plugins'] = ['prettier-plugin-java']";
+			prettierConfigPluginsPhpStr = "prettierConfigPhp['plugins'] = ['@prettier/plugin-php']";
+			break;
+		}
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -198,15 +300,17 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"def prettierConfigPhp = [:]",
 				"prettierConfigPhp['tabWidth'] = 3",
 				"prettierConfigPhp['parser'] = 'php'",
+				prettierConfigPluginsPhpStr,
 				"def prettierPackagesPhp = [:]",
-				"prettierPackagesPhp['prettier'] = '2.8.8'",
-				"prettierPackagesPhp['@prettier/plugin-php'] = '0.19.6'",
+				"prettierPackagesPhp['prettier'] = '" + prettierVersion + "'",
+				"prettierPackagesPhp['@prettier/plugin-php'] = '" + prettierPluginPhp + "'",
 				"def prettierConfigJava = [:]",
 				"prettierConfigJava['tabWidth'] = 4",
 				"prettierConfigJava['parser'] = 'java'",
+				prettierConfigPluginsJavaStr,
 				"def prettierPackagesJava = [:]",
-				"prettierPackagesJava['prettier'] = '2.8.8'",
-				"prettierPackagesJava['prettier-plugin-java'] = '2.2.0'",
+				"prettierPackagesJava['prettier'] = '" + prettierVersion + "'",
+				"prettierPackagesJava['prettier-plugin-java'] = '" + prettierPluginJava + "'",
 				"spotless {",
 				"    format 'php', {",
 				"        target 'php-example.php'",
@@ -227,8 +331,9 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
 	}
 
-	@Test
-	void autodetectNpmrcFileConfig() throws IOException {
+	@ParameterizedTest(name = "{index}: autodetectNpmrcFileConfig with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void autodetectNpmrcFileConfig(String prettierVersion) throws IOException {
 		setFile(".npmrc").toLines(
 				"registry=https://i.do.not.exist.com",
 				"fetch-timeout=250",
@@ -245,7 +350,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mytypescript', {",
 				"        target 'test.ts'",
-				"        prettier().config(prettierConfig)",
+				"        prettier('" + prettierVersion + "').config(prettierConfig)",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
@@ -253,8 +358,9 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		Assertions.assertThat(spotlessApply.getOutput()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
 	}
 
-	@Test
-	void pickupNpmrcFileConfig() throws IOException {
+	@ParameterizedTest(name = "{index}: autodetectNpmrcFileConfig with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void pickupNpmrcFileConfig(String prettierVersion) throws IOException {
 		setFile(".custom_npmrc").toLines(
 				"registry=https://i.do.not.exist.com",
 				"fetch-timeout=250",
@@ -271,7 +377,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mytypescript', {",
 				"        target 'test.ts'",
-				"        prettier().npmrc('.custom_npmrc').config(prettierConfig)",
+				"        prettier('" + prettierVersion + "').npmrc('.custom_npmrc').config(prettierConfig)",
 				"    }",
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");

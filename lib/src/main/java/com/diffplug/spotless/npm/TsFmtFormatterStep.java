@@ -107,7 +107,7 @@ public class TsFmtFormatterStep {
 			Map<String, Object> unified = new HashMap<>();
 			if (!this.inlineTsFmtSettings.isEmpty()) {
 				File targetFile = new File(this.buildDir, "inline-tsfmt.json");
-				SimpleJsonWriter.of(this.inlineTsFmtSettings).toJsonFile(targetFile);
+				JsonWriter.of(this.inlineTsFmtSettings).toJsonFile(targetFile);
 				unified.put("tsfmt", true);
 				unified.put("tsfmtFile", targetFile.getAbsolutePath());
 			} else if (this.configFile != null) {

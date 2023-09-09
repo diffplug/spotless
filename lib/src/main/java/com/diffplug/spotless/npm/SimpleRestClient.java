@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class SimpleRestClient {
 	}
 
 	String postJson(String endpoint, Map<String, Object> jsonParams) throws SimpleRestException {
-		final SimpleJsonWriter jsonWriter = SimpleJsonWriter.of(jsonParams);
+		final JsonWriter jsonWriter = JsonWriter.of(jsonParams);
 		final String jsonString = jsonWriter.toJsonString();
 
 		return postJson(endpoint, jsonString);
