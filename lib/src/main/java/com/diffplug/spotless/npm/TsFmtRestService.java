@@ -28,7 +28,7 @@ public class TsFmtRestService extends BaseNpmRestService {
 		Map<String, Object> jsonProperties = new LinkedHashMap<>();
 		jsonProperties.put("file_content", fileContent);
 		if (configOptions != null && !configOptions.isEmpty()) {
-			jsonProperties.put("config_options", SimpleJsonWriter.of(configOptions).toJsonRawValue());
+			jsonProperties.put("config_options", JsonWriter.of(configOptions).toJsonRawValue());
 		}
 
 		return restClient.postJson("/tsfmt/format", jsonProperties);

@@ -185,6 +185,56 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	void custom_plugin_prettier3() throws Exception {
+		writePomWithFormatSteps(
+				"<includes><include>php-example.php</include></includes>",
+				"<prettier>",
+				"  <devDependencyProperties>",
+				"    <property>",
+				"      <name>prettier</name>",
+				"      <value>3.0.3</value>",
+				"    </property>",
+				"    <property>",
+				"      <name>@prettier/plugin-php</name>",
+				"      <value>0.20.1</value>",
+				"    </property>",
+				"  </devDependencyProperties>",
+				"  <config>",
+				"    <tabWidth>3</tabWidth>",
+				"    <parser>php</parser>",
+				"    <plugins>@prettier/plugin-php</plugins>",
+				"  </config>",
+				"</prettier>");
+
+		setFile("php-example.php").toResource("npm/prettier/plugins/php.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
+	}
+
+	@Test
+	void custom_plugin_prettier3_file_config() throws Exception {
+		writePomWithFormatSteps(
+				"<includes><include>JavaTest.java</include></includes>",
+				"<prettier>",
+				"  <devDependencyProperties>",
+				"    <property>",
+				"      <name>prettier</name>",
+				"      <value>3.0.3</value>",
+				"    </property>",
+				"    <property>",
+				"      <name>prettier-plugin-java</name>",
+				"      <value>2.3.0</value>",
+				"    </property>",
+				"  </devDependencyProperties>",
+				"  <configFile>.prettierrc.yml</configFile>",
+				"</prettier>");
+		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc_java_plugin.yml");
+		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
+	}
+
+	@Test
 	void autodetect_parser_based_on_filename() throws Exception {
 		writePomWithFormatSteps(
 				"<includes><include>dirty.json</include></includes>",

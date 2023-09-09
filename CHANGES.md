@@ -10,7 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-
+### Fixed
+* Added support for plugins when using Prettier version `3.0.0` and newer. ([#1802](https://github.com/diffplug/spotless/pull/1802))
 ### Changes
 * Bump default `flexmark` version to latest `0.64.0` -> `0.64.6`. ([#1801](https://github.com/diffplug/spotless/pull/1801))
 
