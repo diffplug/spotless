@@ -402,7 +402,12 @@ spotless {
     ktlint("1.0.0")
       .userData(mapOf("android" to "true"))
       .setEditorConfigPath("$projectDir/config/.editorconfig")  // sample unusual placement
-      .editorConfigOverride(mapOf("indent_size" to 2))
+      .editorConfigOverride(
+        mapOf(
+          "indent_size" to 2,
+          "ktlint_code_style" to "intellij_idea",
+        )
+      )
   }
 }
 ```
