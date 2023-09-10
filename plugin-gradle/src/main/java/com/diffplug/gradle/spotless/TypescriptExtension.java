@@ -118,7 +118,7 @@ public class TypescriptExtension extends FormatExtension {
 					devDependencies,
 					provisioner(),
 					project.getProjectDir(),
-					project.getBuildDir(),
+					project.getLayout().getBuildDirectory().getAsFile().get(),
 					npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					typedConfigFile(),
@@ -215,7 +215,7 @@ public class TypescriptExtension extends FormatExtension {
 					devDependencies,
 					provisioner(),
 					project.getProjectDir(),
-					project.getBuildDir(),
+					project.getLayout().getBuildDirectory().getAsFile().get(),
 					npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					eslintConfig());

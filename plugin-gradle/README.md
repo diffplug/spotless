@@ -1243,7 +1243,7 @@ To use a fixed binary, omit the `version` and specify a `pathToExe`:
 spotless {
   format 'rome', {
     target '**/*.js','**/*.ts','**/*.json'
-    rome().pathToExe("${project.buildDir.absolutePath}/bin/rome")
+    rome().pathToExe("${project.layout.buildDirectory.asFile.get().absolutePath}/bin/rome")
   }
 }
 ```

@@ -280,9 +280,9 @@ public class FormatExtension {
 					excludes.add(".gradle");
 				}
 				// no build folders (flatInclude means that subproject might not be subfolders, see https://github.com/diffplug/spotless/issues/121)
-				relativizeIfSubdir(excludes, dir, getProject().getBuildDir());
+				relativizeIfSubdir(excludes, dir, getProject().getLayout().getBuildDirectory().getAsFile().get());
 				for (Project subproject : getProject().getSubprojects()) {
-					relativizeIfSubdir(excludes, dir, subproject.getBuildDir());
+					relativizeIfSubdir(excludes, dir, subproject.getLayout().getBuildDirectory().getAsFile().get());
 				}
 				matchedFiles.exclude(excludes);
 			}
@@ -606,7 +606,7 @@ public class FormatExtension {
 		}
 
 		public T npmInstallCache() {
-			this.npmInstallCache = new File(project.getBuildDir(), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
+			this.npmInstallCache = new File(project.getLayout().getBuildDirectory().getAsFile().get(), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
 			replaceStep();
 			return (T) this;
 		}
@@ -673,7 +673,7 @@ public class FormatExtension {
 					devDependencies,
 					provisioner(),
 					project.getProjectDir(),
-					project.getBuildDir(),
+					project.getLayout().getBuildDirectory().getAsFile().get(),
 					npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					new com.diffplug.spotless.npm.PrettierConfig(
