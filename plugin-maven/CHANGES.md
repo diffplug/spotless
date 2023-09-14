@@ -3,7 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-
+### Added
+* Added support for `google-java-format`'s `skip-javadoc-formatting` option ([#1793](https://github.com/diffplug/spotless/pull/1793))
 ### Fixed
 * Added support for plugins when using Prettier version `3.0.0` and newer. ([#1802](https://github.com/diffplug/spotless/pull/1802))
 
@@ -11,7 +12,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Add a `jsonPatch` step to `json` formatter configurations. This allows patching of JSON documents using [JSON Patches](https://jsonpatch.com). ([#1753](https://github.com/diffplug/spotless/pull/1753))
 * Support GJF own import order. ([#1780](https://github.com/diffplug/spotless/pull/1780))
-* Added support for `google-java-format`'s `skip-javadoc-formatting` option ([#1793](https://github.com/diffplug/spotless/pull/1793))
 ### Fixed
 * Add support for `prettier` version `3.0.0` and newer. ([#1760](https://github.com/diffplug/spotless/pull/1760), [#1751](https://github.com/diffplug/spotless/issues/1751))
 * Fix npm install calls when npm cache is not up-to-date. ([#1760](https://github.com/diffplug/spotless/pull/1760), [#1750](https://github.com/diffplug/spotless/issues/1750))
