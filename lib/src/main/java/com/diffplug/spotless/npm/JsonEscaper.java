@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,22 @@ final class JsonEscaper {
 		}
 		if (val instanceof String) {
 			return jsonEscape((String) val);
+		}
+		if (ListableAdapter.canAdapt(val)) {
+			// create an array
+			StringBuilder sb = new StringBuilder();
+			sb.append('[');
+			boolean first = true;
+			for (Object o : ListableAdapter.adapt(val)) {
+				if (first) {
+					first = false;
+				} else {
+					sb.append(", ");
+				}
+				sb.append(jsonEscape(o));
+			}
+			sb.append(']');
+			return sb.toString();
 		}
 		return val.toString();
 	}

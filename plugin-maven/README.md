@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.38.0-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.38.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.39.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.39.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -1076,6 +1076,8 @@ You can use prettier in any language-specific format, but usually you will be cr
         <configFile>${project.basedir}/path/to/configfile</configFile>
         <config>
             <useTabs>true</useTabs>
+            <!-- Prettier v3 Only - Comma Delimited -->
+            <plugins>@prettier/plugin-php</plugins>
         </config>
       </prettier>
     </format>
@@ -1121,6 +1123,7 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
         <config>
             <tabWidth>4</tabWidth>
             <parser>java</parser>
+            <plugins>prettier-plugin-java</plugins><!-- this is only for prettier 3.0.0 and above: an additional 'plugins' config element is required -->
         </config>
       </prettier>
     </format>
@@ -1146,6 +1149,7 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
         <config>
             <tabWidth>3</tabWidth>
             <parser>php</parser>
+            <plugins>@prettier/plugin-php</plugins><!-- this is only for prettier 3.0.0 and above: an additional 'plugins' config element is required -->
         </config>
       </prettier>
     </format>
