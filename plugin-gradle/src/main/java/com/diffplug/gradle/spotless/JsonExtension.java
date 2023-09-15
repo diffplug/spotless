@@ -80,7 +80,7 @@ public class JsonExtension extends FormatExtension {
 	 * Defaults to downloading the default Rome version from the network. To work
 	 * offline, you can specify the path to the Rome executable via
 	 * {@code rome().pathToExe(...)}.
-	 * 
+	 *
 	 * @deprecated Use {@link #biome()}.
 	 */
 	@Deprecated
@@ -90,7 +90,7 @@ public class JsonExtension extends FormatExtension {
 
 	/**
 	 * Downloads the given Rome version from the network.
-	 * 
+	 *
 	 * @deprecated Use {@link #biome(String)}.
 	 */
 	@Deprecated
@@ -233,7 +233,7 @@ public class JsonExtension extends FormatExtension {
 
 	/**
 	 * Rome formatter step for JSON.
-	 * 
+	 *
 	 * @deprecated Rome has transitioned to Biome. This will be removed shortly.
 	 */
 	@Deprecated

@@ -735,7 +735,7 @@ public class FormatExtension {
 		/**
 		 * Creates a new Rome config that downloads the Rome executable for the given
 		 * version from the network.
-		 * 
+		 *
 		 * @param version Rome version to use. The default version is used when
 		 *                <code>null</code>.
 		 */
@@ -758,7 +758,7 @@ public class FormatExtension {
 		 * extension)</li>
 		 * <li>json (JSON)</li>
 		 * </ul>
-		 * 
+		 *
 		 * @param language The language of the files to format.
 		 * @return This step for further configuration.
 		 */
@@ -783,7 +783,7 @@ public class FormatExtension {
 	 * Generic Rome formatter step that detects the language of the input file from
 	 * the file name. It should be specified as a formatter step for a generic
 	 * <code>format{ ... }</code>.
-	 * 
+	 *
 	 * @deprecated Rome has transitioned to Biome. This will be removed shortly.
 	 */
 	@Deprecated
@@ -794,7 +794,7 @@ public class FormatExtension {
 		/**
 		 * Creates a new Rome config that downloads the Rome executable for the given
 		 * version from the network.
-		 * 
+		 *
 		 * @param version Rome version to use. The default version is used when
 		 *                <code>null</code>.
 		 */
@@ -817,7 +817,7 @@ public class FormatExtension {
 		 * extension)</li>
 		 * <li>json (JSON)</li>
 		 * </ul>
-		 * 
+		 *
 		 * @param language The language of the files to format.
 		 * @return This step for further configuration.
 		 */
@@ -875,7 +875,7 @@ public class FormatExtension {
 	 * Defaults to downloading the default Rome version from the network. To work
 	 * offline, you can specify the path to the Rome executable via
 	 * {@code rome().pathToExe(...)}.
-	 * 
+	 *
 	 * @deprecated Use {@link #biome(String)}.
 	 */
 	@Deprecated
@@ -885,7 +885,7 @@ public class FormatExtension {
 
 	/**
 	 * Downloads the given Rome version from the network.
-	 * 
+	 *
 	 * @deprecated Use {@link #biome(String)}.
 	 */
 	@Deprecated
