@@ -19,13 +19,11 @@ import com.diffplug.spotless.maven.rome.AbstractRome;
 import com.diffplug.spotless.rome.EBiomeFlavor;
 
 /**
- * Rome formatter step for TypeScript.
- * @deprecated Rome has transitioned to Biome. This will be removed shortly.
+ * Biome formatter step for TypeScript.
  */
-@Deprecated
-public class RomeTs extends AbstractRome {
-	public RomeTs() {
-		super(EBiomeFlavor.ROME);
+public class BiomeTs extends AbstractRome {
+	public BiomeTs() {
+		super(EBiomeFlavor.BIOME);
 	}
 
 	@Override

@@ -41,6 +41,20 @@ public class Format extends FormatterFactory {
 		return null;
 	}
 
+	/**
+	 * Adds a step to this format that format code with the Biome formatter.
+	 * @param biome Biome configuration to use.
+	 */
+	public void addBiome(Biome biome) {
+		addStepFactory(biome);
+	}
+
+	/**
+	 * Adds a step to this format that format code with the Rome formatter.
+	 * @param rome Rome configuration to use.
+	 * @deprecated Rome has transitioned to Biome. Use {@link #addBiome(Biome)}.
+	 */
+	@Deprecated
 	public void addRome(Rome rome) {
 		addStepFactory(rome);
 	}

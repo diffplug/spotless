@@ -16,11 +16,18 @@
 package com.diffplug.spotless.maven.javascript;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
+import com.diffplug.spotless.rome.EBiomeFlavor;
 
 /**
  * Rome formatter step for JavaScript.
+ * @deprecated Rome has transitioned to Biome. This will be removed shortly.
  */
+@Deprecated
 public class RomeJs extends AbstractRome {
+	public RomeJs() {
+		super(EBiomeFlavor.ROME);
+	}
+
 	@Override
 	protected String getLanguage() {
 		return "js?";

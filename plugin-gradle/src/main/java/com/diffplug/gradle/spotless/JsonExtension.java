@@ -27,6 +27,7 @@ import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.json.JsonPatchStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
 import com.diffplug.spotless.json.gson.GsonStep;
+import com.diffplug.spotless.rome.EBiomeFlavor;
 
 public class JsonExtension extends FormatExtension {
 	private static final int DEFAULT_INDENTATION = 4;
@@ -60,15 +61,39 @@ public class JsonExtension extends FormatExtension {
 	}
 
 	/**
+	 * Defaults to downloading the default Biome version from the network. To work
+	 * offline, you can specify the path to the Biome executable via
+	 * {@code biome().pathToExe(...)}.
+	 */
+	public BiomeJson biome() {
+		return biome(null);
+	}
+
+	/** Downloads the given Biome version from the network. */
+	public BiomeJson biome(String version) {
+		var biomeConfig = new BiomeJson(version);
+		addStep(biomeConfig.createStep());
+		return biomeConfig;
+	}
+
+	/**
 	 * Defaults to downloading the default Rome version from the network. To work
 	 * offline, you can specify the path to the Rome executable via
 	 * {@code rome().pathToExe(...)}.
+	 * 
+	 * @deprecated Use {@link #biome()}.
 	 */
+	@Deprecated
 	public RomeJson rome() {
 		return rome(null);
 	}
 
-	/** Downloads the given Rome version from the network. */
+	/**
+	 * Downloads the given Rome version from the network.
+	 * 
+	 * @deprecated Use {@link #biome(String)}.
+	 */
+	@Deprecated
 	public RomeJson rome(String version) {
 		var romeConfig = new RomeJson(version);
 		addStep(romeConfig.createStep());
@@ -140,7 +165,9 @@ public class JsonExtension extends FormatExtension {
 		}
 
 		private FormatterStep createStep() {
-			return GsonStep.create(new com.diffplug.spotless.json.gson.GsonConfig(sortByKeys, escapeHtml, indentSpaces, version), provisioner());
+			return GsonStep.create(
+					new com.diffplug.spotless.json.gson.GsonConfig(sortByKeys, escapeHtml, indentSpaces, version),
+					provisioner());
 		}
 	}
 
@@ -180,8 +207,36 @@ public class JsonExtension extends FormatExtension {
 	}
 
 	/**
-	 * Rome formatter step for JSON.
+	 * Biome formatter step for JSON.
 	 */
+	public class BiomeJson extends RomeStepConfig<BiomeJson> {
+		/**
+		 * Creates a new Biome formatter step config for formatting JSON files. Unless
+		 * overwritten, the given Biome version is downloaded from the network.
+		 *
+		 * @param version Biome version to use.
+		 */
+		public BiomeJson(String version) {
+			super(getProject(), JsonExtension.this::replaceStep, EBiomeFlavor.BIOME, version);
+		}
+
+		@Override
+		protected String getLanguage() {
+			return "json";
+		}
+
+		@Override
+		protected BiomeJson getThis() {
+			return this;
+		}
+	}
+
+	/**
+	 * Rome formatter step for JSON.
+	 * 
+	 * @deprecated Rome has transitioned to Biome. This will be removed shortly.
+	 */
+	@Deprecated
 	public class RomeJson extends RomeStepConfig<RomeJson> {
 		/**
 		 * Creates a new Rome formatter step config for formatting JSON files. Unless
@@ -190,7 +245,7 @@ public class JsonExtension extends FormatExtension {
 		 * @param version Rome version to use.
 		 */
 		public RomeJson(String version) {
-			super(getProject(), JsonExtension.this::replaceStep, version);
+			super(getProject(), JsonExtension.this::replaceStep, EBiomeFlavor.ROME, version);
 		}
 
 		@Override

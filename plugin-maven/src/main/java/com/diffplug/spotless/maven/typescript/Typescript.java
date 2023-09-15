@@ -46,6 +46,11 @@ public class Typescript extends FormatterFactory {
 		addStepFactory(eslint);
 	}
 
+	public void addBiome(BiomeTs biome) {
+		addStepFactory(biome);
+	}
+
+	@Deprecated
 	public void addRome(RomeTs rome) {
 		addStepFactory(rome);
 	}

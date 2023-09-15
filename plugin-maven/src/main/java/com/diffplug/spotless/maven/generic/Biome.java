@@ -21,18 +21,19 @@ import com.diffplug.spotless.maven.rome.AbstractRome;
 import com.diffplug.spotless.rome.EBiomeFlavor;
 
 /**
- * See {@link Biome}.
- * @deprecated Rome has transitioned to Biome. This will be removed shortly.
+ * Generic Biome formatter step that detects the language of the input file from
+ * the file name. It should be specified as a formatter step for a generic
+ * {@code <format>}.
  */
-public class Rome extends AbstractRome {
-	public Rome() {
-		super(EBiomeFlavor.ROME);
+public class Biome extends AbstractRome {
+	public Biome() {
+		super(EBiomeFlavor.BIOME);
 	}
 
 	/**
 	 * Gets the language (syntax) of the input files to format. When
 	 * <code>null</code> or the empty string, the language is detected automatically
-	 * from the file name. Currently the following languages are supported by Rome:
+	 * from the file name. Currently the following languages are supported by Biome:
 	 * <ul>
 	 * <ul>
 	 * <li>js (JavaScript)</li>

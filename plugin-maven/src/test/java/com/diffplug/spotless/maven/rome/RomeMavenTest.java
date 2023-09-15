@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
+@Deprecated
 class RomeMavenTest extends MavenIntegrationHarness {
 	/**
 	 * Tests that rome can be used as a generic formatting step.
@@ -181,7 +182,7 @@ class RomeMavenTest extends MavenIntegrationHarness {
 		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
 		var result = mavenRunner().withArguments("spotless:apply").runHasError();
 		assertFile("rome_test.js").sameAsResource("rome/js/fileBefore.js");
-		assertThat(result.stdOutUtf8()).contains("Rome executable does not exist");
+		assertThat(result.stdOutUtf8()).contains("Biome executable does not exist");
 	}
 
 	/**
