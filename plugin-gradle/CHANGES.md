@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+* Add support for biome. The Rome project [was renamed to Biome](https://biomejs.dev/blog/annoucing-biome/).
+  The configuration is still the same, but you should switch to the new `biome(...)` function and adjust
+  the version accordingly. ([#1804](https://github.com/diffplug/spotless/issues/1804)).
+
 ### Fixed
 * Added support for plugins when using Prettier version `3.0.0` and newer. ([#1802](https://github.com/diffplug/spotless/pull/1802))
 
