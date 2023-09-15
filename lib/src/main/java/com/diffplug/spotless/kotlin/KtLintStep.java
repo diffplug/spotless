@@ -39,7 +39,7 @@ public class KtLintStep {
 	private static final String DEFAULT_VERSION = "1.0.0";
 	static final String NAME = "ktlint";
 	static final String MAVEN_COORDINATE_0_DOT = "com.pinterest:ktlint:";
-	static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";
+	public static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);

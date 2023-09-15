@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.io.Files;
+import com.diffplug.spotless.kotlin.KtLintStep;
 
 public class TestProvisioner {
 	public static Project gradleProject(File dir) {
@@ -70,7 +71,14 @@ public class TestProvisioner {
 			config.setTransitive(withTransitives);
 			config.setDescription(mavenCoords.toString());
 			config.attributes(attr -> {
-				attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+				final String type;
+				// See https://github.com/diffplug/spotless/pull/1808#discussion_r1321682984.
+				if (mavenCoords.stream().anyMatch(it -> it.startsWith(KtLintStep.MAVEN_COORDINATE_1_DOT))) {
+					type = Bundling.SHADOWED;
+				} else {
+					type = Bundling.EXTERNAL;
+				}
+				attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, type));
 			});
 			try {
 				return config.resolve();

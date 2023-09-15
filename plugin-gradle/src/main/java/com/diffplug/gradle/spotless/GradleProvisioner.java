@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.kotlin.KtLintStep;
 
 /** Should be package-private. */
 class GradleProvisioner {
@@ -121,7 +122,14 @@ class GradleProvisioner {
 				config.setCanBeConsumed(false);
 				config.setVisible(false);
 				config.attributes(attr -> {
-					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+					final String type;
+					// See https://github.com/diffplug/spotless/pull/1808#discussion_r1321682984.
+					if (mavenCoords.stream().anyMatch(it -> it.startsWith(KtLintStep.MAVEN_COORDINATE_1_DOT))) {
+						type = Bundling.SHADOWED;
+					} else {
+						type = Bundling.EXTERNAL;
+					}
+					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, type));
 				});
 				return config.resolve();
 			} catch (Exception e) {
