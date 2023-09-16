@@ -22,7 +22,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 import com.diffplug.spotless.rome.RomeStep;
 
 /**
@@ -34,9 +34,9 @@ import com.diffplug.spotless.rome.RomeStep;
  */
 public abstract class AbstractRome implements FormatterStepFactory {
 	/** Biome flavor to use. */
-	private EBiomeFlavor flavor;
+	private BiomeFlavor flavor;
 
-	protected AbstractRome(EBiomeFlavor flavor) {
+	protected AbstractRome(BiomeFlavor flavor) {
 		this.flavor = flavor;
 	}
 

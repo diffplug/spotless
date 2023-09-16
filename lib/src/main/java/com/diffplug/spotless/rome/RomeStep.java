@@ -74,7 +74,7 @@ public class RomeStep {
 	 * Biome flavor to use. Will be removed once we stop supporting the deprecated Rome project.
 	 */
 	@Deprecated
-	private final EBiomeFlavor flavor;
+	private final BiomeFlavor flavor;
 
 	/**
 	 * Path to the Biome executable. Can be <code>null</code>, but either a path to
@@ -113,7 +113,7 @@ public class RomeStep {
 	 * @param downloadDir Directory where to place the downloaded executable.
 	 * @return A new Biome step that download the executable from the network.
 	 */
-	public static RomeStep withExeDownload(EBiomeFlavor flavor, String version, String downloadDir) {
+	public static RomeStep withExeDownload(BiomeFlavor flavor, String version, String downloadDir) {
 		return new RomeStep(flavor, version, null, downloadDir);
 	}
 
@@ -125,7 +125,7 @@ public class RomeStep {
 	 * @param pathToExe Path to the Biome executable to use.
 	 * @return A new Biome step that format with the given executable.
 	 */
-	public static RomeStep withExePath(EBiomeFlavor flavor, String pathToExe) {
+	public static RomeStep withExePath(BiomeFlavor flavor, String pathToExe) {
 		return new RomeStep(flavor, null, pathToExe, null);
 	}
 
@@ -154,7 +154,7 @@ public class RomeStep {
 	 *
 	 * @return The default version for Biome.
 	 */
-	private static String defaultVersion(EBiomeFlavor flavor) {
+	private static String defaultVersion(BiomeFlavor flavor) {
 		return flavor.defaultVersion();
 	}
 
@@ -198,7 +198,7 @@ public class RomeStep {
 	 * Checks the Biome config path. When the config path does not exist or when it
 	 * does not contain a file named {@code biome.json}, an error is thrown.
 	 */
-	private static void validateBiomeConfigPath(EBiomeFlavor flavor, String configPath) {
+	private static void validateBiomeConfigPath(BiomeFlavor flavor, String configPath) {
 		if (configPath == null) {
 			return;
 		}
@@ -230,7 +230,7 @@ public class RomeStep {
 	 * @param pathToExe Path to the Biome executable to use.
 	 * @param downloadDir Directory where to place the downloaded executable.
 	 */
-	private RomeStep(EBiomeFlavor flavor, String version, String pathToExe, String downloadDir) {
+	private RomeStep(BiomeFlavor flavor, String version, String pathToExe, String downloadDir) {
 		this.flavor = flavor;
 		this.version = version != null && !version.isBlank() ? version : defaultVersion(flavor);
 		this.pathToExe = pathToExe;

@@ -28,7 +28,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 import com.diffplug.spotless.rome.RomeStep;
 
 public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
@@ -54,7 +54,7 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	 * The flavor of Biome to use. Will be removed when we stop support the
 	 * deprecated Rome project.
 	 */
-	private final EBiomeFlavor flavor;
+	private final BiomeFlavor flavor;
 
 	/**
 	 * Optional path to the Biome executable. Either a <code>version</code> or a
@@ -95,7 +95,7 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	@Nullable
 	private String version;
 
-	protected RomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, EBiomeFlavor flavor,
+	protected RomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, BiomeFlavor flavor,
 			String version) {
 		this.project = requireNonNull(project);
 		this.replaceStep = requireNonNull(replaceStep);

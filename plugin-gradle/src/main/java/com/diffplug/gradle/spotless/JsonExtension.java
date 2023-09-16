@@ -27,7 +27,7 @@ import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.json.JsonPatchStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
 import com.diffplug.spotless.json.gson.GsonStep;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 public class JsonExtension extends FormatExtension {
 	private static final int DEFAULT_INDENTATION = 4;
@@ -217,7 +217,7 @@ public class JsonExtension extends FormatExtension {
 		 * @param version Biome version to use.
 		 */
 		public BiomeJson(String version) {
-			super(getProject(), JsonExtension.this::replaceStep, EBiomeFlavor.BIOME, version);
+			super(getProject(), JsonExtension.this::replaceStep, BiomeFlavor.BIOME, version);
 		}
 
 		@Override
@@ -245,7 +245,7 @@ public class JsonExtension extends FormatExtension {
 		 * @param version Rome version to use.
 		 */
 		public RomeJson(String version) {
-			super(getProject(), JsonExtension.this::replaceStep, EBiomeFlavor.ROME, version);
+			super(getProject(), JsonExtension.this::replaceStep, BiomeFlavor.ROME, version);
 		}
 
 		@Override

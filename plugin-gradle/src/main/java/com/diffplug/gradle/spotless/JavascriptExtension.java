@@ -34,7 +34,7 @@ import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 public class JavascriptExtension extends FormatExtension {
 
@@ -193,7 +193,7 @@ public class JavascriptExtension extends FormatExtension {
 		 * @param version Biome version to use.
 		 */
 		public BiomeJs(String version) {
-			super(getProject(), JavascriptExtension.this::replaceStep, EBiomeFlavor.BIOME, version);
+			super(getProject(), JavascriptExtension.this::replaceStep, BiomeFlavor.BIOME, version);
 		}
 
 		@Override
@@ -221,7 +221,7 @@ public class JavascriptExtension extends FormatExtension {
 		 * @param version Rome version to use.
 		 */
 		public RomeJs(String version) {
-			super(getProject(), JavascriptExtension.this::replaceStep, EBiomeFlavor.ROME, version);
+			super(getProject(), JavascriptExtension.this::replaceStep, BiomeFlavor.ROME, version);
 		}
 
 		@Override

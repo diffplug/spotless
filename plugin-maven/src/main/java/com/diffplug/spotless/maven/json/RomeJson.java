@@ -16,7 +16,7 @@
 package com.diffplug.spotless.maven.json;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 /**
  * Rome formatter step for JSON.
@@ -25,7 +25,7 @@ import com.diffplug.spotless.rome.EBiomeFlavor;
 @Deprecated
 public class RomeJson extends AbstractRome {
 	public RomeJson() {
-		super(EBiomeFlavor.ROME);
+		super(BiomeFlavor.ROME);
 	}
 
 	@Override

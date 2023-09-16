@@ -16,14 +16,14 @@
 package com.diffplug.spotless.maven.javascript;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 /**
  * Biome formatter step for JavaScript.
  */
 public class BiomeJs extends AbstractRome {
 	public BiomeJs() {
-		super(EBiomeFlavor.BIOME);
+		super(BiomeFlavor.BIOME);
 	}
 
 	@Override

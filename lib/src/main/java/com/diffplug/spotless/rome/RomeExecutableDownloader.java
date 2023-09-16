@@ -71,7 +71,7 @@ final class RomeExecutableDownloader {
 
 	private final Path downloadDir;
 
-	private final EBiomeFlavor flavor;
+	private final BiomeFlavor flavor;
 
 	/**
 	 * Creates a new downloader for the Biome executable. The executable files are
@@ -80,7 +80,7 @@ final class RomeExecutableDownloader {
 	 * @param flavor Flavor of Biome to use.
 	 * @param downloadDir Directory where to store the downloaded executable.
 	 */
-	public RomeExecutableDownloader(EBiomeFlavor flavor, Path downloadDir) {
+	public RomeExecutableDownloader(BiomeFlavor flavor, Path downloadDir) {
 		this.flavor = flavor;
 		this.downloadDir = downloadDir;
 	}

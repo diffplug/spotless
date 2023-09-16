@@ -16,14 +16,14 @@
 package com.diffplug.spotless.maven.json;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 /**
  * Biome formatter step for JSON.
  */
 public class BiomeJson extends AbstractRome {
 	public BiomeJson() {
-		super(EBiomeFlavor.BIOME);
+		super(BiomeFlavor.BIOME);
 	}
 
 	@Override

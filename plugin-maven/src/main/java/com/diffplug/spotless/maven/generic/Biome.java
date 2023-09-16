@@ -18,7 +18,7 @@ package com.diffplug.spotless.maven.generic;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 /**
  * Generic Biome formatter step that detects the language of the input file from
@@ -27,7 +27,7 @@ import com.diffplug.spotless.rome.EBiomeFlavor;
  */
 public class Biome extends AbstractRome {
 	public Biome() {
-		super(EBiomeFlavor.BIOME);
+		super(BiomeFlavor.BIOME);
 	}
 
 	/**

@@ -16,14 +16,14 @@
 package com.diffplug.spotless.maven.typescript;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 /**
  * Biome formatter step for TypeScript.
  */
 public class BiomeTs extends AbstractRome {
 	public BiomeTs() {
-		super(EBiomeFlavor.BIOME);
+		super(BiomeFlavor.BIOME);
 	}
 
 	@Override

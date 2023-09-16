@@ -67,7 +67,7 @@ import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 import groovy.lang.Closure;
 
@@ -740,7 +740,7 @@ public class FormatExtension {
 		 *                <code>null</code>.
 		 */
 		public BiomeGeneric(String version) {
-			super(getProject(), FormatExtension.this::replaceStep, EBiomeFlavor.BIOME, version);
+			super(getProject(), FormatExtension.this::replaceStep, BiomeFlavor.BIOME, version);
 		}
 
 		/**
@@ -799,7 +799,7 @@ public class FormatExtension {
 		 *                <code>null</code>.
 		 */
 		public RomeGeneric(String version) {
-			super(getProject(), FormatExtension.this::replaceStep, EBiomeFlavor.ROME, version);
+			super(getProject(), FormatExtension.this::replaceStep, BiomeFlavor.ROME, version);
 		}
 
 		/**

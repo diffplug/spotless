@@ -18,7 +18,7 @@ package com.diffplug.spotless.maven.generic;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 /**
  * See {@link Biome}.
@@ -26,7 +26,7 @@ import com.diffplug.spotless.rome.EBiomeFlavor;
  */
 public class Rome extends AbstractRome {
 	public Rome() {
-		super(EBiomeFlavor.ROME);
+		super(BiomeFlavor.ROME);
 	}
 
 	/**

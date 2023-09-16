@@ -38,7 +38,7 @@ import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.npm.TsConfigFileType;
 import com.diffplug.spotless.npm.TsFmtFormatterStep;
 import com.diffplug.spotless.npm.TypedTsFmtConfigFile;
-import com.diffplug.spotless.rome.EBiomeFlavor;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 public class TypescriptExtension extends FormatExtension {
 
@@ -278,7 +278,7 @@ public class TypescriptExtension extends FormatExtension {
 		 * @param version Biome version to use.
 		 */
 		public BiomeTs(String version) {
-			super(getProject(), TypescriptExtension.this::replaceStep, EBiomeFlavor.BIOME, version);
+			super(getProject(), TypescriptExtension.this::replaceStep, BiomeFlavor.BIOME, version);
 		}
 
 		@Override
@@ -306,7 +306,7 @@ public class TypescriptExtension extends FormatExtension {
 		 * @param version Rome version to use.
 		 */
 		public RomeTs(String version) {
-			super(getProject(), TypescriptExtension.this::replaceStep, EBiomeFlavor.ROME, version);
+			super(getProject(), TypescriptExtension.this::replaceStep, BiomeFlavor.ROME, version);
 		}
 
 		@Override

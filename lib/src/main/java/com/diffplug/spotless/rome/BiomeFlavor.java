@@ -21,7 +21,7 @@ package com.diffplug.spotless.rome;
  * <p>
  * Will be removed once the old Rome project is not supported anymore.
  */
-public enum EBiomeFlavor {
+public enum BiomeFlavor {
 	/** The new forked Biome project. */
 	BIOME("biome", "1.2.0", "biome.json", "biome-%s-%s-%s",
 			"https://github.com/biomejs/biome/releases/download/cli%%2Fv%s/biome-%s"),
@@ -42,7 +42,7 @@ public enum EBiomeFlavor {
 	private final String shortName;
 	private final String urlPattern;
 
-	EBiomeFlavor(String shortName, String defaultVersion, String configName, String downloadFilePattern,
+	BiomeFlavor(String shortName, String defaultVersion, String configName, String downloadFilePattern,
 			String urlPattern) {
 		this.shortName = shortName;
 		this.defaultVersion = defaultVersion;
