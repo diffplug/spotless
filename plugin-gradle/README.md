@@ -405,7 +405,6 @@ spotless {
       .editorConfigOverride(
         mapOf(
           "indent_size" to 2,
-          "ktlint_code_style" to "intellij_idea",
         )
       )
   }

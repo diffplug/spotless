@@ -11,7 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* **POTENTIALLY BREAKING** Support Ktlint 1.0.0 ([#1808](https://github.com/diffplug/spotless/pull/1808)).
+* Support Ktlint 1.0.0 ([#1808](https://github.com/diffplug/spotless/pull/1808)).
 
 ## [2.41.0] - 2023-08-29
 ### Added

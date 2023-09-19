@@ -36,7 +36,6 @@ class KtlintTest extends MavenIntegrationHarness {
 				"  <editorConfigOverride>\n" +
 				"    <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>\n" +
 				"    <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>\n" +
-				"    <ktlint_code_style>intellij_idea</ktlint_code_style>\n" +
 				"  </editorConfigOverride>\n" +
 				"</ktlint>");
 

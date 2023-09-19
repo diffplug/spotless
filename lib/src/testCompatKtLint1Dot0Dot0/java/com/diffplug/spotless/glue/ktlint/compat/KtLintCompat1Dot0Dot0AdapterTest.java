@@ -54,7 +54,6 @@ public class KtLintCompat1Dot0Dot0AdapterTest {
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 		editorConfigOverrideMap.put("indent_style", "tab");
-		editorConfigOverrideMap.put("ktlint_code_style", "intellij_idea");
 		editorConfigOverrideMap.put("ktlint_standard_no-semi", "disabled");
 
 		String formatted = KtLintCompat1Dot0Dot0Adapter.format(text, filePath, false, null, userData, editorConfigOverrideMap);

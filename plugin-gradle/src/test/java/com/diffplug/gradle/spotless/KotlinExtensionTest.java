@@ -73,7 +73,6 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    kotlin {",
 				"        ktlint().editorConfigOverride([",
-				"            ktlint_code_style: \"intellij_idea\",",
 				"            ktlint_experimental: \"enabled\",",
 				"            ij_kotlin_allow_trailing_comma: true,",
 				"            ij_kotlin_allow_trailing_comma_on_call_site: true",
