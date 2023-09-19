@@ -27,6 +27,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.attributes.Bundling;
+import org.gradle.api.attributes.Category;
 import org.gradle.api.initialization.dsl.ScriptHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.kotlin.KtLintStep;
 
 /** Should be package-private. */
 class GradleProvisioner {
@@ -122,14 +122,8 @@ class GradleProvisioner {
 				config.setCanBeConsumed(false);
 				config.setVisible(false);
 				config.attributes(attr -> {
-					final String type;
-					// See https://github.com/diffplug/spotless/pull/1808#discussion_r1321682984.
-					if (mavenCoords.stream().anyMatch(it -> it.startsWith(KtLintStep.MAVEN_COORDINATE_1_DOT))) {
-						type = Bundling.SHADOWED;
-					} else {
-						type = Bundling.EXTERNAL;
-					}
-					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, type));
+					attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
+					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
 				});
 				return config.resolve();
 			} catch (Exception e) {

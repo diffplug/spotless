@@ -32,6 +32,7 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ResolveException;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.attributes.Bundling;
+import org.gradle.api.attributes.Category;
 import org.gradle.testfixtures.ProjectBuilder;
 
 import com.diffplug.common.base.Errors;
@@ -39,7 +40,6 @@ import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.io.Files;
-import com.diffplug.spotless.kotlin.KtLintStep;
 
 public class TestProvisioner {
 	public static Project gradleProject(File dir) {
@@ -71,14 +71,8 @@ public class TestProvisioner {
 			config.setTransitive(withTransitives);
 			config.setDescription(mavenCoords.toString());
 			config.attributes(attr -> {
-				final String type;
-				// See https://github.com/diffplug/spotless/pull/1808#discussion_r1321682984.
-				if (mavenCoords.stream().anyMatch(it -> it.startsWith(KtLintStep.MAVEN_COORDINATE_1_DOT))) {
-					type = Bundling.SHADOWED;
-				} else {
-					type = Bundling.EXTERNAL;
-				}
-				attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, type));
+				attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
+				attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
 			});
 			try {
 				return config.resolve();
