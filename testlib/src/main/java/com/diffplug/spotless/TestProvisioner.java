@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ResolveException;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.attributes.Bundling;
+import org.gradle.api.attributes.Category;
 import org.gradle.testfixtures.ProjectBuilder;
 
 import com.diffplug.common.base.Errors;
@@ -70,6 +71,7 @@ public class TestProvisioner {
 			config.setTransitive(withTransitives);
 			config.setDescription(mavenCoords.toString());
 			config.attributes(attr -> {
+				attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
 				attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
 			});
 			try {
