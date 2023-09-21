@@ -14,6 +14,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Add support for biome. The Rome project [was renamed to Biome](https://biomejs.dev/blog/annoucing-biome/).
   The configuration is still the same, but you should switch to the new `biome` tag / function and adjust
   the version accordingly. ([#1804](https://github.com/diffplug/spotless/issues/1804)).
+* Support configuration of mirrors for P2 repositories in maven DSL ([#1697](https://github.com/diffplug/spotless/issues/1697)).
 ### Fixed
 * Added support for plugins when using Prettier version `3.0.0` and newer. ([#1802](https://github.com/diffplug/spotless/pull/1802))
 ### Changes
