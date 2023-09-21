@@ -15,10 +15,13 @@
  */
 package com.diffplug.spotless.extra;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -74,6 +77,10 @@ public abstract class EquoBasedStepBuilder {
 
 	public void setP2Mirrors(Map<String, String> p2Mirrors) {
 		this.p2Mirrors = Map.copyOf(p2Mirrors);
+	}
+
+	public void setP2Mirrors(Collection<P2Mirror> p2Mirrors) {
+		this.p2Mirrors = p2Mirrors.stream().collect(toMap(P2Mirror::getPrefix, P2Mirror::getUrl));
 	}
 
 	/** Returns the FormatterStep (whose state will be calculated lazily). */
