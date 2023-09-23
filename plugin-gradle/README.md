@@ -400,10 +400,14 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 spotless {
   kotlin {
     // version, userData and editorConfigOverride are all optional
-    ktlint("0.50.0")
+    ktlint("1.0.0")
       .userData(mapOf("android" to "true"))
       .setEditorConfigPath("$projectDir/config/.editorconfig")  // sample unusual placement
-      .editorConfigOverride(mapOf("indent_size" to 2))
+      .editorConfigOverride(
+        mapOf(
+          "indent_size" to 2,
+        )
+      )
   }
 }
 ```
@@ -1263,7 +1267,7 @@ To use a fixed binary, omit the `version` and specify a `pathToExe`:
 spotless {
   format 'rome', {
     target '**/*.js','**/*.ts','**/*.json'
-    rome().pathToExe("${project.buildDir.absolutePath}/bin/rome")
+    rome().pathToExe("${project.layout.buildDirectory.asFile.get().absolutePath}/bin/rome")
   }
 }
 ```

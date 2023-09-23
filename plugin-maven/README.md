@@ -409,7 +409,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <ktlint>
-  <version>0.43.2</version> <!-- optional -->
+  <version>1.0.0</version> <!-- optional -->
   <editorConfigOverride> <!-- optional -->
     <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>
     <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>
