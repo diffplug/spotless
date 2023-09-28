@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless.extra;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings("UWF_UNWRITTEN_FIELD")
 public class P2Mirror {
 
 	private String prefix;
