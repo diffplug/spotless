@@ -19,10 +19,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
-
-import javax.annotation.Nullable;
 
 /**
  * Represents the line endings which should be written by the tool.
@@ -76,8 +73,6 @@ public enum LineEnding {
 		}
 	}
 
-	private static volatile @Nullable BiFunction<File, Supplier<Iterable<File>>, Policy> gitAttributesPolicyCreator;
-
 	// @formatter:off
 	/** Should use {@link #createPolicy(File, Supplier)} instead, but this will work iff its a path-independent LineEnding policy. */
 	public Policy createPolicy() {
@@ -85,7 +80,7 @@ public enum LineEnding {
 		case PLATFORM_NATIVE:	return _platformNativePolicy;
 		case WINDOWS:			return WINDOWS_POLICY;
 		case UNIX:				return UNIX_POLICY;
-        case MAC_CLASSIC:       return MAC_CLASSIC_POLICY;
+		case MAC_CLASSIC:		return MAC_CLASSIC_POLICY;
 		default:	throw new UnsupportedOperationException(this + " is a path-specific line ending.");
 		}
 	}
@@ -129,7 +124,7 @@ public enum LineEnding {
 		case PLATFORM_NATIVE:	return _platformNative;
 		case WINDOWS:			return "\r\n";
 		case UNIX:				return "\n";
-		case MAC_CLASSIC:       return "\r";
+		case MAC_CLASSIC:		return "\r";
 		default:	throw new UnsupportedOperationException(this + " is a path-specific line ending.");
 		}
 	}
