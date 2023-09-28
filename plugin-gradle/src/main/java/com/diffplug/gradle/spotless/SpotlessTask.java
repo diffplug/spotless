@@ -148,7 +148,7 @@ public abstract class SpotlessTask extends DefaultTask {
 		}
 	}
 
-	protected File outputDirectory = new File(getProject().getBuildDir(), "spotless/" + getName());
+	protected File outputDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(), "spotless/" + getName());
 
 	@OutputDirectory
 	public File getOutputDirectory() {

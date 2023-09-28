@@ -16,11 +16,18 @@
 package com.diffplug.spotless.maven.typescript;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 /**
  * Rome formatter step for TypeScript.
+ * @deprecated Rome has transitioned to Biome. This will be removed shortly.
  */
+@Deprecated
 public class RomeTs extends AbstractRome {
+	public RomeTs() {
+		super(BiomeFlavor.ROME);
+	}
+
 	@Override
 	protected String getLanguage() {
 		return "ts?";

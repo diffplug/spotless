@@ -38,6 +38,7 @@ import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.npm.TsConfigFileType;
 import com.diffplug.spotless.npm.TsFmtFormatterStep;
 import com.diffplug.spotless.npm.TypedTsFmtConfigFile;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 public class TypescriptExtension extends FormatExtension {
 
@@ -58,7 +59,10 @@ public class TypescriptExtension extends FormatExtension {
 		return tsfmt(TsFmtFormatterStep.defaultDevDependenciesWithTsFmt(version));
 	}
 
-	/** Creates a {@code TypescriptFormatExtension} using exactly the specified npm packages. */
+	/**
+	 * Creates a {@code TypescriptFormatExtension} using exactly the specified npm
+	 * packages.
+	 */
 	public TypescriptFormatExtension tsfmt(Map<String, String> devDependencies) {
 		TypescriptFormatExtension tsfmt = new TypescriptFormatExtension(devDependencies);
 		addStep(tsfmt.createStep());
@@ -114,15 +118,12 @@ public class TypescriptExtension extends FormatExtension {
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
-			return TsFmtFormatterStep.create(
-					devDependencies,
-					provisioner(),
-					project.getProjectDir(),
-					project.getBuildDir(),
-					npmModulesCacheOrNull(),
-					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
-					typedConfigFile(),
-					config);
+			return TsFmtFormatterStep
+					.create(devDependencies, provisioner(), project.getProjectDir(),
+							project.getLayout().getBuildDirectory().getAsFile().get(), npmModulesCacheOrNull(),
+							new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(),
+									Arrays.asList(project.getProjectDir(), project.getRootDir())),
+							typedConfigFile(), config);
 		}
 
 		private TypedTsFmtConfigFile typedConfigFile() {
@@ -154,7 +155,8 @@ public class TypescriptExtension extends FormatExtension {
 	}
 
 	/**
-	 * Overrides the parser to be set to typescript, no matter what the user's config says.
+	 * Overrides the parser to be set to typescript, no matter what the user's
+	 * config says.
 	 */
 	public class TypescriptPrettierConfig extends PrettierConfig {
 		TypescriptPrettierConfig(Map<String, String> devDependencies) {
@@ -173,7 +175,8 @@ public class TypescriptExtension extends FormatExtension {
 			} else {
 				final Object replaced = this.prettierConfig.put("parser", "typescript");
 				if (replaced != null) {
-					getProject().getLogger().warn("overriding parser option to 'typescript'. Was set to '{}'", replaced);
+					getProject().getLogger().warn("overriding parser option to 'typescript'. Was set to '{}'",
+							replaced);
 				}
 			}
 		}
@@ -211,34 +214,53 @@ public class TypescriptExtension extends FormatExtension {
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
-			return EslintFormatterStep.create(
-					devDependencies,
-					provisioner(),
-					project.getProjectDir(),
-					project.getBuildDir(),
-					npmModulesCacheOrNull(),
-					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
+			return EslintFormatterStep.create(devDependencies, provisioner(), project.getProjectDir(),
+					project.getLayout().getBuildDirectory().getAsFile().get(), npmModulesCacheOrNull(),
+					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(),
+							Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					eslintConfig());
 		}
 
 		protected EslintConfig eslintConfig() {
-			return new EslintTypescriptConfig(
-					configFilePath != null ? getProject().file(configFilePath) : null,
-					configJs,
-					typescriptConfigFilePath != null ? getProject().file(typescriptConfigFilePath) : null);
+			return new EslintTypescriptConfig(configFilePath != null ? getProject().file(configFilePath) : null,
+					configJs, typescriptConfigFilePath != null ? getProject().file(typescriptConfigFilePath) : null);
 		}
+	}
+
+	/**
+	 * Defaults to downloading the default Biome version from the network. To work
+	 * offline, you can specify the path to the Biome executable via
+	 * {@code biome().pathToExe(...)}.
+	 */
+	public BiomeTs biome() {
+		return biome(null);
+	}
+
+	/** Downloads the given Biome version from the network. */
+	public BiomeTs biome(String version) {
+		var biomeConfig = new BiomeTs(version);
+		addStep(biomeConfig.createStep());
+		return biomeConfig;
 	}
 
 	/**
 	 * Defaults to downloading the default Rome version from the network. To work
 	 * offline, you can specify the path to the Rome executable via
 	 * {@code rome().pathToExe(...)}.
+	 *
+	 * @deprecated Use {@link #biome()}.
 	 */
+	@Deprecated
 	public RomeTs rome() {
 		return rome(null);
 	}
 
-	/** Downloads the given Rome version from the network. */
+	/**
+	 * Downloads the given Rome version from the network.
+	 *
+	 * @deprecated Use {@link #biome(String)}.
+	 */
+	@Deprecated
 	public RomeTs rome(String version) {
 		var romeConfig = new RomeTs(version);
 		addStep(romeConfig.createStep());
@@ -246,17 +268,45 @@ public class TypescriptExtension extends FormatExtension {
 	}
 
 	/**
-	 * Rome formatter step for TypeScript.
+	 * Biome formatter step for TypeScript.
 	 */
+	public class BiomeTs extends RomeStepConfig<BiomeTs> {
+		/**
+		 * Creates a new Biome formatter step config for formatting TypeScript files.
+		 * Unless overwritten, the given Biome version is downloaded from the network.
+		 *
+		 * @param version Biome version to use.
+		 */
+		public BiomeTs(String version) {
+			super(getProject(), TypescriptExtension.this::replaceStep, BiomeFlavor.BIOME, version);
+		}
+
+		@Override
+		protected String getLanguage() {
+			return "ts?";
+		}
+
+		@Override
+		protected BiomeTs getThis() {
+			return this;
+		}
+	}
+
+	/**
+	 * Rome formatter step for TypeScript.
+	 *
+	 * @deprecated Rome has transitioned to Biome. This will be removed shortly.
+	 */
+	@Deprecated
 	public class RomeTs extends RomeStepConfig<RomeTs> {
 		/**
-		 * Creates a new Rome formatter step config for formatting TypeScript files. Unless
-		 * overwritten, the given Rome version is downloaded from the network.
+		 * Creates a new Rome formatter step config for formatting TypeScript files.
+		 * Unless overwritten, the given Rome version is downloaded from the network.
 		 *
 		 * @param version Rome version to use.
 		 */
 		public RomeTs(String version) {
-			super(getProject(), TypescriptExtension.this::replaceStep, version);
+			super(getProject(), TypescriptExtension.this::replaceStep, BiomeFlavor.ROME, version);
 		}
 
 		@Override

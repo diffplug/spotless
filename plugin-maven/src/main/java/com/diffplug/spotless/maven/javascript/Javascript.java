@@ -42,6 +42,11 @@ public class Javascript extends FormatterFactory {
 		addStepFactory(eslint);
 	}
 
+	public void addBiome(BiomeJs biome) {
+		addStepFactory(biome);
+	}
+
+	@Deprecated
 	public void addRome(RomeJs rome) {
 		addStepFactory(rome);
 	}

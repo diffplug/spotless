@@ -18,13 +18,17 @@ package com.diffplug.spotless.maven.generic;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 /**
- * Generic Rome formatter step that detects the language of the input file from
- * the file name. It should be specified as a formatter step for a generic
- * {@code <format>}.
+ * See {@link Biome}.
+ * @deprecated Rome has transitioned to Biome. This will be removed shortly.
  */
 public class Rome extends AbstractRome {
+	public Rome() {
+		super(BiomeFlavor.ROME);
+	}
+
 	/**
 	 * Gets the language (syntax) of the input files to format. When
 	 * <code>null</code> or the empty string, the language is detected automatically

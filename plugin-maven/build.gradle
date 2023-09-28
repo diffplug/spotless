@@ -30,8 +30,8 @@ String VER_MAVEN_API = '3.0'
 String VER_ECLIPSE_AETHER = '1.1.0'
 String VER_PLEXUS_RESOURCES = '1.2.0'
 dependencies {
-	implementation project(':lib')
-	implementation project(':lib-extra')
+	implementation projects.lib
+	implementation projects.libExtra
 
 	compileOnly "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
 	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:${VER_MAVEN_API}"
