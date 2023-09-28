@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.42.0] - 2023-09-28
 ### Added
 * Support for biome. The Rome project [was renamed to Biome](https://biomejs.dev/blog/annoucing-biome/).
   The configuration is still the same, but you should switch to the new `biome` tag / function and adjust
