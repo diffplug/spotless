@@ -116,7 +116,7 @@ spotless {
     // don't need to set target, it is inferred from java
 
     // apply a specific flavor of google-java-format
-    googleJavaFormat('1.8').aosp().reflowLongStrings()
+    googleJavaFormat('1.8').aosp().reflowLongStrings().skipJavadocFormatting()
     // fix formatting of type annotations
     formatAnnotations()
     // make sure every file has the following copyright header.
@@ -207,7 +207,7 @@ spotless {
     // optional: you can specify a specific version (>= 1.8) and/or switch to AOSP style
     //   and/or reflow long strings
     //   and/or use custom group artifact (you probably don't need this)
-    googleJavaFormat('1.8').aosp().reflowLongStrings().reorderImports(false).groupArtifact('com.google.googlejavaformat:google-java-format')
+    googleJavaFormat('1.8').aosp().reflowLongStrings().formatJavadoc(false).reorderImports(false).groupArtifact('com.google.googlejavaformat:google-java-format')
 ```
 
 ### palantir-java-format
