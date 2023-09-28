@@ -24,9 +24,9 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.owasp.encoder.Encode;
 
-class RomeIntegrationTest extends GradleIntegrationHarness {
+class BiomeIntegrationTest extends GradleIntegrationHarness {
 	/**
-	 * Tests that rome can be used as a generic formatting step.
+	 * Tests that biome can be used as a generic formatting step.
 	 *
 	 * @throws Exception When a test failure occurs.
 	 */
@@ -38,20 +38,20 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    format 'myrome', {",
+				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        rome('12.0.0')",
+				"        biome('1.2.0')",
 				"    }",
 				"}");
-		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("rome_test.js").sameAsResource("rome/js/fileAfter.js");
+		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
 	}
 
 	/**
-	 * Tests that rome can be used as a JavaScript formatting step.
+	 * Tests that biome can be used as a JavaScript formatting step.
 	 *
 	 * @throws Exception When a test failure occurs.
 	 */
@@ -65,18 +65,18 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    javascript {",
 				"        target '**/*.js'",
-				"        rome('12.0.0')",
+				"        biome('1.2.0')",
 				"    }",
 				"}");
-		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("rome_test.js").sameAsResource("rome/js/fileAfter.js");
+		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
 	}
 
 	/**
-	 * Tests that rome can be used as a JSON formatting step.
+	 * Tests that biome can be used as a JSON formatting step.
 	 *
 	 * @throws Exception When a test failure occurs.
 	 */
@@ -90,18 +90,18 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    json {",
 				"        target '**/*.json'",
-				"        rome('12.0.0')",
+				"        biome('1.2.0')",
 				"    }",
 				"}");
-		setFile("rome_test.json").toResource("rome/json/fileBefore.json");
+		setFile("biome_test.json").toResource("biome/json/fileBefore.json");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("rome_test.json").sameAsResource("rome/json/fileAfter.json");
+		assertFile("biome_test.json").sameAsResource("biome/json/fileAfter.json");
 	}
 
 	/**
-	 * Tests that rome can be used as a TypeScript formatting step.
+	 * Tests that biome can be used as a TypeScript formatting step.
 	 *
 	 * @throws Exception When a test failure occurs.
 	 */
@@ -115,14 +115,14 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    typescript {",
 				"        target '**/*.ts'",
-				"        rome('12.0.0')",
+				"        biome('1.2.0')",
 				"    }",
 				"}");
-		setFile("rome_test.ts").toResource("rome/ts/fileBefore.ts");
+		setFile("biome_test.ts").toResource("biome/ts/fileBefore.ts");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("rome_test.ts").sameAsResource("rome/ts/fileAfter.ts");
+		assertFile("biome_test.ts").sameAsResource("biome/ts/fileAfter.ts");
 	}
 
 	/**
@@ -138,16 +138,16 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    format 'myrome', {",
+				"    format 'mybiome', {",
 				"        target '**/*.nosj'",
-				"        rome('12.0.0').language('json')",
+				"        biome('1.2.0').language('json')",
 				"    }",
 				"}");
-		setFile("rome_test.nosj").toResource("rome/json/fileBefore.json");
+		setFile("biome_test.nosj").toResource("biome/json/fileBefore.json");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("rome_test.nosj").sameAsResource("rome/json/fileAfter.json");
+		assertFile("biome_test.nosj").sameAsResource("biome/json/fileAfter.json");
 	}
 
 	/**
@@ -164,21 +164,21 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    format 'myrome', {",
+				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        rome('12.0.0').configPath('" + Encode.forJava(path) + "')",
+				"        biome('1.2.0').configPath('" + Encode.forJava(path) + "')",
 				"    }",
 				"}");
-		setFile("rome_test.js").toResource("rome/js/longLineBefore.js");
-		setFile("configs/rome.json").toResource("rome/config/line-width-120.json");
+		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
+		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("rome_test.js").sameAsResource("rome/js/longLineAfter120.js");
+		assertFile("biome_test.js").sameAsResource("biome/js/longLineAfter120.js");
 	}
 
 	/**
-	 * Tests that a path to the directory with the rome.json config file can be
+	 * Tests that a path to the directory with the biome.json config file can be
 	 * specified. Uses a config file with a line width of 120.
 	 *
 	 * @throws Exception When a test failure occurs.
@@ -191,21 +191,21 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    format 'myrome', {",
+				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        rome('12.0.0').configPath('configs')",
+				"        biome('1.2.0').configPath('configs')",
 				"    }",
 				"}");
-		setFile("rome_test.js").toResource("rome/js/longLineBefore.js");
-		setFile("configs/rome.json").toResource("rome/config/line-width-120.json");
+		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
+		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("rome_test.js").sameAsResource("rome/js/longLineAfter120.js");
+		assertFile("biome_test.js").sameAsResource("biome/js/longLineAfter120.js");
 	}
 
 	/**
-	 * Tests that a path to the directory with the rome.json config file can be
+	 * Tests that a path to the directory with the biome.json config file can be
 	 * specified. Uses a config file with a line width of 80.
 	 *
 	 * @throws Exception When a test failure occurs.
@@ -218,17 +218,17 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    format 'myrome', {",
+				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        rome('12.0.0').configPath('configs')",
+				"        biome('1.2.0').configPath('configs')",
 				"    }",
 				"}");
-		setFile("rome_test.js").toResource("rome/js/longLineBefore.js");
-		setFile("configs/rome.json").toResource("rome/config/line-width-80.json");
+		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
+		setFile("configs/biome.json").toResource("biome/config/line-width-80.json");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("rome_test.js").sameAsResource("rome/js/longLineAfter80.js");
+		assertFile("biome_test.js").sameAsResource("biome/js/longLineAfter80.js");
 	}
 
 	/**
@@ -238,25 +238,25 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 	 */
 	@Test
 	void downloadDirAbsolute() throws Exception {
-		var path = newFile("target/bin/rome").getAbsoluteFile().toString();
+		var path = newFile("target/bin/biome").getAbsoluteFile().toString();
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    format 'myrome', {",
+				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        rome('12.0.0').downloadDir('" + Encode.forJava(path) + "')",
+				"        biome('1.2.0').downloadDir('" + Encode.forJava(path) + "')",
 				"    }",
 				"}");
-		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
-		assertTrue(!newFile("target/bin/rome").exists() || newFile("target/bin/rome").list().length == 0);
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
+		assertTrue(!newFile("target/bin/biome").exists() || newFile("target/bin/biome").list().length == 0);
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("rome_test.js").sameAsResource("rome/js/fileAfter.js");
-		assertEquals(2, newFile("target/bin/rome").list().length);
+		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
+		assertEquals(2, newFile("target/bin/biome").list().length);
 	}
 
 	/**
@@ -273,18 +273,18 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    format 'myrome', {",
+				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        rome('12.0.0').downloadDir('target/bin/rome')",
+				"        biome('1.2.0').downloadDir('target/bin/biome')",
 				"    }",
 				"}");
-		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
-		assertTrue(!newFile("target/bin/rome").exists() || newFile("target/bin/rome").list().length == 0);
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
+		assertTrue(!newFile("target/bin/biome").exists() || newFile("target/bin/biome").list().length == 0);
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		assertFile("rome_test.js").sameAsResource("rome/js/fileAfter.js");
-		assertEquals(2, newFile("target/bin/rome").list().length);
+		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
+		assertEquals(2, newFile("target/bin/biome").list().length);
 	}
 
 	/**
@@ -300,17 +300,17 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    format 'myrome', {",
+				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        rome('12.0.0').pathToExe('rome/is/missing')",
+				"        biome('1.2.0').pathToExe('biome/is/missing')",
 				"    }",
 				"}");
-		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
 		assertThat(spotlessApply.getOutput()).contains("Build failed with an exception");
-		assertFile("rome_test.js").sameAsResource("rome/js/fileBefore.js");
-		assertThat(spotlessApply.getOutput()).contains("Could not create task ':spotlessMyromeApply'");
+		assertFile("biome_test.js").sameAsResource("biome/js/fileBefore.js");
+		assertThat(spotlessApply.getOutput()).contains("Could not create task ':spotlessMybiomeApply'");
 		assertThat(spotlessApply.getOutput()).contains("Biome executable does not exist");
 	}
 
@@ -327,17 +327,17 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
-				"    format 'myrome', {",
+				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        rome('12.0.0').language('json')",
+				"        biome('1.2.0').language('json')",
 				"    }",
 				"}");
-		setFile("rome_test.js").toResource("rome/js/fileBefore.js");
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
-		assertThat(spotlessApply.getOutput()).contains("spotlessMyrome FAILED");
-		assertFile("rome_test.js").sameAsResource("rome/js/fileBefore.js");
+		assertThat(spotlessApply.getOutput()).contains("spotlessMybiome FAILED");
+		assertFile("biome_test.js").sameAsResource("biome/js/fileBefore.js");
 		assertThat(spotlessApply.getOutput()).contains("Format with errors is disabled.");
-		assertThat(spotlessApply.getOutput()).contains("Step 'rome' found problem in 'rome_test.js'");
+		assertThat(spotlessApply.getOutput()).contains("Step 'biome' found problem in 'biome_test.js'");
 	}
 }

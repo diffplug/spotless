@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.json;
+package com.diffplug.spotless.maven.typescript;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
 import com.diffplug.spotless.rome.BiomeFlavor;
 
 /**
- * Rome formatter step for JSON.
- * @deprecated Rome has transitioned to Biome. This will be removed shortly.
+ * Biome formatter step for TypeScript.
  */
-@Deprecated
-public class RomeJson extends AbstractRome {
-	public RomeJson() {
-		super(BiomeFlavor.ROME);
+public class BiomeTs extends AbstractRome {
+	public BiomeTs() {
+		super(BiomeFlavor.BIOME);
 	}
 
 	@Override
 	protected String getLanguage() {
-		return "json";
+		return "ts?";
 	}
 }

@@ -64,9 +64,9 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [FreshMark](#freshmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
-  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Rome](#rome))
-  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Rome](#rome))
-  - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [rome](#rome), [jsonPatch](#jsonPatch))
+  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Biome](#biome))
+  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Biome](#biome))
+  - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [Biome](#biome), [jsonPatch](#jsonPatch))
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
   - Multiple languages
@@ -76,7 +76,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
       - c, c++, c#, objective-c, protobuf, javascript, java
     - [eclipse web tools platform](#eclipse-web-tools-platform)
       - css, html, js, json, xml
-    - [Rome](#rome) ([binary detection](#rome-binary), [config file](#rome-configuration-file), [input language](#rome-input-language))
+    - [Biome](#biome) ([binary detection](#biome-binary), [config file](#biome-configuration-file), [input language](#biome-input-language))
 - **Language independent**
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
@@ -654,7 +654,7 @@ spotless {
     tsfmt()    // has its own section below
     prettier() // has its own section below
     eslint()   // has its own section below
-    rome()     // has its own section below
+    biome()    // has its own section below
 
     licenseHeader '/* (C) $YEAR */', '(import|const|declare|export|var) ' // or licenseHeaderFile
     // note the '(import|const|...' argument - this is a regex which identifies the top
@@ -747,7 +747,7 @@ spotless {
 
     prettier() // has its own section below
     eslint()   // has its own section below
-    rome()     // has its own section below
+    biome()    // has its own section below
 
     licenseHeader '/* (C) $YEAR */', 'REGEX_TO_DEFINE_TOP_OF_FILE' // or licenseHeaderFile
   }
@@ -814,7 +814,7 @@ spotless {
     eclipseWtp('json')                    // see Eclipse web tools platform section
     gson()                                // has its own section below
     jackson()                             // has its own section below
-    rome()                                // has its own section below
+    biome()                               // has its own section below
     jsonPatch([])                         // has its own section below
   }
 }
@@ -1154,15 +1154,20 @@ Unlike Eclipse, Spotless WTP ignores per default external URIs in schema locatio
 external entities. To allow the access of external URIs, set the property `resolveExternalURI`
 to true.
 
-## Rome
+## Biome
 
-[homepage](https://rome.tools/). [changelog](https://github.com/rome/tools/blob/main/CHANGELOG.md). Rome is a formatter that for the Frontend written in Rust, which has a native binary,
-does not require Node.js and as such, is pretty fast. It can currently format
-JavaScript, TypeScript, JSX, and JSON, and may support
-[more frontend languages](https://docs.rome.tools/internals/language_support/)
-such as CSS in the future.
+[homepage](https://biomejs.dev/). [changelog](https://github.com/biomejs/biome/blob/main/CHANGELOG.md). Biome is
+a formatter that for the frontend written in Rust, which has a native binary, does not require Node.js and as such,
+is pretty fast. It can currently format JavaScript, TypeScript, JSX, and JSON, and may support
+[more frontend languages](https://biomejs.dev/internals/language-support/) such as CSS in the future.
 
-You can use rome in any language-specific format for supported languages, but
+Note: Biome [was formerly called Rome](https://biomejs.dev/blog/annoucing-biome/). Configurations with
+the old `<rome>` tag and `rome(...)` function are still supported for the time being. This will be removed
+in a future version, you should migrate to the new `<biome>` tag or `biome(...)` function. The configuration
+remains the same, you only need to update the version. If you are using a custom `rome.json` configuration file,
+you need to rename it to `biome.json`.
+
+You can use Biome in any language-specific format for supported languages, but
 usually you will be creating a generic format.
 
 ```gradle
@@ -1171,72 +1176,73 @@ spotless {
     // you have to set the target manually
     target 'src/*/webapp/**/*.js'
 
-    // Download Rome from the network if not already downloaded, see below for more info
-    rome('12.0.0')
+    // Download Biome from the network if not already downloaded, see below for more info
+    biome('1.2.0')
 
-    // (optional) Path to the directory with the rome.json conig file
-    rome('12.0.0').configPath("path/config/dir")
+    // (optional) Path to the directory with the biome.json conig file
+    biome('1.2.0').configPath("path/config/dir")
 
-    // (optional) Rome will auto detect the language based on the file extension.
+    // (optional) Biome will auto detect the language based on the file extension.
     // See below for possible values.
-    rome('12.0.0').language("js")
+    biome('1.2.0').language("js")
   }
 }
 ```
 
 **Limitations:**
-- The auto-discovery of config files (up the file tree) will not work when using
-  Rome within spotless.
 
-To apply Rome to more kinds of files with a different configuration, just add
+- The auto-discovery of config files (up the file tree) will not work when using
+  Biome within spotless.
+
+To apply Biome to more kinds of files with a different configuration, just add
 more formats:
 
 ```gradle
 spotless {
-  format 'rome-js', {
+  format 'biome-js', {
     target '**/*.js'
-    rome('12.0.0')
+    biome('1.2.0')
   }
-  format 'rome-ts', {
+  format 'biome-ts', {
     target '**/*.ts'
-    rome('12.0.0')
+    biome('1.2.0')
   }
-  format 'rome-json', {
+  format 'biome-json', {
     target '**/*.json'
-    rome('12.0.0')
+    biome('1.2.0')
   }
 }
 ```
 
-### Rome binary
+### Biome binary
 
-To format with Rome, spotless needs to find the Rome binary. By default,
+To format with Biome, spotless needs to find the Biome binary. By default,
 spotless downloads the binary for the given version from the network. This
 should be fine in most cases, but may not work e.g. when there is not connection
 to the internet.
 
-To download the Rome binary from the network, just specify a version:
+To download the Biome binary from the network, just specify a version:
 
 ```gradle
 spotless {
-  format 'rome', {
+  format 'biome', {
     target '**/*.js','**/*.ts','**/*.json'
-    rome('12.0.0')
+    biome('1.2.0')
   }
 }
 ```
 
-Spotless uses a default version when you do not specfiy a version, but this
-may change at any time, so we recommend that you always set the Rome version
+Spotless uses a default version when you do not specify a version, but this
+may change at any time, so we recommend that you always set the Biome version
 you want to use. Optionally, you can also specify a directory for the downloaded
-Rome binaries (defaults to `~/.m2/repository/com/diffplug/spotless/spotless-data/rome`):
+Biome binaries (defaults to `~/.m2/repository/com/diffplug/spotless/spotless-data/biome`):
 
 ```gradle
 spotless {
-  format 'rome', {
+  format 'biome', {
     target '**/*.js','**/*.ts','**/*.json'
      // Relative paths are resolved against the project's base directory
-    rome('12.0.0').downloadDir("${project.gradle.gradleUserHomeDir}/rome")
+    biome('1.2.0').downloadDir("${project.gradle.gradleUserHomeDir}/biome")
   }
 }
 ```
@@ -1245,68 +1251,59 @@ To use a fixed binary, omit the `version` and specify a `pathToExe`:
 
 ```gradle
 spotless {
-  format 'rome', {
+  format 'biome', {
     target '**/*.js','**/*.ts','**/*.json'
-    rome().pathToExe("${project.layout.buildDirectory.asFile.get().absolutePath}/bin/rome")
+    biome().pathToExe("${project.layout.buildDirectory.asFile.get().absolutePath}/bin/biome")
   }
 }
 ```
 
 Absolute paths are used as-is. Relative paths are resolved against the project's
-base directory. To use a pre-installed Rome binary on the user's path, specify
+base directory. To use a pre-installed Biome binary on the user's path, specify
 just a name without any slashes / backslashes:
 
 ```gradle
 spotless {
-  format 'rome', {
+  format 'biome', {
     target '**/*.js','**/*.ts','**/*.json'
-    // Uses the "rome" command, which must be on the user's path. -->
-    rome().pathToExe('rome')
+    // Uses the "biome" command, which must be on the user's path. -->
+    biome().pathToExe('biome')
   }
 }
 ```
 
-### Rome configuration file
+### Biome configuration file
 
-Rome is a biased formatter and linter without many options, but there are a few
-basic options. Rome uses a file named [rome.json](https://docs.rome.tools/configuration/)
+Biome is a biased formatter and linter without many options, but there are a few
+basic options. Biome uses a file named [biome.json](https://biomejs.dev/reference/configuration/)
 for its configuration. When none is specified, the default configuration from
-Rome is used. To use a custom configuration:
+Biome is used. To use a custom configuration:
 
 ```gradle
 spotless {
-  format 'rome', {
+  format 'biome', {
     target '**/*.js','**/*.ts','**/*.json'
-    // Must point to the directory with the "rome.json" config file -->
+    // Must point to the directory with the "biome.json" config file -->
     // Relative paths are resolved against the project's base directory -->
-    rome('12.0.0').configPath('./config')
+    biome('1.2.0').configPath('./config')
   }
 }
 ```
 
-### Rome input language
+### Biome input language
 
-By default, Rome detects the language / syntax of the files to format
+By default, Biome detects the language / syntax of the files to format
 automatically from the file extension. This may fail if your source code files
 have unusual extensions for some reason. If you are using the generic format,
 you can force a certain language like this:
 
 ```xml
-<configuration>
-  <formats>
-    <format>
-      <includes>
-        <include>src/**/typescript/**/*.mjson</include>
-      </includes>
-
-      <rome>
-        <version>12.0.0</version>
-        <language>json</language>
-      </prettier>
-    </rome>
-
-  </formats>
-</configuration>
+spotless {
+  format 'biome', {
+    target 'src/**/typescript/**/*.mjson'
+    biome('1.2.0').language('json')
+  }
+}
 ```
 
 The following languages are currently recognized:
