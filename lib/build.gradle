@@ -114,7 +114,7 @@ dependencies {
 	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:1.0.0'
 	compatKtLint1Dot0Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.0'
 	// palantirJavaFormat
-	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
+	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:2.38.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 	// scalafmt
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:3.7.3"
 	// sortPom
