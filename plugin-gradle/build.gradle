@@ -10,8 +10,8 @@ apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
 dependencies {
 	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
-		api project(':lib')
-		api project(':lib-extra')
+		api projects.lib
+		api projects.libExtra
 	} else {
 		api "com.diffplug.spotless:spotless-lib:${rootProject.spotlessChangelog.versionLast}"
 		api "com.diffplug.spotless:spotless-lib-extra:${rootProject.spotlessChangelog.versionLast}"
@@ -21,7 +21,7 @@ dependencies {
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
 
-	testImplementation project(':testlib')
+	testImplementation projects.testlib
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
