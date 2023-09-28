@@ -25,7 +25,7 @@ plugins {
 	// https://plugins.gradle.org/plugin/com.gradle.enterprise
 	id 'com.gradle.enterprise' version '3.14.1'
 	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
-	id 'dev.equo.ide' version '1.0.1' apply false
+	id 'dev.equo.ide' version '1.7.3' apply false
 }
 
 dependencyResolutionManagement {
