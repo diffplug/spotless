@@ -23,7 +23,7 @@ plugins {
 	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
 	id 'io.github.davidburstrom.version-compatibility' version '0.5.0' apply false
 	// https://plugins.gradle.org/plugin/com.gradle.enterprise
-	id 'com.gradle.enterprise' version '3.14.1'
+	id 'com.gradle.enterprise' version '3.15'
 	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
 	id 'dev.equo.ide' version '1.0.1' apply false
 }
