@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.40.0] - 2023-09-28
 ### Added
 * Add `-DspotlessIdeHook` that provides the ability to apply Spotless exclusively to a specified file. It accepts the absolute path of the file. ([#1782](https://github.com/diffplug/spotless/pull/1782))
   * BETA, subject to change until we have proven compatibility with some IDE plugins.
