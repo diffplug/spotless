@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,14 @@ public enum LineEnding {
 			return super.createPolicy();
 		}
 	},
+	/** Uses the same line endings as Git, and assumes that every single file being formatted will have the same line ending. */
+	GIT_ATTRIBUTES_FAST_ALLSAME {
+		/** .gitattributes is path-specific, so you must use {@link LineEnding#createPolicy(File, Supplier)}. */
+		@Override @Deprecated
+		public Policy createPolicy() {
+			return super.createPolicy();
+		}
+	},
 	/** {@code \n} on unix systems, {@code \r\n} on windows systems. */
 	PLATFORM_NATIVE,
 	/** {@code \r\n} */
@@ -51,7 +59,7 @@ public enum LineEnding {
 	public Policy createPolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
 		Objects.requireNonNull(projectDir, "projectDir");
 		Objects.requireNonNull(toFormat, "toFormat");
-		if (this != GIT_ATTRIBUTES) {
+		if (this != GIT_ATTRIBUTES && this != GIT_ATTRIBUTES_FAST_ALLSAME) {
 			return createPolicy();
 		} else {
 			if (gitAttributesPolicyCreator == null) {
@@ -64,7 +72,39 @@ public enum LineEnding {
 				}
 			}
 			// gitAttributesPolicyCreator will always be nonnull at this point
-			return gitAttributesPolicyCreator.apply(projectDir, toFormat);
+			Policy policy = gitAttributesPolicyCreator.apply(projectDir, toFormat);
+			if (this == GIT_ATTRIBUTES) {
+				return policy;
+			} else if (this == GIT_ATTRIBUTES_FAST_ALLSAME) {
+				return new LazyAllTheSame(policy, toFormat);
+			} else {
+				throw new IllegalArgumentException("Unknown " + this);
+			}
+		}
+	}
+
+	static class LazyAllTheSame extends LazyForwardingEquality<String> implements Policy {
+		private transient Policy policy;
+		private transient Supplier<Iterable<File>> toFormat;
+
+		public LazyAllTheSame(Policy policy, Supplier<Iterable<File>> toFormat) {
+			this.policy = policy;
+			this.toFormat = toFormat;
+		}
+
+		@Override
+		protected String calculateState() throws Exception {
+			var files = toFormat.get().iterator();
+			if (files.hasNext()) {
+				return policy.getEndingFor(files.next());
+			} else {
+				return LineEnding.UNIX.str();
+			}
+		}
+
+		@Override
+		public String getEndingFor(File file) {
+			return state();
 		}
 	}
 
