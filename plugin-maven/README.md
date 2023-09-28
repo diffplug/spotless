@@ -1586,7 +1586,7 @@ Spotless uses UTF-8 by default, but you can use [any encoding which Java support
 </configuration>
 ```
 
-Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports four line ending modes: `UNIX`, `WINDOWS`, `MAC_CLASSIC`, `PLATFORM_NATIVE`, and `GIT_ATTRIBUTES`.  The default value is `GIT_ATTRIBUTES`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time.
+Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports four line ending modes: `UNIX`, `WINDOWS`, `MAC_CLASSIC`, `PLATFORM_NATIVE`, `GIT_ATTRIBUTES`, and `GIT_ATTRIBUTES_FAST_ALLSAME`.  The default value is `GIT_ATTRIBUTES_FAST_ALLSAME`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time. `FAST_ALLSAME` just means that Spotless can assume that every file being formatted has the same line endings ([more info](https://github.com/diffplug/spotless/pull/1838)).
 
 You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
 
