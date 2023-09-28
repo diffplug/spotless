@@ -19,7 +19,7 @@ tasks.withType(JavaCompile).configureEach {
 dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
-	testImplementation project(':testlib')
+	testImplementation projects.testlib
 }
 
 tasks.withType(Test).configureEach {
