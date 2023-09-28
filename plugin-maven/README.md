@@ -109,6 +109,7 @@ To use it in your pom, just [add the Spotless dependency](https://search.maven.o
         <version>1.8</version>
         <style>AOSP</style>
         <reflowLongStrings>true</reflowLongStrings>
+        <formatJavadoc>false</formatJavadoc>
       </googleJavaFormat>
 
       <!-- make sure every file has the following copyright header.
@@ -233,6 +234,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
   <version>1.8</version>                      <!-- optional, 1.8 is minimum supported version -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
+  <formatJavadoc>false</formatJavadoc>        <!-- optional -->
   <!-- optional: custom group artifact (you probably don't need this) -->
   <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
 </googleJavaFormat>

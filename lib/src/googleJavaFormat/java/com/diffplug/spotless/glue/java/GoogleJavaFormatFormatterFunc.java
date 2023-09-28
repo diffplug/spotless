@@ -46,15 +46,17 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 
 	private final boolean reorderImports;
 
-	public GoogleJavaFormatFormatterFunc(@Nonnull String version, @Nonnull String style, boolean reflowStrings, boolean reorderImports) {
+	public GoogleJavaFormatFormatterFunc(@Nonnull String version, @Nonnull String style, boolean reflowStrings, boolean reorderImports, boolean formatJavadoc) {
 		this.version = Objects.requireNonNull(version);
 		this.formatterStyle = Style.valueOf(Objects.requireNonNull(style));
 		this.reflowStrings = reflowStrings;
 		this.reorderImports = reorderImports;
 
-		this.formatter = new Formatter(JavaFormatterOptions.builder()
-				.style(formatterStyle)
-				.build());
+		JavaFormatterOptions.Builder builder = JavaFormatterOptions.builder().style(formatterStyle);
+		if (!formatJavadoc) {
+			builder = builder.formatJavadoc(false);
+		}
+		this.formatter = new Formatter(builder.build());
 	}
 
 	@Override
