@@ -2,7 +2,7 @@ apply plugin: 'dev.equo.ide'
 equoIde {
 	branding().title('Spotless').icon(file('_images/spotless_logo.png'))
 	welcome().openUrl('https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md')
-	gradleBuildship().autoImport('.')
+	//gradleBuildship().autoImport('.')
 }
 
 repositories {
