@@ -59,52 +59,20 @@ public enum LineEnding {
 	public Policy createPolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
 		Objects.requireNonNull(projectDir, "projectDir");
 		Objects.requireNonNull(toFormat, "toFormat");
-		if (this != GIT_ATTRIBUTES && this != GIT_ATTRIBUTES_FAST_ALLSAME) {
-			return createPolicy();
+		String gitAttributesMethod;
+		if (this == GIT_ATTRIBUTES) {
+			gitAttributesMethod = "create";
+		} else if (this == GIT_ATTRIBUTES_FAST_ALLSAME) {
+			gitAttributesMethod = "createFastAllSame";
 		} else {
-			if (gitAttributesPolicyCreator == null) {
-				try {
-					Class<?> clazz = Class.forName("com.diffplug.spotless.extra.GitAttributesLineEndings");
-					Method method = clazz.getMethod("create", File.class, Supplier.class);
-					gitAttributesPolicyCreator = (proj, target) -> ThrowingEx.get(() -> (Policy) method.invoke(null, proj, target));
-				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-					throw new IllegalStateException("LineEnding.GIT_ATTRIBUTES requires the spotless-lib-extra library, but it is not on the classpath", e);
-				}
-			}
-			// gitAttributesPolicyCreator will always be nonnull at this point
-			Policy policy = gitAttributesPolicyCreator.apply(projectDir, toFormat);
-			if (this == GIT_ATTRIBUTES) {
-				return policy;
-			} else if (this == GIT_ATTRIBUTES_FAST_ALLSAME) {
-				return new LazyAllTheSame(policy, toFormat);
-			} else {
-				throw new IllegalArgumentException("Unknown " + this);
-			}
+			return createPolicy();
 		}
-	}
-
-	static class LazyAllTheSame extends LazyForwardingEquality<String> implements Policy {
-		private transient Policy policy;
-		private transient Supplier<Iterable<File>> toFormat;
-
-		public LazyAllTheSame(Policy policy, Supplier<Iterable<File>> toFormat) {
-			this.policy = policy;
-			this.toFormat = toFormat;
-		}
-
-		@Override
-		protected String calculateState() throws Exception {
-			var files = toFormat.get().iterator();
-			if (files.hasNext()) {
-				return policy.getEndingFor(files.next());
-			} else {
-				return LineEnding.UNIX.str();
-			}
-		}
-
-		@Override
-		public String getEndingFor(File file) {
-			return state();
+		try {
+			Class<?> clazz = Class.forName("com.diffplug.spotless.extra.GitAttributesLineEndings");
+			Method method = clazz.getMethod(gitAttributesMethod, File.class, Supplier.class);
+			return ThrowingEx.get(() -> (Policy) method.invoke(null, projectDir, toFormat));
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
+			throw new IllegalStateException("LineEnding.GIT_ATTRIBUTES requires the spotless-lib-extra library, but it is not on the classpath", e);
 		}
 	}
 

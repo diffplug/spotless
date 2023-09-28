@@ -69,6 +69,41 @@ public final class GitAttributesLineEndings {
 	private GitAttributesLineEndings() {}
 
 	/**
+	 * Creates a line-endings policy which matches {@link #create(File, Supplier)},
+	 * which is much faster at the cost that every file under the policy
+	 * is assumed to have the same line endings as the first file.
+	 */
+	public static LineEnding.Policy createFastAllSame(File projectDir, Supplier<Iterable<File>> toFormat) {
+		return new LazyAllTheSame(projectDir, toFormat);
+	}
+
+	static class LazyAllTheSame extends LazyForwardingEquality<String> implements LineEnding.Policy {
+		transient File projectDir;
+		transient Supplier<Iterable<File>> toFormat;
+
+		public LazyAllTheSame(File projectDir, Supplier<Iterable<File>> toFormat) {
+			this.projectDir = projectDir;
+			this.toFormat = toFormat;
+		}
+
+		@Override
+		protected String calculateState() throws Exception {
+			var files = toFormat.get().iterator();
+			if (files.hasNext()) {
+				Runtime runtime = new RuntimeInit(projectDir).atRuntime();
+				return runtime.getEndingFor(files.next());
+			} else {
+				return LineEnding.UNIX.str();
+			}
+		}
+
+		@Override
+		public String getEndingFor(File file) {
+			return state();
+		}
+	}
+
+	/**
 	 * Creates a line-endings policy whose serialized state is relativized against projectDir,
 	 * at the cost of eagerly evaluating the line-ending state of every target file when the
 	 * policy is checked for equality with another policy.
