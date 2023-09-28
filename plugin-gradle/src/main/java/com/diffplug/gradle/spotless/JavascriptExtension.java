@@ -34,6 +34,7 @@ import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 public class JavascriptExtension extends FormatExtension {
 
@@ -58,7 +59,8 @@ public class JavascriptExtension extends FormatExtension {
 		return eslint;
 	}
 
-	public static abstract class EslintBaseConfig<T extends EslintBaseConfig<?>> extends NpmStepConfig<EslintBaseConfig<T>> {
+	public static abstract class EslintBaseConfig<T extends EslintBaseConfig<?>>
+			extends NpmStepConfig<EslintBaseConfig<T>> {
 		Map<String, String> devDependencies = new LinkedHashMap<>();
 
 		@Nullable
@@ -67,7 +69,8 @@ public class JavascriptExtension extends FormatExtension {
 		@Nullable
 		String configJs = null;
 
-		public EslintBaseConfig(Project project, Consumer<FormatterStep> replaceStep, Map<String, String> devDependencies) {
+		public EslintBaseConfig(Project project, Consumer<FormatterStep> replaceStep,
+				Map<String, String> devDependencies) {
 			super(project, replaceStep);
 			this.devDependencies.putAll(requireNonNull(devDependencies));
 		}
@@ -103,13 +106,10 @@ public class JavascriptExtension extends FormatExtension {
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
-			return EslintFormatterStep.create(
-					devDependencies,
-					provisioner(),
-					project.getProjectDir(),
-					project.getBuildDir(),
-					npmModulesCacheOrNull(),
-					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(), Arrays.asList(project.getProjectDir(), project.getRootDir())),
+			return EslintFormatterStep.create(devDependencies, provisioner(), project.getProjectDir(),
+					project.getLayout().getBuildDirectory().getAsFile().get(), npmModulesCacheOrNull(),
+					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(),
+							Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					eslintConfig());
 		}
 
@@ -139,15 +139,39 @@ public class JavascriptExtension extends FormatExtension {
 	}
 
 	/**
+	 * Defaults to downloading the default Biome version from the network. To work
+	 * offline, you can specify the path to the Biome executable via
+	 * {@code biome().pathToExe(...)}.
+	 */
+	public BiomeJs biome() {
+		return biome(null);
+	}
+
+	/** Downloads the given Biome version from the network. */
+	public BiomeJs biome(String version) {
+		var biomeConfig = new BiomeJs(version);
+		addStep(biomeConfig.createStep());
+		return biomeConfig;
+	}
+
+	/**
 	 * Defaults to downloading the default Rome version from the network. To work
 	 * offline, you can specify the path to the Rome executable via
 	 * {@code rome().pathToExe(...)}.
+	 *
+	 * @deprecated Use {@link #biome()}.
 	 */
+	@Deprecated
 	public RomeJs rome() {
 		return rome(null);
 	}
 
-	/** Downloads the given Rome version from the network. */
+	/**
+	 * Downloads the given Rome version from the network.
+	 *
+	 * @deprecated Use {@link #biome(String)}.
+	 */
+	@Deprecated
 	public RomeJs rome(String version) {
 		var romeConfig = new RomeJs(version);
 		addStep(romeConfig.createStep());
@@ -155,21 +179,49 @@ public class JavascriptExtension extends FormatExtension {
 	}
 
 	private static final String DEFAULT_PRETTIER_JS_PARSER = "babel";
-	private static final ImmutableList<String> PRETTIER_JS_PARSERS = ImmutableList.of(DEFAULT_PRETTIER_JS_PARSER, "babel-flow", "flow");
+	private static final ImmutableList<String> PRETTIER_JS_PARSERS = ImmutableList.of(DEFAULT_PRETTIER_JS_PARSER,
+			"babel-flow", "flow");
+
+	/**
+	 * Biome formatter step for JavaScript.
+	 */
+	public class BiomeJs extends RomeStepConfig<BiomeJs> {
+		/**
+		 * Creates a new Biome formatter step config for formatting JavaScript files.
+		 * Unless overwritten, the given Biome version is downloaded from the network.
+		 *
+		 * @param version Biome version to use.
+		 */
+		public BiomeJs(String version) {
+			super(getProject(), JavascriptExtension.this::replaceStep, BiomeFlavor.BIOME, version);
+		}
+
+		@Override
+		protected String getLanguage() {
+			return "js?";
+		}
+
+		@Override
+		protected BiomeJs getThis() {
+			return this;
+		}
+	}
 
 	/**
 	 * Rome formatter step for JavaScript.
+	 *
+	 * @deprecated Rome has transitioned to Biome. This will be removed shortly.
 	 */
+	@Deprecated
 	public class RomeJs extends RomeStepConfig<RomeJs> {
-
 		/**
-		 * Creates a new Rome formatter step config for formatting JavaScript files. Unless
-		 * overwritten, the given Rome version is downloaded from the network.
+		 * Creates a new Rome formatter step config for formatting JavaScript files.
+		 * Unless overwritten, the given Rome version is downloaded from the network.
 		 *
 		 * @param version Rome version to use.
 		 */
 		public RomeJs(String version) {
-			super(getProject(), JavascriptExtension.this::replaceStep, version);
+			super(getProject(), JavascriptExtension.this::replaceStep, BiomeFlavor.ROME, version);
 		}
 
 		@Override
@@ -208,7 +260,9 @@ public class JavascriptExtension extends FormatExtension {
 				} else {
 					this.prettierConfig.put("parser", DEFAULT_PRETTIER_JS_PARSER);
 					if (currentParser != null) {
-						getProject().getLogger().warn("Overriding parser option to '{}'. (Was set to '{}'.) Set it to another js parser if you have problems with '{}'.", DEFAULT_PRETTIER_JS_PARSER, currentParser, DEFAULT_PRETTIER_JS_PARSER);
+						getProject().getLogger().warn(
+								"Overriding parser option to '{}'. (Was set to '{}'.) Set it to another js parser if you have problems with '{}'.",
+								DEFAULT_PRETTIER_JS_PARSER, currentParser, DEFAULT_PRETTIER_JS_PARSER);
 					}
 				}
 

@@ -48,6 +48,7 @@ versionCompatibility {
 				'0.48.0',
 				'0.49.0',
 				'0.50.0',
+				'1.0.0',
 			]
 			targetSourceSetName = 'ktlint'
 		}
@@ -104,10 +105,14 @@ dependencies {
 	compatKtLint0Dot49Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:0.49.0'
 	compatKtLint0Dot49Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.49.0'
 	compatKtLint0Dot49Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.0'
-	// ktlint latest supported version
+	// ktlint previous supported version
 	compatKtLint0Dot50Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:0.50.0'
 	compatKtLint0Dot50Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.50.0'
 	compatKtLint0Dot50Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.0'
+	// ktlint latest supported version
+	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:1.0.0'
+	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:1.0.0'
+	compatKtLint1Dot0Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.0'
 	// palantirJavaFormat
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 	// scalafmt

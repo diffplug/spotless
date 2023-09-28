@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![Maven central](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.38.0-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.38.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.39.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.39.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -49,15 +49,15 @@ user@machine repo % mvn spotless:check
   - [Sql](#sql) ([dbeaver](#dbeaver))
   - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
   - [Markdown](#markdown) ([flexmark](#flexmark))
-  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Rome](#rome))
-  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Rome](#rome))
-  - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [rome](#rome), [jsonPatch](#jsonPatch))
+  - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Biome](#biome))
+  - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Biome](#biome))
+  - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [Biome](#biome), [jsonPatch](#jsonPatch))
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
-    - [Rome](#rome) ([binary detection](#rome-binary), [config file](#rome-configuration-file), [input language](#rome-input-language))
+    - [Biome](#biome) ([binary detection](#biome-binary), [config file](#biome-configuration-file), [input language](#biome-input-language))
 - **Language independent**
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
@@ -109,6 +109,7 @@ To use it in your pom, just [add the Spotless dependency](https://search.maven.o
         <version>1.8</version>
         <style>AOSP</style>
         <reflowLongStrings>true</reflowLongStrings>
+        <formatJavadoc>false</formatJavadoc>
       </googleJavaFormat>
 
       <!-- make sure every file has the following copyright header.
@@ -233,6 +234,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
   <version>1.8</version>                      <!-- optional, 1.8 is minimum supported version -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
+  <formatJavadoc>false</formatJavadoc>        <!-- optional -->
   <!-- optional: custom group artifact (you probably don't need this) -->
   <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
 </googleJavaFormat>
@@ -409,7 +411,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <ktlint>
-  <version>0.43.2</version> <!-- optional -->
+  <version>1.0.0</version> <!-- optional -->
   <editorConfigOverride> <!-- optional -->
     <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>
     <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>
@@ -712,7 +714,7 @@ Currently, none of the available options can be configured yet. It uses only the
     <tsfmt/>    <!-- has its own section below -->
     <prettier/> <!-- has its own section below -->
     <eslint/>   <!-- has its own section below -->
-    <rome/>     <!-- has its own section below -->
+    <biome/>    <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
@@ -823,7 +825,7 @@ For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmr
 
     <prettier/> <!-- has its own section below -->
     <eslint/>   <!-- has its own section below -->
-    <rome/>     <!-- has its own section below -->
+    <biome/>    <!-- has its own section below -->
 
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
@@ -900,7 +902,7 @@ For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmr
     <simple />         <!-- has its own section below -->
     <gson />           <!-- has its own section below -->
     <jackson />        <!-- has its own section below -->
-    <rome />           <!-- has its own section below -->
+    <biome />          <!-- has its own section below -->
     <jsonPatch />      <!-- has its own section below -->
   </json>
 </configuration>
@@ -1074,6 +1076,8 @@ You can use prettier in any language-specific format, but usually you will be cr
         <configFile>${project.basedir}/path/to/configfile</configFile>
         <config>
             <useTabs>true</useTabs>
+            <!-- Prettier v3 Only - Comma Delimited -->
+            <plugins>@prettier/plugin-php</plugins>
         </config>
       </prettier>
     </format>
@@ -1119,6 +1123,7 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
         <config>
             <tabWidth>4</tabWidth>
             <parser>java</parser>
+            <plugins>prettier-plugin-java</plugins><!-- this is only for prettier 3.0.0 and above: an additional 'plugins' config element is required -->
         </config>
       </prettier>
     </format>
@@ -1144,6 +1149,7 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
         <config>
             <tabWidth>3</tabWidth>
             <parser>php</parser>
+            <plugins>@prettier/plugin-php</plugins><!-- this is only for prettier 3.0.0 and above: an additional 'plugins' config element is required -->
         </config>
       </prettier>
     </format>
@@ -1248,15 +1254,20 @@ to true.
 <a name="format"></a>
 <a name="custom rules"></a>
 
-## Rome
+## Biome
 
-[homepage](https://rome.tools/). [changelog](https://github.com/rome/tools/blob/main/CHANGELOG.md). Rome is a formatter that for the Frontend written in Rust, which has a native binary,
-does not require Node.js and as such, is pretty fast. It can currently format
-JavaScript, TypeScript, JSX, and JSON, and may support
-[more frontend languages](https://docs.rome.tools/internals/language_support/)
-such as CSS in the future.
+[homepage](https://biomejs.dev/). [changelog](https://github.com/biomejs/biome/blob/main/CHANGELOG.md). Biome is
+a formatter that for the frontend written in Rust, which has a native binary, does not require Node.js and as such,
+is pretty fast. It can currently format JavaScript, TypeScript, JSX, and JSON, and may support
+[more frontend languages](https://biomejs.dev/internals/language-support/) such as CSS in the future.
 
-You can use rome in any language-specific format for supported languages, but
+Note: Biome [was formerly called Rome](https://biomejs.dev/blog/annoucing-biome/). Configurations with
+the old `<rome>` tag and `rome(...)` function are still supported for the time being. This will be removed
+in a future version, you should migrate to the new `<biome>` tag or `biome(...)` function. The configuration
+remains the same, you only need to update the version. If you are using a custom `rome.json` configuration file,
+you need to rename it to `biome.json`.
+
+You can use Biome in any language-specific format for supported languages, but
 usually you will be creating a generic format.
 
 ```xml
@@ -1267,18 +1278,18 @@ usually you will be creating a generic format.
         <include>src/**/typescript/**/*.ts</include>
       </includes>
 
-      <rome>
-        <!-- Download Rome from the network if not already downloaded, see below for more info  -->
-        <version>12.0.0</version>
+      <biome>
+        <!-- Download Biome from the network if not already downloaded, see below for more info  -->
+        <version>1.2.0</version>
 
-        <!-- (optional) Path to the directory with the rome.json conig file -->
+        <!-- (optional) Path to the directory with the biome.json conig file -->
         <configPath>${project.basedir}/path/to/config/dir</configPath>
 
-        <!-- (optional) Rome will auto detect the language based on the file extension. -->
+        <!-- (optional) Biome will auto detect the language based on the file extension. -->
         <!-- See below for possible values. -->
         <language>ts</language>
       </prettier>
-    </rome>
+    </biome>
 
   </formats>
 </configuration>
@@ -1286,85 +1297,85 @@ usually you will be creating a generic format.
 
 **Limitations:**
 - The auto-discovery of config files (up the file tree) will not work when using
-  Rome within spotless.
+  Biome within spotless.
 
-To apply Rome to more kinds of files with a different configuration, just add
-more formats
+To apply Biome to more kinds of files with a different configuration, just add
+more formats:
 
 ```xml
 <configuration>
   <formats>
-    <format><includes>src/**/*.ts</includes><rome/></format>
-    <format><includes>src/**/*.js</includes><rome/></format>
+    <format><includes>src/**/*.ts</includes><biome/></format>
+    <format><includes>src/**/*.js</includes><biome/></format>
 </configuration>
 ```
 
-### Rome binary
+### Biome binary
 
-To format with Rome, spotless needs to find the Rome binary. By default,
+To format with Biome, spotless needs to find the Biome binary. By default,
 spotless downloads the binary for the given version from the network. This
 should be fine in most cases, but may not work e.g. when there is not connection
 to the internet.
 
-To download the Rome binary from the network, just specify a version:
+To download the Biome binary from the network, just specify a version:
 
 ```xml
-<rome>
-  <version>12.0.0</version>
-</rome>
+<biome>
+  <version>1.2.0</version>
+</biome>
 ```
 
-Spotless uses a default version when you do not specfiy a version, but this
-may change at any time, so we recommend that you always set the Rome version
+Spotless uses a default version when you do not specify a version, but this
+may change at any time, so we recommend that you always set the Biome version
 you want to use. Optionally, you can also specify a directory for the downloaded
-Rome binaries (defaults to `~/.m2/repository/com/diffplug/spotless/spotless-data/rome`):
+Biome binaries (defaults to `~/.m2/repository/com/diffplug/spotless/spotless-data/biome`):
 
 ```xml
-<rome>
-  <version>12.0.0</version>
+<biome>
+  <version>1.2.0</version>
   <!-- Relative paths are resolved against the project's base directory -->
-  <downloadDir>${user.home}/rome</downloadDir>
-</rome>
+  <downloadDir>${user.home}/biome</downloadDir>
+</biome>
 ```
 
 To use a fixed binary, omit the `version` and specify a `pathToExe`:
 
 ```xml
-<rome>
-  <pathToExe>${project.basedir}/bin/rome</pathToExe>
-</rome>
+<biome>
+  <pathToExe>${project.basedir}/bin/biome</pathToExe>
+</biome>
 ```
 
 Absolute paths are used as-is. Relative paths are resolved against the project's
-base directory. To use a pre-installed Rome binary on the user's path, specify
+base directory. To use a pre-installed Biome binary on the user's path, specify
 just a name without any slashes / backslashes:
 
 
 ```xml
-<rome>
-  <!-- Uses the "rome" command, which must be on the user's path. -->
-  <pathToExe>rome</pathToExe>
-</rome>
+<biome>
+  <!-- Uses the "biome" command, which must be on the user's path. -->
+  <pathToExe>biome</pathToExe>
+</biome>
 ```
 
-### Rome configuration file
+### Biome configuration file
 
-Rome is a biased formatter and linter without many options, but there are a few
-basic options. Rome uses a file named [rome.json](https://docs.rome.tools/configuration/)
+Biome is a biased formatter and linter without many options, but there are a few
+basic options. Biome uses a file named [biome.json](https://biomejs.dev/reference/configuration/)
 for its configuration. When none is specified, the default configuration from
-Rome is used. To use a custom configuration:
+Biome is used. To use a custom configuration:
 
 ```xml
-<rome>
-  <!-- Must point to the directory with the "rome.json" config file -->
+<biome>
+  <!-- Must point to the directory with the "biome.json" config file -->
   <!-- Relative paths are resolved against the project's base directory -->
   <configPath>${project.basedir}</configPath>
-</rome>
+</biome>
 ```
 
-### Rome input language
+### Biome input language
 
-By default, Rome detects the language / syntax of the files to format
+By default, Biome detects the language / syntax of the files to format
 automatically from the file extension. This may fail if your source code files
 have unusual extensions for some reason. If you are using the generic format,
 you can force a certain language like this:
@@ -1377,12 +1388,11 @@ you can force a certain language like this:
         <include>src/**/typescript/**/*.mjson</include>
       </includes>
 
-      <rome>
-        <version>12.0.0</version>
+      <biome>
+        <version>1.2.0</version>
         <language>json</language>
-      </prettier>
-    </rome>
-
+      </biome>
+    </format>
   </formats>
 </configuration>
 ```

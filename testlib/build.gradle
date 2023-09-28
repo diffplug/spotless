@@ -6,8 +6,8 @@ version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {
-	api project(':lib')
-	api files(project(':lib').sourceSets.sortPom.output.classesDirs)
+	api projects.lib
+	api files(projects.lib.dependencyProject.sourceSets.sortPom.output.classesDirs)
 	api "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	api "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 	api "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"

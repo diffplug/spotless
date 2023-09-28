@@ -16,11 +16,18 @@
 package com.diffplug.spotless.maven.json;
 
 import com.diffplug.spotless.maven.rome.AbstractRome;
+import com.diffplug.spotless.rome.BiomeFlavor;
 
 /**
  * Rome formatter step for JSON.
+ * @deprecated Rome has transitioned to Biome. This will be removed shortly.
  */
+@Deprecated
 public class RomeJson extends AbstractRome {
+	public RomeJson() {
+		super(BiomeFlavor.ROME);
+	}
+
 	@Override
 	protected String getLanguage() {
 		return "json";

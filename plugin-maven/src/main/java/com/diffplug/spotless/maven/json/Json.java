@@ -50,6 +50,11 @@ public class Json extends FormatterFactory {
 		addStepFactory(jackson);
 	}
 
+	public void addBiome(BiomeJson biome) {
+		addStepFactory(biome);
+	}
+
+	@Deprecated
 	public void addRome(RomeJson rome) {
 		addStepFactory(rome);
 	}

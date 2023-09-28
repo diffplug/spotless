@@ -32,7 +32,7 @@ public final class GrEclipseFormatterStep {
 	private GrEclipseFormatterStep() {}
 
 	private static final String NAME = "eclipse groovy formatter";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "4.26").add(17, "4.27");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "4.26").add(17, "4.28");
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
@@ -50,7 +50,9 @@ public final class GrEclipseFormatterStep {
 					throw new IllegalArgumentException("4.8 is the oldest version we support, this was " + version);
 				}
 				String greclipseVersion;
-				if (eVersion >= 18) {
+				if (eVersion >= 28) {
+					greclipseVersion = "5." + (eVersion - 28) + ".0";
+				} else if (eVersion >= 18) {
 					greclipseVersion = "4." + (eVersion - 18) + ".0";
 				} else {
 					greclipseVersion = "3." + (eVersion - 8) + ".0";

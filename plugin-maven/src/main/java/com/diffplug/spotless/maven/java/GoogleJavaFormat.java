@@ -38,6 +38,9 @@ public class GoogleJavaFormat implements FormatterStepFactory {
 	@Parameter
 	private Boolean reorderImports;
 
+	@Parameter
+	private Boolean formatJavadoc;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : GoogleJavaFormatStep.defaultGroupArtifact();
@@ -45,6 +48,7 @@ public class GoogleJavaFormat implements FormatterStepFactory {
 		String style = this.style != null ? this.style : GoogleJavaFormatStep.defaultStyle();
 		boolean reflowLongStrings = this.reflowLongStrings != null ? this.reflowLongStrings : GoogleJavaFormatStep.defaultReflowLongStrings();
 		boolean reorderImports = this.reorderImports != null ? this.reorderImports : GoogleJavaFormatStep.defaultReorderImports();
-		return GoogleJavaFormatStep.create(groupArtifact, version, style, config.getProvisioner(), reflowLongStrings, reorderImports);
+		boolean formatJavadoc = this.formatJavadoc != null ? this.formatJavadoc : GoogleJavaFormatStep.defaultFormatJavadoc();
+		return GoogleJavaFormatStep.create(groupArtifact, version, style, config.getProvisioner(), reflowLongStrings, reorderImports, formatJavadoc);
 	}
 }

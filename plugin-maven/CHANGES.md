@@ -4,15 +4,41 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* Added support for `google-java-format`'s `skip-javadoc-formatting` option ([#1793](https://github.com/diffplug/spotless/pull/1793))
+* Added support for biome. The Rome project [was renamed to Biome](https://biomejs.dev/blog/annoucing-biome/).
+  The configuration is still the same, but you should switch to the new `<biome>` tag and adjust
+  the version accordingly. ([#1804](https://github.com/diffplug/spotless/issues/1804)).
+* Support configuration of mirrors for P2 repositories ([#1697](https://github.com/diffplug/spotless/issues/1697)):
+  ```
+  <eclipse>
+    <p2Mirrors>
+      <p2Mirror>
+        <prefix>https://download.eclipse.org/</prefix>
+        <url>https://some.internal.mirror/eclipse</url>
+      </p2Mirror>
+    </p2Mirrors>
+  </eclipse>
+  ```
+  Mirrors are selected by prefix match, for example `https://download.eclipse.org/eclipse/updates/4.26/` will be redirected to `https://some.internal.mirror/eclipse/eclipse/updates/4.26/`.
+  The same configuration exists for `<greclipse>` and `<eclipseCdt>`.
+### Fixed
+* Fixed support for plugins when using Prettier version `3.0.0` and newer. ([#1802](https://github.com/diffplug/spotless/pull/1802))
+### Changes
+* Bump default `flexmark` version to latest `0.64.0` -> `0.64.8`. ([#1801](https://github.com/diffplug/spotless/pull/1801))
+* Bump default `ktlint` version to latest `0.50.0` -> `1.0.0`. ([#1808](https://github.com/diffplug/spotless/pull/1808))
+
+## [2.39.0] - 2023-08-29
+### Added
 * Add a `jsonPatch` step to `json` formatter configurations. This allows patching of JSON documents using [JSON Patches](https://jsonpatch.com). ([#1753](https://github.com/diffplug/spotless/pull/1753))
 * Support GJF own import order. ([#1780](https://github.com/diffplug/spotless/pull/1780))
 * Add `-DspotlessIdeHook` that provides the ability to apply Spotless exclusively to a specified file. It accepts the absolute path of the file. ([#200](https://github.com/diffplug/spotless/issues/200))
 ### Fixed
-* Add support for `prettier` version `3.0.0` and newer. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1751](https://github.com/diffplug/spotless/issues/1751))
-* Fix npm install calls when npm cache is not up-to-date. ([#1760]https://github.com/diffplug/spotless/pull/1760), [#1750](https://github.com/diffplug/spotless/issues/1750))
+* Add support for `prettier` version `3.0.0` and newer. ([#1760](https://github.com/diffplug/spotless/pull/1760), [#1751](https://github.com/diffplug/spotless/issues/1751))
+* Fix npm install calls when npm cache is not up-to-date. ([#1760](https://github.com/diffplug/spotless/pull/1760), [#1750](https://github.com/diffplug/spotless/issues/1750))
 ### Changes
 * Bump default `eslint` version to latest `8.31.0` -> `8.45.0` ([#1761](https://github.com/diffplug/spotless/pull/1761))
 * Bump default `prettier` version to latest (v2) `2.8.1` -> `2.8.8`. ([#1760](https://github.com/diffplug/spotless/pull/1760))
+* Bump default `greclipse` version to latest `4.27` -> `4.28`. ([#1775](https://github.com/diffplug/spotless/pull/1775))
 
 ## [2.38.0] - 2023-07-17
 ### Added
