@@ -31,7 +31,7 @@ class FlexmarkExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    flexmark {",
 				"        target '*.md'",
-				"        flexmarkFormatter()",
+				"        flexmark()",
 				"    }",
 				"}");
 		setFile("markdown_test.md").toResource("markdown/flexmark/FlexmarkUnformatted.md");

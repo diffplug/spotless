@@ -30,11 +30,11 @@ public class FlexmarkExtension extends FormatExtension {
 		super(spotless);
 	}
 
-	public FlexmarkFormatterConfig flexmarkFormatter() {
-		return flexmarkFormatter(FlexmarkStep.defaultVersion());
+	public FlexmarkFormatterConfig flexmark() {
+		return flexmark(FlexmarkStep.defaultVersion());
 	}
 
-	public FlexmarkFormatterConfig flexmarkFormatter(String version) {
+	public FlexmarkFormatterConfig flexmark(String version) {
 		return new FlexmarkFormatterConfig(version);
 	}
 
