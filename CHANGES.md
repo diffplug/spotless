@@ -18,6 +18,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Support configuration of mirrors for P2 repositories in maven DSL ([#1697](https://github.com/diffplug/spotless/issues/1697)).
 ### Fixed
 * Fix support for plugins when using Prettier version `3.0.0` and newer. ([#1802](https://github.com/diffplug/spotless/pull/1802))
+* Fix configuration cache issue around `external process started '/usr/bin/git --version'`. ([#1806](https://github.com/diffplug/spotless/issues/1806))
 ### Changes
 * Bump default `flexmark` version to latest `0.64.0` -> `0.64.8`. ([#1801](https://github.com/diffplug/spotless/pull/1801))
 * Bump default `ktlint` version to latest `0.50.0` -> `1.0.0`. ([#1808](https://github.com/diffplug/spotless/pull/1808))
