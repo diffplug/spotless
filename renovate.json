@@ -2,5 +2,14 @@
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": [
 		"config:base"
+	],
+	"packageRules": [
+		{
+			"groupName": "Ktlint",
+			"enabled": false,
+			"matchPackagePatterns": [
+				"com.pinterest.ktlint:*"
+			]
+		}
 	]
 }
