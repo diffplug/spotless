@@ -57,7 +57,7 @@ public abstract class SpotlessExtension {
 	}
 
 	/** Line endings (if any). */
-	LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES;
+	LineEnding lineEndings = LineEnding.GIT_ATTRIBUTES_FAST_ALLSAME;
 
 	public LineEnding getLineEndings() {
 		return lineEndings;
