@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.22.0] - 2023-09-28
 ### Added
 * Added support for `google-java-format`'s `skip-javadoc-formatting` option ([#1793](https://github.com/diffplug/spotless/pull/1793))
 * Add support for `flexmark` in gradle. Previously only Maven was supported. ([#1801](https://github.com/diffplug/spotless/pull/1801))
