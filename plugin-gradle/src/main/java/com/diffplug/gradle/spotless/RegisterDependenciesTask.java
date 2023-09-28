@@ -68,7 +68,7 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		taskService = buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {});
 		usesService(taskService);
 		getBuildEventsListenerRegistry().onTaskCompletion(taskService);
-		unitOutput = new File(getProject().getBuildDir(), "tmp/spotless-register-dependencies");
+		unitOutput = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(), "tmp/spotless-register-dependencies");
 	}
 
 	List<FormatterStep> steps = new ArrayList<>();

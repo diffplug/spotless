@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,8 @@ public class SpotlessDiagnoseTask extends DefaultTask {
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	public void performAction() throws IOException {
 		Path srcRoot = getProject().getProjectDir().toPath();
-		Path diagnoseRoot = getProject().getBuildDir().toPath().resolve("spotless-diagnose-" + source.formatName());
+		Path diagnoseRoot = getProject().getLayout().getBuildDirectory().getAsFile().get()
+				.toPath().resolve("spotless-diagnose-" + source.formatName());
 		getProject().delete(diagnoseRoot.toFile());
 		try (Formatter formatter = source.buildFormatter()) {
 			for (File file : source.target) {

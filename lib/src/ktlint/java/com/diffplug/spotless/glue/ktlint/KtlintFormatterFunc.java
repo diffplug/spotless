@@ -33,22 +33,28 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
 	public KtlintFormatterFunc(String version, boolean isScript, FileSignature editorConfigPath, Map<String, String> userData,
 			Map<String, Object> editorConfigOverrideMap) {
-		int minorVersion = Integer.parseInt(version.split("\\.")[1]);
-		if (minorVersion >= 50) {
-			// Fixed `RuleId` and `RuleSetId` issues
-			// New argument to `EditorConfigDefaults.Companion.load(...)` for custom property type parsing
-			// New argument to `new KtLintRuleEngine(...)` to fail on usage of `treeCopyHandler` extension point
-			this.adapter = new KtLintCompat0Dot50Dot0Adapter();
-		} else if (minorVersion == 49) {
-			// Packages and modules moved around (`ktlint-core` -> `ktlint-rule-engine`)
-			// Experimental ruleset was replaced by implementing `Rule.Experimental` and checking the `ktlint_experimental` `.editorconfig` property
-			// `RuleId` and `RuleSetId` became inline classes (mangled to be unrepresentable in Java source code, so reflection is needed), tracked here: https://github.com/pinterest/ktlint/issues/2041
-			this.adapter = new KtLintCompat0Dot49Dot0Adapter();
-		} else if (minorVersion == 48) {
-			// ExperimentalParams lost two constructor arguments, EditorConfigProperty moved to its own class
-			this.adapter = new KtLintCompat0Dot48Dot0Adapter();
+		String[] versions = version.split("\\.");
+		int majorVersion = Integer.parseInt(versions[0]);
+		int minorVersion = Integer.parseInt(versions[1]);
+		if (majorVersion == 1) {
+			this.adapter = new KtLintCompat1Dot0Dot0Adapter();
 		} else {
-			throw new IllegalStateException("Ktlint versions < 0.48.0 not supported!");
+			if (minorVersion >= 50) {
+				// Fixed `RuleId` and `RuleSetId` issues
+				// New argument to `EditorConfigDefaults.Companion.load(...)` for custom property type parsing
+				// New argument to `new KtLintRuleEngine(...)` to fail on usage of `treeCopyHandler` extension point
+				this.adapter = new KtLintCompat0Dot50Dot0Adapter();
+			} else if (minorVersion == 49) {
+				// Packages and modules moved around (`ktlint-core` -> `ktlint-rule-engine`)
+				// Experimental ruleset was replaced by implementing `Rule.Experimental` and checking the `ktlint_experimental` `.editorconfig` property
+				// `RuleId` and `RuleSetId` became inline classes (mangled to be unrepresentable in Java source code, so reflection is needed), tracked here: https://github.com/pinterest/ktlint/issues/2041
+				this.adapter = new KtLintCompat0Dot49Dot0Adapter();
+			} else if (minorVersion == 48) {
+				// ExperimentalParams lost two constructor arguments, EditorConfigProperty moved to its own class
+				this.adapter = new KtLintCompat0Dot48Dot0Adapter();
+			} else {
+				throw new IllegalStateException("Ktlint versions < 0.48.0 not supported!");
+			}
 		}
 		this.editorConfigPath = editorConfigPath;
 		this.editorConfigOverrideMap = editorConfigOverrideMap;

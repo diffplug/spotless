@@ -147,6 +147,12 @@ public abstract class SpotlessExtension {
 		format(FreshMarkExtension.NAME, FreshMarkExtension.class, closure);
 	}
 
+	/** Configures the special flexmark-specific extension. */
+	public void flexmark(Action<FlexmarkExtension> closure) {
+		requireNonNull(closure);
+		format(FlexmarkExtension.NAME, FlexmarkExtension.class, closure);
+	}
+
 	/** Configures the special groovy-specific extension. */
 	public void groovy(Action<GroovyExtension> closure) {
 		format(GroovyExtension.NAME, GroovyExtension.class, closure);

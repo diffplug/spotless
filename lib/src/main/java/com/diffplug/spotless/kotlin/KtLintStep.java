@@ -36,10 +36,10 @@ public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
-	private static final String DEFAULT_VERSION = "0.50.0";
+	private static final String DEFAULT_VERSION = "1.0.0";
 	static final String NAME = "ktlint";
-	static final String PACKAGE = "com.pinterest";
-	static final String MAVEN_COORDINATE = PACKAGE + ":ktlint:";
+	static final String MAVEN_COORDINATE_0_DOT = "com.pinterest:ktlint:";
+	static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
@@ -110,7 +110,8 @@ public class KtLintStep {
 			this.version = version;
 			this.userData = new TreeMap<>(userData);
 			this.editorConfigOverride = new TreeMap<>(editorConfigOverride);
-			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+			this.jarState = JarState.from((version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version,
+					provisioner);
 			this.editorConfigPath = editorConfigPath;
 			this.isScript = isScript;
 		}

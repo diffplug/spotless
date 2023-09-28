@@ -100,6 +100,16 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void behaviorWithSkipFormatJavadoc() throws Exception {
+		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), GoogleJavaFormatStep.defaultVersion(), GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), GoogleJavaFormatStep.defaultReflowLongStrings(), GoogleJavaFormatStep.defaultReorderImports(), false))) {
+			step.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedSkipJavadocFormatting.test")
+					.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
+					.testResource("java/googlejavaformat/JavaCodeWithLicensePackageUnformatted.test", "java/googlejavaformat/JavaCodeWithLicensePackageFormatted.test")
+					.testResource("java/googlejavaformat/JavaCodeWithPackageUnformatted.test", "java/googlejavaformat/JavaCodeWithPackageFormatted.test");
+		}
+	}
+
+	@Test
 	void behaviorWithCustomGroupArtifact() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.10.0", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false);
 		StepHarness.forStep(step)

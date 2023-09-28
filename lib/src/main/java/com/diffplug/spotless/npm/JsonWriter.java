@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,33 +28,46 @@ import java.util.stream.Collectors;
 
 import com.diffplug.spotless.ThrowingEx;
 
-public class SimpleJsonWriter {
+class JsonWriter {
 
 	private final LinkedHashMap<String, Object> valueMap = new LinkedHashMap<>();
 
-	public static SimpleJsonWriter of(Map<String, ?> values) {
-		SimpleJsonWriter writer = new SimpleJsonWriter();
+	public static JsonWriter of(Map<String, ?> values) {
+		JsonWriter writer = new JsonWriter();
 		writer.putAll(values);
 		return writer;
 	}
 
-	SimpleJsonWriter putAll(Map<String, ?> values) {
+	JsonWriter putAll(Map<String, ?> values) {
 		verifyValues(values);
 		this.valueMap.putAll(values);
 		return this;
 	}
 
-	SimpleJsonWriter put(String name, Object value) {
+	JsonWriter put(String name, Object value) {
 		verifyValues(Collections.singletonMap(name, value));
 		this.valueMap.put(name, value);
 		return this;
 	}
 
 	private void verifyValues(Map<String, ?> values) {
-		if (values.values()
-				.stream()
-				.anyMatch(val -> !(val instanceof String || val instanceof JsonRawValue || val instanceof Number || val instanceof Boolean))) {
-			throw new IllegalArgumentException("Only values of type 'String', 'JsonRawValue', 'Number' and 'Boolean' are supported. You provided: " + values.values());
+		for (Object value : values.values()) {
+			verifyValue(value);
+		}
+	}
+
+	private void verifyValue(Object val) {
+		if (val == null) {
+			return;
+		}
+		if (ListableAdapter.canAdapt(val)) {
+			for (Object o : ListableAdapter.adapt(val)) {
+				verifyValue(o);
+			}
+			return;
+		}
+		if (!(val instanceof String || val instanceof JsonRawValue || val instanceof Number || val instanceof Boolean)) {
+			throw new IllegalArgumentException("Only values of type 'String', 'JsonRawValue', 'Number' and 'Boolean' are supported. You provided: " + val);
 		}
 	}
 

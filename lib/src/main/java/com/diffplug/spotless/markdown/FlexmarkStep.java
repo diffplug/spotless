@@ -29,7 +29,7 @@ public class FlexmarkStep {
 	// prevent direct instantiation
 	private FlexmarkStep() {}
 
-	private static final String DEFAULT_VERSION = "0.64.0";
+	private static final String DEFAULT_VERSION = "0.64.8";
 	private static final String NAME = "flexmark-java";
 	private static final String MAVEN_COORDINATE = "com.vladsch.flexmark:flexmark-all:";
 

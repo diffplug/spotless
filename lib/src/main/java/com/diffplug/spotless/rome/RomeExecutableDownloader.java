@@ -38,8 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Downloader for the Rome executable:
- * <a href="https://github.com/rome/tools">https://github.com/rome/tools</a>.
+ * Downloader for the Biome executable:
+ * <a href="https://github.com/biomejs/biome">https://github.com/biomejs/biome</a>.
  */
 final class RomeExecutableDownloader {
 	private static final Logger logger = LoggerFactory.getLogger(RomeExecutableDownloader.class);
@@ -51,15 +51,7 @@ final class RomeExecutableDownloader {
 
 	/**
 	 * The pattern for {@link String#format(String, Object...) String.format()} for
-	 * the file name of a Rome executable for a certain version and architecure. The
-	 * first parameter is the platform, the second is the OS, the third is the
-	 * architecture.
-	 */
-	private static final String DOWNLOAD_FILE_PATTERN = "rome-%s-%s-%s";
-
-	/**
-	 * The pattern for {@link String#format(String, Object...) String.format()} for
-	 * the platform part of the Rome executable download URL. First parameter is the
+	 * the platform part of the Biome executable download URL. First parameter is the
 	 * OS, second parameter the architecture, the third the file extension.
 	 */
 	private static final String PLATFORM_PATTERN = "%s-%s%s";
@@ -71,38 +63,35 @@ final class RomeExecutableDownloader {
 	private static final OpenOption[] READ_OPTIONS = {StandardOpenOption.READ};
 
 	/**
-	 * The pattern for {@link String#format(String, Object...) String.format()} for
-	 * the URL where the Rome executables can be downloaded. The first parameter is
-	 * the version, the second parameter is the OS / platform.
-	 */
-	private static final String URL_PATTERN = "https://github.com/rome/tools/releases/download/cli%%2Fv%s/rome-%s";
-
-	/**
 	 * {@link OpenOption Open options} for creating a new file, overwriting the
 	 * existing file if present.
 	 */
 	private static final OpenOption[] WRITE_OPTIONS = {StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
 			StandardOpenOption.WRITE};
 
-	private Path downloadDir;
+	private final Path downloadDir;
+
+	private final BiomeFlavor flavor;
 
 	/**
-	 * Creates a new downloader for the Rome executable. The executable files are
+	 * Creates a new downloader for the Biome executable. The executable files are
 	 * stored in the given download directory.
 	 *
-	 * @param downloadDir Directory where
+	 * @param flavor Flavor of Biome to use.
+	 * @param downloadDir Directory where to store the downloaded executable.
 	 */
-	public RomeExecutableDownloader(Path downloadDir) {
+	public RomeExecutableDownloader(BiomeFlavor flavor, Path downloadDir) {
+		this.flavor = flavor;
 		this.downloadDir = downloadDir;
 	}
 
 	/**
-	 * Downloads the Rome executable for the current platform from the network to
+	 * Downloads the Biome executable for the current platform from the network to
 	 * the download directory. When the executable exists already, it is
 	 * overwritten.
 	 *
-	 * @param version Desired Rome version.
-	 * @return The path to the Rome executable.
+	 * @param version Desired Biome version.
+	 * @return The path to the Biome executable.
 	 * @throws IOException           When the executable cannot be downloaded from
 	 *                               the network or the file system could not be
 	 *                               accessed.
@@ -121,7 +110,7 @@ final class RomeExecutableDownloader {
 		if (executableDir != null) {
 			Files.createDirectories(executableDir);
 		}
-		logger.info("Attempting to download Rome from '{}' to '{}'", url, executablePath);
+		logger.info("Attempting to download Biome from '{}' to '{}'", url, executablePath);
 		var request = HttpRequest.newBuilder(URI.create(url)).GET().build();
 		var handler = BodyHandlers.ofFile(executablePath, WRITE_OPTIONS);
 		var response = HttpClient.newBuilder().followRedirects(Redirect.NORMAL).build().send(request, handler);
@@ -133,19 +122,19 @@ final class RomeExecutableDownloader {
 			throw new IOException("Failed to download file from " + url + ", file is empty or does not exist");
 		}
 		writeChecksumFile(downloadedFile, checksumPath);
-		logger.debug("Rome was downloaded successfully to '{}'", downloadedFile);
+		logger.debug("Biome was downloaded successfully to '{}'", downloadedFile);
 		return downloadedFile;
 	}
 
 	/**
-	 * Ensures that the Rome executable for the current platform exists in the
+	 * Ensures that the Biome executable for the current platform exists in the
 	 * download directory. When the executable does not exist in the download
-	 * directory, an attempt is made to download the Rome executable from the
+	 * directory, an attempt is made to download the Biome executable from the
 	 * network. When the executable exists already, no attempt to download it again
 	 * is made.
 	 *
-	 * @param version Desired Rome version.
-	 * @return The path to the Rome executable.
+	 * @param version Desired Biome version.
+	 * @return The path to the Biome executable.
 	 * @throws IOException           When the executable cannot be downloaded from
 	 *                               the network or the file system could not be
 	 *                               accessed.
@@ -157,23 +146,23 @@ final class RomeExecutableDownloader {
 	 */
 	public Path ensureDownloaded(String version) throws IOException, InterruptedException {
 		var platform = Platform.guess();
-		logger.debug("Ensuring that Rome for platform '{}' is downloaded", platform);
+		logger.debug("Ensuring that Biome for platform '{}' is downloaded", platform);
 		var existing = findDownloaded(version);
 		if (existing.isPresent()) {
-			logger.debug("Rome was already downloaded, using executable at '{}'", existing.get());
+			logger.debug("Biome was already downloaded, using executable at '{}'", existing.get());
 			return existing.get();
 		} else {
-			logger.debug("Rome was not yet downloaded, attempting to download executable");
+			logger.debug("Biome was not yet downloaded, attempting to download executable");
 			return download(version);
 		}
 	}
 
 	/**
-	 * Attempts to find the Rome executable for the current platform in the download
+	 * Attempts to find the Biome executable for the current platform in the download
 	 * directory. No attempt is made to download the executable from the network.
 	 *
-	 * @param version Desired Rome version.
-	 * @return The path to the Rome executable.
+	 * @param version Desired Biome version.
+	 * @return The path to the Biome executable.
 	 * @throws IOException           When the executable does not exists in the
 	 *                               download directory, or when the file system
 	 *                               could not be accessed.
@@ -184,7 +173,7 @@ final class RomeExecutableDownloader {
 	public Optional<Path> findDownloaded(String version) throws IOException {
 		var platform = Platform.guess();
 		var executablePath = getExecutablePath(version, platform);
-		logger.debug("Checking rome executable at {}", executablePath);
+		logger.debug("Checking Biome executable at {}", executablePath);
 		return checkFileWithChecksum(executablePath) ? Optional.ofNullable(executablePath) : Optional.empty();
 	}
 
@@ -248,12 +237,12 @@ final class RomeExecutableDownloader {
 	}
 
 	/**
-	 * Finds the code name for the given operating system used by the Rome
+	 * Finds the code name for the given operating system used by the Biome
 	 * executable download URL.
 	 *
 	 * @param os Desired operating system.
-	 * @return Code name for the Rome download URL.
-	 * @throws IOException When the given OS is not supported by Rome.
+	 * @return Code name for the Biome download URL.
+	 * @throws IOException When the given OS is not supported by Biome.
 	 */
 	private String getArchitectureCodeName(Architecture architecture) throws IOException {
 		switch (architecture) {
@@ -281,28 +270,28 @@ final class RomeExecutableDownloader {
 	}
 
 	/**
-	 * Finds the URL from which the Rome executable can be downloaded.
+	 * Finds the URL from which the Biome executable can be downloaded.
 	 *
-	 * @param version  Desired Rome version.
+	 * @param version  Desired Biome version.
 	 * @param platform Desired platform.
-	 * @return The URL for the Rome executable.
-	 * @throws IOException When the platform is not supported by Rome.
+	 * @return The URL for the Biome executable.
+	 * @throws IOException When the platform is not supported by Biome.
 	 */
 	private String getDownloadUrl(String version, Platform platform) throws IOException {
 		var osCodeName = getOsCodeName(platform.getOs());
 		var architectureCodeName = getArchitectureCodeName(platform.getArchitecture());
 		var extension = getDownloadUrlExtension(platform.getOs());
 		var platformString = String.format(PLATFORM_PATTERN, osCodeName, architectureCodeName, extension);
-		return String.format(URL_PATTERN, version, platformString);
+		return String.format(flavor.getUrlPattern(), version, platformString);
 	}
 
 	/**
-	 * Finds the file extension of the Rome download URL for the given operating
+	 * Finds the file extension of the Biome download URL for the given operating
 	 * system.
 	 *
 	 * @param os Desired operating system.
-	 * @return Extension for the Rome download URL.
-	 * @throws IOException When the given OS is not supported by Rome.
+	 * @return Extension for the Biome download URL.
+	 * @throws IOException When the given OS is not supported by Biome.
 	 */
 	private String getDownloadUrlExtension(OS os) throws IOException {
 		switch (os) {
@@ -318,27 +307,27 @@ final class RomeExecutableDownloader {
 	}
 
 	/**
-	 * Finds the path on the file system for the Rome executable with a given
+	 * Finds the path on the file system for the Biome executable with a given
 	 * version and platform.
 	 *
-	 * @param version  Desired Rome version.
+	 * @param version  Desired Biome version.
 	 * @param platform Desired platform.
-	 * @return The path for the Rome executable.
+	 * @return The path for the Biome executable.
 	 */
 	private Path getExecutablePath(String version, Platform platform) {
 		var os = platform.getOs().name().toLowerCase(Locale.ROOT);
 		var arch = platform.getArchitecture().name().toLowerCase(Locale.ROOT);
-		var fileName = String.format(DOWNLOAD_FILE_PATTERN, os, arch, version);
+		var fileName = String.format(flavor.getDownloadFilePattern(), os, arch, version);
 		return downloadDir.resolve(fileName);
 	}
 
 	/**
-	 * Finds the code name for the given operating system used by the Rome
+	 * Finds the code name for the given operating system used by the Biome
 	 * executable download URL.
 	 *
 	 * @param os Desired operating system.
-	 * @return Code name for the Rome download URL.
-	 * @throws IOException When the given OS is not supported by Rome.
+	 * @return Code name for the Biome download URL.
+	 * @throws IOException When the given OS is not supported by Biome.
 	 */
 	private String getOsCodeName(OS os) throws IOException {
 		switch (os) {

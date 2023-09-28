@@ -52,6 +52,17 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 		runTest("java/googlejavaformat/JavaCodeFormattedReflowLongStrings.test");
 	}
 
+	@Test
+	void specificVersionSkipJavadocFormatting() throws Exception {
+		writePomWithJavaSteps(
+				"<googleJavaFormat>",
+				"  <version>1.12.0</version>",
+				"  <formatJavadoc>false</formatJavadoc>",
+				"</googleJavaFormat>");
+
+		runTest("java/googlejavaformat/JavaCodeFormattedSkipJavadocFormatting.test");
+	}
+
 	private void runTest(String targetResource) throws Exception {
 		String path = "src/main/java/test.java";
 		setFile(path).toResource("java/googlejavaformat/JavaCodeUnformatted.test");

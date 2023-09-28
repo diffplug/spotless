@@ -174,6 +174,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		String style;
 		boolean reflowLongStrings;
 		boolean reorderImports;
+		boolean formatJavadoc = true;
 
 		GoogleJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
@@ -213,6 +214,16 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		public GoogleJavaFormatConfig skipJavadocFormatting() {
+			return formatJavadoc(false);
+		}
+
+		public GoogleJavaFormatConfig formatJavadoc(boolean formatJavadoc) {
+			this.formatJavadoc = formatJavadoc;
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
 			return GoogleJavaFormatStep.create(
 					groupArtifact,
@@ -220,7 +231,8 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 					style,
 					provisioner(),
 					reflowLongStrings,
-					reorderImports);
+					reorderImports,
+					formatJavadoc);
 		}
 	}
 
