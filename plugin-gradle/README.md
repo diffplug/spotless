@@ -592,7 +592,7 @@ To apply flexmark to all of the `.md` files in your project, use this snippet:
 spotless {
   flexmark {
     target '**/*.md' // you have to set the target manually
-    flexmark() // or flexmark('0.64.6') // version is optional
+    flexmark() // or flexmark('0.64.8') // version is optional
   }
 }
 ```
