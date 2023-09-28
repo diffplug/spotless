@@ -4,6 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* Add `-DspotlessIdeHook` that provides the ability to apply Spotless exclusively to a specified file. It accepts the absolute path of the file. ([#1782](https://github.com/diffplug/spotless/pull/1782))
+  * BETA, subject to change until we have proven compatibility with some IDE plugins.
 * Added support for `google-java-format`'s `skip-javadoc-formatting` option ([#1793](https://github.com/diffplug/spotless/pull/1793))
 * Added support for biome. The Rome project [was renamed to Biome](https://biomejs.dev/blog/annoucing-biome/).
   The configuration is still the same, but you should switch to the new `<biome>` tag and adjust

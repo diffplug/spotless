@@ -39,6 +39,7 @@ dependencies {
 	compileOnly "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
 
 	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	implementation("org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}")
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
