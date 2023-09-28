@@ -78,6 +78,7 @@ public final class GitAttributesLineEndings {
 	}
 
 	static class LazyAllTheSame extends LazyForwardingEquality<String> implements LineEnding.Policy {
+		private static final long serialVersionUID = 727912266173243664L;
 		transient File projectDir;
 		transient Supplier<Iterable<File>> toFormat;
 
