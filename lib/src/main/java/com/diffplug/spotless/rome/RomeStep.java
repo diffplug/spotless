@@ -38,16 +38,16 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ProcessRunner;
 
 /**
- * formatter step that formats JavaScript and TypeScript code with Rome:
- * <a href= "https://github.com/rome/tools">https://github.com/rome/tools</a>.
- * It delegates to the Rome executable. The Rome executable is downloaded from
+ * formatter step that formats JavaScript and TypeScript code with Biome:
+ * <a href= "https://github.com/biomejs/biome">https://github.com/biomejs/biome</a>.
+ * It delegates to the Biome executable. The Rome executable is downloaded from
  * the network when no executable path is provided explicitly.
  */
 public class RomeStep {
 	private static final Logger logger = LoggerFactory.getLogger(RomeStep.class);
 
 	/**
-	 * Path to the directory with the {@code rome.json} config file, can be
+	 * Path to the directory with the {@code biome.json} config file, can be
 	 * <code>null</code>, in which case the defaults are used.
 	 */
 	private String configPath;
@@ -55,7 +55,7 @@ public class RomeStep {
 	/**
 	 * The language (syntax) of the input files to format. When <code>null</code> or
 	 * the empty string, the language is detected automatically from the file name.
-	 * Currently the following languages are supported by Rome:
+	 * Currently the following languages are supported by Biome:
 	 * <ul>
 	 * <li>js (JavaScript)</li>
 	 * <li>jsx (JavaScript + JSX)</li>
@@ -71,7 +71,13 @@ public class RomeStep {
 	private String language;
 
 	/**
-	 * Path to the Rome executable. Can be <code>null</code>, but either a path to
+	 * Biome flavor to use. Will be removed once we stop supporting the deprecated Rome project.
+	 */
+	@Deprecated
+	private final BiomeFlavor flavor;
+
+	/**
+	 * Path to the Biome executable. Can be <code>null</code>, but either a path to
 	 * the executable of a download directory and version must be given. The path
 	 * must be either an absolute path, or a file name without path separators. If
 	 * the latter, it is interpreted as a command in the user's path.
@@ -79,46 +85,48 @@ public class RomeStep {
 	private final String pathToExe;
 
 	/**
-	 * Absolute path to the download directory for storing the download Rome
+	 * Absolute path to the download directory for storing the download Biome
 	 * executable. Can be <code>null</code>, but either a path to the executable of
 	 * a download directory and version must be given.
 	 */
 	private final String downloadDir;
 
 	/**
-	 * Version of Rome to download. Can be <code>null</code>, but either a path to
+	 * Version of Biome to download. Can be <code>null</code>, but either a path to
 	 * the executable of a download directory and version must be given.
 	 */
 	private final String version;
 
 	/**
-	 * @return The name of this format step, i.e. {@code rome}.
+	 * @return The name of this format step, i.e. <code>biome</code> or <code>rome</code>.
 	 */
-	public static String name() {
-		return "rome";
+	public String name() {
+		return flavor.shortName();
 	}
 
 	/**
-	 * Creates a Rome step that format code by downloading to the given Rome
+	 * Creates a Biome step that format code by downloading to the given Biome
 	 * version. The executable is downloaded from the network.
 	 *
-	 * @param version     Version of the Rome executable to download.
+	 * @param flavor Flavor of Biome to use.
+	 * @param version     Version of the Biome executable to download.
 	 * @param downloadDir Directory where to place the downloaded executable.
-	 * @return A new Rome step that download the executable from the network.
+	 * @return A new Biome step that download the executable from the network.
 	 */
-	public static RomeStep withExeDownload(String version, String downloadDir) {
-		return new RomeStep(version, null, downloadDir);
+	public static RomeStep withExeDownload(BiomeFlavor flavor, String version, String downloadDir) {
+		return new RomeStep(flavor, version, null, downloadDir);
 	}
 
 	/**
-	 * Creates a Rome step that formats code by delegating to the Rome executable
+	 * Creates a Biome step that formats code by delegating to the Biome executable
 	 * located at the given path.
 	 *
-	 * @param pathToExe Path to the Rome executable to use.
-	 * @return A new Rome step that format with the given executable.
+	 * @param flavor Flavor of Biome to use.
+	 * @param pathToExe Path to the Biome executable to use.
+	 * @return A new Biome step that format with the given executable.
 	 */
-	public static RomeStep withExePath(String pathToExe) {
-		return new RomeStep(null, pathToExe, null);
+	public static RomeStep withExePath(BiomeFlavor flavor, String pathToExe) {
+		return new RomeStep(flavor, null, pathToExe, null);
 	}
 
 	/**
@@ -140,21 +148,21 @@ public class RomeStep {
 	}
 
 	/**
-	 * Finds the default version for Rome when no version is specified explicitly.
+	 * Finds the default version for Biome when no version is specified explicitly.
 	 * Over time this will become outdated -- people should always specify the
 	 * version explicitly!
 	 *
-	 * @return The default version for Rome.
+	 * @return The default version for Biome.
 	 */
-	private static String defaultVersion() {
-		return "12.0.0";
+	private static String defaultVersion(BiomeFlavor flavor) {
+		return flavor.defaultVersion();
 	}
 
 	/**
 	 * Attempts to make the given file executable. This is a best-effort attempt,
 	 * any errors are swallowed. Depending on the OS, the file might still be
 	 * executable even if this method fails. The user will get a descriptive error
-	 * later when we attempt to execute the Rome executable.
+	 * later when we attempt to execute the Biome executable.
 	 *
 	 * @param filePath Path to the file to make executable.
 	 */
@@ -187,60 +195,64 @@ public class RomeStep {
 	}
 
 	/**
-	 * Checks the Rome config path. When the config path does not exist or when it
-	 * does not contain a file named {@code rome.json}, an error is thrown.
+	 * Checks the Biome config path. When the config path does not exist or when it
+	 * does not contain a file named {@code biome.json}, an error is thrown.
 	 */
-	private static void validateRomeConfigPath(String configPath) {
+	private static void validateBiomeConfigPath(BiomeFlavor flavor, String configPath) {
 		if (configPath == null) {
 			return;
 		}
 		var path = Paths.get(configPath);
-		var config = path.resolve("rome.json");
+		var config = path.resolve(flavor.configName());
 		if (!Files.exists(path)) {
-			throw new IllegalArgumentException("Rome config directory does not exist: " + path);
+			throw new IllegalArgumentException("Biome config directory does not exist: " + path);
 		}
 		if (!Files.exists(config)) {
-			throw new IllegalArgumentException("Rome config does not exist: " + config);
+			throw new IllegalArgumentException("Biome config does not exist: " + config);
 		}
 	}
 
 	/**
-	 * Checks the Rome executable file. When the file does not exist, an error is
+	 * Checks the Biome executable file. When the file does not exist, an error is
 	 * thrown.
 	 */
-	private static void validateRomeExecutable(String resolvedPathToExe) {
+	private static void validateBiomeExecutable(String resolvedPathToExe) {
 		if (!new File(resolvedPathToExe).isFile()) {
-			throw new IllegalArgumentException("Rome executable does not exist: " + resolvedPathToExe);
+			throw new IllegalArgumentException("Biome executable does not exist: " + resolvedPathToExe);
 		}
 	}
 
 	/**
-	 * Creates a new Rome step with the configuration from the given builder.
+	 * Creates a new Biome step with the configuration from the given builder.
 	 *
-	 * @param builder Builder with the configuration to use.
+	 * @param flavor Flavor of Biome to use.
+	 * @param version     Version of the Biome executable to download.
+	 * @param pathToExe Path to the Biome executable to use.
+	 * @param downloadDir Directory where to place the downloaded executable.
 	 */
-	private RomeStep(String version, String pathToExe, String downloadDir) {
-		this.version = version != null && !version.isBlank() ? version : defaultVersion();
+	private RomeStep(BiomeFlavor flavor, String version, String pathToExe, String downloadDir) {
+		this.flavor = flavor;
+		this.version = version != null && !version.isBlank() ? version : defaultVersion(flavor);
 		this.pathToExe = pathToExe;
 		this.downloadDir = downloadDir;
 	}
 
 	/**
 	 * Creates a formatter step with the current configuration, which formats code
-	 * by passing it to the Rome executable.
+	 * by passing it to the Biome executable.
 	 *
-	 * @return A new formatter step for formatting with Rome.
+	 * @return A new formatter step for formatting with Biome.
 	 */
 	public FormatterStep create() {
 		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
 	}
 
 	/**
-	 * Sets the path to the directory with the {@code rome.json} config file. When
+	 * Sets the path to the directory with the {@code biome.json} config file. When
 	 * no config path is set, the default configuration is used.
 	 *
-	 * @param configPath Config path to use. Must point to a directory which contain
-	 *                   a file named {@code rome.json}.
+	 * @param configPath Config path to use. Must point to a directory which contains
+	 *                   a file named {@code biome.json}.
 	 * @return This builder instance for chaining method calls.
 	 */
 	public RomeStep withConfigPath(String configPath) {
@@ -251,7 +263,7 @@ public class RomeStep {
 	/**
 	 * Sets the language of the files to format When no language is set, it is
 	 * determined automatically from the file name. The following languages are
-	 * currently supported by Rome.
+	 * currently supported by Biome.
 	 *
 	 * <ul>
 	 * <li>js (JavaScript)</li>
@@ -274,41 +286,41 @@ public class RomeStep {
 	}
 
 	/**
-	 * Resolves the Rome executable, possibly downloading it from the network, and
+	 * Resolves the Biome executable, possibly downloading it from the network, and
 	 * creates a new state instance with the resolved executable that can format
-	 * code via Rome.
+	 * code via Biome.
 	 *
-	 * @return The state instance for formatting code via Rome.
+	 * @return The state instance for formatting code via Biome.
 	 * @throws IOException          When any file system or network operations
-	 *                              failed, such as when the Rome executable could
+	 *                              failed, such as when the Biome executable could
 	 *                              not be downloaded, or when the given executable
 	 *                              does not exist.
-	 * @throws InterruptedException When the Rome executable needs to be downloaded
+	 * @throws InterruptedException When the Biome executable needs to be downloaded
 	 *                              and this thread was interrupted while waiting
 	 *                              for the download to complete.
 	 */
 	private State createState() throws IOException, InterruptedException {
 		var resolvedPathToExe = resolveExe();
-		validateRomeExecutable(resolvedPathToExe);
-		validateRomeConfigPath(configPath);
-		logger.debug("Using Rome executable located at  '{}'", resolvedPathToExe);
+		validateBiomeExecutable(resolvedPathToExe);
+		validateBiomeConfigPath(flavor, configPath);
+		logger.debug("Using Biome executable located at  '{}'", resolvedPathToExe);
 		var exeSignature = FileSignature.signAsList(Collections.singleton(new File(resolvedPathToExe)));
 		makeExecutable(resolvedPathToExe);
 		return new State(resolvedPathToExe, exeSignature, configPath, language);
 	}
 
 	/**
-	 * Resolves the path to the Rome executable, given the configuration of this
-	 * step. When the path to the Rome executable is given explicitly, that path is
-	 * used as-is. Otherwise, at attempt is made to download the Rome executable for
+	 * Resolves the path to the Biome executable, given the configuration of this
+	 * step. When the path to the Biome executable is given explicitly, that path is
+	 * used as-is. Otherwise, at attempt is made to download the Biome executable for
 	 * the configured version from the network, unless it was already downloaded and
 	 * is available in the cache.
 	 *
-	 * @return The path to the resolved Rome executable.
+	 * @return The path to the resolved Biome executable.
 	 * @throws IOException          When any file system or network operations
-	 *                              failed, such as when the Rome executable could
+	 *                              failed, such as when the Biome executable could
 	 *                              not be downloaded.
-	 * @throws InterruptedException When the Rome executable needs to be downloaded
+	 * @throws InterruptedException When the Biome executable needs to be downloaded
 	 *                              and this thread was interrupted while waiting
 	 *                              for the download to complete.
 	 */
@@ -321,7 +333,7 @@ public class RomeStep {
 				return pathToExe;
 			}
 		} else {
-			var downloader = new RomeExecutableDownloader(Paths.get(downloadDir));
+			var downloader = new RomeExecutableDownloader(flavor, Paths.get(downloadDir));
 			var downloaded = downloader.ensureDownloaded(version).toString();
 			makeExecutable(downloaded);
 			return downloaded;
@@ -329,7 +341,7 @@ public class RomeStep {
 	}
 
 	/**
-	 * The internal state used by the Rome formatter. A state instance is created
+	 * The internal state used by the Biome formatter. A state instance is created
 	 * when the spotless plugin for Maven or Gradle is executed, and reused for all
 	 * formatting requests for different files. The lifetime of the instance ends
 	 * when the Maven or Gradle plugin was successfully executed.
@@ -349,7 +361,7 @@ public class RomeStep {
 		private final FileSignature exeSignature;
 
 		/**
-		 * The optional path to the directory with the {@code rome.json} config file.
+		 * The optional path to the directory with the {@code biome.json} config file.
 		 */
 		private final String configPath;
 
@@ -360,12 +372,12 @@ public class RomeStep {
 		private final String language;
 
 		/**
-		 * Creates a new state for instance which can format code with the given Rome
+		 * Creates a new state for instance which can format code with the given Biome
 		 * executable.
 		 *
-		 * @param exe          Path to the Rome executable.
-		 * @param exeSignature Signature (e.g. SHA-256 checksum) of the Rome executable.
-		 * @param configPath   Path to the optional directory with the {@code rome.json}
+		 * @param exe          Path to the Biome executable.
+		 * @param exeSignature Signature (e.g. SHA-256 checksum) of the Biome executable.
+		 * @param configPath   Path to the optional directory with the {@code biome.json}
 		 *                     config file, can be <code>null</code>, in which case the
 		 *                     defaults are used.
 		 */
@@ -377,13 +389,13 @@ public class RomeStep {
 		}
 
 		/**
-		 * Builds the list of arguments for the command that executes Rome to format a
+		 * Builds the list of arguments for the command that executes Biome to format a
 		 * piece of code passed via stdin.
 		 *
 		 * @param file File to format.
-		 * @return The Rome command to use for formatting code.
+		 * @return The Biome command to use for formatting code.
 		 */
-		private String[] buildRomeCommand(File file) {
+		private String[] buildBiomeCommand(File file) {
 			var fileName = resolveFileName(file);
 			var argList = new ArrayList<String>();
 			argList.add(pathToExe);
@@ -398,37 +410,37 @@ public class RomeStep {
 		}
 
 		/**
-		 * Formats the given piece of code by delegating to the Rome executable. The
-		 * code is passed to Rome via stdin, the file name is used by Rome only to
+		 * Formats the given piece of code by delegating to the Biome executable. The
+		 * code is passed to Biome via stdin, the file name is used by Biome only to
 		 * determine the code syntax (e.g. JavaScript or TypeScript).
 		 *
-		 * @param runner Process runner for invoking the Rome executable.
+		 * @param runner Process runner for invoking the Biome executable.
 		 * @param input  Code to format.
 		 * @param file   File to format.
 		 * @return The formatted code.
 		 * @throws IOException          When a file system error occurred while
-		 *                              executing Rome.
+		 *                              executing Biome.
 		 * @throws InterruptedException When this thread was interrupted while waiting
-		 *                              for Rome to finish formatting.
+		 *                              for Biome to finish formatting.
 		 */
 		private String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
 			var stdin = input.getBytes(StandardCharsets.UTF_8);
-			var args = buildRomeCommand(file);
+			var args = buildBiomeCommand(file);
 			if (logger.isDebugEnabled()) {
-				logger.debug("Running Rome comand to format code: '{}'", String.join(", ", args));
+				logger.debug("Running Biome comand to format code: '{}'", String.join(", ", args));
 			}
 			return runner.exec(stdin, args).assertExitZero(StandardCharsets.UTF_8);
 		}
 
 		/**
-		 * The Rome executable currently does not have a parameter to specify the
-		 * expected language / syntax. Rome always determined the language from the file
+		 * The Biome executable currently does not have a parameter to specify the
+		 * expected language / syntax. Biome always determined the language from the file
 		 * extension. This method returns the file name for the desired language when a
 		 * language was requested explicitly, or the file name of the input file for
 		 * auto detection.
 		 *
 		 * @param file File to be formatted.
-		 * @return The file name to pass to the Rome executable.
+		 * @return The file name to pass to the Biome executable.
 		 */
 		private String resolveFileName(File file) {
 			var name = file.getName();
@@ -454,7 +466,7 @@ public class RomeStep {
 				return "tsx".equals(ext) ? name : "file.tsx";
 			case "json":
 				return "json".equals(ext) ? name : "file.json";
-			// so that we can support new languages such as css or yaml when Rome adds
+			// so that we can support new languages such as css or yaml when Biome adds
 			// support for them without having to change the code
 			default:
 				return "file." + language;
@@ -463,7 +475,7 @@ public class RomeStep {
 
 		/**
 		 * Creates a new formatter function for formatting a piece of code by delegating
-		 * to the Rome executable.
+		 * to the Biome executable.
 		 *
 		 * @return A formatter function for formatting code.
 		 */

@@ -22,19 +22,27 @@ import org.apache.maven.plugins.annotations.Parameter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.rome.BiomeFlavor;
 import com.diffplug.spotless.rome.RomeStep;
 
 /**
- * Factory for creating the Rome formatter step that can format format code in
- * various types of language with Rome. Currently Rome support JavaScript,
- * TypeScript, JSX, TSX, and JSON. See also
- * <a href= "https://github.com/rome/tools">https://github.com/rome/tools</a>.
- * It delegates to the Rome CLI executable.
+ * Factory for creating the Biome formatter step that can format format code in
+ * various types of language with Biome. Currently Biome supports JavaScript,
+ * TypeScript, JSX, TSX, and JSON. See also <a href=
+ * "https://github.com/biomejs/biome">https://github.com/biomejs/biome</a>. It
+ * delegates to the Biome CLI executable.
  */
 public abstract class AbstractRome implements FormatterStepFactory {
+	/** Biome flavor to use. */
+	private BiomeFlavor flavor;
+
+	protected AbstractRome(BiomeFlavor flavor) {
+		this.flavor = flavor;
+	}
+
 	/**
-	 * Optional path to the directory with configuration file for Rome. The file
-	 * must be named {@code rome.json}. When none is given, the default
+	 * Optional path to the directory with configuration file for Biome. The file
+	 * must be named {@code biome.json}. When none is given, the default
 	 * configuration is used. If this is a relative path, it is resolved against the
 	 * project's base directory.
 	 */
@@ -42,12 +50,12 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	private String configPath;
 
 	/**
-	 * Optional directory where the downloaded Rome executable is placed. If this is
-	 * a relative path, it is resolved against the project's base directory.
+	 * Optional directory where the downloaded Biome executable is placed. If this
+	 * is a relative path, it is resolved against the project's base directory.
 	 * Defaults to
-	 * <code>~/.m2/repository/com/diffplug/spotless/spotless-data/rome</code>.
+	 * <code>~/.m2/repository/com/diffplug/spotless/spotless-data/biome</code>.
 	 * <p>
-	 * You can use an expression like <code>${user.home}/rome</code> if you want to
+	 * You can use an expression like <code>${user.home}/biome</code> if you want to
 	 * use the home directory, or <code>${project.build.directory</code> if you want
 	 * to use the target directory of the current project.
 	 */
@@ -55,7 +63,7 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	private String downloadDir;
 
 	/**
-	 * Optional path to the Rome executable. Either a <code>version</code> or a
+	 * Optional path to the Biome executable. Either a <code>version</code> or a
 	 * <code>pathToExe</code> should be specified. When not given, an attempt is
 	 * made to download the executable for the given version from the network. When
 	 * given, the executable is used and the <code>version</code> parameter is
@@ -64,16 +72,16 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	 * When an absolute path is given, that path is used as-is. When a relative path
 	 * is given, it is resolved against the project's base directory. When only a
 	 * file name (i.e. without any slashes or back slash path separators such as
-	 * {@code rome}) is given, this is interpreted as the name of a command with
-	 * executable that is in your {@code path} environment variable. Use
-	 * {@code ./executable-name} if you want to use an executable in the project's
-	 * base directory.
+	 * <code>biome</code>) is given, this is interpreted as the name of a command
+	 * with executable that is in your <code>path</code> environment variable. Use
+	 * <code>./executable-name</code> if you want to use an executable in the
+	 * project's base directory.
 	 */
 	@Parameter
 	private String pathToExe;
 
 	/**
-	 * Rome version to download, applies only when no <code>pathToExe</code> is
+	 * Biome version to download, applies only when no <code>pathToExe</code> is
 	 * specified explicitly. Either a <code>version</code> or a
 	 * <code>pathToExe</code> should be specified. When not given, a default known
 	 * version is used. For stable builds, it is recommended that you always set the
@@ -99,7 +107,7 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	/**
 	 * Gets the language (syntax) of the input files to format. When
 	 * <code>null</code> or the empty string, the language is detected automatically
-	 * from the file name. Currently the following languages are supported by Rome:
+	 * from the file name. Currently the following languages are supported by Biome:
 	 * <ul>
 	 * <li>js (JavaScript)</li>
 	 * <li>jsx (JavaScript + JSX)</li>
@@ -117,26 +125,26 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	protected abstract String getLanguage();
 
 	/**
-	 * A new builder for configuring a Rome step that either downloads the Rome
+	 * A new builder for configuring a Biome step that either downloads the Biome
 	 * executable with the given version from the network, or uses the executable
 	 * from the given path.
 	 *
 	 * @param config Configuration from the Maven Mojo execution with details about
 	 *               the currently executed project.
-	 * @return A builder for a Rome step.
+	 * @return A builder for a Biome step.
 	 */
 	private RomeStep newBuilder(FormatterStepConfig config) {
 		if (pathToExe != null) {
 			var resolvedExePath = resolveExePath(config);
-			return RomeStep.withExePath(resolvedExePath);
+			return RomeStep.withExePath(flavor, resolvedExePath);
 		} else {
 			var downloadDir = resolveDownloadDir(config);
-			return RomeStep.withExeDownload(version, downloadDir);
+			return RomeStep.withExeDownload(flavor, version, downloadDir);
 		}
 	}
 
 	/**
-	 * Resolves the path to the configuration file for Rome. Relative paths are
+	 * Resolves the path to the configuration file for Biome. Relative paths are
 	 * resolved against the project's base directory.
 	 *
 	 * @param config Configuration from the Maven Mojo execution with details about
@@ -148,14 +156,14 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	}
 
 	/**
-	 * Resolves the path to the Rome executable. When the path is only a file name,
+	 * Resolves the path to the Biome executable. When the path is only a file name,
 	 * do not perform any resolution and interpret it as a command that must be on
 	 * the user's path. Otherwise resolve the executable path against the project's
 	 * base directory.
 	 *
 	 * @param config Configuration from the Maven Mojo execution with details about
 	 *               the currently executed project.
-	 * @return The resolved path to the Rome executable.
+	 * @return The resolved path to the Biome executable.
 	 */
 	private String resolveExePath(FormatterStepConfig config) {
 		var path = Paths.get(pathToExe);
@@ -167,20 +175,20 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	}
 
 	/**
-	 * Resolves the directory to use for storing downloaded Rome executable. When a
+	 * Resolves the directory to use for storing downloaded Biome executable. When a
 	 * {@link #downloadDir} is given, use that directory, resolved against the
-	 * current project's directory. Otherwise, use the {@code Rome} sub folder in
-	 * the shared data directory.
+	 * current project's directory. Otherwise, use the <code>biome</code> sub folder
+	 * in the shared data directory.
 	 *
 	 * @param config Configuration for this step.
-	 * @return The download directory for the Rome executable.
+	 * @return The download directory for the Biome executable.
 	 */
 	private String resolveDownloadDir(FormatterStepConfig config) {
 		final var fileLocator = config.getFileLocator();
 		if (downloadDir != null && !downloadDir.isBlank()) {
 			return fileLocator.getBaseDir().toPath().resolve(downloadDir).toAbsolutePath().toString();
 		} else {
-			return fileLocator.getDataDir().toPath().resolve("rome").toString();
+			return fileLocator.getDataDir().toPath().resolve(flavor.shortName()).toString();
 		}
 	}
 }

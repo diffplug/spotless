@@ -288,7 +288,7 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 	}
 
 	/**
-	 * Tests that the build fails when given Rome executable does not exist.
+	 * Tests that the build fails when given Biome executable does not exist.
 	 *
 	 * @throws Exception When a test failure occurs.
 	 */
@@ -311,7 +311,7 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 		assertThat(spotlessApply.getOutput()).contains("Build failed with an exception");
 		assertFile("rome_test.js").sameAsResource("rome/js/fileBefore.js");
 		assertThat(spotlessApply.getOutput()).contains("Could not create task ':spotlessMyromeApply'");
-		assertThat(spotlessApply.getOutput()).contains("Rome executable does not exist");
+		assertThat(spotlessApply.getOutput()).contains("Biome executable does not exist");
 	}
 
 	/**

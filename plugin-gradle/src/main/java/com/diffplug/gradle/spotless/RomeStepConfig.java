@@ -28,12 +28,13 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.rome.BiomeFlavor;
 import com.diffplug.spotless.rome.RomeStep;
 
 public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	/**
-	 * Optional path to the directory with configuration file for Rome. The file
-	 * must be named {@code rome.json}. When none is given, the default
+	 * Optional path to the directory with configuration file for Biome. The file
+	 * must be named {@code biome.json}. When none is given, the default
 	 * configuration is used. If this is a relative path, it is resolved against the
 	 * project's base directory.
 	 */
@@ -41,16 +42,22 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	private Object configPath;
 
 	/**
-	 * Optional directory where the downloaded Rome executable is placed. If this is
-	 * a relative path, it is resolved against the project's base directory.
+	 * Optional directory where the downloaded Biome executable is placed. If this
+	 * is a relative path, it is resolved against the project's base directory.
 	 * Defaults to
-	 * <code>~/.m2/repository/com/diffplug/spotless/spotless-data/rome</code>.
+	 * <code>~/.m2/repository/com/diffplug/spotless/spotless-data/biome</code>.
 	 */
 	@Nullable
 	private Object downloadDir;
 
 	/**
-	 * Optional path to the Rome executable. Either a <code>version</code> or a
+	 * The flavor of Biome to use. Will be removed when we stop support the
+	 * deprecated Rome project.
+	 */
+	private final BiomeFlavor flavor;
+
+	/**
+	 * Optional path to the Biome executable. Either a <code>version</code> or a
 	 * <code>pathToExe</code> should be specified. When not given, an attempt is
 	 * made to download the executable for the given version from the network. When
 	 * given, the executable is used and the <code>version</code> parameter is
@@ -59,10 +66,10 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	 * When an absolute path is given, that path is used as-is. When a relative path
 	 * is given, it is resolved against the project's base directory. When only a
 	 * file name (i.e. without any slashes or back slash path separators such as
-	 * {@code rome}) is given, this is interpreted as the name of a command with
-	 * executable that is in your {@code path} environment variable. Use
-	 * {@code ./executable-name} if you want to use an executable in the project's
-	 * base directory.
+	 * <code>biome</code>) is given, this is interpreted as the name of a command
+	 * with executable that is in your <code>path</code> environment variable. Use
+	 * <code>./executable-name</code> if you want to use an executable in the
+	 * project's base directory.
 	 */
 	@Nullable
 	private Object pathToExe;
@@ -73,12 +80,12 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	private final Project project;
 
 	/**
-	 * Replaces the current Rome formatter step with the given step.
+	 * Replaces the current Biome formatter step with the given step.
 	 */
 	private final Consumer<FormatterStep> replaceStep;
 
 	/**
-	 * Rome version to download, applies only when no <code>pathToExe</code> is
+	 * Biome version to download, applies only when no <code>pathToExe</code> is
 	 * specified explicitly. Either a <code>version</code> or a
 	 * <code>pathToExe</code> should be specified. When not given, a default known
 	 * version is used. For stable builds, it is recommended that you always set the
@@ -88,15 +95,17 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	@Nullable
 	private String version;
 
-	protected RomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, String version) {
+	protected RomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, BiomeFlavor flavor,
+			String version) {
 		this.project = requireNonNull(project);
 		this.replaceStep = requireNonNull(replaceStep);
+		this.flavor = flavor;
 		this.version = version;
 	}
 
 	/**
-	 * Optional path to the directory with configuration file for Rome. The file
-	 * must be named {@code rome.json}. When none is given, the default
+	 * Optional path to the directory with configuration file for Biome. The file
+	 * must be named {@code biome.json}. When none is given, the default
 	 * configuration is used. If this is a relative path, it is resolved against the
 	 * project's base directory.
 	 *
@@ -109,10 +118,10 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	}
 
 	/**
-	 * Optional directory where the downloaded Rome executable is placed. If this is
-	 * a relative path, it is resolved against the project's base directory.
+	 * Optional directory where the downloaded Biome executable is placed. If this
+	 * is a relative path, it is resolved against the project's base directory.
 	 * Defaults to
-	 * <code>~/.m2/repository/com/diffplug/spotless/spotless-data/rome</code>.
+	 * <code>~/.m2/repository/com/diffplug/spotless/spotless-data/biome</code>.
 	 *
 	 * @return This step for further configuration.
 	 */
@@ -123,16 +132,16 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	}
 
 	/**
-	 * Optional path to the Rome executable. Overwrites the configured version. No
-	 * attempt is made to download the Rome executable from the network.
+	 * Optional path to the Biome executable. Overwrites the configured version. No
+	 * attempt is made to download the Biome executable from the network.
 	 * <p>
 	 * When an absolute path is given, that path is used as-is. When a relative path
 	 * is given, it is resolved against the project's base directory. When only a
 	 * file name (i.e. without any slashes or back slash path separators such as
-	 * {@code rome}) is given, this is interpreted as the name of a command with
-	 * executable that is in your {@code path} environment variable. Use
-	 * {@code ./executable-name} if you want to use an executable in the project's
-	 * base directory.
+	 * <code>biome</code>) is given, this is interpreted as the name of a command
+	 * with executable that is in your <code>path</code> environment variable. Use
+	 * <code>./executable-name</code> if you want to use an executable in the
+	 * project's base directory.
 	 *
 	 * @return This step for further configuration.
 	 */
@@ -143,10 +152,10 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	}
 
 	/**
-	 * Creates a new formatter step that formats code by calling the Rome
+	 * Creates a new formatter step that formats code by calling the Biome
 	 * executable, using the current configuration.
 	 *
-	 * @return A new formatter step for the Rome formatter.
+	 * @return A new formatter step for the Biome formatter.
 	 */
 	protected FormatterStep createStep() {
 		var builder = newBuilder();
@@ -161,7 +170,7 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	/**
 	 * Gets the language (syntax) of the input files to format. When
 	 * <code>null</code> or the empty string, the language is detected automatically
-	 * from the file name. Currently the following languages are supported by Rome:
+	 * from the file name. Currently the following languages are supported by Biome:
 	 * <ul>
 	 * <li>js (JavaScript)</li>
 	 * <li>jsx (JavaScript + JSX)</li>
@@ -179,12 +188,12 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	protected abstract String getLanguage();
 
 	/**
-	 * @return This Rome config instance.
+	 * @return This Biome config instance.
 	 */
 	protected abstract Self getThis();
 
 	/**
-	 * Creates a new Rome step and replaces the existing Rome step in the list of
+	 * Creates a new Biome step and replaces the existing Biome step in the list of
 	 * format steps.
 	 */
 	protected void replaceStep() {
@@ -193,19 +202,18 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 
 	/**
 	 * Finds the data directory that can be used for storing shared data such as
-	 * Rome executable globally. This is a directory in the local repository, e.g.
+	 * Biome executable globally. This is a directory in the local repository, e.g.
 	 * <code>~/.m2/repository/com/diffplus/spotless/spotless-data<code>.
 	 *
 	 * @return The directory for storing shared data.
 	 */
 	private File findDataDir() {
-		var currentRepo = project.getRepositories().stream()
-				.filter(r -> r instanceof MavenArtifactRepository)
-				.map(r -> (MavenArtifactRepository) r)
-				.filter(r -> "file".equals(r.getUrl().getScheme()))
-				.findAny().orElse(null);
+		var currentRepo = project.getRepositories().stream().filter(r -> r instanceof MavenArtifactRepository)
+				.map(r -> (MavenArtifactRepository) r).filter(r -> "file".equals(r.getUrl().getScheme())).findAny()
+				.orElse(null);
 		// Temporarily add mavenLocal() repository to get its file URL
-		var localRepo = currentRepo != null ? (MavenArtifactRepository) currentRepo : project.getRepositories().mavenLocal();
+		var localRepo = currentRepo != null ? (MavenArtifactRepository) currentRepo
+				: project.getRepositories().mavenLocal();
 		try {
 			// e.g. ~/.m2/repository/
 			var repoPath = Path.of(localRepo.getUrl());
@@ -220,29 +228,29 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	}
 
 	/**
-	 * A new builder for configuring a Rome step that either downloads the Rome
+	 * A new builder for configuring a Biome step that either downloads the Biome
 	 * executable with the given version from the network, or uses the executable
 	 * from the given path.
 	 *
-	 * @return A builder for a Rome step.
+	 * @return A builder for a Biome step.
 	 */
 	private RomeStep newBuilder() {
 		if (pathToExe != null) {
 			var resolvedPathToExe = resolvePathToExe();
-			return RomeStep.withExePath(resolvedPathToExe);
+			return RomeStep.withExePath(flavor, resolvedPathToExe);
 		} else {
 			var downloadDir = resolveDownloadDir();
-			return RomeStep.withExeDownload(version, downloadDir);
+			return RomeStep.withExeDownload(flavor, version, downloadDir);
 		}
 	}
 
 	/**
-	 * Resolves the path to the Rome executable. When the path is only a file name,
+	 * Resolves the path to the Biome executable. When the path is only a file name,
 	 * do not perform any resolution and interpret it as a command that must be on
 	 * the user's path. Otherwise resolve the executable path against the project's
 	 * base directory.
 	 *
-	 * @return The resolved path to the Rome executable.
+	 * @return The resolved path to the Biome executable.
 	 */
 	private String resolvePathToExe() {
 		var fileNameOnly = pathToExe instanceof String && Paths.get(pathToExe.toString()).getNameCount() == 1;
@@ -254,18 +262,18 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	}
 
 	/**
-	 * Resolves the directory to use for storing downloaded Rome executable. When a
+	 * Resolves the directory to use for storing downloaded Biome executable. When a
 	 * {@link #downloadDir} is given, use that directory, resolved against the
-	 * current project's directory. Otherwise, use the {@code Rome} sub folder in
+	 * current project's directory. Otherwise, use the {@code biome} sub folder in
 	 * the shared data directory.
 	 *
-	 * @return The download directory for the Rome executable.
+	 * @return The download directory for the Biome executable.
 	 */
 	private String resolveDownloadDir() {
 		if (downloadDir != null) {
 			return project.file(downloadDir).toString();
 		} else {
-			return findDataDir().toPath().resolve("rome").toString();
+			return findDataDir().toPath().resolve(flavor.shortName()).toString();
 		}
 	}
 }
