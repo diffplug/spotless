@@ -49,6 +49,9 @@ jobs:
           - kind: maven
             jre: 11
             os: windows-latest
+          - kind: maven
+            jre: 21
+            os: ubuntu-latest
           - kind: gradle
             jre: 17
             os: windows-latest
