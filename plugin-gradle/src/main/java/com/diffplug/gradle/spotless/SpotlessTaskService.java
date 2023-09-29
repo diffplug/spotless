@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
 import org.gradle.api.tasks.Internal;
@@ -91,6 +92,16 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	static String INDEPENDENT_HELPER = "Helper";
 
+	static void usesServiceTolerateTestFailure(DefaultTask task, Provider<SpotlessTaskService> serviceProvider) {
+		try {
+			task.usesService(serviceProvider);
+		} catch (ClassCastException e) {
+			// this happens only in our test mocking, e.g. DiffMessageFormatterTest
+			// https://github.com/diffplug/spotless/pull/1570/commits/c45e1f2322c78f272689feb35753bbc633422bfa
+			// it's fine to swallow these exceptions
+		}
+	}
+
 	static abstract class ClientTask extends DefaultTask {
 		@Internal
 		abstract Property<File> getSpotlessOutDirectory();
@@ -105,7 +116,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		protected abstract ObjectFactory getConfigCacheWorkaround();
 
 		void init(SpotlessTaskImpl impl) {
-			usesService(impl.getTaskServiceProvider());
+			usesServiceTolerateTestFailure(this, impl.getTaskServiceProvider());
 			getSpotlessOutDirectory().set(impl.getOutputDirectory());
 			getTaskService().set(impl.getTaskService());
 			getProjectDir().set(impl.getProjectDir());
