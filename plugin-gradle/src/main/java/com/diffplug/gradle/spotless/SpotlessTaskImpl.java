@@ -48,7 +48,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 	void init(Provider<SpotlessTaskService> service) {
 		taskServiceProvider = service;
-		usesService(service);
+		SpotlessTaskService.usesServiceTolerateTestFailure(this, service);
 		getTaskService().set(service);
 		getProjectDir().set(getProject().getProjectDir());
 	}
