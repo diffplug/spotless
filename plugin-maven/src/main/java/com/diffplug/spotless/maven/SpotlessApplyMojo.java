@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
@@ -31,8 +32,22 @@ import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 @Mojo(name = AbstractSpotlessMojo.GOAL_APPLY, threadSafe = true)
 public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
+	@Parameter(property = "spotlessIdeHook")
+	private String spotlessIdeHook;
+
+	@Parameter(property = "spotlessIdeHookUseStdIn")
+	private boolean spotlessIdeHookUseStdIn;
+
+	@Parameter(property = "spotlessIdeHookUseStdOut")
+	private boolean spotlessIdeHookUseStdOut;
+
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
+		if (isIdeHook()) {
+			IdeHook.performHook(files, formatter, spotlessIdeHook, spotlessIdeHookUseStdIn, spotlessIdeHookUseStdOut);
+			return;
+		}
+
 		ImpactedFilesTracker counter = new ImpactedFilesTracker();
 
 		for (File file : files) {
@@ -68,5 +83,9 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 		} else {
 			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", formatter.getName()));
 		}
+	}
+
+	private boolean isIdeHook() {
+		return !(spotlessIdeHook == null || spotlessIdeHook.isEmpty());
 	}
 }

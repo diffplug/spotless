@@ -15,10 +15,13 @@
  */
 package com.diffplug.spotless.extra;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -76,6 +79,10 @@ public abstract class EquoBasedStepBuilder {
 		this.p2Mirrors = Map.copyOf(p2Mirrors);
 	}
 
+	public void setP2Mirrors(Collection<P2Mirror> p2Mirrors) {
+		this.p2Mirrors = p2Mirrors.stream().collect(toMap(P2Mirror::getPrefix, P2Mirror::getUrl));
+	}
+
 	/** Returns the FormatterStep (whose state will be calculated lazily). */
 	public FormatterStep build() {
 		return FormatterStep.createLazy(formatterName, this::get, stateToFormatter);
@@ -110,7 +117,7 @@ public abstract class EquoBasedStepBuilder {
 		}
 		var classpath = new ArrayList<File>();
 		var mavenDeps = new ArrayList<String>();
-		mavenDeps.add("dev.equo.ide:solstice:1.3.1");
+		mavenDeps.add("dev.equo.ide:solstice:1.7.3");
 		mavenDeps.add("com.diffplug.durian:durian-swt.os:4.2.0");
 		mavenDeps.addAll(query.getJarsOnMavenCentral());
 		classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));

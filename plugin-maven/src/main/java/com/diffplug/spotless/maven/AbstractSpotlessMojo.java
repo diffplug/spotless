@@ -80,7 +80,7 @@ import com.diffplug.spotless.maven.yaml.Yaml;
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private static final String DEFAULT_INDEX_FILE_NAME = "spotless-index";
 	private static final String DEFAULT_ENCODING = "UTF-8";
-	private static final String DEFAULT_LINE_ENDINGS = "GIT_ATTRIBUTES";
+	private static final String DEFAULT_LINE_ENDINGS = "GIT_ATTRIBUTES_FAST_ALLSAME";
 
 	/** Value to allow unsetting the ratchet inherited from parent pom configuration. */
 	static final String RATCHETFROM_NONE = "NONE";

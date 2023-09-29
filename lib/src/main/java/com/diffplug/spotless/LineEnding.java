@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
-
-import javax.annotation.Nullable;
 
 /**
  * Represents the line endings which should be written by the tool.
@@ -31,6 +28,14 @@ public enum LineEnding {
 	// @formatter:off
 	/** Uses the same line endings as Git, using {@code .gitattributes} and the {@code core.eol} property. */
 	GIT_ATTRIBUTES {
+		/** .gitattributes is path-specific, so you must use {@link LineEnding#createPolicy(File, Supplier)}. */
+		@Override @Deprecated
+		public Policy createPolicy() {
+			return super.createPolicy();
+		}
+	},
+	/** Uses the same line endings as Git, and assumes that every single file being formatted will have the same line ending. */
+	GIT_ATTRIBUTES_FAST_ALLSAME {
 		/** .gitattributes is path-specific, so you must use {@link LineEnding#createPolicy(File, Supplier)}. */
 		@Override @Deprecated
 		public Policy createPolicy() {
@@ -51,24 +56,22 @@ public enum LineEnding {
 	public Policy createPolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
 		Objects.requireNonNull(projectDir, "projectDir");
 		Objects.requireNonNull(toFormat, "toFormat");
-		if (this != GIT_ATTRIBUTES) {
-			return createPolicy();
+		String gitAttributesMethod;
+		if (this == GIT_ATTRIBUTES) {
+			gitAttributesMethod = "create";
+		} else if (this == GIT_ATTRIBUTES_FAST_ALLSAME) {
+			gitAttributesMethod = "createFastAllSame";
 		} else {
-			if (gitAttributesPolicyCreator == null) {
-				try {
-					Class<?> clazz = Class.forName("com.diffplug.spotless.extra.GitAttributesLineEndings");
-					Method method = clazz.getMethod("create", File.class, Supplier.class);
-					gitAttributesPolicyCreator = (proj, target) -> ThrowingEx.get(() -> (Policy) method.invoke(null, proj, target));
-				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-					throw new IllegalStateException("LineEnding.GIT_ATTRIBUTES requires the spotless-lib-extra library, but it is not on the classpath", e);
-				}
-			}
-			// gitAttributesPolicyCreator will always be nonnull at this point
-			return gitAttributesPolicyCreator.apply(projectDir, toFormat);
+			return createPolicy();
+		}
+		try {
+			Class<?> clazz = Class.forName("com.diffplug.spotless.extra.GitAttributesLineEndings");
+			Method method = clazz.getMethod(gitAttributesMethod, File.class, Supplier.class);
+			return ThrowingEx.get(() -> (Policy) method.invoke(null, projectDir, toFormat));
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
+			throw new IllegalStateException("LineEnding.GIT_ATTRIBUTES requires the spotless-lib-extra library, but it is not on the classpath", e);
 		}
 	}
-
-	private static volatile @Nullable BiFunction<File, Supplier<Iterable<File>>, Policy> gitAttributesPolicyCreator;
 
 	// @formatter:off
 	/** Should use {@link #createPolicy(File, Supplier)} instead, but this will work iff its a path-independent LineEnding policy. */
@@ -77,7 +80,7 @@ public enum LineEnding {
 		case PLATFORM_NATIVE:	return _platformNativePolicy;
 		case WINDOWS:			return WINDOWS_POLICY;
 		case UNIX:				return UNIX_POLICY;
-        case MAC_CLASSIC:       return MAC_CLASSIC_POLICY;
+		case MAC_CLASSIC:		return MAC_CLASSIC_POLICY;
 		default:	throw new UnsupportedOperationException(this + " is a path-specific line ending.");
 		}
 	}
@@ -121,7 +124,7 @@ public enum LineEnding {
 		case PLATFORM_NATIVE:	return _platformNative;
 		case WINDOWS:			return "\r\n";
 		case UNIX:				return "\n";
-		case MAC_CLASSIC:       return "\r";
+		case MAC_CLASSIC:		return "\r";
 		default:	throw new UnsupportedOperationException(this + " is a path-specific line ending.");
 		}
 	}

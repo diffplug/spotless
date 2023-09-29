@@ -10,13 +10,18 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.42.0] - 2023-09-28
 ### Added
-* Add support for biome. The Rome project [was renamed to Biome](https://biomejs.dev/blog/annoucing-biome/).
+* Support for biome. The Rome project [was renamed to Biome](https://biomejs.dev/blog/annoucing-biome/).
   The configuration is still the same, but you should switch to the new `biome` tag / function and adjust
   the version accordingly. ([#1804](https://github.com/diffplug/spotless/issues/1804)).
-* Add support for `google-java-format`'s `skip-javadoc-formatting` option. ([#1793](https://github.com/diffplug/spotless/pull/1793))
+* Support for `google-java-format`'s `skip-javadoc-formatting` option. ([#1793](https://github.com/diffplug/spotless/pull/1793))
+* Support configuration of mirrors for P2 repositories in maven DSL ([#1697](https://github.com/diffplug/spotless/issues/1697)).
+* New line endings mode `GIT_ATTRIBUTES_FAST_ALLSAME`. ([#1838](https://github.com/diffplug/spotless/pull/1838))
 ### Fixed
 * Fix support for plugins when using Prettier version `3.0.0` and newer. ([#1802](https://github.com/diffplug/spotless/pull/1802))
+* Fix configuration cache issue around `external process started '/usr/bin/git --version'`. ([#1806](https://github.com/diffplug/spotless/issues/1806))
 ### Changes
 * Bump default `flexmark` version to latest `0.64.0` -> `0.64.8`. ([#1801](https://github.com/diffplug/spotless/pull/1801))
 * Bump default `ktlint` version to latest `0.50.0` -> `1.0.0`. ([#1808](https://github.com/diffplug/spotless/pull/1808))
