@@ -30,7 +30,7 @@ public class PalantirJavaFormatStep {
 	private static final String DEFAULT_STYLE = "PALANTIR";
 	private static final String NAME = "palantir-java-format";
 	private static final String MAVEN_COORDINATE = "com.palantir.javaformat:palantir-java-format:";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.1.0").add(11, "2.28.0");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.1.0").add(11, "2.38.0");
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(Provisioner provisioner) {
