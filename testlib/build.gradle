@@ -13,6 +13,7 @@ dependencies {
 	api "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	api "org.assertj:assertj-core:${VER_ASSERTJ}"
 	api "org.mockito:mockito-core:$VER_MOCKITO"
+	runtimeOnly "org.junit.platform:junit-platform-launcher"
 
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"

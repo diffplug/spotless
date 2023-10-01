@@ -20,6 +20,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation projects.testlib
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 tasks.withType(Test).configureEach {
