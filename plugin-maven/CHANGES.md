@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Added
+* CompileSourceRoots and TestCompileSourceRoots are now respected as default includes. These properties are commonly set when adding extra source directories. ([#1846](https://github.com/diffplug/spotless/issues/1846))
+
 ## [2.40.0] - 2023-09-28
 ### Added
 * Add `-DspotlessIdeHook` that provides the ability to apply Spotless exclusively to a specified file. It accepts the absolute path of the file. ([#1782](https://github.com/diffplug/spotless/pull/1782))
