@@ -17,7 +17,6 @@ package com.diffplug.spotless.glue.ktlint.compat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -61,15 +60,14 @@ public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
 	private static final List<EditorConfigProperty<?>> DEFAULT_EDITOR_CONFIG_PROPERTIES;
 
 	static {
-		List<EditorConfigProperty<?>> list = new ArrayList<>();
-		list.add(CodeStyleEditorConfigPropertyKt.getCODE_STYLE_PROPERTY());
-		list.add(EndOfLinePropertyKt.getEND_OF_LINE_PROPERTY());
-		list.add(IndentSizeEditorConfigPropertyKt.getINDENT_SIZE_PROPERTY());
-		list.add(IndentStyleEditorConfigPropertyKt.getINDENT_STYLE_PROPERTY());
-		list.add(InsertFinalNewLineEditorConfigPropertyKt.getINSERT_FINAL_NEWLINE_PROPERTY());
-		list.add(MaxLineLengthEditorConfigPropertyKt.getMAX_LINE_LENGTH_PROPERTY());
-		list.add(RuleExecutionEditorConfigPropertyKt.getEXPERIMENTAL_RULES_EXECUTION_PROPERTY());
-		DEFAULT_EDITOR_CONFIG_PROPERTIES = Collections.unmodifiableList(list);
+		DEFAULT_EDITOR_CONFIG_PROPERTIES = List.of(
+				CodeStyleEditorConfigPropertyKt.getCODE_STYLE_PROPERTY(),
+				EndOfLinePropertyKt.getEND_OF_LINE_PROPERTY(),
+				IndentSizeEditorConfigPropertyKt.getINDENT_SIZE_PROPERTY(),
+				IndentStyleEditorConfigPropertyKt.getINDENT_STYLE_PROPERTY(),
+				InsertFinalNewLineEditorConfigPropertyKt.getINSERT_FINAL_NEWLINE_PROPERTY(),
+				MaxLineLengthEditorConfigPropertyKt.getMAX_LINE_LENGTH_PROPERTY(),
+				RuleExecutionEditorConfigPropertyKt.getEXPERIMENTAL_RULES_EXECUTION_PROPERTY());
 	}
 
 	static class FormatterCallback implements Function2<LintError, Boolean, Unit> {

@@ -16,8 +16,6 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +33,7 @@ public class NpmPathResolver {
 		this.explicitNpmExecutable = explicitNpmExecutable;
 		this.explicitNodeExecutable = explicitNodeExecutable;
 		this.explicitNpmrcFile = explicitNpmrcFile;
-		this.additionalNpmrcLocations = Collections.unmodifiableList(new ArrayList<>(additionalNpmrcLocations));
+		this.additionalNpmrcLocations = List.copyOf(additionalNpmrcLocations);
 	}
 
 	/**
