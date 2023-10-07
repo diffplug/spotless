@@ -56,6 +56,7 @@ dependencies {
 	testImplementation "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
 	testImplementation "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
 	testImplementation "org.apache.maven:maven-core:${VER_MAVEN_API}"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 apply from: rootProject.file('gradle/special-tests.gradle')

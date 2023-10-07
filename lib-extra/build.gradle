@@ -24,6 +24,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 spotless {
 	java {
