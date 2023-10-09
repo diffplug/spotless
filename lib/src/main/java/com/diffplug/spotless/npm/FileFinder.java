@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ class FileFinder {
 	private final List<Supplier<Optional<File>>> fileCandidateFinders;
 
 	private FileFinder(Builder builder) {
-		this.fileCandidateFinders = Collections.unmodifiableList(new ArrayList<>(builder.candidateFinders));
+		this.fileCandidateFinders = List.copyOf(builder.candidateFinders);
 	}
 
 	static Builder finderForFilename(String fileName) {

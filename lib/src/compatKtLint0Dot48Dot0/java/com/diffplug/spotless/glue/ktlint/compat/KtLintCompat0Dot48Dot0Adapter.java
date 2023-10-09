@@ -17,8 +17,6 @@ package com.diffplug.spotless.glue.ktlint.compat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -53,17 +51,15 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 	private static final List<EditorConfigProperty<?>> DEFAULT_EDITOR_CONFIG_PROPERTIES;
 
 	static {
-		List<EditorConfigProperty<?>> list = new ArrayList<>();
-		list.add(CodeStyleEditorConfigPropertyKt.getCODE_STYLE_PROPERTY());
 		//noinspection deprecation
-		list.add(DisabledRulesEditorConfigPropertyKt.getDISABLED_RULES_PROPERTY());
-		//noinspection KotlinInternalInJava,deprecation
-		list.add(DisabledRulesEditorConfigPropertyKt.getKTLINT_DISABLED_RULES_PROPERTY());
-		list.add(IndentStyleEditorConfigPropertyKt.getINDENT_STYLE_PROPERTY());
-		list.add(IndentSizeEditorConfigPropertyKt.getINDENT_SIZE_PROPERTY());
-		list.add(InsertFinalNewLineEditorConfigPropertyKt.getINSERT_FINAL_NEWLINE_PROPERTY());
-		list.add(MaxLineLengthEditorConfigPropertyKt.getMAX_LINE_LENGTH_PROPERTY());
-		DEFAULT_EDITOR_CONFIG_PROPERTIES = Collections.unmodifiableList(list);
+		DEFAULT_EDITOR_CONFIG_PROPERTIES = List.of(
+				CodeStyleEditorConfigPropertyKt.getCODE_STYLE_PROPERTY(),
+				DisabledRulesEditorConfigPropertyKt.getDISABLED_RULES_PROPERTY(),
+				DisabledRulesEditorConfigPropertyKt.getKTLINT_DISABLED_RULES_PROPERTY(),
+				IndentStyleEditorConfigPropertyKt.getINDENT_STYLE_PROPERTY(),
+				IndentSizeEditorConfigPropertyKt.getINDENT_SIZE_PROPERTY(),
+				InsertFinalNewLineEditorConfigPropertyKt.getINSERT_FINAL_NEWLINE_PROPERTY(),
+				MaxLineLengthEditorConfigPropertyKt.getMAX_LINE_LENGTH_PROPERTY());
 	}
 
 	static class FormatterCallback implements Function2<LintError, Boolean, Unit> {
