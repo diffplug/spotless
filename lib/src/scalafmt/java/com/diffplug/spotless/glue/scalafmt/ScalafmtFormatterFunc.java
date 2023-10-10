@@ -51,4 +51,9 @@ public class ScalafmtFormatterFunc implements FormatterFunc {
 	public String apply(String input) {
 		return Scalafmt.format(input, config, Set$.MODULE$.empty()).get();
 	}
+
+	@Override
+	public String apply(String input, File file) {
+		return Scalafmt.format(input, config, Set$.MODULE$.empty(), file.getAbsolutePath()).get();
+	}
 }

@@ -41,6 +41,13 @@ class ScalaFmtStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void behaviorFileOverride() {
+		FormatterStep step = ScalaFmtStep.create(ScalaFmtStep.DEFAULT_VERSION, TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.fileoverride.conf"));
+		StepHarness.forStep(step)
+			.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basic.cleanWithCustomConf_3.0.0");
+	}
+
+	@Test
 	void behaviorDefaultConfigVersion_3_0_0() {
 		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), null);
 		StepHarness.forStep(step)
