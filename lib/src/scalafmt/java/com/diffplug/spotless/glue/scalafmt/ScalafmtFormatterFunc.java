@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,5 +50,10 @@ public class ScalafmtFormatterFunc implements FormatterFunc {
 	@Override
 	public String apply(String input) {
 		return Scalafmt.format(input, config, Set$.MODULE$.empty()).get();
+	}
+
+	@Override
+	public String apply(String input, File file) {
+		return Scalafmt.format(input, config, Set$.MODULE$.empty(), file.getAbsolutePath()).get();
 	}
 }

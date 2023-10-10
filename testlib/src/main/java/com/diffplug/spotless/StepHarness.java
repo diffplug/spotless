@@ -80,7 +80,11 @@ public class StepHarness extends StepHarnessBase {
 	public StepHarness testResource(String resourceBefore, String resourceAfter) {
 		String before = ResourceHarness.getTestResource(resourceBefore);
 		String after = ResourceHarness.getTestResource(resourceAfter);
-		return test(before, after);
+		String actual = formatter().compute(LineEnding.toUnix(before), new File(resourceBefore));
+		assertEquals(after, actual, "Step application failed");
+		actual = formatter().compute(LineEnding.toUnix(after), new File(resourceAfter));
+		assertEquals(after, actual, "Step is not idempotent");
+		return this;
 	}
 
 	/** Asserts that the given elements in the resources directory are transformed as expected. */
