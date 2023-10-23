@@ -144,7 +144,14 @@ class FileIndex {
 			throw new IllegalStateException("Index file does not have a parent dir: " + indexFile);
 		}
 		try {
-			Files.createDirectories(parentDir);
+			if (Files.exists(parentDir, LinkOption.NOFOLLOW_LINKS)) {
+				Path realPath = parentDir.toRealPath();
+				if (!Files.exists(realPath)) {
+					Files.createDirectories(realPath);
+				}
+			} else {
+				Files.createDirectories(parentDir);
+			}
 		} catch (IOException e) {
 			throw new UncheckedIOException("Unable to create parent directory for the index file: " + indexFile, e);
 		}
