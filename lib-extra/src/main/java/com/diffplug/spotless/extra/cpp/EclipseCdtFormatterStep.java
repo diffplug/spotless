@@ -27,7 +27,7 @@ import dev.equo.solstice.p2.P2Model;
 
 /**
  * Formatter step which calls out to the Eclipse CDT formatter.
- *
+ * <p>
  * Eclipse-CDT <code>org.eclipse.core.contenttype.contentTypes</code>
  * extension <code>cSource</code>, <code>cHeader</code>, <code>cxxSource</code> and <code>cxxHeader</code>.
  * can handle: "c", "h", "C", "cpp", "cxx", "cc", "c++", "h", "hpp", "hh", "hxx", "inc"

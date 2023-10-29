@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Shelling out to a process is harder than it ought to be in Java.
  * If you don't read stdout and stderr on their own threads, you risk
  * deadlock on a clogged buffer.
- *
+ * <p>
  * ProcessRunner allocates two threads specifically for the purpose of
  * flushing stdout and stderr to buffers.  These threads will remain alive until
  * the ProcessRunner is closed, so it is especially useful for repeated
@@ -239,7 +239,7 @@ public class ProcessRunner implements AutoCloseable {
 		/**
 		 * Asserts that the exit code was zero, and if so, returns
 		 * the content of stdout encoded with the given charset.
-		 *
+		 * <p>
 		 * If the exit code was not zero, throws an exception
 		 * with useful debugging information.
 		 */

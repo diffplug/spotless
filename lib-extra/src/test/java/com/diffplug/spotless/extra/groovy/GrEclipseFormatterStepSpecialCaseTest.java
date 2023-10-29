@@ -24,7 +24,7 @@ import com.diffplug.spotless.TestProvisioner;
 public class GrEclipseFormatterStepSpecialCaseTest {
 	/**
 	 * https://github.com/diffplug/spotless/issues/1657
-	 *
+	 * <p>
 	 * broken: ${parm == null ? "" : "<tag>$parm</tag>"}
 	 *  works: ${parm == null ? "" : "<tag>parm</tag>"}
 	 */

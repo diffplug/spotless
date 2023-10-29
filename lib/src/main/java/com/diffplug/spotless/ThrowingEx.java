@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.diffplug.spotless;
 /**
  * Basic functional interfaces which throw exception, along with
  * static helper methods for calling them.
- *
+ * <p>
  * Contains most of the functionality of Durian's Throwing and Errors
  * classes, but stripped down and renamed to avoid any confusion.
  */
@@ -80,7 +80,7 @@ public final class ThrowingEx {
 
 	/**
 	 * Casts or wraps the given exception to be a RuntimeException.
-	 *
+	 * <p>
 	 * If the input exception is a RuntimeException, it is simply
 	 * cast and returned.  Otherwise, it wrapped in a
 	 * {@link WrappedAsRuntimeException} and returned.

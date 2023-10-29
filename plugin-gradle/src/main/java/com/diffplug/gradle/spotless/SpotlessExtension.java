@@ -234,7 +234,7 @@ public abstract class SpotlessExtension {
 	/**
 	 * Configures Gradle's {@code check} task to run {@code spotlessCheck} if {@code true},
 	 * but to not do so if {@code false}.
-	 *
+	 * <p>
 	 * {@code true} by default.
 	 */
 	public void setEnforceCheck(boolean enforceCheck) {

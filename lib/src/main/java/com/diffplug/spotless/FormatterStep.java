@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 
 /**
  * An implementation of this class specifies a single step in a formatting process.
- *
+ * <p>
  * The input is guaranteed to have unix-style newlines, and the output is required
  * to not introduce any windows-style newlines as well.
  */
@@ -75,7 +75,7 @@ public interface FormatterStep extends Serializable {
 	/**
 	 * Returns a new FormatterStep which will only apply its changes
 	 * to files which pass the given filter.
-	 *
+	 * <p>
 	 * The provided filter must be serializable.
 	 */
 	public default FormatterStep filterByFile(SerializableFileFilter filter) {

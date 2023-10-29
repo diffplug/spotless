@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
  * Finds a foreign executable and checks its version.
  * If either part of that fails, it shows you why
  * and helps you fix it.
- *
+ * <p>
  * Usage: {@code ForeignExe.nameAndVersion("grep", "2.5.7").confirmVersionAndGetAbsolutePath()}
  * will find grep, confirm that it is version 2.5.7, and then return.
  */

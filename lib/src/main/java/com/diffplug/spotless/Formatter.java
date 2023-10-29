@@ -193,7 +193,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 
 	/**
 	 * Applies formatting to the given file.
-	 *
+	 * <p>
 	 * Returns null if the file was already clean, or the
 	 * formatted result with unix newlines if it was not.
 	 */

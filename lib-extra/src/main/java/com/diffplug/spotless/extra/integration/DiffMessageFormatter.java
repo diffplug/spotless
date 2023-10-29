@@ -249,9 +249,9 @@ public final class DiffMessageFormatter {
 
 	/**
 	 * Returns a git-style diff between the two unix strings.
-	 *
+	 * <p>
 	 * Output has no trailing newlines.
-	 *
+	 * <p>
 	 * Boolean args determine whether whitespace or line endings will be visible.
 	 */
 	private static String diffWhitespaceLineEndings(String dirty, String clean, boolean whitespace, boolean lineEndings) throws IOException {
@@ -278,7 +278,7 @@ public final class DiffMessageFormatter {
 
 	/**
 	 * Makes the whitespace and/or the lineEndings visible.
-	 *
+	 * <p>
 	 * MyersDiff wants inputs with only unix line endings.  So this ensures that that is the case.
 	 */
 	private static String visibleWhitespaceLineEndings(String input, boolean whitespace, boolean lineEndings) {

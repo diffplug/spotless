@@ -246,7 +246,7 @@ public final class GitAttributesLineEndings {
 
 		/**
 		 * Default line ending, determined in this order (paths are a teensy different platform to platform).
-		 *
+		 * <p>
 		 * - .git/config (per-repo)
 		 * - ~/.gitconfig (per-user)
 		 * - /etc/gitconfig (system-wide)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@ import com.diffplug.spotless.annotations.Internal;
 /**
  * **Warning:** Use this class at your own risk. It is an implementation detail and is not
  * guaranteed to exist in future versions.
- *
+ * <p>
  * Forked from
  * DBeaver - Universal Database Manager
  * Copyright (C) 2010-2017 Serge Rider (serge@jkiss.org)
- *
+ * <p>
  * Based on SQLFormatterConfiguration from https://github.com/serge-rider/dbeaver,
  * which itself is licensed under the Apache 2.0 license.
  */

@@ -52,10 +52,10 @@ public class TestProvisioner {
 
 	/**
 	 * Creates a Provisioner for the given repositories.
-	 *
+	 * <p>
 	 * The first time a project is created, there are ~7 seconds of configuration
 	 * which will go away for all subsequent runs.
-	 *
+	 * <p>
 	 * Every call to resolve will take about 1 second, even when all artifacts are resolved.
 	 */
 	private static Provisioner createWithRepositories(Consumer<RepositoryHandler> repoConfig) {

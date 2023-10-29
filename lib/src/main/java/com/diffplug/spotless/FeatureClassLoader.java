@@ -34,7 +34,7 @@ import java.util.Objects;
  * but linked against the `Url[]`. This allows us to ship classfiles which function as glue
  * code but delay linking/definition to runtime after the user has specified which version
  * of the formatter they want.
- *
+ * <p>
  *  For `"org.slf4j.` and (`com.diffplug.spotless.` but not `com.diffplug.spotless.extra.`)
  * 	the classes are loaded from the buildToolClassLoader.
  */
