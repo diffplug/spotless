@@ -19,7 +19,7 @@ plugins {
 	// DO NOT UPDATE, see https://github.com/diffplug/spotless/pull/874
 	id 'com.diffplug.p2.asmaven' version '3.27.0' apply false
 	// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
-	id 'com.adarshr.test-logger' version '3.2.0' apply false
+	id 'com.adarshr.test-logger' version '4.0.0' apply false
 	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
 	id 'io.github.davidburstrom.version-compatibility' version '0.5.0' apply false
 	// https://plugins.gradle.org/plugin/com.gradle.enterprise
