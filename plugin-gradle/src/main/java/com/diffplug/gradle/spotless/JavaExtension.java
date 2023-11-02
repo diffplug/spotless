@@ -211,6 +211,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 		public GoogleJavaFormatConfig reorderImports(boolean reorderImports) {
 			this.reorderImports = reorderImports;
+			replaceStep(createStep());
 			return this;
 		}
 

@@ -47,6 +47,32 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void integrationWithReorderImports() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"    java {",
+				"        target file('test.java')",
+				"        googleJavaFormat('1.12.0').aosp().reorderImports(true)",
+				"    }",
+				"}");
+
+		setFile("test.java").toResource("java/googlejavaformat/JavaWithReorderImportsUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaWithReorderImportsEnabledFormatted.test");
+
+		checkRunsThenUpToDate();
+		replace("build.gradle",
+				"googleJavaFormat('1.12.0')",
+				"googleJavaFormat()");
+		checkRunsThenUpToDate();
+	}
+
+	@Test
 	void integrationWithSkipJavadocFormatting() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",

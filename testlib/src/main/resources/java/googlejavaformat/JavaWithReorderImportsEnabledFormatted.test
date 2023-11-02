@@ -1,0 +1,13 @@
+import my.UsedB;
+
+import org.xml.sax.InputSource;
+
+import java.nio.file.Paths;
+
+public class Java {
+    public static void main(String[] args) {
+        UsedB b = new UsedB();
+        InputSource inputSource = new InputSource();
+        Paths.get("dir");
+    }
+}

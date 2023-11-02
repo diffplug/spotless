@@ -53,6 +53,18 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	void specificVersionReorderImports() throws Exception {
+		writePomWithJavaSteps(
+				"<googleJavaFormat>",
+				"  <version>1.12.0</version>",
+				"  <style>AOSP</style>",
+				"  <reorderImports>true</reorderImports>",
+				"</googleJavaFormat>");
+
+		runTest("java/googlejavaformat/JavaWithReorderImportsEnabledFormatted.test", "java/googlejavaformat/JavaWithReorderImportsUnformatted.test");
+	}
+
+	@Test
 	void specificVersionSkipJavadocFormatting() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
@@ -64,8 +76,12 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest(String targetResource) throws Exception {
+		runTest(targetResource, "java/googlejavaformat/JavaCodeUnformatted.test");
+	}
+
+	private void runTest(String targetResource, String sourceResource) throws Exception {
 		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		setFile(path).toResource(sourceResource);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource(targetResource);
 	}

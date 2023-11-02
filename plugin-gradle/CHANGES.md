@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changes
 * Bump default `ktlint` version to latest `1.0.0` -> `1.0.1`. ([#1855](https://github.com/diffplug/spotless/pull/1855))
+### Fixed
+* Fix `GoogleJavaFormatConfig.reorderImports` not working. ([#1872](https://github.com/diffplug/spotless/issues/1872))
 
 ## [6.22.0] - 2023-09-28
 ### Added
