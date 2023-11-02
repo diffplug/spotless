@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -144,7 +145,14 @@ class FileIndex {
 			throw new IllegalStateException("Index file does not have a parent dir: " + indexFile);
 		}
 		try {
-			Files.createDirectories(parentDir);
+			if (Files.exists(parentDir, LinkOption.NOFOLLOW_LINKS)) {
+				Path realPath = parentDir.toRealPath();
+				if (!Files.exists(realPath)) {
+					Files.createDirectories(realPath);
+				}
+			} else {
+				Files.createDirectories(parentDir);
+			}
 		} catch (IOException e) {
 			throw new UncheckedIOException("Unable to create parent directory for the index file: " + indexFile, e);
 		}

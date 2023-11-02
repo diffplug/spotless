@@ -3,11 +3,12 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-### Changes
-* Bump default `ktlint` version to latest `1.0.0` -> `1.0.1`. ([#1855](https://github.com/diffplug/spotless/pull/1855))
-
 ### Added
 * CompileSourceRoots and TestCompileSourceRoots are now respected as default includes. These properties are commonly set when adding extra source directories. ([#1846](https://github.com/diffplug/spotless/issues/1846))
+### Fixed
+* Fix crash when build dir is a softlink to another directory. ([#1859](https://github.com/diffplug/spotless/pull/1859))
+### Changes
+* Bump default `ktlint` version to latest `1.0.0` -> `1.0.1`. ([#1855](https://github.com/diffplug/spotless/pull/1855))
 
 ## [2.40.0] - 2023-09-28
 ### Added
