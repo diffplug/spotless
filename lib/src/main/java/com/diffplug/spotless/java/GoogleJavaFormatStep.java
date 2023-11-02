@@ -58,7 +58,11 @@ public class GoogleJavaFormatStep {
 	}
 
 	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings) {
-		return create(groupArtifact, version, style, provisioner, reflowLongStrings, false, DEFAULT_FORMAT_JAVADOC);
+		return create(groupArtifact, version, style, provisioner, reflowLongStrings, DEFAULT_REORDER_IMPORTS);
+	}
+
+	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports) {
+		return create(groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, DEFAULT_FORMAT_JAVADOC);
 	}
 
 	/** Creates a step which formats everything - groupArtifact, code, import order, and unused imports - and optionally reflows long strings. */
@@ -127,7 +131,11 @@ public class GoogleJavaFormatStep {
 		}
 
 		State(String stepName, String version, String style, Provisioner provisioner, boolean reflowLongStrings) throws Exception {
-			this(stepName, MAVEN_COORDINATE, version, style, provisioner, reflowLongStrings, DEFAULT_REORDER_IMPORTS, DEFAULT_FORMAT_JAVADOC);
+			this(stepName, version, style, provisioner, reflowLongStrings, DEFAULT_REORDER_IMPORTS);
+		}
+
+		State(String stepName, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports) throws Exception {
+			this(stepName, MAVEN_COORDINATE, version, style, provisioner, reflowLongStrings, reorderImports, DEFAULT_FORMAT_JAVADOC);
 		}
 
 		State(String stepName, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc) throws Exception {

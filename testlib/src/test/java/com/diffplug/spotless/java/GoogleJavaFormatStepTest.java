@@ -120,6 +120,19 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void behaviorWithReorderImports() throws Exception {
+		FormatterStep enabled = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), GoogleJavaFormatStep.defaultVersion(), "AOSP", TestProvisioner.mavenCentral(), GoogleJavaFormatStep.defaultReflowLongStrings(), true);
+		FormatterStep disabled = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), GoogleJavaFormatStep.defaultVersion(), "AOSP", TestProvisioner.mavenCentral(), GoogleJavaFormatStep.defaultReflowLongStrings(), false);
+		String unformatted = "java/googlejavaformat/JavaWithReorderImportsUnformatted.test";
+		try (StepHarness step = StepHarness.forStep(enabled)) {
+			step.testResource(unformatted, "java/googlejavaformat/JavaWithReorderImportsEnabledFormatted.test");
+		}
+		try (StepHarness step = StepHarness.forStep(disabled)) {
+			step.testResource(unformatted, "java/googlejavaformat/JavaWithReorderImportsDisabledFormatted.test");
+		}
+	}
+
+	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "1.10.0";
