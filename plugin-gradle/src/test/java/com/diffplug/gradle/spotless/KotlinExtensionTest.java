@@ -106,6 +106,42 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void testReadCodeStyleFromEditorConfigFile() throws IOException {
+		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint()",
+				"    }",
+				"}");
+		checkKtlintOfficialStyle();
+	}
+
+	@Test
+	void testSetEditorConfigCanOverrideEditorConfigFile() throws IOException {
+		setFile(".editorconfig").toResource("kotlin/ktlint/intellij_idea/.editorconfig");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint().editorConfigOverride([",
+				"            ktlint_code_style: \"ktlint_official\",",
+				"        ])",
+				"    }",
+				"}");
+		checkKtlintOfficialStyle();
+	}
+
+	@Test
 	void testWithHeader() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -143,5 +179,12 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		setFile("src/main/kotlin/max-width.kt").toResource("kotlin/ktfmt/max-width.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/kotlin/max-width.kt").sameAsResource("kotlin/ktfmt/max-width.clean");
+	}
+
+	private void checkKtlintOfficialStyle() throws IOException {
+		String path = "src/main/kotlin/Main.kt";
+		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile(path).sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.ktlintOfficial.clean");
 	}
 }
