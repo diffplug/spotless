@@ -17,6 +17,12 @@ tasks.withType(Test).configureEach {
 			maxRetries = 2
 			maxFailures = 10
 		}
+
+		// There are only 2 cores in each GitHub Action Runner, we use all of them here.
+		maxParallelForks = Runtime.getRuntime().availableProcessors()
+	} else {
+		// https://docs.gradle.org/8.4/userguide/performance.html#execute_tests_in_parallel
+		maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
 	}
 }
 
