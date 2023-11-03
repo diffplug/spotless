@@ -15,15 +15,14 @@
  */
 package com.diffplug.spotless.extra.java;
 
-import com.diffplug.spotless.extra.EquoBasedStepBuilder;
+import java.io.File;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
-
-import java.io.File;
-import java.util.List;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 
 public class EclipseJdtFormatterStepSpecialCaseTest {
 	/** https://github.com/diffplug/spotless/issues/1638 */

@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.internal.compiler.env.IModule;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatter;
@@ -38,10 +37,10 @@ public class EclipseJdtFormatterStepImpl {
 
 	public EclipseJdtFormatterStepImpl(Properties settings) {
 		Map<String, String> options = settings.entrySet().stream().collect(Collectors.toMap(
-			e -> String.valueOf(e.getKey()),
-			e -> String.valueOf(e.getValue()),
-			(prev, next) -> next,
-			HashMap::new));
+				e -> String.valueOf(e.getKey()),
+				e -> String.valueOf(e.getValue()),
+				(prev, next) -> next,
+				HashMap::new));
 		this.codeFormatter = new DefaultCodeFormatter(options);
 	}
 
