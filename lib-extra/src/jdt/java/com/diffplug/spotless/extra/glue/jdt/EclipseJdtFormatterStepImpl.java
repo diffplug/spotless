@@ -16,11 +16,14 @@
 package com.diffplug.spotless.extra.glue.jdt;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
-import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.internal.compiler.env.IModule;
+import org.eclipse.jdt.internal.formatter.DefaultCodeFormatter;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
@@ -33,7 +36,12 @@ public class EclipseJdtFormatterStepImpl {
 	private final CodeFormatter codeFormatter;
 
 	public EclipseJdtFormatterStepImpl(Properties settings) {
-		this.codeFormatter = ToolFactory.createCodeFormatter(settings, ToolFactory.M_FORMAT_EXISTING);
+		Map<String, String> options = settings.entrySet().stream().collect(Collectors.toMap(
+				e -> String.valueOf(e.getKey()),
+				e -> String.valueOf(e.getValue()),
+				(prev, next) -> next,
+				HashMap::new));
+		this.codeFormatter = new DefaultCodeFormatter(options);
 	}
 
 	/** Formatting Java string, distinguishing module-info and compilation unit by file name */

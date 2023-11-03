@@ -15,16 +15,24 @@
  */
 package com.diffplug.spotless.extra.java;
 
+import java.io.File;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 
 public class EclipseJdtFormatterStepSpecialCaseTest {
 	/** https://github.com/diffplug/spotless/issues/1638 */
 	@Test
 	public void issue_1638() {
-		StepHarness.forStep(EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral()).build())
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource("eclipse_formatter_issue_1638.xml").getFile());
+		EquoBasedStepBuilder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.setPreferences(List.of(file));
+		StepHarness.forStep(builder.build())
 				.testResource("java/eclipse/AbstractType.test", "java/eclipse/AbstractType.clean");
 	}
 }
