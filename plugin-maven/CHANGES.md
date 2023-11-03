@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * CompileSourceRoots and TestCompileSourceRoots are now respected as default includes. These properties are commonly set when adding extra source directories. ([#1846](https://github.com/diffplug/spotless/issues/1846))
 ### Fixed
 * Fix crash when build dir is a softlink to another directory. ([#1859](https://github.com/diffplug/spotless/pull/1859))
+* Fix Eclipse JDT on some settings files. ([#1864](https://github.com/diffplug/spotless/pull/1864) fixes [#1638](https://github.com/diffplug/spotless/issues/1638))
 ### Changes
 * Bump default `ktlint` version to latest `1.0.0` -> `1.0.1`. ([#1855](https://github.com/diffplug/spotless/pull/1855))
 
