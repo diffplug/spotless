@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changes
+* Bump default `ktlint` version to latest `1.0.0` -> `1.0.1`. ([#1855](https://github.com/diffplug/spotless/pull/1855))
 
 ## [2.42.0] - 2023-09-28
 ### Added
