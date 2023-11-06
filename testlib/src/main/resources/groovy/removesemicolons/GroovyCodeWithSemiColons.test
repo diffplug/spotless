@@ -1,0 +1,10 @@
+import mylib.Unused;
+import mylib.UsedB;
+import mylib.UsedA;
+
+public class SomeClass {
+System.out.println("hello");
+UsedB.someMethod();
+UsedA.someMethod();
+}
+}

@@ -52,4 +52,8 @@ public class Groovy extends FormatterFactory {
 	public void addImportOrder(ImportOrder importOrder) {
 		addStepFactory(importOrder);
 	}
+
+	public void addRemoveSemiColons(RemoveSemiColons removeSemiColons) {
+		addStepFactory(removeSemiColons);
+	}
 }
