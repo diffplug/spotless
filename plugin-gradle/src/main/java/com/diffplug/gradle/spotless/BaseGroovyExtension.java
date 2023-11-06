@@ -24,6 +24,7 @@ import org.gradle.api.Project;
 
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
+import com.diffplug.spotless.groovy.RemoveSemicolonsStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
 abstract class BaseGroovyExtension extends FormatExtension {
@@ -38,6 +39,10 @@ abstract class BaseGroovyExtension extends FormatExtension {
 	public void importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
 		addStep(ImportOrderStep.forGroovy().createFrom(getProject().file(importOrderFile)));
+	}
+
+	public void removeSemicolons() {
+		addStep(RemoveSemicolonsStep.create());
 	}
 
 	public GrEclipseConfig greclipse() {

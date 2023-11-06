@@ -336,6 +336,8 @@ These mechanisms already exist for the Gradle plugin.
       <order>java|javax,org,com,com.diffplug,,\#com.diffplug,\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
       <!-- you can use an empty string for all the imports you didn't specify explicitly, '|' to join group without blank line, and '\#` prefix for static imports. -->
     </importOrder>
+    
+    <removeSemicolons /> <!-- removes semicolons at the end of lines -->
 
     <greclipse />          <!-- has its own section below -->
 

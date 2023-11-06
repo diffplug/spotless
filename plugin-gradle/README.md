@@ -320,6 +320,8 @@ spotless {
     // optional: instead of specifying import groups directly you can specify a config file
     // export config file: https://github.com/diffplug/spotless/blob/main/ECLIPSE_SCREENSHOTS.md#creating-spotlessimportorder
     importOrderFile('eclipse-import-order.txt') // import order file as exported from eclipse
+    // removes semicolons at the end of lines
+    removeSemicolons()
 
     excludeJava() // excludes all Java sources within the Groovy source dirs from formatting
     // the Groovy Eclipse formatter extends the Java Eclipse formatter,
