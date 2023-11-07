@@ -14,6 +14,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Fix Eclipse JDT on some settings files. ([#1864](https://github.com/diffplug/spotless/pull/1864) fixes [#1638](https://github.com/diffplug/spotless/issues/1638))
 ### Changes
 * Bump default `ktlint` version to latest `1.0.0` -> `1.0.1`. ([#1855](https://github.com/diffplug/spotless/pull/1855))
+* Add Step to remove semicolons from Groovy code. ([#1881])(https://github.com/diffplug/spotless/pull/1881)
 
 ## [2.42.0] - 2023-09-28
 ### Added
