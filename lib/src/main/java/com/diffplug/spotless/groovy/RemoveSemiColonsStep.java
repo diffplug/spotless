@@ -18,7 +18,7 @@ public final class RemoveSemiColonsStep {
 		// prevent instantiation
 	}
 
-	static final String NAME = "Remove not needed semi colons";
+	static final String NAME = "Remove unnecessary semicolons"; 
 
 	public static FormatterStep create() {
 		return FormatterStep.createLazy(NAME,
