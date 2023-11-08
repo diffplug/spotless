@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless;
 
+import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
@@ -58,14 +59,14 @@ public class StepHarness implements AutoCloseable {
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
 	public StepHarness test(String before, String after) {
 		String actual = formatter.compute(LineEnding.toUnix(before), new File(""));
-		assertEquals(after, actual, "Step application failed");
+		assertJsonEquals(after, actual);
 		return testUnaffected(after);
 	}
 
 	/** Asserts that the given element is idempotent w.r.t the step under test. */
 	public StepHarness testUnaffected(String idempotentElement) {
 		String actual = formatter.compute(LineEnding.toUnix(idempotentElement), new File(""));
-		assertEquals(idempotentElement, actual, "Step is not idempotent");
+		assertJsonEquals(idempotentElement, actual);
 		return this;
 	}
 

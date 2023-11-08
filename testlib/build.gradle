@@ -17,6 +17,8 @@ dependencies {
 
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation "net.javacrumbs.json-unit:json-unit:${VER_JSON_UNIT}"
+	implementation "com.fasterxml.jackson.core:jackson-databind:${VER_JACKSON}"
 	implementation gradleTestKit()
 }
 
