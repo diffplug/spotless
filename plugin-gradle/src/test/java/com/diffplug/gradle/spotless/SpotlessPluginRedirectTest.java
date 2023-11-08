@@ -54,7 +54,7 @@ class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 						"   > We have moved from 'com.diffplug.gradle.spotless'",
 						"                     to 'com.diffplug.spotless'",
 						"     To migrate:",
-						"     - Upgrade gradle to 6.1.1 or newer (you're on 5.0)",
+						"     - Upgrade Gradle to 6.1.1 or newer (you're on 5.0)",
 						"     - Test your build with: id 'com.diffplug.gradle.spotless' version '4.5.1'"));
 	}
 

@@ -29,7 +29,7 @@ import com.diffplug.spotless.ProcessRunner;
 
 /**
  * Harness for running a maven build, same idea as the
- * <a href="https://docs.gradle.org/current/javadoc/org/gradle/testkit/runner/GradleRunner.html">GradleRunner from the gradle testkit</a>.
+ * <a href="https://docs.gradle.org/current/javadoc/org/gradle/testkit/runner/GradleRunner.html">GradleRunner from the Gradle testkit</a>.
  */
 public class MavenRunner {
 	public static MavenRunner create() {

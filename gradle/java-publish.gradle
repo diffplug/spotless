@@ -192,7 +192,7 @@ if (System.env['JITPACK'] == 'true' || version.endsWith('-SNAPSHOT')) {
 	changelogTasks.named('changelogBump').configure {
 		dependsOn ":${thisProj.path}:publishPluginMavenPublicationToSonatypeRepository"
 		dependsOn ":closeAndReleaseSonatypeStagingRepository"
-		// if we have a gradle plugin, we need to push it up to the plugin portal too
+		// if we have a Gradle plugin, we need to push it up to the plugin portal too
 		if (thisProj.tasks.names.contains('publishPlugins')) {
 			dependsOn thisProj.tasks.named('publishPlugins')
 		}

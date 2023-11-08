@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
-* Fix typo in gradle variable names ([#1425](https://github.com/diffplug/spotless/pull/1425))
+* Fix typo in Gradle variable names ([#1425](https://github.com/diffplug/spotless/pull/1425))
 
 ## [3.23.0] - 2021-09-22
 ### Added
