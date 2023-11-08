@@ -27,7 +27,7 @@ Spotless also provides `PaddedCell`, which makes it easy to diagnose and correct
 
 ## Project layout
 
-For the folders below in monospace text, they are published on maven central at the coordinate `com.diffplug.spotless:spotless-${FOLDER_NAME}`.  The other folders are dev infrastructure.
+For the folders below in monospace text, they are published on MavenCentral at the coordinate `com.diffplug.spotless:spotless-${FOLDER_NAME}`.  The other folders are dev infrastructure.
 
 | Folder | Description |
 | ------ | ----------- |

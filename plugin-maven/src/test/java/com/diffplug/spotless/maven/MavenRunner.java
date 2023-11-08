@@ -28,7 +28,7 @@ import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.ProcessRunner;
 
 /**
- * Harness for running a maven build, same idea as the
+ * Harness for running a Maven build, same idea as the
  * <a href="https://docs.gradle.org/current/javadoc/org/gradle/testkit/runner/GradleRunner.html">GradleRunner from the Gradle testkit</a>.
  */
 public class MavenRunner {
@@ -67,7 +67,7 @@ public class MavenRunner {
 	private ProcessRunner.Result run() throws IOException, InterruptedException {
 		Objects.requireNonNull(projectDir, "Need to call withProjectDir() first");
 		Objects.requireNonNull(args, "Need to call withArguments() first");
-		// run maven with the given args in the given directory
+		// run Maven with the given args in the given directory
 		String argsString = "-e " + String.join(" ", Arrays.asList(args));
 		return runner.shellWinUnix(projectDir, environment, "mvnw " + argsString, "./mvnw " + argsString);
 	}

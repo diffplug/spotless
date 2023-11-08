@@ -211,7 +211,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [6.10.0] - 2022-08-23
 ### Added
-* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
+* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the Maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
 ### Changes
 * Add the `ktlint` rule in error messages when `ktlint` fails to apply a fix ([#1279](https://github.com/diffplug/spotless/pull/1279))
 * Bump default `scalafmt` to latest `3.0.8` -> `3.5.9` (removed support for pre-`3.0.0`) ([#1283](https://github.com/diffplug/spotless/pull/1283))
@@ -496,7 +496,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Update ktfmt from 0.21 to 0.24
 ### Fixed
-* The `<url>` field in the maven POM is now set correctly ([#798](https://github.com/diffplug/spotless/issues/798))
+* The `<url>` field in the Maven POM is now set correctly ([#798](https://github.com/diffplug/spotless/issues/798))
 * Node is re-installed if some other build step removed it ([#863](https://github.com/diffplug/spotless/issues/863))
 
 ## [5.12.4] - 2021-04-21
@@ -864,7 +864,7 @@ spotless {
 * Updated default eclipse-jdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
 * Updated default eclipse-cdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
     * **KNOWN BUG - accidentally published CDT 9.7 rather than 9.8 - fixed in 3.26.0**
-* Added new maven coordinates for scalafmt 2.0.0+, maintains backwards compatability ([#415](https://github.com/diffplug/spotless/issues/415))
+* Added new Maven coordinates for scalafmt 2.0.0+, maintains backwards compatability ([#415](https://github.com/diffplug/spotless/issues/415))
 
 ## [3.23.1] - 2019-06-17
 * Fixes incorrect M2 cache directory path handling of Eclipse based formatters ([#401](https://github.com/diffplug/spotless/issues/401))
@@ -1028,7 +1028,7 @@ spotless {
 
 ## [3.0.0] - 2017-01-09
 * BREAKING CHANGE: `customReplace` and `customReplaceRegex` renamed to just `replace` and `replaceRegex`.
-* BREAKING CHANGE: Plugin portal ID is still `com.diffplug.gradle.spotless`, but maven coordinate has changed to `com.diffplug.spotless:spotless-plugin-gradle`.
+* BREAKING CHANGE: Plugin portal ID is still `com.diffplug.gradle.spotless`, but Maven coordinate has changed to `com.diffplug.spotless:spotless-plugin-gradle`.
 * HUGE SPEEDUP: Now supports incremental build / up-to-date-checking.
   + If you are using `custom` or `customLazy`, you might want to take a look at [this javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/3.27.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-).
 * BREAKING CHANGE: `freshmark` no longer includes all project properties by default.  All properties must now be added manually:

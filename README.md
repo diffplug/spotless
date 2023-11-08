@@ -169,7 +169,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 
 ## Acknowledgements
 
-- Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing and maintaining the maven plugin](https://github.com/diffplug/spotless/pull/188), as well as fixing [remote-build cache support for Gradle](https://github.com/diffplug/spotless/pull/571).
+- Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing and maintaining the Maven plugin](https://github.com/diffplug/spotless/pull/188), as well as fixing [remote-build cache support for Gradle](https://github.com/diffplug/spotless/pull/571).
 - Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13), [C++ support via CDT](https://github.com/diffplug/spotless/issues/232), [XML support via WTP](https://github.com/diffplug/spotless/pull/241) and a huge body of work with other eclipse-based formatters.
 - Thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
   - implementing up-to-date checking [#31](https://github.com/diffplug/spotless/issues/31)
@@ -195,7 +195,7 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 - Thanks to [Baptiste Mesta](https://github.com/baptistemesta) for
   - porting the DBeaver formatter to Spotless, and thanks to [DBeaver](https://dbeaver.jkiss.org/) and [its authors](https://github.com/serge-rider/dbeaver/graphs/contributors) for their excellent SQL formatter.
   - making license headers date-aware [#179](https://github.com/diffplug/spotless/pull/179)
-- Thanks to [vmdominguez](https://github.com/vmdominguez) and [Luis Fors](https://github.com/luis-fors-cb) for adding the ability to limit formatting to specific files in Gradle ([#322](https://github.com/diffplug/spotless/pull/322)) and maven ([#392](https://github.com/diffplug/spotless/pull/392)), respectively.
+- Thanks to [vmdominguez](https://github.com/vmdominguez) and [Luis Fors](https://github.com/luis-fors-cb) for adding the ability to limit formatting to specific files in Gradle ([#322](https://github.com/diffplug/spotless/pull/322)) and Maven ([#392](https://github.com/diffplug/spotless/pull/392)), respectively.
 - Thanks to [bender316](https://github.com/bender316) for fixing classloading on Java 9 ([#426](https://github.com/diffplug/spotless/pull/426)).
 - Thanks to [Stefan Oehme](https://github.com/oehme) for tons of help on the internal mechanics of Gradle.
 - Thanks to [eyalkaspi](https://github.com/eyalkaspi) for adding configurable date ranges to the date-aware license headers.
