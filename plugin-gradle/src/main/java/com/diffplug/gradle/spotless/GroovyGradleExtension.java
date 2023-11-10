@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
+import com.diffplug.spotless.groovy.RemoveSemiColonsStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
 public class GroovyGradleExtension extends FormatExtension {
@@ -38,6 +39,10 @@ public class GroovyGradleExtension extends FormatExtension {
 	public void importOrderFile(Object importOrderFile) {
 		Objects.requireNonNull(importOrderFile);
 		addStep(ImportOrderStep.forGroovy().createFrom(getProject().file(importOrderFile)));
+	}
+
+	public void removeSemiColons(String... arguments) {
+		addStep(RemoveSemiColonsStep.create());
 	}
 
 	public GroovyExtension.GrEclipseConfig greclipse() {

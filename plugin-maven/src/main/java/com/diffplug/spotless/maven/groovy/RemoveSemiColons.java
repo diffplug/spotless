@@ -15,11 +15,8 @@
  */
 package com.diffplug.spotless.maven.groovy;
 
-
-import com.diffplug.spotless.groovy.RemoveSemiColonsStep;
-
-
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.groovy.RemoveSemiColonsStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
