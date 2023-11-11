@@ -16,14 +16,14 @@
 package com.diffplug.spotless.maven.groovy;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.groovy.RemoveSemiColonsStep;
+import com.diffplug.spotless.groovy.RemoveSemicolonsStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
-public class RemoveSemiColons implements FormatterStepFactory {
+public class RemoveSemicolons implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		return RemoveSemiColonsStep.create();
+		return RemoveSemicolonsStep.create();
 	}
 }

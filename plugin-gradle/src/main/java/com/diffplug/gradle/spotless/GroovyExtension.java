@@ -33,7 +33,7 @@ import org.gradle.util.GradleVersion;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
-import com.diffplug.spotless.groovy.RemoveSemiColonsStep;
+import com.diffplug.spotless.groovy.RemoveSemicolonsStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
 public class GroovyExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
@@ -70,8 +70,8 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 		addStep(ImportOrderStep.forGroovy().createFrom(importOrder));
 	}
 
-	public void removeSemiColons() {
-		addStep(RemoveSemiColonsStep.create());
+	public void removeSemicolons() {
+		addStep(RemoveSemicolonsStep.create());
 	}
 
 	public void importOrderFile(Object importOrderFile) {

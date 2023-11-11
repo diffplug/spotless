@@ -20,7 +20,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
-import com.diffplug.spotless.groovy.RemoveSemiColonsStep;
+import com.diffplug.spotless.groovy.RemoveSemicolonsStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
 public class GroovyGradleExtension extends FormatExtension {
@@ -41,8 +41,8 @@ public class GroovyGradleExtension extends FormatExtension {
 		addStep(ImportOrderStep.forGroovy().createFrom(getProject().file(importOrderFile)));
 	}
 
-	public void removeSemiColons(String... arguments) {
-		addStep(RemoveSemiColonsStep.create());
+	public void removeSemicolons(String... arguments) {
+		addStep(RemoveSemicolonsStep.create());
 	}
 
 	public GroovyExtension.GrEclipseConfig greclipse() {

@@ -27,9 +27,9 @@ import com.diffplug.spotless.FormatterStep;
  *
  * @author Jose Luis Badano
  */
-public final class RemoveSemiColonsStep {
+public final class RemoveSemicolonsStep {
 
-	private RemoveSemiColonsStep() {
+	private RemoveSemicolonsStep() {
 		// prevent instantiation
 	}
 
@@ -38,7 +38,7 @@ public final class RemoveSemiColonsStep {
 	public static FormatterStep create() {
 		return FormatterStep.createLazy(NAME,
 				State::new,
-				RemoveSemiColonsStep.State::toFormatter);
+				RemoveSemicolonsStep.State::toFormatter);
 	}
 
 	private static final class State implements Serializable {
@@ -50,7 +50,7 @@ public final class RemoveSemiColonsStep {
 					StringBuilder result = new StringBuilder();
 					String line;
 					while ((line = reader.readLine()) != null) {
-						result.append(removeSemiColon(line));
+						result.append(removeSemicolon(line));
 						result.append(System.lineSeparator());
 					}
 					return result.toString();
@@ -64,11 +64,11 @@ public final class RemoveSemiColonsStep {
 		 * @param line the line to remove the semicolon from
 		 * @return the line without the last semicolon
 		 */
-		private String removeSemiColon(String line) {
+		private String removeSemicolon(String line) {
 			// find last semicolon in a string a remove it
-			int lastSemiColon = line.lastIndexOf(";");
-			if (lastSemiColon != -1 && lastSemiColon == line.length() - 1) {
-				return line.substring(0, lastSemiColon);
+			int lastSemicolon = line.lastIndexOf(";");
+			if (lastSemicolon != -1 && lastSemicolon == line.length() - 1) {
+				return line.substring(0, lastSemicolon);
 			} else {
 				return line;
 			}

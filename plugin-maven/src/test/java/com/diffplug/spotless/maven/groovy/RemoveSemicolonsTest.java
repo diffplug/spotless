@@ -19,28 +19,28 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
-class RemoveSemiColonsTest extends MavenIntegrationHarness {
+class RemoveSemicolonsTest extends MavenIntegrationHarness {
 
 	@Test
-	void testRemoveSemiColonsString() throws Exception {
-		writePomWithGroovySteps("<removeSemiColons/>");
+	void testRemoveSemicolonsString() throws Exception {
+		writePomWithGroovySteps("<removeSemicolons/>");
 		runTest("Hello World;", "Hello World");
 	}
 
 	@Test
-	void testNotRemoveSemiColonsString() throws Exception {
-		writePomWithGroovySteps("<removeSemiColons/>");
+	void testNotRemoveSemicolonsString() throws Exception {
+		writePomWithGroovySteps("<removeSemicolons/>");
 		runTest("Hello;World", "Hello;World");
 	}
 
 	@Test
-	void testRemoveSemiColons() throws Exception {
-		writePomWithGroovySteps("<removeSemiColons/>");
+	void testRemoveSemicolons() throws Exception {
+		writePomWithGroovySteps("<removeSemicolons/>");
 
 		String path = "src/main/groovy/test.groovy";
-		setFile(path).toResource("groovy/removesemicolons/GroovyCodeWithSemiColons.test");
+		setFile(path).toResource("groovy/removesemicolons/GroovyCodeWithSemicolons.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("groovy/removesemicolons/GroovyCodeWithSemiColonsFormatted.test");
+		assertFile(path).sameAsResource("groovy/removesemicolons/GroovyCodeWithSemicolonsFormatted.test");
 
 	}
 
