@@ -105,7 +105,7 @@ spotless {
 
   format 'misc', {
     // define the files to apply `misc` to
-    target '*.gradle', '*.md', '.gitignore'
+    target '*.gradle', '.gitattributes', '.gitignore'
 
     // define the steps to apply to those files
     trimTrailingWhitespace()

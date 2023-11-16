@@ -11,6 +11,7 @@ charset = utf-8
 [*.md]
 indent_style = space
 indent_size = 2
+trim_trailing_whitespace = false
 
 [*.java]
 # Doc: https://youtrack.jetbrains.com/issue/IDEA-170643#focus=streamItem-27-3708697.0-0

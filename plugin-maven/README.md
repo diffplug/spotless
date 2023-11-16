@@ -88,7 +88,7 @@ To use it in your pom, just [add the Spotless dependency](https://search.maven.o
       <format>
         <!-- define the files to apply to -->
         <includes>
-          <include>*.md</include>
+          <include>.gitattributes</include>
           <include>.gitignore</include>
         </includes>
         <!-- define the steps to apply to those files -->
