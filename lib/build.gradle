@@ -69,6 +69,7 @@ dependencies {
 	testCommonImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testCommonImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 	testCommonImplementation "com.diffplug.durian:durian-testlib:$VER_DURIAN"
+	testCommonRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
 	// GLUE CODE (alphabetic order please)
 	// cleanthat
