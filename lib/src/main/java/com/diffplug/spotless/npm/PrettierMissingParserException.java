@@ -95,8 +95,8 @@ class PrettierMissingParserException extends RuntimeException {
 				+ String.format("<https://www.npmjs.com/search?ranking=popularity&q=%s>", pluginName)
 				+ "\n\n"
 				+ "For instructions on how to include plugins for prettier in spotless see our documentation:\n"
-				+ "- for gradle <https://github.com/diffplug/spotless/tree/main/plugin-gradle#prettier-plugins>\n"
-				+ "- for maven <https://github.com/diffplug/spotless/tree/main/plugin-maven#prettier-plugins>";
+				+ "- for Gradle <https://github.com/diffplug/spotless/tree/main/plugin-gradle#prettier-plugins>\n"
+				+ "- for Maven <https://github.com/diffplug/spotless/tree/main/plugin-maven#prettier-plugins>";
 	}
 
 	private static String guessPlugin(File file) {

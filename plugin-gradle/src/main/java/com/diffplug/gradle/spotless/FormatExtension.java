@@ -395,7 +395,7 @@ public class FormatExtension {
 	 *
 	 * Spotless tracks what files have changed from run to run, so that it can run
 	 * faster by only checking files which have changed, or whose formatting steps
-	 * have changed. If you use the {@code custom} methods, then gradle can never
+	 * have changed. If you use the {@code custom} methods, then Gradle can never
 	 * mark your files as {@code up-to-date}, because it can't know if perhaps the
 	 * behavior of your custom function has changed.
 	 *

@@ -73,7 +73,7 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 				"If you like the idea behind 'ratchetFrom', you should checkout spotless-changelog",
 				"https://github.com/diffplug/spotless-changelog");
 		if (gradleIsTooOld(project)) {
-			errorMsg = errorMsg.replace("To migrate:\n", "To migrate:\n- Upgrade gradle to " + SpotlessPlugin.VER_GRADLE_min + " or newer (you're on " + project.getGradle().getGradleVersion() + ")\n");
+			errorMsg = errorMsg.replace("To migrate:\n", "To migrate:\n- Upgrade Gradle to " + SpotlessPlugin.VER_GRADLE_min + " or newer (you're on " + project.getGradle().getGradleVersion() + ")\n");
 		}
 		throw new GradleException(errorMsg);
 	}

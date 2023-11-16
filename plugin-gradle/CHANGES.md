@@ -161,7 +161,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * `KtLint` does not maintain a stable API - before this PR, we supported every breaking change in the API since 2019.
   * From now on, we will support no more than 2 breaking changes at a time.
 * `npm`-based formatters `ESLint`, `prettier` and `tsfmt` delay their `npm install` call until the formatters are first
-  used. For gradle this effectively moves the `npm install` call out of the configuration phase and as such enables
+  used. For Gradle this effectively moves the `npm install` call out of the configuration phase and as such enables
   better integration with `gradle-node-plugin`. ([#1522](https://github.com/diffplug/spotless/pull/1522))
 * Bump default `ktlint` version to latest `0.48.1` -> `0.48.2` ([#1529](https://github.com/diffplug/spotless/pull/1529))
 * Bump default `scalafmt` version to latest `3.6.1` -> `3.7.1` ([#1529](https://github.com/diffplug/spotless/pull/1529))
@@ -211,7 +211,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [6.10.0] - 2022-08-23
 ### Added
-* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
+* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the Maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
 ### Changes
 * Add the `ktlint` rule in error messages when `ktlint` fails to apply a fix ([#1279](https://github.com/diffplug/spotless/pull/1279))
 * Bump default `scalafmt` to latest `3.0.8` -> `3.5.9` (removed support for pre-`3.0.0`) ([#1283](https://github.com/diffplug/spotless/pull/1283))
@@ -371,7 +371,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [6.0.4] - 2021-12-07
 ### Fixed
-* Fix gradle composite builds ([#860](https://github.com/diffplug/spotless/issues/860)).
+* Fix Gradle composite builds ([#860](https://github.com/diffplug/spotless/issues/860)).
 
 ## [6.0.3] - 2021-12-06
 ### Fixed
@@ -496,7 +496,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Update ktfmt from 0.21 to 0.24
 ### Fixed
-* The `<url>` field in the maven POM is now set correctly ([#798](https://github.com/diffplug/spotless/issues/798))
+* The `<url>` field in the Maven POM is now set correctly ([#798](https://github.com/diffplug/spotless/issues/798))
 * Node is re-installed if some other build step removed it ([#863](https://github.com/diffplug/spotless/issues/863))
 
 ## [5.12.4] - 2021-04-21
@@ -687,7 +687,7 @@ println "isEager $isEager"
 * LineEndings.GIT_ATTRIBUTES is now a bit more efficient, and paves the way for remote build cache support in Gradle. ([#621](https://github.com/diffplug/spotless/pull/621))
 * `ratchetFrom` now ratchets from the merge base of `HEAD` and the specified branch.  This fixes the surprising behavior when a remote branch advanced ([#631](https://github.com/diffplug/spotless/pull/631) fixes [#627](https://github.com/diffplug/spotless/issues/627)).
 ### Deprecated
-* The default targets for `C/C++`, `freshmark`, `sql`, and `typescript` now generate a warning, asking the user to specify a target manually. There is no well-established convention for these languages in the gradle ecosystem, and the performance of the default target is far worse than a user-provided one.  If you dislike this change, please complain in [#634](https://github.com/diffplug/spotless/pull/634).
+* The default targets for `C/C++`, `freshmark`, `sql`, and `typescript` now generate a warning, asking the user to specify a target manually. There is no well-established convention for these languages in the Gradle ecosystem, and the performance of the default target is far worse than a user-provided one.  If you dislike this change, please complain in [#634](https://github.com/diffplug/spotless/pull/634).
 * `customLazy` and `customLazyGroovy` now generate a warning, asking the user to migrate to `custom`.  There is no longer a performance advantage to `customLazy` in the new modern plugin. See [#635](https://github.com/diffplug/spotless/pull/635/files) for example migrations.
 * inside the `cpp { }` block, the `eclipse` step now generates a warning, asking you to switch to `eclipseCdt`.  It is the same underlying step, but the new name clears up any confusion with the more common Java `eclipse`. [#636](https://github.com/diffplug/spotless/pull/635/files)
 
@@ -765,7 +765,7 @@ spotless {
 **TLDR: This version improves performance and adds support for the local Gradle Build Cache.  You will not need to make any changes in your buildscript.**  It is a breaking change only for a few users who have built *other* plugins on top of this one.
 
 ### Added
-* Support for the gradle build cache. ([#576](https://github.com/diffplug/spotless/pull/576))
+* Support for the Gradle build cache. ([#576](https://github.com/diffplug/spotless/pull/576))
   * The local cache will work great, but the remote cache will always miss until [#566](https://github.com/diffplug/spotless/issues/566) is resolved.
 ### Removed
 * **BREAKING** it used to be possible for any project to format files in any other project.  For example, `:a` could format files in `:b`.  It is now only possible to format files within the project directory.  It is okay (but not advised) to format files in subprojects, since they are within the project directory.
@@ -773,7 +773,7 @@ spotless {
   * Previously, the `check` and `apply` tasks were just marker tasks, and they called `setCheck` and `setApply` on the "worker" task.  Now `check` and `apply` are real tasks in their own right, so the marker-task kludge is no longer necessary.
 ### Changed
 * (Power users only) **BREAKING** `SpotlessTask FormatExtension::createIndependentTask` has been removed, and replaced with `SpotlessApply::createIndependentApplyTask`. ([#576](https://github.com/diffplug/spotless/pull/576))
-* Improve suggested gradle invocation for running `spotlessApply`. ([#578](https://github.com/diffplug/spotless/pull/578))
+* Improve suggested Gradle invocation for running `spotlessApply`. ([#578](https://github.com/diffplug/spotless/pull/578))
 
 ## [3.30.0] - 2020-05-11
 ### Added
@@ -864,11 +864,11 @@ spotless {
 * Updated default eclipse-jdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
 * Updated default eclipse-cdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
     * **KNOWN BUG - accidentally published CDT 9.7 rather than 9.8 - fixed in 3.26.0**
-* Added new maven coordinates for scalafmt 2.0.0+, maintains backwards compatability ([#415](https://github.com/diffplug/spotless/issues/415))
+* Added new Maven coordinates for scalafmt 2.0.0+, maintains backwards compatability ([#415](https://github.com/diffplug/spotless/issues/415))
 
 ## [3.23.1] - 2019-06-17
 * Fixes incorrect M2 cache directory path handling of Eclipse based formatters ([#401](https://github.com/diffplug/spotless/issues/401))
-* Update jgit from `4.9.0.201710071750-r` to `5.3.2.201906051522-r` because gradle project is sometimes broken by `apache httpcomponents` in transitive dependency. ([#407](https://github.com/diffplug/spotless/pull/407))
+* Update jgit from `4.9.0.201710071750-r` to `5.3.2.201906051522-r` because Gradle project is sometimes broken by `apache httpcomponents` in transitive dependency. ([#407](https://github.com/diffplug/spotless/pull/407))
 
 ## [3.23.0] - 2019-04-24
 * Updated default ktlint from 0.21.0 to 0.32.0, and Maven coords to com.pinterest ([#394](https://github.com/diffplug/spotless/pull/394))
@@ -1028,7 +1028,7 @@ spotless {
 
 ## [3.0.0] - 2017-01-09
 * BREAKING CHANGE: `customReplace` and `customReplaceRegex` renamed to just `replace` and `replaceRegex`.
-* BREAKING CHANGE: Plugin portal ID is still `com.diffplug.gradle.spotless`, but maven coordinate has changed to `com.diffplug.spotless:spotless-plugin-gradle`.
+* BREAKING CHANGE: Plugin portal ID is still `com.diffplug.gradle.spotless`, but Maven coordinate has changed to `com.diffplug.spotless:spotless-plugin-gradle`.
 * HUGE SPEEDUP: Now supports incremental build / up-to-date-checking.
   + If you are using `custom` or `customLazy`, you might want to take a look at [this javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/3.27.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-).
 * BREAKING CHANGE: `freshmark` no longer includes all project properties by default.  All properties must now be added manually:

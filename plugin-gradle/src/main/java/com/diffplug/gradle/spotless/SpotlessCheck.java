@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,8 +86,8 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 						// in its output directory which ought to have been removed. As
 						// best I can tell, this is a filesytem race which is very hard
 						// to trigger.  GitRatchetGradleTest can *sometimes* reproduce it
-						// but it's very erratic, and that test writes both to gradle cache
-						// and git cache very quickly.  Either of gradle or jgit might be
+						// but it's very erratic, and that test writes both to Gradle cache
+						// and git cache very quickly.  Either of Gradle or jgit might be
 						// caching something wrong because of the fast repeated writes.
 						if (!Arrays.equals(userFile, formatted)) {
 							// If the on-disk content is equal to the formatted content,

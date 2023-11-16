@@ -5,7 +5,7 @@
 output = [
   link(shield('Gradle plugin', 'plugins.gradle.org', 'com.diffplug.spotless', 'blue'), 'https://plugins.gradle.org/plugin/com.diffplug.spotless'),
   link(shield('Changelog', 'changelog', '{{versionLast}}', 'blue'), 'CHANGES.md'),
-  link(shield('Maven central', 'mavencentral', 'here', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
+  link(shield('MavenCentral', 'mavencentral', 'here', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22'),
   link(shield('Javadoc', 'javadoc', 'here', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/{{versionLast}}/index.html'),
   '',
   link(shield('VS Code plugin', 'IDE', 'VS Code', 'blueviolet'), 'https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle'),
@@ -15,7 +15,7 @@ output = [
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.spotless)
 [![Changelog](https://img.shields.io/badge/changelog-6.22.0-blue.svg)](CHANGES.md)
-[![Maven central](https://img.shields.io/badge/mavencentral-here-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
+[![MavenCentral](https://img.shields.io/badge/mavencentral-here-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
 [![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.22.0/index.html)
 
 [![VS Code plugin](https://img.shields.io/badge/IDE-VS_Code-blueviolet.svg)](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)

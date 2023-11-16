@@ -142,7 +142,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * Respect `sourceDirectory` and `testSourceDirectory` POM configurations for Java formatters ([#1553](https://github.com/diffplug/spotless/pull/1553))
 * **POTENTIALLY BREAKING** `sortByKeys` for JSON formatting now takes into account objects inside arrays ([#1546](https://github.com/diffplug/spotless/pull/1546))
-* Any commit of the Spotless maven plugin now available via JitPack ([#1547](https://github.com/diffplug/spotless/pull/1547))
+* Any commit of the Spotless Maven plugin now available via JitPack ([#1547](https://github.com/diffplug/spotless/pull/1547))
 
 ## [2.31.0] - 2023-01-26
 ### Added
@@ -228,7 +228,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [2.25.0] - 2022-08-23
 ### Added
-* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
+* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the Maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
 ### Changes
 * Add the `ktlint` rule in error messages when `ktlint` fails to apply a fix ([#1279](https://github.com/diffplug/spotless/pull/1279))
 * Bump default `scalafmt` to latest `3.0.8` -> `3.5.9` (removed support for pre-`3.0.0`) ([#1283](https://github.com/diffplug/spotless/pull/1283))
@@ -462,7 +462,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Update ktfmt from 0.21 to 0.24
 ### Fixed
-* The `<url>` field in the maven POM is now set correctly ([#798](https://github.com/diffplug/spotless/issues/798))
+* The `<url>` field in the Maven POM is now set correctly ([#798](https://github.com/diffplug/spotless/issues/798))
 
 ## [2.10.3] - 2021-04-21
 ### Fixed
@@ -596,7 +596,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `prettier` will now autodetect the parser (and formatter) to use based on the filename, unless you override this using `config` or `configFile` with the option `parser` or `filepath` ([#620](https://github.com/diffplug/spotless/pull/620)).
 * Added ANTLR4 support ([#326](https://github.com/diffplug/spotless/issues/326)).
 ### Removed
-* **BREAKING** the default includes for `<typescript>` and `<cpp>` were removed, and will now generate an error if an `<include>` is not specified.  There is no well-established convention for these languages in the maven ecosystem, and the performance of the default includes is far worse than a user-provided one.  If you dislike this change, please complain in [#634](https://github.com/diffplug/spotless/pull/634), it would not be a breaking change to bring the defaults back.
+* **BREAKING** the default includes for `<typescript>` and `<cpp>` were removed, and will now generate an error if an `<include>` is not specified.  There is no well-established convention for these languages in the Maven ecosystem, and the performance of the default includes is far worse than a user-provided one.  If you dislike this change, please complain in [#634](https://github.com/diffplug/spotless/pull/634), it would not be a breaking change to bring the defaults back.
 * **BREAKING** inside the `<cpp>` block, `<eclipse>` has been renamed to `<eclipseCdt>` to avoid any confusion with the java `<eclipse>` ([#636](https://github.com/diffplug/spotless/pull/636)).
 * **BREAKING** the long-deprecated `<xml>` and `<css>` formats have been removed, in favor of the long-available [`<eclipseWtp>`](https://github.com/diffplug/spotless/tree/main/plugin-maven#eclipse-wtp) step which is available in every generic format ([#630](https://github.com/diffplug/spotless/pull/630)).
   * This probably doesn't affect you, but if it does, you just need to change `<xml>...` into `<formats><format><eclipseWtp><type>XML</type>...`
@@ -644,7 +644,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Enable IntelliJ-compatible token `$today.year` for specifying the year in license header files. ([#542](https://github.com/diffplug/spotless/pull/542))
 ### Fixed
-* Fix scala and kotlin maven config documentation.
+* Fix scala and kotlin Maven config documentation.
 * Eclipse-WTP formatter (web tools platform, not java) could encounter errors in parallel multiproject builds [#492](https://github.com/diffplug/spotless/issues/492). Fixed for Eclipse-WTP formatter Eclipse version 4.13.0 (default version).
 
 ## [1.27.0] - 2020-01-01
@@ -692,11 +692,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Updated default eclipse-jdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
 * Updated default eclipse-cdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
     * **KNOWN BUG - accidentally published CDT 9.7 rather than 9.8 fixed in 1.26.0**
-* Added new maven coordinates for scalafmt 2.0.0+, maintains backwards compatability ([#415](https://github.com/diffplug/spotless/issues/415))
+* Added new Maven coordinates for scalafmt 2.0.0+, maintains backwards compatability ([#415](https://github.com/diffplug/spotless/issues/415))
 
 ## [1.23.1] - 2019-06-17
 * Fixes incorrect M2 cache directory path handling of Eclipse based formatters ([#401](https://github.com/diffplug/spotless/issues/401))
-* Update jgit from `4.9.0.201710071750-r` to `5.3.2.201906051522-r` because gradle project is sometimes broken by `apache httpcomponents` in transitive dependency. ([#407](https://github.com/diffplug/spotless/pull/407))
+* Update jgit from `4.9.0.201710071750-r` to `5.3.2.201906051522-r` because Gradle project is sometimes broken by `apache httpcomponents` in transitive dependency. ([#407](https://github.com/diffplug/spotless/pull/407))
 
 ## [1.23.0] - 2019-04-24
 * Updated default ktlint from 0.21.0 to 0.32.0, and Maven coords to com.pinterest ([#394](https://github.com/diffplug/spotless/pull/394))

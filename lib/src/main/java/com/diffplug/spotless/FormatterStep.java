@@ -86,7 +86,7 @@ public interface FormatterStep extends Serializable {
 	 * Implements a FormatterStep in a strict way which guarantees correct and lazy implementation
 	 * of up-to-date checks.  This maximizes performance for cases where the FormatterStep is not
 	 * actually needed (e.g. don't load eclipse setting file unless this step is actually running)
-	 * while also ensuring that gradle can detect changes in a step's settings to determine that
+	 * while also ensuring that Gradle can detect changes in a step's settings to determine that
 	 * it needs to rerun a format.
 	 */
 	abstract class Strict<State extends Serializable> extends LazyForwardingEquality<State> implements FormatterStep {

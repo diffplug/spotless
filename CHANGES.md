@@ -21,7 +21,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   The configuration is still the same, but you should switch to the new `biome` tag / function and adjust
   the version accordingly. ([#1804](https://github.com/diffplug/spotless/issues/1804)).
 * Support for `google-java-format`'s `skip-javadoc-formatting` option. ([#1793](https://github.com/diffplug/spotless/pull/1793))
-* Support configuration of mirrors for P2 repositories in maven DSL ([#1697](https://github.com/diffplug/spotless/issues/1697)).
+* Support configuration of mirrors for P2 repositories in Maven DSL ([#1697](https://github.com/diffplug/spotless/issues/1697)).
 * New line endings mode `GIT_ATTRIBUTES_FAST_ALLSAME`. ([#1838](https://github.com/diffplug/spotless/pull/1838))
 ### Fixed
 * Fix support for plugins when using Prettier version `3.0.0` and newer. ([#1802](https://github.com/diffplug/spotless/pull/1802))
@@ -135,7 +135,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [2.33.0] - 2023-01-26
 ### Added
-* `ProcessRunner` has added some convenience methods so it can be used for maven testing. ([#1496](https://github.com/diffplug/spotless/pull/1496))
+* `ProcessRunner` has added some convenience methods so it can be used for Maven testing. ([#1496](https://github.com/diffplug/spotless/pull/1496))
 * `ProcessRunner` allows to limit captured output to a certain number of bytes. ([#1511](https://github.com/diffplug/spotless/pull/1511))
 * `ProcessRunner` is now capable of handling long-running tasks where waiting for exit is delegated to the caller. ([#1511](https://github.com/diffplug/spotless/pull/1511))
 * Allow to specify node executable for node-based formatters using `nodeExecutable` parameter ([#1500](https://github.com/diffplug/spotless/pull/1500))
@@ -208,7 +208,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [2.29.0] - 2022-08-23
 ### Added
-* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
+* `scalafmt` integration now has a configuration option `majorScalaVersion` that allows you to configure the Scala version that gets resolved from the Maven artifact ([#1283](https://github.com/diffplug/spotless/pull/1283))
   * Converted `scalafmt` integration to use a compile-only source set (fixes [#524](https://github.com/diffplug/spotless/issues/524))
 ### Changes
 * Add the `ktlint` rule in error messages when `ktlint` fails to apply a fix ([#1279](https://github.com/diffplug/spotless/pull/1279))
@@ -433,7 +433,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Update ktfmt from 0.21 to 0.24
 ### Fixed
-* The `<url>` field in the maven POM is now set correctly ([#798](https://github.com/diffplug/spotless/issues/798))
+* The `<url>` field in the Maven POM is now set correctly ([#798](https://github.com/diffplug/spotless/issues/798))
 * Node is re-installed if some other build step removed it ([#863](https://github.com/diffplug/spotless/issues/863))
 
 ## [2.13.4] - 2021-04-21
@@ -507,7 +507,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [2.8.0] - 2020-10-05
 ### Added
-* Exposed new methods in `GitRatchet` to support faster ratcheting in the maven plugin ([#706](https://github.com/diffplug/spotless/pull/706)).
+* Exposed new methods in `GitRatchet` to support faster ratcheting in the Maven plugin ([#706](https://github.com/diffplug/spotless/pull/706)).
 
 ## [2.7.0] - 2020-09-21
 ### Added
@@ -578,10 +578,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `FormatterFunc.NeedsFile` for implementing file-based formatters more cleanly than we have so far ([#637](https://github.com/diffplug/spotless/issues/637)).
 ### Changed
 * **BREAKING** `FileSignature` can no longer sign folders, only files.  Signatures are now based only on filename (not path), size, and a content hash.  It throws an error if a signature is attempted on a folder or on multiple files with different paths but the same filename - it never breaks silently.  This change does not break any of Spotless' internal logic, so it is unlikely to affect any of Spotless' consumers either. ([#571](https://github.com/diffplug/spotless/pull/571))
-  * This change allows the maven plugin to cache classloaders across subprojects when loading config resources from the classpath (fixes [#559](https://github.com/diffplug/spotless/issues/559)).
-  * This change also allows the gradle plugin to work with the remote buildcache (fixes [#280](https://github.com/diffplug/spotless/issues/280)).
+  * This change allows the Maven plugin to cache classloaders across subprojects when loading config resources from the classpath (fixes [#559](https://github.com/diffplug/spotless/issues/559)).
+  * This change also allows the Gradle plugin to work with the remote buildcache (fixes [#280](https://github.com/diffplug/spotless/issues/280)).
 * **BREAKING** `FormatterFunc` no longer `extends ThrowingEx.Function` and `BiFunction`. In a major win for Java's idea of ["target typing"](https://cr.openjdk.java.net/~briangoetz/lambda/lambda-state-final.html), this required no changes anywhere in the codebase except deleting the `extends` part of `FormatterFunc` ([#638](https://github.com/diffplug/spotless/issues/638)).
-* **BREAKING** Heavy refactor of the `LicenseHeaderStep` public API.  Doesn't change internal behavior, but makes implementation of the gradle and maven plugins much easier. ([#628](https://github.com/diffplug/spotless/pull/628))
+* **BREAKING** Heavy refactor of the `LicenseHeaderStep` public API.  Doesn't change internal behavior, but makes implementation of the Gradle and Maven plugins much easier. ([#628](https://github.com/diffplug/spotless/pull/628))
 * **BREAKING** Removed all deprecated methods and classes from `lib` and `lib-extra`.
   * [#629](https://github.com/diffplug/spotless/pull/629) removes the code which wasn't being used in plugin-gradle or plugin-maven.
   * [#630](https://github.com/diffplug/spotless/pull/630) moves the code which was still being used in deprecated parts of plugin-gradle into `.deprecated` package in `plugin-gradle`, which allows us to break `lib` without a breaking change in `plugin-gradle`.
@@ -614,7 +614,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `NodeJsGlobal.setSharedLibFolder` allows to set the location of nodejs shared libs. ([#586](https://github.com/diffplug/spotless/pull/586))
 * `PaddedCell.isClean()` returns the instance of `PaddedCell.DirtyState` which represents clean. ([#590](https://github.com/diffplug/spotless/pull/590))
 ### Fixed
-* Previously, the nodejs-based steps would throw `UnsatisfiedLinkError` if they were ever used from more than one classloader.  Now they can be used from any number of classloaders (important for gradle build daemon). ([#586](https://github.com/diffplug/spotless/pull/586))
+* Previously, the nodejs-based steps would throw `UnsatisfiedLinkError` if they were ever used from more than one classloader.  Now they can be used from any number of classloaders (important for Gradle build daemon). ([#586](https://github.com/diffplug/spotless/pull/586))
 
 ## [1.31.0] - 2020-05-21
 ### Added
@@ -636,8 +636,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Updated a bunch of dependencies, most notably: ([#564](https://github.com/diffplug/spotless/pull/564))
   * jgit `5.5.0.201909110433-r` -> `5.7.0.202003110725-r`
-  * gradle `6.2.2` -> `6.3`
-  * spotbugs gradle plugin `2.0.0` -> `4.0.8`
+  * Gradle `6.2.2` -> `6.3`
+  * spotbugs Gradle plugin `2.0.0` -> `4.0.8`
 
 ## [1.28.1] - 2020-04-02
 ### Fixed
@@ -654,12 +654,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * We now use [javadoc.io](https://javadoc.io/) instead of github pages. ([#508](https://github.com/diffplug/spotless/pull/508))
 * We no longer publish `-SNAPSHOT` for every build to `main`, since we have good [JitPack integration](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#gradle---any-commit-in-a-public-github-repo-this-one-or-any-fork). ([#508](https://github.com/diffplug/spotless/pull/508))
 * Improved how we use Spotless on itself. ([#509](https://github.com/diffplug/spotless/pull/509))
-* Fix build warnings when building on Gradle 6+, bump build gradle to 6.2.2, and fix javadoc links. ([#536](https://github.com/diffplug/spotless/pull/536))
+* Fix build warnings when building on Gradle 6+, bump build Gradle to 6.2.2, and fix javadoc links. ([#536](https://github.com/diffplug/spotless/pull/536))
 
 ## [1.27.0] - 2020-01-01
 * Ignored `KtLintStepTest`, because [gradle/gradle#11752](https://github.com/gradle/gradle/issues/11752) is causing too many CI failures. ([#499](https://github.com/diffplug/spotless/pull/499))
     * Also fixed a minor problem in TestProvisioner.
-* If you set the environment variable `SPOTLESS_EXCLUDE_MAVEN=true` then the maven plugin will be excluded from the build. ([#502](https://github.com/diffplug/spotless/pull/502))
+* If you set the environment variable `SPOTLESS_EXCLUDE_MAVEN=true` then the Maven plugin will be excluded from the build. ([#502](https://github.com/diffplug/spotless/pull/502))
     * We have set this in JitPack, as a workaround for [jitpack/jitpack.io#4112](https://github.com/jitpack/jitpack.io/issues/4112)
 * Deprecated `SpotlessCache.clear()` in favor of the new `SpotlessCache.clearOnce(Object key)`. ([#501](https://github.com/diffplug/spotless/issues/#501))
 
@@ -694,7 +694,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
     - but incorrectly marked as good by "check"
     - this led to "check" says all good, but then "apply" still causes format (https://github.com/diffplug/spotless/issues/453)
     - combined with up-to-date checking, could lead to even more confusing results (https://github.com/diffplug/spotless/issues/338)
-    - only affects the gradle plugin, since that was the only plugin to use this feature
+    - only affects the Gradle plugin, since that was the only plugin to use this feature
 * Minor change to `TestProvisioner`, which should fix the cache-breaking issues, allowing us to speed-up the CI builds a bit.
 * Bumped `scalafmt` default version from `1.1.0` to `2.0.1`, since there are [bugs](https://github.com/diffplug/spotless/issues/454) in the old default ([#458](https://github.com/diffplug/spotless/pull/458)).
 
@@ -707,11 +707,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Updated default eclipse-jdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
 * Updated default eclipse-cdt from 4.11.0 to 4.12.0 ([#423](https://github.com/diffplug/spotless/pull/423)).
     * **KNOWN BUG - accidentally published CDT 9.7 rather than 9.8 - fixed in 1.26.0**
-* Added new maven coordinates for scalafmt 2.0.0+, maintains backwards compatability ([#415](https://github.com/diffplug/spotless/issues/415))
+* Added new Maven coordinates for scalafmt 2.0.0+, maintains backwards compatability ([#415](https://github.com/diffplug/spotless/issues/415))
 
 ## [1.23.1] - 2019-06-17
 * Fixes incorrect M2 cache directory path handling of Eclipse based formatters ([#401](https://github.com/diffplug/spotless/issues/401))
-* Update jgit from `4.9.0.201710071750-r` to `5.3.2.201906051522-r` because gradle project is sometimes broken by `apache httpcomponents` in transitive dependency. ([#407](https://github.com/diffplug/spotless/pull/407))
+* Update jgit from `4.9.0.201710071750-r` to `5.3.2.201906051522-r` because Gradle project is sometimes broken by `apache httpcomponents` in transitive dependency. ([#407](https://github.com/diffplug/spotless/pull/407))
 
 ## [1.23.0] - 2019-04-24
 * Updated default ktlint from 0.21.0 to 0.32.0, and Maven coords to com.pinterest ([#394](https://github.com/diffplug/spotless/pull/394))
@@ -787,7 +787,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [1.12.0] - 2018-05-14
 * Fixed a bug in `LicenseHeaderStep` which caused an exception with some malformed date-aware licenses. ([#222](https://github.com/diffplug/spotless/pull/222))
 * Updated default ktlint from 0.14.0 to 0.21.0
-* Add ability to pass custom options to ktlint in gradle plugin. See plugin-gradle/README for details.
+* Add ability to pass custom options to ktlint in Gradle plugin. See plugin-gradle/README for details.
 
 ## [1.11.0] - 2018-02-26
 * Added default indentation of `4` to `IndentStep`. ([#209](https://github.com/diffplug/spotless/pull/209))
