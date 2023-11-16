@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 /**
  * Signifies that a {@code public} API is actually an implementation detail, and should be treated as if it
  * were {@code private}.
- *
+ * <p>
  * The user of the API should be warned that it may unexpectedly disappear in future versions of
  * Spotless. Usually the best place to put this warning is in the API's class JavaDoc.
  */

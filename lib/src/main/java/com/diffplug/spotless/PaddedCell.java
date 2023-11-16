@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 /**
  * Models the result of applying a {@link Formatter} on a given {@link File}
  * while characterizing various failure modes (slow convergence, cycles, and divergence).
- *
+ * <p>
  * See {@link #check(Formatter, File)} as the entry point to this class.
  */
 public final class PaddedCell {
@@ -78,9 +78,9 @@ public final class PaddedCell {
 	/**
 	 * Applies the given formatter to the given file, checking that
 	 * F(F(input)) == F(input).
-	 *
+	 * <p>
 	 * If it meets this test, {@link #misbehaved()} will return false.
-	 *
+	 * <p>
 	 * If it fails the test, {@link #misbehaved()} will return true, and you can find
 	 * out more about the misbehavior based on its {@link Type}.
 	 *

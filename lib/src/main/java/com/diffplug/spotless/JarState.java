@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * Grabs a jar and its dependencies from maven,
  * and makes it easy to access the collection in
  * a classloader.
- *
+ * <p>
  * Serializes the full state of the jar, so it can
  * catch changes in a SNAPSHOT version.
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.diffplug.spotless.sql.dbeaver;
  * Forked from
  * DBeaver - Universal Database Manager
  * Copyright (C) 2010-2017 Serge Rider (serge@jkiss.org)
- *
+ * <p>
  * Based on SQLConstants from https://github.com/serge-rider/dbeaver,
  * which itself is licensed under the Apache 2.0 license.
  */

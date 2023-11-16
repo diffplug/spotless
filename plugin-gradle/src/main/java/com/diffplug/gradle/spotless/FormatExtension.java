@@ -204,14 +204,14 @@ public class FormatExtension {
 	/**
 	 * Sets which files should be formatted. Files to be formatted = (target -
 	 * targetExclude).
-	 *
+	 * <p>
 	 * When this method is called multiple times, only the last call has any effect.
-	 *
+	 * <p>
 	 * FileCollections pass through raw. Strings are treated as the 'include' arg to
 	 * fileTree, with project.rootDir as the dir. List<String> are treated as the
 	 * 'includes' arg to fileTree, with project.rootDir as the dir. Anything else
 	 * gets passed to getProject().files().
-	 *
+	 * <p>
 	 * If you pass any strings that start with "**\/*", this method will
 	 * automatically filter out "build", ".gradle", and ".git" folders.
 	 */
@@ -222,9 +222,9 @@ public class FormatExtension {
 	/**
 	 * Sets which files will be excluded from formatting. Files to be formatted =
 	 * (target - targetExclude).
-	 *
+	 * <p>
 	 * When this method is called multiple times, only the last call has any effect.
-	 *
+	 * <p>
 	 * FileCollections pass through raw. Strings are treated as the 'include' arg to
 	 * fileTree, with project.rootDir as the dir. List<String> are treated as the
 	 * 'includes' arg to fileTree, with project.rootDir as the dir. Anything else
@@ -236,7 +236,7 @@ public class FormatExtension {
 
 	/**
 	 * Excludes all files whose content contains {@code string}.
-	 *
+	 * <p>
 	 * When this method is called multiple times, only the last call has any effect.
 	 */
 	public void targetExcludeIfContentContains(String string) {
@@ -245,7 +245,7 @@ public class FormatExtension {
 
 	/**
 	 * Excludes all files whose content contains the given regex.
-	 *
+	 * <p>
 	 * When this method is called multiple times, only the last call has any effect.
 	 */
 	public void targetExcludeIfContentContainsRegex(String regex) {
@@ -392,13 +392,13 @@ public class FormatExtension {
 	 * An optional performance optimization if you are using any of the
 	 * {@code custom} methods. If you aren't explicitly calling {@code custom}, then
 	 * this method has no effect.
-	 *
+	 * <p>
 	 * Spotless tracks what files have changed from run to run, so that it can run
 	 * faster by only checking files which have changed, or whose formatting steps
 	 * have changed. If you use the {@code custom} methods, then Gradle can never
 	 * mark your files as {@code up-to-date}, because it can't know if perhaps the
 	 * behavior of your custom function has changed.
-	 *
+	 * <p>
 	 * If you set {@code bumpThisNumberIfACustomStepChanges( <some number> )}, then
 	 * spotless will assume that the custom rules have not changed if the number has
 	 * not changed. If a custom rule does change, then you must bump the number so
@@ -1090,16 +1090,16 @@ public class FormatExtension {
 	/**
 	 * Creates an independent {@link SpotlessApply} for (very) unusual
 	 * circumstances.
-	 *
+	 * <p>
 	 * Most users will not want this method. In the rare case that you want to
 	 * create a {@code SpotlessApply} which is independent of the normal Spotless
 	 * machinery, this will let you do that.
-	 *
+	 * <p>
 	 * The returned task will not be hooked up to the global {@code spotlessApply},
 	 * and there will be no corresponding {@code check} task.
-	 *
+	 * <p>
 	 * The task name must not end with `Apply`.
-	 *
+	 * <p>
 	 * NOTE: does not respect the rarely-used <a href=
 	 * "https://github.com/diffplug/spotless/blob/b7f8c551a97dcb92cc4b0ee665448da5013b30a3/plugin-gradle/README.md#can-i-apply-spotless-to-specific-files">{@code spotlessFiles}
 	 * property</a>.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 	/**
 	 * This function is guaranteed to be called at most once.
 	 * If the state is never required, then it will never be called at all.
-	 *
+	 * <p>
 	 * Throws exception because it's likely that there will be some IO going on.
 	 */
 	protected abstract T calculateState() throws Exception;

@@ -39,7 +39,7 @@ import com.diffplug.spotless.FormatterStep;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
- *
+ * <p>
  * - When a user asks for a formatter, we need to download the jars for that formatter
  * - Gradle wants us to resolve all our dependencies in the root project - no new dependencies in subprojects
  * - So, whenever a SpotlessTask in a subproject gets configured, we call {@link #hookSubprojectTask(SpotlessTask)},

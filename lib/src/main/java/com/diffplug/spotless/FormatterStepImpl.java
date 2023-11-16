@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * Standard implementation of FormatExtension which cleanly enforces
  * separation of serializable configuration and a pure format function.
- *
+ * <p>
  * Not an inner-class of FormatterStep so that it can stay entirely private
  * from the API.
  */

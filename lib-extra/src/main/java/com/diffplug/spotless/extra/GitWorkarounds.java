@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 DiffPlug
+ * Copyright 2020-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public final class GitWorkarounds {
 
 	/**
 	 * Finds the .git directory for the given project directory.
-	 *
+	 * <p>
 	 * Ordinarily one would just use JGit for this, but it doesn't support worktrees properly.
 	 * So this applies an additional workaround for that.
 	 *
@@ -55,7 +55,7 @@ public final class GitWorkarounds {
 
 	/**
 	 * Creates a {@link RepositorySpecificResolver} for the given project directory.
-	 *
+	 * <p>
 	 * This applies a workaround for JGit not supporting worktrees properly.
 	 *
 	 * @param projectDir the project directory.
@@ -67,7 +67,7 @@ public final class GitWorkarounds {
 
 	/**
 	 * Creates a {@link RepositorySpecificResolver} for the given project directory.
-	 *
+	 * <p>
 	 * This applies a workaround for JGit not supporting worktrees properly.
 	 *
 	 * @param projectDir the project directory.
@@ -86,7 +86,7 @@ public final class GitWorkarounds {
 
 	/**
 	 * Piggyback on the {@link FileRepositoryBuilder} mechanics for finding the git directory.
-	 *
+	 * <p>
 	 * Here we take into account that git repositories can share a common directory. This directory
 	 * will contain ./config ./objects/, ./info/, and ./refs/.
 	 */

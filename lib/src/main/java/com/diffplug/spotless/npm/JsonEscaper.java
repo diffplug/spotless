@@ -60,7 +60,7 @@ final class JsonEscaper {
 	private static String jsonEscape(String unescaped) {
 		/**
 		 * the following characters are reserved in JSON and must be properly escaped to be used in strings:
-		 *
+		 * <p>
 		 * Backspace is replaced with \b
 		 * Form feed is replaced with \f
 		 * Newline is replaced with \n
@@ -68,7 +68,7 @@ final class JsonEscaper {
 		 * Tab is replaced with \t
 		 * Double quote is replaced with \"
 		 * Backslash is replaced with \\
-		 *
+		 * <p>
 		 * additionally we handle xhtml '</bla>' string
 		 * and non-ascii chars
 		 */
