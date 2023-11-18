@@ -54,23 +54,6 @@ public class KtLintStep {
 		return create(version, provisioner, false, null, userData, editorConfigOverride);
 	}
 
-	public static FormatterStep createForScript(String version, Provisioner provisioner) {
-		return create(version, provisioner, true, null, Collections.emptyMap(), Collections.emptyMap());
-	}
-
-	public static FormatterStep createForScript(String version,
-			Provisioner provisioner,
-			@Nullable FileSignature editorConfigPath,
-			Map<String, String> userData,
-			Map<String, Object> editorConfigOverride) {
-		return create(version,
-				provisioner,
-				true,
-				editorConfigPath,
-				userData,
-				editorConfigOverride);
-	}
-
 	public static FormatterStep create(String version,
 			Provisioner provisioner,
 			boolean isScript,
