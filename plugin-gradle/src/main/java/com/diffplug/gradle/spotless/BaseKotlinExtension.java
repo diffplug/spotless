@@ -31,8 +31,8 @@ import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
 
-public abstract class BaseKotlinExtension extends FormatExtension {
-	public BaseKotlinExtension(SpotlessExtension spotless) {
+abstract class BaseKotlinExtension extends FormatExtension {
+	protected BaseKotlinExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
 
@@ -70,11 +70,10 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 	protected abstract boolean isScript();
 
 	public class DiktatConfig {
-
 		private final String version;
 		private FileSignature config;
 
-		DiktatConfig(String version) {
+		private DiktatConfig(String version) {
 			Objects.requireNonNull(version, "version");
 			this.version = version;
 			addStep(createStep());
@@ -97,22 +96,15 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 	}
 
 	public class KtfmtConfig {
-		final String version;
-		KtfmtStep.Style style;
-		KtfmtStep.KtfmtFormattingOptions options;
-
+		private final String version;
 		private final ConfigurableStyle configurableStyle = new ConfigurableStyle();
+		private KtfmtStep.Style style;
+		private KtfmtStep.KtfmtFormattingOptions options;
 
-		KtfmtConfig(String version) {
+		private KtfmtConfig(String version) {
 			Objects.requireNonNull(version);
 			this.version = Objects.requireNonNull(version);
 			addStep(createStep());
-		}
-
-		private ConfigurableStyle style(KtfmtStep.Style style) {
-			this.style = style;
-			replaceStep(createStep());
-			return configurableStyle;
 		}
 
 		public ConfigurableStyle dropboxStyle() {
@@ -131,13 +123,18 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 			this.configurableStyle.configure(optionsConfiguration);
 		}
 
+		private ConfigurableStyle style(KtfmtStep.Style style) {
+			this.style = style;
+			replaceStep(createStep());
+			return configurableStyle;
+		}
+
 		private FormatterStep createStep() {
 			return KtfmtStep.create(version, provisioner(), style, options);
 		}
 
 		public class ConfigurableStyle {
-
-			public void configure(Consumer<KtfmtStep.KtfmtFormattingOptions> optionsConfiguration) {
+			private void configure(Consumer<KtfmtStep.KtfmtFormattingOptions> optionsConfiguration) {
 				KtfmtStep.KtfmtFormattingOptions ktfmtFormattingOptions = new KtfmtStep.KtfmtFormattingOptions();
 				optionsConfiguration.accept(ktfmtFormattingOptions);
 				options = ktfmtFormattingOptions;
@@ -147,26 +144,26 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 	}
 
 	public class KtlintConfig {
-
 		private final String version;
-		@Nullable
 		private FileSignature editorConfigPath;
 		private Map<String, String> userData;
 		private Map<String, Object> editorConfigOverride;
 
-		KtlintConfig(String version, Map<String, String> config,
+		private KtlintConfig(
+				String version,
+				Map<String, String> userData,
 				Map<String, Object> editorConfigOverride) throws IOException {
 			Objects.requireNonNull(version);
 			File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
 			FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
 			this.version = version;
 			this.editorConfigPath = editorConfigPath;
-			this.userData = config;
+			this.userData = userData;
 			this.editorConfigOverride = editorConfigOverride;
 			addStep(createStep());
 		}
 
-		public KtlintConfig setEditorConfigPath(Object editorConfigPath) throws IOException {
+		public KtlintConfig setEditorConfigPath(@Nullable Object editorConfigPath) throws IOException {
 			if (editorConfigPath == null) {
 				this.editorConfigPath = null;
 			} else {
