@@ -20,6 +20,10 @@ import java.util.Map;
 
 public interface KtLintCompatAdapter {
 
-	String format(String text, Path path, boolean isScript, Path editorConfigPath, Map<String, String> userData,
+	String format(
+			String text,
+			Path path,
+			boolean isScript,
+			Path editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap);
 }

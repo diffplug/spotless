@@ -399,9 +399,8 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 ```kotlin
 spotless {
   kotlin {
-    // version, userData and editorConfigOverride are all optional
+    // version, editorConfigPath and editorConfigOverride are all optional
     ktlint("1.0.0")
-      .userData(mapOf("android" to "true"))
       .setEditorConfigPath("$projectDir/config/.editorconfig")  // sample unusual placement
       .editorConfigOverride(
         mapOf(
