@@ -74,11 +74,14 @@ public class KotlinGradleExtension extends FormatExtension {
 		}
 
 		public KotlinFormatExtension setEditorConfigPath(Object editorConfigPath) throws IOException {
-
 			if (editorConfigPath == null) {
 				this.editorConfigPath = null;
 			} else {
-				this.editorConfigPath = FileSignature.signAsList(getProject().file(editorConfigPath));
+				File editorConfigFile = getProject().file(editorConfigPath);
+				if (!editorConfigFile.exists()) {
+					throw new IllegalArgumentException("EditorConfig file does not exist: " + editorConfigFile);
+				}
+				this.editorConfigPath = FileSignature.signAsList(editorConfigFile);
 			}
 			replaceStep(createStep());
 			return this;
