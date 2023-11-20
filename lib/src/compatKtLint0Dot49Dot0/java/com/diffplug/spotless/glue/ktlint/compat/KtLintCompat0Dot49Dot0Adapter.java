@@ -119,9 +119,12 @@ public class KtLintCompat0Dot49Dot0Adapter implements KtLintCompatAdapter {
 	}
 
 	@Override
-	public String format(final String text, Path path, final boolean isScript,
-			Path editorConfigPath, final Map<String, String> userData,
-			final Map<String, Object> editorConfigOverrideMap) {
+	public String format(
+			String text,
+			Path path,
+			boolean isScript,
+			Path editorConfigPath,
+			Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
 		Set<RuleProvider> allRuleProviders = ServiceLoader.load(RuleSetProviderV3.class, RuleSetProviderV3.class.getClassLoader())

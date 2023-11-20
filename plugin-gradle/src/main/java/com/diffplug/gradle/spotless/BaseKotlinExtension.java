@@ -51,7 +51,7 @@ abstract class BaseKotlinExtension extends FormatExtension {
 
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KtlintConfig ktlint(String version) throws IOException {
-		return new KtlintConfig(version, Collections.emptyMap(), Collections.emptyMap());
+		return new KtlintConfig(version, Collections.emptyMap());
 	}
 
 	/** Uses the <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> jar to format source code. */
@@ -146,19 +146,16 @@ abstract class BaseKotlinExtension extends FormatExtension {
 	public class KtlintConfig {
 		private final String version;
 		private FileSignature editorConfigPath;
-		private Map<String, String> userData;
 		private Map<String, Object> editorConfigOverride;
 
 		private KtlintConfig(
 				String version,
-				Map<String, String> userData,
 				Map<String, Object> editorConfigOverride) throws IOException {
 			Objects.requireNonNull(version);
 			File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
 			FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
 			this.version = version;
 			this.editorConfigPath = editorConfigPath;
-			this.userData = userData;
 			this.editorConfigOverride = editorConfigOverride;
 			addStep(createStep());
 		}
@@ -177,14 +174,6 @@ abstract class BaseKotlinExtension extends FormatExtension {
 			return this;
 		}
 
-		public KtlintConfig userData(Map<String, String> userData) {
-			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
-			// representation.
-			this.userData = ImmutableSortedMap.copyOf(userData);
-			replaceStep(createStep());
-			return this;
-		}
-
 		public KtlintConfig editorConfigOverride(Map<String, Object> editorConfigOverride) {
 			// Copy the map to a sorted map because up-to-date checking is based on binary-equals of the serialized
 			// representation.
@@ -199,7 +188,6 @@ abstract class BaseKotlinExtension extends FormatExtension {
 					provisioner(),
 					isScript(),
 					editorConfigPath,
-					userData,
 					editorConfigOverride);
 		}
 	}

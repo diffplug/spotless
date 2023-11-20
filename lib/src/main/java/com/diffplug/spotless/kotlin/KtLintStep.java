@@ -46,24 +46,23 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(version, provisioner, Collections.emptyMap(), Collections.emptyMap());
+		return create(version, provisioner, Collections.emptyMap());
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner,
-			Map<String, String> userData, Map<String, Object> editorConfigOverride) {
-		return create(version, provisioner, false, null, userData, editorConfigOverride);
+			Map<String, Object> editorConfigOverride) {
+		return create(version, provisioner, false, null, editorConfigOverride);
 	}
 
 	public static FormatterStep create(String version,
 			Provisioner provisioner,
 			boolean isScript,
 			@Nullable FileSignature editorConfig,
-			Map<String, String> userData,
 			Map<String, Object> editorConfigOverride) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, isScript, editorConfig, userData, editorConfigOverride),
+				() -> new State(version, provisioner, isScript, editorConfig, editorConfigOverride),
 				State::createFormat);
 	}
 
@@ -78,7 +77,6 @@ public class KtLintStep {
 		private final boolean isScript;
 		/** The jar that contains the formatter. */
 		final JarState jarState;
-		private final TreeMap<String, String> userData;
 		private final TreeMap<String, Object> editorConfigOverride;
 		private final String version;
 		@Nullable
@@ -88,10 +86,8 @@ public class KtLintStep {
 				Provisioner provisioner,
 				boolean isScript,
 				@Nullable FileSignature editorConfigPath,
-				Map<String, String> userData,
 				Map<String, Object> editorConfigOverride) throws IOException {
 			this.version = version;
-			this.userData = new TreeMap<>(userData);
 			this.editorConfigOverride = new TreeMap<>(editorConfigOverride);
 			this.jarState = JarState.from((version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version,
 					provisioner);
@@ -103,8 +99,8 @@ public class KtLintStep {
 			final ClassLoader classLoader = jarState.getClassLoader();
 			Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
 			Constructor<?> constructor = formatterFunc.getConstructor(
-					String.class, boolean.class, FileSignature.class, Map.class, Map.class);
-			return (FormatterFunc.NeedsFile) constructor.newInstance(version, isScript, editorConfigPath, userData, editorConfigOverride);
+					String.class, boolean.class, FileSignature.class, Map.class);
+			return (FormatterFunc.NeedsFile) constructor.newInstance(version, isScript, editorConfigPath, editorConfigOverride);
 		}
 	}
 }

@@ -36,11 +36,9 @@ public class KtLintCompat0Dot50Dot0AdapterTest {
 		String text = loadAndWriteText(path, "EmptyClassBody.kt");
 		final Path filePath = Paths.get(path.toString(), "EmptyClassBody.kt");
 
-		Map<String, String> userData = new HashMap<>();
-
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 
-		String formatted = KtLintCompat0Dot50Dot0Adapter.format(text, filePath, false, null, userData, editorConfigOverrideMap);
+		String formatted = KtLintCompat0Dot50Dot0Adapter.format(text, filePath, false, null, editorConfigOverrideMap);
 		assertEquals("class EmptyClassBody\n", formatted);
 	}
 
@@ -50,13 +48,11 @@ public class KtLintCompat0Dot50Dot0AdapterTest {
 		String text = loadAndWriteText(path, "FailsNoSemicolons.kt");
 		final Path filePath = Paths.get(path.toString(), "FailsNoSemicolons.kt");
 
-		Map<String, String> userData = new HashMap<>();
-
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 		editorConfigOverrideMap.put("indent_style", "tab");
 		editorConfigOverrideMap.put("ktlint_standard_no-semi", "disabled");
 
-		String formatted = KtLintCompat0Dot50Dot0Adapter.format(text, filePath, false, null, userData, editorConfigOverrideMap);
+		String formatted = KtLintCompat0Dot50Dot0Adapter.format(text, filePath, false, null, editorConfigOverrideMap);
 		assertEquals("class FailsNoSemicolons {\n\tval i = 0;\n}\n", formatted);
 	}
 
