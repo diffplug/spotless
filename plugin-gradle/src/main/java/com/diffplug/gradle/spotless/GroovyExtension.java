@@ -15,35 +15,25 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
-
-import java.util.Map;
-import java.util.Objects;
-
 import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
-import org.gradle.api.Project;
 import org.gradle.api.internal.plugins.DslObject;
 import org.gradle.api.plugins.GroovyBasePlugin;
 import org.gradle.api.tasks.GroovySourceDirectorySet;
 import org.gradle.api.tasks.GroovySourceSet;
 import org.gradle.util.GradleVersion;
 
-import com.diffplug.spotless.extra.EquoBasedStepBuilder;
-import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
-import com.diffplug.spotless.java.ImportOrderStep;
 
-public class GroovyExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
+public class GroovyExtension extends BaseGroovyExtension implements HasBuiltinDelimiterForLicense, JvmLang {
+	private boolean excludeJava = false;
 	static final String NAME = "groovy";
 
 	@Inject
 	public GroovyExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
-
-	boolean excludeJava = false;
 
 	/** Excludes .java files, to focus on only .groovy files. */
 	public void excludeJava() {
@@ -63,48 +53,6 @@ public class GroovyExtension extends FormatExtension implements HasBuiltinDelimi
 	@Override
 	public LicenseHeaderConfig licenseHeaderFile(Object licenseHeaderFile) {
 		return licenseHeaderFile(licenseHeaderFile, JavaExtension.LICENSE_HEADER_DELIMITER);
-	}
-
-	public void importOrder(String... importOrder) {
-		addStep(ImportOrderStep.forGroovy().createFrom(importOrder));
-	}
-
-	public void importOrderFile(Object importOrderFile) {
-		Objects.requireNonNull(importOrderFile);
-		addStep(ImportOrderStep.forGroovy().createFrom(getProject().file(importOrderFile)));
-	}
-
-	public GrEclipseConfig greclipse() {
-		return greclipse(GrEclipseFormatterStep.defaultVersion());
-	}
-
-	public GrEclipseConfig greclipse(String version) {
-		return new GrEclipseConfig(version, this);
-	}
-
-	public static class GrEclipseConfig {
-		private final EquoBasedStepBuilder builder;
-		private final FormatExtension extension;
-
-		GrEclipseConfig(String version, FormatExtension extension) {
-			this.extension = extension;
-			builder = GrEclipseFormatterStep.createBuilder(extension.provisioner());
-			builder.setVersion(version);
-			extension.addStep(builder.build());
-		}
-
-		public void configFile(Object... configFiles) {
-			requireElementsNonNull(configFiles);
-			Project project = extension.getProject();
-			builder.setPreferences(project.files(configFiles).getFiles());
-			extension.replaceStep(builder.build());
-		}
-
-		public GrEclipseConfig withP2Mirrors(Map<String, String> mirrors) {
-			builder.setP2Mirrors(mirrors);
-			extension.replaceStep(builder.build());
-			return this;
-		}
 	}
 
 	/** If the user hasn't specified the files yet, we'll assume he/she means all of the groovy files. */
