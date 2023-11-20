@@ -53,10 +53,6 @@ public class DiktatStep {
 		return create(versionDiktat, provisioner, false, config);
 	}
 
-	public static FormatterStep createForScript(String versionDiktat, Provisioner provisioner, @Nullable FileSignature config) {
-		return create(versionDiktat, provisioner, true, config);
-	}
-
 	public static FormatterStep create(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) {
 		if (BadSemver.version(versionDiktat) < BadSemver.version(MIN_SUPPORTED_VERSION)) {
 			throw new IllegalStateException("Minimum required Diktat version is " + MIN_SUPPORTED_VERSION + ", you tried " + versionDiktat + " which is too old");
