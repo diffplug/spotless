@@ -83,7 +83,6 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 
 	@Override
 	public String format(
-			String text,
 			Path path,
 			Path editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap) {

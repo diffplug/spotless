@@ -60,11 +60,10 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
 	@Override
 	public String applyWithFile(String unix, File file) {
-
 		Path absoluteEditorConfigPath = null;
 		if (editorConfigPath != null) {
 			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().toPath();
 		}
-		return adapter.format(unix, file.toPath(), absoluteEditorConfigPath, editorConfigOverrideMap);
+		return adapter.format(file.toPath(), absoluteEditorConfigPath, editorConfigOverrideMap);
 	}
 }

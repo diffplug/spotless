@@ -33,26 +33,26 @@ public class KtLintCompat0Dot50Dot0AdapterTest {
 	@Test
 	public void testDefaults(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot50Dot0Adapter KtLintCompat0Dot50Dot0Adapter = new KtLintCompat0Dot50Dot0Adapter();
-		String text = loadAndWriteText(path, "EmptyClassBody.kt");
+		loadAndWriteText(path, "EmptyClassBody.kt");
 		final Path filePath = Paths.get(path.toString(), "EmptyClassBody.kt");
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 
-		String formatted = KtLintCompat0Dot50Dot0Adapter.format(text, filePath, null, editorConfigOverrideMap);
+		String formatted = KtLintCompat0Dot50Dot0Adapter.format(filePath, null, editorConfigOverrideMap);
 		assertEquals("class EmptyClassBody\n", formatted);
 	}
 
 	@Test
 	public void testEditorConfigCanDisable(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot50Dot0Adapter KtLintCompat0Dot50Dot0Adapter = new KtLintCompat0Dot50Dot0Adapter();
-		String text = loadAndWriteText(path, "FailsNoSemicolons.kt");
+		loadAndWriteText(path, "FailsNoSemicolons.kt");
 		final Path filePath = Paths.get(path.toString(), "FailsNoSemicolons.kt");
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 		editorConfigOverrideMap.put("indent_style", "tab");
 		editorConfigOverrideMap.put("ktlint_standard_no-semi", "disabled");
 
-		String formatted = KtLintCompat0Dot50Dot0Adapter.format(text, filePath, null, editorConfigOverrideMap);
+		String formatted = KtLintCompat0Dot50Dot0Adapter.format(filePath, null, editorConfigOverrideMap);
 		assertEquals("class FailsNoSemicolons {\n\tval i = 0;\n}\n", formatted);
 	}
 

@@ -21,7 +21,6 @@ import java.util.Map;
 public interface KtLintCompatAdapter {
 
 	String format(
-			String text,
 			Path path,
 			Path editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap);
