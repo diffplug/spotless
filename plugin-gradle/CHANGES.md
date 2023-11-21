@@ -5,7 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 * Fix Eclipse JDT on some settings files. ([#1864](https://github.com/diffplug/spotless/pull/1864) fixes [#1638](https://github.com/diffplug/spotless/issues/1638))
-* Check if EditorConfig file exist for Ktlint in KotlinGradleExtension. ([#1889](https://github.com/diffplug/spotless/pull/1889)
+* Check if EditorConfig file exist for Ktlint in KotlinGradleExtension. ([#1889](https://github.com/diffplug/spotless/pull/1889))
 ### Changes
 * Bump default `ktlint` version to latest `1.0.0` -> `1.0.1`. ([#1855](https://github.com/diffplug/spotless/pull/1855))
 ### Fixed
