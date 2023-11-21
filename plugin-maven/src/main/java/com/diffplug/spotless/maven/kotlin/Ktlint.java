@@ -47,6 +47,6 @@ public class Ktlint implements FormatterStepFactory {
 			editorConfigOverride = new HashMap<>();
 		}
 
-		return KtLintStep.create(ktlintVersion, stepConfig.getProvisioner(), false, configPath, editorConfigOverride);
+		return KtLintStep.create(ktlintVersion, stepConfig.getProvisioner(), configPath, editorConfigOverride);
 	}
 }

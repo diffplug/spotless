@@ -186,7 +186,6 @@ abstract class BaseKotlinExtension extends FormatExtension {
 			return KtLintStep.create(
 					version,
 					provisioner(),
-					isScript(),
 					editorConfigPath,
 					editorConfigOverride);
 		}

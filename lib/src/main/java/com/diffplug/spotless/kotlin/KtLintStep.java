@@ -46,23 +46,17 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(version, provisioner, Collections.emptyMap());
-	}
-
-	public static FormatterStep create(String version, Provisioner provisioner,
-			Map<String, Object> editorConfigOverride) {
-		return create(version, provisioner, false, null, editorConfigOverride);
+		return create(version, provisioner, null, Collections.emptyMap());
 	}
 
 	public static FormatterStep create(String version,
 			Provisioner provisioner,
-			boolean isScript,
 			@Nullable FileSignature editorConfig,
 			Map<String, Object> editorConfigOverride) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, isScript, editorConfig, editorConfigOverride),
+				() -> new State(version, provisioner, editorConfig, editorConfigOverride),
 				State::createFormat);
 	}
 
@@ -72,9 +66,6 @@ public class KtLintStep {
 
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
-
-		/** Are the files being linted Kotlin script files. */
-		private final boolean isScript;
 		/** The jar that contains the formatter. */
 		final JarState jarState;
 		private final TreeMap<String, Object> editorConfigOverride;
@@ -84,7 +75,6 @@ public class KtLintStep {
 
 		State(String version,
 				Provisioner provisioner,
-				boolean isScript,
 				@Nullable FileSignature editorConfigPath,
 				Map<String, Object> editorConfigOverride) throws IOException {
 			this.version = version;
@@ -92,15 +82,14 @@ public class KtLintStep {
 			this.jarState = JarState.from((version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version,
 					provisioner);
 			this.editorConfigPath = editorConfigPath;
-			this.isScript = isScript;
 		}
 
 		FormatterFunc createFormat() throws Exception {
 			final ClassLoader classLoader = jarState.getClassLoader();
 			Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
 			Constructor<?> constructor = formatterFunc.getConstructor(
-					String.class, boolean.class, FileSignature.class, Map.class);
-			return (FormatterFunc.NeedsFile) constructor.newInstance(version, isScript, editorConfigPath, editorConfigOverride);
+					String.class, FileSignature.class, Map.class);
+			return (FormatterFunc.NeedsFile) constructor.newInstance(version, editorConfigPath, editorConfigOverride);
 		}
 	}
 }

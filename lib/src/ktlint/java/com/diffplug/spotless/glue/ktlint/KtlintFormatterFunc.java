@@ -25,12 +25,11 @@ import com.diffplug.spotless.glue.ktlint.compat.*;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 
-	private final boolean isScript;
 	private final KtLintCompatAdapter adapter;
 	private final FileSignature editorConfigPath;
 	private final Map<String, Object> editorConfigOverrideMap;
 
-	public KtlintFormatterFunc(String version, boolean isScript, FileSignature editorConfigPath,
+	public KtlintFormatterFunc(String version, FileSignature editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap) {
 		String[] versions = version.split("\\.");
 		int majorVersion = Integer.parseInt(versions[0]);
@@ -57,7 +56,6 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 		}
 		this.editorConfigPath = editorConfigPath;
 		this.editorConfigOverrideMap = editorConfigOverrideMap;
-		this.isScript = isScript;
 	}
 
 	@Override
@@ -67,6 +65,6 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 		if (editorConfigPath != null) {
 			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().toPath();
 		}
-		return adapter.format(unix, file.toPath(), isScript, absoluteEditorConfigPath, editorConfigOverrideMap);
+		return adapter.format(unix, file.toPath(), absoluteEditorConfigPath, editorConfigOverrideMap);
 	}
 }

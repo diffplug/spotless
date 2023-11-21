@@ -76,7 +76,6 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 	public String format(
 			String text,
 			Path path,
-			boolean isScript,
 			Path editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();

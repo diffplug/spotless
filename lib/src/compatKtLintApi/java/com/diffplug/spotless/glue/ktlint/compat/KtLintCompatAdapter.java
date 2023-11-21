@@ -23,7 +23,6 @@ public interface KtLintCompatAdapter {
 	String format(
 			String text,
 			Path path,
-			boolean isScript,
 			Path editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap);
 }
