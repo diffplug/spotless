@@ -49,12 +49,7 @@ public class KtLintStep {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(version, provisioner, Collections.emptyMap());
-	}
-
-	public static FormatterStep create(String version, Provisioner provisioner,
-			Map<String, Object> editorConfigOverride) {
-		return create(version, provisioner, null, editorConfigOverride, Collections.emptyList());
+		return create(version, provisioner, null, Collections.emptyMap(), Collections.emptyList());
 	}
 
 	public static FormatterStep create(String version,
@@ -73,7 +68,7 @@ public class KtLintStep {
 		return DEFAULT_VERSION;
 	}
 
-	static final class State implements Serializable {
+	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 		/** The jar that contains the formatter. */
 		private final JarState jarState;

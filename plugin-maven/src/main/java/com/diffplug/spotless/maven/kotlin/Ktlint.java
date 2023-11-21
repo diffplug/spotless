@@ -30,7 +30,6 @@ import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class Ktlint implements FormatterStepFactory {
-
 	@Parameter
 	private String version;
 	@Parameter
@@ -53,7 +52,11 @@ public class Ktlint implements FormatterStepFactory {
 		if (customRuleSets == null) {
 			customRuleSets = Collections.emptyList();
 		}
-
-		return KtLintStep.create(ktlintVersion, stepConfig.getProvisioner(), configPath, editorConfigOverride, customRuleSets);
+		return KtLintStep.create(
+				ktlintVersion,
+				stepConfig.getProvisioner(),
+				configPath,
+				editorConfigOverride,
+				customRuleSets);
 	}
 }
