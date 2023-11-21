@@ -15,8 +15,11 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class KtlintTest extends MavenIntegrationHarness {
@@ -61,6 +64,21 @@ class KtlintTest extends MavenIntegrationHarness {
 				"  </editorConfigOverride>\n" +
 				"</ktlint>");
 		checkKtlintOfficialStyle();
+	}
+
+	@Test
+	void testWithCustomRuleSetApply() throws Exception {
+		writePomWithKotlinSteps("<ktlint>\n" +
+				"  <customRuleSets>\n" +
+				"    <value>io.nlopez.compose.rules:ktlint:0.3.3</value>\n" +
+				"  </customRuleSets>\n" +
+				"  <editorConfigOverride>\n" +
+				"    <ktlint_function_naming_ignore_when_annotated_with>Composable</ktlint_function_naming_ignore_when_annotated_with>\n" +
+				"  </editorConfigOverride>\n" +
+				"</ktlint>");
+		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/listScreen.dirty");
+		ProcessRunner.Result result = mavenRunner().withArguments("spotless:check").runHasError();
+		assertTrue(result.toString().contains("Composable functions that return Unit should start with an uppercase letter."));
 	}
 
 	private void checkKtlintOfficialStyle() throws Exception {

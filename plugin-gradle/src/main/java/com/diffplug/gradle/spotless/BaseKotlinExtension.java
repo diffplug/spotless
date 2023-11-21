@@ -18,12 +18,14 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSortedMap;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
@@ -51,7 +53,7 @@ abstract class BaseKotlinExtension extends FormatExtension {
 
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KtlintConfig ktlint(String version) throws IOException {
-		return new KtlintConfig(version, Collections.emptyMap());
+		return new KtlintConfig(version, Collections.emptyMap(), Collections.emptyList());
 	}
 
 	/** Uses the <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> jar to format source code. */
@@ -147,16 +149,19 @@ abstract class BaseKotlinExtension extends FormatExtension {
 		private final String version;
 		private FileSignature editorConfigPath;
 		private Map<String, Object> editorConfigOverride;
+		private List<String> customRuleSets;
 
 		private KtlintConfig(
 				String version,
-				Map<String, Object> editorConfigOverride) throws IOException {
+				Map<String, Object> editorConfigOverride,
+				List<String> customRuleSets) throws IOException {
 			Objects.requireNonNull(version);
 			File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
 			FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
 			this.version = version;
 			this.editorConfigPath = editorConfigPath;
 			this.editorConfigOverride = editorConfigOverride;
+			this.customRuleSets = customRuleSets;
 			addStep(createStep());
 		}
 
@@ -182,12 +187,19 @@ abstract class BaseKotlinExtension extends FormatExtension {
 			return this;
 		}
 
+		public KtlintConfig customRuleSets(List<String> customRuleSets) {
+			this.customRuleSets = ImmutableList.copyOf(customRuleSets);
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
 			return KtLintStep.create(
 					version,
 					provisioner(),
 					editorConfigPath,
-					editorConfigOverride);
+					editorConfigOverride,
+					customRuleSets);
 		}
 	}
 }

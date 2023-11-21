@@ -1,0 +1,6 @@
+import androidx.compose.runtime.Composable
+
+@Composable
+fun listScreen() {
+    val list: List<String> = mutableListOf<String>()
+}

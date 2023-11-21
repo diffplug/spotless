@@ -399,12 +399,17 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 ```kotlin
 spotless {
   kotlin {
-    // version, editorConfigPath and editorConfigOverride are all optional
+    // version, editorConfigPath, editorConfigOverride and customRuleSets are all optional
     ktlint("1.0.0")
       .setEditorConfigPath("$projectDir/config/.editorconfig")  // sample unusual placement
       .editorConfigOverride(
         mapOf(
           "indent_size" to 2,
+        )
+      )
+      .customRuleSets(
+        listOf(
+          "io.nlopez.compose.rules:ktlint:0.3.3"
         )
       )
   }
