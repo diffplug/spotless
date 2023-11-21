@@ -416,6 +416,9 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
     <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>
     <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>
   </editorConfigOverride>
+  <customRuleSets> <!-- optional -->
+    <value>io.nlopez.compose.rules:ktlint:0.3.3</value>
+  </customRuleSets>
 </ktlint>
 ```
 

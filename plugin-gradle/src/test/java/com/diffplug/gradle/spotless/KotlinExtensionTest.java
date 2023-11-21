@@ -142,6 +142,30 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void withCustomRuleSetApply() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint(\"1.0.1\")",
+				"        .customRuleSets([",
+				"            \"io.nlopez.compose.rules:ktlint:0.3.3\"",
+				"        ])",
+				"        .editorConfigOverride([",
+				"            ktlint_function_naming_ignore_when_annotated_with: \"Composable\",",
+				"        ])",
+				"    }",
+				"}");
+		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/listScreen.dirty");
+		String buildOutput = gradleRunner().withArguments("spotlessCheck").buildAndFail().getOutput();
+		assertThat(buildOutput).contains("Composable functions that return Unit should start with an uppercase letter.");
+	}
+
+	@Test
 	void testWithHeader() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",

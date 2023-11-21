@@ -19,8 +19,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.annotation.Nullable;
@@ -51,18 +54,19 @@ public class KtLintStep {
 
 	public static FormatterStep create(String version, Provisioner provisioner,
 			Map<String, Object> editorConfigOverride) {
-		return create(version, provisioner, false, null, editorConfigOverride);
+		return create(version, provisioner, false, null, editorConfigOverride, Collections.emptyList());
 	}
 
 	public static FormatterStep create(String version,
 			Provisioner provisioner,
 			boolean isScript,
 			@Nullable FileSignature editorConfig,
-			Map<String, Object> editorConfigOverride) {
+			Map<String, Object> editorConfigOverride,
+			List<String> customRuleSets) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, isScript, editorConfig, editorConfigOverride),
+				() -> new State(version, provisioner, isScript, editorConfig, editorConfigOverride, customRuleSets),
 				State::createFormat);
 	}
 
@@ -86,11 +90,14 @@ public class KtLintStep {
 				Provisioner provisioner,
 				boolean isScript,
 				@Nullable FileSignature editorConfigPath,
-				Map<String, Object> editorConfigOverride) throws IOException {
+				Map<String, Object> editorConfigOverride,
+				List<String> customRuleSets) throws IOException {
 			this.version = version;
 			this.editorConfigOverride = new TreeMap<>(editorConfigOverride);
-			this.jarState = JarState.from((version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version,
-					provisioner);
+			String ktlintCoordinate = (version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version;
+			Set<String> mavenCoordinates = new HashSet<>(customRuleSets);
+			mavenCoordinates.add(ktlintCoordinate);
+			this.jarState = JarState.from(mavenCoordinates, provisioner);
 			this.editorConfigPath = editorConfigPath;
 			this.isScript = isScript;
 		}

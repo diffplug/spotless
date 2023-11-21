@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Support custom rule sets for Ktlint. ([#1896](https://github.com/diffplug/spotless/pull/1896)
 ### Fixed
 * Fix Eclipse JDT on some settings files. ([#1864](https://github.com/diffplug/spotless/pull/1864) fixes [#1638](https://github.com/diffplug/spotless/issues/1638))
 * Check if EditorConfig file exist for Ktlint in KotlinGradleExtension. ([#1889](https://github.com/diffplug/spotless/pull/1889)
