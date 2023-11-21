@@ -54,6 +54,6 @@ public class Ktlint implements FormatterStepFactory {
 			customRuleSets = Collections.emptyList();
 		}
 
-		return KtLintStep.create(ktlintVersion, stepConfig.getProvisioner(), false, configPath, editorConfigOverride, customRuleSets);
+		return KtLintStep.create(ktlintVersion, stepConfig.getProvisioner(), configPath, editorConfigOverride, customRuleSets);
 	}
 }
