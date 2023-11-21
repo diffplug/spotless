@@ -37,9 +37,9 @@ public class KtLintStep {
 	private KtLintStep() {}
 
 	private static final String DEFAULT_VERSION = "1.0.1";
-	static final String NAME = "ktlint";
-	static final String MAVEN_COORDINATE_0_DOT = "com.pinterest:ktlint:";
-	static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";
+	private static final String NAME = "ktlint";
+	private static final String MAVEN_COORDINATE_0_DOT = "com.pinterest:ktlint:";
+	private static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
@@ -67,7 +67,7 @@ public class KtLintStep {
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 		/** The jar that contains the formatter. */
-		final JarState jarState;
+		private final JarState jarState;
 		private final TreeMap<String, Object> editorConfigOverride;
 		private final String version;
 		@Nullable
