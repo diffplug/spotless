@@ -322,13 +322,16 @@ spotless {
     importOrderFile('eclipse-import-order.txt') // import order file as exported from eclipse
     // removes semicolons at the end of lines
     removeSemicolons()
-
-    excludeJava() // excludes all Java sources within the Groovy source dirs from formatting
     // the Groovy Eclipse formatter extends the Java Eclipse formatter,
     // so it formats Java files by default (unless `excludeJava` is used).
     greclipse() // has its own section below
+    
+    licenseHeader('/* (C) $YEAR */') // or licenseHeaderFile
 
-    licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
+    //---- Below is for `groovy` only ----
+    
+    // excludes all Java sources within the Groovy source dirs from formatting
+    excludeJava()
   }
   groovyGradle {
     target '*.gradle' // default target of groovyGradle
