@@ -65,8 +65,8 @@ class GradleProvisioner {
 		}
 
 		@Override
-		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
-			Request req = new Request(withTransitives, mavenCoordinates);
+		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<?> dependencies) {
+			Request req = new Request(withTransitives, dependencies);
 			Set<File> result;
 			synchronized (cache) {
 				result = cache.get(req);
@@ -77,7 +77,7 @@ class GradleProvisioner {
 				synchronized (cache) {
 					result = cache.get(req);
 					if (result == null) {
-						result = provisioner.provisionWithTransitives(req.withTransitives, req.mavenCoords);
+						result = provisioner.provisionWithTransitives(req.withTransitives, req.dependencies);
 						cache.put(req, result);
 					}
 					return result;
@@ -86,8 +86,8 @@ class GradleProvisioner {
 		}
 
 		/** A child Provisioner which retries cached elements only. */
-		final Provisioner cachedOnly = (withTransitives, mavenCoordinates) -> {
-			Request req = new Request(withTransitives, mavenCoordinates);
+		final Provisioner cachedOnly = (withTransitives, dependencies) -> {
+			Request req = new Request(withTransitives, dependencies);
 			Set<File> result;
 			synchronized (cache) {
 				result = cache.get(req);
@@ -95,7 +95,7 @@ class GradleProvisioner {
 			if (result != null) {
 				return result;
 			}
-			throw new GradleException("Add a step with " + req.mavenCoords + " into the `spotlessPredeclare` block in the root project.");
+			throw new GradleException("Add a step with " + req.dependencies + " into the `spotlessPredeclare` block in the root project.");
 		};
 	}
 
@@ -110,14 +110,14 @@ class GradleProvisioner {
 	}
 
 	private static Provisioner forConfigurationContainer(Project project, ConfigurationContainer configurations, DependencyHandler dependencies) {
-		return (withTransitives, mavenCoords) -> {
+		return (withTransitives, deps) -> {
 			try {
 				Configuration config = configurations.create("spotless"
-						+ new Request(withTransitives, mavenCoords).hashCode());
-				mavenCoords.stream()
+						+ new Request(withTransitives, deps).hashCode());
+				deps.stream()
 						.map(dependencies::create)
 						.forEach(config.getDependencies()::add);
-				config.setDescription(mavenCoords.toString());
+				config.setDescription(deps.toString());
 				config.setTransitive(withTransitives);
 				config.setCanBeConsumed(false);
 				config.setVisible(false);
@@ -134,7 +134,7 @@ class GradleProvisioner {
 				throw new GradleException(String.format(
 						"You need to add a repository containing the '%s' artifact in '%sbuild.gradle'.%n" +
 								"E.g.: 'repositories { mavenCentral() }'",
-						mavenCoords, projName), e);
+						deps, projName), e);
 			}
 		};
 	}
@@ -144,16 +144,16 @@ class GradleProvisioner {
 	/** Models a request to the provisioner. */
 	private static class Request {
 		final boolean withTransitives;
-		final ImmutableList<String> mavenCoords;
+		final ImmutableList<?> dependencies;
 
-		public Request(boolean withTransitives, Collection<String> mavenCoords) {
+		public Request(boolean withTransitives, Collection<?> dependencies) {
 			this.withTransitives = withTransitives;
-			this.mavenCoords = ImmutableList.copyOf(mavenCoords);
+			this.dependencies = ImmutableList.copyOf(dependencies);
 		}
 
 		@Override
 		public int hashCode() {
-			return withTransitives ? mavenCoords.hashCode() : ~mavenCoords.hashCode();
+			return withTransitives ? dependencies.hashCode() : ~dependencies.hashCode();
 		}
 
 		@Override
@@ -162,7 +162,7 @@ class GradleProvisioner {
 				return true;
 			} else if (obj instanceof Request) {
 				Request o = (Request) obj;
-				return o.withTransitives == withTransitives && o.mavenCoords.equals(mavenCoords);
+				return o.withTransitives == withTransitives && o.dependencies.equals(dependencies);
 			} else {
 				return false;
 			}
@@ -170,7 +170,7 @@ class GradleProvisioner {
 
 		@Override
 		public String toString() {
-			String coords = mavenCoords.toString();
+			String coords = dependencies.toString();
 			StringBuilder builder = new StringBuilder();
 			builder.append(coords, 1, coords.length() - 1); // strip off []
 			if (withTransitives) {

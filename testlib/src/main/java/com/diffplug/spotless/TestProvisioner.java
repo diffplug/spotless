@@ -63,13 +63,13 @@ public class TestProvisioner {
 		File tempDir = Files.createTempDir();
 		Project project = TestProvisioner.gradleProject(tempDir);
 		repoConfig.accept(project.getRepositories());
-		return (withTransitives, mavenCoords) -> {
-			Dependency[] deps = mavenCoords.stream()
+		return (withTransitives, dependencies) -> {
+			Dependency[] deps = dependencies.stream()
 					.map(project.getDependencies()::create)
 					.toArray(Dependency[]::new);
 			Configuration config = project.getConfigurations().detachedConfiguration(deps);
 			config.setTransitive(withTransitives);
-			config.setDescription(mavenCoords.toString());
+			config.setDescription(dependencies.toString());
 			config.attributes(attr -> {
 				attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
 				attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
@@ -100,10 +100,10 @@ public class TestProvisioner {
 		File testlib = new File(spotlessDir, "testlib");
 		File cacheFile = new File(testlib, "build/tmp/testprovisioner." + name + ".cache");
 
-		Map<ImmutableSet<String>, ImmutableSet<File>> cached;
+		Map<ImmutableSet<?>, ImmutableSet<File>> cached;
 		if (cacheFile.exists()) {
 			try (ObjectInputStream inputStream = new ObjectInputStream(Files.asByteSource(cacheFile).openBufferedStream())) {
-				cached = (Map<ImmutableSet<String>, ImmutableSet<File>>) inputStream.readObject();
+				cached = (Map<ImmutableSet<?>, ImmutableSet<File>>) inputStream.readObject();
 			} catch (IOException | ClassNotFoundException e) {
 				throw Errors.asRuntime(e);
 			}
@@ -115,15 +115,15 @@ public class TestProvisioner {
 				throw Errors.asRuntime(e);
 			}
 		}
-		return (withTransitives, mavenCoordsRaw) -> {
-			ImmutableSet<String> mavenCoords = ImmutableSet.copyOf(mavenCoordsRaw);
+		return (withTransitives, depsRaw) -> {
+			ImmutableSet<?> deps = ImmutableSet.copyOf(depsRaw);
 			synchronized (TestProvisioner.class) {
-				ImmutableSet<File> result = cached.get(mavenCoords);
+				ImmutableSet<File> result = cached.get(deps);
 				// double-check that depcache pruning hasn't removed them since our cache cached them
 				boolean needsToBeSet = result == null || !result.stream().allMatch(file -> file.exists() && file.isFile() && file.length() > 0);
 				if (needsToBeSet) {
-					result = ImmutableSet.copyOf(input.get().provisionWithTransitives(withTransitives, mavenCoords));
-					cached.put(mavenCoords, result);
+					result = ImmutableSet.copyOf(input.get().provisionWithTransitives(withTransitives, deps));
+					cached.put(deps, result);
 					try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
 						outputStream.writeObject(cached);
 					} catch (IOException e) {

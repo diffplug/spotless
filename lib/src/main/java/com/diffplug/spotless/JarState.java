@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -38,46 +37,43 @@ import java.util.stream.Collectors;
  */
 public final class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	@Deprecated
-	private final Set<String> mavenCoordinates;
 	private final FileSignature fileSignature;
 
-	private JarState(Collection<String> mavenCoordinates, FileSignature fileSignature) {
-		this.mavenCoordinates = new TreeSet<>(mavenCoordinates);
+	private JarState(FileSignature fileSignature) {
 		this.fileSignature = fileSignature;
 	}
 
 	/** Provisions the given maven coordinate and its transitive dependencies. */
-	public static JarState from(String mavenCoordinate, Provisioner provisioner) throws IOException {
-		return from(Collections.singletonList(mavenCoordinate), provisioner);
+	public static JarState from(Object dependency, Provisioner provisioner) throws IOException {
+		final Collection<?> mavenCoordinates;
+		if (dependency instanceof Collection) {
+			mavenCoordinates = (Collection<?>) dependency;
+		} else {
+			mavenCoordinates = Collections.singletonList(dependency);
+		}
+		return from(mavenCoordinates, provisioner);
 	}
 
 	/** Provisions the given maven coordinates and their transitive dependencies. */
-	public static JarState from(Collection<String> mavenCoordinates, Provisioner provisioner) throws IOException {
-		return provisionWithTransitives(true, mavenCoordinates, provisioner);
+	public static JarState from(Collection<?> dependencies, Provisioner provisioner) throws IOException {
+		return from(dependencies, provisioner, true);
 	}
 
-	/** Provisions the given maven coordinates without their transitive dependencies. */
-	public static JarState withoutTransitives(Collection<String> mavenCoordinates, Provisioner provisioner) throws IOException {
-		return provisionWithTransitives(false, mavenCoordinates, provisioner);
-	}
-
-	private static JarState provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates, Provisioner provisioner) throws IOException {
-		Objects.requireNonNull(mavenCoordinates, "mavenCoordinates");
+	public static JarState from(Collection<?> dependencies, Provisioner provisioner, boolean withTransitives) throws IOException {
+		Objects.requireNonNull(dependencies, "dependencies");
 		Objects.requireNonNull(provisioner, "provisioner");
-		Set<File> jars = provisioner.provisionWithTransitives(withTransitives, mavenCoordinates);
+		Set<File> jars = provisioner.provisionWithTransitives(withTransitives, dependencies);
 		if (jars.isEmpty()) {
-			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinates.stream().collect(Collectors.joining(", ")));
+			throw new NoSuchElementException("Resolved to an empty result: " + dependencies.stream().map(Object::toString).collect(Collectors.joining(", ")));
 		}
 		FileSignature fileSignature = FileSignature.signAsSet(jars);
-		return new JarState(mavenCoordinates, fileSignature);
+		return new JarState(fileSignature);
 	}
 
 	/** Wraps the given collection of a files as a JarState, maintaining the order in the Collection. */
 	public static JarState preserveOrder(Collection<File> jars) throws IOException {
 		FileSignature fileSignature = FileSignature.signAsList(jars);
-		return new JarState(Collections.emptySet(), fileSignature);
+		return new JarState(fileSignature);
 	}
 
 	URL[] jarUrls() {
@@ -106,11 +102,5 @@ public final class JarState implements Serializable {
 	 */
 	public ClassLoader getClassLoader(Serializable key) {
 		return SpotlessCache.instance().classloader(key, this);
-	}
-
-	/** Returns unmodifiable view on sorted Maven coordinates */
-	@Deprecated
-	public Set<String> getMavenCoordinates() {
-		return Collections.unmodifiableSet(mavenCoordinates);
 	}
 }
