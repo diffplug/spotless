@@ -15,34 +15,19 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.IOException;
 
-import org.gradle.testkit.runner.BuildResult;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-class KotlinGradleExtensionTest extends GradleIntegrationHarness {
-	@Test
-	void integration_default_diktat() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.4.30'",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    kotlinGradle {",
-				"        diktat()",
-				"    }",
-				"}");
-		setFile("configuration.gradle.kts").toResource("kotlin/diktat/basic.dirty");
-		BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
-		assertThat(result.getOutput()).contains("[AVOID_NESTED_FUNCTIONS] try to avoid using nested functions");
-	}
+/**
+ * We test KotlinGradleExtension only behaviors here.
+ */
+class KotlinGradleExtensionTest extends KotlinExtensionTest {
 
-	@Test
-	void withExperimentalEditorConfigOverride() throws IOException {
+	@ParameterizedTest
+	@ValueSource(booleans = {true, false})
+	void testTarget(boolean useDefaultTarget) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
@@ -51,6 +36,7 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlinGradle {",
+				"        " + (useDefaultTarget ? "" : "target \"*.kts\""),
 				"        ktlint().editorConfigOverride([",
 				"            ktlint_experimental: \"enabled\",",
 				"            ij_kotlin_allow_trailing_comma: true,",
@@ -59,25 +45,14 @@ class KotlinGradleExtensionTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		setFile("configuration.kts").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
-	}
-
-	@Test
-	void integration_ktfmt_with_dropbox_style() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"spotless {",
-				"    kotlinGradle {",
-				"        ktfmt().dropboxStyle()",
-				"    }",
-				"}");
-		setFile("configuration.gradle.kts").toResource("kotlin/ktfmt/dropboxstyle.dirty");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktfmt/dropboxstyle.clean");
+		if (useDefaultTarget) {
+			assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
+			assertFile("configuration.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		} else {
+			assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
+			assertFile("configuration.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
+		}
 	}
 }

@@ -30,7 +30,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void integrationDiktat() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.4.30'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
