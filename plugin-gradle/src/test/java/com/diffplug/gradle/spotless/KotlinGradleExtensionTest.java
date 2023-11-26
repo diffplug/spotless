@@ -30,7 +30,7 @@ class KotlinGradleExtensionTest extends KotlinExtensionTest {
 	void testTarget(boolean useDefaultTarget) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.5.31'",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
