@@ -199,10 +199,6 @@ if (System.env['JITPACK'] == 'true' || version.endsWith('-SNAPSHOT')) {
 	}
 }
 
-tasks.withType(Sign).configureEach {
-	notCompatibleWithConfigurationCache("https://github.com/gradle/gradle/issues/13470")
-}
-
 tasks.withType(AbstractArchiveTask).configureEach {
 	preserveFileTimestamps = false
 	reproducibleFileOrder = true
