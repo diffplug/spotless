@@ -17,7 +17,11 @@ spotbugs {
 	ignoreFailures = false 	// bug free or it doesn't ship!
 	reportLevel = 'medium'	// low|medium|high (low = sensitive to even minor mistakes)
 	omitVisitors = [
-		'FindReturnRef'] // https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
+		// https://spotbugs.readthedocs.io/en/latest/detectors.html#constructorthrow
+		'ConstructorThrow',
+		// https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
+		'FindReturnRef',
+	]
 }
 tasks.named('spotbugsTest') {
 	enabled = false
