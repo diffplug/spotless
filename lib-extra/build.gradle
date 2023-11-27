@@ -56,16 +56,16 @@ for (needsP2 in NEEDS_P2_DEPS) {
 		add("${needsP2}CompileOnly", "dev.equo.ide:solstice:${VER_SOLSTICE}")
 	}
 }
-jar {
+
+def jar = tasks.named('jar', Jar) {
 	for (needsP2 in NEEDS_P2_DEPS) {
-		from sourceSets.getByName(needsP2).output.classesDirs
+		from sourceSets.named(needsP2).map { it.output.classesDirs }
 	}
 }
+
 tasks.withType(Test).configureEach {
 	dependsOn jar
-	doFirst {
-		classpath += jar.outputs.files
-	}
+	classpath += jar.get().outputs.files
 }
 
 apply plugin: 'dev.equo.p2deps'

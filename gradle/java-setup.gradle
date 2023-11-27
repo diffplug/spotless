@@ -14,11 +14,14 @@ tasks.withType(JavaCompile).configureEach {
 //////////////
 apply plugin: 'com.github.spotbugs'
 spotbugs {
-	toolVersion = VER_SPOTBUGS
 	ignoreFailures = false 	// bug free or it doesn't ship!
 	reportLevel = 'medium'	// low|medium|high (low = sensitive to even minor mistakes)
 	omitVisitors = [
-		'FindReturnRef'] // https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
+		// https://spotbugs.readthedocs.io/en/latest/detectors.html#constructorthrow
+		'ConstructorThrow',
+		// https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
+		'FindReturnRef',
+	]
 }
 tasks.named('spotbugsTest') {
 	enabled = false
@@ -30,16 +33,10 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
 	reports {
 		html.enabled = true
 	}
-	notCompatibleWithConfigurationCache("https://github.com/spotbugs/spotbugs-gradle-plugin/issues/670")
 }
 
-tasks.named('spotbugsMain') {
-	reports {
-		html.enabled = true
-	}
-}
 dependencies {
 	compileOnly 'net.jcip:jcip-annotations:1.0'
-	compileOnly "com.github.spotbugs:spotbugs-annotations:${VER_SPOTBUGS}"
+	compileOnly "com.github.spotbugs:spotbugs-annotations:${spotbugs.toolVersion.get()}"
 	compileOnly "com.google.code.findbugs:jsr305:${VER_JSR_305}"
 }
