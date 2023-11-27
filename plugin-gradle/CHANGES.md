@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.23.0] - 2023-11-27
 ### Added
 * Support custom rule sets for Ktlint. ([#1896](https://github.com/diffplug/spotless/pull/1896)
 ### Fixed
