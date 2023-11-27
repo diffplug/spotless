@@ -27,7 +27,7 @@ import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.groovy.RemoveSemicolonsStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 
-abstract class BaseGroovyExtension extends FormatExtension {
+public abstract class BaseGroovyExtension extends FormatExtension {
 	protected BaseGroovyExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}
