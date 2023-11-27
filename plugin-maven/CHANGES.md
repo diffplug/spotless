@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.41.0] - 2023-11-27
 ### Added
 * CompileSourceRoots and TestCompileSourceRoots are now respected as default includes. These properties are commonly set when adding extra source directories. ([#1846](https://github.com/diffplug/spotless/issues/1846))
 * Support custom rule sets for Ktlint. ([#1896](https://github.com/diffplug/spotless/pull/1896)
