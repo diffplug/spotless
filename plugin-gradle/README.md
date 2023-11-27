@@ -320,13 +320,18 @@ spotless {
     // optional: instead of specifying import groups directly you can specify a config file
     // export config file: https://github.com/diffplug/spotless/blob/main/ECLIPSE_SCREENSHOTS.md#creating-spotlessimportorder
     importOrderFile('eclipse-import-order.txt') // import order file as exported from eclipse
-
-    excludeJava() // excludes all Java sources within the Groovy source dirs from formatting
+    // removes semicolons at the end of lines
+    removeSemicolons()
     // the Groovy Eclipse formatter extends the Java Eclipse formatter,
     // so it formats Java files by default (unless `excludeJava` is used).
     greclipse() // has its own section below
+    
+    licenseHeader('/* (C) $YEAR */') // or licenseHeaderFile
 
-    licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
+    //---- Below is for `groovy` only ----
+    
+    // excludes all Java sources within the Groovy source dirs from formatting
+    excludeJava()
   }
   groovyGradle {
     target '*.gradle' // default target of groovyGradle

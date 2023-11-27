@@ -331,14 +331,16 @@ These mechanisms already exist for the Gradle plugin.
       <include>src/test/groovy/**/*.groovy</include>
     </includes>
 
-    <importOrder /> <!-- standard import order -->
+    <importOrder/> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
       <order>java|javax,org,com,com.diffplug,,\#com.diffplug,\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
       <!-- you can use an empty string for all the imports you didn't specify explicitly, '|' to join group without blank line, and '\#` prefix for static imports. -->
     </importOrder>
+    
+    <removeSemicolons/> <!-- removes semicolons at the end of lines -->
+    <greclipse/>          <!-- has its own section below -->
 
-    <greclipse />          <!-- has its own section below -->
-
+    <excludeJava/>
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
     </licenseHeader>

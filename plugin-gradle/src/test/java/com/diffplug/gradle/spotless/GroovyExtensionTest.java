@@ -89,6 +89,27 @@ class GroovyExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void removeSemicolons() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"apply plugin: 'groovy'",
+				"",
+				"spotless {",
+				"    groovy {",
+				"        removeSemicolons()",
+				"    }",
+				"}");
+
+		String withSemicolons = getTestResource("groovy/removeSemicolons/GroovyCodeWithSemicolons.test");
+		String withoutSemicolons = getTestResource("groovy/removeSemicolons/GroovyCodeWithSemicolonsFormatted.test");
+		setFile("src/main/groovy/test.groovy").toContent(withSemicolons);
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/groovy/test.groovy").hasContent(withoutSemicolons);
+	}
+
+	@Test
 	void groovyPluginMissingCheck() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
