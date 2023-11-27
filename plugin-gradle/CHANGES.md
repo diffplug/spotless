@@ -10,13 +10,15 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Support custom rule sets for Ktlint. ([#1896](https://github.com/diffplug/spotless/pull/1896))
 ### Fixed
+* Fix `GoogleJavaFormatConfig.reorderImports` not working. ([#1872](https://github.com/diffplug/spotless/issues/1872))
 * Fix Eclipse JDT on some settings files. ([#1864](https://github.com/diffplug/spotless/pull/1864) fixes [#1638](https://github.com/diffplug/spotless/issues/1638))
 * Check if EditorConfig file exist for Ktlint in KotlinGradleExtension. ([#1889](https://github.com/diffplug/spotless/pull/1889))
 ### Changes
 * Bump default `ktlint` version to latest `1.0.0` -> `1.0.1`. ([#1855](https://github.com/diffplug/spotless/pull/1855))
 * Add a Step to remove semicolons from Groovy files. ([#1881](https://github.com/diffplug/spotless/pull/1881))
-### Fixed
-* Fix `GoogleJavaFormatConfig.reorderImports` not working. ([#1872](https://github.com/diffplug/spotless/issues/1872))
+* **POSSIBLY BREAKING** `userData` method has been removed from Ktlint step in ([#1891](https://github.com/diffplug/spotless/pull/1891)), you may use `editorConfigOverride` instead.
+* **POSSIBLY BREAKING** Reuse configs for `KotlinExtension` and `KotlinGradleExtension` in ([#1890](https://github.com/diffplug/spotless/pull/1890)), this may break your integrations in Gradle Kotlin DSL, wait for Spotless 6.23.1 to fix this.
+* **POSSIBLY BREAKING** Reuse configs for `GroovyExtension` and `GroovyGradleExtension` in ([#1890](https://github.com/diffplug/spotless/pull/1890)), this may break your integrations in Gradle Kotlin DSL, wait for Spotless 6.23.1 to fix this.
 
 ## [6.22.0] - 2023-09-28
 ### Added
