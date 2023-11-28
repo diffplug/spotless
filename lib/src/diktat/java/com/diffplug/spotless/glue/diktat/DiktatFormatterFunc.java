@@ -30,6 +30,8 @@ import com.diffplug.spotless.FormatterFunc;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
+import org.jetbrains.annotations.NotNull;
+
 public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 
 	private final List<RuleSet> rulesets;

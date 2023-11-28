@@ -34,8 +34,10 @@ public class DiktatStep {
 
 	private static final String DEFAULT_VERSION = "1.2.5";
 	static final String NAME = "diktat";
-	static final String PACKAGE_DIKTAT = "org.cqfn.diktat";
-	static final String MAVEN_COORDINATE = PACKAGE_DIKTAT + ":diktat-rules:";
+	static final String PACKAGE_PRE_2_0_0 = "org.cqfn.diktat";
+	static final String PACKAGE = "com.saveourtool.diktat";
+	static final String MAVEN_COORDINATE_PRE_2_0_0 = PACKAGE_PRE_2_0_0 + ":diktat-rules:";
+	static final String MAVEN_COORDINATE = PACKAGE + ":diktat-runner:";
 
 	public static String defaultVersionDiktat() {
 		return DEFAULT_VERSION;
@@ -76,7 +78,7 @@ public class DiktatStep {
 		State(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) throws IOException {
 
 			HashSet<String> pkgSet = new HashSet<>();
-			pkgSet.add(MAVEN_COORDINATE + versionDiktat);
+			pkgSet.add(MAVEN_COORDINATE_PRE_2_0_0 + versionDiktat);
 
 			this.jar = JarState.from(pkgSet, provisioner);
 			this.isScript = isScript;
