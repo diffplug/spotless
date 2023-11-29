@@ -164,7 +164,15 @@ public class TestProvisioner {
 		return mavenLocal.get();
 	}
 
+	public static Provisioner mavenCentralAndLocal() {
+		return mavenCentralAndLocal.get();
+	}
+
 	private static final Supplier<Provisioner> mavenLocal = () -> createWithRepositories(repo -> repo.mavenLocal());
+	private static final Supplier<Provisioner> mavenCentralAndLocal = () -> createWithRepositories(repo -> {
+		repo.mavenCentral();
+		repo.mavenLocal();
+	});
 
 	/** Creates a Provisioner for the Sonatype snapshots maven repo for development purpose. */
 	public static Provisioner snapshots() {

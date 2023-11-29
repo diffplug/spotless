@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.kotlin;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -24,7 +25,7 @@ import javax.annotation.Nullable;
 
 import com.diffplug.spotless.*;
 
-/** Wraps up <a href="https://github.com/cqfn/diKTat">diktat</a> as a FormatterStep. */
+/** Wraps up <a href="https://github.com/saveourtool/diktat">diktat</a> as a FormatterStep. */
 public class DiktatStep {
 
 	// prevent direct instantiation
@@ -32,7 +33,9 @@ public class DiktatStep {
 
 	private static final String MIN_SUPPORTED_VERSION = "1.2.1";
 
-	private static final String DEFAULT_VERSION = "1.2.5";
+	private static final String PACKAGE_RELOCATED_VERSION = "2.0.0";
+
+	private static final String DEFAULT_VERSION = "2.0.0";
 	static final String NAME = "diktat";
 	static final String PACKAGE_PRE_2_0_0 = "org.cqfn.diktat";
 	static final String PACKAGE = "com.saveourtool.diktat";
@@ -70,29 +73,35 @@ public class DiktatStep {
 
 		private static final long serialVersionUID = 1L;
 
+		private final String versionDiktat;
 		/** Are the files being linted Kotlin script files. */
 		private final boolean isScript;
 		private final @Nullable FileSignature config;
 		final JarState jar;
 
 		State(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) throws IOException {
-
 			HashSet<String> pkgSet = new HashSet<>();
-			pkgSet.add(MAVEN_COORDINATE_PRE_2_0_0 + versionDiktat);
+			if (BadSemver.version(versionDiktat) >= BadSemver.version(PACKAGE_RELOCATED_VERSION)) {
+				pkgSet.add(MAVEN_COORDINATE + versionDiktat);
+			} else {
+				pkgSet.add(MAVEN_COORDINATE_PRE_2_0_0 + versionDiktat);
+			}
 
 			this.jar = JarState.from(pkgSet, provisioner);
+			this.versionDiktat = versionDiktat;
 			this.isScript = isScript;
 			this.config = config;
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			if (config != null) {
-				System.setProperty("diktat.config.path", config.getOnlyFile().getAbsolutePath());
-			}
-
+			final File configFile = (config != null) ? config.getOnlyFile() : null;
 			Class<?> formatterFunc = jar.getClassLoader().loadClass("com.diffplug.spotless.glue.diktat.DiktatFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(boolean.class);
-			return (FormatterFunc.NeedsFile) constructor.newInstance(isScript);
+			Constructor<?> constructor = formatterFunc.getConstructor(
+				String.class,
+				File.class,
+				boolean.class
+			);
+			return (FormatterFunc.NeedsFile) constructor.newInstance(versionDiktat, configFile, isScript);
 		}
 	}
 }

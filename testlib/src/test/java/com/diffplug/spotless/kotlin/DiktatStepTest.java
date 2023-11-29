@@ -32,7 +32,7 @@ class DiktatStepTest extends ResourceHarness {
 
 	@Test
 	void behavior() {
-		FormatterStep step = DiktatStep.create(TestProvisioner.mavenCentral());
+		FormatterStep step = DiktatStep.create("2.0.0-rc.8.108+b4039ad", TestProvisioner.mavenCentralAndLocal());
 		StepHarnessWithFile.forStep(this, step).testResourceExceptionMsg("kotlin/diktat/Unsolvable.kt").isEqualTo("There are 2 unfixed errors:" +
 				System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
 				System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()" +
