@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.23.1] - 2023-11-29
 ### Fixed
 * Make `BaseGroovyExtension` and `BaseKotlinExtension` public. ([#1912](https://github.com/diffplug/spotless/pull/1912))
 
