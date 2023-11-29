@@ -33,7 +33,7 @@ import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
 
-abstract class BaseKotlinExtension extends FormatExtension {
+public abstract class BaseKotlinExtension extends FormatExtension {
 	protected BaseKotlinExtension(SpotlessExtension spotless) {
 		super(spotless);
 	}

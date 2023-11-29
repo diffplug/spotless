@@ -143,21 +143,21 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 
 	@Test
 	void withCustomRuleSetApply() throws IOException {
-		setFile("build.gradle").toLines(
+		setFile("build.gradle.kts").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
-				"    id 'com.diffplug.spotless'",
+				"    id(\"org.jetbrains.kotlin.jvm\") version \"1.6.21\"",
+				"    id(\"com.diffplug.spotless\")",
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
 				"        ktlint(\"1.0.1\")",
-				"        .customRuleSets([",
+				"        .customRuleSets(listOf(",
 				"            \"io.nlopez.compose.rules:ktlint:0.3.3\"",
-				"        ])",
-				"        .editorConfigOverride([",
-				"            ktlint_function_naming_ignore_when_annotated_with: \"Composable\",",
-				"        ])",
+				"        ))",
+				"        .editorConfigOverride(mapOf(",
+				"            \"ktlint_function_naming_ignore_when_annotated_with\" to \"Composable\"",
+				"        ))",
 				"    }",
 				"}");
 		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/listScreen.dirty");
