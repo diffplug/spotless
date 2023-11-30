@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.saveourtool.diktat.DiktatFactoriesKt;
@@ -40,7 +41,7 @@ public class DiktatCompat2Dot0Dot0Adapter implements DiktatCompatAdapter {
 	private final ArrayList<DiktatError> errors = new ArrayList<>();
 
 	public DiktatCompat2Dot0Dot0Adapter(@Nullable File configFile) {
-		this.processor = getDiktatReporter(configFile != null ? configFile : new File("diktat-analysis.yml"));
+		this.processor = getDiktatReporter(configFile);
 		this.formatterCallback = new FormatterCallback(errors);
 	}
 
@@ -78,13 +79,19 @@ public class DiktatCompat2Dot0Dot0Adapter implements DiktatCompatAdapter {
 	}
 
 	private static DiktatProcessor getDiktatReporter(File configFile) {
+		final DiktatRuleSet ruleSet = DiktatFactoriesKt.getDiktatRuleSetFactory().invoke(readRuleConfigs(configFile));
+		return DiktatFactoriesKt.getDiktatProcessorFactory().invoke(ruleSet);
+	}
+
+	private static List<DiktatRuleConfig> readRuleConfigs(File configFile) {
+		if (configFile == null) {
+			return Collections.emptyList();
+		}
 		try {
 			final InputStream configInputStream = new FileInputStream(configFile);
-			final List<DiktatRuleConfig> ruleConfigs = DiktatFactoriesKt.getDiktatRuleConfigReader().invoke(configInputStream);
-			final DiktatRuleSet ruleSet = DiktatFactoriesKt.getDiktatRuleSetFactory().invoke(ruleConfigs);
-			return DiktatFactoriesKt.getDiktatProcessorFactory().invoke(ruleSet);
+			return DiktatFactoriesKt.getDiktatRuleConfigReader().invoke(configInputStream);
 		} catch (FileNotFoundException e) {
-			throw new IllegalArgumentException("Config file doesn't exist", e);
+			throw new IllegalArgumentException("Fail to read configFile", e);
 		}
 	}
 }
