@@ -3,8 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.23.2] - 2023-12-01
 ### Fixed
-* Fix a stuck mavencentral sync from `6.23.1`.
+* Fix a stuck MavenCentral sync from `6.23.1`.
 
 ## [6.23.1] - 2023-11-29
 ### Fixed
