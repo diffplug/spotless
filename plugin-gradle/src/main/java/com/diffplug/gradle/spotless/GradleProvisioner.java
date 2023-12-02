@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
+import com.diffplug.spotless.java.PalantirJavaFormatStep;
 
 /** Should be package-private. */
 class GradleProvisioner {
@@ -117,7 +119,16 @@ class GradleProvisioner {
 						+ new Request(withTransitives, mavenCoords).hashCode());
 				mavenCoords.stream()
 						.map(dependencies::create)
-						.forEach(config.getDependencies()::add);
+						.forEach(dependency -> {
+							config.getDependencies().add(dependency);
+							String coordinate = dependency.getGroup() + ":" + dependency.getName();
+							if (coordinate.startsWith(GoogleJavaFormatStep.MAVEN_COORDINATE) ||
+									coordinate.startsWith(PalantirJavaFormatStep.MAVEN_COORDINATE)) {
+								// Use Guava 32.1.3, see https://github.com/google/guava/issues/6657.
+								// TODO: May remove this after https://github.com/google/google-java-format/pull/996 and https://github.com/palantir/palantir-java-format/issues/957 are released.
+								config.getDependencies().add(dependencies.create("com.google.guava:guava:32.1.3-jre"));
+							}
+						});
 				config.setDescription(mavenCoords.toString());
 				config.setTransitive(withTransitives);
 				config.setCanBeConsumed(false);

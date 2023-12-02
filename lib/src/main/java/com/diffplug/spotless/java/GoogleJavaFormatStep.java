@@ -35,7 +35,7 @@ public class GoogleJavaFormatStep {
 	private static final boolean DEFAULT_REORDER_IMPORTS = false;
 	private static final boolean DEFAULT_FORMAT_JAVADOC = true;
 	static final String NAME = "google-java-format";
-	static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format";
+	public static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format";
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(Provisioner provisioner) {
