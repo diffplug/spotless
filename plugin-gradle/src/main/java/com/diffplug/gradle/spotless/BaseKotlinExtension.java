@@ -136,7 +136,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 		}
 
 		public class ConfigurableStyle {
-			private void configure(Consumer<KtfmtStep.KtfmtFormattingOptions> optionsConfiguration) {
+			public void configure(Consumer<KtfmtStep.KtfmtFormattingOptions> optionsConfiguration) {
 				KtfmtStep.KtfmtFormattingOptions ktfmtFormattingOptions = new KtfmtStep.KtfmtFormattingOptions();
 				optionsConfiguration.accept(ktfmtFormattingOptions);
 				options = ktfmtFormattingOptions;

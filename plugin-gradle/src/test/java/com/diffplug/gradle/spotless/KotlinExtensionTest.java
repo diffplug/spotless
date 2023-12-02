@@ -45,21 +45,26 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void integrationKtfmt_dropboxStyle_0_19() throws IOException {
-		setFile("build.gradle").toLines(
+	void integrationKtfmtDropboxStyleWithPublicApi() throws IOException {
+		setFile("build.gradle.kts").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
-				"    id 'com.diffplug.spotless'",
+				"    id(\"org.jetbrains.kotlin.jvm\") version \"1.6.21\"",
+				"    id(\"com.diffplug.spotless\")",
 				"}",
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        ktfmt('0.19').dropboxStyle()",
+				"        ktfmt().dropboxStyle().configure {",
+				"            it.setMaxWidth(4)",
+				"            it.setBlockIndent(4)",
+				"            it.setContinuationIndent(4)",
+				"            it.setRemoveUnusedImport(false)",
+				"        }",
 				"    }",
 				"}");
 		setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic-dropboxstyle.clean");
+		assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic-dropbox-style.clean");
 	}
 
 	@Test
