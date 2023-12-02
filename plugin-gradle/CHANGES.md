@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 * Make `KtfmtConfig.ConfigurableStyle#configure` public. ([#1926](https://github.com/diffplug/spotless/pull/1926))
+### Changes
+* Bump default `ktfmt` version to latest `0.44` -> `0.46`. ([#1927](https://github.com/diffplug/spotless/pull/1927))
 
 ## [6.23.2] - 2023-12-01
 ### Fixed
