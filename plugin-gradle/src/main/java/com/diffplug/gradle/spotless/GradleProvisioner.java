@@ -26,6 +26,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.attributes.Attribute;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
 import org.gradle.api.initialization.dsl.ScriptHandler;
@@ -124,6 +125,9 @@ class GradleProvisioner {
 				config.attributes(attr -> {
 					attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
 					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+					// TODO: This is a copy-paste from org.gradle.api.attributes.java.TargetJvmEnvironment which is added in Gradle 7.0, remove this once we drop support for Gradle 6.x.
+					// Add this attribute for resolving Guava dependency, see https://github.com/google/guava/issues/6801.
+					attr.attribute(Attribute.of("org.gradle.jvm.environment", String.class), "standard-jvm");
 				});
 				return config.resolve();
 			} catch (Exception e) {
