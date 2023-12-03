@@ -11,7 +11,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [2.41.0] - 2023-11-27
 ### Added
-* CompileSourceRoots and TestCompileSourceRoots are now respected as default includes. These properties are commonly set when adding extra source directories. ([#1846](https://github.com/diffplug/spotless/issues/1846))
+* ~~CompileSourceRoots and TestCompileSourceRoots are now respected as default includes. These properties are commonly set when adding extra source directories.~~ ([#1846](https://github.com/diffplug/spotless/issues/1846))
+  * Reverted in the next release (`2.41.1`) due to backward compatibility problems, see [#1914](https://github.com/diffplug/spotless/issues/1914).
 * Support custom rule sets for Ktlint. ([#1896](https://github.com/diffplug/spotless/pull/1896))
 ### Fixed
 * Fix crash when build dir is a softlink to another directory. ([#1859](https://github.com/diffplug/spotless/pull/1859))
