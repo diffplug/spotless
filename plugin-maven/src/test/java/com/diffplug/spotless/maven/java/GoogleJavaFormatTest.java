@@ -24,7 +24,7 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	void specificVersionDefaultStyle() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.10.0</version>",
+				"  <version>1.17.0</version>",
 				"</googleJavaFormat>");
 
 		runTest("java/googlejavaformat/JavaCodeFormatted.test");
@@ -34,7 +34,7 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	void specificVersionSpecificStyle() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.10.0</version>",
+				"  <version>1.17.0</version>",
 				"  <style>AOSP</style>",
 				"</googleJavaFormat>");
 
@@ -45,7 +45,7 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	void specificVersionReflowLongStrings() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.10.0</version>",
+				"  <version>1.17.0</version>",
 				"  <reflowLongStrings>true</reflowLongStrings>",
 				"</googleJavaFormat>");
 
@@ -56,7 +56,7 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	void specificVersionReorderImports() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.12.0</version>",
+				"  <version>1.17.0</version>",
 				"  <style>AOSP</style>",
 				"  <reorderImports>true</reorderImports>",
 				"</googleJavaFormat>");
@@ -68,7 +68,7 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	void specificVersionSkipJavadocFormatting() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.12.0</version>",
+				"  <version>1.17.0</version>",
 				"  <formatJavadoc>false</formatJavadoc>",
 				"</googleJavaFormat>");
 

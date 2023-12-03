@@ -38,7 +38,7 @@ class PalantirJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	void behavior2() throws Exception {
-		FormatterStep step = PalantirJavaFormatStep.create("2.28.0", TestProvisioner.mavenCentral());
+		FormatterStep step = PalantirJavaFormatStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/palantirjavaformat/JavaCodeUnformatted.test", "java/palantirjavaformat/JavaCodeFormatted.test")
 				.testResource("java/palantirjavaformat/JavaCodeWithLicenseUnformatted.test", "java/palantirjavaformat/JavaCodeWithLicenseFormatted.test")
