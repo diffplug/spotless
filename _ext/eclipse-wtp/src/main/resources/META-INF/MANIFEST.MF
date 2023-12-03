@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: com.diffplug.gradle.spotless.eclipse.wtp; singleton:=true

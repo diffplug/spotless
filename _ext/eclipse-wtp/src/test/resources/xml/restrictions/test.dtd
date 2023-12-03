@@ -1,4 +1,0 @@
-<!ELEMENT r (x,y)>
-<!ELEMENT x (#PCDATA)>
-<!ELEMENT y ANY>
-<!ATTLIST y xml:space (preserve) #FIXED 'preserve'>
