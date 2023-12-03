@@ -21,7 +21,10 @@ dependencies {
 }
 
 // we'll hold the testlib to a low standard (prize brevity)
-spotbugs { reportLevel = 'high' } // low|medium|high (low = sensitive to even minor mistakes)
+spotbugs {
+	// LOW|MEDIUM|DEFAULT|HIGH (low = sensitive to even minor mistakes).
+	reportLevel = com.github.spotbugs.snom.Confidence.valueOf('HIGH')
+}
 
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
