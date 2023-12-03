@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changes
+* Use palantir-java-format 2.38.0 on Java 21. ([#1920](https://github.com/diffplug/spotless/pull/1920))
+* Bump default `googleJavaFormat` version to latest `1.17.0` -> `1.18.1`. ([#1920](https://github.com/diffplug/spotless/pull/1920))
 ### Fixed
 * Make `KtfmtConfig.ConfigurableStyle#configure` public. ([#1926](https://github.com/diffplug/spotless/pull/1926))
 * **BREAKING CHANGE** `6.23.0` made breaking changes to the ABI of the `KotlinExtension` and `GroovyExtension`. Those are reflected retroactively now.

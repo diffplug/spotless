@@ -25,12 +25,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ResolveException;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
+import org.gradle.api.attributes.Attribute;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -40,6 +42,8 @@ import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.io.Files;
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
+import com.diffplug.spotless.java.PalantirJavaFormatStep;
 
 public class TestProvisioner {
 	public static Project gradleProject(File dir) {
@@ -64,7 +68,15 @@ public class TestProvisioner {
 		Project project = TestProvisioner.gradleProject(tempDir);
 		repoConfig.accept(project.getRepositories());
 		return (withTransitives, mavenCoords) -> {
-			Dependency[] deps = mavenCoords.stream()
+			boolean forceGuava = mavenCoords.stream().anyMatch(coordinate -> coordinate.startsWith(GoogleJavaFormatStep.MAVEN_COORDINATE) ||
+					coordinate.startsWith(PalantirJavaFormatStep.MAVEN_COORDINATE));
+			Stream<String> coordinateStream = mavenCoords.stream();
+			if (forceGuava) {
+				// Use Guava 32.1.3, see https://github.com/google/guava/issues/6657.
+				// TODO: May remove this after https://github.com/google/google-java-format/pull/996 and https://github.com/palantir/palantir-java-format/issues/957 are released.
+				coordinateStream = Stream.concat(coordinateStream, Stream.of("com.google.guava:guava:32.1.3-jre"));
+			}
+			Dependency[] deps = coordinateStream
 					.map(project.getDependencies()::create)
 					.toArray(Dependency[]::new);
 			Configuration config = project.getConfigurations().detachedConfiguration(deps);
@@ -73,6 +85,9 @@ public class TestProvisioner {
 			config.attributes(attr -> {
 				attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
 				attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+				// TODO: This is a copy-paste from org.gradle.api.attributes.java.TargetJvmEnvironment which is added in Gradle 7.0, remove this once we drop support for Gradle 6.x.
+				// Add this attribute for resolving Guava dependency, see https://github.com/google/guava/issues/6801.
+				attr.attribute(Attribute.of("org.gradle.jvm.environment", String.class), "standard-jvm");
 			});
 			try {
 				return config.resolve();

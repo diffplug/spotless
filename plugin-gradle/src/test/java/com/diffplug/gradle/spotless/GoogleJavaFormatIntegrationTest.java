@@ -31,7 +31,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.10.0')",
+				"        googleJavaFormat('1.17.0')",
 				"    }",
 				"}");
 
@@ -41,7 +41,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 
 		checkRunsThenUpToDate();
 		replace("build.gradle",
-				"googleJavaFormat('1.10.0')",
+				"googleJavaFormat('1.17.0')",
 				"googleJavaFormat()");
 		checkRunsThenUpToDate();
 	}
@@ -57,7 +57,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.12.0').aosp().reorderImports(true)",
+				"        googleJavaFormat('1.17.0').aosp().reorderImports(true)",
 				"    }",
 				"}");
 
@@ -67,7 +67,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 
 		checkRunsThenUpToDate();
 		replace("build.gradle",
-				"googleJavaFormat('1.12.0')",
+				"googleJavaFormat('1.17.0')",
 				"googleJavaFormat()");
 		checkRunsThenUpToDate();
 	}
@@ -83,7 +83,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.12.0').skipJavadocFormatting()",
+				"        googleJavaFormat('1.17.0').skipJavadocFormatting()",
 				"    }",
 				"}");
 
@@ -93,7 +93,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 
 		checkRunsThenUpToDate();
 		replace("build.gradle",
-				"googleJavaFormat('1.12.0')",
+				"googleJavaFormat('1.17.0')",
 				"googleJavaFormat()");
 		checkRunsThenUpToDate();
 	}

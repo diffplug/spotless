@@ -34,7 +34,7 @@ class PalantirJavaFormatTest extends MavenIntegrationHarness {
 	void specificJava11Version2() throws Exception {
 		writePomWithJavaSteps(
 				"<palantirJavaFormat>",
-				"  <version>2.10.0</version>",
+				"  <version>2.38.0</version>",
 				"</palantirJavaFormat>");
 
 		runTest("java/palantirjavaformat/JavaCodeFormatted.test");

@@ -34,7 +34,7 @@ public class CombinedJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	void checkIssue1679() {
-		FormatterStep gjf = GoogleJavaFormatStep.create("1.15.0", "AOSP", mavenCentral());
+		FormatterStep gjf = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultVersion(), "AOSP", mavenCentral());
 		FormatterStep indentWithSpaces = IndentStep.Type.SPACE.create();
 		FormatterStep importOrder = ImportOrderStep.forJava().createFrom();
 		FormatterStep removeUnused = RemoveUnusedImportsStep.create(mavenCentral());
