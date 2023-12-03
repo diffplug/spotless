@@ -1,0 +1,15 @@
+package bar.foo;
+
+import static foo.bar.B.someMethod; // Is used
+import static foo.bar.B.someOtherMethod; // Covered already by non-static import
+import static foo.bar.B.notUsed; // Is not used
+
+import foo.bar.B;
+
+class A {
+	static {
+		someMethod();
+		B.someOtherMethod();
+		new B();
+	}
+}

@@ -1,0 +1,12 @@
+package bar.foo;
+
+import foo.bar.B;
+
+import static foo.bar.B.someMethod; //Default configuration places static imports before none-static
+
+class A {
+	static {
+		someMethod();
+		new B();
+	}
+}
