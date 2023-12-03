@@ -20,9 +20,8 @@ import static java.util.stream.Collectors.toSet;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
@@ -45,15 +44,7 @@ public class Java extends FormatterFactory {
 	public Set<String> defaultIncludes(MavenProject project) {
 		Path projectDir = project.getBasedir().toPath();
 		Build build = project.getBuild();
-
-		List<String> includes = new ArrayList<>();
-		includes.add(build.getSourceDirectory());
-		includes.add(build.getTestSourceDirectory());
-		includes.addAll(project.getCompileSourceRoots());
-		includes.addAll(project.getTestCompileSourceRoots());
-
-		return includes.stream()
-				.distinct()
+		return Stream.of(build.getSourceDirectory(), build.getTestSourceDirectory())
 				.map(Paths::get)
 				.map(projectDir::relativize)
 				.map(Java::fileMask)

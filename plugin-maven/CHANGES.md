@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Revert [#1846](https://github.com/diffplug/spotless/issues/1846) from 2.41.0 which causes the plugin to format generated sources in the `target` directory. ([#1928](https://github.com/diffplug/spotless/pull/1928))
 
 ## [2.41.0] - 2023-11-27
 ### Added
