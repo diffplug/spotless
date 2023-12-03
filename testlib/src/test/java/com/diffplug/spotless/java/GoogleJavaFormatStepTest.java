@@ -18,6 +18,7 @@ package com.diffplug.spotless.java;
 import static org.junit.jupiter.api.condition.JRE.JAVA_13;
 import static org.junit.jupiter.api.condition.JRE.JAVA_15;
 import static org.junit.jupiter.api.condition.JRE.JAVA_16;
+import static org.junit.jupiter.api.condition.JRE.JAVA_20;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -52,7 +53,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	void behavior() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create("1.10.0", TestProvisioner.mavenCentral());
+		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultVersion(), TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
@@ -79,7 +80,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	void behaviorWithAospStyle() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create("1.10.0", "AOSP", TestProvisioner.mavenCentral());
+		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultVersion(), "AOSP", TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedAOSP.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormattedAOSP.test")
@@ -111,7 +112,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	void behaviorWithCustomGroupArtifact() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.10.0", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false);
+		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), GoogleJavaFormatStep.defaultVersion(), GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false);
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")
@@ -133,6 +134,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(max = JAVA_20)
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			String version = "1.10.0";
@@ -163,6 +165,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(max = JAVA_20)
 	void equalityGroupArtifact() throws Exception {
 		new SerializableEqualityTester() {
 			String groupArtifact = GoogleJavaFormatStep.defaultGroupArtifact();

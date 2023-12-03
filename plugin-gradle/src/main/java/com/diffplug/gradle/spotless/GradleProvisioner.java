@@ -26,6 +26,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.attributes.Attribute;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
 import org.gradle.api.initialization.dsl.ScriptHandler;
@@ -35,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
+import com.diffplug.spotless.java.PalantirJavaFormatStep;
 
 /** Should be package-private. */
 class GradleProvisioner {
@@ -116,7 +119,16 @@ class GradleProvisioner {
 						+ new Request(withTransitives, mavenCoords).hashCode());
 				mavenCoords.stream()
 						.map(dependencies::create)
-						.forEach(config.getDependencies()::add);
+						.forEach(dependency -> {
+							config.getDependencies().add(dependency);
+							String coordinate = dependency.getGroup() + ":" + dependency.getName();
+							if (coordinate.startsWith(GoogleJavaFormatStep.MAVEN_COORDINATE) ||
+									coordinate.startsWith(PalantirJavaFormatStep.MAVEN_COORDINATE)) {
+								// Use Guava 32.1.3, see https://github.com/google/guava/issues/6657.
+								// TODO: May remove this after https://github.com/google/google-java-format/pull/996 and https://github.com/palantir/palantir-java-format/issues/957 are released.
+								config.getDependencies().add(dependencies.create("com.google.guava:guava:32.1.3-jre"));
+							}
+						});
 				config.setDescription(mavenCoords.toString());
 				config.setTransitive(withTransitives);
 				config.setCanBeConsumed(false);
@@ -124,6 +136,9 @@ class GradleProvisioner {
 				config.attributes(attr -> {
 					attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
 					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+					// TODO: This is a copy-paste from org.gradle.api.attributes.java.TargetJvmEnvironment which is added in Gradle 7.0, remove this once we drop support for Gradle 6.x.
+					// Add this attribute for resolving Guava dependency, see https://github.com/google/guava/issues/6801.
+					attr.attribute(Attribute.of("org.gradle.jvm.environment", String.class), "standard-jvm");
 				});
 				return config.resolve();
 			} catch (Exception e) {

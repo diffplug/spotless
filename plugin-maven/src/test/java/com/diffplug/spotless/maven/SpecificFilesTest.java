@@ -58,7 +58,6 @@ public class SpecificFilesTest extends MavenIntegrationHarness {
 				"  <include>src/**/java/**/*.java</include>",
 				"</includes>",
 				"<googleJavaFormat>",
-				"  <version>1.10.0</version>",
 				"</googleJavaFormat>");
 
 		setFile(testFile(1)).toResource(fixture(false));

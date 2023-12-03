@@ -3,10 +3,15 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changes
+* **BREAKING CHANGE** `6.23.0` made breaking changes to the ABI of the `KotlinExtension` and `GroovyExtension`. Those are reflected retroactively now.
+  - Previously, we had done semver on the Gradle plugin based only on buildscript compatibility.
+  - From now on, we will consider ABI for the benefit of convention-based plugins.
+* Bump default `googleJavaFormat` version to latest `1.17.0` -> `1.18.1`. ([#1920](https://github.com/diffplug/spotless/pull/1920))
+* Bump default `ktfmt` version to latest `0.44` -> `0.46`. ([#1927](https://github.com/diffplug/spotless/pull/1927))
+* Use palantir-java-format 2.38.0 on Java 21. ([#1920](https://github.com/diffplug/spotless/pull/1920))
 ### Fixed
 * Make `KtfmtConfig.ConfigurableStyle#configure` public. ([#1926](https://github.com/diffplug/spotless/pull/1926))
-### Changes
-* Bump default `ktfmt` version to latest `0.44` -> `0.46`. ([#1927](https://github.com/diffplug/spotless/pull/1927))
 
 ## [6.23.2] - 2023-12-01
 ### Fixed
@@ -28,7 +33,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Add a Step to remove semicolons from Groovy files. ([#1881](https://github.com/diffplug/spotless/pull/1881))
 * **POSSIBLY BREAKING** `userData` method has been removed from Ktlint step in ([#1891](https://github.com/diffplug/spotless/pull/1891)), you may use `editorConfigOverride` instead.
 * **POSSIBLY BREAKING** Reuse configs for `KotlinExtension` and `KotlinGradleExtension` in ([#1890](https://github.com/diffplug/spotless/pull/1890)), this may break your integrations in Gradle Kotlin DSL, wait for Spotless 6.23.1 to fix this.
-* **POSSIBLY BREAKING** Reuse configs for `GroovyExtension` and `GroovyGradleExtension` in ([#1890](https://github.com/diffplug/spotless/pull/1890)), this may break your integrations in Gradle Kotlin DSL, wait for Spotless 6.23.1 to fix this.
+* **POSSIBLY BREAKING** Reuse configs for `GroovyExtension` and `GroovyGradleExtension` in ([#1892](https://github.com/diffplug/spotless/pull/1892)), this may break your integrations in Gradle Kotlin DSL, wait for Spotless 6.23.1 to fix this.
 
 ## [6.22.0] - 2023-09-28
 ### Added

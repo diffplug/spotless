@@ -33,7 +33,6 @@ class MavenProvisionerTest extends MavenIntegrationHarness {
 	void testSingleDependencyIncludingTransitives() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.10.0</version>",
 				"</googleJavaFormat>");
 		assertResolveDependenciesWorks();
 	}
