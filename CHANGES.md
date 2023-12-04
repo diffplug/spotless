@@ -11,7 +11,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Changes
-* Use palantir-java-format 2.38.0 on Java 21. ([#1920](https://github.com/diffplug/spotless/pull/1920))
+* Use palantir-java-format `2.38.0` on Java 21. ([#1920](https://github.com/diffplug/spotless/pull/1920))
+* Bump default `ktfmt` version to latest `0.44` -> `0.46`. ([#1927](https://github.com/diffplug/spotless/pull/1927))
 * Bump default `googleJavaFormat` version to latest `1.17.0` -> `1.18.1`. ([#1920](https://github.com/diffplug/spotless/pull/1920))
 
 ## [2.43.0] - 2023-11-27
