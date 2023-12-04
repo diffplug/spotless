@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.41.1] - 2023-12-04
 ### Fixed
 * Revert [#1846](https://github.com/diffplug/spotless/issues/1846) from 2.41.0 which causes the plugin to format generated sources in the `target` directory. ([#1928](https://github.com/diffplug/spotless/pull/1928))
 * Eclipse-based steps which contained any jars with a `+` in their path were broken, now fixed. ([#1860](https://github.com/diffplug/spotless/issues/1860#issuecomment-1826113332))
