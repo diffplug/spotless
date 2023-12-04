@@ -3,15 +3,19 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
-### Changes
-* **BREAKING CHANGE** `6.23.0` made breaking changes to the ABI of the `KotlinExtension` and `GroovyExtension`. Those are reflected retroactively now.
+**BREAKING CHANGE** `6.23.0` made breaking changes to the ABI of the `KotlinExtension` and `GroovyExtension`. Those are reflected retroactively now.
   - Previously, we had done semver on the Gradle plugin based only on buildscript compatibility.
   - From now on, we will consider ABI for the benefit of convention-based plugins.
+### Fixed
+* Eclipse-based steps which contained any jars with a `+` in their path were broken, now fixed. ([#1860](https://github.com/diffplug/spotless/issues/1860#issuecomment-1826113332))
+* Make `KtfmtConfig.ConfigurableStyle#configure` public. ([#1926](https://github.com/diffplug/spotless/pull/1926))
+### Changes
+* Bump default `palantir-java-format` version to latest `2.28.0` -> `2.38.0` on Java 21. ([#1920](https://github.com/diffplug/spotless/pull/1920))
 * Bump default `googleJavaFormat` version to latest `1.17.0` -> `1.18.1`. ([#1920](https://github.com/diffplug/spotless/pull/1920))
 * Bump default `ktfmt` version to latest `0.44` -> `0.46`. ([#1927](https://github.com/diffplug/spotless/pull/1927))
-* Use palantir-java-format 2.38.0 on Java 21. ([#1920](https://github.com/diffplug/spotless/pull/1920))
-### Fixed
-* Make `KtfmtConfig.ConfigurableStyle#configure` public. ([#1926](https://github.com/diffplug/spotless/pull/1926))
+* Bump default `eclipse` version to latest `4.27` -> `4.29`. ([#1939](https://github.com/diffplug/spotless/pull/1939))
+* Bump default `greclipse` version to latest `4.28` -> `4.29`. ([#1939](https://github.com/diffplug/spotless/pull/1939))
+* Bump default `cdt` version to latest `11.1` -> `11.3`. ([#1939](https://github.com/diffplug/spotless/pull/1939))
 
 ## [6.23.2] - 2023-12-01
 ### Fixed
