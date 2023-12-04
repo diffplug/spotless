@@ -26,13 +26,12 @@ import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 
 /** An api for testing a {@code FormatterStep} that depends on the File path. */
-public class StepHarnessWithFile implements AutoCloseable {
-	private final Formatter formatter;
+public class StepHarnessWithFile extends StepHarnessBase<StepHarnessWithFile> {
 	private final ResourceHarness harness;
 
 	private StepHarnessWithFile(ResourceHarness harness, Formatter formatter) {
+		super(formatter);
 		this.harness = Objects.requireNonNull(harness);
-		this.formatter = Objects.requireNonNull(formatter);
 	}
 
 	/** Creates a harness for testing steps which do depend on the file. */
@@ -54,14 +53,14 @@ public class StepHarnessWithFile implements AutoCloseable {
 
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
 	public StepHarnessWithFile test(File file, String before, String after) {
-		String actual = formatter.compute(LineEnding.toUnix(before), file);
+		String actual = formatter().compute(LineEnding.toUnix(before), file);
 		assertEquals(after, actual, "Step application failed");
 		return testUnaffected(file, after);
 	}
 
 	/** Asserts that the given element is idempotent w.r.t the step under test. */
 	public StepHarnessWithFile testUnaffected(File file, String idempotentElement) {
-		String actual = formatter.compute(LineEnding.toUnix(idempotentElement), file);
+		String actual = formatter().compute(LineEnding.toUnix(idempotentElement), file);
 		assertEquals(idempotentElement, actual, "Step is not idempotent");
 		return this;
 	}
@@ -96,7 +95,7 @@ public class StepHarnessWithFile implements AutoCloseable {
 
 	public AbstractStringAssert<?> testExceptionMsg(File file, String before) {
 		try {
-			formatter.compute(LineEnding.toUnix(before), file);
+			formatter().compute(LineEnding.toUnix(before), file);
 			throw new SecurityException("Expected exception");
 		} catch (Throwable e) {
 			if (e instanceof SecurityException) {
@@ -109,10 +108,5 @@ public class StepHarnessWithFile implements AutoCloseable {
 				return Assertions.assertThat(rootCause.getMessage());
 			}
 		}
-	}
-
-	@Override
-	public void close() {
-		formatter.close();
 	}
 }
