@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<t:r xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:t="http://foo.bar/test" xsi:schemaLocation="http://foo.bar/test https://raw.githubusercontent.com/diffplug/spotless/main/_ext/eclipse-wtp/src/test/resources/xml/restrictions/test.xsd">
-<t:x> remove spaces </t:x><t:y> preserve spaces </t:y>
-</t:r>

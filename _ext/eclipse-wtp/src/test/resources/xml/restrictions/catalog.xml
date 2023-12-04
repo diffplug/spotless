@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-  <!-- OASIS: If the catalog entry file is specified with a relative URI, it is relative to the base URI of the document that contains the processing instruction. -->
-  <system systemId="http://foo.bar/test.xsd" uri="./test.xsd" />
-</catalog>

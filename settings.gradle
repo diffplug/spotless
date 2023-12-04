@@ -15,9 +15,6 @@ plugins {
 	id 'com.github.spotbugs' version '6.0.1' apply false
 	// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
 	id 'com.diffplug.spotless-changelog' version '3.0.2' apply false
-	// https://github.com/diffplug/goomph/blob/main/CHANGES.md
-	// DO NOT UPDATE, see https://github.com/diffplug/spotless/pull/874
-	id 'com.diffplug.p2.asmaven' version '3.27.0' apply false
 	// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
 	id 'com.adarshr.test-logger' version '4.0.0' apply false
 	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
@@ -97,32 +94,4 @@ def getStartProperty(java.lang.String name) {
 
 if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true') {
 	include 'plugin-maven'	// maven-specific glue code
-}
-
-// include external (_ext) projects from development builds
-if (getStartProperty('com.diffplug.spotless.include.ext') == 'true') {
-	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
-		include dir.name
-		project(":${dir.name}").projectDir = dir
-	}
-}
-
-// include external (_ext) projects from development builds, but disable the p2 parts
-if (getStartProperty('com.diffplug.spotless.include.ext.nop2') == 'true') {
-	file('_ext').eachDirMatch(~/^(?!(\.|gradle)).*/) { dir ->
-		include dir.name
-		project(":${dir.name}").projectDir = dir
-	}
-}
-
-// the p2-based projects are too expensive for routine CI builds, so they have to be invoked explicitly
-for (kind in [
-			'cdt',
-			'groovy',
-			'wtp'
-		]) {
-	if (getStartProperty("com.diffplug.spotless.include.ext.${kind}") == 'true') {
-		include "eclipse-${kind}"
-		project(":eclipse-${kind}").projectDir = file("_ext/eclipse-${kind}")
-	}
 }
