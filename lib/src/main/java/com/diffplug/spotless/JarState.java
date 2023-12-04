@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -39,12 +38,9 @@ import java.util.stream.Collectors;
 public final class JarState implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Deprecated
-	private final Set<String> mavenCoordinates;
 	private final FileSignature fileSignature;
 
-	private JarState(Collection<String> mavenCoordinates, FileSignature fileSignature) {
-		this.mavenCoordinates = new TreeSet<>(mavenCoordinates);
+	private JarState(FileSignature fileSignature) {
 		this.fileSignature = fileSignature;
 	}
 
@@ -71,13 +67,13 @@ public final class JarState implements Serializable {
 			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinates.stream().collect(Collectors.joining(", ")));
 		}
 		FileSignature fileSignature = FileSignature.signAsSet(jars);
-		return new JarState(mavenCoordinates, fileSignature);
+		return new JarState(fileSignature);
 	}
 
 	/** Wraps the given collection of a files as a JarState, maintaining the order in the Collection. */
 	public static JarState preserveOrder(Collection<File> jars) throws IOException {
 		FileSignature fileSignature = FileSignature.signAsList(jars);
-		return new JarState(Collections.emptySet(), fileSignature);
+		return new JarState(fileSignature);
 	}
 
 	URL[] jarUrls() {
@@ -106,11 +102,5 @@ public final class JarState implements Serializable {
 	 */
 	public ClassLoader getClassLoader(Serializable key) {
 		return SpotlessCache.instance().classloader(key, this);
-	}
-
-	/** Returns unmodifiable view on sorted Maven coordinates */
-	@Deprecated
-	public Set<String> getMavenCoordinates() {
-		return Collections.unmodifiableSet(mavenCoordinates);
 	}
 }

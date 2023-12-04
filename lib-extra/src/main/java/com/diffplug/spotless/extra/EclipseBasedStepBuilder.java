@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 
 import com.diffplug.common.base.Errors;
@@ -185,12 +184,6 @@ public class EclipseBasedStepBuilder {
 			//Keep the IllegalArgumentException since it contains detailed information
 			FormatterProperties preferences = FormatterProperties.from(settingsFiles.files());
 			return preferences.getProperties();
-		}
-
-		/** Returns first coordinate from sorted set that starts with a given prefix.*/
-		public Optional<String> getMavenCoordinate(String prefix) {
-			return jarState.getMavenCoordinates().stream()
-					.filter(coordinate -> coordinate.startsWith(prefix)).findFirst();
 		}
 
 		/**
