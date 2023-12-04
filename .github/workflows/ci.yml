@@ -85,3 +85,4 @@ jobs:
         with:
           check_name: JUnit ${{ matrix.kind }} ${{ matrix.jre }} ${{ matrix.os }}
           report_paths: '*/build/test-results/*/TEST-*.xml'
+          check_retries: true
