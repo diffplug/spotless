@@ -26,11 +26,23 @@ class StepHarnessBase<T extends StepHarnessBase<?>> implements AutoCloseable {
 
 	protected StepHarnessBase(Formatter formatter) {
 		this.formatter = Objects.requireNonNull(formatter);
-	}
-
-	public T supportsRoundTrip(boolean supportsRoundTrip) {
-		this.supportsRoundTrip = supportsRoundTrip;
-		return (T) this;
+		if (formatter.getSteps().size() == 1) {
+			// our goal is for everything to be roundtrip serializable
+			// the steps to get there are
+			// - make every individual step round-trippable
+			// - make the other machinery (Formatter, LineEnding, etc) round-trippable
+			// - done!
+			//
+			// Right now, we're still trying to get each and every single step to be round-trippable.
+			// You can help by add a test below, make sure that the test for that step fails, and then
+			// make the test pass. `FormatterStepEqualityOnStateSerialization` is a good base class for
+			// easily converting a step to round-trip serialization while maintaining easy and concise
+			// equality code.
+			String onlyStepName = formatter.getSteps().get(0).getName();
+			if (onlyStepName.startsWith("indentWith")) {
+				supportsRoundTrip = true;
+			}
+		}
 	}
 
 	protected Formatter formatter() {
