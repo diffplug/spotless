@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 public final class JarState implements Serializable {
 	/** A lazily evaluated JarState, which becomes a set of files when serialized. */
 	public static class Promised implements Serializable {
+		private static final long serialVersionUID = 1L;
 		private final transient ThrowingEx.Supplier<JarState> supplier;
 		private FileSignature.RoundTrippable cached;
 

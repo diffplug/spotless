@@ -26,6 +26,7 @@ import com.diffplug.spotless.*;
 
 /** Wraps up <a href="https://github.com/cqfn/diKTat">diktat</a> as a FormatterStep. */
 public class DiktatStep extends FormatterStepEqualityOnStateSerialization<DiktatStep.State> {
+	private static final long serialVersionUID = 1L;
 	private final JarState.Promised jarState;
 	private final boolean isScript;
 	private final @Nullable FileSignature.RoundTrippable config;

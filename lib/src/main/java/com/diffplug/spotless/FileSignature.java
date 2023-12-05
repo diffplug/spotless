@@ -98,7 +98,9 @@ public final class FileSignature implements Serializable {
 
 	/** A view of `FileSignature` which can be safely roundtripped. */
 	public static class RoundTrippable implements Serializable {
+		private static final long serialVersionUID = 1L;
 		private final List<File> files;
+		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 		private transient @Nullable FileSignature cached;
 
 		private RoundTrippable(List<File> files, FileSignature cached) {
