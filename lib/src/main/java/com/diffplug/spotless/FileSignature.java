@@ -97,13 +97,13 @@ public final class FileSignature implements Serializable {
 	}
 
 	/** A view of `FileSignature` which can be safely roundtripped. */
-	public static class RoundTrippable implements Serializable {
+	public static class Promised implements Serializable {
 		private static final long serialVersionUID = 1L;
 		private final List<File> files;
 		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 		private transient @Nullable FileSignature cached;
 
-		private RoundTrippable(List<File> files, FileSignature cached) {
+		private Promised(List<File> files, FileSignature cached) {
 			this.files = files;
 			this.cached = cached;
 		}
@@ -117,11 +117,15 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
-	public RoundTrippable roundTrippable() {
-		return new RoundTrippable(files, this);
+	public static Promised promise(Iterable<File> files) {
+		return new Promised(MoreIterables.toNullHostileList(files), null);
 	}
 
-	public static @Nullable RoundTrippable roundTrippableNullable(@Nullable FileSignature signature) {
+	public Promised roundTrippable() {
+		return new Promised(files, this);
+	}
+
+	public static @Nullable Promised roundTrippableNullable(@Nullable FileSignature signature) {
 		if (signature != null) {
 			return signature.roundTrippable();
 		} else {
@@ -129,7 +133,7 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
-	public static @Nullable FileSignature stripAbsolutePathsNullable(@Nullable RoundTrippable roundTrippable) throws IOException {
+	public static @Nullable FileSignature stripAbsolutePathsNullable(@Nullable Promised roundTrippable) throws IOException {
 		if (roundTrippable != null) {
 			return roundTrippable.stripAbsolutePaths();
 		} else {

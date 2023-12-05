@@ -41,7 +41,7 @@ public final class JarState implements Serializable {
 	public static class Promised implements Serializable {
 		private static final long serialVersionUID = 1L;
 		private final transient ThrowingEx.Supplier<JarState> supplier;
-		private FileSignature.RoundTrippable cached;
+		private FileSignature.Promised cached;
 
 		public Promised(ThrowingEx.Supplier<JarState> supplier) {
 			this.supplier = supplier;

@@ -29,7 +29,7 @@ public class DiktatStep extends FormatterStepEqualityOnStateSerialization<Diktat
 	private static final long serialVersionUID = 1L;
 	private final JarState.Promised jarState;
 	private final boolean isScript;
-	private final @Nullable FileSignature.RoundTrippable config;
+	private final @Nullable FileSignature.Promised config;
 
 	private DiktatStep(JarState.Promised jarState, boolean isScript, @Nullable FileSignature config) {
 		this.jarState = jarState;
