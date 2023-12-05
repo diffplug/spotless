@@ -41,6 +41,8 @@ class StepHarnessBase<T extends StepHarnessBase<?>> implements AutoCloseable {
 			String onlyStepName = formatter.getSteps().get(0).getName();
 			if (onlyStepName.startsWith("indentWith")) {
 				supportsRoundTrip = true;
+			} else if (onlyStepName.equals("diktat")) {
+				supportsRoundTrip = true;
 			}
 		}
 	}

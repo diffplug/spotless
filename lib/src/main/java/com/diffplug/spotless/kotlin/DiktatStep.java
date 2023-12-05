@@ -25,10 +25,16 @@ import javax.annotation.Nullable;
 import com.diffplug.spotless.*;
 
 /** Wraps up <a href="https://github.com/cqfn/diKTat">diktat</a> as a FormatterStep. */
-public class DiktatStep {
+public class DiktatStep extends FormatterStepEqualityOnStateSerialization<DiktatStep.State> {
+	private final JarState.Promised jarState;
+	private final boolean isScript;
+	private final @Nullable FileSignature.RoundTrippable config;
 
-	// prevent direct instantiation
-	private DiktatStep() {}
+	private DiktatStep(JarState.Promised jarState, boolean isScript, @Nullable FileSignature config) {
+		this.jarState = jarState;
+		this.isScript = isScript;
+		this.config = FileSignature.roundTrippableNullable(config);
+	}
 
 	private static final String MIN_SUPPORTED_VERSION = "1.2.1";
 
@@ -59,26 +65,35 @@ public class DiktatStep {
 		}
 		Objects.requireNonNull(versionDiktat, "versionDiktat");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new DiktatStep.State(versionDiktat, provisioner, isScript, config),
-				DiktatStep.State::createFormat);
+		return new DiktatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + versionDiktat, provisioner)), isScript, config);
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
+	}
+
+	@Override
+	protected State stateSupplier() throws Exception {
+		return new State(jarState.get(), isScript, FileSignature.stripAbsolutePathsNullable(config));
+	}
+
+	@Override
+	protected FormatterFunc stateToFormatter(State state) throws Exception {
+		return state.createFormat();
 	}
 
 	static final class State implements Serializable {
 
 		private static final long serialVersionUID = 1L;
 
+		final JarState jar;
 		/** Are the files being linted Kotlin script files. */
 		private final boolean isScript;
 		private final @Nullable FileSignature config;
-		final JarState jar;
 
-		State(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) throws IOException {
-
-			HashSet<String> pkgSet = new HashSet<>();
-			pkgSet.add(MAVEN_COORDINATE + versionDiktat);
-
-			this.jar = JarState.from(pkgSet, provisioner);
+		State(JarState jar, boolean isScript, @Nullable FileSignature config) throws IOException {
+			this.jar = jar;
 			this.isScript = isScript;
 			this.config = config;
 		}
