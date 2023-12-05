@@ -28,13 +28,14 @@ public class GrEclipseFormatterStepTest extends EquoResourceHarness {
 	private final static String EXPECTED = "class F{\n\tdef m(){}\n}";
 
 	public GrEclipseFormatterStepTest() {
-		super(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()), INPUT, EXPECTED);
+		super(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()));
 	}
 
 	@ParameterizedTest
 	@MethodSource
 	void formatWithVersion(String version) throws Exception {
-		assertFormatted(version);
+		harnessFor(version).test("test.groovy",
+				"class F{ def m(){} }", "class F{\n\tdef m(){}\n}");
 	}
 
 	private static Stream<String> formatWithVersion() {
