@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changes
+* Use palantir-java-format 2.39.0 on Java 21. ([#XXXX](https://github.com/diffplug/spotless/pull/XXXX))
 
 ## [6.23.3] - 2023-12-04
 **BREAKING CHANGE** `6.23.0` made breaking changes to the ABI of the `KotlinExtension` and `GroovyExtension`. Those are reflected retroactively now.
