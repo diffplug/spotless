@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
@@ -36,6 +37,48 @@ import java.util.stream.Collectors;
  * catch changes in a SNAPSHOT version.
  */
 public final class JarState implements Serializable {
+	/** A lazily evaluated JarState, which becomes a set of files when serialized. */
+	public static class Promised implements Serializable {
+		private final transient ThrowingEx.Supplier<JarState> supplier;
+		private FileSignature.RoundTrippable cached;
+
+		public Promised(ThrowingEx.Supplier<JarState> supplier) {
+			this.supplier = supplier;
+		}
+
+		public JarState get() {
+			try {
+				if (cached == null) {
+					JarState result = supplier.get();
+					cached = result.fileSignature.roundTrippable();
+					return result;
+				}
+				return new JarState(cached.stripAbsolutePaths());
+			} catch (Exception e) {
+				throw ThrowingEx.asRuntime(e);
+			}
+		}
+
+		// override serialize output
+		private void writeObject(java.io.ObjectOutputStream out)
+				throws IOException {
+			get();
+			out.defaultWriteObject();
+		}
+
+		private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+			in.defaultReadObject();
+		}
+
+		private void readObjectNoData() throws ObjectStreamException {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	public static Promised promise(ThrowingEx.Supplier<JarState> supplier) {
+		return new Promised(supplier);
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	private final FileSignature fileSignature;

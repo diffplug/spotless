@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Computes a signature for any needed files. */
@@ -43,6 +44,8 @@ public final class FileSignature implements Serializable {
 	 * Transient because not needed to uniquely identify a FileSignature instance, and also because
 	 * Gradle only needs this class to be Serializable so it can compare FileSignature instances for
 	 * incremental builds.
+	 *
+	 * We don't want these absolute paths to screw up buildcache keys.
 	 */
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient List<File> files;
@@ -90,6 +93,45 @@ public final class FileSignature implements Serializable {
 		for (File file : this.files) {
 			signatures[i] = cache.sign(file);
 			++i;
+		}
+	}
+
+	/** A view of `FileSignature` which can be safely roundtripped. */
+	public static class RoundTrippable implements Serializable {
+		private final List<File> files;
+		private transient @Nullable FileSignature cached;
+
+		private RoundTrippable(List<File> files, FileSignature cached) {
+			this.files = files;
+			this.cached = cached;
+		}
+
+		public FileSignature stripAbsolutePaths() throws IOException {
+			if (cached == null) {
+				// null when restored via serialization
+				cached = new FileSignature(files);
+			}
+			return cached;
+		}
+	}
+
+	public RoundTrippable roundTrippable() {
+		return new RoundTrippable(files, this);
+	}
+
+	public static @Nullable RoundTrippable roundTrippableNullable(@Nullable FileSignature signature) {
+		if (signature != null) {
+			return signature.roundTrippable();
+		} else {
+			return null;
+		}
+	}
+
+	public static @Nullable FileSignature stripAbsolutePathsNullable(@Nullable RoundTrippable roundTrippable) throws IOException {
+		if (roundTrippable != null) {
+			return roundTrippable.stripAbsolutePaths();
+		} else {
+			return null;
 		}
 	}
 
