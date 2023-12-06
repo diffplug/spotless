@@ -42,7 +42,7 @@ class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, E
 
 	@Override
 	protected EqualityState stateSupplier() throws Exception {
-		if (roundtripStateInternal != null) {
+		if (roundtripStateInternal == null) {
 			roundtripStateInternal = initializer.get();
 		}
 		return equalityStateExtractor.apply(roundtripStateInternal);

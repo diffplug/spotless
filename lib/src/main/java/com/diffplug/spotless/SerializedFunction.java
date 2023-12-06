@@ -18,4 +18,8 @@ package com.diffplug.spotless;
 import java.io.Serializable;
 
 @FunctionalInterface
-interface SerializedFunction<T, R> extends Serializable, ThrowingEx.Function<T, R> {}
+public interface SerializedFunction<T, R> extends Serializable, ThrowingEx.Function<T, R> {
+	static <T> SerializedFunction<T, T> identity() {
+		return t -> t;
+	}
+}

@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * and such without interfering with buildcache keys.
  */
 @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-public abstract class FormatterStepEqualityOnStateSerialization<State extends Serializable> implements FormatterStep, Serializable {
+abstract class FormatterStepEqualityOnStateSerialization<State extends Serializable> implements FormatterStep, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	protected abstract State stateSupplier() throws Exception;
@@ -80,11 +80,7 @@ public abstract class FormatterStepEqualityOnStateSerialization<State extends Se
 
 	private byte[] serializedState() {
 		if (serializedStateInternal == null) {
-			try {
-				serializedStateInternal = LazyForwardingEquality.toBytes(state());
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+			serializedStateInternal = ThrowingEx.get(() -> LazyForwardingEquality.toBytes(state()));
 		}
 		return serializedStateInternal;
 	}
