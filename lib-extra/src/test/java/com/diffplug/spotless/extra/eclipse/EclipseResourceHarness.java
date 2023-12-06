@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.io.File;
 import java.util.Arrays;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 
 /**
@@ -43,57 +43,19 @@ import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
  */
 public class EclipseResourceHarness extends ResourceHarness {
 	private final EclipseBasedStepBuilder stepBuilder;
-	private final String fileName;
-	private final String input;
-	private final String expected;
 
 	/**
 	 * Create harness to be used for several versions of the formatter step
 	 * @param builder Eclipse Formatter step builder
-	 * @param unformatted Simple unformatted input
-	 * @param formatted Expected formatted output
 	 */
-	public EclipseResourceHarness(EclipseBasedStepBuilder builder, String unformatted, String formatted) {
-		this(builder, "someSourceFile", unformatted, formatted);
+	public EclipseResourceHarness(EclipseBasedStepBuilder builder) {
+		this.stepBuilder = builder;
 	}
 
-	/**
-	 * Create harness to be used for several versions of the formatter step
-	 * @param builder Eclipse Formatter step builder
-	 * @param sourceFileName File name of the source file
-	 * @param unformatted Simple unformatted input
-	 * @param formatted Expected formatted output
-	 */
-	public EclipseResourceHarness(EclipseBasedStepBuilder builder, String sourceFileName, String unformatted, String formatted) {
-		stepBuilder = builder;
-		fileName = sourceFileName;
-		input = unformatted;
-		expected = formatted;
-	}
-
-	/**
-	 * Assert that formatting input results in expected output
-	 * @param formatterVersion Formatter version
-	 * @param settingsFiles Formatter settings
-	 * @return Formatted string
-	 */
-	protected String assertFormatted(String formatterVersion, File... settingsFiles) throws Exception {
-		String output = format(formatterVersion, settingsFiles);
-		assertThat(output).isEqualTo(expected);
-		return output;
-	}
-
-	/**
-	 * Formatting input results and returns output
-	 * @param formatterVersion Formatter version
-	 * @param settingsFiles Formatter settings
-	 * @return Formatted string
-	 */
-	protected String format(String formatterVersion, File... settingsFiles) throws Exception {
-		File inputFile = setFile(fileName).toContent(input);
+	protected StepHarnessWithFile harnessFor(String formatterVersion, File... settingsFiles) throws Exception {
 		stepBuilder.setVersion(formatterVersion);
 		stepBuilder.setPreferences(Arrays.asList(settingsFiles));
 		FormatterStep step = stepBuilder.build();
-		return LineEnding.toUnix(step.format(input, inputFile));
+		return StepHarnessWithFile.forStep(this, step);
 	}
 }
