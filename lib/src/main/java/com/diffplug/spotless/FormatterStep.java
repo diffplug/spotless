@@ -106,6 +106,29 @@ public interface FormatterStep extends Serializable {
 
 	/**
 	 * @param name
+	 *             The name of the formatter step.
+	 * @param roundtripInit
+	 *             If the step has any state, this supplier will calculate it lazily. The supplier doesn't
+	 *             have to be serializable, but the result it calculates needs to be serializable.
+	 * @param equalityFunc
+	 * 		       A pure serializable function (method reference recommended) which takes the result of `roundtripInit`,
+	 * 		       and returns a serializable object whose serialized representation will be used for `.equals` and
+	 * 		       `.hashCode` of the FormatterStep.
+	 * @param formatterFunc
+	 * 		       A pure serializable function (method reference recommended) which takes the result of `equalityFunc`,
+	 * 		       and returns a `FormatterFunc` which will be used for the actual formatting.
+	 * @return A FormatterStep which can be losslessly roundtripped through the java serialization machinery.
+	 */
+	static <RoundtripState extends Serializable, EqualityState extends Serializable> FormatterStep createLazy(
+			String name,
+			ThrowingEx.Supplier<RoundtripState> roundtripInit,
+			SerializedFunction<RoundtripState, EqualityState> equalityFunc,
+			SerializedFunction<EqualityState, FormatterFunc> formatterFunc) {
+		return new FormatterStepSerializationRoundtrip(name, roundtripInit, equalityFunc, formatterFunc);
+	}
+
+	/**
+	 * @param name
 	 *             The name of the formatter step
 	 * @param stateSupplier
 	 *             If the rule has any state, this supplier will calculate it lazily, and the result
