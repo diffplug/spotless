@@ -43,6 +43,8 @@ class StepHarnessBase<T extends StepHarnessBase<?>> implements AutoCloseable {
 				supportsRoundTrip = true;
 			} else if (onlyStepName.equals("diktat")) {
 				supportsRoundTrip = true;
+			} else if (onlyStepName.equals("eclipse jdt formatter") || onlyStepName.equals("eclipse cdt formatter") || onlyStepName.equals("eclipse groovy formatter")) {
+				supportsRoundTrip = true;
 			}
 		}
 	}
