@@ -54,7 +54,7 @@ public final class JarState implements Serializable {
 					cached = result.fileSignature.roundTrippable();
 					return result;
 				}
-				return new JarState(cached.stripAbsolutePaths());
+				return new JarState(cached.get());
 			} catch (Exception e) {
 				throw ThrowingEx.asRuntime(e);
 			}

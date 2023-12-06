@@ -108,10 +108,10 @@ public final class FileSignature implements Serializable {
 			this.cached = cached;
 		}
 
-		public FileSignature stripAbsolutePaths() throws IOException {
+		public FileSignature get() {
 			if (cached == null) {
 				// null when restored via serialization
-				cached = new FileSignature(files);
+				cached = ThrowingEx.get(() -> new FileSignature(files));
 			}
 			return cached;
 		}
@@ -135,7 +135,7 @@ public final class FileSignature implements Serializable {
 
 	public static @Nullable FileSignature stripAbsolutePathsNullable(@Nullable Promised roundTrippable) throws IOException {
 		if (roundTrippable != null) {
-			return roundTrippable.stripAbsolutePaths();
+			return roundTrippable.get();
 		} else {
 			return null;
 		}
