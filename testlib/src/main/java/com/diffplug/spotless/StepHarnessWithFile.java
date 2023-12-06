@@ -52,7 +52,8 @@ public class StepHarnessWithFile extends StepHarnessBase<StepHarnessWithFile> {
 	}
 
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
-	public StepHarnessWithFile test(File file, String before, String after) {
+	public StepHarnessWithFile test(String filename, String before, String after) {
+		File file = harness.setFile(filename).toContent(before);
 		String actual = formatter().compute(LineEnding.toUnix(before), file);
 		assertEquals(after, actual, "Step application failed");
 		return testUnaffected(file, after);
@@ -65,6 +66,11 @@ public class StepHarnessWithFile extends StepHarnessBase<StepHarnessWithFile> {
 		return this;
 	}
 
+	/** Asserts that the given element is idempotent w.r.t the step under test. */
+	public StepHarnessWithFile testUnaffected(String file, String idempotentElement) {
+		return testUnaffected(harness.setFile(file).toContent(idempotentElement), idempotentElement);
+	}
+
 	/** Asserts that the given elements in  the resources directory are transformed as expected. */
 	public StepHarnessWithFile testResource(String resourceBefore, String resourceAfter) {
 		return testResource(resourceBefore, resourceBefore, resourceAfter);
@@ -72,8 +78,7 @@ public class StepHarnessWithFile extends StepHarnessBase<StepHarnessWithFile> {
 
 	public StepHarnessWithFile testResource(String filename, String resourceBefore, String resourceAfter) {
 		String contentBefore = ResourceHarness.getTestResource(resourceBefore);
-		File file = harness.setFile(filename).toContent(contentBefore);
-		return test(file, contentBefore, ResourceHarness.getTestResource(resourceAfter));
+		return test(filename, contentBefore, ResourceHarness.getTestResource(resourceAfter));
 	}
 
 	/** Asserts that the given elements in the resources directory are transformed as expected. */
