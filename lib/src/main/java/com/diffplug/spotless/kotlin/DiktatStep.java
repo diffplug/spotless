@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 import com.diffplug.spotless.*;
 
 /** Wraps up <a href="https://github.com/cqfn/diKTat">diktat</a> as a FormatterStep. */
-public class DiktatStep extends FormatterStepEqualityOnStateSerialization<DiktatStep.State> {
+public class DiktatStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final JarState.Promised jarState;
 	private final boolean isScript;
@@ -66,26 +66,16 @@ public class DiktatStep extends FormatterStepEqualityOnStateSerialization<Diktat
 		}
 		Objects.requireNonNull(versionDiktat, "versionDiktat");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return new DiktatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + versionDiktat, provisioner)), isScript, config);
+		return FormatterStep.create(NAME,
+				new DiktatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + versionDiktat, provisioner)), isScript, config),
+				DiktatStep::equalityState, State::createFormat);
 	}
 
-	@Override
-	public String getName() {
-		return NAME;
-	}
-
-	@Override
-	protected State stateSupplier() throws Exception {
+	private State equalityState() throws Exception {
 		return new State(jarState.get(), isScript, FileSignature.stripAbsolutePathsNullable(config));
 	}
 
-	@Override
-	protected FormatterFunc stateToFormatter(State state) throws Exception {
-		return state.createFormat();
-	}
-
 	static final class State implements Serializable {
-
 		private static final long serialVersionUID = 1L;
 
 		final JarState jar;

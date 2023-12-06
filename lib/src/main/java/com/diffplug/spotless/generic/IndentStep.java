@@ -15,12 +15,14 @@
  */
 package com.diffplug.spotless.generic;
 
+import java.io.Serializable;
+
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.FormatterStepEqualityOnStateSerialization;
+import com.diffplug.spotless.SerializedFunction;
 
 /** Simple step which checks for consistent indentation characters. */
-public final class IndentStep extends FormatterStepEqualityOnStateSerialization<IndentStep> {
+public final class IndentStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	final Type type;
@@ -29,21 +31,6 @@ public final class IndentStep extends FormatterStepEqualityOnStateSerialization<
 	private IndentStep(Type type, int numSpacesPerTab) {
 		this.type = type;
 		this.numSpacesPerTab = numSpacesPerTab;
-	}
-
-	@Override
-	public String getName() {
-		return "indentWith" + type.tabSpace("Tabs", "Spaces");
-	}
-
-	@Override
-	protected IndentStep stateSupplier() {
-		return this;
-	}
-
-	@Override
-	protected FormatterFunc stateToFormatter(IndentStep state) {
-		return new Runtime(this)::format;
 	}
 
 	private static final int DEFAULT_NUM_SPACES_PER_TAB = 4;
@@ -68,7 +55,14 @@ public final class IndentStep extends FormatterStepEqualityOnStateSerialization<
 
 	/** Creates a step which will indent with the given type of whitespace, converting between tabs and spaces at the given ratio. */
 	public static FormatterStep create(Type type, int numSpacesPerTab) {
-		return new IndentStep(type, numSpacesPerTab);
+		return FormatterStep.create("indentWith" + type.tabSpace("Tabs", "Spaces"),
+				new IndentStep(type, numSpacesPerTab), SerializedFunction.identity(),
+				IndentStep::startFormatting);
+	}
+
+	private FormatterFunc startFormatting() {
+		var runtime = new Runtime(this);
+		return runtime::format;
 	}
 
 	static class Runtime {
