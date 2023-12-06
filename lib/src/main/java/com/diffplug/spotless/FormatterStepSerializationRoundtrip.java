@@ -22,6 +22,7 @@ import java.io.Serializable;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, EqualityState extends Serializable> extends FormatterStepEqualityOnStateSerialization<EqualityState> {
+	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final transient ThrowingEx.Supplier<RoundtripState> initializer;
 	private @Nullable RoundtripState roundtripStateInternal;
