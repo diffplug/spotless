@@ -34,7 +34,7 @@ public class DiktatStep implements Serializable {
 	private DiktatStep(JarState.Promised jarState, boolean isScript, @Nullable FileSignature config) {
 		this.jarState = jarState;
 		this.isScript = isScript;
-		this.config = FileSignature.roundTrippableNullable(config);
+		this.config = config != null ? config.asPromise() : null;
 	}
 
 	private static final String MIN_SUPPORTED_VERSION = "1.2.1";
@@ -72,7 +72,7 @@ public class DiktatStep implements Serializable {
 	}
 
 	private State equalityState() throws Exception {
-		return new State(jarState.get(), isScript, FileSignature.stripAbsolutePathsNullable(config));
+		return new State(jarState.get(), isScript, config != null ? config.get() : null);
 	}
 
 	static final class State implements Serializable {

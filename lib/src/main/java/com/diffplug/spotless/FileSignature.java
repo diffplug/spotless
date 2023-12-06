@@ -121,24 +121,8 @@ public final class FileSignature implements Serializable {
 		return new Promised(MoreIterables.toNullHostileList(files), null);
 	}
 
-	public Promised roundTrippable() {
+	public Promised asPromise() {
 		return new Promised(files, this);
-	}
-
-	public static @Nullable Promised roundTrippableNullable(@Nullable FileSignature signature) {
-		if (signature != null) {
-			return signature.roundTrippable();
-		} else {
-			return null;
-		}
-	}
-
-	public static @Nullable FileSignature stripAbsolutePathsNullable(@Nullable Promised roundTrippable) throws IOException {
-		if (roundTrippable != null) {
-			return roundTrippable.get();
-		} else {
-			return null;
-		}
 	}
 
 	/** Returns all of the files in this signature, throwing an exception if there are more or less than 1 file. */

@@ -51,7 +51,7 @@ public final class JarState implements Serializable {
 			try {
 				if (cached == null) {
 					JarState result = supplier.get();
-					cached = result.fileSignature.roundTrippable();
+					cached = result.fileSignature.asPromise();
 					return result;
 				}
 				return new JarState(cached.get());
