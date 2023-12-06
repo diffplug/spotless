@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 
@@ -48,7 +49,7 @@ class StepHarnessBase<T extends StepHarnessBase<?>> implements AutoCloseable {
 				supportsRoundTrip = true;
 			} else if (onlyStepName.equals("fence")) {
 				supportsRoundTrip = true;
-			} else if (onlyStepName.equals("buf")) {
+			} else if (Set.of("buf", "clang").contains(onlyStepName)) {
 				supportsRoundTrip = true;
 			}
 		}
