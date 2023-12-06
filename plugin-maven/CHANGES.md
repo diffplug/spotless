@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Changes
-* Use palantir-java-format 2.39.0 on Java 21. ([#XXXX](https://github.com/diffplug/spotless/pull/XXXX))
+* Use palantir-java-format 2.39.0 on Java 21. ([#1948](https://github.com/diffplug/spotless/pull/1948))
 
 ## [2.41.1] - 2023-12-04
 ### Fixed
