@@ -29,6 +29,7 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.SerializedFunction;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -82,6 +83,7 @@ public class FenceStep {
 		assertRegexSet();
 		return FormatterStep.createLazy(name,
 				() -> new PreserveWithin(regex, steps),
+				SerializedFunction.identity(),
 				state -> FormatterFunc.Closeable.of(state.buildFormatter(), state));
 	}
 
@@ -93,6 +95,7 @@ public class FenceStep {
 		assertRegexSet();
 		return FormatterStep.createLazy(name,
 				() -> new ApplyWithin(regex, steps),
+				SerializedFunction.identity(),
 				state -> FormatterFunc.Closeable.of(state.buildFormatter(), state));
 	}
 

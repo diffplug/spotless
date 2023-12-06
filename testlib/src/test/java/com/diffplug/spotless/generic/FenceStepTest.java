@@ -15,12 +15,17 @@
  */
 package com.diffplug.spotless.generic;
 
+import java.io.File;
+import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Locale;
+import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
@@ -29,8 +34,8 @@ import com.diffplug.spotless.StepHarnessWithFile;
 class FenceStepTest extends ResourceHarness {
 	@Test
 	void single() {
-		FormatterStep fence = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
+				.preserveWithin(Arrays.asList(createNeverUpToDateSerializable("lowercase", String::toLowerCase)));
 		StepHarness harness = StepHarness.forSteps(fence);
 		harness.test(
 				StringPrinter.buildStringFromLines(
@@ -49,8 +54,8 @@ class FenceStepTest extends ResourceHarness {
 
 	@Test
 	void multiple() {
-		FormatterStep fence = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
+				.preserveWithin(Arrays.asList(createNeverUpToDateSerializable("lowercase", String::toLowerCase)));
 		StepHarness harness = StepHarness.forSteps(fence);
 		harness.test(
 				StringPrinter.buildStringFromLines(
@@ -83,8 +88,8 @@ class FenceStepTest extends ResourceHarness {
 
 	@Test
 	void broken() {
-		FormatterStep fence = FenceStep.named("underTest").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Arrays.asList(FormatterStep.createNeverUpToDate("uppercase", str -> str.toUpperCase(Locale.ROOT))));
+		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
+				.preserveWithin(Arrays.asList(createNeverUpToDateSerializable("uppercase", String::toUpperCase)));
 		StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, fence);
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
 		harness.testExceptionMsg(newFile("test"), StringPrinter.buildStringFromLines("A B C",
@@ -96,9 +101,8 @@ class FenceStepTest extends ResourceHarness {
 
 	@Test
 	void andApply() {
-		FormatterStep fence = FenceStep.named("lowercaseSometimes").openClose("<lower>", "</lower>")
-				.applyWithin(Arrays.asList(
-						FormatterStep.createNeverUpToDate("lowercase", str -> str.toLowerCase(Locale.ROOT))));
+		FormatterStep fence = FenceStep.named("fence").openClose("<lower>", "</lower>")
+				.applyWithin(Arrays.asList(createNeverUpToDateSerializable("lowercase", String::toLowerCase)));
 		StepHarness.forSteps(fence).test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -112,5 +116,41 @@ class FenceStepTest extends ResourceHarness {
 						"d e f",
 						"</lower>",
 						"G H I"));
+	}
+
+	/**
+	 * @param name
+	 *             The name of the formatter step
+	 * @param function
+	 *             The function used by the formatter step
+	 * @return A FormatterStep which will never report that it is up-to-date, because
+	 *         it is not equal to the serialized representation of itself.
+	 */
+	static <T extends FormatterFunc & Serializable> FormatterStep createNeverUpToDateSerializable(
+			String name,
+			T function) {
+		Objects.requireNonNull(function, "function");
+		return new NeverUpToDateSerializable(name, function);
+	}
+
+	static class NeverUpToDateSerializable<T extends FormatterFunc & Serializable> implements FormatterStep, Serializable {
+		private final String name;
+		private final T formatterFunc;
+
+		private NeverUpToDateSerializable(String name, T formatterFunc) {
+			this.name = name;
+			this.formatterFunc = formatterFunc;
+		}
+
+		@Override
+		public String getName() {
+			return name;
+		}
+
+		@Nullable
+		@Override
+		public String format(String rawUnix, File file) throws Exception {
+			return formatterFunc.apply(rawUnix, file);
+		}
 	}
 }
