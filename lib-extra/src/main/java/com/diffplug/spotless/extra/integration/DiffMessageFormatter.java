@@ -55,10 +55,10 @@ public final class DiffMessageFormatter {
 		String getFormatted(File file, String rawUnix);
 	}
 
-	private static class CleanProviderFormatter implements CleanProvider {
+	public static class CleanProviderFormatter implements CleanProvider {
 		private final Formatter formatter;
 
-		CleanProviderFormatter(Formatter formatter) {
+		public CleanProviderFormatter(Formatter formatter) {
 			this.formatter = Objects.requireNonNull(formatter);
 		}
 
@@ -234,6 +234,10 @@ public final class DiffMessageFormatter {
 	 * sequence (\n, \r, \r\n).
 	 */
 	private String diff(File file) throws IOException {
+		return diff(formatter, file);
+	}
+
+	public static String diff(CleanProvider formatter, File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 		String formatted = formatter.getFormatted(file, rawUnix);

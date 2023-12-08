@@ -23,10 +23,12 @@ import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
+import com.diffplug.spotless.extra.integration.DiffMessageFormatter.CleanProviderFormatter;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
 /**
@@ -54,6 +56,9 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					problemFiles.add(file);
+					if (buildContext.isIncremental()) {
+						buildContext.addMessage(file, 0, 0, DiffMessageFormatter.diff(new CleanProviderFormatter(formatter), file), BuildContext.SEVERITY_ERROR, null);
+					}
 					counter.cleaned();
 				} else {
 					counter.checkedButAlreadyClean();
