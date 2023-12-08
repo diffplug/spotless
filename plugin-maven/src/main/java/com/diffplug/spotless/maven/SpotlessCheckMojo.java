@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -28,7 +29,6 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
-import com.diffplug.spotless.extra.integration.DiffMessageFormatter.CleanProviderFormatter;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
 /**
@@ -57,7 +57,8 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					problemFiles.add(file);
 					if (buildContext.isIncremental()) {
-						buildContext.addMessage(file, 0, 0, DiffMessageFormatter.diff(new CleanProviderFormatter(formatter), file), BuildContext.SEVERITY_ERROR, null);
+						Map.Entry<String, Integer> diffEntry = DiffMessageFormatter.diff(formatter, file);
+						buildContext.addMessage(file, diffEntry.getValue(), 0, diffEntry.getKey(), BuildContext.SEVERITY_ERROR, null);
 					}
 					counter.cleaned();
 				} else {
@@ -65,7 +66,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 					upToDateChecker.setUpToDate(file.toPath());
 				}
 			} catch (IOException | RuntimeException e) {
-				throw new MojoExecutionException("Unable to format file " + file, e);
+				throw new MojoExecutionException("Unable to check file " + file, e);
 			}
 		}
 

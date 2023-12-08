@@ -22,11 +22,14 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.MyersDiff;
 import org.eclipse.jgit.diff.RawText;
@@ -55,10 +58,10 @@ public final class DiffMessageFormatter {
 		String getFormatted(File file, String rawUnix);
 	}
 
-	public static class CleanProviderFormatter implements CleanProvider {
+	private static class CleanProviderFormatter implements CleanProvider {
 		private final Formatter formatter;
 
-		public CleanProviderFormatter(Formatter formatter) {
+		CleanProviderFormatter(Formatter formatter) {
 			this.formatter = Objects.requireNonNull(formatter);
 		}
 
@@ -234,10 +237,19 @@ public final class DiffMessageFormatter {
 	 * sequence (\n, \r, \r\n).
 	 */
 	private String diff(File file) throws IOException {
-		return diff(formatter, file);
+		return diff(formatter, file).getKey();
 	}
 
-	public static String diff(CleanProvider formatter, File file) throws IOException {
+	/**
+	 * Returns a map entry with key being a git-style diff between the contents of the given file and what those contents would
+	 * look like if formatted using the given formatter. Does not end with any newline
+	 * sequence (\n, \r, \r\n). The value of the map entry is the line where the first difference occurred.
+	 */
+	public static Map.Entry<String, Integer> diff(Formatter formatter, File file) throws IOException {
+		return diff(new CleanProviderFormatter(formatter), file);
+	}
+
+	private static Map.Entry<String, Integer> diff(CleanProvider formatter, File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 		String formatted = formatter.getFormatted(file, rawUnix);
@@ -252,13 +264,13 @@ public final class DiffMessageFormatter {
 	}
 
 	/**
-	 * Returns a git-style diff between the two unix strings.
+	 * Returns a map entry with key being a git-style diff between the two unix strings and value being the line of the first difference (in the dirty string)
 	 * <p>
 	 * Output has no trailing newlines.
 	 * <p>
 	 * Boolean args determine whether whitespace or line endings will be visible.
 	 */
-	private static String diffWhitespaceLineEndings(String dirty, String clean, boolean whitespace, boolean lineEndings) throws IOException {
+	private static Map.Entry<String, Integer> diffWhitespaceLineEndings(String dirty, String clean, boolean whitespace, boolean lineEndings) throws IOException {
 		dirty = visibleWhitespaceLineEndings(dirty, whitespace, lineEndings);
 		clean = visibleWhitespaceLineEndings(clean, whitespace, lineEndings);
 
@@ -275,7 +287,11 @@ public final class DiffMessageFormatter {
 
 		// we don't need the diff to show this, since we display newlines ourselves
 		formatted = formatted.replace("\\ No newline at end of file\n", "");
-		return NEWLINE_MATCHER.trimTrailingFrom(formatted);
+		return new AbstractMap.SimpleEntry<>(NEWLINE_MATCHER.trimTrailingFrom(formatted), getLineOfFirstDifference(edits));
+	}
+
+	private static int getLineOfFirstDifference(EditList edits) {
+		return edits.stream().mapToInt(Edit::getBeginA).min().getAsInt();
 	}
 
 	private static final CharMatcher NEWLINE_MATCHER = CharMatcher.is('\n');
