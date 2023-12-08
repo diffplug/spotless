@@ -58,7 +58,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 					problemFiles.add(file);
 					if (buildContext.isIncremental()) {
 						Map.Entry<String, Integer> diffEntry = DiffMessageFormatter.diff(formatter, file);
-						buildContext.addMessage(file, diffEntry.getValue(), 0, diffEntry.getKey(), BuildContext.SEVERITY_ERROR, null);
+						buildContext.addMessage(file, diffEntry.getValue() + 1, 0, diffEntry.getKey(), BuildContext.SEVERITY_ERROR, null);
 					}
 					counter.cleaned();
 				} else {
