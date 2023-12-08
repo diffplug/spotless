@@ -7,7 +7,7 @@ version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
-String VER_SOLSTICE = '1.7.4'
+String VER_SOLSTICE = '1.7.5'
 dependencies {
 	api projects.lib
 	// misc useful utilities
