@@ -22,7 +22,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -237,19 +236,19 @@ public final class DiffMessageFormatter {
 	 * sequence (\n, \r, \r\n).
 	 */
 	private String diff(File file) throws IOException {
-		return diff(formatter, file).getKey();
+		return diff(formatter, file).getValue();
 	}
 
 	/**
-	 * Returns a map entry with key being a git-style diff between the contents of the given file and what those contents would
+	 * Returns a map entry with value being a git-style diff between the contents of the given file and what those contents would
 	 * look like if formatted using the given formatter. Does not end with any newline
-	 * sequence (\n, \r, \r\n). The value of the map entry is the line where the first difference occurred.
+	 * sequence (\n, \r, \r\n). The key of the map entry is the 0-based line where the first difference occurred.
 	 */
-	public static Map.Entry<String, Integer> diff(Formatter formatter, File file) throws IOException {
+	public static Map.Entry<Integer, String> diff(Formatter formatter, File file) throws IOException {
 		return diff(new CleanProviderFormatter(formatter), file);
 	}
 
-	private static Map.Entry<String, Integer> diff(CleanProvider formatter, File file) throws IOException {
+	private static Map.Entry<Integer, String> diff(CleanProvider formatter, File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 		String formatted = formatter.getFormatted(file, rawUnix);
@@ -264,13 +263,13 @@ public final class DiffMessageFormatter {
 	}
 
 	/**
-	 * Returns a map entry with key being a git-style diff between the two unix strings and value being the line of the first difference (in the dirty string)
+	 * Returns a map entry with value being a git-style diff between the two unix strings and key being the 0-based line of the first difference (in the dirty string)
 	 * <p>
 	 * Output has no trailing newlines.
 	 * <p>
 	 * Boolean args determine whether whitespace or line endings will be visible.
 	 */
-	private static Map.Entry<String, Integer> diffWhitespaceLineEndings(String dirty, String clean, boolean whitespace, boolean lineEndings) throws IOException {
+	private static Map.Entry<Integer, String> diffWhitespaceLineEndings(String dirty, String clean, boolean whitespace, boolean lineEndings) throws IOException {
 		dirty = visibleWhitespaceLineEndings(dirty, whitespace, lineEndings);
 		clean = visibleWhitespaceLineEndings(clean, whitespace, lineEndings);
 
@@ -287,7 +286,7 @@ public final class DiffMessageFormatter {
 
 		// we don't need the diff to show this, since we display newlines ourselves
 		formatted = formatted.replace("\\ No newline at end of file\n", "");
-		return new AbstractMap.SimpleEntry<>(NEWLINE_MATCHER.trimTrailingFrom(formatted), getLineOfFirstDifference(edits));
+		return Map.entry(getLineOfFirstDifference(edits), NEWLINE_MATCHER.trimTrailingFrom(formatted));
 	}
 
 	private static int getLineOfFirstDifference(EditList edits) {
