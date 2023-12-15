@@ -10,6 +10,10 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* New static method to `DiffMessageFormatter` which allows to retrieve diffs with their line numbers ([#1960](https://github.com/diffplug/spotless/issues/1960))
+### Changes
+* Use palantir-java-format 2.39.0 on Java 21. ([#1948](https://github.com/diffplug/spotless/pull/1948))
 
 ## [2.43.1] - 2023-12-04
 ### Fixed
