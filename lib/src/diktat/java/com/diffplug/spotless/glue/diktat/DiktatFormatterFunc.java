@@ -32,8 +32,7 @@ public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 		File configFile,
 		boolean isScript
 	) {
-		int majorVersion = Integer.parseInt(version.split("\\.")[0]);
-		if (majorVersion == 1) {
+		if (version.startsWith("1.")) {
 			this.adapter = new DiktatCompat1Dot2Dot5Adapter(configFile);
 		} else {
 			this.adapter = new DiktatCompat2Dot0Dot0Adapter(configFile);
