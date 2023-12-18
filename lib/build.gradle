@@ -2,10 +2,6 @@ plugins {
 	id 'java-library'
 	id 'io.github.davidburstrom.version-compatibility'
 }
-repositories {
-	mavenCentral()
-	mavenLocal()
-}
 ext.artifactId = project.artifactIdLib
 version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
@@ -90,7 +86,7 @@ dependencies {
 	// diktat old supported version 1.x
 	compatDiktat1Dot2Dot5CompileOnly "org.cqfn.diktat:diktat-rules:1.2.5"
 	// diktat latest supported version 2.x
-	compatDiktat2Dot0Dot0CompileOnly "com.saveourtool.diktat:diktat-runner:2.0.0-rc.8.107+20231128T142927Z"
+	compatDiktat2Dot0Dot0CompileOnly "com.saveourtool.diktat:diktat-runner:2.0.0"
 	// flexmark
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.0'
 	// gherkin
@@ -134,7 +130,6 @@ dependencies {
 	// sortPom
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.2.1'
 	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
-
 	// zjsonPatch
 	zjsonPatchCompileOnly 'com.flipkart.zjsonpatch:zjsonpatch:0.4.14'
 }
