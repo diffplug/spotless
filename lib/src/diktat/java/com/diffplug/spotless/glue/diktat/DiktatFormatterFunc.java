@@ -35,10 +35,8 @@ public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 		int majorVersion = Integer.parseInt(version.split("\\.")[0]);
 		if (majorVersion == 1) {
 			this.adapter = new DiktatCompat1Dot2Dot5Adapter(configFile);
-		} else if (majorVersion == 2) {
-			this.adapter = new DiktatCompat2Dot0Dot0Adapter(configFile);
 		} else {
-			throw new IllegalStateException("Not supported version of Diktat!");
+			this.adapter = new DiktatCompat2Dot0Dot0Adapter(configFile);
 		}
 		this.isScript = isScript;
 	}
