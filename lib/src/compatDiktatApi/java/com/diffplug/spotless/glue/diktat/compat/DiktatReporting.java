@@ -19,8 +19,12 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
-final class DiktatReporting {
-	static <T> void reportIfRequired(List<T> errors, ToIntFunction<T> lineGetter, ToIntFunction<T> columnGetter, Function<T, String> detailGetter) {
+interface DiktatReporting {
+	static <T> void reportIfRequired(
+		List<T> errors,
+		ToIntFunction<T> lineGetter,
+		ToIntFunction<T> columnGetter,
+		Function<T, String> detailGetter) {
 		if (!errors.isEmpty()) {
 			StringBuilder error = new StringBuilder();
 			error.append("There are ").append(errors.size()).append(" unfixed errors:");

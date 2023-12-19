@@ -36,11 +36,9 @@ public class DiktatStep {
 	private static final String PACKAGE_RELOCATED_VERSION = "2.0.0";
 
 	private static final String DEFAULT_VERSION = "2.0.0";
-	static final String NAME = "diktat";
-	static final String PACKAGE_PRE_2_0_0 = "org.cqfn.diktat";
-	static final String PACKAGE = "com.saveourtool.diktat";
-	static final String MAVEN_COORDINATE_PRE_2_0_0 = PACKAGE_PRE_2_0_0 + ":diktat-rules:";
-	static final String MAVEN_COORDINATE = PACKAGE + ":diktat-runner:";
+	private static final String NAME = "diktat";
+	private static final String MAVEN_COORDINATE_PRE_2_0_0 = "org.cqfn.diktat:diktat-rules:";
+	private static final String MAVEN_COORDINATE = "com.saveourtool.diktat:diktat-runner:";
 
 	public static String defaultVersionDiktat() {
 		return DEFAULT_VERSION;
@@ -81,11 +79,13 @@ public class DiktatStep {
 
 		State(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) throws IOException {
 			HashSet<String> pkgSet = new HashSet<>();
+			final String diktatCoordinate;
 			if (BadSemver.version(versionDiktat) >= BadSemver.version(PACKAGE_RELOCATED_VERSION)) {
-				pkgSet.add(MAVEN_COORDINATE + versionDiktat);
+				diktatCoordinate = MAVEN_COORDINATE + versionDiktat;
 			} else {
-				pkgSet.add(MAVEN_COORDINATE_PRE_2_0_0 + versionDiktat);
+				diktatCoordinate = MAVEN_COORDINATE_PRE_2_0_0 + versionDiktat;
 			}
+			this.jar = JarState.from(diktatCoordinate, provisioner);
 
 			this.jar = JarState.from(pkgSet, provisioner);
 			this.versionDiktat = versionDiktat;
