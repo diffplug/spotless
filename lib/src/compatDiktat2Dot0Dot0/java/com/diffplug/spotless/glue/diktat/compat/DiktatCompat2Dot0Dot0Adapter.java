@@ -15,10 +15,7 @@
  */
 package com.diffplug.spotless.glue.diktat.compat;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -87,11 +84,10 @@ public class DiktatCompat2Dot0Dot0Adapter implements DiktatCompatAdapter {
 		if (configFile == null) {
 			return Collections.emptyList();
 		}
-		try {
-			final InputStream configInputStream = new FileInputStream(configFile);
+		try (final InputStream configInputStream = new FileInputStream(configFile)) {
 			return DiktatFactoriesKt.getDiktatRuleConfigReader().invoke(configInputStream);
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			throw new IllegalArgumentException("Fail to read configFile", e);
 		}
-	}
+    }
 }
