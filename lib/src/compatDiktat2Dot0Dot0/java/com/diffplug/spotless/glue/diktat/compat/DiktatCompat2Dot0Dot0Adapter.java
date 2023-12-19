@@ -15,7 +15,10 @@
  */
 package com.diffplug.spotless.glue.diktat.compat;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

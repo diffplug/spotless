@@ -21,10 +21,10 @@ import java.util.function.ToIntFunction;
 
 interface DiktatReporting {
 	static <T> void reportIfRequired(
-		List<T> errors,
-		ToIntFunction<T> lineGetter,
-		ToIntFunction<T> columnGetter,
-		Function<T, String> detailGetter) {
+			List<T> errors,
+			ToIntFunction<T> lineGetter,
+			ToIntFunction<T> columnGetter,
+			Function<T, String> detailGetter) {
 		if (!errors.isEmpty()) {
 			StringBuilder error = new StringBuilder();
 			error.append("There are ").append(errors.size()).append(" unfixed errors:");

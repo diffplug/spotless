@@ -78,7 +78,6 @@ public class DiktatStep {
 		final JarState jar;
 
 		State(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) throws IOException {
-			HashSet<String> pkgSet = new HashSet<>();
 			final String diktatCoordinate;
 			if (BadSemver.version(versionDiktat) >= BadSemver.version(PACKAGE_RELOCATED_VERSION)) {
 				diktatCoordinate = MAVEN_COORDINATE + versionDiktat;
@@ -86,8 +85,6 @@ public class DiktatStep {
 				diktatCoordinate = MAVEN_COORDINATE_PRE_2_0_0 + versionDiktat;
 			}
 			this.jar = JarState.from(diktatCoordinate, provisioner);
-
-			this.jar = JarState.from(pkgSet, provisioner);
 			this.versionDiktat = versionDiktat;
 			this.isScript = isScript;
 			this.config = config;
