@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import com.saveourtool.diktat.DiktatFactoriesKt;
 import com.saveourtool.diktat.DiktatProcessor;
 import com.saveourtool.diktat.api.DiktatCallback;
@@ -31,9 +34,6 @@ import com.saveourtool.diktat.api.DiktatRuleConfig;
 import com.saveourtool.diktat.api.DiktatRuleSet;
 
 import kotlin.Unit;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class DiktatCompat2Dot0Dot0Adapter implements DiktatCompatAdapter {
 	private final DiktatProcessor processor;

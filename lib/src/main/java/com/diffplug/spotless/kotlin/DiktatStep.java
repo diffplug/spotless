@@ -97,10 +97,9 @@ public class DiktatStep {
 			final File configFile = (config != null) ? config.getOnlyFile() : null;
 			Class<?> formatterFunc = jar.getClassLoader().loadClass("com.diffplug.spotless.glue.diktat.DiktatFormatterFunc");
 			Constructor<?> constructor = formatterFunc.getConstructor(
-				String.class,
-				File.class,
-				boolean.class
-			);
+					String.class,
+					File.class,
+					boolean.class);
 			return (FormatterFunc.NeedsFile) constructor.newInstance(versionDiktat, configFile, isScript);
 		}
 	}

@@ -17,21 +17,19 @@ package com.diffplug.spotless.glue.diktat;
 
 import java.io.File;
 
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.glue.diktat.compat.DiktatCompat1Dot2Dot5Adapter;
 import com.diffplug.spotless.glue.diktat.compat.DiktatCompat2Dot0Dot0Adapter;
 import com.diffplug.spotless.glue.diktat.compat.DiktatCompatAdapter;
-
-import com.diffplug.spotless.FormatterFunc;
 
 public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 	private final DiktatCompatAdapter adapter;
 	private final boolean isScript;
 
 	public DiktatFormatterFunc(
-		String version,
-		File configFile,
-		boolean isScript
-	) {
+			String version,
+			File configFile,
+			boolean isScript) {
 		if (version.startsWith("1.")) {
 			this.adapter = new DiktatCompat1Dot2Dot5Adapter(configFile);
 		} else {

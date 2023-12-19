@@ -26,11 +26,11 @@ final class DiktatReporting {
 			error.append("There are ").append(errors.size()).append(" unfixed errors:");
 			for (T er : errors) {
 				error.append(System.lineSeparator())
-					.append("Error on line: ").append(lineGetter.applyAsInt(er))
-					.append(", column: ").append(columnGetter.applyAsInt(er))
-					.append(" cannot be fixed automatically")
-					.append(System.lineSeparator())
-					.append(detailGetter.apply(er));
+						.append("Error on line: ").append(lineGetter.applyAsInt(er))
+						.append(", column: ").append(columnGetter.applyAsInt(er))
+						.append(" cannot be fixed automatically")
+						.append(System.lineSeparator())
+						.append(detailGetter.apply(er));
 			}
 			throw new AssertionError(error);
 		}

@@ -15,23 +15,22 @@
  */
 package com.diffplug.spotless.glue.diktat.compat;
 
-import com.pinterest.ktlint.core.KtLint;
-import com.pinterest.ktlint.core.LintError;
-import com.pinterest.ktlint.core.RuleSet;
-
-import com.pinterest.ktlint.core.api.EditorConfigOverride;
-
-import kotlin.Unit;
-import kotlin.jvm.functions.Function2;
-
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider;
-
-import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider;
+
+import com.pinterest.ktlint.core.KtLint;
+import com.pinterest.ktlint.core.LintError;
+import com.pinterest.ktlint.core.RuleSet;
+import com.pinterest.ktlint.core.api.EditorConfigOverride;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 public class DiktatCompat1Dot2Dot5Adapter implements DiktatCompatAdapter {
 	private final List<RuleSet> ruleSets;
@@ -66,18 +65,18 @@ public class DiktatCompat1Dot2Dot5Adapter implements DiktatCompatAdapter {
 	public String format(final File file, final String content, final boolean isScript) {
 		errors.clear();
 		String result = KtLint.INSTANCE.format(new KtLint.ExperimentalParams(
-			// Unlike Ktlint, Diktat requires full path to the file.
-			// See https://github.com/diffplug/spotless/issues/1189, https://github.com/analysis-dev/diktat/issues/1202
-			file.getAbsolutePath(),
-			content,
-			ruleSets,
-			Collections.emptyMap(),
-			formatterCallback,
-			isScript,
-			null,
-			false,
-			new EditorConfigOverride(),
-			false));
+				// Unlike Ktlint, Diktat requires full path to the file.
+				// See https://github.com/diffplug/spotless/issues/1189, https://github.com/analysis-dev/diktat/issues/1202
+				file.getAbsolutePath(),
+				content,
+				ruleSets,
+				Collections.emptyMap(),
+				formatterCallback,
+				isScript,
+				null,
+				false,
+				new EditorConfigOverride(),
+				false));
 
 		DiktatReporting.reportIfRequired(errors, LintError::getLine, LintError::getCol, LintError::getDetail);
 
