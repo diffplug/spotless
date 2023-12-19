@@ -82,7 +82,7 @@ public class DiktatStep {
 		State(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) throws IOException {
 			HashSet<String> pkgSet = new HashSet<>();
 			if (BadSemver.version(versionDiktat) >= BadSemver.version(PACKAGE_RELOCATED_VERSION)) {
-				pkgSet.add(MAVEN_COORDINATE + versionDiktat + ":shadow");
+				pkgSet.add(MAVEN_COORDINATE + versionDiktat);
 			} else {
 				pkgSet.add(MAVEN_COORDINATE_PRE_2_0_0 + versionDiktat);
 			}
