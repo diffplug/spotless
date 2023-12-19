@@ -48,7 +48,7 @@ public class DiktatCompat2Dot0Dot0Adapter implements DiktatCompatAdapter {
 	@Override
 	public String format(File file, String content, boolean isScript) {
 		errors.clear();
-		String result = processor.fix(file.toPath(), formatterCallback);
+		String result = processor.fix(content, file.toPath(), formatterCallback);
 		DiktatReporting.reportIfRequired(errors, DiktatError::getLine, DiktatError::getCol, DiktatError::getDetail);
 		return result;
 	}
