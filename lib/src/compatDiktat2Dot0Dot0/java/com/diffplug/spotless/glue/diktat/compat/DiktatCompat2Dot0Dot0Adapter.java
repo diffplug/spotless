@@ -89,5 +89,5 @@ public class DiktatCompat2Dot0Dot0Adapter implements DiktatCompatAdapter {
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Fail to read configFile", e);
 		}
-    }
+	}
 }
