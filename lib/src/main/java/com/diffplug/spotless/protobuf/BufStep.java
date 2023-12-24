@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -78,20 +77,14 @@ public class BufStep {
 		final String version;
 		final transient ForeignExe exe;
 
-        State(BufStep step, ForeignExe exe) {
+		State(BufStep step, ForeignExe exe) {
 			this.version = step.version;
 			this.exe = Objects.requireNonNull(exe);
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
-			return runner.exec(
-				input.getBytes(StandardCharsets.UTF_8),
-				List.of(
-					exe.confirmVersionAndGetAbsolutePath(),
-					"format",
-					file.getAbsolutePath()
-				)
-			).assertExitZero(StandardCharsets.UTF_8);
+			List<String> args = List.of(exe.confirmVersionAndGetAbsolutePath(), "format", file.getAbsolutePath());
+			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {
