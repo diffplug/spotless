@@ -75,7 +75,10 @@ public class BufStep {
 		private static final long serialVersionUID = -1825662356883926318L;
 		// used for up-to-date checks and caching
 		final String version;
-		final transient ForeignExe exe;
+
+		// used for executing
+		private final transient ForeignExe exe;
+		private transient String exeAbsPath;
 
 		State(BufStep step, ForeignExe exe) {
 			this.version = step.version;
@@ -83,7 +86,10 @@ public class BufStep {
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
-			List<String> args = List.of(exe.confirmVersionAndGetAbsolutePath(), "format", file.getAbsolutePath());
+			if (exeAbsPath == null) {
+				exeAbsPath = exe.confirmVersionAndGetAbsolutePath();
+			}
+			List<String> args = List.of(exeAbsPath, "format", file.getAbsolutePath());
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
 		}
 
