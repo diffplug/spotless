@@ -431,14 +431,14 @@ public class RomeStep {
 			}
 			var runnerResult = runner.exec(stdin, args);
 			var stdErr = runnerResult.stdErrUtf8();
-			if (stdErr != null && !stdErr.isEmpty()) {
+			if (!stdErr.isEmpty()) {
 				logger.warn("Biome stderr ouptut for file '{}'\n{}", file, stdErr.trim());
 			}
 			var formatted = runnerResult.assertExitZero(StandardCharsets.UTF_8);
 			// When biome encounters an ignored file, it does not output any formatted code
 			// Ignored files come from (a) the biome.json configuration file and (b) from
 			// a list of hard-coded file names, such as package.json or tsconfig.json.
-			if (formatted == null || formatted.isEmpty()) {
+			if (formatted.isEmpty()) {
 				return input;
 			} else {
 				return formatted;
