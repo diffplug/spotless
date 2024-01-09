@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -352,16 +352,16 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 	@Test
 	void preservesIgnoredFiles() throws Exception {
 		setFile("build.gradle").toLines(
-			"plugins {",
-			"    id 'com.diffplug.spotless'",
-			"}",
-			"repositories { mavenCentral() }",
-			"spotless {",
-			"    json {",
-			"        target '**/*.json'",
-			"        biome('1.5.0')",
-			"    }",
-			"}");
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    json {",
+				"        target '**/*.json'",
+				"        biome('1.5.0')",
+				"    }",
+				"}");
 		setFile("package.json").toResource("biome/json/packageBefore.json");
 
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
