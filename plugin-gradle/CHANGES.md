@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Fix empty files with biome >= 1.5.0 when formatting files that are in the ignore list of the biome configuration file. ([#1989](https://github.com/diffplug/spotless/pull/1989) fixes [#1987](https://github.com/diffplug/spotless/issues/1987))
 ### Changes
 * Use palantir-java-format 2.39.0 on Java 21. ([#1948](https://github.com/diffplug/spotless/pull/1948))
 
