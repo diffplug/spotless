@@ -340,4 +340,32 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 		assertThat(spotlessApply.getOutput()).contains("Format with errors is disabled.");
 		assertThat(spotlessApply.getOutput()).contains("Step 'biome' found problem in 'biome_test.js'");
 	}
+
+	/**
+	 * Biome is hard-coded to ignore certain files, such as package.json. Since version 1.5.0,
+	 * the biome CLI does not output any formatted code anymore, whereas previously it printed
+	 * the input as-is. This tests checks that when the biome formatter outputs an empty string,
+	 * the contents of the file to format are used instead.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void preservesIgnoredFiles() throws Exception {
+		setFile("build.gradle").toLines(
+			"plugins {",
+			"    id 'com.diffplug.spotless'",
+			"}",
+			"repositories { mavenCentral() }",
+			"spotless {",
+			"    json {",
+			"        target '**/*.json'",
+			"        biome('1.5.0')",
+			"    }",
+			"}");
+		setFile("package.json").toResource("biome/json/packageBefore.json");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("package.json").sameAsResource("biome/json/packageAfter.json");
+	}
 }

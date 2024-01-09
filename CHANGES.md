@@ -12,6 +12,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * New static method to `DiffMessageFormatter` which allows to retrieve diffs with their line numbers ([#1960](https://github.com/diffplug/spotless/issues/1960))
+### Fixed
+* Fix empty files with biome >= 1.5.0 when formatting files that are in the ignore list of the biome configuration file. (fixes [#1987](https://github.com/diffplug/spotless/issues/1987))
 ### Changes
 * Use palantir-java-format 2.39.0 on Java 21. ([#1948](https://github.com/diffplug/spotless/pull/1948))
 
