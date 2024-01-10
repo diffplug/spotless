@@ -23,6 +23,8 @@ plugins {
 	id 'com.gradle.enterprise' version '3.16'
 	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
 	id 'dev.equo.ide' version '1.7.5' apply false
+	// https://github.com/johnrengelman/shadow/tags
+	id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
 }
 
 dependencyResolutionManagement {
