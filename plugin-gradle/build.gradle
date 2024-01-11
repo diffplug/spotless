@@ -37,24 +37,8 @@ tasks.withType(Test).configureEach {
 
 shadowJar {
 	archiveClassifier.set('')
+	enableRelocation = false
 	relocate 'org.eclipse.jgit', 'shadow.eclipse.jgit'
-	relocate 'org.eclipse.osgi', 'shadow.eclipse.osgi'
-	relocate 'org.eclipse.equinox', 'shadow.eclipse.equinox'
-	relocate 'org.eclipse.core', 'shadow.eclipse.core'
-	relocate 'org.osgi', 'shadow.org.osgi'
-	relocate 'com.googlecode.concurrenttrees', 'shadow.googlecode.concurrenttrees'
-	relocate 'com.googlecode.javaewah', 'shadow.googlecode.javaewah'
-	relocate 'com.googlecode.javaewah32', 'shadow.googlecode.javaewah32'
-	relocate 'dev.equo.solstice', 'shadow.equo.solstice'
-	relocate 'dev.equo.ide', 'shadow.equo.ide'
-	relocate 'org.apache.commons', 'shadow.apache.commons'
-	relocate 'org.apache.felix', 'shadow.apache.felix'
-	relocate 'org.tukaani.xz', 'shadow.tukaani.xz'
-	relocate 'okhttp3', 'shadow.okhttp3'
-	relocate 'okio', 'shadow.okio'
-	relocate 'org.intellij', 'shadow.intellij'
-	relocate 'org.jetbrains', 'shadow.jetbrains'
-	relocate 'org.slf4j', 'shadow.slf4j'
 }
 
 //////////////////////////
