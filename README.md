@@ -4,7 +4,7 @@
 [![Maven Plugin](https://img.shields.io/maven-central/v/com.diffplug.spotless/spotless-maven-plugin?color=blue&label=maven%20plugin)](plugin-maven)
 [![SBT Plugin](https://img.shields.io/badge/sbt%20plugin-0.1.3-blue)](https://github.com/moznion/sbt-spotless)
 
-Spotless can format &lt;antlr | c | c# | c++ | css | flow | graphql | groovy | html | java | javascript | json | jsx | kotlin | less | license headers | markdown | objective-c | protobuf | python | scala | scss | sql | typeScript | vue | yaml | anything> using &lt;gradle | maven | sbt | anything>.
+Spotless can format &lt;antlr | c | c# | c++ | css | flow | graphql | groovy | html | java | javascript | json | jsx | kotlin | less | license headers | markdown | objective-c | protobuf | python | scala | scss | shell | sql | typeScript | vue | yaml | anything> using &lt;gradle | maven | sbt | anything>.
 
 You probably want one of the links below:
 
