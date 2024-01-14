@@ -52,6 +52,13 @@ versionCompatibility {
 			]
 			targetSourceSetName = 'ktlint'
 		}
+		namespaces.register('Diktat') {
+			versions = [
+				'1.2.5',
+				'2.0.0',
+			]
+			targetSourceSetName = 'diktat'
+		}
 	}
 }
 
@@ -76,8 +83,10 @@ dependencies {
 	String VER_CLEANTHAT='2.17'
 	cleanthatCompileOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	compatCleanthat2Dot1CompileAndTestOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
-	// diktat
-	diktatCompileOnly 'org.cqfn.diktat:diktat-rules:1.2.5'
+	// diktat old supported version 1.x
+	compatDiktat1Dot2Dot5CompileOnly "org.cqfn.diktat:diktat-rules:1.2.5"
+	// diktat latest supported version 2.x
+	compatDiktat2Dot0Dot0CompileOnly "com.saveourtool.diktat:diktat-runner:2.0.0"
 	// flexmark
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.0'
 	// gherkin
