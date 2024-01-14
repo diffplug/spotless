@@ -1,6 +1,7 @@
 apply from: rootProject.file('gradle/changelog.gradle')
 ext.artifactId = project.artifactIdGradle
 version = spotlessChangelog.versionNext
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java-library'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
@@ -32,6 +33,12 @@ dependencies {
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	testLogging.showStandardStreams = true
+}
+
+shadowJar {
+	archiveClassifier.set('')
+	enableRelocation = false
+	relocate 'org.eclipse.jgit', 'shadow.eclipse.jgit'
 }
 
 //////////////////////////
