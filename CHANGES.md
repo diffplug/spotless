@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.44.0] - 2024-01-15
 ### Added
 * New static method to `DiffMessageFormatter` which allows to retrieve diffs with their line numbers ([#1960](https://github.com/diffplug/spotless/issues/1960))
 * Format shell via [shfmt](https://github.com/mvdan/sh). ([#1994](https://github.com/diffplug/spotless/pull/1994))
