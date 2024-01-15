@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.24.0] - 2024-01-15
 ### Added
 * Support for shell via [shfmt](https://github.com/mvdan/sh).
 ### Fixed
