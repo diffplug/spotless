@@ -151,6 +151,26 @@ The gist of it is that you will have to:
 
 If you get something running, we'd love to host your plugin within this repo as a peer to `plugin-gradle` and `plugin-maven`.
 
+## Run tests
+
+To run all tests, simply do
+
+> gradlew test
+
+Since that takes some time, you might only want to run the tests
+concerning what you are working on:
+
+```shell
+# Run only from test from the "lib" project
+gradlew :testlib:test --tests com.diffplug.spotless.generic.IndentStepTest
+
+# Run only one test from the "plugin-maven" project
+gradlew :plugin-maven:test --tests com.diffplug.spotless.maven.pom.SortPomMavenTest
+
+# Run only one test from the "plugin-gradle" project
+gradlew :plugin-gradle:test --tests com.diffplug.gradle.spotless.FreshMarkExtensionTest
+```
+
 ## Integration testing
 
 ### Gradle - locally
