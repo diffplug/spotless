@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import com.diffplug.spotless.go.GofmtFormatStep;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -66,6 +65,7 @@ import com.diffplug.spotless.generic.PipeStepPair;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
+import com.diffplug.spotless.go.GofmtFormatStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.rome.BiomeFlavor;

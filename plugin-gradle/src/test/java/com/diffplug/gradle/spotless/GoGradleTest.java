@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
-import com.diffplug.spotless.tag.GofmtTest;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
+import com.diffplug.spotless.tag.GofmtTest;
 
 @GofmtTest
 class GoGradleTest extends GradleIntegrationHarness {
