@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.tag.ShfmtTest;
 
 @ShfmtTest
-public class ShfmtIntegrationTest extends GradleIntegrationHarness {
+public class ShellExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void shfmt() throws IOException {
 		setFile("build.gradle").toLines(
