@@ -1300,10 +1300,6 @@ usually you will be creating a generic format.
 </configuration>
 ```
 
-**Limitations:**
-- The auto-discovery of config files (up the file tree) will not work when using
-  Biome within spotless.
-
 To apply Biome to more kinds of files with a different configuration, just add
 more formats:
 
@@ -1314,6 +1310,22 @@ more formats:
     <format><includes>src/**/*.js</includes><biome/></format>
 </configuration>
 ```
+
+**Limitations:**
+- The auto-discovery of config files (up the file tree) will not work when using
+  Biome within spotless.
+- The `ignore` option of the `biome.json` configuration file will not be applied.
+  Include and exclude patterns are configured in the spotless configuration in the
+  Maven pom instead.
+
+Note: Due to a limitation of biome, if the name of a file matches a pattern in
+the `ignore` option of the specified `biome.json` configuration file, it will not be
+formatted, even if included in the biome configuration section of the Maven pom.
+You could specify a different `biome.json` configuration file without an `ignore`
+pattern to circumvent this.
+
+Note 2: Biome is hard-coded to ignore certain special files, such as `package.json`
+or `tsconfig.json`. These files will never be formatted.
 
 ### Biome binary
 

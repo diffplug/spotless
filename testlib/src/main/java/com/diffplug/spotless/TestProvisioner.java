@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -42,8 +41,6 @@ import com.diffplug.common.base.StandardSystemProperty;
 import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.io.Files;
-import com.diffplug.spotless.java.GoogleJavaFormatStep;
-import com.diffplug.spotless.java.PalantirJavaFormatStep;
 
 public class TestProvisioner {
 	public static Project gradleProject(File dir) {
@@ -68,15 +65,7 @@ public class TestProvisioner {
 		Project project = TestProvisioner.gradleProject(tempDir);
 		repoConfig.accept(project.getRepositories());
 		return (withTransitives, mavenCoords) -> {
-			boolean forceGuava = mavenCoords.stream().anyMatch(coordinate -> coordinate.startsWith(GoogleJavaFormatStep.MAVEN_COORDINATE) ||
-					coordinate.startsWith(PalantirJavaFormatStep.MAVEN_COORDINATE));
-			Stream<String> coordinateStream = mavenCoords.stream();
-			if (forceGuava) {
-				// Use Guava 32.1.3, see https://github.com/google/guava/issues/6657.
-				// TODO: May remove this after https://github.com/google/google-java-format/pull/996 and https://github.com/palantir/palantir-java-format/issues/957 are released.
-				coordinateStream = Stream.concat(coordinateStream, Stream.of("com.google.guava:guava:32.1.3-jre"));
-			}
-			Dependency[] deps = coordinateStream
+			Dependency[] deps = mavenCoords.stream()
 					.map(project.getDependencies()::create)
 					.toArray(Dependency[]::new);
 			Configuration config = project.getConfigurations().detachedConfiguration(deps);
