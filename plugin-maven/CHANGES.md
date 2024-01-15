@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Support for formatting shell scripts via [shfmt](https://github.com/mvdan/sh). TODO [#9999](https://github.com/diffplug/spotless/issues/9999)
 
 ## [2.42.0] - 2024-01-15
 ### Added
