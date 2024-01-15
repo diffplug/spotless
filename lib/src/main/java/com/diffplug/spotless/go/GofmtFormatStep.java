@@ -94,7 +94,11 @@ public class GofmtFormatStep {
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
 			final List<String> processArgs = new ArrayList<>();
 			String pathToGoBinary = exe.confirmVersionAndGetAbsolutePath();
-			String pathToGoFmt = Path.of(pathToGoBinary).getParent().resolve("gofmt").toString();
+			Path goBasePath = Path.of(pathToGoBinary).getParent();
+			if (goBasePath == null) {
+				throw new IllegalStateException("Unable to resolve base path of Go installation directory");
+			}
+			String pathToGoFmt = goBasePath.resolve("gofmt").toString();
 			processArgs.add(pathToGoFmt);
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), processArgs).assertExitZero(StandardCharsets.UTF_8);
 		}
