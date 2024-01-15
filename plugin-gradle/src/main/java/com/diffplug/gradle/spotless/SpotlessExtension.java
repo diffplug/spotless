@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -203,6 +203,12 @@ public abstract class SpotlessExtension {
 	public void protobuf(Action<ProtobufExtension> closure) {
 		requireNonNull(closure);
 		format(ProtobufExtension.NAME, ProtobufExtension.class, closure);
+	}
+
+	/** Configures the special shell-specific extension. */
+	public void shell(Action<ShellExtension> closure) {
+		requireNonNull(closure);
+		format(ShellExtension.NAME, ShellExtension.class, closure);
 	}
 
 	/** Configures the special YAML-specific extension. */

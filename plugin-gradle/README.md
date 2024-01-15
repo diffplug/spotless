@@ -69,6 +69,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Biome](#biome))
   - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [Biome](#biome), [jsonPatch](#jsonPatch))
   - [YAML](#yaml)
+  - [Shell](#shell)
   - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
@@ -981,6 +982,38 @@ spotless {
   }
 }
 ```
+
+## Shell
+
+`com.diffplug.gradle.spotless.ShellExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.23.3/com/diffplug/gradle/spotless/ShellExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ShellExtension.java)
+
+```gradle
+spotless {
+  shell {
+    target 'scripts/**/*.sh' // default: '*.sh'
+
+    shfmt()  // has its own section below
+  }
+}
+```
+
+### shfmt
+
+[homepage](https://github.com/mvdan/sh). [changelog](https://github.com/mvdan/sh/blob/master/CHANGELOG.md).
+
+```gradle
+shfmt('3.7.0') // version is optional
+
+// if shfmt is not on your path, you must specify its location manually
+shfmt().pathToExe('/opt/homebrew/bin/shfmt')
+// Spotless always checks the version of the shfmt it is using
+// and will fail with an error if it does not match the expected version
+// (whether manually specified or default). If there is a problem, Spotless
+// will suggest commands to help install the correct version.
+//   TODO: handle installation & packaging automatically - https://github.com/diffplug/spotless/issues/674
+```
+
+<a name="applying-freshmark-to-markdown-files"></a>
 
 ## Gherkin
 
