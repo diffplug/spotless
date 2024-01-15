@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.42.0] - 2024-01-15
 ### Added
 * M2E support: Emit file specific errors during incremental build. ([#1960](https://github.com/diffplug/spotless/issues/1960))
 ### Fixed
