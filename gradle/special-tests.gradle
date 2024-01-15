@@ -3,6 +3,7 @@ def special = [
 	'Black',
 	'Buf',
 	'Clang',
+	'gofmt',
 	'Npm',
 	'Shfmt'
 ]

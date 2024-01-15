@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import com.diffplug.spotless.go.GofmtFormatStep;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -954,6 +955,33 @@ public class FormatExtension {
 
 	public EclipseWtpConfig eclipseWtp(EclipseWtpFormatterStep type, String version) {
 		return new EclipseWtpConfig(type, version);
+	}
+
+	public class GofmtConfig {
+		GofmtFormatStep stepCfg;
+
+		public GofmtConfig(String version) {
+			stepCfg = (GofmtFormatStep) GofmtFormatStep.withVersion(version).create();
+			addStep(createStep());
+		}
+
+		public GofmtConfig withGoExecutable(String pathToGo) {
+			stepCfg = stepCfg.withGoExecutable(pathToGo);
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return stepCfg.create();
+		}
+	}
+
+	public GofmtConfig gofmt() {
+		return new GofmtConfig(GofmtFormatStep.defaultVersion());
+	}
+
+	public GofmtConfig gofmt(String version) {
+		return new GofmtConfig(version);
 	}
 
 	/**
