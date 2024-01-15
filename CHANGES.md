@@ -11,7 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* Maven - Support for formatting shell scripts via [shfmt](https://github.com/mvdan/sh). TODO ([#9999](https://github.com/diffplug/spotless/pull/9999))
+* Maven - Support for formatting shell scripts via [shfmt](https://github.com/mvdan/sh). ([#1998](https://github.com/diffplug/spotless/pull/1998))
 
 ## [2.44.0] - 2024-01-15
 ### Added
