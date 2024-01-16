@@ -10,7 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-* Support for `gofmt` ([#861](https://github.com/diffplug/spotless/issues/861))
+* Support for `gofmt` ([#2001](https://github.com/diffplug/spotless/issues/2001))
 
 ## [2.44.0] - 2024-01-15
 ### Added
