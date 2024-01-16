@@ -54,6 +54,7 @@ user@machine repo % mvn spotless:check
   - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [Biome](#biome), [jsonPatch](#jsonPatch))
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
+  - [Go](#go)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -1045,6 +1046,33 @@ Uses a Gherkin pretty-printer that optionally allows configuring the number of s
 <gherkinUtils>
   <version>8.0.2</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
 </gherkinUtils>
+```
+
+## Go
+
+- `com.diffplug.spotless.maven.FormatterFactory.addStepFactory(FormatterStepFactory)` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/go/Go.java)
+
+```xml
+<configuration>
+  <go>
+    <includes>     <!-- You have to set the target manually -->
+      <include>src/**/*.go</include>
+    </includes>
+
+    <gofmt />    <!-- has its own section below -->
+  </go>
+</configuration>
+```
+
+### gofmt
+
+Standard Go formatter, part of Go distribution.
+
+```xml
+<gofmt>
+  <version>go1.25.1</version>
+  <goExecutablePath>/opt/sdks/go1.25.1/bin/go</goExecutablePath>
+</gofmt>
 ```
 
 ## Prettier
