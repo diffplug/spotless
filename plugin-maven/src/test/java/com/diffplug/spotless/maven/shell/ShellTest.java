@@ -15,14 +15,14 @@
  */
 package com.diffplug.spotless.maven.shell;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
+import com.diffplug.spotless.tag.ShfmtTest;
 
-@Disabled // Disabled due to GHA not having shfmt
+@ShfmtTest
 public class ShellTest extends MavenIntegrationHarness {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShellTest.class);
 
