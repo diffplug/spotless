@@ -15,43 +15,43 @@
  */
 package com.diffplug.gradle.spotless;
 
+import javax.inject.Inject;
+
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.go.GofmtFormatStep;
 
-import javax.inject.Inject;
-
 public class GoExtension extends FormatExtension {
-    public static final String NAME = "go";
+	public static final String NAME = "go";
 
-    @Inject
-    public GoExtension(SpotlessExtension spotless) {
-        super(spotless);
-    }
+	@Inject
+	public GoExtension(SpotlessExtension spotless) {
+		super(spotless);
+	}
 
-    public GofmtConfig gofmt() {
-        return new GofmtConfig(GofmtFormatStep.defaultVersion());
-    }
+	public GofmtConfig gofmt() {
+		return new GofmtConfig(GofmtFormatStep.defaultVersion());
+	}
 
-    public GofmtConfig gofmt(String version) {
-        return new GofmtConfig(version);
-    }
+	public GofmtConfig gofmt(String version) {
+		return new GofmtConfig(version);
+	}
 
-    public class GofmtConfig {
-        GofmtFormatStep stepCfg;
+	public class GofmtConfig {
+		GofmtFormatStep stepCfg;
 
-        public GofmtConfig(String version) {
-            stepCfg = GofmtFormatStep.withVersion(version);
-            addStep(createStep());
-        }
+		public GofmtConfig(String version) {
+			stepCfg = GofmtFormatStep.withVersion(version);
+			addStep(createStep());
+		}
 
-        public GofmtConfig withGoExecutable(String pathToGo) {
-            stepCfg = stepCfg.withGoExecutable(pathToGo);
-            replaceStep(createStep());
-            return this;
-        }
+		public GofmtConfig withGoExecutable(String pathToGo) {
+			stepCfg = stepCfg.withGoExecutable(pathToGo);
+			replaceStep(createStep());
+			return this;
+		}
 
-        private FormatterStep createStep() {
-            return stepCfg.create();
-        }
-    }
+		private FormatterStep createStep() {
+			return stepCfg.create();
+		}
+	}
 }
