@@ -43,7 +43,7 @@ public class GofmtFormatStep {
 	}
 
 	public static String defaultVersion() {
-		return "1.20.0";
+		return "go1.20.0";
 	}
 
 	private final String version;

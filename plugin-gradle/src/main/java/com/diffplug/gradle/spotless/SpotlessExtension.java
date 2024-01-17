@@ -223,6 +223,11 @@ public abstract class SpotlessExtension {
 		format(GherkinExtension.NAME, GherkinExtension.class, closure);
 	}
 
+	public void go(Action<GoExtension> closure) {
+		requireNonNull(closure);
+		format(GoExtension.NAME, GoExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");

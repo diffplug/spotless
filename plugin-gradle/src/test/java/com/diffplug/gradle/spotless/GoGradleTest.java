@@ -30,9 +30,9 @@ class GoGradleTest extends GradleIntegrationHarness {
 				"  id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
-				"  format 'go' {",
+				"  go {",
 				"    target 'src/**/*.go'",
-				"    gofmt()",
+				"    gofmt(\"go1.21.5\")",
 				"  }",
 				"}");
 		setFile("src/test.go").toResource("go/gofmt/go.dirty");
