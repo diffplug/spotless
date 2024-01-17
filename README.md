@@ -103,7 +103,7 @@ lib('pom.SortPomStepStep')                       +'{{no}}        | {{yes}}      
 lib('protobuf.BufStep')                          +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('python.BlackStep')                          +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
-lib('shell.ShfmtStep')                           +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
+lib('shell.ShfmtStep')                           +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
@@ -156,7 +156,7 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`protobuf.BufStep`](lib/src/main/java/com/diffplug/spotless/protobuf/BufStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`python.BlackStep`](lib/src/main/java/com/diffplug/spotless/python/BlackStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
-| [`shell.ShfmtStep`](lib/src/main/java/com/diffplug/spotless/shell/ShfmtStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
+| [`shell.ShfmtStep`](lib/src/main/java/com/diffplug/spotless/shell/ShfmtStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`sql.DBeaverSQLFormatterStep`](lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`wtp.EclipseWtpFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/wtp/EclipseWtpFormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`yaml.JacksonYamlStep`](lib/src/main/java/com/diffplug/spotless/yaml/JacksonYamlStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |

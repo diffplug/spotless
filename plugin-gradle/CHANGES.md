@@ -6,7 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [6.24.0] - 2024-01-15
 ### Added
-* Support for shell via [shfmt](https://github.com/mvdan/sh).
+* Support for shell formatting via [shfmt](https://github.com/mvdan/sh). ([#1994](https://github.com/diffplug/spotless/pull/1994))
 ### Fixed
 * Fix empty files with biome >= 1.5.0 when formatting files that are in the ignore list of the biome configuration file. ([#1989](https://github.com/diffplug/spotless/pull/1989) fixes [#1987](https://github.com/diffplug/spotless/issues/1987))
 * Fix a regression in BufStep where the same arguments were being provided to every `buf` invocation. ([#1976](https://github.com/diffplug/spotless/issues/1976))
