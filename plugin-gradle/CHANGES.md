@@ -4,7 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
-* Bundle dependencies in the Gradle plugin and relocate most dependencies. ([#1991](https://github.com/diffplug/spotless/pull/1991))
+* Bundle some dependencies in the Gradle plugin and relocate JGit. ([#1991](https://github.com/diffplug/spotless/pull/1991))
 ### Changes
 * Use palantir-java-format 2.39.0 on Java 21. ([#1948](https://github.com/diffplug/spotless/pull/1948))
 

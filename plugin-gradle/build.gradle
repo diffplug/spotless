@@ -11,11 +11,11 @@ apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
 dependencies {
 	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
-		api projects.lib
-		api projects.libExtra
+		shadow projects.lib
+		shadow projects.libExtra
 	} else {
-		api "com.diffplug.spotless:spotless-lib:${rootProject.spotlessChangelog.versionLast}"
-		api "com.diffplug.spotless:spotless-lib-extra:${rootProject.spotlessChangelog.versionLast}"
+		shadow "com.diffplug.spotless:spotless-lib:${rootProject.spotlessChangelog.versionLast}"
+		shadow "com.diffplug.spotless:spotless-lib-extra:${rootProject.spotlessChangelog.versionLast}"
 	}
 	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
@@ -30,6 +30,12 @@ dependencies {
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
+configurations {
+	testImplementation.extendsFrom(shadow, implementation)
+}
+
+assemble.dependsOn shadowJar
+
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	testLogging.showStandardStreams = true
@@ -38,7 +44,7 @@ tasks.withType(Test).configureEach {
 shadowJar {
 	archiveClassifier.set('')
 	enableRelocation = false
-	relocate 'org.eclipse.jgit', 'shadow.eclipse.jgit'
+	relocate 'org.eclipse.jgit', 'spotless.shadow.org.eclipse.jgit'
 }
 
 //////////////////////////
