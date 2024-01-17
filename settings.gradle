@@ -31,14 +31,18 @@ dependencyResolutionManagement {
 	}
 }
 
-if (System.env['CI'] != null) {
+def env(String key) {
+	return providers.environmentVariable(key).orNull
+}
+
+if (env('CI') != null) {
 	// use the remote buildcache on all CI builds
 	buildCache {
 		def cred = {
-			if (System.env[it] != null) {
-				return System.env[it]
+			if (env(it) != null) {
+				return env(it)
 			} else {
-				return System.getProperty(it)
+				return providers.systemProperty(it)
 			}
 		}
 		remote(HttpBuildCache) {
@@ -92,6 +96,6 @@ def getStartProperty(java.lang.String name) {
 	return userProperties.get(name)
 }
 
-if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true') {
+if (env('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true') {
 	include 'plugin-maven'	// maven-specific glue code
 }

@@ -18,7 +18,7 @@ prettierConfig['printWidth'] = 20
 prettierConfig['parser'] = 'typescript'
 
 // the executable name
-def npmExec = System.getProperty('os.name').toLowerCase().contains('windows') ? '/npm.cmd' : '/bin/npm'
+def npmExec = providers.systemProperty('os.name').get().toLowerCase().contains('windows') ? '/npm.cmd' : '/bin/npm'
 
 spotless {
     typescript {

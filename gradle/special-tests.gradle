@@ -10,7 +10,7 @@ def special = [
 	'Shfmt'
 ]
 
-boolean isCiServer = System.getenv().containsKey("CI")
+boolean isCiServer = providers.environmentVariable("CI").isPresent()
 tasks.withType(Test).configureEach {
 	if (isCiServer) {
 		retry {

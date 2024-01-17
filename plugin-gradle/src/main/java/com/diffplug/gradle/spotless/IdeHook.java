@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class IdeHook {
 	}
 
 	static void performHook(SpotlessTaskImpl spotlessTask) {
-		String path = (String) spotlessTask.getProject().property(PROPERTY);
+		String path = spotlessTask.getProject().getProviders().gradleProperty(PROPERTY).get();
 		File file = new File(path);
 		if (!file.isAbsolute()) {
 			System.err.println("Argument passed to " + PROPERTY + " must be an absolute path");
@@ -50,7 +50,7 @@ class IdeHook {
 					}
 				}
 				byte[] bytes;
-				if (spotlessTask.getProject().hasProperty(USE_STD_IN)) {
+				if (spotlessTask.getProject().getProviders().gradleProperty(USE_STD_IN).isPresent()) {
 					bytes = ByteStreams.toByteArray(System.in);
 				} else {
 					bytes = Files.readAllBytes(file.toPath());
@@ -63,7 +63,7 @@ class IdeHook {
 					System.err.println("Run 'spotlessDiagnose' for details https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md");
 				} else {
 					System.err.println("IS DIRTY");
-					if (spotlessTask.getProject().hasProperty(USE_STD_OUT)) {
+					if (spotlessTask.getProject().getProviders().gradleProperty(USE_STD_OUT).isPresent()) {
 						dirty.writeCanonicalTo(System.out);
 					} else {
 						dirty.writeCanonicalTo(file);

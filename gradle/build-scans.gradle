@@ -1,9 +1,12 @@
 File acceptFile = new File(gradle.gradleUserHomeDir, "build-scans/spotless/gradle-scans-license-agree.txt")
 acceptFile.parentFile.mkdirs()
-def env = System.getenv()
-boolean isCI = env.CI || env.TRAVIS
-boolean hasAccepted = isCI || env.SPOTLESS_GRADLE_SCANS_ACCEPT=='yes' || acceptFile.exists() && acceptFile.text.trim() == 'yes'
-boolean hasRefused = env.SPOTLESS_GRADLE_SCANS_ACCEPT=='no' || acceptFile.exists() && acceptFile.text.trim() == 'no'
+
+def env(String key) {
+	return providers.environmentVariable(key).orNull
+}
+boolean isCI = env('CI') != null
+boolean hasAccepted = isCI || env('SPOTLESS_GRADLE_SCANS_ACCEPT') =='yes' || acceptFile.exists() && acceptFile.text.trim() == 'yes'
+boolean hasRefused = env('SPOTLESS_GRADLE_SCANS_ACCEPT') =='no' || acceptFile.exists() && acceptFile.text.trim() == 'no'
 
 buildScan {
 	if (hasAccepted) {
@@ -11,14 +14,14 @@ buildScan {
 	} else if (!hasRefused) {
 		gradle.buildFinished {
 			println """
-This build uses Gradle Build Scans to gather statistics, share information about 
+This build uses Gradle Build Scans to gather statistics, share information about
 failures, environmental issues, dependencies resolved during the build and more.
-Build scans will be published after each build, if you accept the terms of 
+Build scans will be published after each build, if you accept the terms of
 service, and in particular the privacy policy.
 
-Please read 
-   
-    https://gradle.com/terms-of-service 
+Please read
+
+    https://gradle.com/terms-of-service
     https://gradle.com/legal/privacy
 
 and then:
@@ -32,7 +35,7 @@ and then:
 
     echo 'no' >> ${acceptFile}
 
-And we'll not bother you again. Note that build scans are only made public if 
+And we'll not bother you again. Note that build scans are only made public if
 you share the URL at the end of the build.
 """
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 	@Override
 	protected void createFormatTasks(String name, FormatExtension formatExtension) {
-		boolean isIdeHook = project.hasProperty(IdeHook.PROPERTY);
+		boolean isIdeHook = project.getProviders().gradleProperty(IdeHook.PROPERTY).isPresent();
 		TaskContainer tasks = project.getTasks();
 
 		// create the SpotlessTask

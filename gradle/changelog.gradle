@@ -43,7 +43,7 @@ if (project == rootProject) {
 			if (isPlugin) {
 				// make sure there aren't any unreleased changes in lib
 				if (!rootProject.spotlessChangelog.parsedChangelog.noUnreleasedChanges()) {
-					if (!("true".equals(rootProject.findProperty('ignoreUnreleasedLib')))) {
+					if (!("true" == rootProject.providers.gradleProperty('ignoreUnreleasedLib').orNull)) {
 						throw new IllegalArgumentException(
 						"You're going to publish ${changelogPushTasks[0]}, but there are unreleased features in lib!\n" +
 						"You should run :changelogPush first!  Else you'll be missing out on:\n" +

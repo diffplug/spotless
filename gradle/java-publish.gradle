@@ -1,7 +1,9 @@
-import java.nio.charset.StandardCharsets
+def env(String key) {
+	return providers.environmentVariable(key).orNull
+}
 
 def decode64(String varName) {
-	String envValue = System.env[varName]
+	String envValue = env(varName)
 	if (envValue == null) {
 		return ""
 	} else {
@@ -11,7 +13,7 @@ def decode64(String varName) {
 
 if (project.parent == null) {
 	group = 'com.diffplug.spotless'
-	def pass = System.env['ORG_GRADLE_PROJECT_nexus_pass64']
+	def pass = env('ORG_GRADLE_PROJECT_nexus_pass64')
 	if (pass != null) {
 		pass = pass.decodeBase64()
 	}
@@ -22,7 +24,7 @@ if (project.parent == null) {
 			sonatype {
 				nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
 				snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-				username = System.env['ORG_GRADLE_PROJECT_nexus_user']
+				username = env('ORG_GRADLE_PROJECT_nexus_user')
 				password = decode64('ORG_GRADLE_PROJECT_nexus_pass64')
 			}
 		}
@@ -169,14 +171,14 @@ model {
 	}
 }
 
-if (System.env['JITPACK'] == 'true' || version.endsWith('-SNAPSHOT')) {
+if (env('JITPACK') == 'true' || version.endsWith('-SNAPSHOT')) {
 	signing {
 		setRequired(false)
 	}
 } else {
 	signing {
 		String gpg_key = decode64('ORG_GRADLE_PROJECT_gpg_key64')
-		useInMemoryPgpKeys(gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])
+		useInMemoryPgpKeys(gpg_key, env('ORG_GRADLE_PROJECT_gpg_passphrase'))
 		sign(publishing.publications)
 	}
 

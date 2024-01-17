@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -558,8 +558,8 @@ public class FormatExtension {
 
 		FormatterStep createStep() {
 			return builder.withYearModeLazy(() -> {
-				if ("true".equals(spotless.project
-						.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
+				if ("true".equals(spotless.project.getProviders()
+						.gradleProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()).getOrNull())) {
 					return YearMode.SET_FROM_GIT;
 				} else {
 					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
