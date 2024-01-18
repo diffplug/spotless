@@ -48,7 +48,7 @@ public class PalantirJavaFormatStep {
 	 * style.
 	 */
 	public static FormatterStep create(String version, String style, Provisioner provisioner) {
-		return create(version, style, defaultFormatJavadoc(), provisioner);
+		return create(version, style, DEFAULT_FORMAT_JAVADOC, provisioner);
 	}
 
 	/**
