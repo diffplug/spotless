@@ -220,6 +220,8 @@ spotless {
     palantirJavaFormat()
     // optional: you can specify a specific version and/or switch to AOSP/GOOGLE style
     palantirJavaFormat('2.9.0').style("GOOGLE")
+    // optional: you can also format Javadocs, requires at least Palantir 2.39.0
+    palantirJavaFormat('2.39.0').formatJavadoc(true)
 ```
 
 ### eclipse jdt

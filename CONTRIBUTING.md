@@ -171,6 +171,17 @@ gradlew :plugin-maven:test --tests com.diffplug.spotless.maven.pom.SortPomMavenT
 gradlew :plugin-gradle:test --tests com.diffplug.gradle.spotless.FreshMarkExtensionTest
 ```
 
+## Check and format code
+
+Before creating a pull request, you might want to format (yes, spotless is  formatted by spotless)
+the code and check for possible bugs
+
+* `./gradlew spotlessApply`
+* `./gradlew spotbugsMain`
+
+These checks are also run by the automated pipeline when you submit a pull request, if
+the pipeline fails, first check if the code is formatted and no bugs were found.
+
 ## Integration testing
 
 ### Gradle - locally
