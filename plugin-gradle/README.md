@@ -1107,11 +1107,13 @@ With version 3 prettier it is required to pass in an additional 'plugins' parame
 ```gradle
 spotless {
   java {
-    prettier(['prettier': '3.0.3', 'prettier-plugin-java': '2.3.0']).config(['parser': 'java', 'tabWidth': 4, 'plugins': ['prettier-plugin-java']])
+    prettier(['prettier': '3.0.3', 'prettier-plugin-java': '2.3.0'])
+      .config(['parser': 'java', 'tabWidth': 4, 'plugins': ['prettier-plugin-java']])
   }
   format 'php', {
     target 'src/**/*.php'
-    prettier(['prettier': '3.0.3', '@prettier/plugin-php': '0.20.1']).config(['parser': 'php', 'tabWidth': 3, 'plugins': ['@prettier/plugin-php']])
+    prettier(['prettier': '3.0.3', '@prettier/plugin-php': '0.20.1'])
+      .config(['parser': 'php', 'tabWidth': 3, 'plugins': ['@prettier/plugin-php']])
   }
 }
 ```
