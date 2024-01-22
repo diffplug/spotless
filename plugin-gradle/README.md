@@ -1086,16 +1086,34 @@ To apply prettier to more kinds of files, just add more formats
 Since spotless uses the actual npm prettier package behind the scenes, it is possible to use prettier with
 [plugins](https://prettier.io/docs/en/plugins.html#official-plugins) or [community-plugins](https://www.npmjs.com/search?q=prettier-plugin) in order to support even more file types.
 
+#### prettier version below 3
+
 ```gradle
 spotless {
   java {
     prettier(['prettier': '2.8.8', 'prettier-plugin-java': '2.2.0']).config(['parser': 'java', 'tabWidth': 4])
-    // prettier(['prettier': '3.0.3', 'prettier-plugin-java': '2.3.0']).config(['parser': 'java', 'tabWidth': 4, 'plugins': ['prettier-plugin-java']]) // Prettier v3 requires additional 'plugins' config
   }
   format 'php', {
     target 'src/**/*.php'
     prettier(['prettier': '2.8.8', '@prettier/plugin-php': '0.19.6']).config(['parser': 'php', 'tabWidth': 3])
-    // prettier(['prettier': '3.0.3', '@prettier/plugin-php': '0.20.1']).config(['parser': 'php', 'tabWidth': 3, 'plugins': ['@prettier/plugin-php']]) // Prettier v3 requires additional 'plugins' config
+  }
+}
+```
+
+#### prettier version 3+
+
+With version 3 prettier it is required to pass in an additional 'plugins' parameter to the config block with a list of plugins you want to use.
+
+```gradle
+spotless {
+  java {
+    prettier(['prettier': '3.0.3', 'prettier-plugin-java': '2.3.0'])
+      .config(['parser': 'java', 'tabWidth': 4, 'plugins': ['prettier-plugin-java']])
+  }
+  format 'php', {
+    target 'src/**/*.php'
+    prettier(['prettier': '3.0.3', '@prettier/plugin-php': '0.20.1'])
+      .config(['parser': 'php', 'tabWidth': 3, 'plugins': ['@prettier/plugin-php']])
   }
 }
 ```
