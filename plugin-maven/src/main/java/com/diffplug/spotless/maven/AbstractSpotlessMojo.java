@@ -62,6 +62,7 @@ import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.gherkin.Gherkin;
+import com.diffplug.spotless.maven.go.Go;
 import com.diffplug.spotless.maven.groovy.Groovy;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 import com.diffplug.spotless.maven.incremental.UpToDateChecking;
@@ -187,6 +188,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Gherkin gherkin;
+
+	@Parameter
+	private Go go;
 
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
@@ -362,7 +366,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}
