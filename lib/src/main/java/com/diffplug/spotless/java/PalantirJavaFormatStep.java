@@ -27,6 +27,7 @@ public class PalantirJavaFormatStep {
 	// prevent direct instantiation
 	private PalantirJavaFormatStep() {}
 
+	private static final boolean DEFAULT_FORMAT_JAVADOC = false;
 	private static final String DEFAULT_STYLE = "PALANTIR";
 	private static final String NAME = "palantir-java-format";
 	public static final String MAVEN_COORDINATE = "com.palantir.javaformat:palantir-java-format:";
@@ -42,14 +43,25 @@ public class PalantirJavaFormatStep {
 		return create(version, defaultStyle(), provisioner);
 	}
 
-	/** Creates a step which formats everything - code, import order, and unused imports. And with the style input. */
+	/**
+	 * Creates a step which formats code, import order, and unused imports, but not Java docs. And with the given format
+	 * style.
+	 */
 	public static FormatterStep create(String version, String style, Provisioner provisioner) {
+		return create(version, style, DEFAULT_FORMAT_JAVADOC, provisioner);
+	}
+
+	/**
+	 * Creates a step which formats everything - code, import order, unused imports, and Java docs. And with the given
+	 * format style.
+	 */
+	public static FormatterStep create(String version, String style, boolean formatJavadoc, Provisioner provisioner) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
 
 		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), version, style),
+				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), version, style, formatJavadoc),
 				State::createFormat);
 	}
 
@@ -63,6 +75,11 @@ public class PalantirJavaFormatStep {
 		return DEFAULT_STYLE;
 	}
 
+	/** Get default for whether Java docs should be formatted */
+	public static boolean defaultFormatJavadoc() {
+		return DEFAULT_FORMAT_JAVADOC;
+	}
+
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
@@ -71,23 +88,23 @@ public class PalantirJavaFormatStep {
 		/** Version of the formatter jar. */
 		private final String formatterVersion;
 		private final String style;
+		/** Whether to format Java docs. */
+		private final boolean formatJavadoc;
 
-		State(JarState jarState, String formatterVersion) {
-			this(jarState, formatterVersion, DEFAULT_STYLE);
-		}
-
-		State(JarState jarState, String formatterVersion, String style) {
+		State(JarState jarState, String formatterVersion, String style, boolean formatJavadoc) {
 			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = jarState;
 			this.formatterVersion = formatterVersion;
 			this.style = style;
+			this.formatJavadoc = formatJavadoc;
 		}
 
 		FormatterFunc createFormat() throws Exception {
 			final ClassLoader classLoader = jarState.getClassLoader();
 			final Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.pjf.PalantirJavaFormatFormatterFunc");
-			final Constructor<?> constructor = formatterFunc.getConstructor(String.class); // style
-			return JVM_SUPPORT.suggestLaterVersionOnError(formatterVersion, (FormatterFunc) constructor.newInstance(style));
+			// 1st arg is "style", 2nd arg is "formatJavadoc"
+			final Constructor<?> constructor = formatterFunc.getConstructor(String.class, boolean.class);
+			return JVM_SUPPORT.suggestLaterVersionOnError(formatterVersion, (FormatterFunc) constructor.newInstance(style, formatJavadoc));
 		}
 	}
 }

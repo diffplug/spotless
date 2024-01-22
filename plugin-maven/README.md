@@ -247,8 +247,9 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <palantirJavaFormat>
-  <version>2.10.0</version>                     <!-- optional -->
+  <version>2.39.0</version>                     <!-- optional -->
   <style>PALANTIR</style>                       <!-- or AOSP/GOOGLE (optional) -->
+  <formatJavadoc>false</formatJavadoc>          <!-- defaults to false (optional, requires at least Palantir 2.39.0) -->
 </palantirJavaFormat>
 ```
 
