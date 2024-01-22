@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Added
+* Maven / Gradle - Support for formatting Java Docs for the Palantir formatter ([#2009](https://github.com/diffplug/spotless/pull/2009))
+
 ## [6.24.0] - 2024-01-15
 ### Added
 * Support for shell formatting via [shfmt](https://github.com/mvdan/sh). ([#1994](https://github.com/diffplug/spotless/pull/1994))
