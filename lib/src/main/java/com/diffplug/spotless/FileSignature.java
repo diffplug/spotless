@@ -117,10 +117,6 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
-	public static Promised promise(Iterable<File> files) {
-		return new Promised(MoreIterables.toNullHostileList(files), null);
-	}
-
 	public Promised asPromise() {
 		return new Promised(files, this);
 	}
