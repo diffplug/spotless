@@ -11,6 +11,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+* Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020))
+
 ## [2.45.0] - 2024-01-23
 ### Added
 * Support for `gofmt` ([#2001](https://github.com/diffplug/spotless/pull/2001))

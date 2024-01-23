@@ -4,6 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+* Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020))
+
 ## [2.43.0] - 2024-01-23
 ### Added
 * Support for formatting shell scripts via [shfmt](https://github.com/mvdan/sh). ([#1998](https://github.com/diffplug/spotless/issues/1998))
