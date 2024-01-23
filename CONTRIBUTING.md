@@ -96,13 +96,13 @@ Here's a checklist for creating a new step for Spotless:
 - [ ] Class name ends in Step, `SomeNewStep`.
 - [ ] Class has a public static method named `create` that returns a `FormatterStep`.
 - [ ] Has a test class named `SomeNewStepTest` that uses `StepHarness` or `StepHarnessWithFile` to test the step.
-  - [ ] Start with `StepHarness.forStep(myStep).supportsRoundTrip(false)`, and then add round trip support as decribed in the next section. 
+  - [ ] Start with `StepHarness.forStep(myStep).supportsRoundTrip(false)`, and then add round trip support as described in the next section. 
 - [ ] Test class has test methods to verify behavior.
 - [ ] Test class has a test method `equality()` which tests equality using `StepEqualityTester` (see existing methods for examples).
 
 ### Serialization roundtrip
 
-In order to support Gradle's configuration cache, all `FormatterStep` must be round-trip serializable. This is a bit tricky because step equality is based on the serialied form of the state, and `transient` is used to take absolute paths out of the equality check. To make this work, roundtrip compatible steps actually have *two* states
+In order to support Gradle's configuration cache, all `FormatterStep` must be round-trip serializable. This is a bit tricky because step equality is based on the serialized form of the state, and `transient` is used to take absolute paths out of the equality check. To make this work, roundtrip compatible steps actually have *two* states:
 
 - `RoundtripState` which must be roundtrip serializable but has no equality constraints
   - `FileSignature.Promised` for settings files and `JarState.Promised` for the classpath 
