@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,5 +26,5 @@ import org.junit.jupiter.api.Tag;
 
 @Target({TYPE, METHOD})
 @Retention(RUNTIME)
-@Tag("Buf")
+@Tag("buf")
 public @interface BufTest {}
