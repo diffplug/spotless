@@ -1,14 +1,17 @@
 package com.diffplug.spotless.java;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.diffplug.spotless.ForeignExe;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.ProcessRunner;
 
@@ -19,13 +22,30 @@ public final class IdeaFormatterFunc implements FormatterFunc.NeedsFile {
 
 	private static final String DEFAULT_IDEA = "idea";
 
-	// TODO: Use ForeignExe to ensure file
-	private final String binaryPath;
-	private final boolean withDefaults;
+	private String binaryPath;
+	private boolean withDefaults;
 
 	private IdeaFormatterFunc(boolean withDefaults, String binaryPath) {
 		this.withDefaults = withDefaults;
 		this.binaryPath = Objects.requireNonNullElse(binaryPath, DEFAULT_IDEA);
+		resolveFullBinaryPathAndCheckVersion();
+	}
+
+	private void resolveFullBinaryPathAndCheckVersion() {
+		var exe = ForeignExe.nameAndVersion(this.binaryPath, "IntelliJ IDEA")
+				.versionRegex(Pattern.compile("(IntelliJ IDEA) .*"))
+				.fixCantFind("IDEA executable cannot be found on your machine, "
+						+ "please install it and put idea binary to PATH; or report the problem")
+				.fixWrongVersion("Provided binary is not IDEA, "
+						+ "please check it and fix the problem; or report the problem");
+		try {
+			this.binaryPath = exe.confirmVersionAndGetAbsolutePath();
+		} catch (IOException e) {
+			throw new IllegalArgumentException("binary cannot be found", e);
+		} catch (InterruptedException e) {
+			throw new IllegalArgumentException(
+					"binary cannot be found, process was interrupted", e);
+		}
 	}
 
 	public static IdeaFormatterFunc allowingDefaultsWithCustomBinary(
