@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [6.25.0] - 2024-01-23
 * Support for `gofmt` ([#2001](https://github.com/diffplug/spotless/pull/2001))
 
 ### Added
