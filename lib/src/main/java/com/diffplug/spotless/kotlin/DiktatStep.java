@@ -71,8 +71,14 @@ public class DiktatStep implements Serializable {
 		}
 		Objects.requireNonNull(versionDiktat, "versionDiktat");
 		Objects.requireNonNull(provisioner, "provisioner");
+		final String diktatCoordinate;
+		if (BadSemver.version(versionDiktat) >= BadSemver.version(PACKAGE_RELOCATED_VERSION)) {
+			diktatCoordinate = MAVEN_COORDINATE + versionDiktat;
+		} else {
+			diktatCoordinate = MAVEN_COORDINATE_PRE_2_0_0 + versionDiktat;
+		}
 		return FormatterStep.create(NAME,
-				new DiktatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + versionDiktat, provisioner)), versionDiktat, isScript, config),
+				new DiktatStep(JarState.promise(() -> JarState.from(diktatCoordinate, provisioner)), versionDiktat, isScript, config),
 				DiktatStep::equalityState, State::createFormat);
 	}
 
