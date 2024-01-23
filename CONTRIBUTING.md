@@ -36,7 +36,6 @@ For the folders below in monospace text, they are published on MavenCentral at t
 | `lib-extra` | Contains the optional parts of Spotless which require external dependencies.  `LineEnding.GIT_ATTRIBUTES` won't work unless `lib-extra` is available. |
 | `plugin-gradle` | Integrates spotless and all of its formatters into Gradle. |
 | `plugin-maven` | Integrates spotless and all of its formatters into Maven. |
-| `_ext` | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
 
 ## How to add a new FormatterStep
 
@@ -118,24 +117,6 @@ There are many great formatters (prettier, clang-format, black, etc.) which live
 - open a headless server and make http calls to it from Spotless (used by our [npm-based](https://github.com/diffplug/spotless/blob/main/lib/src/main/java/com/diffplug/spotless/npm/NpmFormatterStepStateBase.java) formatters such as prettier)
 
 Because of Spotless' up-to-date checking and [git ratcheting](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet), Spotless actually doesn't have to call formatters very often, so even an expensive shell call for every single invocation isn't that bad.  Anything that works is better than nothing, and we can always speed things up later if it feels too slow (but it probably won't).
-
-## How to enable the `_ext` projects
-
-The `_ext` projects are disabled per default, since:
-
-* some of the projects perform vast downloads at configuration time
-* the downloaded content may change on server side and break CI builds
-
-
-The `_ext` can be activated via the root project property `com.diffplug.spotless.include.ext`.
-
-Activate the property via command line, like for example:
-
-```
-gradlew -Pcom.diffplug.spotless.include.ext=true build
-```
-
-Or set the property in your user `gradle.properties` file, which is especially recommended if you like to work with the `_ext` projects using IDEs.
 
 ## How to add a new plugin for a build system
 
