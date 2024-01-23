@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
@@ -25,7 +26,6 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -37,14 +37,54 @@ import java.util.stream.Collectors;
  * catch changes in a SNAPSHOT version.
  */
 public final class JarState implements Serializable {
+	/** A lazily evaluated JarState, which becomes a set of files when serialized. */
+	public static class Promised implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private final transient ThrowingEx.Supplier<JarState> supplier;
+		private FileSignature.Promised cached;
+
+		public Promised(ThrowingEx.Supplier<JarState> supplier) {
+			this.supplier = supplier;
+		}
+
+		public JarState get() {
+			try {
+				if (cached == null) {
+					JarState result = supplier.get();
+					cached = result.fileSignature.asPromise();
+					return result;
+				}
+				return new JarState(cached.get());
+			} catch (Exception e) {
+				throw ThrowingEx.asRuntime(e);
+			}
+		}
+
+		// override serialize output
+		private void writeObject(java.io.ObjectOutputStream out)
+				throws IOException {
+			get();
+			out.defaultWriteObject();
+		}
+
+		private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+			in.defaultReadObject();
+		}
+
+		private void readObjectNoData() throws ObjectStreamException {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	public static Promised promise(ThrowingEx.Supplier<JarState> supplier) {
+		return new Promised(supplier);
+	}
+
 	private static final long serialVersionUID = 1L;
 
-	@Deprecated
-	private final Set<String> mavenCoordinates;
 	private final FileSignature fileSignature;
 
-	private JarState(Collection<String> mavenCoordinates, FileSignature fileSignature) {
-		this.mavenCoordinates = new TreeSet<>(mavenCoordinates);
+	private JarState(FileSignature fileSignature) {
 		this.fileSignature = fileSignature;
 	}
 
@@ -71,13 +111,13 @@ public final class JarState implements Serializable {
 			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinates.stream().collect(Collectors.joining(", ")));
 		}
 		FileSignature fileSignature = FileSignature.signAsSet(jars);
-		return new JarState(mavenCoordinates, fileSignature);
+		return new JarState(fileSignature);
 	}
 
 	/** Wraps the given collection of a files as a JarState, maintaining the order in the Collection. */
 	public static JarState preserveOrder(Collection<File> jars) throws IOException {
 		FileSignature fileSignature = FileSignature.signAsList(jars);
-		return new JarState(Collections.emptySet(), fileSignature);
+		return new JarState(fileSignature);
 	}
 
 	URL[] jarUrls() {
@@ -106,11 +146,5 @@ public final class JarState implements Serializable {
 	 */
 	public ClassLoader getClassLoader(Serializable key) {
 		return SpotlessCache.instance().classloader(key, this);
-	}
-
-	/** Returns unmodifiable view on sorted Maven coordinates */
-	@Deprecated
-	public Set<String> getMavenCoordinates() {
-		return Collections.unmodifiableSet(mavenCoordinates);
 	}
 }

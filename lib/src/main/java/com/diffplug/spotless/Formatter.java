@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -304,6 +304,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 		for (FormatterStep step : steps) {
 			if (step instanceof FormatterStepImpl.Standard) {
 				((FormatterStepImpl.Standard) step).cleanupFormatterFunc();
+			} else if (step instanceof FormatterStepEqualityOnStateSerialization) {
+				((FormatterStepEqualityOnStateSerialization) step).cleanupFormatterFunc();
 			}
 		}
 	}
