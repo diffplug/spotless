@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![MavenCentral](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.41.1-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.41.1/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.42.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.42.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -54,6 +54,7 @@ user@machine repo % mvn spotless:check
   - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [Biome](#biome), [jsonPatch](#jsonPatch))
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
+  - [Go](#go)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -246,8 +247,9 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <palantirJavaFormat>
-  <version>2.10.0</version>                     <!-- optional -->
+  <version>2.39.0</version>                     <!-- optional -->
   <style>PALANTIR</style>                       <!-- or AOSP/GOOGLE (optional) -->
+  <formatJavadoc>false</formatJavadoc>          <!-- defaults to false (optional, requires at least Palantir 2.39.0) -->
 </palantirJavaFormat>
 ```
 
@@ -1047,6 +1049,33 @@ Uses a Gherkin pretty-printer that optionally allows configuring the number of s
 </gherkinUtils>
 ```
 
+## Go
+
+- `com.diffplug.spotless.maven.FormatterFactory.addStepFactory(FormatterStepFactory)` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/go/Go.java)
+
+```xml
+<configuration>
+  <go>
+    <includes>     <!-- You have to set the target manually -->
+      <include>src/**/*.go</include>
+    </includes>
+
+    <gofmt />    <!-- has its own section below -->
+  </go>
+</configuration>
+```
+
+### gofmt
+
+Standard Go formatter, part of Go distribution.
+
+```xml
+<gofmt>
+  <version>go1.25.1</version>
+  <goExecutablePath>/opt/sdks/go1.25.1/bin/go</goExecutablePath>
+</gofmt>
+```
+
 ## Prettier
 
 [homepage](https://prettier.io/). [changelog](https://github.com/prettier/prettier/blob/master/CHANGELOG.md). [official plugins](https://prettier.io/docs/en/plugins.html#official-plugins). [community plugins](https://prettier.io/docs/en/plugins.html#community-plugins). Prettier is a formatter that can format almost every anything - JavaScript, JSX, Angular, Vue, Flow, TypeScript, CSS, Less, SCSS, HTML, JSON, GraphQL, Markdown (including GFM and MDX), and YAML.  It can format even more [using plugins](https://prettier.io/docs/en/plugins.html) (PHP, Ruby, Swift, XML, Apex, Elm, Java (!!), Kotlin, pgSQL, .properties, solidity, svelte, toml, shellscript, ...).
@@ -1300,10 +1329,6 @@ usually you will be creating a generic format.
 </configuration>
 ```
 
-**Limitations:**
-- The auto-discovery of config files (up the file tree) will not work when using
-  Biome within spotless.
-
 To apply Biome to more kinds of files with a different configuration, just add
 more formats:
 
@@ -1314,6 +1339,22 @@ more formats:
     <format><includes>src/**/*.js</includes><biome/></format>
 </configuration>
 ```
+
+**Limitations:**
+- The auto-discovery of config files (up the file tree) will not work when using
+  Biome within spotless.
+- The `ignore` option of the `biome.json` configuration file will not be applied.
+  Include and exclude patterns are configured in the spotless configuration in the
+  Maven pom instead.
+
+Note: Due to a limitation of biome, if the name of a file matches a pattern in
+the `ignore` option of the specified `biome.json` configuration file, it will not be
+formatted, even if included in the biome configuration section of the Maven pom.
+You could specify a different `biome.json` configuration file without an `ignore`
+pattern to circumvent this.
+
+Note 2: Biome is hard-coded to ignore certain special files, such as `package.json`
+or `tsconfig.json`. These files will never be formatted.
 
 ### Biome binary
 

@@ -36,7 +36,6 @@ For the folders below in monospace text, they are published on MavenCentral at t
 | `lib-extra` | Contains the optional parts of Spotless which require external dependencies.  `LineEnding.GIT_ATTRIBUTES` won't work unless `lib-extra` is available. |
 | `plugin-gradle` | Integrates spotless and all of its formatters into Gradle. |
 | `plugin-maven` | Integrates spotless and all of its formatters into Maven. |
-| `_ext` | Folder for generating glue jars (specifically packaging Eclipse jars from p2 for consumption using maven).
 
 ## How to add a new FormatterStep
 
@@ -140,24 +139,6 @@ There are many great formatters (prettier, clang-format, black, etc.) which live
 
 Because of Spotless' up-to-date checking and [git ratcheting](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet), Spotless actually doesn't have to call formatters very often, so even an expensive shell call for every single invocation isn't that bad.  Anything that works is better than nothing, and we can always speed things up later if it feels too slow (but it probably won't).
 
-## How to enable the `_ext` projects
-
-The `_ext` projects are disabled per default, since:
-
-* some of the projects perform vast downloads at configuration time
-* the downloaded content may change on server side and break CI builds
-
-
-The `_ext` can be activated via the root project property `com.diffplug.spotless.include.ext`.
-
-Activate the property via command line, like for example:
-
-```
-gradlew -Pcom.diffplug.spotless.include.ext=true build
-```
-
-Or set the property in your user `gradle.properties` file, which is especially recommended if you like to work with the `_ext` projects using IDEs.
-
 ## How to add a new plugin for a build system
 
 The gist of it is that you will have to:
@@ -171,6 +152,37 @@ The gist of it is that you will have to:
 `plugin-gradle` is the canonical example which uses everything that Spotless has to offer.  It's only ~700 lines.
 
 If you get something running, we'd love to host your plugin within this repo as a peer to `plugin-gradle` and `plugin-maven`.
+
+## Run tests
+
+To run all tests, simply do
+
+> gradlew test
+
+Since that takes some time, you might only want to run the tests
+concerning what you are working on:
+
+```shell
+# Run only from test from the "lib" project
+gradlew :testlib:test --tests com.diffplug.spotless.generic.IndentStepTest
+
+# Run only one test from the "plugin-maven" project
+gradlew :plugin-maven:test --tests com.diffplug.spotless.maven.pom.SortPomMavenTest
+
+# Run only one test from the "plugin-gradle" project
+gradlew :plugin-gradle:test --tests com.diffplug.gradle.spotless.FreshMarkExtensionTest
+```
+
+## Check and format code
+
+Before creating a pull request, you might want to format (yes, spotless is  formatted by spotless)
+the code and check for possible bugs
+
+* `./gradlew spotlessApply`
+* `./gradlew spotbugsMain`
+
+These checks are also run by the automated pipeline when you submit a pull request, if
+the pipeline fails, first check if the code is formatted and no bugs were found.
 
 ## Integration testing
 

@@ -1,17 +1,17 @@
 apply plugin: 'com.adarshr.test-logger'
+
+// See com.diffplug.spotless.tag package for available JUnit 5 @Tag annotations
 def special = [
-	'Npm',
 	'Black',
+	'Buf',
 	'Clang',
-	'Buf'
+	'gofmt',
+	'Npm',
+	'Shfmt'
 ]
 
 boolean isCiServer = System.getenv().containsKey("CI")
 tasks.withType(Test).configureEach {
-	// See com.diffplug.spotless.tag package for available JUnit 5 @Tag annotations
-	useJUnitPlatform {
-		excludeTags special as String[]
-	}
 	if (isCiServer) {
 		retry {
 			maxRetries = 2
@@ -25,7 +25,11 @@ tasks.withType(Test).configureEach {
 		maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
 	}
 }
-
+tasks.named('test').configure {
+	useJUnitPlatform {
+		excludeTags special as String[]
+	}
+}
 special.forEach { tag ->
 	tasks.register("test${tag}", Test) {
 		useJUnitPlatform { includeTags tag }

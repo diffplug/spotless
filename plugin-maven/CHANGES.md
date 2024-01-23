@@ -4,9 +4,20 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* Support for formatting shell scripts via [shfmt](https://github.com/mvdan/sh). ([#1998](https://github.com/diffplug/spotless/issues/1998))
+* Support for `gofmt` ([#2001](https://github.com/diffplug/spotless/pull/2001))
+* Support for formatting Java Docs for the Palantir formatter ([#2009](https://github.com/diffplug/spotless/pull/2009))
+
+## [2.42.0] - 2024-01-15
+### Added
 * M2E support: Emit file specific errors during incremental build. ([#1960](https://github.com/diffplug/spotless/issues/1960))
+### Fixed
+* Fix empty files with biome >= 1.5.0 when formatting files that are in the ignore list of the biome configuration file. ([#1989](https://github.com/diffplug/spotless/pull/1989) fixes [#1987](https://github.com/diffplug/spotless/issues/1987))
 ### Changes
 * Use palantir-java-format 2.39.0 on Java 21. ([#1948](https://github.com/diffplug/spotless/pull/1948))
+* Bump default `ktlint` version to latest `1.0.1` -> `1.1.1`. ([#1973](https://github.com/diffplug/spotless/pull/1973))
+* Bump default `googleJavaFormat` version to latest `1.18.1` -> `1.19.2`. ([#1971](https://github.com/diffplug/spotless/pull/1971))
+* Bump default `diktat` version to latest `1.2.5` -> `2.0.0`. ([#1972](https://github.com/diffplug/spotless/pull/1972))
 
 ## [2.41.1] - 2023-12-04
 ### Fixed

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless.glue.pjf;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import com.palantir.javaformat.java.Formatter;
 import com.palantir.javaformat.java.ImportOrderer;
 import com.palantir.javaformat.java.JavaFormatterOptions;
@@ -28,11 +31,20 @@ public class PalantirJavaFormatFormatterFunc implements FormatterFunc {
 
 	private final JavaFormatterOptions.Style formatterStyle;
 
-	public PalantirJavaFormatFormatterFunc(String style) {
+	/**
+	 * Creates a new formatter func that formats code via Palantir.
+	 * @param style The style to use for formatting.
+	 * @param formatJavadoc Whether to format Java docs. Requires at least Palantir 2.36.0 or later, otherwise the
+	 * constructor will throw.
+	 */
+	public PalantirJavaFormatFormatterFunc(String style, boolean formatJavadoc) {
 		this.formatterStyle = JavaFormatterOptions.Style.valueOf(style);
-		formatter = Formatter.createFormatter(JavaFormatterOptions.builder()
-				.style(formatterStyle)
-				.build());
+		JavaFormatterOptions.Builder builder = JavaFormatterOptions.builder();
+		builder.style(formatterStyle);
+		if (formatJavadoc) {
+			applyFormatJavadoc(builder);
+		}
+		formatter = Formatter.createFormatter(builder.build());
 	}
 
 	@Override
@@ -46,5 +58,16 @@ public class PalantirJavaFormatFormatterFunc implements FormatterFunc {
 	@Override
 	public String toString() {
 		return "PalantirJavaFormatFormatterFunc{formatter=" + formatter + '}';
+	}
+
+	private static void applyFormatJavadoc(JavaFormatterOptions.Builder builder) {
+		// The formatJavadoc option is available since Palantir 2.36.0
+		// To support older versions for now, attempt to invoke the builder method via reflection.
+		try {
+			Method formatJavadoc = JavaFormatterOptions.Builder.class.getMethod("formatJavadoc", boolean.class);
+			formatJavadoc.invoke(builder, true);
+		} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+			throw new IllegalStateException("Cannot enable formatJavadoc option, make sure you are using Palantir with version 2.36.0 or later", e);
+		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.kotlin;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -28,21 +29,25 @@ import com.diffplug.spotless.*;
 public class DiktatStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final JarState.Promised jarState;
+	private final String versionDiktat;
 	private final boolean isScript;
 	private final @Nullable FileSignature.Promised config;
 
-	private DiktatStep(JarState.Promised jarState, boolean isScript, @Nullable FileSignature config) {
+	private DiktatStep(JarState.Promised jarState, String versionDiktat, boolean isScript, @Nullable FileSignature config) {
 		this.jarState = jarState;
+		this.versionDiktat = versionDiktat;
 		this.isScript = isScript;
 		this.config = config != null ? config.asPromise() : null;
 	}
 
 	private static final String MIN_SUPPORTED_VERSION = "1.2.1";
 
-	private static final String DEFAULT_VERSION = "1.2.5";
-	static final String NAME = "diktat";
-	static final String PACKAGE_DIKTAT = "org.cqfn.diktat";
-	static final String MAVEN_COORDINATE = PACKAGE_DIKTAT + ":diktat-rules:";
+	private static final String PACKAGE_RELOCATED_VERSION = "2.0.0";
+
+	private static final String DEFAULT_VERSION = "2.0.0";
+	private static final String NAME = "diktat";
+	private static final String MAVEN_COORDINATE_PRE_2_0_0 = "org.cqfn.diktat:diktat-rules:";
+	private static final String MAVEN_COORDINATE = "com.saveourtool.diktat:diktat-runner:";
 
 	public static String defaultVersionDiktat() {
 		return DEFAULT_VERSION;
@@ -67,36 +72,38 @@ public class DiktatStep implements Serializable {
 		Objects.requireNonNull(versionDiktat, "versionDiktat");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.create(NAME,
-				new DiktatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + versionDiktat, provisioner)), isScript, config),
+				new DiktatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + versionDiktat, provisioner)), versionDiktat, isScript, config),
 				DiktatStep::equalityState, State::createFormat);
 	}
 
 	private State equalityState() throws Exception {
-		return new State(jarState.get(), isScript, config != null ? config.get() : null);
+		return new State(jarState.get(), versionDiktat, isScript, config != null ? config.get() : null);
 	}
 
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		final JarState jar;
+		final String versionDiktat;
 		/** Are the files being linted Kotlin script files. */
 		private final boolean isScript;
 		private final @Nullable FileSignature config;
 
-		State(JarState jar, boolean isScript, @Nullable FileSignature config) throws IOException {
+		State(JarState jar, String versionDiktat, boolean isScript, @Nullable FileSignature config) throws IOException {
 			this.jar = jar;
+			this.versionDiktat = versionDiktat;
 			this.isScript = isScript;
 			this.config = config;
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			if (config != null) {
-				System.setProperty("diktat.config.path", config.getOnlyFile().getAbsolutePath());
-			}
-
+			final File configFile = (config != null) ? config.getOnlyFile() : null;
 			Class<?> formatterFunc = jar.getClassLoader().loadClass("com.diffplug.spotless.glue.diktat.DiktatFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(boolean.class);
-			return (FormatterFunc.NeedsFile) constructor.newInstance(isScript);
+			Constructor<?> constructor = formatterFunc.getConstructor(
+					String.class,
+					File.class,
+					boolean.class);
+			return (FormatterFunc.NeedsFile) constructor.newInstance(versionDiktat, configFile, isScript);
 		}
 	}
 }

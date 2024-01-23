@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -205,6 +205,12 @@ public abstract class SpotlessExtension {
 		format(ProtobufExtension.NAME, ProtobufExtension.class, closure);
 	}
 
+	/** Configures the special shell-specific extension. */
+	public void shell(Action<ShellExtension> closure) {
+		requireNonNull(closure);
+		format(ShellExtension.NAME, ShellExtension.class, closure);
+	}
+
 	/** Configures the special YAML-specific extension. */
 	public void yaml(Action<YamlExtension> closure) {
 		requireNonNull(closure);
@@ -215,6 +221,11 @@ public abstract class SpotlessExtension {
 	public void gherkin(Action<GherkinExtension> closure) {
 		requireNonNull(closure);
 		format(GherkinExtension.NAME, GherkinExtension.class, closure);
+	}
+
+	public void go(Action<GoExtension> closure) {
+		requireNonNull(closure);
+		format(GoExtension.NAME, GoExtension.class, closure);
 	}
 
 	/** Configures a custom extension. */
