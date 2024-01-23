@@ -6,6 +6,7 @@ def special = [
 	'Buf',
 	'Clang',
 	'gofmt',
+	'idea',
 	'Npm',
 	'Shfmt'
 ]

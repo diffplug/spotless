@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
+@com.diffplug.spotless.tag.IdeaTest
 class IdeaTest extends MavenIntegrationHarness {
 	@Test
 	void idea() throws Exception {

@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.tag.IdeaTest;
 
+@IdeaTest
 class IdeaStepTest extends ResourceHarness {
 
 	@Test

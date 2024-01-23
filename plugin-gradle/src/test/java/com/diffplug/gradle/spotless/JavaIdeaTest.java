@@ -18,8 +18,9 @@ package com.diffplug.gradle.spotless;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
+import com.diffplug.spotless.tag.IdeaTest;
 
-
+@IdeaTest
 class JavaIdeaTest extends GradleIntegrationHarness {
 	@Test
 	void idea() throws IOException {
