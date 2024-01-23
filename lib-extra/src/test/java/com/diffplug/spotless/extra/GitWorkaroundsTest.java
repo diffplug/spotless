@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.ClearGitConfig;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.extra.GitWorkarounds.RepositorySpecificResolver;
 
+@ClearGitConfig
 class GitWorkaroundsTest extends ResourceHarness {
 	@Test
 	void inline() throws IOException, GitAPIException {
