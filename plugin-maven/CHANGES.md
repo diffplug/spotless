@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
 
 ## [2.43.0] - 2024-01-23
 ### Added
