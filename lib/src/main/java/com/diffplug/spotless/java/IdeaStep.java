@@ -16,19 +16,24 @@ public final class IdeaStep {
 
 	public static FormatterStep create(boolean withDefaults,
 			String binaryPath) {
+		return create(withDefaults, binaryPath, null);
+	}
+
+	public static FormatterStep create(boolean withDefaults,
+			String binaryPath, String configPath) {
 		IdeaFormatterFunc formatterFunc =
-				getFormatterFunc(withDefaults, binaryPath);
+				getFormatterFunc(withDefaults, binaryPath, configPath);
 		// TODO: make it lazy
 		return FormatterStep.createNeverUpToDate("IDEA", formatterFunc);
 	}
 
 	private static IdeaFormatterFunc getFormatterFunc(boolean withDefaults,
-			String binaryPath) {
+			String binaryPath, String configPath) {
 		if (withDefaults) {
 			return IdeaFormatterFunc
-					.allowingDefaultsWithCustomBinary(binaryPath);
+					.allowingDefaultsWithCustomBinary(binaryPath, configPath);
 		}
-		return IdeaFormatterFunc.noDefaultsWithCustomBinary(binaryPath);
+		return IdeaFormatterFunc.noDefaultsWithCustomBinary(binaryPath, configPath);
 	}
 
 }

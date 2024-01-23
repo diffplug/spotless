@@ -27,10 +27,13 @@ public class Idea implements FormatterStepFactory {
 	private String binaryPath;
 
 	@Parameter
+	private String configPath;
+
+	@Parameter
 	private Boolean withDefaults = false;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		return IdeaStep.create(withDefaults, binaryPath);
+		return IdeaStep.create(withDefaults, binaryPath, configPath);
 	}
 }

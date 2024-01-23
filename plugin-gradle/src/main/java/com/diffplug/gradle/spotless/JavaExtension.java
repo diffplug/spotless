@@ -320,6 +320,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public class IdeaConfig {
 		String binaryPath;
+		String configPath;
 		boolean withDefaults = false;
 
 		IdeaConfig() {
@@ -333,6 +334,13 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		public IdeaConfig binaryPath(String binaryPath) {
 			Objects.requireNonNull(binaryPath);
 			this.binaryPath = binaryPath;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public IdeaConfig configPath(String configPath) {
+			Objects.requireNonNull(configPath);
+			this.configPath = configPath;
 			replaceStep(createStep());
 			return this;
 		}

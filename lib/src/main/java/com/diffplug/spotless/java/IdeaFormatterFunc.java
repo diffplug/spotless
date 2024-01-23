@@ -23,10 +23,13 @@ public final class IdeaFormatterFunc implements FormatterFunc.NeedsFile {
 	private static final String DEFAULT_IDEA = "idea";
 
 	private String binaryPath;
+	private String configPath;
 	private boolean withDefaults;
 
-	private IdeaFormatterFunc(boolean withDefaults, String binaryPath) {
+	private IdeaFormatterFunc(boolean withDefaults, String binaryPath,
+			String configPath) {
 		this.withDefaults = withDefaults;
+		this.configPath = configPath;
 		this.binaryPath = Objects.requireNonNullElse(binaryPath, DEFAULT_IDEA);
 		resolveFullBinaryPathAndCheckVersion();
 	}
@@ -49,13 +52,13 @@ public final class IdeaFormatterFunc implements FormatterFunc.NeedsFile {
 	}
 
 	public static IdeaFormatterFunc allowingDefaultsWithCustomBinary(
-			String binaryPath) {
-		return new IdeaFormatterFunc(true, binaryPath);
+			String binaryPath, String configPath) {
+		return new IdeaFormatterFunc(true, binaryPath, configPath);
 	}
 
 	public static IdeaFormatterFunc noDefaultsWithCustomBinary(
-			String binaryPath) {
-		return new IdeaFormatterFunc(false, binaryPath);
+			String binaryPath, String configPath) {
+		return new IdeaFormatterFunc(false, binaryPath, configPath);
 	}
 
 	@Override
@@ -78,6 +81,10 @@ public final class IdeaFormatterFunc implements FormatterFunc.NeedsFile {
 		builder.add("format");
 		if (withDefaults) {
 			builder.add("-allowDefaults");
+		}
+		if (configPath != null) {
+			builder.add("-s");
+			builder.add(configPath);
 		}
 		builder.add(file.toString());
 		return builder.build().collect(Collectors.toList());

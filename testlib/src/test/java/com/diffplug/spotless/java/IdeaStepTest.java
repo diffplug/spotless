@@ -64,7 +64,7 @@ class IdeaStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void formattingsNotDeafaultDoesNothing() throws Exception {
+	void formattingsWithOutDefaultDoesNothing() throws Exception {
 		File dirtyFile = newFile("dirty.java");
 		String dirtyJava =
 				ResourceHarness.getTestResource("java/idea/full.dirty.java");
