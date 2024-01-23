@@ -12,7 +12,7 @@ class IdeaStepTest extends ResourceHarness {
 
 	@Test
 	void name() throws Exception {
-		FormatterStep step = IdeaStep.create();
+		FormatterStep step = IdeaStep.create(true, "idea");
 
 		String name = step.getName();
 
@@ -25,7 +25,7 @@ class IdeaStepTest extends ResourceHarness {
 		String cleanJava =
 				ResourceHarness.getTestResource("java/idea/full.clean.java");
 		Files.write(cleanJava, cleanFile, StandardCharsets.UTF_8);
-		FormatterStep step = IdeaStep.create();
+		FormatterStep step = IdeaStep.create(true, "idea");
 
 		var result = step.format(cleanJava, cleanFile);
 
@@ -39,6 +39,20 @@ class IdeaStepTest extends ResourceHarness {
 		String dirtyJava =
 				ResourceHarness.getTestResource("java/idea/full.dirty.java");
 		Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
+		FormatterStep step = IdeaStep.create(true, "idea");
+
+		var result = step.format(dirtyJava, dirtyFile);
+
+		Assertions.assertNotEquals(dirtyJava, result,
+				"files were not changed after reformat");
+	}
+
+	@Test
+	void formattingsWorkWithDefaultParameters() throws Exception {
+		File dirtyFile = newFile("dirty.java");
+		String dirtyJava =
+				ResourceHarness.getTestResource("java/idea/full.dirty.java");
+		Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
 		FormatterStep step = IdeaStep.create();
 
 		var result = step.format(dirtyJava, dirtyFile);
@@ -47,4 +61,31 @@ class IdeaStepTest extends ResourceHarness {
 				"files were not changed after reformat");
 	}
 
+	@Test
+	void formattingsNotDeafaultDoesNothing() throws Exception {
+		File dirtyFile = newFile("dirty.java");
+		String dirtyJava =
+				ResourceHarness.getTestResource("java/idea/full.dirty.java");
+		Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
+		FormatterStep step = IdeaStep.create(false, "idea");
+
+		var result = step.format(dirtyJava, dirtyFile);
+
+		Assertions.assertEquals(dirtyJava, result,
+				"files were changed after reformat");
+	}
+
+	@Test
+	void configureFile() throws Exception {
+		File cleanFile = newFile("clean.java");
+		String cleanJava =
+				ResourceHarness.getTestResource("java/idea/full.clean.java");
+		Files.write(cleanJava, cleanFile, StandardCharsets.UTF_8);
+		FormatterStep step = IdeaStep.create(true, "idea");
+
+		var result = step.format(cleanJava, cleanFile);
+
+		Assertions.assertEquals(cleanJava, result,
+				"formatting was applied to clean file");
+	}
 }
