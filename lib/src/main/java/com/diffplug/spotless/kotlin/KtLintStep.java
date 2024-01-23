@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class KtLintStep {
 	// prevent direct instantiation
 	private KtLintStep() {}
 
-	private static final String DEFAULT_VERSION = "1.0.1";
+	private static final String DEFAULT_VERSION = "1.1.1";
 	private static final String NAME = "ktlint";
 	private static final String MAVEN_COORDINATE_0_DOT = "com.pinterest:ktlint:";
 	private static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";

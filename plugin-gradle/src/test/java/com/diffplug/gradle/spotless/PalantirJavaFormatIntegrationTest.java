@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,28 @@ class PalantirJavaFormatIntegrationTest extends GradleIntegrationHarness {
 		replace("build.gradle",
 				"palantirJavaFormat('1.1.0')",
 				"palantirJavaFormat('1.0.1')");
+		checkRunsThenUpToDate();
+	}
+
+	@Test
+	void formatJavaDoc() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"    java {",
+				"        target file('test.java')",
+				"        palantirJavaFormat('2.39.0').formatJavadoc(true)",
+				"    }",
+				"}");
+
+		setFile("test.java").toResource("java/palantirjavaformat/JavaCodeWithJavaDocUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("test.java").sameAsResource("java/palantirjavaformat/JavaCodeWithJavaDocFormatted.test");
+
 		checkRunsThenUpToDate();
 	}
 }

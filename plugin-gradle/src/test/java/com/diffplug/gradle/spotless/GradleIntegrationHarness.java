@@ -119,6 +119,7 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		return GradleRunner.create()
 				.withGradleVersion(GradleVersionSupport.MINIMUM.version)
 				.withProjectDir(rootFolder())
+				.withTestKitDir(getTestKitDir())
 				.withPluginClasspath();
 	}
 
@@ -220,5 +221,13 @@ public class GradleIntegrationHarness extends ResourceHarness {
 				printer.println(task.getPath() + " " + task.getOutcome());
 			}
 		});
+	}
+
+	private static File getTestKitDir() {
+		String gradleUserHome = System.getenv("GRADLE_USER_HOME");
+		if (gradleUserHome == null || gradleUserHome.isEmpty()) {
+			gradleUserHome = new File(System.getProperty("user.home"), ".gradle").getAbsolutePath();
+		}
+		return new File(gradleUserHome, "testkit");
 	}
 }
