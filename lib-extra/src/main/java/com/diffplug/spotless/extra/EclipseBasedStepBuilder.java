@@ -33,7 +33,7 @@ import com.diffplug.spotless.FormatterProperties;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.ThrowingEx;
+import com.diffplug.spotless.SerializedFunction;
 
 /**
  * Generic Eclipse based formatter step {@link State} builder.
@@ -41,7 +41,7 @@ import com.diffplug.spotless.ThrowingEx;
 public class EclipseBasedStepBuilder {
 	private final String formatterName;
 	private final String formatterStepExt;
-	private final ThrowingEx.Function<State, FormatterFunc> stateToFormatter;
+	private final SerializedFunction<State, FormatterFunc> stateToFormatter;
 	private final Provisioner jarProvisioner;
 	private String formatterVersion;
 
@@ -63,12 +63,12 @@ public class EclipseBasedStepBuilder {
 	private Iterable<File> settingsFiles = new ArrayList<>();
 
 	/** Initialize valid default configuration, taking latest version */
-	public EclipseBasedStepBuilder(String formatterName, Provisioner jarProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+	public EclipseBasedStepBuilder(String formatterName, Provisioner jarProvisioner, SerializedFunction<State, FormatterFunc> stateToFormatter) {
 		this(formatterName, "", jarProvisioner, stateToFormatter);
 	}
 
 	/** Initialize valid default configuration, taking latest version */
-	public EclipseBasedStepBuilder(String formatterName, String formatterStepExt, Provisioner jarProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+	public EclipseBasedStepBuilder(String formatterName, String formatterStepExt, Provisioner jarProvisioner, SerializedFunction<State, FormatterFunc> stateToFormatter) {
 		this.formatterName = Objects.requireNonNull(formatterName, "formatterName");
 		this.formatterStepExt = Objects.requireNonNull(formatterStepExt, "formatterStepExt");
 		this.jarProvisioner = Objects.requireNonNull(jarProvisioner, "jarProvisioner");
@@ -78,7 +78,11 @@ public class EclipseBasedStepBuilder {
 
 	/** Returns the FormatterStep (whose state will be calculated lazily). */
 	public FormatterStep build() {
-		return FormatterStep.createLazy(formatterName + formatterStepExt, this::get, stateToFormatter);
+		var roundtrippableState = new EclipseStep(formatterVersion, formatterStepExt, FileSignature.promise(settingsFiles), JarState.promise(() -> {
+			return JarState.withoutTransitives(dependencies, jarProvisioner);
+		}));
+		return FormatterStep.create(formatterName + formatterStepExt, roundtrippableState,
+				EclipseStep::state, stateToFormatter);
 	}
 
 	/** Set dependencies for the corresponding Eclipse version */
@@ -122,21 +126,23 @@ public class EclipseBasedStepBuilder {
 		this.settingsFiles = settingsFiles;
 	}
 
-	/** Creates the state of the configuration. */
-	EclipseBasedStepBuilder.State get() throws IOException {
-		/*
-		 * The current use case is tailored for Gradle.
-		 * Gradle calls this method only once per execution
-		 * and compares the State with the one of a previous run
-		 * for incremental building.
-		 * Hence a lazy construction is not required.
-		 */
-		return new State(
-				formatterVersion,
-				formatterStepExt,
-				jarProvisioner,
-				dependencies,
-				settingsFiles);
+	static class EclipseStep implements Serializable {
+		private static final long serialVersionUID = 1;
+		private final String semanticVersion;
+		private final String formatterStepExt;
+		private final FileSignature.Promised settingsPromise;
+		private final JarState.Promised jarPromise;
+
+		EclipseStep(String semanticVersion, String formatterStepExt, FileSignature.Promised settingsPromise, JarState.Promised jarPromise) {
+			this.semanticVersion = semanticVersion;
+			this.formatterStepExt = formatterStepExt;
+			this.settingsPromise = settingsPromise;
+			this.jarPromise = jarPromise;
+		}
+
+		private State state() {
+			return new State(semanticVersion, formatterStepExt, jarPromise.get(), settingsPromise.get());
+		}
 	}
 
 	/**
@@ -155,9 +161,9 @@ public class EclipseBasedStepBuilder {
 		private final FileSignature settingsFiles;
 
 		/** State constructor expects that all passed items are not modified afterwards */
-		protected State(String formatterVersion, String formatterStepExt, Provisioner jarProvisioner, List<String> dependencies, Iterable<File> settingsFiles) throws IOException {
-			this.jarState = JarState.withoutTransitives(dependencies, jarProvisioner);
-			this.settingsFiles = FileSignature.signAsList(settingsFiles);
+		protected State(String formatterVersion, String formatterStepExt, JarState jarState, FileSignature settingsFiles) {
+			this.jarState = jarState;
+			this.settingsFiles = settingsFiles;
 			this.formatterStepExt = formatterStepExt;
 			semanticVersion = convertEclipseVersion(formatterVersion);
 		}
