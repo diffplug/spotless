@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,24 @@
 package com.diffplug.spotless.generic;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.SerializedFunction;
 
 /** Simple step which checks for consistent indentation characters. */
-public final class IndentStep {
+public final class IndentStep implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	final Type type;
+	final int numSpacesPerTab;
+
+	private IndentStep(Type type, int numSpacesPerTab) {
+		this.type = type;
+		this.numSpacesPerTab = numSpacesPerTab;
+	}
 
 	private static final int DEFAULT_NUM_SPACES_PER_TAB = 4;
-
-	// prevent direct instantiation
-	private IndentStep() {}
 
 	public enum Type {
 		TAB, SPACE;
@@ -49,32 +55,21 @@ public final class IndentStep {
 
 	/** Creates a step which will indent with the given type of whitespace, converting between tabs and spaces at the given ratio. */
 	public static FormatterStep create(Type type, int numSpacesPerTab) {
-		Objects.requireNonNull(type, "type");
 		return FormatterStep.create("indentWith" + type.tabSpace("Tabs", "Spaces"),
-				new State(type, numSpacesPerTab), State::toFormatter);
+				new IndentStep(type, numSpacesPerTab), SerializedFunction.identity(),
+				IndentStep::startFormatting);
 	}
 
-	private static class State implements Serializable {
-		private static final long serialVersionUID = 1L;
-
-		final Type type;
-		final int numSpacesPerTab;
-
-		State(Type type, int numSpacesPerTab) {
-			this.type = type;
-			this.numSpacesPerTab = numSpacesPerTab;
-		}
-
-		FormatterFunc toFormatter() {
-			return new Runtime(this)::format;
-		}
+	private FormatterFunc startFormatting() {
+		var runtime = new Runtime(this);
+		return runtime::format;
 	}
 
 	static class Runtime {
-		final State state;
+		final IndentStep state;
 		final StringBuilder builder = new StringBuilder();
 
-		Runtime(State state) {
+		Runtime(IndentStep state) {
 			this.state = state;
 		}
 

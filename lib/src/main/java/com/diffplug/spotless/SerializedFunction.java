@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.tag;
+package com.diffplug.spotless;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.io.Serializable;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.junit.jupiter.api.Tag;
-
-@Target({TYPE, METHOD})
-@Retention(RUNTIME)
-@Tag("buf")
-public @interface BufTest {}
+@FunctionalInterface
+public interface SerializedFunction<T, R> extends Serializable, ThrowingEx.Function<T, R> {
+	static <T> SerializedFunction<T, T> identity() {
+		return t -> t;
+	}
+}

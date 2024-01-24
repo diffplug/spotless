@@ -2,13 +2,13 @@ apply plugin: 'com.adarshr.test-logger'
 
 // See com.diffplug.spotless.tag package for available JUnit 5 @Tag annotations
 def special = [
-	'Black',
-	'Buf',
-	'Clang',
+	'black',
+	'buf',
+	'clang',
 	'gofmt',
 	'idea',
-	'Npm',
-	'Shfmt'
+	'npm',
+	'shfmt'
 ]
 
 boolean isCiServer = System.getenv().containsKey("CI")
@@ -32,7 +32,7 @@ tasks.named('test').configure {
 	}
 }
 special.forEach { tag ->
-	tasks.register("test${tag}", Test) {
+	tasks.register("test${tag.capitalize()}", Test) {
 		useJUnitPlatform { includeTags tag }
 	}
 }

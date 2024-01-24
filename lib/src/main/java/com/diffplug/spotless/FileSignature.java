@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Computes a signature for any needed files. */
@@ -43,6 +44,8 @@ public final class FileSignature implements Serializable {
 	 * Transient because not needed to uniquely identify a FileSignature instance, and also because
 	 * Gradle only needs this class to be Serializable so it can compare FileSignature instances for
 	 * incremental builds.
+	 *
+	 * We don't want these absolute paths to screw up buildcache keys.
 	 */
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private final transient List<File> files;
@@ -91,6 +94,35 @@ public final class FileSignature implements Serializable {
 			signatures[i] = cache.sign(file);
 			++i;
 		}
+	}
+
+	/** A view of `FileSignature` which can be safely roundtripped. */
+	public static class Promised implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private final List<File> files;
+		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
+		private transient @Nullable FileSignature cached;
+
+		private Promised(List<File> files, @Nullable FileSignature cached) {
+			this.files = files;
+			this.cached = cached;
+		}
+
+		public FileSignature get() {
+			if (cached == null) {
+				// null when restored via serialization
+				cached = ThrowingEx.get(() -> new FileSignature(files));
+			}
+			return cached;
+		}
+	}
+
+	public Promised asPromise() {
+		return new Promised(files, this);
+	}
+
+	public static Promised promise(Iterable<File> files) {
+		return new Promised(MoreIterables.toNullHostileList(files), null);
 	}
 
 	/** Returns all of the files in this signature, throwing an exception if there are more or less than 1 file. */

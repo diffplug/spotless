@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,6 @@ class EslintFormatterStepTest {
 			//			final File eslintRc = setFile(buildDir().getPath() + "/.eslintrc.js").toResource(filedir + ".eslintrc.js");
 
 			final String dirtyFile = filedir + "javascript-es6.dirty";
-			File dirtyFileFile = setFile(testDir + "test.js").toResource(dirtyFile);
 			final String cleanFile = filedir + "javascript-es6.clean";
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
@@ -69,7 +68,7 @@ class EslintFormatterStepTest {
 					new EslintConfig(eslintRc, null));
 
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
-				stepHarness.test(dirtyFileFile, ResourceHarness.getTestResource(dirtyFile), ResourceHarness.getTestResource(cleanFile));
+				stepHarness.test("test.js", ResourceHarness.getTestResource(dirtyFile), ResourceHarness.getTestResource(cleanFile));
 			}
 		}
 	}
@@ -100,7 +99,6 @@ class EslintFormatterStepTest {
 				tsconfigFile = setFile(testDir + "tsconfig.json").toResource(filedir + "tsconfig.json");
 			}
 			final String dirtyFile = filedir + "typescript.dirty";
-			File dirtyFileFile = setFile(testDir + "test.ts").toResource(dirtyFile);
 			final String cleanFile = filedir + "typescript.clean";
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
@@ -113,7 +111,7 @@ class EslintFormatterStepTest {
 					new EslintTypescriptConfig(eslintRc, null, tsconfigFile));
 
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
-				stepHarness.test(dirtyFileFile, ResourceHarness.getTestResource(dirtyFile), ResourceHarness.getTestResource(cleanFile));
+				stepHarness.test(testDir + "test.ts", ResourceHarness.getTestResource(dirtyFile), ResourceHarness.getTestResource(cleanFile));
 			}
 		}
 	}
@@ -158,7 +156,6 @@ class EslintFormatterStepTest {
 
 			File tsconfigFile = setFile(testDir + "tsconfig.json").toResource(filedir + "tsconfig.json");
 			final String dirtyFile = filedir + "typescript.dirty";
-			File dirtyFileFile = setFile(testDir + "test.ts").toResource(dirtyFile);
 			final String cleanFile = filedir + "typescript.clean";
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
@@ -171,7 +168,7 @@ class EslintFormatterStepTest {
 					new EslintTypescriptConfig(null, esLintConfig, tsconfigFile));
 
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
-				stepHarness.test(dirtyFileFile, ResourceHarness.getTestResource(dirtyFile), ResourceHarness.getTestResource(cleanFile));
+				stepHarness.test(testDir + "test.ts", ResourceHarness.getTestResource(dirtyFile), ResourceHarness.getTestResource(cleanFile));
 			}
 		}
 	}

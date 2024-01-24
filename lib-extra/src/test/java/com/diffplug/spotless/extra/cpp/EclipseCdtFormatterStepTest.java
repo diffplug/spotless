@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,16 @@ import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 class EclipseCdtFormatterStepTest extends EquoResourceHarness {
-	private final static String INPUT = "#include <a.h>;\nint main(int argc,   \nchar *argv[]) {}";
-	private final static String EXPECTED = "#include <a.h>;\nint main(int argc, char *argv[]) {\n}\n";
-
 	public EclipseCdtFormatterStepTest() {
-		super(EclipseCdtFormatterStep.createBuilder(TestProvisioner.mavenCentral()), INPUT, EXPECTED);
+		super(EclipseCdtFormatterStep.createBuilder(TestProvisioner.mavenCentral()));
 	}
 
 	@ParameterizedTest
 	@MethodSource
 	void formatWithVersion(String version) throws Exception {
-		assertFormatted(version);
+		harnessFor(version).test("main.c",
+				"#include <a.h>;\nint main(int argc,   \nchar *argv[]) {}",
+				"#include <a.h>;\nint main(int argc, char *argv[]) {\n}\n");
 	}
 
 	private static Stream<String> formatWithVersion() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,14 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Objects;
 
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 
 /** An api for testing a {@code FormatterStep} that doesn't depend on the File path. DO NOT ADD FILE SUPPORT TO THIS, use {@link StepHarnessWithFile} if you need that. */
-public class StepHarness implements AutoCloseable {
-	private final Formatter formatter;
-
+public class StepHarness extends StepHarnessBase<StepHarness> {
 	private StepHarness(Formatter formatter) {
-		this.formatter = Objects.requireNonNull(formatter);
+		super(formatter);
 	}
 
 	/** Creates a harness for testing steps which don't depend on the file. */
@@ -57,14 +54,14 @@ public class StepHarness implements AutoCloseable {
 
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
 	public StepHarness test(String before, String after) {
-		String actual = formatter.compute(LineEnding.toUnix(before), new File(""));
+		String actual = formatter().compute(LineEnding.toUnix(before), new File(""));
 		assertEquals(after, actual, "Step application failed");
 		return testUnaffected(after);
 	}
 
 	/** Asserts that the given element is idempotent w.r.t the step under test. */
 	public StepHarness testUnaffected(String idempotentElement) {
-		String actual = formatter.compute(LineEnding.toUnix(idempotentElement), new File(""));
+		String actual = formatter().compute(LineEnding.toUnix(idempotentElement), new File(""));
 		assertEquals(idempotentElement, actual, "Step is not idempotent");
 		return this;
 	}
@@ -88,7 +85,7 @@ public class StepHarness implements AutoCloseable {
 
 	public AbstractStringAssert<?> testExceptionMsg(String before) {
 		try {
-			formatter.compute(LineEnding.toUnix(before), Formatter.NO_FILE_SENTINEL);
+			formatter().compute(LineEnding.toUnix(before), Formatter.NO_FILE_SENTINEL);
 			throw new SecurityException("Expected exception");
 		} catch (Throwable e) {
 			if (e instanceof SecurityException) {
@@ -104,10 +101,5 @@ public class StepHarness implements AutoCloseable {
 				return Assertions.assertThat(rootCause.getMessage());
 			}
 		}
-	}
-
-	@Override
-	public void close() {
-		formatter.close();
 	}
 }

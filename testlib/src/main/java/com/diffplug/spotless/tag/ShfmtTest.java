@@ -26,5 +26,5 @@ import org.junit.jupiter.api.Tag;
 
 @Target({TYPE, METHOD})
 @Retention(RUNTIME)
-@Tag("Shfmt")
+@Tag("shfmt")
 public @interface ShfmtTest {}

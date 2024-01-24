@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.extra.wtp;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,14 +36,18 @@ public class EclipseWtpFormatterStepTest {
 	private final static Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "4.8.0");
 
 	private static class NestedTests extends EclipseResourceHarness {
+		private final String unformatted, formatted;
+
 		public NestedTests(String unformatted, String formatted, EclipseWtpFormatterStep kind) {
-			super(kind.createBuilder(TestProvisioner.mavenCentral()), unformatted, formatted);
+			super(kind.createBuilder(TestProvisioner.mavenCentral()));
+			this.unformatted = unformatted;
+			this.formatted = formatted;
 		}
 
 		@ParameterizedTest
 		@MethodSource
 		void formatWithVersion(String version) throws Exception {
-			assertFormatted(version);
+			harnessFor(version).test("someFilename", unformatted, formatted);
 		}
 
 		private static Stream<String> formatWithVersion() {
@@ -67,8 +69,8 @@ public class EclipseWtpFormatterStepTest {
 				config.setProperty("indentationChar", "space");
 				config.setProperty("indentationSize", "5");
 			});
-			String defaultFormatted = assertFormatted(EclipseWtpFormatterStep.defaultVersion(), tabPropertyFile);
-			assertThat(format(EclipseWtpFormatterStep.defaultVersion(), spacePropertyFile)).as("Space formatting output unexpected").isEqualTo(defaultFormatted.replace("\t", "     "));
+			harnessFor(EclipseWtpFormatterStep.defaultVersion(), tabPropertyFile).test("someFilename", unformatted, formatted);
+			harnessFor(EclipseWtpFormatterStep.defaultVersion(), spacePropertyFile).test("someFilename", unformatted, formatted.replace("\t", "     "));
 		}
 
 		private File createPropertyFile(Consumer<Properties> config) throws IOException {

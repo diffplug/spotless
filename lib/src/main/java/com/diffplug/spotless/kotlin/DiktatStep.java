@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,20 @@ import javax.annotation.Nullable;
 
 import com.diffplug.spotless.*;
 
-/** Wraps up <a href="https://github.com/saveourtool/diktat">diktat</a> as a FormatterStep. */
-public class DiktatStep {
+/** Wraps up <a href="https://github.com/cqfn/diKTat">diktat</a> as a FormatterStep. */
+public class DiktatStep implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private final JarState.Promised jarState;
+	private final String versionDiktat;
+	private final boolean isScript;
+	private final @Nullable FileSignature.Promised config;
 
-	// prevent direct instantiation
-	private DiktatStep() {}
+	private DiktatStep(JarState.Promised jarState, String versionDiktat, boolean isScript, @Nullable FileSignature config) {
+		this.jarState = jarState;
+		this.versionDiktat = versionDiktat;
+		this.isScript = isScript;
+		this.config = config != null ? config.asPromise() : null;
+	}
 
 	private static final String MIN_SUPPORTED_VERSION = "1.2.1";
 
@@ -62,29 +71,32 @@ public class DiktatStep {
 		}
 		Objects.requireNonNull(versionDiktat, "versionDiktat");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new DiktatStep.State(versionDiktat, provisioner, isScript, config),
-				DiktatStep.State::createFormat);
+		final String diktatCoordinate;
+		if (BadSemver.version(versionDiktat) >= BadSemver.version(PACKAGE_RELOCATED_VERSION)) {
+			diktatCoordinate = MAVEN_COORDINATE + versionDiktat;
+		} else {
+			diktatCoordinate = MAVEN_COORDINATE_PRE_2_0_0 + versionDiktat;
+		}
+		return FormatterStep.create(NAME,
+				new DiktatStep(JarState.promise(() -> JarState.from(diktatCoordinate, provisioner)), versionDiktat, isScript, config),
+				DiktatStep::equalityState, State::createFormat);
+	}
+
+	private State equalityState() throws Exception {
+		return new State(jarState.get(), versionDiktat, isScript, config != null ? config.get() : null);
 	}
 
 	static final class State implements Serializable {
-
 		private static final long serialVersionUID = 1L;
 
-		private final String versionDiktat;
+		final JarState jar;
+		final String versionDiktat;
 		/** Are the files being linted Kotlin script files. */
 		private final boolean isScript;
 		private final @Nullable FileSignature config;
-		final JarState jar;
 
-		State(String versionDiktat, Provisioner provisioner, boolean isScript, @Nullable FileSignature config) throws IOException {
-			final String diktatCoordinate;
-			if (BadSemver.version(versionDiktat) >= BadSemver.version(PACKAGE_RELOCATED_VERSION)) {
-				diktatCoordinate = MAVEN_COORDINATE + versionDiktat;
-			} else {
-				diktatCoordinate = MAVEN_COORDINATE_PRE_2_0_0 + versionDiktat;
-			}
-			this.jar = JarState.from(diktatCoordinate, provisioner);
+		State(JarState jar, String versionDiktat, boolean isScript, @Nullable FileSignature config) throws IOException {
+			this.jar = jar;
 			this.versionDiktat = versionDiktat;
 			this.isScript = isScript;
 			this.config = config;
