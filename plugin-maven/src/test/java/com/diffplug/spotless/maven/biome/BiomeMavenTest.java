@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,5 +198,21 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 		assertThat(result.stdOutUtf8()).contains("Format with errors is disabled.");
 		assertThat(result.stdOutUtf8()).contains("Unable to format file");
 		assertThat(result.stdOutUtf8()).contains("Step 'biome' found problem in 'biome_test.js'");
+	}
+
+	/**
+	 * Biome is hard-coded to ignore certain files, such as package.json. Since version 1.5.0,
+	 * the biome CLI does not output any formatted code anymore, whereas previously it printed
+	 * the input as-is. This tests checks that when the biome formatter outputs an empty string,
+	 * the contents of the file to format are used instead.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void preservesIgnoredFiles() throws Exception {
+		writePomWithJsonSteps("**/*.json", "<biome><version>1.5.0</version></biome>");
+		setFile("package.json").toResource("biome/json/packageBefore.json");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("package.json").sameAsResource("biome/json/packageAfter.json");
 	}
 }

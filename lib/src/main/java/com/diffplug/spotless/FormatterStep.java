@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
  */
 public interface FormatterStep extends Serializable {
 	/** The name of the step, for debugging purposes. */
-	public String getName();
+	String getName();
 
 	/**
 	 * Returns a formatted version of the given content.
@@ -43,7 +43,8 @@ public interface FormatterStep extends Serializable {
 	 *         if the formatter step doesn't have any changes to make
 	 * @throws Exception if the formatter step experiences a problem
 	 */
-	public @Nullable String format(String rawUnix, File file) throws Exception;
+	@Nullable
+	String format(String rawUnix, File file) throws Exception;
 
 	/**
 	 * Returns a new FormatterStep which will only apply its changes
@@ -54,7 +55,7 @@ public interface FormatterStep extends Serializable {
 	 * @return FormatterStep
 	 */
 	@Deprecated
-	public default FormatterStep filterByContentPattern(String contentPattern) {
+	default FormatterStep filterByContentPattern(String contentPattern) {
 		return filterByContent(OnMatch.INCLUDE, contentPattern);
 	}
 
@@ -68,7 +69,7 @@ public interface FormatterStep extends Serializable {
 	 *            java regular expression used to filter in or out files which content contain pattern
 	 * @return FormatterStep
 	 */
-	public default FormatterStep filterByContent(OnMatch onMatch, String contentPattern) {
+	default FormatterStep filterByContent(OnMatch onMatch, String contentPattern) {
 		return new FilterByContentPatternFormatterStep(this, onMatch, contentPattern);
 	}
 
@@ -78,7 +79,7 @@ public interface FormatterStep extends Serializable {
 	 * <p>
 	 * The provided filter must be serializable.
 	 */
-	public default FormatterStep filterByFile(SerializableFileFilter filter) {
+	default FormatterStep filterByFile(SerializableFileFilter filter) {
 		return new FilterByFileFormatterStep(this, filter);
 	}
 
@@ -124,7 +125,7 @@ public interface FormatterStep extends Serializable {
 			ThrowingEx.Supplier<RoundtripState> roundtripInit,
 			SerializedFunction<RoundtripState, EqualityState> equalityFunc,
 			SerializedFunction<EqualityState, FormatterFunc> formatterFunc) {
-		return new FormatterStepSerializationRoundtrip(name, roundtripInit, equalityFunc, formatterFunc);
+		return new FormatterStepSerializationRoundtrip<>(name, roundtripInit, equalityFunc, formatterFunc);
 	}
 
 	/**
@@ -160,7 +161,7 @@ public interface FormatterStep extends Serializable {
 	 *             only the state supplied by state and nowhere else.
 	 * @return A FormatterStep
 	 */
-	public static <State extends Serializable> FormatterStep createLazy(
+	static <State extends Serializable> FormatterStep createLazy(
 			String name,
 			ThrowingEx.Supplier<State> stateSupplier,
 			ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
@@ -177,7 +178,7 @@ public interface FormatterStep extends Serializable {
 	 *             only the state supplied by state and nowhere else.
 	 * @return A FormatterStep
 	 */
-	public static <State extends Serializable> FormatterStep create(
+	static <State extends Serializable> FormatterStep create(
 			String name,
 			State state,
 			ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
@@ -194,7 +195,7 @@ public interface FormatterStep extends Serializable {
 	 * @return A FormatterStep which will never report that it is up-to-date, because
 	 *         it is not equal to the serialized representation of itself.
 	 */
-	public static FormatterStep createNeverUpToDateLazy(
+	static FormatterStep createNeverUpToDateLazy(
 			String name,
 			ThrowingEx.Supplier<FormatterFunc> functionSupplier) {
 		return new FormatterStepImpl.NeverUpToDate(name, functionSupplier);
@@ -208,7 +209,7 @@ public interface FormatterStep extends Serializable {
 	 * @return A FormatterStep which will never report that it is up-to-date, because
 	 *         it is not equal to the serialized representation of itself.
 	 */
-	public static FormatterStep createNeverUpToDate(
+	static FormatterStep createNeverUpToDate(
 			String name,
 			FormatterFunc function) {
 		Objects.requireNonNull(function, "function");

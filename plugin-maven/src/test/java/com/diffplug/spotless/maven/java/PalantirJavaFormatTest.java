@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,22 +27,33 @@ class PalantirJavaFormatTest extends MavenIntegrationHarness {
 				"  <version>1.1.0</version>",
 				"</palantirJavaFormat>");
 
-		runTest("java/palantirjavaformat/JavaCodeFormatted.test");
+		runTest("java/palantirjavaformat/JavaCodeFormatted.test", "java/palantirjavaformat/JavaCodeUnformatted.test");
 	}
 
 	@Test
 	void specificJava11Version2() throws Exception {
 		writePomWithJavaSteps(
 				"<palantirJavaFormat>",
-				"  <version>2.38.0</version>",
+				"  <version>2.39.0</version>",
 				"</palantirJavaFormat>");
 
-		runTest("java/palantirjavaformat/JavaCodeFormatted.test");
+		runTest("java/palantirjavaformat/JavaCodeFormatted.test", "java/palantirjavaformat/JavaCodeUnformatted.test");
 	}
 
-	private void runTest(String targetResource) throws Exception {
+	@Test
+	void formatJavaDoc() throws Exception {
+		writePomWithJavaSteps(
+				"<palantirJavaFormat>",
+				"  <version>2.39.0</version>",
+				"  <formatJavadoc>true</formatJavadoc>",
+				"</palantirJavaFormat>");
+
+		runTest("java/palantirjavaformat/JavaCodeWithJavaDocFormatted.test", "java/palantirjavaformat/JavaCodeWithJavaDocUnformatted.test");
+	}
+
+	private void runTest(String targetResource, String sourceResource) throws Exception {
 		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/palantirjavaformat/JavaCodeUnformatted.test");
+		setFile(path).toResource(sourceResource);
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource(targetResource);
 	}
