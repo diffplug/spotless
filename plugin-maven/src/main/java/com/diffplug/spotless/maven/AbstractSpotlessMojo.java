@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,7 @@ import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.gherkin.Gherkin;
+import com.diffplug.spotless.maven.go.Go;
 import com.diffplug.spotless.maven.groovy.Groovy;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 import com.diffplug.spotless.maven.incremental.UpToDateChecking;
@@ -73,6 +74,7 @@ import com.diffplug.spotless.maven.markdown.Markdown;
 import com.diffplug.spotless.maven.pom.Pom;
 import com.diffplug.spotless.maven.python.Python;
 import com.diffplug.spotless.maven.scala.Scala;
+import com.diffplug.spotless.maven.shell.Shell;
 import com.diffplug.spotless.maven.sql.Sql;
 import com.diffplug.spotless.maven.typescript.Typescript;
 import com.diffplug.spotless.maven.yaml.Yaml;
@@ -179,10 +181,16 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private Json json;
 
 	@Parameter
+	private Shell shell;
+
+	@Parameter
 	private Yaml yaml;
 
 	@Parameter
 	private Gherkin gherkin;
+
+	@Parameter
+	private Go go;
 
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
@@ -358,7 +366,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, yaml, gherkin))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

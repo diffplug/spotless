@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ import java.time.YearMonth;
 import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.ClearGitConfig;
+
+@ClearGitConfig
 class LicenseHeaderTest extends GradleIntegrationHarness {
 	private static final String NOW = String.valueOf(YearMonth.now().getYear());
 

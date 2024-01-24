@@ -10,6 +10,30 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* `FileSignature.Promised` and `JarState.Promised` to facilitate round-trip serialization for the Gradle configuration cache. ([#1945](https://github.com/diffplug/spotless/pull/1945)) 
+### Removed
+* **BREAKING** Remove `JarState.getMavenCoordinate(String prefix)`. ([#1945](https://github.com/diffplug/spotless/pull/1945))
+### Fixed
+* Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
+
+## [2.45.0] - 2024-01-23
+### Added
+* Support for `gofmt` ([#2001](https://github.com/diffplug/spotless/pull/2001))
+* Support for formatting Java Docs for the Palantir formatter ([#2009](https://github.com/diffplug/spotless/pull/2009))
+
+## [2.44.0] - 2024-01-15
+### Added
+* New static method to `DiffMessageFormatter` which allows to retrieve diffs with their line numbers ([#1960](https://github.com/diffplug/spotless/issues/1960))
+* Gradle - Support for formatting shell scripts via [shfmt](https://github.com/mvdan/sh). ([#1994](https://github.com/diffplug/spotless/pull/1994))
+### Fixed
+* Fix empty files with biome >= 1.5.0 when formatting files that are in the ignore list of the biome configuration file. ([#1989](https://github.com/diffplug/spotless/pull/1989) fixes [#1987](https://github.com/diffplug/spotless/issues/1987))
+* Fix a regression in BufStep where the same arguments were being provided to every `buf` invocation. ([#1976](https://github.com/diffplug/spotless/issues/1976))
+### Changes
+* Use palantir-java-format 2.39.0 on Java 21. ([#1948](https://github.com/diffplug/spotless/pull/1948))
+* Bump default `ktlint` version to latest `1.0.1` -> `1.1.1`. ([#1973](https://github.com/diffplug/spotless/pull/1973))
+* Bump default `googleJavaFormat` version to latest `1.18.1` -> `1.19.2`. ([#1971](https://github.com/diffplug/spotless/pull/1971))
+* Bump default `diktat` version to latest `1.2.5` -> `2.0.0`. ([#1972](https://github.com/diffplug/spotless/pull/1972))
 
 ## [2.43.1] - 2023-12-04
 ### Fixed

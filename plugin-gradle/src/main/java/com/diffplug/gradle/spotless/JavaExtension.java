@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -256,6 +256,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	public class PalantirJavaFormatConfig {
 		final String version;
 		String style;
+		boolean formatJavadoc;
 
 		PalantirJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
@@ -269,8 +270,14 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		public PalantirJavaFormatConfig formatJavadoc(boolean formatJavadoc) {
+			this.formatJavadoc = formatJavadoc;
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
-			return PalantirJavaFormatStep.create(version, style, provisioner());
+			return PalantirJavaFormatStep.create(version, style, formatJavadoc, provisioner());
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -391,6 +391,19 @@ class RomeStepTest extends ResourceHarness {
 				var step = RomeStep.withExeDownload(BiomeFlavor.BIOME, "1.2.0", downloadDir.toString()).create();
 				var stepHarness = StepHarnessWithFile.forStep(RomeStepTest.this, step);
 				stepHarness.testResource("biome/ts/fileBefore.tsx", "biome/ts/fileAfter.tsx");
+			}
+
+			/**
+			 * Biome is hard-coded to ignore certain files, such as package.json. Since version 1.5.0,
+			 * the biome CLI does not output any formatted code anymore, whereas previously it printed
+			 * the input as-is. This tests checks that when the biome formatter outputs an empty string,
+			 * the contents of the file to format are used instead.
+			 */
+			@Test
+			void preservesIgnoredFiles() {
+				var step = RomeStep.withExeDownload(BiomeFlavor.BIOME, "1.5.0", downloadDir.toString()).create();
+				var stepHarness = StepHarnessWithFile.forStep(RomeStepTest.this, step);
+				stepHarness.testResource("biome/json/package.json", "biome/json/packageAfter.json");
 			}
 		}
 

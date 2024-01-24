@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -64,11 +63,11 @@ public class BufStep {
 
 	private RoundtripState createRoundtrip() {
 		String instructions = "https://docs.buf.build/installation";
-		ForeignExe exeAbsPath = ForeignExe.nameAndVersion("buf", version)
+		ForeignExe exe = ForeignExe.nameAndVersion("buf", version)
 				.pathToExe(pathToExe)
 				.versionRegex(Pattern.compile("(\\S*)"))
 				.fixCantFind("Try following the instructions at " + instructions + ", or else tell Spotless where it is with {@code buf().pathToExe('path/to/executable')}");
-		return new RoundtripState(version, exeAbsPath);
+		return new RoundtripState(version, exe);
 	}
 
 	private static class RoundtripState implements Serializable {
@@ -92,9 +91,10 @@ public class BufStep {
 		private static final long serialVersionUID = -1825662356883926318L;
 		// used for up-to-date checks and caching
 		final String version;
-		final transient ForeignExe exe;
+
 		// used for executing
-		private transient @Nullable List<String> args;
+		private final transient ForeignExe exe;
+		private transient String exeAbsPath;
 
 		State(String version, ForeignExe exeAbsPath) {
 			this.version = version;
@@ -102,12 +102,10 @@ public class BufStep {
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
-			if (args == null) {
-				args = Arrays.asList(
-						exe.confirmVersionAndGetAbsolutePath(),
-						"format",
-						file.getAbsolutePath());
+			if (exeAbsPath == null) {
+				exeAbsPath = exe.confirmVersionAndGetAbsolutePath();
 			}
+			List<String> args = List.of(exeAbsPath, "format", file.getAbsolutePath());
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
 		}
 
