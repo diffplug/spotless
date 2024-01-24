@@ -1,3 +1,18 @@
+/*
+ * Copyright 2024 DiffPlug
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.diffplug.spotless.java;
 
 import java.io.File;
@@ -9,25 +24,29 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.diffplug.spotless.ForeignExe;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.ProcessRunner;
 
 public final class IdeaFormatterFunc implements FormatterFunc.NeedsFile {
 
-	private static final Logger LOGGER =
-			LoggerFactory.getLogger(IdeaStep.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IdeaStep.class);
 
 	private static final String DEFAULT_IDEA = "idea";
 
 	private String binaryPath;
+	@Nullable
 	private String configPath;
 	private boolean withDefaults;
 
-	private IdeaFormatterFunc(boolean withDefaults, String binaryPath,
-			String configPath) {
+	private IdeaFormatterFunc(boolean withDefaults, @Nullable String binaryPath,
+			@Nullable String configPath) {
 		this.withDefaults = withDefaults;
 		this.configPath = configPath;
 		this.binaryPath = Objects.requireNonNullElse(binaryPath, DEFAULT_IDEA);
@@ -52,12 +71,12 @@ public final class IdeaFormatterFunc implements FormatterFunc.NeedsFile {
 	}
 
 	public static IdeaFormatterFunc allowingDefaultsWithCustomBinary(
-			String binaryPath, String configPath) {
+			@Nullable String binaryPath, @Nullable String configPath) {
 		return new IdeaFormatterFunc(true, binaryPath, configPath);
 	}
 
 	public static IdeaFormatterFunc noDefaultsWithCustomBinary(
-			String binaryPath, String configPath) {
+			@Nullable String binaryPath, @Nullable String configPath) {
 		return new IdeaFormatterFunc(false, binaryPath, configPath);
 	}
 
@@ -76,7 +95,7 @@ public final class IdeaFormatterFunc implements FormatterFunc.NeedsFile {
 	}
 
 	private List<String> getParams(File file) {
-		var builder = Stream.<String>builder();
+		var builder = Stream.<String> builder();
 		builder.add(binaryPath);
 		builder.add("format");
 		if (withDefaults) {

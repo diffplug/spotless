@@ -319,16 +319,16 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public class IdeaConfig {
-		String binaryPath;
-		String configPath;
-		boolean withDefaults = false;
+		private String binaryPath;
+		private String configPath;
+		private boolean withDefaults = false;
 
 		IdeaConfig() {
 			addStep(createStep());
 		}
 
 		private FormatterStep createStep() {
-			return IdeaStep.create(withDefaults, binaryPath);
+			return IdeaStep.create(withDefaults, binaryPath, configPath);
 		}
 
 		public IdeaConfig binaryPath(String binaryPath) {
