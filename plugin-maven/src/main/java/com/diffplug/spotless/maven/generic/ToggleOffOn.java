@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,23 @@ package com.diffplug.spotless.maven.generic;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.diffplug.spotless.generic.PipeStepPair;
+import com.diffplug.spotless.generic.FenceStep;
 
 public class ToggleOffOn {
 	@Parameter
-	public String off = PipeStepPair.defaultToggleOff();
+	public String off = FenceStep.defaultToggleOff();
 
 	@Parameter
-	public String on = PipeStepPair.defaultToggleOn();
+	public String on = FenceStep.defaultToggleOn();
 
 	@Parameter
 	public String regex;
 
-	public PipeStepPair createPair() {
+	public FenceStep createFence() {
 		if (regex != null) {
-			return PipeStepPair.named(PipeStepPair.defaultToggleName()).regex(regex).buildPair();
+			return FenceStep.named(FenceStep.defaultToggleName()).regex(regex);
 		} else {
-			return PipeStepPair.named(PipeStepPair.defaultToggleName()).openClose(off, on).buildPair();
+			return FenceStep.named(FenceStep.defaultToggleName()).openClose(off, on);
 		}
 	}
 }
