@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.extra.java;
 
-import java.io.File;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Nested;
@@ -28,21 +27,20 @@ import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 class EclipseJdtFormatterStepTest extends EquoResourceHarness {
-	private final static String INPUT = "package p; class C{}";
-	private final static String EXPECTED = "package p;\nclass C {\n}";
-
 	private static EquoBasedStepBuilder createBuilder() {
 		return EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 	}
 
 	public EclipseJdtFormatterStepTest() {
-		super(createBuilder(), INPUT, EXPECTED);
+		super(createBuilder());
 	}
 
 	@ParameterizedTest
 	@MethodSource
 	void formatWithVersion(String version) throws Exception {
-		assertFormatted(version);
+		harnessFor(version).test("test.java",
+				"package p; class C{}",
+				"package p;\nclass C {\n}");
 	}
 
 	private static Stream<String> formatWithVersion() {
@@ -53,13 +51,13 @@ class EclipseJdtFormatterStepTest extends EquoResourceHarness {
 	@Nested
 	class NewFormatInterface extends EquoResourceHarness {
 		public NewFormatInterface() {
-			super(createBuilder(), "module-info.java", getTestResource("java/eclipse/ModuleInfoUnformatted.test"), getTestResource("java/eclipse/ModuleInfoFormatted.test"));
+			super(createBuilder());
 		}
 
 		@Test
 		void formatModuleInfo() throws Exception {
-			File settingsFile = createTestFile("java/eclipse/ModuleInfo.prefs");
-			assertFormatted("4.11", settingsFile);
+			harnessFor("4.11", createTestFile("java/eclipse/ModuleInfo.prefs"))
+					.testResource("module-info.java", "java/eclipse/ModuleInfoUnformatted.test", "java/eclipse/ModuleInfoFormatted.test");
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import com.diffplug.spotless.FormatterProperties;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.ThrowingEx;
+import com.diffplug.spotless.SerializedFunction;
 
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.P2ClientCache;
@@ -48,19 +48,19 @@ import dev.equo.solstice.p2.P2QueryResult;
 public abstract class EquoBasedStepBuilder {
 	private final String formatterName;
 	private final Provisioner mavenProvisioner;
-	private final ThrowingEx.Function<State, FormatterFunc> stateToFormatter;
+	private final SerializedFunction<State, FormatterFunc> stateToFormatter;
 	private String formatterVersion;
 	private Iterable<File> settingsFiles = new ArrayList<>();
 	private Map<String, String> p2Mirrors = Map.of();
 
 	/** @deprecated if you use this constructor you *must* call {@link #setVersion(String)} before calling {@link #build()} */
 	@Deprecated
-	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, SerializedFunction<State, FormatterFunc> stateToFormatter) {
 		this(formatterName, mavenProvisioner, null, stateToFormatter);
 	}
 
 	/** Initialize valid default configuration, taking latest version */
-	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, @Nullable String defaultVersion, ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, @Nullable String defaultVersion, SerializedFunction<State, FormatterFunc> stateToFormatter) {
 		this.formatterName = formatterName;
 		this.mavenProvisioner = mavenProvisioner;
 		this.formatterVersion = defaultVersion;
@@ -83,11 +83,6 @@ public abstract class EquoBasedStepBuilder {
 		this.p2Mirrors = p2Mirrors.stream().collect(toMap(P2Mirror::getPrefix, P2Mirror::getUrl));
 	}
 
-	/** Returns the FormatterStep (whose state will be calculated lazily). */
-	public FormatterStep build() {
-		return FormatterStep.createLazy(formatterName, this::get, stateToFormatter);
-	}
-
 	protected abstract P2Model model(String version);
 
 	protected void addPlatformRepo(P2Model model, String version) {
@@ -107,26 +102,28 @@ public abstract class EquoBasedStepBuilder {
 		}
 	}
 
-	/** Creates the state of the configuration. */
-	EquoBasedStepBuilder.State get() throws Exception {
-		P2QueryResult query;
-		try {
-			query = createModelWithMirrors().query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
-		} catch (Exception x) {
-			throw new IOException("Failed to load " + formatterName + ": " + x, x);
-		}
-		var classpath = new ArrayList<File>();
-		var mavenDeps = new ArrayList<String>();
-		mavenDeps.add("dev.equo.ide:solstice:1.7.4");
-		mavenDeps.add("com.diffplug.durian:durian-swt.os:4.2.0");
-		mavenDeps.addAll(query.getJarsOnMavenCentral());
-		classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
-		classpath.addAll(query.getJarsNotOnMavenCentral());
-		for (var nested : NestedJars.inFiles(query.getJarsNotOnMavenCentral()).extractAllNestedJars()) {
-			classpath.add(nested.getValue());
-		}
-		var jarState = JarState.preserveOrder(classpath);
-		return new State(formatterVersion, jarState, FileSignature.signAsList(settingsFiles));
+	/** Returns the FormatterStep (whose state will be calculated lazily). */
+	public FormatterStep build() {
+		var roundtrippableState = new EquoStep(formatterVersion, FileSignature.promise(settingsFiles), JarState.promise(() -> {
+			P2QueryResult query;
+			try {
+				query = createModelWithMirrors().query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
+			} catch (Exception x) {
+				throw new IOException("Failed to load " + formatterName + ": " + x, x);
+			}
+			var classpath = new ArrayList<File>();
+			var mavenDeps = new ArrayList<String>();
+			mavenDeps.add("dev.equo.ide:solstice:1.7.5");
+			mavenDeps.add("com.diffplug.durian:durian-swt.os:4.2.0");
+			mavenDeps.addAll(query.getJarsOnMavenCentral());
+			classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
+			classpath.addAll(query.getJarsNotOnMavenCentral());
+			for (var nested : NestedJars.inFiles(query.getJarsNotOnMavenCentral()).extractAllNestedJars()) {
+				classpath.add(nested.getValue());
+			}
+			return JarState.preserveOrder(classpath);
+		}));
+		return FormatterStep.create(formatterName, roundtrippableState, EquoStep::state, stateToFormatter);
 	}
 
 	private P2Model createModelWithMirrors() {
@@ -152,12 +149,29 @@ public abstract class EquoBasedStepBuilder {
 		return model;
 	}
 
+	static class EquoStep implements Serializable {
+		private static final long serialVersionUID = 1;
+		private final String semanticVersion;
+		private final FileSignature.Promised settingsPromise;
+		private final JarState.Promised jarPromise;
+
+		EquoStep(String semanticVersion, FileSignature.Promised settingsPromise, JarState.Promised jarPromise) {
+			this.semanticVersion = semanticVersion;
+			this.settingsPromise = settingsPromise;
+			this.jarPromise = jarPromise;
+		}
+
+		private State state() {
+			return new State(semanticVersion, jarPromise.get(), settingsPromise.get());
+		}
+	}
+
 	/**
 	 * State of Eclipse configuration items, providing functionality to derived information
 	 * based on the state.
 	 */
 	public static class State implements Serializable {
-		private static final long serialVersionUID = 584400372246020995L;
+		private static final long serialVersionUID = 1;
 		final String semanticVersion;
 		final JarState jarState;
 		final FileSignature settingsFiles;
