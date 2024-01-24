@@ -3,10 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020))
 ### Fixed
 * Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
-
-* Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020))
 
 ## [6.25.0] - 2024-01-23
 ### Added
