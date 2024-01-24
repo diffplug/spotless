@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ public abstract class EquoBasedStepBuilder {
 			}
 			var classpath = new ArrayList<File>();
 			var mavenDeps = new ArrayList<String>();
-			mavenDeps.add("dev.equo.ide:solstice:1.7.4");
+			mavenDeps.add("dev.equo.ide:solstice:1.7.5");
 			mavenDeps.add("com.diffplug.durian:durian-swt.os:4.2.0");
 			mavenDeps.addAll(query.getJarsOnMavenCentral());
 			classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,12 +117,12 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
-	public static Promised promise(Iterable<File> files) {
-		return new Promised(MoreIterables.toNullHostileList(files), null);
-	}
-
 	public Promised asPromise() {
 		return new Promised(files, this);
+	}
+
+	public static Promised promise(Iterable<File> files) {
+		return new Promised(MoreIterables.toNullHostileList(files), null);
 	}
 
 	/** Returns all of the files in this signature, throwing an exception if there are more or less than 1 file. */

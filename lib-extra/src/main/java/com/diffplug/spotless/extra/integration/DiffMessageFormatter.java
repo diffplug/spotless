@@ -24,9 +24,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.MyersDiff;
 import org.eclipse.jgit.diff.RawText;
@@ -234,6 +236,19 @@ public final class DiffMessageFormatter {
 	 * sequence (\n, \r, \r\n).
 	 */
 	private String diff(File file) throws IOException {
+		return diff(formatter, file).getValue();
+	}
+
+	/**
+	 * Returns a map entry with value being a git-style diff between the contents of the given file and what those contents would
+	 * look like if formatted using the given formatter. Does not end with any newline
+	 * sequence (\n, \r, \r\n). The key of the map entry is the 0-based line where the first difference occurred.
+	 */
+	public static Map.Entry<Integer, String> diff(Formatter formatter, File file) throws IOException {
+		return diff(new CleanProviderFormatter(formatter), file);
+	}
+
+	private static Map.Entry<Integer, String> diff(CleanProvider formatter, File file) throws IOException {
 		String raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 		String formatted = formatter.getFormatted(file, rawUnix);
@@ -248,13 +263,13 @@ public final class DiffMessageFormatter {
 	}
 
 	/**
-	 * Returns a git-style diff between the two unix strings.
+	 * Returns a map entry with value being a git-style diff between the two unix strings and key being the 0-based line of the first difference (in the dirty string)
 	 * <p>
 	 * Output has no trailing newlines.
 	 * <p>
 	 * Boolean args determine whether whitespace or line endings will be visible.
 	 */
-	private static String diffWhitespaceLineEndings(String dirty, String clean, boolean whitespace, boolean lineEndings) throws IOException {
+	private static Map.Entry<Integer, String> diffWhitespaceLineEndings(String dirty, String clean, boolean whitespace, boolean lineEndings) throws IOException {
 		dirty = visibleWhitespaceLineEndings(dirty, whitespace, lineEndings);
 		clean = visibleWhitespaceLineEndings(clean, whitespace, lineEndings);
 
@@ -271,7 +286,11 @@ public final class DiffMessageFormatter {
 
 		// we don't need the diff to show this, since we display newlines ourselves
 		formatted = formatted.replace("\\ No newline at end of file\n", "");
-		return NEWLINE_MATCHER.trimTrailingFrom(formatted);
+		return Map.entry(getLineOfFirstDifference(edits), NEWLINE_MATCHER.trimTrailingFrom(formatted));
+	}
+
+	private static int getLineOfFirstDifference(EditList edits) {
+		return edits.stream().mapToInt(Edit::getBeginA).min().getAsInt();
 	}
 
 	private static final CharMatcher NEWLINE_MATCHER = CharMatcher.is('\n');

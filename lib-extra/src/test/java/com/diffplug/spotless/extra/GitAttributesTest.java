@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,11 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.ClearGitConfig;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 
+@ClearGitConfig
 class GitAttributesTest extends ResourceHarness {
 	private List<File> testFiles(String prefix) {
 		List<File> result = new ArrayList<>();

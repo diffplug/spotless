@@ -4,7 +4,7 @@
 [![Maven Plugin](https://img.shields.io/maven-central/v/com.diffplug.spotless/spotless-maven-plugin?color=blue&label=maven%20plugin)](plugin-maven)
 [![SBT Plugin](https://img.shields.io/badge/sbt%20plugin-0.1.3-blue)](https://github.com/moznion/sbt-spotless)
 
-Spotless can format &lt;antlr | c | c# | c++ | css | flow | graphql | groovy | html | java | javascript | json | jsx | kotlin | less | license headers | markdown | objective-c | protobuf | python | scala | scss | sql | typeScript | vue | yaml | anything> using &lt;gradle | maven | sbt | anything>.
+Spotless can format &lt;antlr | c | c# | c++ | css | flow | graphql | groovy | html | java | javascript | json | jsx | kotlin | less | license headers | markdown | objective-c | protobuf | python | scala | scss | shell | sql | typeScript | vue | yaml | anything> using &lt;gradle | maven | sbt | anything>.
 
 You probably want one of the links below:
 
@@ -75,8 +75,10 @@ lib('generic.ReplaceRegexStep')                  +'{{yes}}       | {{yes}}      
 lib('generic.ReplaceStep')                       +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('antlr4.Antlr4FormatterStep')                +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
+lib('biome.BiomeStep')                           +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('cpp.ClangFormatStep')                       +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 extra('cpp.EclipseFormatterStep')                +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
+lib('go.GofmtFormatStep')                        +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('gherkin.GherkinUtilsStep')                  +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
@@ -101,8 +103,8 @@ lib('npm.TsFmtFormatterStep')                    +'{{yes}}       | {{yes}}      
 lib('pom.SortPomStepStep')                       +'{{no}}        | {{yes}}      | {{no}}       | {{no}}  |',
 lib('protobuf.BufStep')                          +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('python.BlackStep')                          +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
-lib('biome.BiomeStep')                           +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('scala.ScalaFmtStep')                        +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
+lib('shell.ShfmtStep')                           +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('sql.DBeaverSQLFormatterStep')               +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 extra('wtp.EclipseWtpFormatterStep')             +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
@@ -127,8 +129,10 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`generic.ReplaceStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`generic.TrimTrailingWhitespaceStep`](lib/src/main/java/com/diffplug/spotless/generic/TrimTrailingWhitespaceStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`antlr4.Antlr4FormatterStep`](lib/src/main/java/com/diffplug/spotless/antlr4/Antlr4FormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
+| [`biome.BiomeStep`](lib/src/main/java/com/diffplug/spotless/biome/BiomeStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`cpp.ClangFormatStep`](lib/src/main/java/com/diffplug/spotless/cpp/ClangFormatStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`cpp.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/cpp/EclipseFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
+| [`go.GofmtFormatStep`](lib/src/main/java/com/diffplug/spotless/go/GofmtFormatStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`gherkin.GherkinUtilsStep`](lib/src/main/java/com/diffplug/spotless/gherkin/GherkinUtilsStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`groovy.GrEclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/groovy/GrEclipseFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/GoogleJavaFormatStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
@@ -153,8 +157,8 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`pom.SortPomStepStep`](lib/src/main/java/com/diffplug/spotless/pom/SortPomStepStep.java) | :white_large_square:        | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`protobuf.BufStep`](lib/src/main/java/com/diffplug/spotless/protobuf/BufStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`python.BlackStep`](lib/src/main/java/com/diffplug/spotless/python/BlackStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
-| [`biome.BiomeStep`](lib/src/main/java/com/diffplug/spotless/biome/BiomeStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
+| [`shell.ShfmtStep`](lib/src/main/java/com/diffplug/spotless/shell/ShfmtStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`sql.DBeaverSQLFormatterStep`](lib/src/main/java/com/diffplug/spotless/sql/DBeaverSQLFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`wtp.EclipseWtpFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/wtp/EclipseWtpFormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`yaml.JacksonYamlStep`](lib/src/main/java/com/diffplug/spotless/yaml/JacksonYamlStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
