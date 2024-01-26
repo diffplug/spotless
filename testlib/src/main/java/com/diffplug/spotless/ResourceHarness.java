@@ -100,6 +100,7 @@ public class ResourceHarness {
 
 	private static Optional<URL> getTestResourceUrl(String filename) {
 		URL url = ResourceHarness.class.getResource("/" + filename);
+//		System.out.println(url.getPath());
 		return Optional.ofNullable(url);
 	}
 

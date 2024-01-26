@@ -96,7 +96,9 @@ public class ShfmtStep {
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
 			if (args == null) {
-				args = List.of(exe.confirmVersionAndGetAbsolutePath(), "-i", "2", "-ci");
+				// When reading from stdin, shfmt requires a filename argument
+				// in order for the editorconfig configuration to be resolved.
+				args = List.of(exe.confirmVersionAndGetAbsolutePath(), "-filename", "PLACEHOLDER.sh");
 			}
 
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);

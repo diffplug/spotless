@@ -23,7 +23,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.shell.ShfmtStep;
 
 public class ShellExtension extends FormatExtension {
-	private static final String SHELL_FILE_EXTENSION = "*.sh";
+	private static final String SHELL_FILE_EXTENSION = "**/*.sh";
 
 	static final String NAME = "shell";
 

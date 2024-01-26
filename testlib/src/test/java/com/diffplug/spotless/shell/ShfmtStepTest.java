@@ -15,18 +15,32 @@
  */
 package com.diffplug.spotless.shell;
 
+import com.diffplug.spotless.StepHarnessWithFile;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.tag.ShfmtTest;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 @ShfmtTest
 public class ShfmtStepTest extends ResourceHarness {
 	@Test
 	void test() throws Exception {
-		try (StepHarness harness = StepHarness.forStep(ShfmtStep.withVersion(ShfmtStep.defaultVersion()).create())) {
-			harness.testResource("shell/shfmt/shfmt.sh", "shell/shfmt/shfmt.clean").close();
+		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, ShfmtStep.withVersion(ShfmtStep.defaultVersion()).create())) {
+			final String filedir = "shell/shfmt/";
+
+			setFile(".editorconfig").toResource(filedir + ".editorconfig");
+
+			final List<File> files = List.of(rootFolder().listFiles());
+
+			final String dirtyFile = filedir + "shfmt.sh";
+			final String cleanFile = filedir + "shfmt.clean";
+
+			harness.testResource(dirtyFile, cleanFile).close();
 		}
 	}
 }

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.tag.ShfmtTest;
 
-@ShfmtTest
+//@ShfmtTest
 public class ShellTest extends MavenIntegrationHarness {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShellTest.class);
 

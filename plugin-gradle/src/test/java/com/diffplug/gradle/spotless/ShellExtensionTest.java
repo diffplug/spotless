@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.tag.ShfmtTest;
 
-@ShfmtTest
+//@ShfmtTest
 public class ShellExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void shfmt() throws IOException {
