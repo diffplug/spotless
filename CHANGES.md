@@ -15,6 +15,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020))
 ### Removed
 * **BREAKING** Remove `JarState.getMavenCoordinate(String prefix)`. ([#1945](https://github.com/diffplug/spotless/pull/1945))
+* **BREAKING** Replace `PipeStepPair` with `FenceStep`. ([#1954](https://github.com/diffplug/spotless/pull/1954))
 ### Fixed
 * Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
 

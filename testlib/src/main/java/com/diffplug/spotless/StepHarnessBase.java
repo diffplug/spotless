@@ -46,6 +46,8 @@ class StepHarnessBase<T extends StepHarnessBase<?>> implements AutoCloseable {
 				supportsRoundTrip = true;
 			} else if (onlyStepName.toLowerCase(Locale.ROOT).contains("eclipse")) {
 				supportsRoundTrip = true;
+			} else if (onlyStepName.equals("fence")) {
+				supportsRoundTrip = true;
 			}
 		}
 	}
