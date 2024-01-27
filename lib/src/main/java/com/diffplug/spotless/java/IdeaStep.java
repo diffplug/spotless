@@ -15,11 +15,30 @@
  */
 package com.diffplug.spotless.java;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.diffplug.spotless.ForeignExe;
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ProcessRunner;
 
 public final class IdeaStep {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(IdeaStep.class);
 
 	private IdeaStep() {}
 
@@ -38,18 +57,81 @@ public final class IdeaStep {
 
 	public static FormatterStep create(boolean withDefaults,
 			@Nullable String binaryPath, @Nullable String configPath) {
-		IdeaFormatterFunc formatterFunc = getFormatterFunc(withDefaults, binaryPath, configPath);
-		// TODO: make it lazy
-		return FormatterStep.createNeverUpToDate("IDEA", formatterFunc);
+		return FormatterStep.createLazy("IDEA",
+				() -> createState(withDefaults, binaryPath, configPath),
+				state -> state);
 	}
 
-	private static IdeaFormatterFunc getFormatterFunc(boolean withDefaults,
+	private static State createState(boolean withDefaults,
 			@Nullable String binaryPath, @Nullable String configPath) {
-		if (withDefaults) {
-			return IdeaFormatterFunc
-					.allowingDefaultsWithCustomBinary(binaryPath, configPath);
-		}
-		return IdeaFormatterFunc.noDefaultsWithCustomBinary(binaryPath, configPath);
+		return new State(withDefaults, binaryPath, configPath);
 	}
 
+	private static class State
+			implements FormatterFunc.NeedsFile, Serializable {
+
+		private static final long serialVersionUID = -1825662355363926318L;
+		private static final String DEFAULT_IDEA = "idea";
+
+		private String binaryPath;
+		@Nullable
+		private String configPath;
+		private boolean withDefaults;
+
+		private State(boolean withDefaults, @Nullable String binaryPath,
+				@Nullable String configPath) {
+			this.withDefaults = withDefaults;
+			this.configPath = configPath;
+			this.binaryPath = Objects.requireNonNullElse(binaryPath, DEFAULT_IDEA);
+			resolveFullBinaryPathAndCheckVersion();
+		}
+
+		private void resolveFullBinaryPathAndCheckVersion() {
+			var exe = ForeignExe
+					.nameAndVersion(this.binaryPath, "IntelliJ IDEA")
+					.versionRegex(Pattern.compile("(IntelliJ IDEA) .*"))
+					.fixCantFind(
+							"IDEA executable cannot be found on your machine, "
+									+ "please install it and put idea binary to PATH; or report the problem")
+					.fixWrongVersion("Provided binary is not IDEA, "
+							+ "please check it and fix the problem; or report the problem");
+			try {
+				this.binaryPath = exe.confirmVersionAndGetAbsolutePath();
+			} catch (IOException e) {
+				throw new IllegalArgumentException("binary cannot be found", e);
+			} catch (InterruptedException e) {
+				throw new IllegalArgumentException(
+						"binary cannot be found, process was interrupted", e);
+			}
+		}
+
+		@Override
+		public String applyWithFile(String unix, File file) throws Exception {
+			List<String> params = getParams(file);
+
+			try (ProcessRunner runner = new ProcessRunner()) {
+				var result = runner.exec(params);
+
+				LOGGER.debug("command finished with stdout: {}",
+						result.assertExitZero(StandardCharsets.UTF_8));
+
+				return Files.readString(file.toPath());
+			}
+		}
+
+		private List<String> getParams(File file) {
+			var builder = Stream.<String> builder();
+			builder.add(binaryPath);
+			builder.add("format");
+			if (withDefaults) {
+				builder.add("-allowDefaults");
+			}
+			if (configPath != null) {
+				builder.add("-s");
+				builder.add(configPath);
+			}
+			builder.add(file.toString());
+			return builder.build().collect(Collectors.toList());
+		}
+	}
 }
