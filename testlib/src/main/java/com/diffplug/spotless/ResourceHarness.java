@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class ResourceHarness {
 
 	private static Optional<URL> getTestResourceUrl(String filename) {
 		URL url = ResourceHarness.class.getResource("/" + filename);
-//		System.out.println(url.getPath());
+		//		System.out.println(url.getPath());
 		return Optional.ofNullable(url);
 	}
 

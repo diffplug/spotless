@@ -86,27 +86,40 @@ public class ShfmtStep {
 		// used for up-to-date checks and caching
 		final String version;
 		final transient ForeignExe exe;
-		// used for executing
-		private transient @Nullable List<String> args;
 
 		State(ShfmtStep step, ForeignExe pathToExe) {
 			this.version = step.version;
 			this.exe = Objects.requireNonNull(pathToExe);
 		}
 
-		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
-			if (args == null) {
-				// When reading from stdin, shfmt requires a filename argument
-				// in order for the editorconfig configuration to be resolved.
-				args = List.of(exe.confirmVersionAndGetAbsolutePath(), "-filename", "PLACEHOLDER.sh");
-			}
-
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
-		}
-
 		FormatterFunc.Closeable toFunc() {
 			ProcessRunner runner = new ProcessRunner();
-			return FormatterFunc.Closeable.of(runner, this::format);
+			return FormatterFunc.Closeable.ofDangerous(runner, new ShfmtFilePathPassingFormatterFunc(runner, exe));
+		}
+	}
+
+	private static class ShfmtFilePathPassingFormatterFunc implements FormatterFunc.NeedsFile {
+		// used for executing
+		private transient @Nullable List<String> args;
+		final transient ForeignExe exe;
+		final transient ProcessRunner runner;
+
+		ShfmtFilePathPassingFormatterFunc(ProcessRunner runner, ForeignExe exe) {
+			this.runner = runner;
+			this.exe = exe;
+		}
+
+		@Override
+		public String applyWithFile(String unix, File file) throws Exception {
+			return format(runner, unix, file);
+		}
+
+		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
+			if (args == null) {
+				args = List.of(exe.confirmVersionAndGetAbsolutePath(), file.getAbsolutePath());
+			}
+
+			return runner.exec(args).assertExitZero(StandardCharsets.UTF_8);
 		}
 	}
 }

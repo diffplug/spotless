@@ -7,7 +7,7 @@ apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {
 	api projects.lib
-//	api files(projects.lib.dependencyProject.sourceSets.sortPom.output.classesDirs)
+	//	api files(projects.lib.dependencyProject.sourceSets.sortPom.output.classesDirs)
 	api "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	api "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 	api "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"

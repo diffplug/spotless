@@ -21,21 +21,45 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.tag.ShfmtTest;
 
-//@ShfmtTest
+@ShfmtTest
 public class ShellExtensionTest extends GradleIntegrationHarness {
 	@Test
-	void shfmt() throws IOException {
-		setFile("build.gradle").toLines(
+	void shfmtWithEditorconfig() throws IOException {
+		String fileDir = "shell/shfmt/with-config/";
+		setFile(".editorconfig").toResource(fileDir + ".editorconfig");
+		setFile("build.gradle.kts").toLines(
 				"plugins {",
-				"  id 'com.diffplug.spotless'",
+				"  id(\"com.diffplug.spotless\")",
 				"}",
+				"repositories { mavenCentral() }",
 				"spotless {",
 				"  shell {",
 				"    shfmt()",
 				"  }",
 				"}");
-		setFile("shfmt.sh").toResource("shell/shfmt/shfmt.sh");
+		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
+
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("shfmt.sh").sameAsResource("shell/shfmt/shfmt.clean");
+		assertFile("shfmt.sh").sameAsResource(fileDir + "shfmt.clean");
+	}
+
+	@Test
+	void shfmtWithoutEditorconfig() throws IOException {
+		String fileDir = "shell/shfmt/without-config/";
+
+		setFile("build.gradle.kts").toLines(
+				"plugins {",
+				"  id(\"com.diffplug.spotless\")",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"  shell {",
+				"    shfmt()",
+				"  }",
+				"}");
+		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
+
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("shfmt.sh").sameAsResource(fileDir + "shfmt.clean");
 	}
 }
