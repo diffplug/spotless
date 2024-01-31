@@ -34,6 +34,7 @@ import com.diffplug.spotless.FormatterProperties;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.RoundedStep;
 import com.diffplug.spotless.SerializedFunction;
 
 import dev.equo.solstice.NestedJars;
@@ -149,7 +150,7 @@ public abstract class EquoBasedStepBuilder {
 		return model;
 	}
 
-	static class EquoStep implements Serializable {
+	static class EquoStep implements RoundedStep {
 		private static final long serialVersionUID = 1;
 		private final String semanticVersion;
 		private final FileSignature.Promised settingsPromise;
