@@ -26,11 +26,11 @@ public class ShfmtStepTest extends ResourceHarness {
 	@Test
 	void testWithEditorconfig() throws Exception {
 		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, ShfmtStep.withVersion(ShfmtStep.defaultVersion()).create())) {
-			final String filedir = "shell/shfmt/with-config/";
-			final String dirtyFile = filedir + "shfmt.sh";
-			final String cleanFile = filedir + "shfmt.clean";
+			final String fileDir = "shell/shfmt/singlefile/with-config/";
+			final String dirtyFile = fileDir + "shfmt.sh";
+			final String cleanFile = fileDir + "shfmt.clean";
 
-			setFile(".editorconfig").toResource(filedir + ".editorconfig");
+			setFile(".editorconfig").toResource(fileDir + ".editorconfig");
 
 			harness.testResource(dirtyFile, cleanFile);
 		}
@@ -39,9 +39,9 @@ public class ShfmtStepTest extends ResourceHarness {
 	@Test
 	void testWithoutEditorconfig() throws Exception {
 		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, ShfmtStep.withVersion(ShfmtStep.defaultVersion()).create())) {
-			final String filedir = "shell/shfmt/without-config/";
-			final String dirtyFile = filedir + "shfmt.sh";
-			final String cleanFile = filedir + "shfmt.clean";
+			final String fileDir = "shell/shfmt/singlefile/without-config/";
+			final String dirtyFile = fileDir + "shfmt.sh";
+			final String cleanFile = fileDir + "shfmt.clean";
 
 			harness.testResource(dirtyFile, cleanFile);
 		}

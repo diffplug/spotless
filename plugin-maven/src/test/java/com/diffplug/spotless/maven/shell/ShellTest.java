@@ -28,7 +28,7 @@ public class ShellTest extends MavenIntegrationHarness {
 
 	@Test
 	public void testFormatShellWithEditorconfig() throws Exception {
-		String fileDir = "shell/shfmt/with-config/";
+		String fileDir = "shell/shfmt/singlefile/with-config/";
 		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
 		setFile(".editorconfig").toResource(fileDir + ".editorconfig");
 
@@ -40,7 +40,7 @@ public class ShellTest extends MavenIntegrationHarness {
 
 	@Test
 	public void testFormatShellWithoutEditorconfig() throws Exception {
-		String fileDir = "shell/shfmt/without-config/";
+		String fileDir = "shell/shfmt/singlefile/without-config/";
 		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
 
 		writePomWithShellSteps("<shfmt/>");

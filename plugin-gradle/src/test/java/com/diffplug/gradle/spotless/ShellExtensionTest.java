@@ -25,18 +25,18 @@ import com.diffplug.spotless.tag.ShfmtTest;
 public class ShellExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void shfmtWithEditorconfig() throws IOException {
-		String fileDir = "shell/shfmt/with-config/";
+		String fileDir = "shell/shfmt/singlefile/with-config/";
 		setFile(".editorconfig").toResource(fileDir + ".editorconfig");
 		setFile("build.gradle.kts").toLines(
 				"plugins {",
 				"  id(\"com.diffplug.spotless\")",
 				"}",
-				"repositories { mavenCentral() }",
 				"spotless {",
 				"  shell {",
 				"    shfmt()",
 				"  }",
 				"}");
+
 		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
 
 		gradleRunner().withArguments("spotlessApply").build();
@@ -44,22 +44,69 @@ public class ShellExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void shfmtWithoutEditorconfig() throws IOException {
-		String fileDir = "shell/shfmt/without-config/";
+	void shfmtMultipleFilesWithEditorconfig() throws IOException {
+		String fileDir = "shell/shfmt/multifile/with-config/";
 
+		setFile(".editorconfig").toResource(fileDir + ".editorconfig");
 		setFile("build.gradle.kts").toLines(
 				"plugins {",
 				"  id(\"com.diffplug.spotless\")",
 				"}",
-				"repositories { mavenCentral() }",
 				"spotless {",
 				"  shell {",
 				"    shfmt()",
 				"  }",
 				"}");
+
+		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
+		setFile("other.sh").toResource(fileDir + "other.sh");
+
+		gradleRunner().withArguments("spotlessApply").build();
+
+		assertFile("other.sh").sameAsResource(fileDir + "other.clean");
+		assertFile("shfmt.sh").sameAsResource(fileDir + "shfmt.clean");
+	}
+
+	@Test
+	void shfmtWithoutEditorconfig() throws IOException {
+		String fileDir = "shell/shfmt/singlefile/without-config/";
+
+		setFile("build.gradle.kts").toLines(
+				"plugins {",
+				"  id(\"com.diffplug.spotless\")",
+				"}",
+				"spotless {",
+				"  shell {",
+				"    shfmt()",
+				"  }",
+				"}");
+
 		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
 
 		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("shfmt.sh").sameAsResource(fileDir + "shfmt.clean");
+	}
+
+	@Test
+	void shfmtMultipleFilesWithoutEditorconfig() throws IOException {
+		String fileDir = "shell/shfmt/multifile/without-config/";
+
+		setFile("build.gradle.kts").toLines(
+				"plugins {",
+				"  id(\"com.diffplug.spotless\")",
+				"}",
+				"spotless {",
+				"  shell {",
+				"    shfmt()",
+				"  }",
+				"}");
+
+		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
+		setFile("other.sh").toResource(fileDir + "other.sh");
+
+		gradleRunner().withArguments("spotlessApply").build();
+
+		assertFile("other.sh").sameAsResource(fileDir + "other.clean");
 		assertFile("shfmt.sh").sameAsResource(fileDir + "shfmt.clean");
 	}
 }

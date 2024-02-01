@@ -83,43 +83,30 @@ public class ShfmtStep {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class State implements Serializable {
 		private static final long serialVersionUID = -1825662356883926318L;
+
 		// used for up-to-date checks and caching
 		final String version;
 		final transient ForeignExe exe;
+
+		// used for executing
+		private transient @Nullable List<String> args;
 
 		State(ShfmtStep step, ForeignExe pathToExe) {
 			this.version = step.version;
 			this.exe = Objects.requireNonNull(pathToExe);
 		}
 
-		FormatterFunc.Closeable toFunc() {
-			ProcessRunner runner = new ProcessRunner();
-			return FormatterFunc.Closeable.ofDangerous(runner, new ShfmtFilePathPassingFormatterFunc(runner, exe));
-		}
-	}
-
-	private static class ShfmtFilePathPassingFormatterFunc implements FormatterFunc.NeedsFile {
-		// used for executing
-		private transient @Nullable List<String> args;
-		private final transient ForeignExe exe;
-		private final transient ProcessRunner runner;
-
-		ShfmtFilePathPassingFormatterFunc(ProcessRunner runner, ForeignExe exe) {
-			this.runner = runner;
-			this.exe = exe;
-		}
-
-		@Override
-		public String applyWithFile(String unix, File file) throws Exception {
-			return format(runner, unix, file);
-		}
-
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
 			if (args == null) {
-				args = List.of(exe.confirmVersionAndGetAbsolutePath(), file.getAbsolutePath());
+				args = List.of(exe.confirmVersionAndGetAbsolutePath(), "--filename", file.getPath());
 			}
 
-			return runner.exec(args).assertExitZero(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
+		}
+
+		FormatterFunc.Closeable toFunc() {
+			ProcessRunner runner = new ProcessRunner();
+			return FormatterFunc.Closeable.of(runner, this::format);
 		}
 	}
 }
