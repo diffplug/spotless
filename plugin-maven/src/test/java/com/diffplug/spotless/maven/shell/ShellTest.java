@@ -27,7 +27,7 @@ public class ShellTest extends MavenIntegrationHarness {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShellTest.class);
 
 	@Test
-	public void testFormatShellWithEditorconfig() throws Exception {
+	public void testSingleFileFormatShellWithEditorconfig() throws Exception {
 		String fileDir = "shell/shfmt/singlefile/with-config/";
 		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
 		setFile(".editorconfig").toResource(fileDir + ".editorconfig");
@@ -39,7 +39,7 @@ public class ShellTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	public void testFormatShellWithoutEditorconfig() throws Exception {
+	public void testSingleFileFormatShellWithoutEditorconfig() throws Exception {
 		String fileDir = "shell/shfmt/singlefile/without-config/";
 		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
 
@@ -47,5 +47,32 @@ public class ShellTest extends MavenIntegrationHarness {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 
 		assertFile("shfmt.sh").sameAsResource(fileDir + "shfmt.clean");
+	}
+
+	@Test
+	public void testMultiFileFormatShellWithEditorconfig() throws Exception {
+		String fileDir = "shell/shfmt/multifile/with-config/";
+		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
+		setFile("other.sh").toResource(fileDir + "other.sh");
+		setFile(".editorconfig").toResource(fileDir + ".editorconfig");
+
+		writePomWithShellSteps("<shfmt/>");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+
+		assertFile("shfmt.sh").sameAsResource(fileDir + "shfmt.clean");
+		assertFile("other.sh").sameAsResource(fileDir + "other.clean");
+	}
+
+	@Test
+	public void testMultiFileFormatShellWithoutEditorconfig() throws Exception {
+		String fileDir = "shell/shfmt/multifile/without-config/";
+		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
+		setFile("other.sh").toResource(fileDir + "other.sh");
+
+		writePomWithShellSteps("<shfmt/>");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+
+		assertFile("shfmt.sh").sameAsResource(fileDir + "shfmt.clean");
+		assertFile("other.sh").sameAsResource(fileDir + "other.clean");
 	}
 }
