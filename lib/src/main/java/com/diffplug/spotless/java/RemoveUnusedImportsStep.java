@@ -52,8 +52,8 @@ public class RemoveUnusedImportsStep {
 					GoogleJavaFormatStep.State::createRemoveUnusedImportsOnly);
 		} else if (CLEANTHAT.equals(unusedImportRemover)) {
 			return FormatterStep.createLazy(NAME,
-					() -> new CleanthatJavaStep.JavaRefactorerState(NAME, CleanthatJavaStep.defaultGroupArtifact(), CleanthatJavaStep.defaultVersion(), "99.9", Arrays.asList(CLEANTHAT_MUTATOR), Arrays.asList(), false, provisioner),
-					CleanthatJavaStep.JavaRefactorerState::createFormat);
+					() -> new CleanthatJavaStep.State(NAME, CleanthatJavaStep.defaultGroupArtifact(), CleanthatJavaStep.defaultVersion(), "99.9", Arrays.asList(CLEANTHAT_MUTATOR), Arrays.asList(), false, provisioner),
+					CleanthatJavaStep.State::createFormat);
 		} else {
 			throw new IllegalArgumentException("Invalid unusedImportRemover: " + unusedImportRemover);
 		}
