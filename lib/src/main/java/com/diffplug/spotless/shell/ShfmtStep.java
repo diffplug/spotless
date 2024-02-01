@@ -101,8 +101,8 @@ public class ShfmtStep {
 	private static class ShfmtFilePathPassingFormatterFunc implements FormatterFunc.NeedsFile {
 		// used for executing
 		private transient @Nullable List<String> args;
-		final transient ForeignExe exe;
-		final transient ProcessRunner runner;
+		private final transient ForeignExe exe;
+		private final transient ProcessRunner runner;
 
 		ShfmtFilePathPassingFormatterFunc(ProcessRunner runner, ForeignExe exe) {
 			this.runner = runner;
