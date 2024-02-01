@@ -131,7 +131,7 @@ public final class CleanthatJavaStep implements RoundedStep {
 		return new State(jarState.get(), version, sourceJdkVersion, included, excluded, includeDraft);
 	}
 
-	static final class State implements Serializable {
+	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;

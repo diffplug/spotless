@@ -88,6 +88,14 @@ public class GoogleJavaFormatStep implements RoundedStep {
 
 	/** Creates a step which formats everything - groupArtifact, code, import order, and unused imports - and optionally reflows long strings. */
 	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc) {
+		return createInternally(groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, false);
+	}
+
+	static FormatterStep createRemoveUnusedImportsOnly(Provisioner provisioner) {
+		return createInternally(MAVEN_COORDINATE, defaultVersion(), defaultStyle(), provisioner, defaultReflowLongStrings(), defaultReorderImports(), defaultFormatJavadoc(), true);
+	}
+
+	private static FormatterStep createInternally(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean removeImports) {
 		Objects.requireNonNull(groupArtifact, "groupArtifact");
 		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
 			throw new IllegalArgumentException("groupArtifact must be in the form 'groupId:artifactId'");
@@ -95,10 +103,19 @@ public class GoogleJavaFormatStep implements RoundedStep {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.create(NAME,
-				new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc),
-				GoogleJavaFormatStep::equalityState,
-				State::createFormat);
+
+		GoogleJavaFormatStep step = new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc);
+		if (removeImports) {
+			return FormatterStep.create(NAME,
+					step,
+					GoogleJavaFormatStep::equalityState,
+					State::createRemoveUnusedImportsOnly);
+		} else {
+			return FormatterStep.create(NAME,
+					step,
+					GoogleJavaFormatStep::equalityState,
+					State::createFormat);
+		}
 	}
 
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME)
@@ -136,7 +153,7 @@ public class GoogleJavaFormatStep implements RoundedStep {
 		return new State(version, style, jarState.get(), reflowLongStrings, reorderImports, formatJavadoc);
 	}
 
-	static final class State implements Serializable {
+	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;
@@ -145,10 +162,6 @@ public class GoogleJavaFormatStep implements RoundedStep {
 		private final boolean reflowLongStrings;
 		private final boolean reorderImports;
 		private final boolean formatJavadoc;
-
-		State(String version, JarState jarState) {
-			this(version, DEFAULT_STYLE, jarState, DEFAULT_REFLOW_LONG_STRINGS, DEFAULT_REORDER_IMPORTS, DEFAULT_FORMAT_JAVADOC);
-		}
 
 		State(String version,
 				String style,
