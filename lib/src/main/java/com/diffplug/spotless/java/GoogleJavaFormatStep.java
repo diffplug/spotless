@@ -24,18 +24,39 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.RoundedStep;
 
 /** Wraps up <a href="https://github.com/google/google-java-format">google-java-format</a> as a FormatterStep. */
-public class GoogleJavaFormatStep {
-	// prevent direct instantiation
-	private GoogleJavaFormatStep() {}
-
+public class GoogleJavaFormatStep implements RoundedStep {
+	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_STYLE = "GOOGLE";
 	private static final boolean DEFAULT_REFLOW_LONG_STRINGS = false;
 	private static final boolean DEFAULT_REORDER_IMPORTS = false;
 	private static final boolean DEFAULT_FORMAT_JAVADOC = true;
-	static final String NAME = "google-java-format";
-	public static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format";
+	private static final String NAME = "google-java-format";
+	private static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format";
+
+	/** The jar that contains the formatter. */
+	private final JarState.Promised jarState;
+	private final String version;
+	private final String style;
+	private final boolean reflowLongStrings;
+	private final boolean reorderImports;
+	private final boolean formatJavadoc;
+
+	private GoogleJavaFormatStep(JarState.Promised jarState,
+			String version,
+			String style,
+			boolean reflowLongStrings,
+			boolean reorderImports,
+			boolean formatJavadoc) {
+		this.jarState = jarState;
+		this.version = version;
+		this.style = style;
+		this.reflowLongStrings = reflowLongStrings;
+		this.reorderImports = reorderImports;
+		this.formatJavadoc = formatJavadoc;
+	}
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(Provisioner provisioner) {
@@ -74,12 +95,13 @@ public class GoogleJavaFormatStep {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc),
+		return FormatterStep.create(NAME,
+				new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc),
+				GoogleJavaFormatStep::equalityState,
 				State::createFormat);
 	}
 
-	static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME)
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME)
 			.addMin(11, "1.8") // we only support google-java-format >= 1.8 due to api changes
 			.addMin(16, "1.10.0") // java 16 requires at least 1.10.0 due to jdk api changes in JavaTokenizer
 			.addMin(21, "1.17.0") // java 21 requires at least 1.17.0 due to https://github.com/google/google-java-format/issues/898
@@ -91,7 +113,7 @@ public class GoogleJavaFormatStep {
 
 	/** Get default formatter version */
 	public static String defaultVersion() {
-		return JVM_SUPPORT.getRecommendedFormatterVersion();
+		return Objects.requireNonNull(JVM_SUPPORT.getRecommendedFormatterVersion());
 	}
 
 	public static String defaultStyle() {
@@ -110,39 +132,33 @@ public class GoogleJavaFormatStep {
 		return DEFAULT_FORMAT_JAVADOC;
 	}
 
+	private State equalityState() {
+		return new State(version, style, jarState.get(), reflowLongStrings, reorderImports, formatJavadoc);
+	}
+
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		/** The jar that contains the formatter. */
-		final JarState jarState;
-		final String stepName;
-		final String version;
-		final String style;
-		final boolean reflowLongStrings;
-		final boolean reorderImports;
-		final boolean formatJavadoc;
+		private final JarState jarState;
+		private final String version;
+		private final String style;
+		private final boolean reflowLongStrings;
+		private final boolean reorderImports;
+		private final boolean formatJavadoc;
 
-		State(String stepName, String version, Provisioner provisioner) throws Exception {
-			this(stepName, version, DEFAULT_STYLE, provisioner);
+		State(String version, JarState jarState) {
+			this(version, DEFAULT_STYLE, jarState, DEFAULT_REFLOW_LONG_STRINGS, DEFAULT_REORDER_IMPORTS, DEFAULT_FORMAT_JAVADOC);
 		}
 
-		State(String stepName, String version, String style, Provisioner provisioner) throws Exception {
-			this(stepName, version, style, provisioner, DEFAULT_REFLOW_LONG_STRINGS);
-		}
-
-		State(String stepName, String version, String style, Provisioner provisioner, boolean reflowLongStrings) throws Exception {
-			this(stepName, version, style, provisioner, reflowLongStrings, DEFAULT_REORDER_IMPORTS);
-		}
-
-		State(String stepName, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports) throws Exception {
-			this(stepName, MAVEN_COORDINATE, version, style, provisioner, reflowLongStrings, reorderImports, DEFAULT_FORMAT_JAVADOC);
-		}
-
-		State(String stepName, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc) throws Exception {
+		State(String version,
+				String style,
+				JarState jarState,
+				boolean reflowLongStrings,
+				boolean reorderImports,
+				boolean formatJavadoc) {
 			JVM_SUPPORT.assertFormatterSupported(version);
 			ModuleHelper.doOpenInternalPackagesIfRequired();
-			this.jarState = JarState.from(groupArtifact + ":" + version, provisioner);
-			this.stepName = stepName;
+			this.jarState = jarState;
 			this.version = version;
 			this.style = style;
 			this.reflowLongStrings = reflowLongStrings;
@@ -167,7 +183,5 @@ public class GoogleJavaFormatStep {
 
 			return JVM_SUPPORT.suggestLaterVersionOnError(version, googleJavaFormatRemoveUnusedImporterFormatterFunc);
 		}
-
 	}
-
 }
