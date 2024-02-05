@@ -96,8 +96,8 @@ jobs:
       - name: Install shfmt
         if: matrix.kind == 'shfmt'
         run: |
-          sudo curl -sSfL "https://github.com/mvdan/sh/releases/download/v${{ matrix.shfmt-version }}/shfmt_v${{ matrix.shfmt-version }}_linux_amd64" -o /usr/local/bin/shfmt
-          sudo chmod +x /usr/local/bin/shfmt
+          curl -sSfL "https://github.com/mvdan/sh/releases/download/v${{ matrix.shfmt-version }}/shfmt_v${{ matrix.shfmt-version }}_linux_amd64" -o /usr/local/bin/shfmt
+          chmod +x /usr/local/bin/shfmt
 
       - name: Test shfmt
         if: matrix.kind == 'shfmt'
