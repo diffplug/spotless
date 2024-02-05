@@ -74,7 +74,7 @@ public class ShfmtStep {
 				"\n    github issue to handle this better: https://github.com/diffplug/spotless/issues/673";
 		final ForeignExe exe = ForeignExe.nameAndVersion("shfmt", version)
 				.pathToExe(pathToExe)
-				.versionRegex(Pattern.compile("(\\S*)"))
+				.versionRegex(Pattern.compile("([\\d.]+)"))
 				.fixCantFind(howToInstall)
 				.fixWrongVersion(
 						"You can tell Spotless to use the version you already have with {@code shfmt('{versionFound}')}" +
