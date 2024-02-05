@@ -1004,7 +1004,7 @@ spotless {
 [homepage](https://github.com/mvdan/sh). [changelog](https://github.com/mvdan/sh/blob/master/CHANGELOG.md).
 
 When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.editorconfig`. 
-Refer to the `shfmt` main page for `.editorconfig` settings. 
+Refer to the `shfmt` [man page](https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd) for `.editorconfig` settings. 
 
 ```gradle
 shfmt('3.7.0') // version is optional
