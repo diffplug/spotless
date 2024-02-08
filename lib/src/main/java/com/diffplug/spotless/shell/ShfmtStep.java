@@ -100,8 +100,8 @@ public class ShfmtStep {
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
 			if (args == null) {
-				// args will be reused during a single spotless task execution,
-				// so this "prefix" is being "cached" for each spotless format with shfmt.
+				// args will be reused during a single Spotless task execution,
+				// so this "prefix" is being "cached" for each Spotless format with shfmt.
 				args = List.of(exe.confirmVersionAndGetAbsolutePath(), "--filename");
 			}
 
