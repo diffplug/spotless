@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -72,7 +74,7 @@ public class ShfmtStep {
 				"\n    github issue to handle this better: https://github.com/diffplug/spotless/issues/673";
 		final ForeignExe exe = ForeignExe.nameAndVersion("shfmt", version)
 				.pathToExe(pathToExe)
-				.versionRegex(Pattern.compile("(\\S*)"))
+				.versionRegex(Pattern.compile("([\\d.]+)"))
 				.fixCantFind(howToInstall)
 				.fixWrongVersion(
 						"You can tell Spotless to use the version you already have with {@code shfmt('{versionFound}')}" +
@@ -83,9 +85,11 @@ public class ShfmtStep {
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	static class State implements Serializable {
 		private static final long serialVersionUID = -1825662356883926318L;
+
 		// used for up-to-date checks and caching
 		final String version;
 		final transient ForeignExe exe;
+
 		// used for executing
 		private transient @Nullable List<String> args;
 
@@ -96,10 +100,16 @@ public class ShfmtStep {
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
 			if (args == null) {
-				args = List.of(exe.confirmVersionAndGetAbsolutePath(), "-i", "2", "-ci");
+				// args will be reused during a single Spotless task execution,
+				// so this "prefix" is being "cached" for each Spotless format with shfmt.
+				args = List.of(exe.confirmVersionAndGetAbsolutePath(), "--filename");
 			}
 
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
+			// This will ensure that the next file name is retrieved on every format
+			final List<String> finalArgs = Stream.concat(args.stream(), Stream.of(file.getAbsolutePath()))
+					.collect(Collectors.toList());
+
+			return runner.exec(input.getBytes(StandardCharsets.UTF_8), finalArgs).assertExitZero(StandardCharsets.UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {
