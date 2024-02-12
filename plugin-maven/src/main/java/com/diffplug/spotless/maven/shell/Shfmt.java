@@ -23,7 +23,6 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 import com.diffplug.spotless.shell.ShfmtStep;
 
 public class Shfmt implements FormatterStepFactory {
-
 	@Parameter
 	private String version;
 
