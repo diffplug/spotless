@@ -18,15 +18,32 @@ package com.diffplug.spotless.shell;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.tag.ShfmtTest;
 
 @ShfmtTest
 public class ShfmtStepTest extends ResourceHarness {
 	@Test
-	void test() throws Exception {
-		try (StepHarness harness = StepHarness.forStep(ShfmtStep.withVersion(ShfmtStep.defaultVersion()).create())) {
-			harness.testResource("shell/shfmt/shfmt.sh", "shell/shfmt/shfmt.clean").close();
+	void testWithEditorconfig() throws Exception {
+		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, ShfmtStep.withVersion(ShfmtStep.defaultVersion()).create())) {
+			final String fileDir = "shell/shfmt/with-config/";
+			final String dirtyFile = fileDir + "shfmt.sh";
+			final String cleanFile = fileDir + "shfmt.clean";
+
+			setFile(".editorconfig").toResource(fileDir + ".editorconfig");
+
+			harness.testResource(dirtyFile, cleanFile);
+		}
+	}
+
+	@Test
+	void testWithoutEditorconfig() throws Exception {
+		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, ShfmtStep.withVersion(ShfmtStep.defaultVersion()).create())) {
+			final String fileDir = "shell/shfmt/without-config/";
+			final String dirtyFile = fileDir + "shfmt.sh";
+			final String cleanFile = fileDir + "shfmt.clean";
+
+			harness.testResource(dirtyFile, cleanFile);
 		}
 	}
 }

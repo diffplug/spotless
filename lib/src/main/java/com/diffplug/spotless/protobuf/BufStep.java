@@ -58,16 +58,32 @@ public class BufStep {
 	}
 
 	public FormatterStep create() {
-		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
+		return FormatterStep.createLazy(name(), this::createRoundtrip, RoundtripState::state, State::toFunc);
 	}
 
-	private State createState() {
+	private RoundtripState createRoundtrip() {
 		String instructions = "https://docs.buf.build/installation";
 		ForeignExe exe = ForeignExe.nameAndVersion("buf", version)
 				.pathToExe(pathToExe)
 				.versionRegex(Pattern.compile("(\\S*)"))
 				.fixCantFind("Try following the instructions at " + instructions + ", or else tell Spotless where it is with {@code buf().pathToExe('path/to/executable')}");
-		return new State(this, exe);
+		return new RoundtripState(version, exe);
+	}
+
+	private static class RoundtripState implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		final String version;
+		final ForeignExe exe;
+
+		RoundtripState(String version, ForeignExe exe) {
+			this.version = version;
+			this.exe = exe;
+		}
+
+		private State state() {
+			return new State(version, exe);
+		}
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
@@ -80,9 +96,9 @@ public class BufStep {
 		private final transient ForeignExe exe;
 		private transient String exeAbsPath;
 
-		State(BufStep step, ForeignExe exe) {
-			this.version = step.version;
-			this.exe = Objects.requireNonNull(exe);
+		State(String version, ForeignExe exeAbsPath) {
+			this.version = version;
+			this.exe = Objects.requireNonNull(exeAbsPath);
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {

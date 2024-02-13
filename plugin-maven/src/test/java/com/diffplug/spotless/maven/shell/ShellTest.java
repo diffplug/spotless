@@ -16,21 +16,36 @@
 package com.diffplug.spotless.maven.shell;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.tag.ShfmtTest;
 
 @ShfmtTest
 public class ShellTest extends MavenIntegrationHarness {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ShellTest.class);
+	@Test
+	public void testFormatShellWithEditorconfig() throws Exception {
+		String fileDir = "shell/shfmt/with-config/";
+		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
+		setFile("scripts/other.sh").toResource(fileDir + "other.sh");
+		setFile(".editorconfig").toResource(fileDir + ".editorconfig");
+
+		writePomWithShellSteps("<shfmt/>");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+
+		assertFile("shfmt.sh").sameAsResource(fileDir + "shfmt.clean");
+		assertFile("scripts/other.sh").sameAsResource(fileDir + "other.clean");
+	}
 
 	@Test
-	public void testFormatShell() throws Exception {
+	public void testFormatShellWithoutEditorconfig() throws Exception {
+		String fileDir = "shell/shfmt/without-config/";
+		setFile("shfmt.sh").toResource(fileDir + "shfmt.sh");
+		setFile("scripts/other.sh").toResource(fileDir + "other.sh");
+
 		writePomWithShellSteps("<shfmt/>");
-		setFile("shfmt.sh").toResource("shell/shfmt/shfmt.sh");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile("shfmt.sh").sameAsResource("shell/shfmt/shfmt.clean");
+
+		assertFile("shfmt.sh").sameAsResource(fileDir + "shfmt.clean");
+		assertFile("scripts/other.sh").sameAsResource(fileDir + "other.clean");
 	}
 }

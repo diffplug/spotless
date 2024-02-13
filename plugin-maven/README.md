@@ -1021,11 +1021,40 @@ Uses Jackson and YAMLFactory to pretty print objects:
 </jackson>
 ```
 
+## Shell
+
+- `com.diffplug.spotless.maven.FormatterFactory.addStepFactory(FormatterStepFactory)` [code](./src/main/java/com/diffplug/spotless/maven/shell/Shell.java)
+
+```xml
+<configuration>
+  <shell>
+    <includes>     <!-- Not required. Defaults to **/*.sh -->
+      <include>scripts/**/*.sh</include>
+    </includes>
+    
+    <shfmt />    <!-- has its own section below -->
+  </shell>
+</configuration>
+```
+
+### shfmt
+
+[homepage](https://github.com/mvdan/sh). [changelog](https://github.com/mvdan/sh/blob/master/CHANGELOG.md).
+
+When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.editorconfig`.
+
+```xml
+<shfmt>
+  <version>3.7.0</version>                         <!-- optional: Custom version of 'mvdan/sh' -->
+  <pathToExe>/opt/homebrew/bin/shfmt</pathToExe>   <!-- optional: if shfmt is not on your path, you must specify its location manually -->
+</shfmt>
+```
+
 ## Gherkin
 
 - `com.diffplug.spotless.maven.FormatterFactory.addStepFactory(FormatterStepFactory)` [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/gherkin/Gherkin.java)
 
-```gradle
+```xml
 <configuration>
   <gherkin>
     <includes>     <!-- You have to set the target manually -->

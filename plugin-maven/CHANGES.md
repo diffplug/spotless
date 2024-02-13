@@ -5,9 +5,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020))
+* Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
 ### Fixed
 * Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
-
 
 ## [2.43.0] - 2024-01-23
 ### Added

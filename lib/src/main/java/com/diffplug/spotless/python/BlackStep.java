@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,17 +56,33 @@ public class BlackStep {
 	}
 
 	public FormatterStep create() {
-		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
+		return FormatterStep.createLazy(name(), this::createState, RoundtripState::state, State::toFunc);
 	}
 
-	private State createState() throws IOException, InterruptedException {
+	private RoundtripState createState() {
 		String trackingIssue = "\n  github issue to handle this better: https://github.com/diffplug/spotless/issues/674";
 		ForeignExe exeAbsPath = ForeignExe.nameAndVersion("black", version)
 				.pathToExe(pathToExe)
 				.versionRegex(Pattern.compile("(?:black, version|black,|version) (\\S*)"))
 				.fixCantFind("Try running {@code pip install black=={version}}, or else tell Spotless where it is with {@code black().pathToExe('path/to/executable')}" + trackingIssue)
 				.fixWrongVersion("Try running {@code pip install --force-reinstall black=={version}}, or else specify {@code black('{versionFound}')} to Spotless" + trackingIssue);
-		return new State(this, exeAbsPath);
+		return new RoundtripState(version, exeAbsPath);
+	}
+
+	static class RoundtripState implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		final String version;
+		final ForeignExe exe;
+
+		RoundtripState(String version, ForeignExe exe) {
+			this.version = version;
+			this.exe = exe;
+		}
+
+		private State state() {
+			return new State(version, exe);
+		}
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
@@ -78,8 +94,8 @@ public class BlackStep {
 		// used for executing
 		private transient @Nullable String[] args;
 
-		State(BlackStep step, ForeignExe exeAbsPath) {
-			this.version = step.version;
+		State(String version, ForeignExe exeAbsPath) {
+			this.version = version;
 			this.exe = Objects.requireNonNull(exeAbsPath);
 		}
 

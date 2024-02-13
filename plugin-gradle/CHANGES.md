@@ -8,6 +8,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
 
+### Added
+* Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
+
 ## [6.25.0] - 2024-01-23
 ### Added
 * Maven / Gradle - Support for formatting Java Docs for the Palantir formatter ([#2009](https://github.com/diffplug/spotless/pull/2009))
