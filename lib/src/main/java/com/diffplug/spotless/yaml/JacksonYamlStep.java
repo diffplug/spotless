@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.yaml;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -25,18 +24,26 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.RoundedStep;
 
 /**
  * Simple YAML formatter which reformats the file according to Jackson YAMLFactory.
  */
 // https://stackoverflow.com/questions/14515994/convert-json-string-to-pretty-print-json-output-using-jackson
 // https://stackoverflow.com/questions/60891174/i-want-to-load-a-yaml-file-possibly-edit-the-data-and-then-dump-it-again-how
-public class JacksonYamlStep {
-	static final String MAVEN_COORDINATE = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:";
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
-	static final String DEFAULT_VERSION = "2.14.1";
+public class JacksonYamlStep implements RoundedStep {
+	private static final long serialVersionUID = 1L;
+	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:";
+	private static final String DEFAULT_VERSION = "2.14.1";
+	public static final String NAME = "jacksonYaml";
 
-	private JacksonYamlStep() {}
+	private final JarState.Promised jarState;
+	private final JacksonYamlConfig jacksonConfig;
+
+	private JacksonYamlStep(JarState.Promised jarState, JacksonYamlConfig jacksonConfig) {
+		this.jarState = jarState;
+		this.jacksonConfig = jacksonConfig;
+	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
@@ -47,8 +54,9 @@ public class JacksonYamlStep {
 			Provisioner provisioner) {
 		Objects.requireNonNull(jacksonConfig, "jacksonConfig cannot be null");
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
-		return FormatterStep.createLazy("yaml",
-				() -> new State(jacksonConfig, jacksonVersion, provisioner),
+		return FormatterStep.create(NAME,
+				new JacksonYamlStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + jacksonVersion, provisioner)), jacksonConfig),
+				JacksonYamlStep::equalityState,
 				State::toFormatter);
 	}
 
@@ -56,19 +64,19 @@ public class JacksonYamlStep {
 		return create(new JacksonYamlConfig(), defaultVersion(), provisioner);
 	}
 
+	private State equalityState() {
+		return new State(jarState.get(), jacksonConfig);
+	}
+
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private final JacksonYamlConfig jacksonConfig;
-
 		private final JarState jarState;
 
-		private State(JacksonYamlConfig jacksonConfig,
-				String jacksonVersion,
-				Provisioner provisioner) throws IOException {
+		State(JarState jarState, JacksonYamlConfig jacksonConfig) {
+			this.jarState = jarState;
 			this.jacksonConfig = jacksonConfig;
-
-			this.jarState = JarState.from(JacksonYamlStep.MAVEN_COORDINATE + jacksonVersion, provisioner);
 		}
 
 		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
