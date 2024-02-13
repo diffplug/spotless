@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.RoundedStep;
+import com.diffplug.spotless.SerializedFunction;
 
 /**
  * Some formatters put every annotation on its own line
@@ -398,7 +399,7 @@ public final class FormatAnnotationsStep implements RoundedStep {
 	}
 
 	public static FormatterStep create(List<String> addedTypeAnnotations, List<String> removedTypeAnnotations) {
-		return FormatterStep.create(NAME, new State(addedTypeAnnotations, removedTypeAnnotations), State::toFormatter);
+		return FormatterStep.create(NAME, new State(addedTypeAnnotations, removedTypeAnnotations), SerializedFunction.identity(), State::toFormatter);
 	}
 
 	private FormatAnnotationsStep() {}

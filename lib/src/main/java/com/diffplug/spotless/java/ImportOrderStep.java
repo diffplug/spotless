@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.RoundedStep;
+import com.diffplug.spotless.SerializedFunction;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -90,6 +91,7 @@ public final class ImportOrderStep implements RoundedStep {
 			Set<String> treatAsClass, Supplier<List<String>> importOrder) {
 		return FormatterStep.create("importOrder",
 				new State(importOrder.get(), lineFormat, wildcardsLast, semanticSort, treatAsPackage, treatAsClass),
+				SerializedFunction.identity(),
 				State::toFormatter);
 	}
 
