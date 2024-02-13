@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.json.gson;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -25,19 +24,32 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.RoundedStep;
 
-public class GsonStep {
+public class GsonStep implements RoundedStep {
+	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATES = "com.google.code.gson:gson";
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Gson; maybe you set an incompatible version?";
+	public static final String NAME = "gson";
 
-	@Deprecated
-	public static FormatterStep create(int indentSpaces, boolean sortByKeys, boolean escapeHtml, String version, Provisioner provisioner) {
-		return create(new GsonConfig(sortByKeys, escapeHtml, indentSpaces, version), provisioner);
+	private final JarState.Promised jarState;
+	private final GsonConfig gsonConfig;
+
+	private GsonStep(JarState.Promised jarState, GsonConfig gsonConfig) {
+		this.gsonConfig = gsonConfig;
+		this.jarState = jarState;
 	}
 
 	public static FormatterStep create(GsonConfig gsonConfig, Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
-		return FormatterStep.createLazy("gson", () -> new State(gsonConfig, provisioner), State::toFormatter);
+		return FormatterStep.create(NAME,
+				new GsonStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATES + ":" + gsonConfig.getVersion(), provisioner)), gsonConfig),
+				GsonStep::equalityState,
+				State::toFormatter);
+	}
+
+	private State equalityState() {
+		return new State(jarState.get(), gsonConfig);
 	}
 
 	private static final class State implements Serializable {
@@ -46,9 +58,9 @@ public class GsonStep {
 		private final JarState jarState;
 		private final GsonConfig gsonConfig;
 
-		private State(GsonConfig gsonConfig, Provisioner provisioner) throws IOException {
+		private State(JarState jarState, GsonConfig gsonConfig) {
+			this.jarState = jarState;
 			this.gsonConfig = gsonConfig;
-			this.jarState = JarState.from(MAVEN_COORDINATES + ":" + gsonConfig.getVersion(), provisioner);
 		}
 
 		FormatterFunc toFormatter() {
@@ -62,5 +74,4 @@ public class GsonStep {
 			}
 		}
 	}
-
 }
