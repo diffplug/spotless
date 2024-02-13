@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,44 +15,54 @@
  */
 package com.diffplug.spotless.antlr4;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.diffplug.spotless.*;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.RoundedStep;
+import com.diffplug.spotless.ThrowingEx;
 
-public class Antlr4FormatterStep {
-
-	public static final String NAME = "antlr4Formatter";
-
-	private Antlr4FormatterStep() {}
-
+public class Antlr4FormatterStep implements RoundedStep {
+	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.khubla.antlr4formatter:antlr4-formatter:";
 	private static final String DEFAULT_VERSION = "1.2.1";
+	public static final String NAME = "antlr4Formatter";
+
+	private final JarState.Promised jarState;
+
+	private Antlr4FormatterStep(JarState.Promised jarState) {
+		this.jarState = jarState;
+	}
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return FormatterStep.createLazy(NAME, () -> new State(version, provisioner), State::createFormat);
+		return FormatterStep.create(NAME,
+				new Antlr4FormatterStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner))),
+				Antlr4FormatterStep::equalityState,
+				State::createFormat);
 	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
 	}
 
-	static final class State implements Serializable {
+	private State equalityState() {
+		return new State(jarState.get());
+	}
+
+	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
+		private final JarState jarState;
 
-		/**
-		 * The jar that contains the formatter.
-		 */
-		final JarState jarState;
-
-		State(String version, Provisioner provisioner) throws IOException {
-			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+		State(JarState jarState) {
+			this.jarState = jarState;
 		}
 
 		FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException {
