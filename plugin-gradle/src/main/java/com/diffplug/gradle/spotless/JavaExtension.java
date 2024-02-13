@@ -39,6 +39,7 @@ import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.CleanthatJavaStep;
 import com.diffplug.spotless.java.FormatAnnotationsStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
+import com.diffplug.spotless.java.IdeaStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
@@ -313,6 +314,45 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	}
 
+	public IdeaConfig idea() {
+		return new IdeaConfig();
+	}
+
+	public class IdeaConfig {
+		private String binaryPath;
+		private String configPath;
+		private boolean withDefaults = false;
+
+		IdeaConfig() {
+			addStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return IdeaStep.create(withDefaults, binaryPath, configPath);
+		}
+
+		public IdeaConfig binaryPath(String binaryPath) {
+			Objects.requireNonNull(binaryPath);
+			this.binaryPath = binaryPath;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public IdeaConfig configPath(String configPath) {
+			Objects.requireNonNull(configPath);
+			this.configPath = configPath;
+			replaceStep(createStep());
+			return this;
+		}
+
+		public IdeaConfig withDefaults(Boolean withDefaults) {
+			Objects.requireNonNull(withDefaults);
+			this.withDefaults = withDefaults;
+			replaceStep(createStep());
+			return this;
+		}
+	}
+
 	/** Removes newlines between type annotations and types. */
 	public FormatAnnotationsConfig formatAnnotations() {
 		return new FormatAnnotationsConfig();
@@ -400,7 +440,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		}
 
 		// An id of a mutator (see IMutator.getIds()) or
-		// tThe fully qualified name of a class implementing eu.solven.cleanthat.engine.java.refactorer.meta.IMutator
+		// The fully qualified name of a class implementing eu.solven.cleanthat.engine.java.refactorer.meta.IMutator
 		public CleanthatJavaConfig addMutator(String mutator) {
 			this.mutators.add(mutator);
 			replaceStep(createStep());
