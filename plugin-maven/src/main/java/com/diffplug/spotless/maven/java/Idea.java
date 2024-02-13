@@ -16,6 +16,7 @@
 package com.diffplug.spotless.maven.java;
 
 import org.apache.maven.plugins.annotations.Parameter;
+
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.java.IdeaStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
