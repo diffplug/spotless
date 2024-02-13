@@ -234,6 +234,10 @@ spotless {
     eclipse()
     // optional: you can specify a specific version and/or config file
     eclipse('4.26').configFile('eclipse-prefs.xml')
+    // if the access to the p2 repositories is restricted, mirrors can be
+    // specified using a URI prefix map as follows:
+    echlise().withP2Mirrors(['https://download.eclipse.org/eclipse/updates/4.29/':'https://some.internal.mirror/4-29-updates-p2/'])
+       
 ```
 
 
