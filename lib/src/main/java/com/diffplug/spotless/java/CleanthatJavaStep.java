@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.java;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -27,6 +26,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.RoundedStep;
 
 /**
  * Enables CleanThat as a SpotLess step.
@@ -34,23 +34,43 @@ import com.diffplug.spotless.Provisioner;
  * @author Benoit Lacelle
  */
 // https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-to-add-a-new-formatterstep
-public final class CleanthatJavaStep {
-
+public final class CleanthatJavaStep implements RoundedStep {
+	private static final long serialVersionUID = 1L;
 	private static final String NAME = "cleanthat";
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
-
-	// CleanThat changelog is available at https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD
+	/**
+	 * CleanThat changelog is available at <a href="https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD">here</a>.
+	 */
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.16");
 
-	// prevent direct instantiation
-	private CleanthatJavaStep() {}
+	private final JarState.Promised jarState;
+	private final String version;
+	private final String sourceJdkVersion;
+	private final List<String> included;
+	private final List<String> excluded;
+	private final boolean includeDraft;
 
-	/** Creates a step which apply default CleanThat mutators. */
+	private CleanthatJavaStep(JarState.Promised jarState,
+			String version,
+			String sourceJdkVersion,
+			List<String> included,
+			List<String> excluded,
+			boolean includeDraft) {
+		this.jarState = jarState;
+		this.version = version;
+
+		this.sourceJdkVersion = sourceJdkVersion;
+		this.included = included;
+		this.excluded = excluded;
+		this.includeDraft = includeDraft;
+	}
+
+	/** Creates a step that applies default CleanThat mutators. */
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
 	}
 
-	/** Creates a step which apply default CleanThat mutators. */
+	/** Creates a step that applies default CleanThat mutators. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
 		return create(MAVEN_COORDINATE, version, defaultSourceJdk(), defaultMutators(), defaultExcludedMutators(), defaultIncludeDraft(), provisioner);
 	}
@@ -64,7 +84,6 @@ public final class CleanthatJavaStep {
 
 	/**
 	 * By default, we include only safe and consensual mutators
-	 * @return
 	 */
 	public static List<String> defaultMutators() {
 		// see ICleanthatStepParametersProperties.SAFE_AND_CONSENSUAL
@@ -79,7 +98,7 @@ public final class CleanthatJavaStep {
 		return false;
 	}
 
-	/** Creates a step which apply selected CleanThat mutators. */
+	/** Creates a step that applies selected CleanThat mutators. */
 	public static FormatterStep create(String groupArtifact,
 			String version,
 			String sourceJdkVersion,
@@ -93,57 +112,51 @@ public final class CleanthatJavaStep {
 		}
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new JavaRefactorerState(NAME, groupArtifact, version, sourceJdkVersion, included, excluded, includeDraft, provisioner),
-				JavaRefactorerState::createFormat);
+		return FormatterStep.create(NAME,
+				new CleanthatJavaStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, sourceJdkVersion, included, excluded, includeDraft),
+				CleanthatJavaStep::equalityState,
+				State::createFormat);
 	}
 
 	/** Get default formatter version */
 	public static String defaultVersion() {
-		return JVM_SUPPORT.getRecommendedFormatterVersion();
+		return Objects.requireNonNull(JVM_SUPPORT.getRecommendedFormatterVersion());
 	}
 
 	public static String defaultGroupArtifact() {
 		return MAVEN_COORDINATE;
 	}
 
-	static final class JavaRefactorerState implements Serializable {
+	private State equalityState() {
+		return new State(jarState.get(), version, sourceJdkVersion, included, excluded, includeDraft);
+	}
+
+	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		final JarState jarState;
-		final String stepName;
-		final String version;
+		private final JarState jarState;
+		private final String version;
+		private final String sourceJdkVersion;
+		private final List<String> included;
+		private final List<String> excluded;
+		private final boolean includeDraft;
 
-		final String sourceJdkVersion;
-		final List<String> included;
-		final List<String> excluded;
-		final boolean includeDraft;
-
-		JavaRefactorerState(String stepName, String version, Provisioner provisioner) throws IOException {
-			this(stepName, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultMutators(), defaultExcludedMutators(), defaultIncludeDraft(), provisioner);
-		}
-
-		JavaRefactorerState(String stepName,
-				String groupArtifact,
+		State(JarState jarState,
 				String version,
 				String sourceJdkVersion,
 				List<String> included,
 				List<String> excluded,
-				boolean includeDraft,
-				Provisioner provisioner) throws IOException {
+				boolean includeDraft) {
 			JVM_SUPPORT.assertFormatterSupported(version);
 			ModuleHelper.doOpenInternalPackagesIfRequired();
-			this.jarState = JarState.from(groupArtifact + ":" + version, provisioner);
-			this.stepName = stepName;
+			this.jarState = jarState;
 			this.version = version;
-
 			this.sourceJdkVersion = sourceJdkVersion;
 			this.included = included;
 			this.excluded = excluded;
 			this.includeDraft = includeDraft;
 		}
 
-		@SuppressWarnings("PMD.UseProperClassLoader")
 		FormatterFunc createFormat() {
 			ClassLoader classLoader = jarState.getClassLoader();
 
@@ -159,9 +172,7 @@ public final class CleanthatJavaStep {
 				throw new IllegalStateException("Issue executing the formatter", e);
 			}
 
-			return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> {
-				return (String) formatterMethod.invoke(formatter, input);
-			});
+			return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> (String) formatterMethod.invoke(formatter, input));
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.diffplug.spotless.kotlin;
 
 import static com.diffplug.spotless.kotlin.KtfmtStep.Style.DEFAULT;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,19 +29,38 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.RoundedStep;
 import com.diffplug.spotless.ThrowingEx;
 
 /**
  * Wraps up <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> as a FormatterStep.
  */
-public class KtfmtStep {
-	// prevent direct instantiation
-	private KtfmtStep() {}
-
+public class KtfmtStep implements RoundedStep {
+	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "0.46";
-	static final String NAME = "ktfmt";
-	static final String PACKAGE = "com.facebook";
-	static final String MAVEN_COORDINATE = PACKAGE + ":ktfmt:";
+	private static final String NAME = "ktfmt";
+	private static final String MAVEN_COORDINATE = "com.facebook:ktfmt:";
+
+	private final String version;
+	/**
+	 * Option that allows to apply formatting options to perform a 4-space block and continuation indent.
+	 */
+	@Nullable
+	private final Style style;
+	@Nullable
+	private final KtfmtFormattingOptions options;
+	/** The jar that contains the formatter. */
+	private final JarState.Promised jarState;
+
+	private KtfmtStep(String version,
+			JarState.Promised jarState,
+			@Nullable Style style,
+			@Nullable KtfmtFormattingOptions options) {
+		this.version = Objects.requireNonNull(version, "version");
+		this.style = style;
+		this.options = options;
+		this.jarState = Objects.requireNonNull(jarState, "jarState");
+	}
 
 	/**
 	 * Used to allow multiple style option through formatting options and since when is each of them available.
@@ -136,39 +154,38 @@ public class KtfmtStep {
 	public static FormatterStep create(String version, Provisioner provisioner, @Nullable Style style, @Nullable KtfmtFormattingOptions options) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(
-				NAME, () -> new State(version, provisioner, style, options), State::createFormat);
+		return FormatterStep.create(NAME,
+				new KtfmtStep(version, JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner)), style, options),
+				KtfmtStep::equalityState,
+				State::createFormat);
 	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
 	}
 
-	static final class State implements Serializable {
+	private State equalityState() {
+		return new State(version, jarState.get(), style, options);
+	}
+
+	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
-
+		private static final String PACKAGE = "com.facebook.ktfmt";
 		private final String version;
-
-		private final String pkg;
-		/**
-		 * Option that allows to apply formatting options to perform a 4 spaces block and continuation indent.
-		 */
 		@Nullable
 		private final Style style;
-		/**
-		 *
-		 */
 		@Nullable
 		private final KtfmtFormattingOptions options;
-		/** The jar that contains the formatter. */
-		final JarState jarState;
+		private final JarState jarState;
 
-		State(String version, Provisioner provisioner, @Nullable Style style, @Nullable KtfmtFormattingOptions options) throws IOException {
+		State(String version,
+				JarState jarState,
+				@Nullable Style style,
+				@Nullable KtfmtFormattingOptions options) {
 			this.version = version;
 			this.options = options;
-			this.pkg = PACKAGE;
 			this.style = style;
-			this.jarState = JarState.from(MAVEN_COORDINATE + version, provisioner);
+			this.jarState = jarState;
 		}
 
 		FormatterFunc createFormat() throws Exception {
@@ -259,7 +276,7 @@ public class KtfmtStep {
 
 			// fallback to old, pre-0.19 ktfmt interface.
 			if (style == Style.DEFAULT || style == Style.DROPBOX) {
-				Class<?> formattingOptionsCompanionClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions$Companion");
+				Class<?> formattingOptionsCompanionClazz = classLoader.loadClass(PACKAGE + ".FormattingOptions$Companion");
 				Object companion = formattingOptionsCompanionClazz.getConstructors()[0].newInstance((Object) null);
 				Method formattingOptionsMethod = formattingOptionsCompanionClazz.getDeclaredMethod("dropboxStyle");
 				return formattingOptionsMethod.invoke(companion);
@@ -271,9 +288,9 @@ public class KtfmtStep {
 		private Class<?> getFormatterClazz(ClassLoader classLoader) throws Exception {
 			Class<?> formatterClazz;
 			if (BadSemver.version(version) >= BadSemver.version(0, 31)) {
-				formatterClazz = classLoader.loadClass(pkg + ".ktfmt.format.Formatter");
+				formatterClazz = classLoader.loadClass(PACKAGE + ".format.Formatter");
 			} else {
-				formatterClazz = classLoader.loadClass(pkg + ".ktfmt.FormatterKt");
+				formatterClazz = classLoader.loadClass(PACKAGE + ".FormatterKt");
 			}
 			return formatterClazz;
 		}
@@ -281,9 +298,9 @@ public class KtfmtStep {
 		private Class<?> getFormattingOptionsClazz(ClassLoader classLoader) throws Exception {
 			Class<?> formattingOptionsClazz;
 			if (BadSemver.version(version) >= BadSemver.version(0, 31)) {
-				formattingOptionsClazz = classLoader.loadClass(pkg + ".ktfmt.format.FormattingOptions");
+				formattingOptionsClazz = classLoader.loadClass(PACKAGE + ".format.FormattingOptions");
 			} else {
-				formattingOptionsClazz = classLoader.loadClass(pkg + ".ktfmt.FormattingOptions");
+				formattingOptionsClazz = classLoader.loadClass(PACKAGE + ".FormattingOptions");
 			}
 			return formattingOptionsClazz;
 		}
