@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,11 @@ public class FreshMarkExtension extends FormatExtension {
 	@Inject
 	public FreshMarkExtension(SpotlessExtension spotless) {
 		super(spotless);
-		addStep(FreshMarkStep.create(() -> {
-			Map<String, Object> map = new HashMap<>();
-			for (Action<Map<String, Object>> action : propertyActions) {
-				action.execute(map);
-			}
-			return map;
-		}, provisioner()));
+		Map<String, Object> map = new HashMap<>();
+		for (Action<Map<String, Object>> action : propertyActions) {
+			action.execute(map);
+		}
+		addStep(FreshMarkStep.create(map, provisioner()));
 	}
 
 	public void properties(Action<Map<String, Object>> action) {
