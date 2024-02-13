@@ -138,7 +138,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   ```
   spotless {
     java {
-      eclipse().withP2Mirrors(['https://download.eclipse.org/', 'https://some.internal.mirror/eclipse'])
+      eclipse().withP2Mirrors(['https://download.eclipse.org/': 'https://some.internal.mirror/eclipse'])
     }
   }
   ```
