@@ -992,7 +992,7 @@ spotless {
 ```gradle
 spotless {
   shell {
-    target 'scripts/**/*.sh' // default: '*.sh'
+    target 'scripts/**/*.sh' // default: '**/*.sh'
 
     shfmt()  // has its own section below
   }
@@ -1003,11 +1003,15 @@ spotless {
 
 [homepage](https://github.com/mvdan/sh). [changelog](https://github.com/mvdan/sh/blob/master/CHANGELOG.md).
 
+When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.editorconfig`. 
+Refer to the `shfmt` [man page](https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd) for `.editorconfig` settings. 
+
 ```gradle
 shfmt('3.7.0') // version is optional
 
 // if shfmt is not on your path, you must specify its location manually
 shfmt().pathToExe('/opt/homebrew/bin/shfmt')
+
 // Spotless always checks the version of the shfmt it is using
 // and will fail with an error if it does not match the expected version
 // (whether manually specified or default). If there is a problem, Spotless

@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.maven.shell;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.apache.maven.project.MavenProject;
@@ -30,9 +29,11 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
  * and shell-specific (e.g. {@link Shfmt}) steps.
  */
 public class Shell extends FormatterFactory {
+	private static final Set<String> DEFAULT_INCLUDES = Set.of("**/*.sh");
+
 	@Override
 	public Set<String> defaultIncludes(MavenProject project) {
-		return Collections.emptySet();
+		return DEFAULT_INCLUDES;
 	}
 
 	@Override
