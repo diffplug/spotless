@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,14 @@ class KtfmtStepTest extends ResourceHarness {
 	@Test
 	void behavior() throws Exception {
 		FormatterStep step = KtfmtStep.create(TestProvisioner.mavenCentral());
+		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic.clean");
+	}
+
+	@Test
+	void behaviorWithOptions() {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		options.setMaxWidth(100);
+		FormatterStep step = KtfmtStep.create(KtfmtStep.defaultVersion(), TestProvisioner.mavenCentral(), KtfmtStep.Style.GOOGLE, options);
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic.clean");
 	}
 
