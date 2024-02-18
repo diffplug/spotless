@@ -37,7 +37,7 @@ import com.diffplug.spotless.ThrowingEx;
  */
 public class KtfmtStep implements RoundedStep {
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = "0.46";
+	private static final String DEFAULT_VERSION = "0.47";
 	private static final String NAME = "ktfmt";
 	private static final String MAVEN_COORDINATE = "com.facebook:ktfmt:";
 

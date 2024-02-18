@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.glue.ktfmt;
+
+import java.lang.reflect.Method;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,7 +56,7 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 		return Formatter.format(createFormattingOptions(), input);
 	}
 
-	private FormattingOptions createFormattingOptions() {
+	private FormattingOptions createFormattingOptions() throws Exception {
 		FormattingOptions formattingOptions;
 		switch (style) {
 		case DEFAULT:
@@ -74,13 +76,26 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 		}
 
 		if (ktfmtFormattingOptions != null) {
-			formattingOptions = formattingOptions.copy(
-					formattingOptions.getStyle(),
-					ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
-					ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
-					ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
-					ktfmtFormattingOptions.getRemoveUnusedImport().orElse(formattingOptions.getRemoveUnusedImports()),
-					formattingOptions.getDebuggingPrintOpsAfterFormatting());
+			try {
+				formattingOptions = formattingOptions.copy(
+						formattingOptions.getStyle(),
+						ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
+						ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
+						ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
+						ktfmtFormattingOptions.getRemoveUnusedImport().orElse(formattingOptions.getRemoveUnusedImports()),
+						formattingOptions.getDebuggingPrintOpsAfterFormatting(),
+						formattingOptions.getManageTrailingCommas());
+			} catch (NoSuchMethodError e) {
+				//noinspection JavaReflectionMemberAccess, ABI change from ktfmt 0.47
+				Method copyMethod = formattingOptions.getClass().getMethod("copy", FormattingOptions.Style.class, int.class, int.class, int.class, boolean.class, boolean.class);
+				formattingOptions = (FormattingOptions) copyMethod.invoke(formattingOptions,
+						formattingOptions.getStyle(),
+						ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
+						ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
+						ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
+						ktfmtFormattingOptions.getRemoveUnusedImport().orElse(formattingOptions.getRemoveUnusedImports()),
+						formattingOptions.getDebuggingPrintOpsAfterFormatting());
+			}
 		}
 
 		return formattingOptions;
