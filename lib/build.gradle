@@ -128,7 +128,7 @@ dependencies {
 	// scalafmt
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:3.7.3"
 	// sortPom
-	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.2.1'
+	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.4.0'
 	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.0'
 	// zjsonPatch
 	zjsonPatchCompileOnly 'com.flipkart.zjsonpatch:zjsonpatch:0.4.14'
