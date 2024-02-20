@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
 ### Changes
 * Bump default `ktfmt` version to latest `0.46` -> `0.47`. ([#2045](https://github.com/diffplug/spotless/pull/2045))
+* Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#TODO](https://github.com/diffplug/spotless/pull/TODO))
 ### Added
 * Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
 
