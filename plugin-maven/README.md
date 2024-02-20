@@ -659,6 +659,8 @@ All configuration settings are optional, they are described in detail [here](htt
 
   <keepBlankLines>true</keepBlankLines> <!-- Keep empty lines -->
 
+  <endWithNewline>true</endWithNewline> <!-- Whether sorted pom ends with a newline -->
+
   <nrOfIndentSpace>2</nrOfIndentSpace> <!-- Indentation -->
 
   <indentBlankLines>false</indentBlankLines> <!-- Should empty lines be indented -->

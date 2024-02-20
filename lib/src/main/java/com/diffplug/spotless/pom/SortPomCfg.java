@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.io.Serializable;
 public class SortPomCfg implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public String version = "3.2.1";
+	public String version = "3.4.0";
 
 	public String encoding = "UTF-8";
 
@@ -32,6 +32,8 @@ public class SortPomCfg implements Serializable {
 	public boolean spaceBeforeCloseEmptyElement = false;
 
 	public boolean keepBlankLines = true;
+
+	public boolean endWithNewline = true;
 
 	public int nrOfIndentSpace = 2;
 
