@@ -50,7 +50,9 @@ class StepHarnessBase<T extends StepHarnessBase<?>> implements AutoCloseable {
 			} else if (onlyStepName.equals("fence")) {
 				supportsRoundTrip = true;
 			} else if (Set.of("black", "buf", "clang", "ktlint", "ktfmt", "scalafmt", "palantir-java-format", "google-java-format",
-					"removeUnusedImports", "cleanthat", "No line break between type annotation and type",
+					"removeUnusedImports", "cleanthat", "No line break between type annotation and type", "antlr4Formatter",
+					"gson", "jacksonJson", "apply-json-patch", "jsonSimple", "sortPom", "jacksonYaml", "gherkinUtils",
+					"flexmark-java", "freshmark",
 					"importOrder", "Remove unnecessary semicolons").contains(onlyStepName)) {
 				supportsRoundTrip = true;
 			}
