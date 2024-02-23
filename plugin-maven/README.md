@@ -1045,7 +1045,7 @@ When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.edit
 
 ```xml
 <shfmt>
-  <version>3.7.0</version>                         <!-- optional: Custom version of 'mvdan/sh' -->
+  <version>3.8.0</version>                         <!-- optional: Custom version of 'mvdan/sh' -->
   <pathToExe>/opt/homebrew/bin/shfmt</pathToExe>   <!-- optional: if shfmt is not on your path, you must specify its location manually -->
 </shfmt>
 ```
