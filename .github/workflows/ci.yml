@@ -60,7 +60,7 @@ jobs:
           - kind: shfmt
             jre: 11
             os: ubuntu-latest
-            shfmt-version: 3.7.0
+            shfmt-version: v3.8.0
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -83,11 +83,15 @@ jobs:
       - name: test npm
         if: matrix.kind == 'npm'
         run: ./gradlew testNpm
+      - name: Setup go
+        if: matrix.kind == 'shfmt'
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
       - name: Install shfmt
         if: matrix.kind == 'shfmt'
         run: |
-          curl -sSfL "https://github.com/mvdan/sh/releases/download/v${{ matrix.shfmt-version }}/shfmt_v${{ matrix.shfmt-version }}_linux_amd64" -o /usr/local/bin/shfmt
-          chmod +x /usr/local/bin/shfmt
+          go install mvdan.cc/sh/v3/cmd/shfmt@${{ matrix.shfmt-version }}
       - name: Test shfmt
         if: matrix.kind == 'shfmt'
         run: ./gradlew testShfmt

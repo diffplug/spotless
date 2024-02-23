@@ -16,6 +16,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 * Bump default `ktfmt` version to latest `0.46` -> `0.47`. ([#2045](https://github.com/diffplug/spotless/pull/2045))
 * Bump default `sortpom` version to latest `3.2.1` -> `3.4.0`. ([#2049](https://github.com/diffplug/spotless/pull/2049))
+* Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
 ### Removed
 * **BREAKING** Remove `JarState.getMavenCoordinate(String prefix)`. ([#1945](https://github.com/diffplug/spotless/pull/1945))
 * **BREAKING** Replace `PipeStepPair` with `FenceStep`. ([#1954](https://github.com/diffplug/spotless/pull/1954))

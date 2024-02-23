@@ -1011,7 +1011,7 @@ When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.edit
 Refer to the `shfmt` [man page](https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd) for `.editorconfig` settings. 
 
 ```gradle
-shfmt('3.7.0') // version is optional
+shfmt('3.8.0') // version is optional
 
 // if shfmt is not on your path, you must specify its location manually
 shfmt().pathToExe('/opt/homebrew/bin/shfmt')
