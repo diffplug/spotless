@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.diffplug.spotless.glue.ktlint.compat;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,6 +37,7 @@ import com.pinterest.ktlint.rule.engine.api.LintError;
 import com.pinterest.ktlint.rule.engine.core.api.Rule;
 import com.pinterest.ktlint.rule.engine.core.api.RuleId;
 import com.pinterest.ktlint.rule.engine.core.api.RuleProvider;
+import com.pinterest.ktlint.rule.engine.core.api.RuleProviderKt;
 import com.pinterest.ktlint.rule.engine.core.api.RuleSetId;
 import com.pinterest.ktlint.rule.engine.core.api.editorconfig.CodeStyleEditorConfigPropertyKt;
 import com.pinterest.ktlint.rule.engine.core.api.editorconfig.EditorConfigProperty;
@@ -105,7 +105,7 @@ public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
 		if (editorConfigPath == null || !Files.exists(editorConfigPath)) {
 			editorConfig = EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS();
 		} else {
-			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath, Collections.emptySet());
+			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath, RuleProviderKt.propertyTypes(allRuleProviders));
 		}
 
 		return new KtLintRuleEngine(
