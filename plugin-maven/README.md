@@ -1698,7 +1698,7 @@ The patterns are matched using `String#matches(String)` against the absolute fil
 
 ## Does Spotless support incremental builds in Eclipse
 
-Spotless comes with [m2e](https://eclipse.dev/m2e/) support. However by default its execution is skipped by default in incremental builds. To enable it use the following parameter.
+Spotless comes with [m2e](https://eclipse.dev/m2e/) support. However by default its execution is skipped by default in incremental builds. To enable it use the following parameter
 
 ```
 <configuration>
@@ -1714,6 +1714,7 @@ You can adjust this with
     <incrementalBuildMessageSeverity>ERROR</incrementalBuildMessageSeverity><!-- WARNING or ERROR -->
 </configuration>
 ```
+
 Note that for Incremental build support the goals have to be bound to a phase prior to `test`.
 
 <a name="examples"></a>
