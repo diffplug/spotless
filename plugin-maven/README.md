@@ -1696,7 +1696,7 @@ cmd> mvn spotless:apply -DspotlessFiles=my/file/pattern.java,more/generic/.*-pat
 
 The patterns are matched using `String#matches(String)` against the absolute file path.
 
-## Does Spotless support incremental builds in Eclipse
+## Does Spotless support incremental builds in Eclipse?
 
 Spotless comes with [m2e](https://eclipse.dev/m2e/) support. However by default its execution is skipped by default in incremental builds. To enable it use the following parameter
 
