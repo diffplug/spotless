@@ -1067,8 +1067,9 @@ public class FormatExtension {
 		}
 		task.setSteps(steps);
 		Directory projectDir = getProject().getLayout().getProjectDirectory();
+		LineEnding lineEndings = getLineEndings();
 		task.setLineEndingsPolicy(
-				getProject().provider(() -> getLineEndings().createPolicy(projectDir.getAsFile(), () -> totalTarget)));
+				getProject().provider(() -> lineEndings.createPolicy(projectDir.getAsFile(), () -> totalTarget)));
 		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
 		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
 	}
