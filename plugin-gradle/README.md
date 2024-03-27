@@ -800,8 +800,6 @@ The configuration is very similar to the [ESLint (Typescript)](#eslint-typescrip
 `tsconfig.json` is supported.
 
 ```gradle
-
-```gradle
 spotless {
   javascript {
     eslint('8.30.0') // version is optional
