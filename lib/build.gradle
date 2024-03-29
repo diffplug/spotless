@@ -126,7 +126,7 @@ dependencies {
 	// palantirJavaFormat
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 	// scalafmt
-	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:3.7.3"
+	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:3.8.1"
 	// sortPom
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.4.0'
 	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.12'
