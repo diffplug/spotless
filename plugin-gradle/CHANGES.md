@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
 ### Added
 * Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
+* Add support for formatting and sorting Maven POMs ([#2081](https://github.com/diffplug/spotless/issues/2081))
 
 ## [6.25.0] - 2024-01-23
 ### Added

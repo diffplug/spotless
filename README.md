@@ -154,7 +154,7 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`npm.EslintFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/EslintFormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`npm.PrettierFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/PrettierFormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`npm.TsFmtFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/TsFmtFormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
-| [`pom.SortPomStepStep`](lib/src/main/java/com/diffplug/spotless/pom/SortPomStepStep.java) | :white_large_square:        | :+1:      | :white_large_square:       | :white_large_square:  |
+| [`pom.SortPomStep`](lib/src/main/java/com/diffplug/spotless/pom/SortPomStep.java) | :+1:        | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`protobuf.BufStep`](lib/src/main/java/com/diffplug/spotless/protobuf/BufStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`python.BlackStep`](lib/src/main/java/com/diffplug/spotless/python/BlackStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |

@@ -665,13 +665,15 @@ All configuration settings are optional, they are described in detail [here](htt
 
   <indentBlankLines>false</indentBlankLines> <!-- Should empty lines be indented -->
 
-  <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indended -->
+  <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indented -->
 
   <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles-->
 
   <sortOrderFile></sortOrderFile> <!-- Custom sort order of elements: https://raw.githubusercontent.com/Ekryd/sortpom/master/sorter/src/main/resources/custom_1.xml -->
 
   <sortDependencies></sortDependencies> <!-- Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+
+  <sortDependencyManagement></sortDependencyManagement> <!-- Sort dependency management: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
 
   <sortDependencyExclusions></sortDependencyExclusions> <!-- Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
 
