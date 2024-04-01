@@ -60,12 +60,10 @@ if (System.env['CI'] != null) {
 }
 
 gradleEnterprise {
-	if (System.env['CI'] != null) {
-		buildScan {
-			termsOfServiceUrl = "https://gradle.com/terms-of-service"
-			termsOfServiceAgree = "yes"
-			publishAlways()
-		}
+	buildScan {
+		termsOfServiceUrl = "https://gradle.com/terms-of-service"
+		termsOfServiceAgree = "yes"
+		publishAlways(providers.environmentVariable('CI').present)
 	}
 }
 
