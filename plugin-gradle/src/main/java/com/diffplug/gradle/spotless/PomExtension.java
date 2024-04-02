@@ -51,7 +51,7 @@ public class PomExtension extends FormatExtension {
 	}
 
 	public class SortPomGradleConfig {
-		final SortPomCfg cfg = new SortPomCfg();
+		private final SortPomCfg cfg = new SortPomCfg();
 
 		SortPomGradleConfig() {
 			addStep(createStep());
