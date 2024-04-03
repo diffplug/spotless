@@ -206,7 +206,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	 * Otherwise this goal is skipped in incremental builds and only runs on full builds.
 	 */
 	@Parameter(defaultValue = "false")
-	protected boolean enableForIncrementalBuild;
+	protected boolean m2eEnableForIncrementalBuild;
 
 	protected abstract void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
 
@@ -252,7 +252,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		if (skip) {
 			return true;
 		}
-		if (buildContext.isIncremental() && !enableForIncrementalBuild) {
+		if (buildContext.isIncremental() && !m2eEnableForIncrementalBuild) {
 			getLog().debug("Skipping for incremental builds as parameter 'enableForIncrementalBuilds' is set to 'false'");
 			return true;
 		}

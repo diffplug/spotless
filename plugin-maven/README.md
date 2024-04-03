@@ -1703,7 +1703,7 @@ To enable it use the following parameter
 
 ```
 <configuration>
-    <enableForIncrementalBuild>true</enableForIncrementalBuild><!-- this is false by default -->
+    <m2eEnableForIncrementalBuild>true</m2eEnableForIncrementalBuild><!-- this is false by default -->
 </configuration>
 ```
 
@@ -1712,7 +1712,7 @@ You can adjust this with
 
 ```
 <configuration>
-    <incrementalBuildMessageSeverity>ERROR</incrementalBuildMessageSeverity><!-- WARNING or ERROR -->
+    <m2eIncrementalBuildMessageSeverity>ERROR</m2eIncrementalBuildMessageSeverity><!-- WARNING or ERROR -->
 </configuration>
 ```
 

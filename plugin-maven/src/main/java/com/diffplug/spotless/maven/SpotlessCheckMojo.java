@@ -58,10 +58,10 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 	/**
 	 * The severity used to emit messages during incremental builds.
 	 * Either {@code WARNING} or {@code ERROR}.
-	 * @see AbstractSpotlessMojo#enableForIncrementalBuild
+	 * @see AbstractSpotlessMojo#m2eEnableForIncrementalBuild
 	 */
 	@Parameter(defaultValue = "WARNING")
-	private MessageSeverity incrementalBuildMessageSeverity;
+	private MessageSeverity m2eIncrementalBuildMessageSeverity;
 
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
@@ -83,7 +83,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 					problemFiles.add(file);
 					if (buildContext.isIncremental()) {
 						Map.Entry<Integer, String> diffEntry = DiffMessageFormatter.diff(formatter, file);
-						buildContext.addMessage(file, diffEntry.getKey() + 1, 0, INCREMENTAL_MESSAGE_PREFIX + diffEntry.getValue(), incrementalBuildMessageSeverity.getSeverity(), null);
+						buildContext.addMessage(file, diffEntry.getKey() + 1, 0, INCREMENTAL_MESSAGE_PREFIX + diffEntry.getValue(), m2eIncrementalBuildMessageSeverity.getSeverity(), null);
 					}
 					counter.cleaned();
 				} else {
