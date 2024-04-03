@@ -21,7 +21,7 @@ import java.io.Serializable;
 public class SortPomCfg implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public String version = "3.4.0";
+	public String version = "3.4.1";
 
 	public String encoding = "UTF-8";
 
