@@ -37,7 +37,7 @@ import com.diffplug.spotless.RoundedStep;
 /** Wraps up <a href="https://github.com/pinterest/ktlint">ktlint</a> as a FormatterStep. */
 public class KtLintStep implements RoundedStep {
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = "1.1.1";
+	private static final String DEFAULT_VERSION = "1.2.1";
 	private static final String NAME = "ktlint";
 	private static final String MAVEN_COORDINATE_0_DOT = "com.pinterest:ktlint:";
 	private static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";
