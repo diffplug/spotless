@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,6 @@ import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
 class JacksonJsonStepTest {
-
-	private static final int INDENT = 4;
-
-	private final FormatterStep step = JsonSimpleStep.create(INDENT, TestProvisioner.mavenCentral());
-	private final StepHarness stepHarness = StepHarness.forStep(step);
-
 	@Test
 	void canSetCustomIndentationLevel() {
 		FormatterStep step = JacksonJsonStep.create(TestProvisioner.mavenCentral());

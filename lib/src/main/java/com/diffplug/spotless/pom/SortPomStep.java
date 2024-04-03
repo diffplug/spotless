@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.pom;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -24,27 +23,41 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.RoundedStep;
 
-public class SortPomStep {
+public class SortPomStep implements RoundedStep {
+	private static final long serialVersionUID = 1L;
+	private static final String MAVEN_COORDINATE = "com.github.ekryd.sortpom:sortpom-sorter:";
 	public static final String NAME = "sortPom";
-	static final String PACKAGE = "com.github.ekryd.sortpom";
-	static final String MAVEN_COORDINATE = PACKAGE + ":sortpom-sorter:";
 
-	private SortPomStep() {}
+	private final JarState.Promised jarState;
+	private final SortPomCfg cfg;
 
-	public static FormatterStep create(SortPomCfg cfg, Provisioner provisioner) {
-		return FormatterStep.createLazy(NAME, () -> new State(cfg, provisioner), State::createFormat);
+	private SortPomStep(JarState.Promised jarState, SortPomCfg cfg) {
+		this.jarState = jarState;
+		this.cfg = cfg;
 	}
 
-	static class State implements Serializable {
+	public static FormatterStep create(SortPomCfg cfg, Provisioner provisioner) {
+		return FormatterStep.create(NAME,
+				new SortPomStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + cfg.version, provisioner)), cfg),
+				SortPomStep::equalityState,
+				State::createFormat);
+	}
+
+	private State equalityState() {
+		return new State(jarState.get(), cfg);
+	}
+
+	private static class State implements Serializable {
 		private static final long serialVersionUID = 1;
 
-		SortPomCfg cfg;
-		JarState jarState;
+		private final SortPomCfg cfg;
+		private final JarState jarState;
 
-		public State(SortPomCfg cfg, Provisioner provisioner) throws IOException {
+		State(JarState jarState, SortPomCfg cfg) {
+			this.jarState = jarState;
 			this.cfg = cfg;
-			this.jarState = JarState.from(MAVEN_COORDINATE + cfg.version, provisioner);
 		}
 
 		FormatterFunc createFormat() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
