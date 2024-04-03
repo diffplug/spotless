@@ -228,6 +228,12 @@ public abstract class SpotlessExtension {
 		format(GoExtension.NAME, GoExtension.class, closure);
 	}
 
+	/** Configures the special POM-specific extension. */
+	public void pom(Action<PomExtension> closure) {
+		requireNonNull(closure);
+		format(PomExtension.NAME, PomExtension.class, closure);
+	}
+
 	/** Configures a custom extension. */
 	public void format(String name, Action<FormatExtension> closure) {
 		requireNonNull(name, "name");
