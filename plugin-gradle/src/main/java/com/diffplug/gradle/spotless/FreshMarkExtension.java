@@ -18,10 +18,10 @@ package com.diffplug.gradle.spotless;
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 
@@ -38,11 +38,7 @@ public class FreshMarkExtension extends FormatExtension {
 	@Inject
 	public FreshMarkExtension(SpotlessExtension spotless) {
 		super(spotless);
-		Map<String, Object> map = new HashMap<>();
-		for (Action<Map<String, Object>> action : propertyActions) {
-			action.execute(map);
-		}
-		addStep(FreshMarkStep.create(map, provisioner()));
+		addStep(FreshMarkStep.create(Map.of(), provisioner()));
 	}
 
 	public void properties(Action<Map<String, Object>> action) {
@@ -65,6 +61,10 @@ public class FreshMarkExtension extends FormatExtension {
 		if (target == null) {
 			throw noDefaultTargetException();
 		}
+		// replace the step
+		TreeMap<String, Object> props = new TreeMap<>();
+		propertyActions.forEach(action -> action.execute(props));
+		replaceStep(FreshMarkStep.create(props, provisioner()));
 		super.setupTask(task);
 	}
 }
