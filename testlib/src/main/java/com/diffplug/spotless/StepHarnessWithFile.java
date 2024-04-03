@@ -26,7 +26,7 @@ import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 
 /** An api for testing a {@code FormatterStep} that depends on the File path. */
-public class StepHarnessWithFile extends StepHarnessBase<StepHarnessWithFile> {
+public class StepHarnessWithFile extends StepHarnessBase {
 	private final ResourceHarness harness;
 
 	private StepHarnessWithFile(ResourceHarness harness, Formatter formatter) {
