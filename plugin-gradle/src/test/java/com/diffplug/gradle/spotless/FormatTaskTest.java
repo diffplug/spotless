@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.List;
 
 import org.gradle.api.Project;
 import org.gradle.api.services.BuildServiceParameters;
@@ -61,7 +62,7 @@ class FormatTaskTest extends ResourceHarness {
 		File outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
 		spotlessTask.setTarget(Collections.singleton(testFile));
 
-		spotlessTask.addStep(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p")));
+		spotlessTask.setSteps(List.of(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p"))));
 		Tasks.execute(spotlessTask);
 
 		assertFile(outputFile).hasContent("aple");

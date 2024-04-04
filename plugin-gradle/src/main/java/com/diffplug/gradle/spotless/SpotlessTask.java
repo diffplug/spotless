@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
-import com.diffplug.gradle.spotless.JvmLocalCache.LiveCache;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
@@ -48,10 +47,6 @@ import com.diffplug.spotless.extra.GitRatchet;
 public abstract class SpotlessTask extends DefaultTask {
 	@Internal
 	abstract Property<SpotlessTaskService> getTaskService();
-
-	protected <T> LiveCache<T> createLive(String keyName) {
-		return JvmLocalCache.createLive(this, keyName);
-	}
 
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
@@ -65,15 +60,15 @@ public abstract class SpotlessTask extends DefaultTask {
 		this.encoding = Objects.requireNonNull(encoding);
 	}
 
-	protected final LiveCache<Provider<LineEnding.Policy>> lineEndingsPolicy = createLive("lineEndingsPolicy");
+	protected Provider<LineEnding.Policy> lineEndingsPolicy = null;
 
 	@Input
 	public Provider<LineEnding.Policy> getLineEndingsPolicy() {
-		return lineEndingsPolicy.get();
+		return lineEndingsPolicy;
 	}
 
 	public void setLineEndingsPolicy(Provider<LineEnding.Policy> lineEndingsPolicy) {
-		this.lineEndingsPolicy.set(lineEndingsPolicy);
+		this.lineEndingsPolicy = lineEndingsPolicy;
 	}
 
 	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
@@ -155,22 +150,17 @@ public abstract class SpotlessTask extends DefaultTask {
 		return outputDirectory;
 	}
 
-	protected final LiveCache<List<FormatterStep>> steps = createLive("steps");
-	{
-		steps.set(new ArrayList<FormatterStep>());
-	}
+	protected final List<FormatterStep> steps = new ArrayList<>();
 
 	@Input
 	public List<FormatterStep> getSteps() {
-		return Collections.unmodifiableList(steps.get());
+		return Collections.unmodifiableList(steps);
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
-		this.steps.set(PluginGradlePreconditions.requireElementsNonNull(steps));
-	}
-
-	public boolean addStep(FormatterStep step) {
-		return this.steps.get().add(Objects.requireNonNull(step));
+		this.steps.clear();
+		PluginGradlePreconditions.requireElementsNonNull(steps);
+		this.steps.addAll(steps);
 	}
 
 	/** Returns the name of this format. */
@@ -186,10 +176,10 @@ public abstract class SpotlessTask extends DefaultTask {
 	Formatter buildFormatter() {
 		return Formatter.builder()
 				.name(formatName())
-				.lineEndingsPolicy(lineEndingsPolicy.get().get())
+				.lineEndingsPolicy(getLineEndingsPolicy().get())
 				.encoding(Charset.forName(encoding))
 				.rootDir(getProjectDir().get().getAsFile().toPath())
-				.steps(steps.get())
+				.steps(steps)
 				.exceptionPolicy(exceptionPolicy)
 				.build();
 	}
