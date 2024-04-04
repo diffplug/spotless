@@ -24,9 +24,8 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 
-public class GherkinUtilsStep implements RoundedStep {
+public class GherkinUtilsStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "io.cucumber:gherkin-utils:";
 	private static final String DEFAULT_VERSION = "8.0.2";

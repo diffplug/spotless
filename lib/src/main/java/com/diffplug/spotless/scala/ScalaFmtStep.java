@@ -28,10 +28,9 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 
 /** Wraps up <a href="https://github.com/scalameta/scalafmt">scalafmt</a> as a FormatterStep. */
-public class ScalaFmtStep implements RoundedStep {
+public class ScalaFmtStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 	static final String DEFAULT_VERSION = "3.7.3";

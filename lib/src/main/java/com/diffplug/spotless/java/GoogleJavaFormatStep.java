@@ -24,10 +24,9 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 
 /** Wraps up <a href="https://github.com/google/google-java-format">google-java-format</a> as a FormatterStep. */
-public class GoogleJavaFormatStep implements RoundedStep {
+public class GoogleJavaFormatStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_STYLE = "GOOGLE";
 	private static final boolean DEFAULT_REFLOW_LONG_STRINGS = false;

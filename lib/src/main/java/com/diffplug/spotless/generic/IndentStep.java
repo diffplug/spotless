@@ -17,11 +17,10 @@ package com.diffplug.spotless.generic;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.RoundedStep;
 import com.diffplug.spotless.SerializedFunction;
 
 /** Simple step which checks for consistent indentation characters. */
-public final class IndentStep implements RoundedStep {
+public final class IndentStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 	final Type type;

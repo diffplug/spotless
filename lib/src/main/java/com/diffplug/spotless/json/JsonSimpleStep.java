@@ -25,12 +25,11 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 
 /**
  * Simple JSON formatter which reformats the file according to the org.json library's default pretty-printing, but has no ability to customise more than the indentation size.
  */
-public final class JsonSimpleStep implements RoundedStep {
+public final class JsonSimpleStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "org.json:json:";
 	private static final String DEFAULT_VERSION = "20210307";

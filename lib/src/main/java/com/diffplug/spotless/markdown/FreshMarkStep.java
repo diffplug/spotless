@@ -35,10 +35,9 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 
 /** A step for <a href="https://github.com/diffplug/freshmark">FreshMark</a>. */
-public class FreshMarkStep implements RoundedStep {
+public class FreshMarkStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final String DEFAULT_VERSION = "1.3.1";

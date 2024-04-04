@@ -24,9 +24,8 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 
-public class GsonStep implements RoundedStep {
+public class GsonStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATES = "com.google.code.gson:gson";
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Gson; maybe you set an incompatible version?";

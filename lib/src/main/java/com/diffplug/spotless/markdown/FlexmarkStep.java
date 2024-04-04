@@ -23,10 +23,9 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 
 /** A step for <a href="https://github.com/vsch/flexmark-java">flexmark-java</a>. */
-public class FlexmarkStep implements RoundedStep {
+public class FlexmarkStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "0.64.8";
 	private static final String MAVEN_COORDINATE = "com.vladsch.flexmark:flexmark-all:";
