@@ -1707,7 +1707,7 @@ To enable it use the following parameter
 </configuration>
 ```
 
-In addition Eclipse problem markers are being emitted. By default they have the severity `WARNING`.
+In addition Eclipse problem markers are being emitted for goal `check`. By default they have the severity `WARNING`.
 You can adjust this with 
 
 ```

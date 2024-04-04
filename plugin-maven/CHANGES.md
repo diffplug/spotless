@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
 ### Added
 * Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
+* Skip execution in M2E (incremental) builds by default ([#1814](https://github.com/diffplug/spotless/issues/1814), [#2037](https://github.com/diffplug/spotless/issues/2037)) 
 
 ## [2.43.0] - 2024-01-23
 ### Added
