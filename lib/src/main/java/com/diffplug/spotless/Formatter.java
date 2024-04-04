@@ -304,6 +304,9 @@ public final class Formatter implements Serializable, AutoCloseable {
 	@Override
 	public void close() {
 		for (FormatterStep step : steps) {
+			if (step instanceof DelegateFormatterStep) {
+				step = ((DelegateFormatterStep) step).delegateStep;
+			}
 			if (step instanceof FormatterStepImpl.Standard) {
 				((FormatterStepImpl.Standard) step).cleanupFormatterFunc();
 			} else if (step instanceof FormatterStepEqualityOnStateSerialization) {
