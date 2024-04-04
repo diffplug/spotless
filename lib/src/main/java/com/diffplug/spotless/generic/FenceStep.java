@@ -94,7 +94,7 @@ public class FenceStep {
 		return new ApplyWithin(name, regex, steps);
 	}
 
-	static class ApplyWithin extends Apply implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+	static class ApplyWithin extends BaseStep {
 		private static final long serialVersionUID = 17061466531957339L;
 
 		ApplyWithin(String name, Pattern regex, List<FormatterStep> steps) {
@@ -114,7 +114,7 @@ public class FenceStep {
 		}
 	}
 
-	static class PreserveWithin extends Apply implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+	static class PreserveWithin extends BaseStep {
 		private static final long serialVersionUID = -8676786492305178343L;
 
 		PreserveWithin(String name, Pattern regex, List<FormatterStep> steps) {
@@ -139,7 +139,7 @@ public class FenceStep {
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	public static abstract class Apply implements Serializable, FormatterStep, FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+	public static abstract class BaseStep implements Serializable, FormatterStep, FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
 		final String name;
 		private static final long serialVersionUID = -2301848328356559915L;
 		final Pattern regex;
@@ -148,7 +148,7 @@ public class FenceStep {
 		transient ArrayList<String> groups = new ArrayList<>();
 		transient StringBuilder builderInternal;
 
-		public Apply(String name, Pattern regex, List<FormatterStep> steps) {
+		public BaseStep(String name, Pattern regex, List<FormatterStep> steps) {
 			this.name = name;
 			this.regex = regex;
 			this.steps = steps;
@@ -238,7 +238,7 @@ public class FenceStep {
 				return true;
 			if (o == null || getClass() != o.getClass())
 				return false;
-			Apply step = (Apply) o;
+			BaseStep step = (BaseStep) o;
 			return name.equals(step.name) && regex.pattern().equals(step.regex.pattern()) && regex.flags() == step.regex.flags() && steps.equals(step.steps);
 		}
 

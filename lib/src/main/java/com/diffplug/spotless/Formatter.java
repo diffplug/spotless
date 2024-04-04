@@ -311,8 +311,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 				((FormatterStepImpl.Standard) step).cleanupFormatterFunc();
 			} else if (step instanceof FormatterStepEqualityOnStateSerialization) {
 				((FormatterStepEqualityOnStateSerialization) step).cleanupFormatterFunc();
-			} else if (step instanceof FenceStep.Apply) {
-				((FenceStep.Apply) step).cleanup();
+			} else if (step instanceof FenceStep.BaseStep) {
+				((FenceStep.BaseStep) step).cleanup();
 			}
 		}
 	}
