@@ -25,11 +25,12 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.SerializedFunction;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -81,10 +82,7 @@ public class FenceStep {
 	/** Returns a step which will apply the given steps but preserve the content selected by the regex / openClose pair. */
 	public FormatterStep preserveWithin(List<FormatterStep> steps) {
 		assertRegexSet();
-		return FormatterStep.createLazy(name,
-				() -> new PreserveWithin(regex, steps),
-				SerializedFunction.identity(),
-				state -> FormatterFunc.Closeable.of(state.buildFormatter(), state));
+		return new PreserveWithin(name, regex, steps);
 	}
 
 	/**
@@ -93,17 +91,14 @@ public class FenceStep {
 	 */
 	public FormatterStep applyWithin(List<FormatterStep> steps) {
 		assertRegexSet();
-		return FormatterStep.createLazy(name,
-				() -> new ApplyWithin(regex, steps),
-				SerializedFunction.identity(),
-				state -> FormatterFunc.Closeable.of(state.buildFormatter(), state));
+		return new ApplyWithin(name, regex, steps);
 	}
 
-	static class ApplyWithin extends Apply implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+	static class ApplyWithin extends BaseStep {
 		private static final long serialVersionUID = 17061466531957339L;
 
-		ApplyWithin(Pattern regex, List<FormatterStep> steps) {
-			super(regex, steps);
+		ApplyWithin(String name, Pattern regex, List<FormatterStep> steps) {
+			super(name, regex, steps);
 		}
 
 		@Override
@@ -119,11 +114,11 @@ public class FenceStep {
 		}
 	}
 
-	static class PreserveWithin extends Apply implements FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+	static class PreserveWithin extends BaseStep {
 		private static final long serialVersionUID = -8676786492305178343L;
 
-		PreserveWithin(Pattern regex, List<FormatterStep> steps) {
-			super(regex, steps);
+		PreserveWithin(String name, Pattern regex, List<FormatterStep> steps) {
+			super(name, regex, steps);
 		}
 
 		private void storeGroups(String unix) {
@@ -144,7 +139,8 @@ public class FenceStep {
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	static class Apply implements Serializable {
+	public static abstract class BaseStep implements Serializable, FormatterStep, FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+		final String name;
 		private static final long serialVersionUID = -2301848328356559915L;
 		final Pattern regex;
 		final List<FormatterStep> steps;
@@ -152,7 +148,8 @@ public class FenceStep {
 		transient ArrayList<String> groups = new ArrayList<>();
 		transient StringBuilder builderInternal;
 
-		public Apply(Pattern regex, List<FormatterStep> steps) {
+		public BaseStep(String name, Pattern regex, List<FormatterStep> steps) {
+			this.name = name;
 			this.regex = regex;
 			this.steps = steps;
 		}
@@ -216,6 +213,44 @@ public class FenceStep {
 					pattern = regex.pattern();
 				}
 				throw new Error("An intermediate step removed a match of " + pattern);
+			}
+		}
+
+		@Override
+		public String getName() {
+			return name;
+		}
+
+		private transient Formatter formatter;
+
+		@Nullable
+		@Override
+		public String format(String rawUnix, File file) throws Exception {
+			if (formatter == null) {
+				formatter = buildFormatter();
+			}
+			return this.apply(formatter, rawUnix, file);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			if (o == null || getClass() != o.getClass())
+				return false;
+			BaseStep step = (BaseStep) o;
+			return name.equals(step.name) && regex.pattern().equals(step.regex.pattern()) && regex.flags() == step.regex.flags() && steps.equals(step.steps);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(name, regex.pattern(), regex.flags(), steps);
+		}
+
+		public void cleanup() {
+			if (formatter != null) {
+				formatter.close();
+				formatter = null;
 			}
 		}
 	}

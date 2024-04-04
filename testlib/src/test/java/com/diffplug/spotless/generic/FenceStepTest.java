@@ -29,14 +29,13 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.StepHarnessWithFile;
 
 class FenceStepTest extends ResourceHarness {
 	@Test
 	void single() {
 		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Arrays.asList(createNeverUpToDateSerializable("lowercase", String::toLowerCase)));
-		StepHarness harness = StepHarness.forSteps(fence);
+		StepHarness harness = StepHarness.forStepNoRoundtrip(fence);
 		harness.test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -56,7 +55,7 @@ class FenceStepTest extends ResourceHarness {
 	void multiple() {
 		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Arrays.asList(createNeverUpToDateSerializable("lowercase", String::toLowerCase)));
-		StepHarness harness = StepHarness.forSteps(fence);
+		StepHarness harness = StepHarness.forStepNoRoundtrip(fence);
 		harness.test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -90,9 +89,8 @@ class FenceStepTest extends ResourceHarness {
 	void broken() {
 		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Arrays.asList(createNeverUpToDateSerializable("uppercase", String::toUpperCase)));
-		StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, fence);
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
-		harness.testExceptionMsg(newFile("test"), StringPrinter.buildStringFromLines("A B C",
+		StepHarness.forStepNoRoundtrip(fence).testExceptionMsg(StringPrinter.buildStringFromLines("A B C",
 				"spotless:off",
 				"D E F",
 				"spotless:on",
@@ -103,7 +101,7 @@ class FenceStepTest extends ResourceHarness {
 	void andApply() {
 		FormatterStep fence = FenceStep.named("fence").openClose("<lower>", "</lower>")
 				.applyWithin(Arrays.asList(createNeverUpToDateSerializable("lowercase", String::toLowerCase)));
-		StepHarness.forSteps(fence).test(
+		StepHarness.forStepNoRoundtrip(fence).test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
 						"<lower>",
@@ -152,5 +150,6 @@ class FenceStepTest extends ResourceHarness {
 		public String format(String rawUnix, File file) throws Exception {
 			return formatterFunc.apply(rawUnix, file);
 		}
+
 	}
 }
