@@ -20,12 +20,21 @@ import java.util.Objects;
 import org.assertj.core.api.Assertions;
 
 class StepHarnessBase implements AutoCloseable {
+	enum RoundTrip {
+		ASSERT_EQUAL, DONT_ASSERT_EQUAL, DONT_ROUNDTRIP
+	}
+
 	private final Formatter formatter;
 
-	protected StepHarnessBase(Formatter formatter) {
+	protected StepHarnessBase(Formatter formatter, RoundTrip roundTrip) {
 		this.formatter = Objects.requireNonNull(formatter);
+		if (roundTrip == RoundTrip.DONT_ROUNDTRIP) {
+			return;
+		}
 		Formatter roundTripped = SerializableEqualityTester.reserialize(formatter);
-		Assertions.assertThat(roundTripped).isEqualTo(formatter);
+		if (roundTrip == RoundTrip.ASSERT_EQUAL) {
+			Assertions.assertThat(roundTripped).isEqualTo(formatter);
+		}
 	}
 
 	protected Formatter formatter() {

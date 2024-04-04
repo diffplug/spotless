@@ -27,8 +27,8 @@ import org.assertj.core.api.Assertions;
 
 /** An api for testing a {@code FormatterStep} that doesn't depend on the File path. DO NOT ADD FILE SUPPORT TO THIS, use {@link StepHarnessWithFile} if you need that. */
 public class StepHarness extends StepHarnessBase {
-	private StepHarness(Formatter formatter) {
-		super(formatter);
+	private StepHarness(Formatter formatter, RoundTrip roundTrip) {
+		super(formatter, roundTrip);
 	}
 
 	/** Creates a harness for testing steps which don't depend on the file. */
@@ -49,7 +49,7 @@ public class StepHarness extends StepHarnessBase {
 
 	/** Creates a harness for testing a formatter whose steps don't depend on the file. */
 	public static StepHarness forFormatter(Formatter formatter) {
-		return new StepHarness(formatter);
+		return new StepHarness(formatter, RoundTrip.ASSERT_EQUAL);
 	}
 
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
