@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
 	void versionBelowMinimumRequiredVersionIsNotAllowed() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.2", "AOSP", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarness.forStepNoRoundtrip(step)
 				.testResourceExceptionMsg("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
 				.contains("you are using 1.2");
 	}
@@ -73,7 +73,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	@EnabledForJreRange(min = JAVA_16)
 	void versionBelowOneDotTenIsNotAllowed() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.9", "AOSP", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
+		StepHarness.forStepNoRoundtrip(step)
 				.testResourceExceptionMsg("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
 				.contains("you are using 1.9");
 	}

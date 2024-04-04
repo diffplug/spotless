@@ -52,6 +52,16 @@ public class StepHarness extends StepHarnessBase {
 		return new StepHarness(formatter, RoundTrip.ASSERT_EQUAL);
 	}
 
+	public static StepHarness forStepNoRoundtrip(FormatterStep step) {
+		return new StepHarness(Formatter.builder()
+				.steps(Arrays.asList(step))
+				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
+				.encoding(StandardCharsets.UTF_8)
+				.rootDir(Paths.get(""))
+				.exceptionPolicy(new FormatExceptionPolicyStrict())
+				.build(), RoundTrip.DONT_ROUNDTRIP);
+	}
+
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
 	public StepHarness test(String before, String after) {
 		String actual = formatter().compute(LineEnding.toUnix(before), new File(""));
