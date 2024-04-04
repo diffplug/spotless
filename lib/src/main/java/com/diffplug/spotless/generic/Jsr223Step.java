@@ -27,9 +27,8 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 
-public final class Jsr223Step implements RoundedStep {
+public final class Jsr223Step implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	@Nullable
 	private final JarState.Promised jarState;
