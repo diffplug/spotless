@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
+* Full no-asterisk support for configuration cache ([#2088](https://github.com/diffplug/spotless/pull/2088) closes [#1274](https://github.com/diffplug/spotless/issues/1274) and [#987](https://github.com/diffplug/spotless/issues/987)).
 * Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
 * Correctly provide EditorConfig property types for Ktlint ([#2052](https://github.com/diffplug/spotless/issues/2052))
 * Fixed memory leak introduced in 6.21.0 ([#2067](https://github.com/diffplug/spotless/issues/2067))

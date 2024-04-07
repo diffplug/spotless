@@ -64,6 +64,9 @@ public abstract class SpotlessExtension {
 	}
 
 	public void setLineEndings(LineEnding lineEndings) {
+		if (lineEndings == LineEnding.GIT_ATTRIBUTES) {
+			throw new IllegalArgumentException("GIT_ATTRIBUTES not supported in Gradle, use GIT_ATTRIBUTES_FAST_ALLSAME instead. See https://github.com/diffplug/spotless/issues/1274 for more details.");
+		}
 		this.lineEndings = requireNonNull(lineEndings);
 	}
 

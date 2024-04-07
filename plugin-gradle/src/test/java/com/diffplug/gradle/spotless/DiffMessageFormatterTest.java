@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,10 +151,10 @@ class DiffMessageFormatterTest extends ResourceHarness {
 	@Test
 	void whitespaceProblem() throws Exception {
 		Bundle spotless = create(setFile("testFile").toContent("A \nB\t\nC  \n"));
-		spotless.task.addStep(FormatterStep.createNeverUpToDate("trimTrailing", input -> {
+		spotless.task.setSteps(List.of(FormatterStep.createNeverUpToDate("trimTrailing", input -> {
 			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
 			return pattern.matcher(input).replaceAll("");
-		}));
+		})));
 		assertCheckFailure(spotless,
 				"    testFile",
 				"        @@ -1,3 +1,3 @@",
