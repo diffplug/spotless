@@ -17,26 +17,29 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.util.Objects;
-import java.util.Random;
 
 /**
  * Formatter which is equal to itself, but not to any other Formatter.
  */
-class NeverUpToDateStep extends FormatterStepImpl<Integer> {
+class NeverUpToDateStep implements FormatterStep {
 	private static final long serialVersionUID = 1L;
 
-	private static final Random RANDOM = new Random();
-
-	final transient ThrowingEx.Supplier<FormatterFunc> formatterSupplier;
-	transient FormatterFunc formatter; // initialized lazily
+	private final String name;
+	private final ThrowingEx.Supplier<FormatterFunc> formatterSupplier;
+	private transient FormatterFunc formatter; // initialized lazily
 
 	NeverUpToDateStep(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
-		super(name, RANDOM::nextInt);
+		this.name = name;
 		this.formatterSupplier = Objects.requireNonNull(formatterSupplier, "formatterSupplier");
 	}
 
 	@Override
-	protected String format(Integer state, String rawUnix, File file) throws Exception {
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String format(String rawUnix, File file) throws Exception {
 		if (formatter == null) {
 			formatter = formatterSupplier.get();
 			if (formatter instanceof FormatterFunc.Closeable) {
