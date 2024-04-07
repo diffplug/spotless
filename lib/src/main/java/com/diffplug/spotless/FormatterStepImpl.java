@@ -18,7 +18,6 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.Random;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -87,40 +86,6 @@ abstract class FormatterStepImpl<State extends Serializable> extends LazyForward
 			Objects.requireNonNull(file, "file");
 			if (formatter == null) {
 				formatter = stateToFormatter.apply(state());
-			}
-			return formatter.apply(rawUnix, file);
-		}
-
-		@Override
-		public void close() throws Exception {
-			if (formatter instanceof FormatterFunc.Closeable) {
-				((FormatterFunc.Closeable) formatter).close();
-				formatter = null;
-			}
-		}
-	}
-
-	/** Formatter which is equal to itself, but not to any other Formatter. */
-	static class NeverUpToDate extends FormatterStepImpl<Integer> {
-		private static final long serialVersionUID = 1L;
-
-		private static final Random RANDOM = new Random();
-
-		final transient ThrowingEx.Supplier<FormatterFunc> formatterSupplier;
-		transient FormatterFunc formatter; // initialized lazily
-
-		NeverUpToDate(String name, ThrowingEx.Supplier<FormatterFunc> formatterSupplier) {
-			super(name, RANDOM::nextInt);
-			this.formatterSupplier = Objects.requireNonNull(formatterSupplier, "formatterSupplier");
-		}
-
-		@Override
-		protected String format(Integer state, String rawUnix, File file) throws Exception {
-			if (formatter == null) {
-				formatter = formatterSupplier.get();
-				if (formatter instanceof FormatterFunc.Closeable) {
-					throw new AssertionError("NeverUpToDate does not support FormatterFunc.Closeable.  See https://github.com/diffplug/spotless/pull/284");
-				}
 			}
 			return formatter.apply(rawUnix, file);
 		}

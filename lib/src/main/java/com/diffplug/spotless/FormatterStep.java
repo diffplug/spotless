@@ -163,7 +163,7 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	static FormatterStep createNeverUpToDateLazy(
 			String name,
 			ThrowingEx.Supplier<FormatterFunc> functionSupplier) {
-		return new FormatterStepImpl.NeverUpToDate(name, functionSupplier);
+		return new NeverUpToDateStep(name, functionSupplier);
 	}
 
 	/**
