@@ -20,8 +20,6 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Random;
 
-import com.diffplug.spotless.FormatterStep.Strict;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -32,8 +30,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * from the API.
  */
 @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-abstract class FormatterStepImpl<State extends Serializable> extends Strict<State> {
-	private static final long serialVersionUID = 1L;
+abstract class FormatterStepImpl<State extends Serializable> extends LazyForwardingEquality<State> implements FormatterStep {
+	private static final long serialVersionUID = 2L;
 
 	/** Transient because only the state matters. */
 	final transient String name;
@@ -49,6 +47,17 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Implements the formatting function strictly in terms
+	 * of the input data and the result of {@link #calculateState()}.
+	 */
+	protected abstract String format(State state, String rawUnix, File file) throws Exception;
+
+	@Override
+	public final String format(String rawUnix, File file) throws Exception {
+		return format(state(), rawUnix, file);
 	}
 
 	@Override
