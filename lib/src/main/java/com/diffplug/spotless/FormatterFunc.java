@@ -71,12 +71,6 @@ public interface FormatterFunc {
 			};
 		}
 
-		/** @deprecated synonym for {@link #ofDangerous(AutoCloseable, FormatterFunc)} */
-		@Deprecated
-		public static Closeable of(AutoCloseable closeable, FormatterFunc function) {
-			return ofDangerous(closeable, function);
-		}
-
 		@FunctionalInterface
 		interface ResourceFunc<T extends AutoCloseable> {
 			String apply(T resource, String unix) throws Exception;
