@@ -1698,6 +1698,28 @@ cmd> mvn spotless:apply -DspotlessFiles=my/file/pattern.java,more/generic/.*-pat
 
 The patterns are matched using `String#matches(String)` against the absolute file path.
 
+## Does Spotless support incremental builds in Eclipse?
+
+Spotless comes with [m2e](https://eclipse.dev/m2e/) support. However, by default its execution is skipped in incremental builds as most developers want to fix all issues in one go via explicit `mvn spotless:apply` prior to raising a PR and don't want to be bothered with Spotless issues during working on the source code in the IDE.
+To enable it use the following parameter
+
+```
+<configuration>
+    <m2eEnableForIncrementalBuild>true</m2eEnableForIncrementalBuild><!-- this is false by default -->
+</configuration>
+```
+
+In addition Eclipse problem markers are being emitted for goal `check`. By default they have the severity `WARNING`.
+You can adjust this with 
+
+```
+<configuration>
+    <m2eIncrementalBuildMessageSeverity>ERROR</m2eIncrementalBuildMessageSeverity><!-- WARNING or ERROR -->
+</configuration>
+```
+
+Note that for Incremental build support the goals have to be bound to a phase prior to `test`.
+
 <a name="examples"></a>
 
 ## Example configurations (from real-world projects)
