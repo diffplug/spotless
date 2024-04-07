@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
  * The input is guaranteed to have unix-style newlines, and the output is required
  * to not introduce any windows-style newlines as well.
  */
-public interface FormatterStep extends Serializable {
+public interface FormatterStep extends Serializable, AutoCloseable {
 	/** The name of the step, for debugging purposes. */
 	String getName();
 

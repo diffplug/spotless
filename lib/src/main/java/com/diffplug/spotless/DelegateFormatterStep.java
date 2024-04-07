@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,5 +28,10 @@ abstract class DelegateFormatterStep implements FormatterStep {
 	@Override
 	public final String getName() {
 		return delegateStep.getName();
+	}
+
+	@Override
+	public void close() throws Exception {
+		delegateStep.close();
 	}
 }
