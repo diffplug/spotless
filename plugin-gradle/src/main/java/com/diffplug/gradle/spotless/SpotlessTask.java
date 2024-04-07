@@ -158,7 +158,7 @@ public abstract class SpotlessTask extends DefaultTask {
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
-                PluginGradlePreconditions.requireElementsNonNull(steps);
+		PluginGradlePreconditions.requireElementsNonNull(steps);
 		this.steps.clear();
 		this.steps.addAll(steps);
 	}
