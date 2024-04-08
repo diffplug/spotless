@@ -22,6 +22,9 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
+/**
+ * Unit test for {@link Ktlint}
+ */
 class KtlintTest extends MavenIntegrationHarness {
 	@Test
 	void testKtlint() throws Exception {
