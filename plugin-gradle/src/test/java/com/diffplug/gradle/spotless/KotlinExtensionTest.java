@@ -71,7 +71,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void withExperimentalEditorConfigOverride() throws IOException {
+	void editorConfigOverride_setExperimental_intellijIdeaStyle() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
@@ -82,6 +82,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"    kotlin {",
 				"        ktlint().editorConfigOverride([",
 				"            ktlint_experimental: \"enabled\",",
+				"            ktlint_code_style : \"intellij_idea\",",
 				"            ij_kotlin_allow_trailing_comma: true,",
 				"            ij_kotlin_allow_trailing_comma_on_call_site: true",
 				"        ])",
@@ -90,6 +91,28 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/kotlin/Main.kt").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
+	}
+
+	@Test
+	void editorConfigOverride_setExperimental_defaultKtlintOfficialStyle() throws IOException {
+		setFile("build.gradle").toLines(
+			"plugins {",
+			"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+			"    id 'com.diffplug.spotless'",
+			"}",
+			"repositories { mavenCentral() }",
+			"spotless {",
+			"    kotlin {",
+			"        ktlint().editorConfigOverride([",
+			"            ktlint_experimental: \"enabled\",",
+			"            ij_kotlin_allow_trailing_comma: true,",
+			"            ij_kotlin_allow_trailing_comma_on_call_site: true",
+			"        ])",
+			"    }",
+			"}");
+		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/kotlin/Main.kt").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.ktlintOfficial.clean");
 	}
 
 	@Test
