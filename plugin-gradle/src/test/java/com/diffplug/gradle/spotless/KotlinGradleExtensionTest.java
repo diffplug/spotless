@@ -27,7 +27,7 @@ class KotlinGradleExtensionTest extends KotlinExtensionTest {
 
 	@ParameterizedTest
 	@ValueSource(booleans = {true, false})
-	void testTarget(boolean useDefaultTarget) throws IOException {
+	void target_setAndUnset_intellijIdeaStyle(boolean useDefaultTarget) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
@@ -39,6 +39,7 @@ class KotlinGradleExtensionTest extends KotlinExtensionTest {
 				"        " + (useDefaultTarget ? "" : "target \"*.kts\""),
 				"        ktlint().editorConfigOverride([",
 				"            ktlint_experimental: \"enabled\",",
+				"            ktlint_code_style: \"intellij_idea\",",
 				"            ij_kotlin_allow_trailing_comma: true,",
 				"            ij_kotlin_allow_trailing_comma_on_call_site: true",
 				"        ])",
@@ -53,6 +54,37 @@ class KotlinGradleExtensionTest extends KotlinExtensionTest {
 		} else {
 			assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
 			assertFile("configuration.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
+		}
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = {true, false})
+	void target_setAndUnset_defaultKtlintOfficialStyle(boolean useDefaultTarget) throws IOException {
+		setFile("build.gradle").toLines(
+			"plugins {",
+			"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+			"    id 'com.diffplug.spotless'",
+			"}",
+			"repositories { mavenCentral() }",
+			"spotless {",
+			"    kotlinGradle {",
+			"        " + (useDefaultTarget ? "" : "target \"*.kts\""),
+			"        ktlint().editorConfigOverride([",
+			"            ktlint_experimental: \"enabled\",",
+			"            ij_kotlin_allow_trailing_comma: true,",
+			"            ij_kotlin_allow_trailing_comma_on_call_site: true",
+			"        ])",
+			"    }",
+			"}");
+		setFile("configuration.gradle.kts").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		setFile("configuration.kts").toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		gradleRunner().withArguments("spotlessApply").build();
+		if (useDefaultTarget) {
+			assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.ktlintOfficial.clean");
+			assertFile("configuration.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		} else {
+			assertFile("configuration.gradle.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.ktlintOfficial.clean");
+			assertFile("configuration.kts").sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.ktlintOfficial.clean");
 		}
 	}
 }
