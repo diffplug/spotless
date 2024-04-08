@@ -37,7 +37,22 @@ class KtlintTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	void testKtlintEditorConfigOverride() throws Exception {
+	void writePomWithKotlinSteps_intellijIdea_intellijIdeaStyleKtlint() throws Exception {
+		writePomWithKotlinSteps("<ktlint>\n" +
+			"  <editorConfigOverride>\n" +
+			"    <ktlint_code_style>intellij_idea</ktlint_code_style>" +
+			"    <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>\n" +
+			"    <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>\n" +
+			"  </editorConfigOverride>\n" +
+			"</ktlint>");
+
+		String path = "src/main/kotlin/Main.kt";
+		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
+	}
+	@Test
+	void writePomWithKotlinSteps_default_officialStyleKtlint() throws Exception {
 		writePomWithKotlinSteps("<ktlint>\n" +
 				"  <editorConfigOverride>\n" +
 				"    <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>\n" +
@@ -45,10 +60,7 @@ class KtlintTest extends MavenIntegrationHarness {
 				"  </editorConfigOverride>\n" +
 				"</ktlint>");
 
-		String path = "src/main/kotlin/Main.kt";
-		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.clean");
+		checkKtlintOfficialStyle();
 	}
 
 	@Test
