@@ -22,6 +22,9 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit test for {@link KotlinExtension}
+ */
 class KotlinExtensionTest extends GradleIntegrationHarness {
 	private static final String HEADER = "// License Header";
 	private static final String HEADER_WITH_YEAR = "// License Header $YEAR";
