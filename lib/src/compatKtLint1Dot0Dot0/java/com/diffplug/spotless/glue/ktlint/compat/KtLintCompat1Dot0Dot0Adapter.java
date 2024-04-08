@@ -131,11 +131,6 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 				.distinct()
 				.collect(Collectors.toMap(EditorConfigProperty::getName, property -> property));
 
-		// The default style had been changed from intellij_idea to ktlint_official in version 1.0.0
-		if (!editorConfigOverrideMap.containsKey("ktlint_code_style")) {
-			editorConfigOverrideMap.put("ktlint_code_style", "ktlint_official");
-		}
-
 		// Create config properties based on provided property names and values
 		@SuppressWarnings("unchecked")
 		Pair<EditorConfigProperty<?>, ?>[] properties = editorConfigOverrideMap.entrySet().stream()
