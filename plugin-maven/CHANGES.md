@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
 * Bump default `ktlint` version to latest `1.1.1` -> `1.2.1`. ([#2057](https://github.com/diffplug/spotless/pull/2057))
 * Bump default `sortpom` version to latest `3.4.0` -> `3.4.1`. ([#2078](https://github.com/diffplug/spotless/pull/2078))
+* Made ShadowCopy (`npmInstallCache`) more robust by re-creating the cache dir if it goes missing ([#1984](https://github.com/diffplug/spotless/issues/1984),[2096](https://github.com/diffplug/spotless/pull/2096))
 ### Added
 * Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
 * Skip execution in M2E (incremental) builds by default ([#1814](https://github.com/diffplug/spotless/issues/1814), [#2037](https://github.com/diffplug/spotless/issues/2037)) 
