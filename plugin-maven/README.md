@@ -6,15 +6,15 @@ output = [
   link(shield('Changelog', 'changelog', '{{versionLast}}', 'blue'), 'CHANGES.md'),
   link(shield('Javadoc', 'javadoc', 'here', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/{{versionLast}}/index.html')
   ].join('\n');
--->
+
 [![MavenCentral](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
 [![Changelog](https://img.shields.io/badge/changelog-2.43.0-blue.svg)](CHANGES.md)
 [![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.43.0/index.html)
-<!---freshmark /shields -->
+<!---freshmark /shields 
 
 <!---freshmark javadoc
 output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/', '/', versionLast)
--->
+
 
 Spotless is a general-purpose formatting plugin used by [6,000 projects on GitHub (Jan 2023)](https://github.com/search?l=Maven+POM&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in. Plugin requires a version of Maven higher or equal to 3.1.0.
 
@@ -82,17 +82,17 @@ To use it in your pom, just [add the Spotless plugin](https://search.maven.org/#
   <artifactId>spotless-maven-plugin</artifactId>
   <version>${spotless.version}</version>
   <configuration>
-    <!-- optional: limit format enforcement to just the files changed by this feature branch -->
+    <!-- optional: limit format enforcement to just the files changed by this feature branch 
     <ratchetFrom>origin/main</ratchetFrom>
     <formats>
-      <!-- you can define as many formats as you want, each is independent -->
+      <!-- you can define as many formats as you want, each is independent 
       <format>
-        <!-- define the files to apply to -->
+        <!-- define the files to apply to 
         <includes>
           <include>.gitattributes</include>
           <include>.gitignore</include>
         </includes>
-        <!-- define the steps to apply to those files -->
+        <!-- define the steps to apply to those files 
         <trimTrailingWhitespace/>
         <endWithNewline/>
         <indent>
@@ -101,11 +101,11 @@ To use it in your pom, just [add the Spotless plugin](https://search.maven.org/#
         </indent>
       </format>
     </formats>
-    <!-- define a language-specific format -->
+    <!-- define a language-specific format 
     <java>
-      <!-- no need to specify files, inferred automatically, but you can if you want -->
+      <!-- no need to specify files, inferred automatically, but you can if you want 
 
-      <!-- apply a specific flavor of google-java-format and reflow long strings -->
+      <!-- apply a specific flavor of google-java-format and reflow long strings 
       <googleJavaFormat>
         <version>1.8</version>
         <style>AOSP</style>
@@ -115,9 +115,9 @@ To use it in your pom, just [add the Spotless plugin](https://search.maven.org/#
 
       <!-- make sure every file has the following copyright header.
         optionally, Spotless can set copyright years by digging
-        through git history (see "license" section below) -->
+        through git history (see "license" section below) 
       <licenseHeader>
-        <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
+        <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> 
       </licenseHeader>
     </java>
   </configuration>
@@ -180,7 +180,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 ```xml
 <configuration>
   <java>
-    <!-- These are the defaults, you can override if you want -->
+    <!-- These are the defaults, you can override if you want 
     <includes>
       <include>src/main/java/**/*.java</include>
       <include>src/test/java/**/*.java</include>
@@ -232,7 +232,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <googleJavaFormat>
-  <version>1.8</version>                      <!-- optional, 1.8 is the minimum supported version for Java 11-->
+  <version>1.8</version>                      <!-- optional, 1.8 is the minimum supported version for Java 11 -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
   <formatJavadoc>false</formatJavadoc>        <!-- optional -->
@@ -653,9 +653,9 @@ All configuration settings are optional, they are described in detail [here](htt
 
   <lineSeparator>${line.separator}</lineSeparator> <!-- line separator to use -->
 
-  <expandEmptyElements>true</expandEmptyElements> <!-- Should empty elements be expanded-->
+  <expandEmptyElements>true</expandEmptyElements> <!-- Should empty elements be expanded -->
 
-  <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement> <!-- Should a space be added inside self-closing elements-->
+  <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement> <!-- Should a space be added inside self-closing elements -->
 
   <keepBlankLines>true</keepBlankLines> <!-- Keep empty lines -->
 
@@ -667,15 +667,15 @@ All configuration settings are optional, they are described in detail [here](htt
 
   <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indented -->
 
-  <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles-->
+  <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles -->
 
   <sortOrderFile></sortOrderFile> <!-- Custom sort order of elements: https://raw.githubusercontent.com/Ekryd/sortpom/master/sorter/src/main/resources/custom_1.xml -->
 
-  <sortDependencies></sortDependencies> <!-- Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+  <sortDependencies></sortDependencies> <!-- Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies -->
 
-  <sortDependencyManagement></sortDependencyManagement> <!-- Sort dependency management: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+  <sortDependencyManagement></sortDependencyManagement> <!-- Sort dependency management: https://github.com/Ekryd/sortpom/wiki/SortDependencies -->
 
-  <sortDependencyExclusions></sortDependencyExclusions> <!-- Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+  <sortDependencyExclusions></sortDependencyExclusions> <!-- Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies -->
 
   <sortPlugins></sortPlugins> <!-- Sort plugins: https://github.com/Ekryd/sortpom/wiki/SortPlugins -->
 
@@ -1502,7 +1502,7 @@ The following languages are currently recognized:
 
 <jsr223> <!-- specify replacements using JSR223 scripting -->
   <name>Greetings to Mars</name>
-  <dependency>org.codehaus.groovy:groovy-jsr223:3.0.9</dependency> <!-- optional, maven dependency, containing the jsr223 compatible scripting engine-->
+  <dependency>org.codehaus.groovy:groovy-jsr223:3.0.9</dependency> <!-- optional, maven dependency, containing the jsr223 compatible scripting engine -->
   <engine>groovy</engine> <!-- nashorn is provided by JDK 8-14, other engines can be loaded from the given dependency -->
   <script>source.replace('World','Mars');</script> <!-- the source variable contains the unformatted code, the returned value of the script is the formatted code -->
 </jsr223>
@@ -1510,7 +1510,7 @@ The following languages are currently recognized:
 <nativeCmd> <!-- run a native binary -->
   <name>Greetings to Mars from sed</name>
   <pathToExe>/usr/bin/sed</pathToExe> <!-- path to the binary, unformatted code is send via StdIn, formatted code is expected on StdOut -->
-  <arguments> <!-- optional, list with arguments for the binary call-->
+  <arguments> <!-- optional, list with arguments for the binary call -->
     <argument>s/World/Mars/g</argument>
   </arguments>
 </nativeCmd>
@@ -1727,4 +1727,4 @@ Note that for Incremental build support the goals have to be bound to a phase pr
 - [Apache Avro](https://github.com/apache/avro/blob/8026c8ffe4ef67ab419dba73910636bf2c1a691c/lang/java/pom.xml#L307-L334)
 - [JUNG: Java Universal Network/Graph Framework](https://github.com/jrtom/jung/blob/b3a2461b97bb3ab40acc631e21feef74976489e4/pom.xml#L187-L208)
 
-<!---freshmark /javadoc -->
+<!---freshmark /javadoc 
