@@ -35,8 +35,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.diffplug.spotless.generic.FenceStep;
-
 /** Formatter which performs the full formatting. */
 public final class Formatter implements Serializable, AutoCloseable {
 	private static final long serialVersionUID = 1L;
@@ -304,15 +302,10 @@ public final class Formatter implements Serializable, AutoCloseable {
 	@Override
 	public void close() {
 		for (FormatterStep step : steps) {
-			if (step instanceof DelegateFormatterStep) {
-				step = ((DelegateFormatterStep) step).delegateStep;
-			}
-			if (step instanceof FormatterStepImpl.Standard) {
-				((FormatterStepImpl.Standard) step).cleanupFormatterFunc();
-			} else if (step instanceof FormatterStepEqualityOnStateSerialization) {
-				((FormatterStepEqualityOnStateSerialization) step).cleanupFormatterFunc();
-			} else if (step instanceof FenceStep.BaseStep) {
-				((FenceStep.BaseStep) step).cleanup();
+			try {
+				step.close();
+			} catch (Exception e) {
+				throw ThrowingEx.asRuntime(e);
 			}
 		}
 	}
