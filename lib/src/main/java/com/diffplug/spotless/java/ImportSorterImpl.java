@@ -253,6 +253,10 @@ final class ImportSorterImpl {
 		if (!samePrefix) {
 			return string1.compareTo(string2);
 		}
+		boolean diffPathDepth = string1IsWildcard ? string2.substring(prefixLength).contains(".") : string1.substring(prefixLength).contains(".");
+		if (diffPathDepth) {
+			return string1IsWildcard ? -1 : 1;
+		}
 		return (string1IsWildcard == wildcardsLast) ? 1 : -1;
 	}
 
