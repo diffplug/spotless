@@ -88,23 +88,23 @@ public class JacksonJsonFormatterFunc extends AJacksonFormatterFunc {
 
 		public SpotlessJsonPrettyPrinter(boolean spaceBeforeSeparator) {
 			this.spaceBeforeSeparator = spaceBeforeSeparator;
+
+			if (_objectFieldValueSeparatorWithSpaces == null || _objectFieldValueSeparatorWithSpaces.isEmpty()) {
+				return;
+			}
+
+			// Keep the behavior consistent even if Jackson changes default behavior
+			boolean startsWithSpace = Character.isWhitespace(_objectFieldValueSeparatorWithSpaces.charAt(0));
+			if (spaceBeforeSeparator && !startsWithSpace) {
+				_objectFieldValueSeparatorWithSpaces = String.format(" %s", _objectFieldValueSeparatorWithSpaces);
+			} else if (!spaceBeforeSeparator && startsWithSpace) {
+				_objectFieldValueSeparatorWithSpaces = _objectFieldValueSeparatorWithSpaces.substring(1);
+			}
 		}
 
 		@Override
 		public DefaultPrettyPrinter createInstance() {
 			return new SpotlessJsonPrettyPrinter(spaceBeforeSeparator);
-		}
-
-		@Override
-		public DefaultPrettyPrinter withSeparators(Separators separators) {
-			this._separators = separators;
-			if (spaceBeforeSeparator) {
-				// This is Jackson default behavior
-				this._objectFieldValueSeparatorWithSpaces = " " + separators.getObjectFieldValueSeparator() + " ";
-			} else {
-				this._objectFieldValueSeparatorWithSpaces = separators.getObjectFieldValueSeparator() + " ";
-			}
-			return this;
 		}
 	}
 }
