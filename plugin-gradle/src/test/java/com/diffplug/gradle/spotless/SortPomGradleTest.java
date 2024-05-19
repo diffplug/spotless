@@ -73,7 +73,7 @@ class SortPomGradleTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"  pom {",
-				"    sortPom '3.4.0'",
+				"    sortPom '4.0.0'",
 				"  }",
 				"}");
 		setFile("pom.xml").toResource("pom/pom_dirty.xml");
@@ -105,6 +105,7 @@ class SortPomGradleTest extends GradleIntegrationHarness {
 				"      .nrOfIndentSpace(2)",
 				"      .indentBlankLines(false)",
 				"      .indentSchemaLocation(false)",
+				"      .indentAttribute(null)",
 				"      .predefinedSortOrder('recommended_2008_06')",
 				"      .sortOrderFile(null)",
 				"      .sortDependencies(null)",

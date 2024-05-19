@@ -30,7 +30,7 @@ public class SortPomTest extends ResourceHarness {
 	@Test
 	public void testSortPomWithVersion() {
 		SortPomCfg cfg = new SortPomCfg();
-		cfg.version = "3.4.1";
+		cfg.version = "4.0.0";
 		FormatterStep step = SortPomStep.create(cfg, TestProvisioner.mavenCentral());
 		StepHarness.forStep(step).testResource("pom/pom_dirty.xml", "pom/pom_clean_default.xml");
 	}

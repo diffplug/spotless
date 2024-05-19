@@ -667,6 +667,8 @@ All configuration settings are optional, they are described in detail [here](htt
 
   <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indented -->
 
+  <indentAttribute></indentAttribute> <!-- Should the xml attributes be indented -->
+
   <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles-->
 
   <sortOrderFile></sortOrderFile> <!-- Custom sort order of elements: https://raw.githubusercontent.com/Ekryd/sortpom/master/sorter/src/main/resources/custom_1.xml -->

@@ -700,7 +700,7 @@ All configuration settings are optional, they are described in detail [here](htt
 ```gradle
 spotless {
   pom {
-    sortPom('3.4.0')
+    sortPom('4.0.0')
       .encoding('UTF-8') // The encoding of the pom files
       .lineSeparator(System.getProperty('line.separator')) // line separator to use
       .expandEmptyElements(true) // Should empty elements be expanded
@@ -710,6 +710,7 @@ spotless {
       .nrOfIndentSpace(2) // Indentation
       .indentBlankLines(false) // Should empty lines be indented
       .indentSchemaLocation(false) // Should schema locations be indented
+      .indentAttribute(null) // Should the xml attributes be indented
       .predefinedSortOrder('recommended_2008_06') // Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles
       .sortOrderFile(null) // Custom sort order of elements: https://raw.githubusercontent.com/Ekryd/sortpom/master/sorter/src/main/resources/custom_1.xml
       .sortDependencies(null) // Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies

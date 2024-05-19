@@ -51,7 +51,7 @@ public class SortPomFormatterFunc implements FormatterFunc {
 				.setFileOutput(false, null, null, false)
 				.setEncoding(cfg.encoding)
 				.setFormatting(cfg.lineSeparator, cfg.expandEmptyElements, cfg.spaceBeforeCloseEmptyElement, cfg.keepBlankLines, cfg.endWithNewline)
-				.setIndent(cfg.nrOfIndentSpace, cfg.indentBlankLines, cfg.indentSchemaLocation)
+				.setIndent(cfg.nrOfIndentSpace, cfg.indentBlankLines, cfg.indentSchemaLocation, cfg.indentAttribute)
 				.setSortOrder(cfg.sortOrderFile, cfg.predefinedSortOrder)
 				.setSortEntities(cfg.sortDependencies, cfg.sortDependencyExclusions, cfg.sortDependencyManagement,
 						cfg.sortPlugins, cfg.sortProperties, cfg.sortModules, cfg.sortExecutions)
