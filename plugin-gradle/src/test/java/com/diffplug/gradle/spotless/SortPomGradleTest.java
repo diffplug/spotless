@@ -16,6 +16,8 @@
 package com.diffplug.gradle.spotless;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SortPomGradleTest extends GradleIntegrationHarness {
 	@Test
@@ -63,8 +65,9 @@ class SortPomGradleTest extends GradleIntegrationHarness {
 		assertFile("test.xml").sameAsResource("pom/pom_clean_default.xml");
 	}
 
-	@Test
-	void sortPomWithVersion() throws Exception {
+	@ParameterizedTest
+	@ValueSource(strings = {"3.2.1", "3.3.0", "3.4.1", "4.0.0"})
+	void sortPomWithVersion(String version) throws Exception {
 		// given
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -73,7 +76,7 @@ class SortPomGradleTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"  pom {",
-				"    sortPom '4.0.0'",
+				"    sortPom '" + version + "'",
 				"  }",
 				"}");
 		setFile("pom.xml").toResource("pom/pom_dirty.xml");
