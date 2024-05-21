@@ -62,7 +62,7 @@ public class SortPomFormatterFunc implements FormatterFunc {
 				builder = (PluginParameters.Builder) method
 						.invoke(builder, cfg.lineSeparator, cfg.expandEmptyElements, cfg.spaceBeforeCloseEmptyElement,
 								cfg.keepBlankLines);
-			} catch (Exception ignore) {
+			} catch (ReflectiveOperationException | RuntimeException ignore) {
 				throw e;
 			}
 		}
@@ -76,7 +76,7 @@ public class SortPomFormatterFunc implements FormatterFunc {
 						.getMethod("setIndent", int.class, boolean.class, boolean.class);
 				builder = (PluginParameters.Builder) method
 						.invoke(builder, cfg.nrOfIndentSpace, cfg.indentBlankLines, cfg.indentSchemaLocation);
-			} catch (Exception ignore) {
+			} catch (ReflectiveOperationException | RuntimeException ignore) {
 				throw e;
 			}
 		}
