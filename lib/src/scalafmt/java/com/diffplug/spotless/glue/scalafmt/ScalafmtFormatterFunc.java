@@ -29,7 +29,7 @@ import com.diffplug.spotless.FormatterFunc;
 
 import scala.collection.immutable.Set$;
 
-public class ScalafmtFormatterFunc implements FormatterFunc {
+public class ScalafmtFormatterFunc implements FormatterFunc.NeedsFile {
 	private final ScalafmtConfig config;
 
 	public ScalafmtFormatterFunc(FileSignature configSignature) throws Exception {
@@ -48,12 +48,7 @@ public class ScalafmtFormatterFunc implements FormatterFunc {
 	}
 
 	@Override
-	public String apply(String input) {
-		return Scalafmt.format(input, config, Set$.MODULE$.empty()).get();
-	}
-
-	@Override
-	public String apply(String input, File file) {
-		return Scalafmt.format(input, config, Set$.MODULE$.empty(), file.getAbsolutePath()).get();
+	public String applyWithFile(String unix, File file) throws Exception {
+		return Scalafmt.format(unix, config, Set$.MODULE$.empty()).get();
 	}
 }
