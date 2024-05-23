@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import com.diffplug.spotless.*;
 
 /** Wraps up <a href="https://github.com/cqfn/diKTat">diktat</a> as a FormatterStep. */
-public class DiktatStep implements RoundedStep {
+public class DiktatStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private final JarState.Promised jarState;
 	private final String versionDiktat;

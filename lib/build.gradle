@@ -97,7 +97,7 @@ dependencies {
 	// gson
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 	// jackson
-	String VER_JACKSON='2.14.2'
+	String VER_JACKSON='2.17.1'
 	jacksonCompileOnly "com.fasterxml.jackson.core:jackson-databind:$VER_JACKSON"
 	jacksonCompileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$VER_JACKSON"
 	// ktfmt
@@ -128,10 +128,10 @@ dependencies {
 	// scalafmt
 	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:3.8.1"
 	// sortPom
-	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.4.0'
+	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:4.0.0'
 	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.12'
 	// zjsonPatch
-	zjsonPatchCompileOnly 'com.flipkart.zjsonpatch:zjsonpatch:0.4.14'
+	zjsonPatchCompileOnly 'com.flipkart.zjsonpatch:zjsonpatch:0.4.16'
 }
 
 // we'll hold the core lib to a high standard

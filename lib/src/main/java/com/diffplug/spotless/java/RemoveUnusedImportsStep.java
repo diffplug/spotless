@@ -20,10 +20,9 @@ import java.util.Objects;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 
 /** Uses google-java-format or cleanthat.UnnecessaryImport, but only to remove unused imports. */
-public class RemoveUnusedImportsStep implements RoundedStep {
+public class RemoveUnusedImportsStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "removeUnusedImports";
 

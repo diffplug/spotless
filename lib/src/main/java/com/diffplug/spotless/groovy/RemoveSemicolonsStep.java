@@ -21,14 +21,13 @@ import java.io.StringReader;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.RoundedStep;
 
 /**
  * Removes all semicolons from the end of lines.
  *
  * @author Jose Luis Badano
  */
-public final class RemoveSemicolonsStep implements RoundedStep {
+public final class RemoveSemicolonsStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "Remove unnecessary semicolons";
 

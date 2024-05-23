@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,11 @@ import org.gradle.api.Project;
 
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
-import com.diffplug.spotless.rome.BiomeFlavor;
 
 public class JavascriptExtension extends FormatExtension {
 
@@ -154,30 +154,6 @@ public class JavascriptExtension extends FormatExtension {
 		return biomeConfig;
 	}
 
-	/**
-	 * Defaults to downloading the default Rome version from the network. To work
-	 * offline, you can specify the path to the Rome executable via
-	 * {@code rome().pathToExe(...)}.
-	 *
-	 * @deprecated Use {@link #biome()}.
-	 */
-	@Deprecated
-	public RomeJs rome() {
-		return rome(null);
-	}
-
-	/**
-	 * Downloads the given Rome version from the network.
-	 *
-	 * @deprecated Use {@link #biome(String)}.
-	 */
-	@Deprecated
-	public RomeJs rome(String version) {
-		var romeConfig = new RomeJs(version);
-		addStep(romeConfig.createStep());
-		return romeConfig;
-	}
-
 	private static final String DEFAULT_PRETTIER_JS_PARSER = "babel";
 	private static final ImmutableList<String> PRETTIER_JS_PARSERS = ImmutableList.of(DEFAULT_PRETTIER_JS_PARSER,
 			"babel-flow", "flow");
@@ -185,7 +161,7 @@ public class JavascriptExtension extends FormatExtension {
 	/**
 	 * Biome formatter step for JavaScript.
 	 */
-	public class BiomeJs extends RomeStepConfig<BiomeJs> {
+	public class BiomeJs extends BiomeStepConfig<BiomeJs> {
 		/**
 		 * Creates a new Biome formatter step config for formatting JavaScript files.
 		 * Unless overwritten, the given Biome version is downloaded from the network.
@@ -203,34 +179,6 @@ public class JavascriptExtension extends FormatExtension {
 
 		@Override
 		protected BiomeJs getThis() {
-			return this;
-		}
-	}
-
-	/**
-	 * Rome formatter step for JavaScript.
-	 *
-	 * @deprecated Rome has transitioned to Biome. This will be removed shortly.
-	 */
-	@Deprecated
-	public class RomeJs extends RomeStepConfig<RomeJs> {
-		/**
-		 * Creates a new Rome formatter step config for formatting JavaScript files.
-		 * Unless overwritten, the given Rome version is downloaded from the network.
-		 *
-		 * @param version Rome version to use.
-		 */
-		public RomeJs(String version) {
-			super(getProject(), JavascriptExtension.this::replaceStep, BiomeFlavor.ROME, version);
-		}
-
-		@Override
-		protected String getLanguage() {
-			return "js?";
-		}
-
-		@Override
-		protected RomeJs getThis() {
 			return this;
 		}
 	}

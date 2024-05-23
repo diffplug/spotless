@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.gherkin;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,9 +25,19 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public class GherkinUtilsStep {
+public class GherkinUtilsStep implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "io.cucumber:gherkin-utils:";
 	private static final String DEFAULT_VERSION = "8.0.2";
+	public static final String NAME = "gherkinUtils";
+
+	private final JarState.Promised jarState;
+	private final GherkinUtilsConfig gherkinSimpleConfig;
+
+	private GherkinUtilsStep(JarState.Promised jarState, GherkinUtilsConfig gherkinSimpleConfig) {
+		this.jarState = jarState;
+		this.gherkinSimpleConfig = gherkinSimpleConfig;
+	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
@@ -37,7 +46,14 @@ public class GherkinUtilsStep {
 	public static FormatterStep create(GherkinUtilsConfig gherkinSimpleConfig,
 			String formatterVersion, Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
-		return FormatterStep.createLazy("gherkin", () -> new GherkinUtilsStep.State(gherkinSimpleConfig, formatterVersion, provisioner), GherkinUtilsStep.State::toFormatter);
+		return FormatterStep.create(NAME,
+				new GherkinUtilsStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + formatterVersion, provisioner)), gherkinSimpleConfig),
+				GherkinUtilsStep::equalityState,
+				GherkinUtilsStep.State::toFormatter);
+	}
+
+	private State equalityState() {
+		return new State(jarState.get(), gherkinSimpleConfig);
 	}
 
 	private static final class State implements Serializable {
@@ -46,9 +62,9 @@ public class GherkinUtilsStep {
 		private final GherkinUtilsConfig gherkinSimpleConfig;
 		private final JarState jarState;
 
-		private State(GherkinUtilsConfig gherkinSimpleConfig, String formatterVersion, Provisioner provisioner) throws IOException {
+		State(JarState jarState, GherkinUtilsConfig gherkinSimpleConfig) {
+			this.jarState = jarState;
 			this.gherkinSimpleConfig = gherkinSimpleConfig;
-			this.jarState = JarState.from(MAVEN_COORDINATE + formatterVersion, provisioner);
 		}
 
 		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
@@ -57,9 +73,5 @@ public class GherkinUtilsStep {
 			Constructor<?> constructor = formatterFunc.getConstructor(GherkinUtilsConfig.class);
 			return (FormatterFunc) constructor.newInstance(gherkinSimpleConfig);
 		}
-	}
-
-	private GherkinUtilsStep() {
-		// cannot be directly instantiated
 	}
 }

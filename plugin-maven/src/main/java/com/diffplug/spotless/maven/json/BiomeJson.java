@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 package com.diffplug.spotless.maven.json;
 
-import com.diffplug.spotless.maven.rome.AbstractRome;
-import com.diffplug.spotless.rome.BiomeFlavor;
+import com.diffplug.spotless.biome.BiomeFlavor;
+import com.diffplug.spotless.maven.generic.AbstractBiome;
 
 /**
  * Biome formatter step for JSON.
  */
-public class BiomeJson extends AbstractRome {
+public class BiomeJson extends AbstractBiome {
 	public BiomeJson() {
 		super(BiomeFlavor.BIOME);
 	}

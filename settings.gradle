@@ -19,8 +19,8 @@ plugins {
 	id 'com.adarshr.test-logger' version '4.0.0' apply false
 	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
 	id 'io.github.davidburstrom.version-compatibility' version '0.5.0' apply false
-	// https://plugins.gradle.org/plugin/com.gradle.enterprise
-	id 'com.gradle.enterprise' version '3.16'
+	// https://plugins.gradle.org/plugin/com.gradle.develocity
+	id 'com.gradle.develocity' version '3.17'
 	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
 	id 'dev.equo.ide' version '1.7.5' apply false
 }
@@ -59,11 +59,15 @@ if (System.env['CI'] != null) {
 	}
 }
 
-gradleEnterprise {
+def isCI = providers.environmentVariable('CI').present
+
+develocity {
 	buildScan {
-		termsOfServiceUrl = "https://gradle.com/terms-of-service"
-		termsOfServiceAgree = "yes"
-		publishAlways()
+		termsOfUseUrl = "https://gradle.com/terms-of-service"
+		termsOfUseAgree = "yes"
+		publishing {
+			onlyIf { isCI }
+		}
 	}
 }
 

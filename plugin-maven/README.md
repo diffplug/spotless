@@ -232,7 +232,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <googleJavaFormat>
-  <version>1.8</version>                      <!-- optional, 1.8 is minimum supported version -->
+  <version>1.8</version>                      <!-- optional, 1.8 is the minimum supported version for Java 11-->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
   <formatJavadoc>false</formatJavadoc>        <!-- optional -->
@@ -419,6 +419,8 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
   <editorConfigOverride> <!-- optional -->
     <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>
     <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>
+    <!-- intellij_idea is the default style we preset in Spotless, you can override it referring to https://pinterest.github.io/ktlint/latest/rules/code-styles. -->
+    <ktlint_code_style>intellij_idea</ktlint_code_style>
   </editorConfigOverride>
   <customRuleSets> <!-- optional -->
     <value>io.nlopez.compose.rules:ktlint:0.3.3</value>
@@ -665,13 +667,17 @@ All configuration settings are optional, they are described in detail [here](htt
 
   <indentBlankLines>false</indentBlankLines> <!-- Should empty lines be indented -->
 
-  <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indended -->
+  <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indented -->
+
+  <indentAttribute></indentAttribute> <!-- Should the xml attributes be indented -->
 
   <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles-->
 
   <sortOrderFile></sortOrderFile> <!-- Custom sort order of elements: https://raw.githubusercontent.com/Ekryd/sortpom/master/sorter/src/main/resources/custom_1.xml -->
 
   <sortDependencies></sortDependencies> <!-- Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+
+  <sortDependencyManagement></sortDependencyManagement> <!-- Sort dependency management: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
 
   <sortDependencyExclusions></sortDependencyExclusions> <!-- Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
 
@@ -1326,12 +1332,6 @@ a formatter that for the frontend written in Rust, which has a native binary, do
 is pretty fast. It can currently format JavaScript, TypeScript, JSX, and JSON, and may support
 [more frontend languages](https://biomejs.dev/internals/language-support/) such as CSS in the future.
 
-Note: Biome [was formerly called Rome](https://biomejs.dev/blog/annoucing-biome/). Configurations with
-the old `<rome>` tag and `rome(...)` function are still supported for the time being. This will be removed
-in a future version, you should migrate to the new `<biome>` tag or `biome(...)` function. The configuration
-remains the same, you only need to update the version. If you are using a custom `rome.json` configuration file,
-you need to rename it to `biome.json`.
-
 You can use Biome in any language-specific format for supported languages, but
 usually you will be creating a generic format.
 
@@ -1695,6 +1695,28 @@ cmd> mvn spotless:apply -DspotlessFiles=my/file/pattern.java,more/generic/.*-pat
 ```
 
 The patterns are matched using `String#matches(String)` against the absolute file path.
+
+## Does Spotless support incremental builds in Eclipse?
+
+Spotless comes with [m2e](https://eclipse.dev/m2e/) support. However, by default its execution is skipped in incremental builds as most developers want to fix all issues in one go via explicit `mvn spotless:apply` prior to raising a PR and don't want to be bothered with Spotless issues during working on the source code in the IDE.
+To enable it use the following parameter
+
+```
+<configuration>
+    <m2eEnableForIncrementalBuild>true</m2eEnableForIncrementalBuild><!-- this is false by default -->
+</configuration>
+```
+
+In addition Eclipse problem markers are being emitted for goal `check`. By default they have the severity `WARNING`.
+You can adjust this with 
+
+```
+<configuration>
+    <m2eIncrementalBuildMessageSeverity>ERROR</m2eIncrementalBuildMessageSeverity><!-- WARNING or ERROR -->
+</configuration>
+```
+
+Note that for Incremental build support the goals have to be bound to a phase prior to `test`.
 
 <a name="examples"></a>
 

@@ -29,13 +29,12 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 import com.diffplug.spotless.ThrowingEx;
 
 /**
  * Wraps up <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> as a FormatterStep.
  */
-public class KtfmtStep implements RoundedStep {
+public class KtfmtStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "0.47";
 	private static final String NAME = "ktfmt";
