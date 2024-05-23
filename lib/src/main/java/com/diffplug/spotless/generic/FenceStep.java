@@ -247,7 +247,8 @@ public class FenceStep {
 			return Objects.hash(name, regex.pattern(), regex.flags(), steps);
 		}
 
-		public void cleanup() {
+		@Override
+		public void close() {
 			if (formatter != null) {
 				formatter.close();
 				formatter = null;

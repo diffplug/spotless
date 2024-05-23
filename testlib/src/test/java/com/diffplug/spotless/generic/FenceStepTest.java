@@ -151,5 +151,11 @@ class FenceStepTest extends ResourceHarness {
 			return formatterFunc.apply(rawUnix, file);
 		}
 
+		@Override
+		public void close() throws Exception {
+			if (formatterFunc instanceof FormatterFunc.Closeable) {
+				((FormatterFunc.Closeable) formatterFunc).close();
+			}
+		}
 	}
 }
