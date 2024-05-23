@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,24 +35,37 @@ public class NativeCmdStep {
 	public static FormatterStep create(String name, File pathToExe, List<String> arguments) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(pathToExe, "pathToExe");
-		return FormatterStep.createLazy(name, () -> new State(FileSignature.signAsList(pathToExe), arguments), State::toFunc);
+		return FormatterStep.createLazy(name, () -> new State(FileSignature.promise(pathToExe), arguments), State::toRuntime, Runtime::toFunc);
 	}
 
 	static class State implements Serializable {
-		private static final long serialVersionUID = 1L;
-
-		final FileSignature pathToExe;
-
+		private static final long serialVersionUID = 2L;
+		final FileSignature.Promised pathToExe;
 		final List<String> arguments;
 
-		State(FileSignature pathToExe, List<String> arguments) {
+		State(FileSignature.Promised pathToExe, List<String> arguments) {
+			this.pathToExe = pathToExe;
+			this.arguments = arguments;
+		}
+
+		Runtime toRuntime() {
+			return new Runtime(pathToExe.get().getOnlyFile(), arguments);
+		}
+	}
+
+	static class Runtime implements Serializable {
+		private static final long serialVersionUID = 2L;
+		final File pathToExe;
+		final List<String> arguments;
+
+		Runtime(File pathToExe, List<String> arguments) {
 			this.pathToExe = pathToExe;
 			this.arguments = arguments;
 		}
 
 		String format(ProcessRunner runner, String input) throws IOException, InterruptedException {
 			List<String> argumentsWithPathToExe = new ArrayList<>();
-			argumentsWithPathToExe.add(pathToExe.getOnlyFile().getAbsolutePath());
+			argumentsWithPathToExe.add(pathToExe.getAbsolutePath());
 			if (arguments != null) {
 				argumentsWithPathToExe.addAll(arguments);
 			}
