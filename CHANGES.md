@@ -19,6 +19,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Made ShadowCopy (`npmInstallCache`) more robust by re-creating the cache dir if it goes missing ([#1984](https://github.com/diffplug/spotless/issues/1984),[2096](https://github.com/diffplug/spotless/pull/2096))
 * scalafmt.conf fileOverride section now works correctly ([#1854](https://github.com/diffplug/spotless/pull/1854))
 ### Changes
+* Bump default `jackson` version to latest `2.14.2` -> `2.17.1`. ([#1685](https://github.com/diffplug/spotless/pull/1685))
 * Bump default `ktfmt` version to latest `0.46` -> `0.47`. ([#2045](https://github.com/diffplug/spotless/pull/2045))
 * Bump default `sortpom` version to latest `3.2.1` -> `3.4.0`. ([#2049](https://github.com/diffplug/spotless/pull/2049))
 * Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
@@ -26,7 +27,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `sortpom` version to latest `3.4.0` -> `3.4.1`. ([#2078](https://github.com/diffplug/spotless/pull/2078))
 * Bump default `sortpom` version to latest `3.4.1` -> `4.0.0` and support versions back to `3.2.1`. ([#2115](https://github.com/diffplug/spotless/pull/2115))
 * Bump default `zjsonpatch` version to latest `0.4.14` -> `0.4.16`. ([#1969](https://github.com/diffplug/spotless/pull/1969))
-
 ### Removed
 * **BREAKING** Remove `JarState.getMavenCoordinate(String prefix)`. ([#1945](https://github.com/diffplug/spotless/pull/1945))
 * **BREAKING** Replace `PipeStepPair` with `FenceStep`. ([#1954](https://github.com/diffplug/spotless/pull/1954))
