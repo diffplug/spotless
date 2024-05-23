@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.rome;
+package com.diffplug.spotless.biome;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
  * Downloader for the Biome executable:
  * <a href="https://github.com/biomejs/biome">https://github.com/biomejs/biome</a>.
  */
-final class RomeExecutableDownloader {
-	private static final Logger logger = LoggerFactory.getLogger(RomeExecutableDownloader.class);
+final class BiomeExecutableDownloader {
+	private static final Logger logger = LoggerFactory.getLogger(BiomeExecutableDownloader.class);
 
 	/**
 	 * The checksum algorithm to use for checking the integrity of downloaded files.
@@ -80,7 +80,7 @@ final class RomeExecutableDownloader {
 	 * @param flavor Flavor of Biome to use.
 	 * @param downloadDir Directory where to store the downloaded executable.
 	 */
-	public RomeExecutableDownloader(BiomeFlavor flavor, Path downloadDir) {
+	public BiomeExecutableDownloader(BiomeFlavor flavor, Path downloadDir) {
 		this.flavor = flavor;
 		this.downloadDir = downloadDir;
 	}

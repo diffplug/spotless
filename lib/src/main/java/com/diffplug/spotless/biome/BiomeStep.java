@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.rome;
+package com.diffplug.spotless.biome;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,11 +40,11 @@ import com.diffplug.spotless.ProcessRunner;
 /**
  * formatter step that formats JavaScript and TypeScript code with Biome:
  * <a href= "https://github.com/biomejs/biome">https://github.com/biomejs/biome</a>.
- * It delegates to the Biome executable. The Rome executable is downloaded from
+ * It delegates to the Biome executable. The Biome executable is downloaded from
  * the network when no executable path is provided explicitly.
  */
-public class RomeStep {
-	private static final Logger logger = LoggerFactory.getLogger(RomeStep.class);
+public class BiomeStep {
+	private static final Logger logger = LoggerFactory.getLogger(BiomeStep.class);
 
 	/**
 	 * Path to the directory with the {@code biome.json} config file, can be
@@ -113,8 +113,8 @@ public class RomeStep {
 	 * @param downloadDir Directory where to place the downloaded executable.
 	 * @return A new Biome step that download the executable from the network.
 	 */
-	public static RomeStep withExeDownload(BiomeFlavor flavor, String version, String downloadDir) {
-		return new RomeStep(flavor, version, null, downloadDir);
+	public static BiomeStep withExeDownload(BiomeFlavor flavor, String version, String downloadDir) {
+		return new BiomeStep(flavor, version, null, downloadDir);
 	}
 
 	/**
@@ -125,8 +125,8 @@ public class RomeStep {
 	 * @param pathToExe Path to the Biome executable to use.
 	 * @return A new Biome step that format with the given executable.
 	 */
-	public static RomeStep withExePath(BiomeFlavor flavor, String pathToExe) {
-		return new RomeStep(flavor, null, pathToExe, null);
+	public static BiomeStep withExePath(BiomeFlavor flavor, String pathToExe) {
+		return new BiomeStep(flavor, null, pathToExe, null);
 	}
 
 	/**
@@ -230,7 +230,7 @@ public class RomeStep {
 	 * @param pathToExe Path to the Biome executable to use.
 	 * @param downloadDir Directory where to place the downloaded executable.
 	 */
-	private RomeStep(BiomeFlavor flavor, String version, String pathToExe, String downloadDir) {
+	private BiomeStep(BiomeFlavor flavor, String version, String pathToExe, String downloadDir) {
 		this.flavor = flavor;
 		this.version = version != null && !version.isBlank() ? version : defaultVersion(flavor);
 		this.pathToExe = pathToExe;
@@ -255,7 +255,7 @@ public class RomeStep {
 	 *                   a file named {@code biome.json}.
 	 * @return This builder instance for chaining method calls.
 	 */
-	public RomeStep withConfigPath(String configPath) {
+	public BiomeStep withConfigPath(String configPath) {
 		this.configPath = configPath;
 		return this;
 	}
@@ -280,7 +280,7 @@ public class RomeStep {
 	 * @param language The language of the files to format.
 	 * @return This builder instance for chaining method calls.
 	 */
-	public RomeStep withLanguage(String language) {
+	public BiomeStep withLanguage(String language) {
 		this.language = language;
 		return this;
 	}
@@ -333,7 +333,7 @@ public class RomeStep {
 				return pathToExe;
 			}
 		} else {
-			var downloader = new RomeExecutableDownloader(flavor, Paths.get(downloadDir));
+			var downloader = new BiomeExecutableDownloader(flavor, Paths.get(downloadDir));
 			var downloaded = downloader.ensureDownloaded(version).toString();
 			makeExecutable(downloaded);
 			return downloaded;
