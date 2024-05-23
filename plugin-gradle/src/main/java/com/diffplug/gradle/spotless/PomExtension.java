@@ -107,6 +107,11 @@ public class PomExtension extends FormatExtension {
 			return this;
 		}
 
+		public SortPomGradleConfig indentAttribute(String indentAttribute) {
+			cfg.indentAttribute = indentAttribute;
+			return this;
+		}
+
 		public SortPomGradleConfig predefinedSortOrder(String predefinedSortOrder) {
 			cfg.predefinedSortOrder = predefinedSortOrder;
 			return this;
