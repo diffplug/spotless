@@ -26,7 +26,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 
 /**
  * Enables CleanThat as a SpotLess step.
@@ -34,7 +33,7 @@ import com.diffplug.spotless.RoundedStep;
  * @author Benoit Lacelle
  */
 // https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-to-add-a-new-formatterstep
-public final class CleanthatJavaStep implements RoundedStep {
+public final class CleanthatJavaStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "cleanthat";
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";

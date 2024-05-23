@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,8 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 			return formatter.apply(rawUnix, file);
 		}
 
-		void cleanupFormatterFunc() {
+		@Override
+		public void close() throws Exception {
 			if (formatter instanceof FormatterFunc.Closeable) {
 				((FormatterFunc.Closeable) formatter).close();
 				formatter = null;
@@ -113,6 +114,14 @@ abstract class FormatterStepImpl<State extends Serializable> extends Strict<Stat
 				}
 			}
 			return formatter.apply(rawUnix, file);
+		}
+
+		@Override
+		public void close() throws Exception {
+			if (formatter instanceof FormatterFunc.Closeable) {
+				((FormatterFunc.Closeable) formatter).close();
+				formatter = null;
+			}
 		}
 	}
 

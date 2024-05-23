@@ -65,6 +65,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Flexmark](#flexmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
+  - [Maven POM](#maven-pom) ([sortPom](#sortpom))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Biome](#biome))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Biome](#biome))
   - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [Biome](#biome), [jsonPatch](#jsonPatch))
@@ -417,6 +418,8 @@ spotless {
       .editorConfigOverride(
         mapOf(
           "indent_size" to 2,
+          // intellij_idea is the default style we preset in Spotless, you can override it referring to https://pinterest.github.io/ktlint/latest/rules/code-styles.
+          "ktlint_code_style" to "intellij_idea",
         )
       )
       .customRuleSets(
@@ -676,6 +679,53 @@ sql.formatter.indent.type=space
 sql.formatter.indent.size=4
 ```
 
+## Maven POM
+
+`com.diffplug.gradle.spotless.PomExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/PomExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/PomExtension.java)
+
+```gradle
+spotless {
+  pom {
+    target('pom.xml') // default value, you can change if you want
+
+    sortPom()  // has its own section below
+  }
+}
+```
+
+### sortPom
+
+[homepage](https://github.com/Ekryd/sortpom).
+
+All configuration settings are optional, they are described in detail [here](https://github.com/Ekryd/sortpom/wiki/Parameters).
+
+```gradle
+spotless {
+  pom {
+    sortPom('4.0.0')
+      .encoding('UTF-8') // The encoding of the pom files
+      .lineSeparator(System.getProperty('line.separator')) // line separator to use
+      .expandEmptyElements(true) // Should empty elements be expanded
+      .spaceBeforeCloseEmptyElement(false) // Should a space be added inside self-closing elements
+      .keepBlankLines(true) // Keep empty lines
+      .endWithNewline(true) // Whether sorted pom ends with a newline
+      .nrOfIndentSpace(2) // Indentation
+      .indentBlankLines(false) // Should empty lines be indented
+      .indentSchemaLocation(false) // Should schema locations be indented
+      .indentAttribute(null) // Should the xml attributes be indented
+      .predefinedSortOrder('recommended_2008_06') // Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles
+      .sortOrderFile(null) // Custom sort order of elements: https://raw.githubusercontent.com/Ekryd/sortpom/master/sorter/src/main/resources/custom_1.xml
+      .sortDependencies(null) // Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies
+      .sortDependencyManagement(null) // Sort dependency management: https://github.com/Ekryd/sortpom/wiki/SortDependencies
+      .sortDependencyExclusions(null) // Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies
+      .sortPlugins(null) // Sort plugins: https://github.com/Ekryd/sortpom/wiki/SortPlugins
+      .sortProperties(false) // Sort properties
+      .sortModules(false) // Sort modules
+      .sortExecutions(false) // Sort plugin executions
+  }
+}
+```
+
 <a name="applying-to-typescript-source"></a>
 
 ## Typescript
@@ -798,8 +848,6 @@ hence you are required to provide resolvable file paths for config files, or alt
 
 The configuration is very similar to the [ESLint (Typescript)](#eslint-typescript) configuration. In javascript, *no*
 `tsconfig.json` is supported.
-
-```gradle
 
 ```gradle
 spotless {

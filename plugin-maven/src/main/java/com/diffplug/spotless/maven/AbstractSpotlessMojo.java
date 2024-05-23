@@ -201,6 +201,13 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private UpToDateChecking upToDateChecking = UpToDateChecking.enabled();
 
+	/**
+	 * If set to {@code true} will also run on incremental builds (i.e. within Eclipse with m2e).
+	 * Otherwise this goal is skipped in incremental builds and only runs on full builds.
+	 */
+	@Parameter(defaultValue = "false")
+	protected boolean m2eEnableForIncrementalBuild;
+
 	protected abstract void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
 
 	private static final int MINIMUM_JRE = 11;
@@ -243,6 +250,10 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	private boolean shouldSkip() {
 		if (skip) {
+			return true;
+		}
+		if (buildContext.isIncremental() && !m2eEnableForIncrementalBuild) {
+			getLog().debug("Skipping for incremental builds as parameter 'enableForIncrementalBuilds' is set to 'false'");
 			return true;
 		}
 

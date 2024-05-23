@@ -1,8 +1,8 @@
 Please **DO NOT FORCE PUSH**. Don't worry about messy history, it's easier to do code review if we can tell what happened after the review, and force pushing breaks that.
 
-Please make sure that your [PR allows edits from maintainers](https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/).  Sometimes its faster for us to just fix something than it is to describe how to fix it.
+Please make sure that your [PR allows edits from maintainers](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork).  Sometimes it's faster for us to just fix something than it is to describe how to fix it.
 
-![Allow edits from maintainers](https://help.github.com/assets/images/help/pull_requests/allow-maintainers-to-make-edits-sidebar-checkbox.png)
+<img src="https://docs.github.com/assets/cb-87454/images/help/pull_requests/allow-edits-and-access-by-maintainers.png" height="297" alt="Allow edits from maintainers">
 
 After creating the PR, please add a commit that adds a bullet-point under the `[Unreleased]` section of [CHANGES.md](https://github.com/diffplug/spotless/blob/main/CHANGES.md), [plugin-gradle/CHANGES.md](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md), and [plugin-maven/CHANGES.md](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md) which includes:
 

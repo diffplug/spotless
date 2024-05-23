@@ -34,7 +34,6 @@ import com.diffplug.spotless.FormatterProperties;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 import com.diffplug.spotless.SerializedFunction;
 
 import dev.equo.solstice.NestedJars;
@@ -53,12 +52,6 @@ public abstract class EquoBasedStepBuilder {
 	private String formatterVersion;
 	private Iterable<File> settingsFiles = new ArrayList<>();
 	private Map<String, String> p2Mirrors = Map.of();
-
-	/** @deprecated if you use this constructor you *must* call {@link #setVersion(String)} before calling {@link #build()} */
-	@Deprecated
-	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, SerializedFunction<State, FormatterFunc> stateToFormatter) {
-		this(formatterName, mavenProvisioner, null, stateToFormatter);
-	}
 
 	/** Initialize valid default configuration, taking latest version */
 	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, @Nullable String defaultVersion, SerializedFunction<State, FormatterFunc> stateToFormatter) {
@@ -150,7 +143,7 @@ public abstract class EquoBasedStepBuilder {
 		return model;
 	}
 
-	static class EquoStep implements RoundedStep {
+	static class EquoStep implements java.io.Serializable {
 		private static final long serialVersionUID = 1;
 		private final String semanticVersion;
 		private final FileSignature.Promised settingsPromise;

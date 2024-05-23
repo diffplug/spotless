@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,11 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 
 	private NodeModulesCachingNpmProcessFactory(@Nonnull File cacheDir) {
 		this.cacheDir = Objects.requireNonNull(cacheDir);
-		assertDir(cacheDir);
-		this.shadowCopy = new ShadowCopy(cacheDir);
+		assertDir(); // throws if cacheDir is not a directory
+		this.shadowCopy = new ShadowCopy(this::assertDir);
 	}
 
-	private void assertDir(File cacheDir) {
+	private synchronized File assertDir() {
 		if (cacheDir.exists() && !cacheDir.isDirectory()) {
 			throw new IllegalArgumentException("Cache dir must be a directory");
 		}
@@ -51,6 +51,7 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 				throw new IllegalArgumentException("Cache dir could not be created.");
 			}
 		}
+		return cacheDir;
 	}
 
 	public static NodeModulesCachingNpmProcessFactory create(@Nonnull File cacheDir) {

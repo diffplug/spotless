@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -310,7 +310,7 @@ class RomeIntegrationTest extends GradleIntegrationHarness {
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
 		assertThat(spotlessApply.getOutput()).contains("Build failed with an exception");
 		assertFile("rome_test.js").sameAsResource("rome/js/fileBefore.js");
-		assertThat(spotlessApply.getOutput()).contains("Could not create task ':spotlessMyromeApply'");
+		assertThat(spotlessApply.getOutput()).contains("Execution failed for task ':spotlessMyrome'");
 		assertThat(spotlessApply.getOutput()).contains("Biome executable does not exist");
 	}
 

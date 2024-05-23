@@ -26,17 +26,17 @@ import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 
 /** An api for testing a {@code FormatterStep} that depends on the File path. */
-public class StepHarnessWithFile extends StepHarnessBase<StepHarnessWithFile> {
+public class StepHarnessWithFile extends StepHarnessBase {
 	private final ResourceHarness harness;
 
-	private StepHarnessWithFile(ResourceHarness harness, Formatter formatter) {
-		super(formatter);
+	private StepHarnessWithFile(ResourceHarness harness, Formatter formatter, RoundTrip roundTrip) {
+		super(formatter, roundTrip);
 		this.harness = Objects.requireNonNull(harness);
 	}
 
 	/** Creates a harness for testing steps which do depend on the file. */
 	public static StepHarnessWithFile forStep(ResourceHarness harness, FormatterStep step) {
-		return new StepHarnessWithFile(harness, Formatter.builder()
+		return forFormatter(harness, Formatter.builder()
 				.name(step.getName())
 				.encoding(StandardCharsets.UTF_8)
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
@@ -48,7 +48,7 @@ public class StepHarnessWithFile extends StepHarnessBase<StepHarnessWithFile> {
 
 	/** Creates a harness for testing a formatter whose steps do depend on the file. */
 	public static StepHarnessWithFile forFormatter(ResourceHarness harness, Formatter formatter) {
-		return new StepHarnessWithFile(harness, formatter);
+		return new StepHarnessWithFile(harness, formatter, RoundTrip.ASSERT_EQUAL);
 	}
 
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */

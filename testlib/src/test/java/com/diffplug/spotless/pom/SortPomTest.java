@@ -16,6 +16,8 @@
 package com.diffplug.spotless.pom;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.diffplug.spotless.*;
 
@@ -27,10 +29,11 @@ public class SortPomTest extends ResourceHarness {
 		StepHarness.forStep(step).testResource("pom/pom_dirty.xml", "pom/pom_clean_default.xml");
 	}
 
-	@Test
-	public void testSortPomWithVersion() {
+	@ParameterizedTest
+	@ValueSource(strings = {"3.2.1", "3.3.0", "3.4.1", "4.0.0"})
+	public void testSortPomWithVersion(String version) {
 		SortPomCfg cfg = new SortPomCfg();
-		cfg.version = "3.4.0";
+		cfg.version = version;
 		FormatterStep step = SortPomStep.create(cfg, TestProvisioner.mavenCentral());
 		StepHarness.forStep(step).testResource("pom/pom_dirty.xml", "pom/pom_clean_default.xml");
 	}

@@ -3,14 +3,21 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
+* Skip execution in M2E (incremental) builds by default ([#1814](https://github.com/diffplug/spotless/issues/1814), [#2037](https://github.com/diffplug/spotless/issues/2037))
 ### Fixed
 * Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
+* Correctly provide EditorConfig property types for Ktlint ([#2052](https://github.com/diffplug/spotless/issues/2052))
+* Made ShadowCopy (`npmInstallCache`) more robust by re-creating the cache dir if it goes missing ([#1984](https://github.com/diffplug/spotless/issues/1984),[2096](https://github.com/diffplug/spotless/pull/2096))
+* scalafmt.conf fileOverride section now works correctly ([#1854](https://github.com/diffplug/spotless/pull/1854))
 ### Changes
 * Bump default `ktfmt` version to latest `0.46` -> `0.47`. ([#2045](https://github.com/diffplug/spotless/pull/2045))
 * Bump default `sortpom` version to latest `3.2.1` -> `3.4.0`. ([#2049](https://github.com/diffplug/spotless/pull/2049))
 * Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
-### Added
-* Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
+* Bump default `ktlint` version to latest `1.1.1` -> `1.2.1`. ([#2057](https://github.com/diffplug/spotless/pull/2057))
+* Bump default `sortpom` version to latest `3.4.0` -> `3.4.1`. ([#2078](https://github.com/diffplug/spotless/pull/2078))
+* Bump default `sortpom` version to latest `3.4.1` -> `4.0.0` and support versions back to `3.2.1`. ([#2115](https://github.com/diffplug/spotless/pull/2115))
 
 ## [2.43.0] - 2024-01-23
 ### Added
