@@ -21,7 +21,7 @@ import java.io.Serializable;
 public class SortPomCfg implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public String version = "3.4.1";
+	public String version = "4.0.0";
 
 	public String encoding = "UTF-8";
 
@@ -40,6 +40,8 @@ public class SortPomCfg implements Serializable {
 	public boolean indentBlankLines = false;
 
 	public boolean indentSchemaLocation = false;
+
+	public String indentAttribute = null;
 
 	public String predefinedSortOrder = "recommended_2008_06";
 

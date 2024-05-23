@@ -419,6 +419,8 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
   <editorConfigOverride> <!-- optional -->
     <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>
     <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>
+    <!-- intellij_idea is the default style we preset in Spotless, you can override it referring to https://pinterest.github.io/ktlint/latest/rules/code-styles. -->
+    <ktlint_code_style>intellij_idea</ktlint_code_style>
   </editorConfigOverride>
   <customRuleSets> <!-- optional -->
     <value>io.nlopez.compose.rules:ktlint:0.3.3</value>
@@ -666,6 +668,8 @@ All configuration settings are optional, they are described in detail [here](htt
   <indentBlankLines>false</indentBlankLines> <!-- Should empty lines be indented -->
 
   <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indented -->
+
+  <indentAttribute></indentAttribute> <!-- Should the xml attributes be indented -->
 
   <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles-->
 

@@ -47,19 +47,6 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	String format(String rawUnix, File file) throws Exception;
 
 	/**
-	 * Returns a new FormatterStep which will only apply its changes
-	 * to files which pass the given filter.
-	 *
-	 * @param contentPattern
-	 *            java regular expression used to filter out files which content doesn't contain pattern
-	 * @return FormatterStep
-	 */
-	@Deprecated
-	default FormatterStep filterByContentPattern(String contentPattern) {
-		return filterByContent(OnMatch.INCLUDE, contentPattern);
-	}
-
-	/**
 	 * Returns a new {@code FormatterStep} which, observing the value of {@code formatIfMatches},
 	 * will only apply, or not, its changes to files which pass the given filter.
 	 *
