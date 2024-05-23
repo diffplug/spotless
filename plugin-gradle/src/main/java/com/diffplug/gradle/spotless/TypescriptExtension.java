@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.gradle.api.Project;
 
 import com.diffplug.gradle.spotless.JavascriptExtension.EslintBaseConfig;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.EslintTypescriptConfig;
@@ -38,7 +39,6 @@ import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.npm.TsConfigFileType;
 import com.diffplug.spotless.npm.TsFmtFormatterStep;
 import com.diffplug.spotless.npm.TypedTsFmtConfigFile;
-import com.diffplug.spotless.rome.BiomeFlavor;
 
 public class TypescriptExtension extends FormatExtension {
 
@@ -244,33 +244,9 @@ public class TypescriptExtension extends FormatExtension {
 	}
 
 	/**
-	 * Defaults to downloading the default Rome version from the network. To work
-	 * offline, you can specify the path to the Rome executable via
-	 * {@code rome().pathToExe(...)}.
-	 *
-	 * @deprecated Use {@link #biome()}.
-	 */
-	@Deprecated
-	public RomeTs rome() {
-		return rome(null);
-	}
-
-	/**
-	 * Downloads the given Rome version from the network.
-	 *
-	 * @deprecated Use {@link #biome(String)}.
-	 */
-	@Deprecated
-	public RomeTs rome(String version) {
-		var romeConfig = new RomeTs(version);
-		addStep(romeConfig.createStep());
-		return romeConfig;
-	}
-
-	/**
 	 * Biome formatter step for TypeScript.
 	 */
-	public class BiomeTs extends RomeStepConfig<BiomeTs> {
+	public class BiomeTs extends BiomeStepConfig<BiomeTs> {
 		/**
 		 * Creates a new Biome formatter step config for formatting TypeScript files.
 		 * Unless overwritten, the given Biome version is downloaded from the network.
@@ -288,34 +264,6 @@ public class TypescriptExtension extends FormatExtension {
 
 		@Override
 		protected BiomeTs getThis() {
-			return this;
-		}
-	}
-
-	/**
-	 * Rome formatter step for TypeScript.
-	 *
-	 * @deprecated Rome has transitioned to Biome. This will be removed shortly.
-	 */
-	@Deprecated
-	public class RomeTs extends RomeStepConfig<RomeTs> {
-		/**
-		 * Creates a new Rome formatter step config for formatting TypeScript files.
-		 * Unless overwritten, the given Rome version is downloaded from the network.
-		 *
-		 * @param version Rome version to use.
-		 */
-		public RomeTs(String version) {
-			super(getProject(), TypescriptExtension.this::replaceStep, BiomeFlavor.ROME, version);
-		}
-
-		@Override
-		protected String getLanguage() {
-			return "ts?";
-		}
-
-		@Override
-		protected RomeTs getThis() {
 			return this;
 		}
 	}

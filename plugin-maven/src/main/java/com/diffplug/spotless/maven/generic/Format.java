@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,15 +47,5 @@ public class Format extends FormatterFactory {
 	 */
 	public void addBiome(Biome biome) {
 		addStepFactory(biome);
-	}
-
-	/**
-	 * Adds a step to this format that format code with the Rome formatter.
-	 * @param rome Rome configuration to use.
-	 * @deprecated Rome has transitioned to Biome. Use {@link #addBiome(Biome)}.
-	 */
-	@Deprecated
-	public void addRome(Rome rome) {
-		addStepFactory(rome);
 	}
 }
