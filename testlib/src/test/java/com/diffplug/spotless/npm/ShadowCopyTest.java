@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.common.base.Suppliers;
 import com.diffplug.spotless.ResourceHarness;
 
 class ShadowCopyTest extends ResourceHarness {
@@ -43,7 +44,7 @@ class ShadowCopyTest extends ResourceHarness {
 	@BeforeEach
 	void setUp() throws IOException {
 		shadowCopyRoot = newFolder("shadowCopyRoot");
-		shadowCopy = new ShadowCopy(shadowCopyRoot);
+		shadowCopy = new ShadowCopy(Suppliers.ofInstance(shadowCopyRoot));
 	}
 
 	@Test
