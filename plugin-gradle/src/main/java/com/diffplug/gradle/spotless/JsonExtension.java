@@ -22,12 +22,12 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.json.JacksonJsonConfig;
 import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.json.JsonPatchStep;
 import com.diffplug.spotless.json.JsonSimpleStep;
 import com.diffplug.spotless.json.gson.GsonStep;
-import com.diffplug.spotless.rome.BiomeFlavor;
 
 public class JsonExtension extends FormatExtension {
 	private static final int DEFAULT_INDENTATION = 4;
@@ -185,7 +185,7 @@ public class JsonExtension extends FormatExtension {
 	/**
 	 * Biome formatter step for JSON.
 	 */
-	public class BiomeJson extends RomeStepConfig<BiomeJson> {
+	public class BiomeJson extends BiomeStepConfig<BiomeJson> {
 		/**
 		 * Creates a new Biome formatter step config for formatting JSON files. Unless
 		 * overwritten, the given Biome version is downloaded from the network.

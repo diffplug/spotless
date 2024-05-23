@@ -53,6 +53,7 @@ import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
@@ -67,7 +68,6 @@ import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
-import com.diffplug.spotless.rome.BiomeFlavor;
 
 import groovy.lang.Closure;
 
@@ -728,15 +728,15 @@ public class FormatExtension {
 	 * the file name. It should be specified as a formatter step for a generic
 	 * <code>format{ ... }</code>.
 	 */
-	public class BiomeGeneric extends RomeStepConfig<BiomeGeneric> {
+	public class BiomeGeneric extends BiomeStepConfig<BiomeGeneric> {
 		@Nullable
 		String language;
 
 		/**
-		 * Creates a new Rome config that downloads the Rome executable for the given
+		 * Creates a new Biome config that downloads the Biome executable for the given
 		 * version from the network.
 		 *
-		 * @param version Rome version to use. The default version is used when
+		 * @param version Biome version to use. The default version is used when
 		 *                <code>null</code>.
 		 */
 		public BiomeGeneric(String version) {
@@ -801,12 +801,12 @@ public class FormatExtension {
 	 * offline, you can specify the path to the Biome executable via
 	 * {@code biome().pathToExe(...)}.
 	 */
-	public RomeStepConfig<?> biome() {
+	public BiomeStepConfig<?> biome() {
 		return biome(null);
 	}
 
 	/** Downloads the given Biome version from the network. */
-	public RomeStepConfig<?> biome(String version) {
+	public BiomeStepConfig<?> biome(String version) {
 		var biomeConfig = new BiomeGeneric(version);
 		addStep(biomeConfig.createStep());
 		return biomeConfig;

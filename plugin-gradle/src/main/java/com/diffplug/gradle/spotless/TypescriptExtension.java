@@ -30,6 +30,7 @@ import org.gradle.api.Project;
 
 import com.diffplug.gradle.spotless.JavascriptExtension.EslintBaseConfig;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.EslintTypescriptConfig;
@@ -38,7 +39,6 @@ import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.npm.TsConfigFileType;
 import com.diffplug.spotless.npm.TsFmtFormatterStep;
 import com.diffplug.spotless.npm.TypedTsFmtConfigFile;
-import com.diffplug.spotless.rome.BiomeFlavor;
 
 public class TypescriptExtension extends FormatExtension {
 
@@ -246,7 +246,7 @@ public class TypescriptExtension extends FormatExtension {
 	/**
 	 * Biome formatter step for TypeScript.
 	 */
-	public class BiomeTs extends RomeStepConfig<BiomeTs> {
+	public class BiomeTs extends BiomeStepConfig<BiomeTs> {
 		/**
 		 * Creates a new Biome formatter step config for formatting TypeScript files.
 		 * Unless overwritten, the given Biome version is downloaded from the network.

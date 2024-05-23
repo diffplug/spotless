@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 package com.diffplug.spotless.maven.javascript;
 
-import com.diffplug.spotless.maven.rome.AbstractRome;
-import com.diffplug.spotless.rome.BiomeFlavor;
+import com.diffplug.spotless.biome.BiomeFlavor;
+import com.diffplug.spotless.maven.generic.AbstractBiome;
 
 /**
  * Biome formatter step for JavaScript.
  */
-public class BiomeJs extends AbstractRome {
+public class BiomeJs extends AbstractBiome {
 	public BiomeJs() {
 		super(BiomeFlavor.BIOME);
 	}

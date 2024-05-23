@@ -30,11 +30,11 @@ import org.gradle.api.Project;
 
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
-import com.diffplug.spotless.rome.BiomeFlavor;
 
 public class JavascriptExtension extends FormatExtension {
 
@@ -161,7 +161,7 @@ public class JavascriptExtension extends FormatExtension {
 	/**
 	 * Biome formatter step for JavaScript.
 	 */
-	public class BiomeJs extends RomeStepConfig<BiomeJs> {
+	public class BiomeJs extends BiomeStepConfig<BiomeJs> {
 		/**
 		 * Creates a new Biome formatter step config for formatting JavaScript files.
 		 * Unless overwritten, the given Biome version is downloaded from the network.
