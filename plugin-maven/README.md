@@ -1332,12 +1332,6 @@ a formatter that for the frontend written in Rust, which has a native binary, do
 is pretty fast. It can currently format JavaScript, TypeScript, JSX, and JSON, and may support
 [more frontend languages](https://biomejs.dev/internals/language-support/) such as CSS in the future.
 
-Note: Biome [was formerly called Rome](https://biomejs.dev/blog/annoucing-biome/). Configurations with
-the old `<rome>` tag and `rome(...)` function are still supported for the time being. This will be removed
-in a future version, you should migrate to the new `<biome>` tag or `biome(...)` function. The configuration
-remains the same, you only need to update the version. If you are using a custom `rome.json` configuration file,
-you need to rename it to `biome.json`.
-
 You can use Biome in any language-specific format for supported languages, but
 usually you will be creating a generic format.
 

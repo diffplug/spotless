@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.rome.BiomeFlavor;
-import com.diffplug.spotless.rome.RomeStep;
+import com.diffplug.spotless.biome.BiomeFlavor;
+import com.diffplug.spotless.biome.BiomeStep;
 
-public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
+public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	/**
 	 * Optional path to the directory with configuration file for Biome. The file
 	 * must be named {@code biome.json}. When none is given, the default
@@ -95,7 +95,7 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	@Nullable
 	private String version;
 
-	protected RomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, BiomeFlavor flavor,
+	protected BiomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, BiomeFlavor flavor,
 			String version) {
 		this.project = requireNonNull(project);
 		this.replaceStep = requireNonNull(replaceStep);
@@ -234,13 +234,13 @@ public abstract class RomeStepConfig<Self extends RomeStepConfig<Self>> {
 	 *
 	 * @return A builder for a Biome step.
 	 */
-	private RomeStep newBuilder() {
+	private BiomeStep newBuilder() {
 		if (pathToExe != null) {
 			var resolvedPathToExe = resolvePathToExe();
-			return RomeStep.withExePath(flavor, resolvedPathToExe);
+			return BiomeStep.withExePath(flavor, resolvedPathToExe);
 		} else {
 			var downloadDir = resolveDownloadDir();
-			return RomeStep.withExeDownload(flavor, version, downloadDir);
+			return BiomeStep.withExeDownload(flavor, version, downloadDir);
 		}
 	}
 
