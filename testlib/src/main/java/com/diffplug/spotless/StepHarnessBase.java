@@ -27,14 +27,15 @@ class StepHarnessBase implements AutoCloseable {
 	private final Formatter formatter;
 
 	protected StepHarnessBase(Formatter formatter, RoundTrip roundTrip) {
-		this.formatter = Objects.requireNonNull(formatter);
 		if (roundTrip == RoundTrip.DONT_ROUNDTRIP) {
+			this.formatter = Objects.requireNonNull(formatter);
 			return;
 		}
 		Formatter roundTripped = SerializableEqualityTester.reserialize(formatter);
 		if (roundTrip == RoundTrip.ASSERT_EQUAL) {
 			Assertions.assertThat(roundTripped).isEqualTo(formatter);
 		}
+		this.formatter = roundTripped;
 	}
 
 	protected Formatter formatter() {
