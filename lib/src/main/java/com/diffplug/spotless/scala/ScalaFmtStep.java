@@ -33,7 +33,7 @@ import com.diffplug.spotless.Provisioner;
 public class ScalaFmtStep implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
-	static final String DEFAULT_VERSION = "3.7.3";
+	static final String DEFAULT_VERSION = "3.8.1";
 
 	private static final String DEFAULT_SCALA_MAJOR_VERSION = "2.13";
 	private static final String NAME = "scalafmt";

@@ -21,9 +21,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 * Bump default `jackson` version to latest `2.14.2` -> `2.17.1`. ([#1685](https://github.com/diffplug/spotless/pull/1685))
 * Bump default `ktfmt` version to latest `0.46` -> `0.47`. ([#2045](https://github.com/diffplug/spotless/pull/2045))
-* Bump default `sortpom` version to latest `3.2.1` -> `3.4.0`. ([#2049](https://github.com/diffplug/spotless/pull/2049))
-* Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
 * Bump default `ktlint` version to latest `1.1.1` -> `1.2.1`. ([#2057](https://github.com/diffplug/spotless/pull/2057))
+* Bump default `scalafmt` version to latest `3.7.3` -> `3.8.1`. ([#1730](https://github.com/diffplug/spotless/pull/1730))
+* Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
+* Bump default `sortpom` version to latest `3.2.1` -> `3.4.0`. ([#2049](https://github.com/diffplug/spotless/pull/2049))
 * Bump default `sortpom` version to latest `3.4.0` -> `3.4.1`. ([#2078](https://github.com/diffplug/spotless/pull/2078))
 * Bump default `sortpom` version to latest `3.4.1` -> `4.0.0` and support versions back to `3.2.1`. ([#2115](https://github.com/diffplug/spotless/pull/2115))
 * Bump default `zjsonpatch` version to latest `0.4.14` -> `0.4.16`. ([#1969](https://github.com/diffplug/spotless/pull/1969))
