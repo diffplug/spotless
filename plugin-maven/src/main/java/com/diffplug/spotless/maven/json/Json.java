@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,11 +52,6 @@ public class Json extends FormatterFactory {
 
 	public void addBiome(BiomeJson biome) {
 		addStepFactory(biome);
-	}
-
-	@Deprecated
-	public void addRome(RomeJson rome) {
-		addStepFactory(rome);
 	}
 
 	public void addJsonPatch(JsonPatch jsonPatch) {

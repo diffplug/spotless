@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,7 @@ package com.diffplug.spotless.rome;
 public enum BiomeFlavor {
 	/** The new forked Biome project. */
 	BIOME("biome", "1.2.0", "biome.json", "biome-%s-%s-%s",
-			"https://github.com/biomejs/biome/releases/download/cli%%2Fv%s/biome-%s"),
-
-	/**
-	 * The old deprecated Rome project.
-	 *
-	 * @deprecated Will be removed once the old Rome project is not supported
-	 *             anymore.
-	 */
-	@Deprecated
-	ROME("rome", "12.0.0", "rome.json", "rome-%s-%s-%s",
-			"https://github.com/rome/tools/releases/download/cli%%2Fv%s/rome-%s");
+			"https://github.com/biomejs/biome/releases/download/cli%%2Fv%s/biome-%s");
 
 	private final String configName;
 	private final String defaultVersion;

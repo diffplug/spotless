@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,30 +74,6 @@ public class JsonExtension extends FormatExtension {
 		var biomeConfig = new BiomeJson(version);
 		addStep(biomeConfig.createStep());
 		return biomeConfig;
-	}
-
-	/**
-	 * Defaults to downloading the default Rome version from the network. To work
-	 * offline, you can specify the path to the Rome executable via
-	 * {@code rome().pathToExe(...)}.
-	 *
-	 * @deprecated Use {@link #biome()}.
-	 */
-	@Deprecated
-	public RomeJson rome() {
-		return rome(null);
-	}
-
-	/**
-	 * Downloads the given Rome version from the network.
-	 *
-	 * @deprecated Use {@link #biome(String)}.
-	 */
-	@Deprecated
-	public RomeJson rome(String version) {
-		var romeConfig = new RomeJson(version);
-		addStep(romeConfig.createStep());
-		return romeConfig;
 	}
 
 	public JsonPatchConfig jsonPatch(List<Map<String, Object>> patch) {
@@ -227,34 +203,6 @@ public class JsonExtension extends FormatExtension {
 
 		@Override
 		protected BiomeJson getThis() {
-			return this;
-		}
-	}
-
-	/**
-	 * Rome formatter step for JSON.
-	 *
-	 * @deprecated Rome has transitioned to Biome. This will be removed shortly.
-	 */
-	@Deprecated
-	public class RomeJson extends RomeStepConfig<RomeJson> {
-		/**
-		 * Creates a new Rome formatter step config for formatting JSON files. Unless
-		 * overwritten, the given Rome version is downloaded from the network.
-		 *
-		 * @param version Rome version to use.
-		 */
-		public RomeJson(String version) {
-			super(getProject(), JsonExtension.this::replaceStep, BiomeFlavor.ROME, version);
-		}
-
-		@Override
-		protected String getLanguage() {
-			return "json";
-		}
-
-		@Override
-		protected RomeJson getThis() {
 			return this;
 		}
 	}
