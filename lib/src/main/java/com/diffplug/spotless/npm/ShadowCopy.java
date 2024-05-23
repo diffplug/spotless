@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
@@ -39,13 +40,18 @@ class ShadowCopy {
 
 	private static final Logger logger = LoggerFactory.getLogger(ShadowCopy.class);
 
-	private final File shadowCopyRoot;
+	private final Supplier<File> shadowCopyRootSupplier;
 
-	public ShadowCopy(@Nonnull File shadowCopyRoot) {
-		this.shadowCopyRoot = shadowCopyRoot;
+	public ShadowCopy(@Nonnull Supplier<File> shadowCopyRootSupplier) {
+		this.shadowCopyRootSupplier = shadowCopyRootSupplier;
+	}
+
+	private File shadowCopyRoot() {
+		File shadowCopyRoot = shadowCopyRootSupplier.get();
 		if (!shadowCopyRoot.isDirectory()) {
-			throw new IllegalArgumentException("Shadow copy root must be a directory: " + shadowCopyRoot);
+			throw new IllegalStateException("Shadow copy root must be a directory: " + shadowCopyRoot);
 		}
+		return shadowCopyRoot;
 	}
 
 	public void addEntry(String key, File orig) {
@@ -86,17 +92,17 @@ class ShadowCopy {
 	}
 
 	private Path markerFilePath(String key) {
-		return Paths.get(shadowCopyRoot.getAbsolutePath(), key + ".marker");
+		return Paths.get(shadowCopyRoot().getAbsolutePath(), key + ".marker");
 	}
 
 	private File entry(String key, String origName) {
-		return Paths.get(shadowCopyRoot.getAbsolutePath(), key, origName).toFile();
+		return Paths.get(shadowCopyRoot().getAbsolutePath(), key, origName).toFile();
 	}
 
 	private boolean reserveSubFolder(String key) {
 		// put a marker file named "key".marker in "shadowCopyRoot" to make sure no other process is using it or return false if it already exists
 		try {
-			Files.createFile(Paths.get(shadowCopyRoot.getAbsolutePath(), key + ".marker"));
+			Files.createFile(Paths.get(shadowCopyRoot().getAbsolutePath(), key + ".marker"));
 			return true;
 		} catch (FileAlreadyExistsException e) {
 			return false;

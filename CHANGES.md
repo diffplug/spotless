@@ -19,12 +19,14 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
 * Bump default `ktlint` version to latest `1.1.1` -> `1.2.1`. ([#2057](https://github.com/diffplug/spotless/pull/2057))
 * Bump default `sortpom` version to latest `3.4.0` -> `3.4.1`. ([#2078](https://github.com/diffplug/spotless/pull/2078))
+* Bump default `sortpom` version to latest `3.4.1` -> `4.0.0` and support versions back to `3.2.1`. ([#2115](https://github.com/diffplug/spotless/pull/2115))
 ### Removed
 * **BREAKING** Remove `JarState.getMavenCoordinate(String prefix)`. ([#1945](https://github.com/diffplug/spotless/pull/1945))
 * **BREAKING** Replace `PipeStepPair` with `FenceStep`. ([#1954](https://github.com/diffplug/spotless/pull/1954))
 ### Fixed
 * Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
 * Correctly provide EditorConfig property types for Ktlint ([#2052](https://github.com/diffplug/spotless/issues/2052))
+* Made ShadowCopy (`npmInstallCache`) more robust by re-creating the cache dir if it goes missing ([#1984](https://github.com/diffplug/spotless/issues/1984),[2096](https://github.com/diffplug/spotless/pull/2096))
 
 ## [2.45.0] - 2024-01-23
 ### Added

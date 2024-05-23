@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -356,6 +356,54 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
 		Assertions.assertThat(spotlessApply.getOutput()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
+	}
+
+	@ParameterizedTest(name = "{index}: verifyCleanAndSpotlessWorks with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void verifyCleanAndSpotlessWorks(String prettierVersion) throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"def prettierConfig = [:]",
+				"prettierConfig['printWidth'] = 20",
+				"prettierConfig['parser'] = 'typescript'",
+				"spotless {",
+				"    format 'mytypescript', {",
+				"        target 'test.ts'",
+				"        prettier('" + prettierVersion + "').config(prettierConfig)",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "clean", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		final BuildResult spotlessApply2 = gradleRunner().withArguments("--stacktrace", "clean", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply2.getOutput()).contains("BUILD SUCCESSFUL");
+	}
+
+	@ParameterizedTest(name = "{index}: verifyCleanAndSpotlessWithNpmInstallCacheWorks with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void verifyCleanAndSpotlessWithNpmInstallCacheWorks(String prettierVersion) throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"def prettierConfig = [:]",
+				"prettierConfig['printWidth'] = 20",
+				"prettierConfig['parser'] = 'typescript'",
+				"spotless {",
+				"    format 'mytypescript', {",
+				"        target 'test.ts'",
+				"        prettier('" + prettierVersion + "').npmInstallCache().config(prettierConfig)",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "clean", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		final BuildResult spotlessApply2 = gradleRunner().withArguments("--stacktrace", "clean", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply2.getOutput()).contains("BUILD SUCCESSFUL");
 	}
 
 	@ParameterizedTest(name = "{index}: autodetectNpmrcFileConfig with prettier {0}")

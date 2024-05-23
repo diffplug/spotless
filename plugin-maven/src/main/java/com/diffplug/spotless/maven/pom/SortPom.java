@@ -57,6 +57,9 @@ public class SortPom implements FormatterStepFactory {
 	boolean indentSchemaLocation = defaultValues.indentSchemaLocation;
 
 	@Parameter
+	String indentAttribute = defaultValues.indentAttribute;
+
+	@Parameter
 	String predefinedSortOrder = defaultValues.predefinedSortOrder;
 
 	@Parameter
@@ -96,6 +99,7 @@ public class SortPom implements FormatterStepFactory {
 		cfg.nrOfIndentSpace = nrOfIndentSpace;
 		cfg.indentBlankLines = indentBlankLines;
 		cfg.indentSchemaLocation = indentSchemaLocation;
+		cfg.indentAttribute = indentAttribute;
 		cfg.predefinedSortOrder = predefinedSortOrder;
 		cfg.sortOrderFile = sortOrderFile;
 		cfg.sortDependencies = sortDependencies;
