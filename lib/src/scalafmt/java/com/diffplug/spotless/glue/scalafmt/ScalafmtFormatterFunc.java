@@ -49,6 +49,6 @@ public class ScalafmtFormatterFunc implements FormatterFunc.NeedsFile {
 
 	@Override
 	public String applyWithFile(String unix, File file) throws Exception {
-		return Scalafmt.format(unix, config, Set$.MODULE$.empty()).get();
+		return Scalafmt.format(unix, config, Set$.MODULE$.empty(), file.getAbsolutePath()).get();
 	}
 }
