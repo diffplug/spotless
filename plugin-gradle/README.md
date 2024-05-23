@@ -418,6 +418,8 @@ spotless {
       .editorConfigOverride(
         mapOf(
           "indent_size" to 2,
+          // intellij_idea is the default style we preset in Spotless, you can override it referring to https://pinterest.github.io/ktlint/latest/rules/code-styles.
+          "ktlint_code_style" to "intellij_idea",
         )
       )
       .customRuleSets(
