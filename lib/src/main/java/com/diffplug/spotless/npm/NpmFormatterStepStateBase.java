@@ -47,75 +47,85 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	private final NpmConfig npmConfig;
 
 	public final NpmFormatterStepLocations locations;
-	protected final transient NodeServerLayout nodeServerLayout;
-	private final transient NodeServeApp nodeServeApp;
 
 	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, NpmFormatterStepLocations locations) throws IOException {
 		this.stepName = requireNonNull(stepName);
 		this.npmConfig = requireNonNull(npmConfig);
 		this.locations = locations;
-		this.nodeServerLayout = new NodeServerLayout(locations.buildDir(), npmConfig.getPackageJsonContent());
-		this.nodeServeApp = new NodeServeApp(nodeServerLayout, npmConfig, locations);
 	}
 
-	protected void prepareNodeServerLayout() throws IOException {
-		nodeServeApp.prepareNodeAppLayout();
+	public Runtime toRuntime() {
+		return new Runtime(this);
 	}
 
-	protected void prepareNodeServer() throws IOException {
-		nodeServeApp.npmInstall();
-	}
+	public static class Runtime {
+		private final NodeServerLayout nodeServerLayout;
+		private final NodeServeApp nodeServeApp;
 
-	protected void assertNodeServerDirReady() throws IOException {
-		if (needsPrepareNodeServerLayout()) {
-			// reinstall if missing
-			prepareNodeServerLayout();
+		Runtime(NpmFormatterStepStateBase parent) {
+			this.nodeServerLayout = new NodeServerLayout(parent.locations.buildDir(), parent.npmConfig.getPackageJsonContent());
+			this.nodeServeApp = new NodeServeApp(nodeServerLayout, parent.npmConfig, parent.locations);
 		}
-		if (needsPrepareNodeServer()) {
-			// run npm install if node_modules is missing
-			prepareNodeServer();
+
+		protected void prepareNodeServerLayout() throws IOException {
+			nodeServeApp.prepareNodeAppLayout();
 		}
-	}
 
-	protected boolean needsPrepareNodeServer() {
-		return nodeServeApp.needsNpmInstall();
-	}
+		protected void prepareNodeServer() throws IOException {
+			nodeServeApp.npmInstall();
+		}
 
-	protected boolean needsPrepareNodeServerLayout() {
-		return nodeServeApp.needsPrepareNodeAppLayout();
-	}
-
-	protected ServerProcessInfo npmRunServer() throws ServerStartException, IOException {
-		assertNodeServerDirReady();
-		LongRunningProcess server = null;
-		try {
-			// The npm process will output the randomly selected port of the http server process to 'server.port' file
-			// so in order to be safe, remove such a file if it exists before starting.
-			final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
-			NpmResourceHelper.deleteFileIfExists(serverPortFile);
-			// start the http server in node
-			server = nodeServeApp.startNpmServeProcess();
-
-			// await the readiness of the http server - wait for at most 60 seconds
-			try {
-				NpmResourceHelper.awaitReadableFile(serverPortFile, Duration.ofSeconds(60));
-			} catch (TimeoutException timeoutException) {
-				// forcibly end the server process
-				try {
-					if (server.isAlive()) {
-						server.destroyForcibly();
-						server.waitFor();
-					}
-				} catch (Throwable t) {
-					// ignore
-				}
-				throw timeoutException;
+		protected void assertNodeServerDirReady() throws IOException {
+			if (needsPrepareNodeServerLayout()) {
+				// reinstall if missing
+				prepareNodeServerLayout();
 			}
-			// read the server.port file for resulting port and remember the port for later formatting calls
-			String serverPort = NpmResourceHelper.readUtf8StringFromFile(serverPortFile).trim();
-			return new ServerProcessInfo(server, serverPort, serverPortFile);
-		} catch (IOException | TimeoutException e) {
-			throw new ServerStartException("Starting server failed." + (server != null ? "\n\nProcess result:\n" + ThrowingEx.get(server::result) : ""), e);
+			if (needsPrepareNodeServer()) {
+				// run npm install if node_modules is missing
+				prepareNodeServer();
+			}
+		}
+
+		protected boolean needsPrepareNodeServer() {
+			return nodeServeApp.needsNpmInstall();
+		}
+
+		protected boolean needsPrepareNodeServerLayout() {
+			return nodeServeApp.needsPrepareNodeAppLayout();
+		}
+
+		protected ServerProcessInfo npmRunServer() throws ServerStartException, IOException {
+			assertNodeServerDirReady();
+			LongRunningProcess server = null;
+			try {
+				// The npm process will output the randomly selected port of the http server process to 'server.port' file
+				// so in order to be safe, remove such a file if it exists before starting.
+				final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
+				NpmResourceHelper.deleteFileIfExists(serverPortFile);
+				// start the http server in node
+				server = nodeServeApp.startNpmServeProcess();
+
+				// await the readiness of the http server - wait for at most 60 seconds
+				try {
+					NpmResourceHelper.awaitReadableFile(serverPortFile, Duration.ofSeconds(60));
+				} catch (TimeoutException timeoutException) {
+					// forcibly end the server process
+					try {
+						if (server.isAlive()) {
+							server.destroyForcibly();
+							server.waitFor();
+						}
+					} catch (Throwable t) {
+						// ignore
+					}
+					throw timeoutException;
+				}
+				// read the server.port file for resulting port and remember the port for later formatting calls
+				String serverPort = NpmResourceHelper.readUtf8StringFromFile(serverPortFile).trim();
+				return new ServerProcessInfo(server, serverPort, serverPortFile);
+			} catch (IOException | TimeoutException e) {
+				throw new ServerStartException("Starting server failed." + (server != null ? "\n\nProcess result:\n" + ThrowingEx.get(server::result) : ""), e);
+			}
 		}
 	}
 
