@@ -39,8 +39,6 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.npm.EslintRestService.FormatOption;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 public class EslintFormatterStep {
 
 	private static final Logger logger = LoggerFactory.getLogger(EslintFormatterStep.class);
@@ -82,11 +80,8 @@ public class EslintFormatterStep {
 
 	private static class State extends NpmFormatterStepStateBase implements Serializable {
 
-		private static final long serialVersionUID = -539537027004745812L;
 		private final EslintConfig origEslintConfig;
-
-		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-		private transient EslintConfig eslintConfigInUse;
+		private EslintConfig eslintConfigInUse;
 
 		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) throws IOException {
 			super(stepName,
@@ -108,8 +103,8 @@ public class EslintFormatterStep {
 		}
 
 		@Override
-		protected void prepareNodeServerLayout() throws IOException {
-			super.prepareNodeServerLayout();
+		protected void prepareNodeServerLayout(NodeServerLayout nodeServerLayout) throws IOException {
+			super.prepareNodeServerLayout(nodeServerLayout);
 			if (origEslintConfig.getEslintConfigPath() != null) {
 				// If any config files are provided, we need to make sure they are at the same location as the node modules
 				// as eslint will try to resolve plugin/config names relatively to the config file location and some
@@ -125,9 +120,10 @@ public class EslintFormatterStep {
 		public FormatterFunc createFormatterFunc() {
 			try {
 				logger.info("Creating formatter function (starting server)");
-				ServerProcessInfo eslintRestServer = npmRunServer();
+				Runtime runtime = toRuntime();
+				ServerProcessInfo eslintRestServer = runtime.npmRunServer();
 				EslintRestService restService = new EslintRestService(eslintRestServer.getBaseUrl());
-				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(locations.projectDir(), nodeServerLayout.nodeModulesDir(), eslintConfigInUse, restService));
+				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(locations.projectDir(), runtime.nodeServerLayout().nodeModulesDir(), eslintConfigInUse, restService));
 			} catch (IOException e) {
 				throw ThrowingEx.asRuntime(e);
 			}

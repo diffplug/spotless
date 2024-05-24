@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,37 +16,20 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 
 import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.ThrowingEx;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class EslintConfig implements Serializable {
-
-	private static final long serialVersionUID = -6196834313082791248L;
-
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	@Nullable
-	private final transient File eslintConfigPath;
-
 	@SuppressWarnings("unused")
-	private final FileSignature eslintConfigPathSignature;
-
+	private final FileSignature.Promised eslintConfigPathSignature;
 	private final String eslintConfigJs;
 
 	public EslintConfig(@Nullable File eslintConfigPath, @Nullable String eslintConfigJs) {
-		try {
-			this.eslintConfigPath = eslintConfigPath;
-			this.eslintConfigPathSignature = eslintConfigPath != null ? FileSignature.signAsList(this.eslintConfigPath) : FileSignature.signAsList();
-			this.eslintConfigJs = eslintConfigJs;
-		} catch (IOException e) {
-			throw ThrowingEx.asRuntime(e);
-		}
+		this.eslintConfigPathSignature = eslintConfigPath == null ? null : FileSignature.promise(eslintConfigPath);
+		this.eslintConfigJs = eslintConfigJs;
 	}
 
 	public EslintConfig withEslintConfigPath(@Nullable File eslintConfigPath) {
@@ -55,7 +38,7 @@ public class EslintConfig implements Serializable {
 
 	@Nullable
 	public File getEslintConfigPath() {
-		return eslintConfigPath;
+		return eslintConfigPathSignature == null ? null : eslintConfigPathSignature.get().getOnlyFile();
 	}
 
 	@Nullable
@@ -64,7 +47,7 @@ public class EslintConfig implements Serializable {
 	}
 
 	public EslintConfig verify() {
-		if (eslintConfigPath == null && eslintConfigJs == null) {
+		if (eslintConfigPathSignature == null && eslintConfigJs == null) {
 			throw new IllegalArgumentException("ESLint must be configured using either a configFile or a configJs - but both are null.");
 		}
 		return this;

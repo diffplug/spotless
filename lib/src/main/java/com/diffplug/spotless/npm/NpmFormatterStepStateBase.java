@@ -58,17 +58,28 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		return new Runtime(this);
 	}
 
+	protected void prepareNodeServerLayout(NodeServerLayout layout) throws IOException {
+
+	}
+
 	public static class Runtime {
+		private final NpmFormatterStepStateBase parent;
 		private final NodeServerLayout nodeServerLayout;
 		private final NodeServeApp nodeServeApp;
 
 		Runtime(NpmFormatterStepStateBase parent) {
+			this.parent = parent;
 			this.nodeServerLayout = new NodeServerLayout(parent.locations.buildDir(), parent.npmConfig.getPackageJsonContent());
 			this.nodeServeApp = new NodeServeApp(nodeServerLayout, parent.npmConfig, parent.locations);
 		}
 
+		public NodeServerLayout nodeServerLayout() {
+			return nodeServerLayout;
+		}
+
 		protected void prepareNodeServerLayout() throws IOException {
 			nodeServeApp.prepareNodeAppLayout();
+			parent.prepareNodeServerLayout(nodeServerLayout);
 		}
 
 		protected void prepareNodeServer() throws IOException {
