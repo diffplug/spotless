@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,6 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
-import com.diffplug.spotless.SerializableEqualityTester;
-import com.diffplug.spotless.java.GoogleJavaFormatStep;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,14 +26,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
-class PrettierFormatterStepTest extends ResourceHarness {
+class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 
 	private static final String PRETTIER_VERSION_2 = PrettierFormatterStep.DEFAULT_VERSION;
 
@@ -196,27 +193,30 @@ class PrettierFormatterStepTest extends ResourceHarness {
 	@Test
 	void equality() {
 		new SerializableEqualityTester() {
-			String groupArtifact = GoogleJavaFormatStep.defaultGroupArtifact();
-			String version = "1.11.0";
-			String style = "";
-			boolean reflowLongStrings = false;
+			String prettierVersion = "3.0.0";
+			PrettierConfig config = new PrettierConfig(null, Map.of("parser", "typescript"));
 
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
 				api.areDifferentThan();
 				// change the groupArtifact, and it's different
-				groupArtifact = "io.opil:google-java-format";
+				prettierVersion = "2.8.8";
+				api.areDifferentThan();
+				config = new PrettierConfig(null, Map.of("parser", "css"));
 				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
-				return PrettierFormatterStep.create(Map.of(), TestProvisioner.mavenCentral(), 					projectDir(),
-					buildDir(),
-					null,
-					npmPathResolver(),
-					);
+				return PrettierFormatterStep.create(
+						ImmutableMap.of("prettier", prettierVersion),
+						TestProvisioner.mavenCentral(),
+						projectDir(),
+						buildDir(),
+						null,
+						npmPathResolver(),
+						config); // should select parser based on this name
 			}
 		}.testEquals();
 	}
