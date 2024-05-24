@@ -1097,7 +1097,7 @@ spotless {
   gherkin {
     target 'src/**/*.feature'     // required to be set explicitly
     gherkinUtils()
-      .version('8.0.2')           // optional: custom version of 'io.cucumber:gherkin-utils'
+      .version('9.0.0')           // optional: custom version of 'io.cucumber:gherkin-utils'
   }
 }
 ```
