@@ -13,22 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.json;
+package com.diffplug.spotless.generic;
+
+import static org.assertj.core.api.Assumptions.assumeThat;
+
+import java.io.File;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 
-class JacksonJsonStepTest {
+public class NativeCmdStepTest extends ResourceHarness {
+
 	@Test
-	void canSetCustomIndentationLevel() {
-		FormatterStep step = JacksonJsonStep.create(TestProvisioner.mavenCentral());
-		StepHarness stepHarness = StepHarness.forStep(step);
-
-		String before = "json/singletonArrayBefore.json";
-		String after = "json/singletonArrayAfter_Jackson.json";
-		stepHarness.testResource(before, after);
+	public void testWithSed() {
+		File sed = new File("/usr/bin/sed");
+		assumeThat(sed).exists();
+		FormatterStep step = NativeCmdStep.create("format-native", sed, List.of("s/placeholder/replaced/g"));
+		StepHarnessWithFile.forStep(this, step)
+				.testResource("native_cmd/dirty.txt", "native_cmd/clean.txt");
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.json;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -23,17 +22,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public class JsonPatchStep {
-	// https://mvnrepository.com/artifact/com.flipkart.zjsonpatch/zjsonpatch
-	static final String MAVEN_COORDINATE = "com.flipkart.zjsonpatch:zjsonpatch";
-	static final String DEFAULT_VERSION = "0.4.14";
+public class JsonPatchStep implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
+	private static final String MAVEN_COORDINATE = "com.flipkart.zjsonpatch:zjsonpatch";
+	private static final String DEFAULT_VERSION = "0.4.16";
+	public static final String NAME = "apply-json-patch";
 
-	private JsonPatchStep() {}
+	private final JarState.Promised jarState;
+	@Nullable
+	private final List<Map<String, Object>> patch;
+	@Nullable
+	private final String patchString;
+
+	private JsonPatchStep(JarState.Promised jarState,
+			@Nullable String patchString,
+			@Nullable List<Map<String, Object>> patch) {
+		this.jarState = jarState;
+		this.patchString = patchString;
+		this.patch = patch;
+	}
 
 	public static FormatterStep create(String patchString, Provisioner provisioner) {
 		return create(DEFAULT_VERSION, patchString, provisioner);
@@ -43,7 +57,10 @@ public class JsonPatchStep {
 		Objects.requireNonNull(zjsonPatchVersion, "zjsonPatchVersion cannot be null");
 		Objects.requireNonNull(patchString, "patchString cannot be null");
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
-		return FormatterStep.createLazy("apply-json-patch", () -> new State(zjsonPatchVersion, patchString, provisioner), State::toFormatter);
+		return FormatterStep.create(NAME,
+				new JsonPatchStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + ":" + zjsonPatchVersion, provisioner)), patchString, null),
+				JsonPatchStep::equalityState,
+				State::toFormatter);
 	}
 
 	public static FormatterStep create(List<Map<String, Object>> patch, Provisioner provisioner) {
@@ -54,26 +71,31 @@ public class JsonPatchStep {
 		Objects.requireNonNull(zjsonPatchVersion, "zjsonPatchVersion cannot be null");
 		Objects.requireNonNull(patch, "patch cannot be null");
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
-		return FormatterStep.createLazy("apply-json-patch", () -> new State(zjsonPatchVersion, patch, provisioner), State::toFormatter);
+		return FormatterStep.create(NAME,
+				new JsonPatchStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + ":" + zjsonPatchVersion, provisioner)), null, patch),
+				JsonPatchStep::equalityState,
+				State::toFormatter);
+	}
+
+	private State equalityState() {
+		return new State(jarState.get(), patchString, patch);
 	}
 
 	static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;
+		@Nullable
 		private final List<Map<String, Object>> patch;
+		@Nullable
 		private final String patchString;
 
-		private State(String zjsonPatchVersion, List<Map<String, Object>> patch, Provisioner provisioner) throws IOException {
-			this.jarState = JarState.from(MAVEN_COORDINATE + ":" + zjsonPatchVersion, provisioner);
-			this.patch = patch;
-			this.patchString = null;
-		}
-
-		private State(String zjsonPatchVersion, String patchString, Provisioner provisioner) throws IOException {
-			this.jarState = JarState.from(MAVEN_COORDINATE + ":" + zjsonPatchVersion, provisioner);
-			this.patch = null;
+		State(JarState jarState,
+				@Nullable String patchString,
+				@Nullable List<Map<String, Object>> patch) {
+			this.jarState = jarState;
 			this.patchString = patchString;
+			this.patch = patch;
 		}
 
 		FormatterFunc toFormatter() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {

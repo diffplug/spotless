@@ -33,7 +33,6 @@ import com.diffplug.spotless.FormatterProperties;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.RoundedStep;
 import com.diffplug.spotless.SerializedFunction;
 
 /**
@@ -127,7 +126,7 @@ public class EclipseBasedStepBuilder {
 		this.settingsFiles = settingsFiles;
 	}
 
-	static class EclipseStep implements RoundedStep {
+	static class EclipseStep implements java.io.Serializable {
 		private static final long serialVersionUID = 1;
 		private final String semanticVersion;
 		private final String formatterStepExt;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,19 +27,19 @@ import com.diffplug.spotless.TestProvisioner;
 
 class FreshMarkStepTest {
 	@Test
-	void behavior() throws Exception {
+	void behavior() {
 		HashMap<String, String> map = new HashMap<>();
 		map.put("lib", "MyLib");
 		map.put("author", "Me");
-		StepHarness.forStep(FreshMarkStep.create(() -> map, TestProvisioner.mavenCentral()))
+		StepHarness.forStep(FreshMarkStep.create(map, TestProvisioner.mavenCentral()))
 				.testResource("freshmark/FreshMarkUnformatted.test", "freshmark/FreshMarkFormatted.test");
 	}
 
 	@Test
-	void equality() throws Exception {
+	void equality() {
 		new SerializableEqualityTester() {
 			String version = "1.3.1";
-			Map<String, Object> props = new HashMap<>();
+			final Map<String, Object> props = new HashMap<>();
 
 			@Override
 			protected void setupTest(API api) {
@@ -57,7 +57,7 @@ class FreshMarkStepTest {
 			protected FormatterStep create() {
 				String finalVersion = this.version;
 				Map<String, ?> finalProps = new HashMap<>(props);
-				return FreshMarkStep.create(finalVersion, () -> finalProps, TestProvisioner.mavenCentral());
+				return FreshMarkStep.create(finalVersion, finalProps, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}

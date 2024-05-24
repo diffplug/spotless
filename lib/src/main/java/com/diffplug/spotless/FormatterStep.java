@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
  * The input is guaranteed to have unix-style newlines, and the output is required
  * to not introduce any windows-style newlines as well.
  */
-public interface FormatterStep extends Serializable {
+public interface FormatterStep extends Serializable, AutoCloseable {
 	/** The name of the step, for debugging purposes. */
 	String getName();
 
@@ -45,19 +45,6 @@ public interface FormatterStep extends Serializable {
 	 */
 	@Nullable
 	String format(String rawUnix, File file) throws Exception;
-
-	/**
-	 * Returns a new FormatterStep which will only apply its changes
-	 * to files which pass the given filter.
-	 *
-	 * @param contentPattern
-	 *            java regular expression used to filter out files which content doesn't contain pattern
-	 * @return FormatterStep
-	 */
-	@Deprecated
-	default FormatterStep filterByContentPattern(String contentPattern) {
-		return filterByContent(OnMatch.INCLUDE, contentPattern);
-	}
 
 	/**
 	 * Returns a new {@code FormatterStep} which, observing the value of {@code formatIfMatches},

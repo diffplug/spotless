@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.diffplug.spotless.Formatter;
@@ -38,6 +39,30 @@ import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 @Mojo(name = AbstractSpotlessMojo.GOAL_CHECK, defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
 public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
+	private static final String INCREMENTAL_MESSAGE_PREFIX = "Spotless Violation: ";
+
+	public enum MessageSeverity {
+		WARNING(BuildContext.SEVERITY_WARNING), ERROR(BuildContext.SEVERITY_ERROR);
+
+		private final int severity;
+
+		MessageSeverity(int severity) {
+			this.severity = severity;
+		}
+
+		public int getSeverity() {
+			return severity;
+		}
+	}
+
+	/**
+	 * The severity used to emit messages during incremental builds.
+	 * Either {@code WARNING} or {@code ERROR}.
+	 * @see AbstractSpotlessMojo#m2eEnableForIncrementalBuild
+	 */
+	@Parameter(defaultValue = "WARNING")
+	private MessageSeverity m2eIncrementalBuildMessageSeverity;
+
 	@Override
 	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		ImpactedFilesTracker counter = new ImpactedFilesTracker();
@@ -51,14 +76,14 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 				}
 				continue;
 			}
-
+			buildContext.removeMessages(file);
 			try {
 				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					problemFiles.add(file);
 					if (buildContext.isIncremental()) {
 						Map.Entry<Integer, String> diffEntry = DiffMessageFormatter.diff(formatter, file);
-						buildContext.addMessage(file, diffEntry.getKey() + 1, 0, diffEntry.getValue(), BuildContext.SEVERITY_ERROR, null);
+						buildContext.addMessage(file, diffEntry.getKey() + 1, 0, INCREMENTAL_MESSAGE_PREFIX + diffEntry.getValue(), m2eIncrementalBuildMessageSeverity.getSeverity(), null);
 					}
 					counter.cleaned();
 				} else {

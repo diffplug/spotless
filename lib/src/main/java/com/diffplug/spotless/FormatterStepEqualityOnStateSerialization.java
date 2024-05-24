@@ -64,7 +64,8 @@ abstract class FormatterStepEqualityOnStateSerialization<State extends Serializa
 		return Arrays.hashCode(serializedState());
 	}
 
-	void cleanupFormatterFunc() {
+	@Override
+	public void close() {
 		if (formatter instanceof FormatterFunc.Closeable) {
 			((FormatterFunc.Closeable) formatter).close();
 			formatter = null;

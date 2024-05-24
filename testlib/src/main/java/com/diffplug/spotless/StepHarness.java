@@ -26,9 +26,9 @@ import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 
 /** An api for testing a {@code FormatterStep} that doesn't depend on the File path. DO NOT ADD FILE SUPPORT TO THIS, use {@link StepHarnessWithFile} if you need that. */
-public class StepHarness extends StepHarnessBase<StepHarness> {
-	private StepHarness(Formatter formatter) {
-		super(formatter);
+public class StepHarness extends StepHarnessBase {
+	private StepHarness(Formatter formatter, RoundTrip roundTrip) {
+		super(formatter, roundTrip);
 	}
 
 	/** Creates a harness for testing steps which don't depend on the file. */
@@ -49,7 +49,17 @@ public class StepHarness extends StepHarnessBase<StepHarness> {
 
 	/** Creates a harness for testing a formatter whose steps don't depend on the file. */
 	public static StepHarness forFormatter(Formatter formatter) {
-		return new StepHarness(formatter);
+		return new StepHarness(formatter, RoundTrip.ASSERT_EQUAL);
+	}
+
+	public static StepHarness forStepNoRoundtrip(FormatterStep step) {
+		return new StepHarness(Formatter.builder()
+				.steps(Arrays.asList(step))
+				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
+				.encoding(StandardCharsets.UTF_8)
+				.rootDir(Paths.get(""))
+				.exceptionPolicy(new FormatExceptionPolicyStrict())
+				.build(), RoundTrip.DONT_ROUNDTRIP);
 	}
 
 	/** Asserts that the given element is transformed as expected, and that the result is idempotent. */
@@ -70,7 +80,11 @@ public class StepHarness extends StepHarnessBase<StepHarness> {
 	public StepHarness testResource(String resourceBefore, String resourceAfter) {
 		String before = ResourceHarness.getTestResource(resourceBefore);
 		String after = ResourceHarness.getTestResource(resourceAfter);
-		return test(before, after);
+		String actual = formatter().compute(LineEnding.toUnix(before), new File(resourceBefore));
+		assertEquals(after, actual, "Step application failed");
+		actual = formatter().compute(LineEnding.toUnix(after), new File(resourceAfter));
+		assertEquals(after, actual, "Step is not idempotent");
+		return this;
 	}
 
 	/** Asserts that the given elements in the resources directory are transformed as expected. */

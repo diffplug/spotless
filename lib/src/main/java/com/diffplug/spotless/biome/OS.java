@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.rome;
+package com.diffplug.spotless.biome;
 
 import java.util.Locale;
 
@@ -38,12 +38,12 @@ enum OS {
 	public static OS guess() {
 		var osName = System.getProperty("os.name");
 		if (osName == null || osName.isBlank()) {
-			throw new IllegalStateException("No OS information is available, specify the Rome executable manually");
+			throw new IllegalStateException("No OS information is available, specify the Biome executable manually");
 		}
 		var osNameUpper = osName.toUpperCase(Locale.ROOT);
 		if (osNameUpper.contains("SUNOS") || osName.contains("AIX")) {
 			throw new IllegalStateException(
-					"Unsupported OS " + osName + ", specify the path to the Rome executable manually");
+					"Unsupported OS " + osName + ", specify the path to the Biome executable manually");
 		}
 		if (osNameUpper.contains("WINDOWS")) {
 			return OS.WINDOWS;

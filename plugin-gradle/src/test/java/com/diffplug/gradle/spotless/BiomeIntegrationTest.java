@@ -310,7 +310,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
 		assertThat(spotlessApply.getOutput()).contains("Build failed with an exception");
 		assertFile("biome_test.js").sameAsResource("biome/js/fileBefore.js");
-		assertThat(spotlessApply.getOutput()).contains("Could not create task ':spotlessMybiomeApply'");
+		assertThat(spotlessApply.getOutput()).contains("Execution failed for task ':spotlessMybiome'");
 		assertThat(spotlessApply.getOutput()).contains("Biome executable does not exist");
 	}
 

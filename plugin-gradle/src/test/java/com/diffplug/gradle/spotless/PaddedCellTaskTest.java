@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.gradle.api.Project;
 import org.gradle.api.provider.Provider;
@@ -65,7 +66,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 		private SpotlessTaskImpl createFormatTask(String name, FormatterStep step) {
 			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
 			task.init(taskService);
-			task.addStep(step);
+			task.setSteps(List.of(step));
 			task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
 			task.setTarget(Collections.singletonList(file));
 			return task;
