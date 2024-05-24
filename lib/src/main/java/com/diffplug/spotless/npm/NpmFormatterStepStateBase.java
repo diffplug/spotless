@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,6 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
 import com.diffplug.spotless.ThrowingEx;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final Logger logger = LoggerFactory.getLogger(NpmFormatterStepStateBase.class);
@@ -45,15 +43,11 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final long serialVersionUID = 1460749955865959948L;
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	protected final transient NodeServerLayout nodeServerLayout;
-
-	public final NpmFormatterStepLocations locations;
-
+	private final String stepName;
 	private final NpmConfig npmConfig;
 
-	private final String stepName;
-
+	public final NpmFormatterStepLocations locations;
+	protected final transient NodeServerLayout nodeServerLayout;
 	private final transient NodeServeApp nodeServeApp;
 
 	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, NpmFormatterStepLocations locations) throws IOException {

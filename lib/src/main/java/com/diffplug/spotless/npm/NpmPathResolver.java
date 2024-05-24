@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public class NpmPathResolver {
+public class NpmPathResolver implements Serializable {
 
 	private final File explicitNpmExecutable;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,8 +83,7 @@ public class TsFmtFormatterStep {
 							projectDir,
 							buildDir,
 							cacheDir,
-							npmPathResolver::resolveNpmExecutable,
-							npmPathResolver::resolveNodeExecutable));
+							npmPathResolver));
 			this.buildDir = requireNonNull(buildDir);
 			this.configFile = configFile;
 			this.inlineTsFmtSettings = inlineTsFmtSettings == null ? new TreeMap<>() : new TreeMap<>(inlineTsFmtSettings);

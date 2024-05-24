@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,36 +19,23 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 class NpmFormatterStepLocations implements Serializable {
 
 	private static final long serialVersionUID = -1055408537924029969L;
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient File projectDir;
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient File buildDir;
+	private final File projectDir;
+	private final File buildDir;
+	private final File cacheDir;
+	private final NpmPathResolver resolver;
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient File cacheDir;
-
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient Supplier<File> npmExecutable;
-
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	private final transient Supplier<File> nodeExecutable;
-
-	public NpmFormatterStepLocations(@Nonnull File projectDir, @Nonnull File buildDir, File cacheDir, @Nonnull Supplier<File> npmExecutable, @Nonnull Supplier<File> nodeExecutable) {
+	public NpmFormatterStepLocations(@Nonnull File projectDir, @Nonnull File buildDir, File cacheDir, @Nonnull NpmPathResolver resolver) {
 		this.projectDir = requireNonNull(projectDir);
 		this.buildDir = requireNonNull(buildDir);
 		this.cacheDir = cacheDir;
-		this.npmExecutable = requireNonNull(npmExecutable);
-		this.nodeExecutable = requireNonNull(nodeExecutable);
+		this.resolver = requireNonNull(resolver);
 	}
 
 	public File projectDir() {
@@ -64,10 +51,10 @@ class NpmFormatterStepLocations implements Serializable {
 	}
 
 	public File npmExecutable() {
-		return npmExecutable.get();
+		return resolver.resolveNpmExecutable();
 	}
 
 	public File nodeExecutable() {
-		return nodeExecutable.get();
+		return resolver.resolveNodeExecutable();
 	}
 }
