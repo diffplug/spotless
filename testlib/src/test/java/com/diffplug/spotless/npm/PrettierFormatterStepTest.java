@@ -19,6 +19,9 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
+import com.diffplug.spotless.SerializableEqualityTester;
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -188,5 +191,33 @@ class PrettierFormatterStepTest extends ResourceHarness {
 		private String major(String semVer) {
 			return semVer.split("\\.")[0];
 		}
+	}
+
+	@Test
+	void equality() {
+		new SerializableEqualityTester() {
+			String groupArtifact = GoogleJavaFormatStep.defaultGroupArtifact();
+			String version = "1.11.0";
+			String style = "";
+			boolean reflowLongStrings = false;
+
+			@Override
+			protected void setupTest(API api) {
+				// same version == same
+				api.areDifferentThan();
+				// change the groupArtifact, and it's different
+				groupArtifact = "io.opil:google-java-format";
+				api.areDifferentThan();
+			}
+
+			@Override
+			protected FormatterStep create() {
+				return PrettierFormatterStep.create(Map.of(), TestProvisioner.mavenCentral(), 					projectDir(),
+					buildDir(),
+					null,
+					npmPathResolver(),
+					);
+			}
+		}.testEquals();
 	}
 }
