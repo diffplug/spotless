@@ -107,7 +107,7 @@ public abstract class EquoBasedStepBuilder {
 			}
 			var classpath = new ArrayList<File>();
 			var mavenDeps = new ArrayList<String>();
-			mavenDeps.add("dev.equo.ide:solstice:1.7.5");
+			mavenDeps.add("dev.equo.ide:solstice:1.7.6");
 			mavenDeps.add("com.diffplug.durian:durian-swt.os:4.2.0");
 			mavenDeps.addAll(query.getJarsOnMavenCentral());
 			classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));

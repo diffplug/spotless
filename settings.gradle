@@ -22,7 +22,7 @@ plugins {
 	// https://plugins.gradle.org/plugin/com.gradle.develocity
 	id 'com.gradle.develocity' version '3.17.4'
 	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
-	id 'dev.equo.ide' version '1.7.5' apply false
+	id 'dev.equo.ide' version '1.7.6' apply false
 }
 
 dependencyResolutionManagement {
