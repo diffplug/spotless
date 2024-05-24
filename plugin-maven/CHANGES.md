@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * scalafmt.conf fileOverride section now works correctly ([#1854](https://github.com/diffplug/spotless/pull/1854))
 ### Changes
 * Bump default `gherkin-utils` version to latest `8.0.2` -> `9.0.0`. ([#1703](https://github.com/diffplug/spotless/pull/1703))
+* Bump default `google-java-format` version to latest `1.19.2` -> `1.22.0`. ([#2129](https://github.com/diffplug/spotless/pull/2129))
 * Bump default `jackson` version to latest `2.14.2` -> `2.17.1`. ([#1685](https://github.com/diffplug/spotless/pull/1685))
 * Bump default `ktfmt` version to latest `0.46` -> `0.49`. ([#2045](https://github.com/diffplug/spotless/pull/2045), [#2127](https://github.com/diffplug/spotless/pull/2127))
 * Bump default `ktlint` version to latest `1.1.1` -> `1.2.1`. ([#2057](https://github.com/diffplug/spotless/pull/2057))

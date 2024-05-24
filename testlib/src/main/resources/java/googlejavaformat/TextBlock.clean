@@ -3,7 +3,8 @@ import mylib.UsedB;
 
 public class Java {
   public static void main(String[] args) {
-    var a = """
+    var a =
+        """
       Howdy
       Partner!
       """;
