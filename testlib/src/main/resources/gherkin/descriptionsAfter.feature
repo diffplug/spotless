@@ -29,7 +29,7 @@ This is a description without indentation
   This description
   has a comment after
 
-    # this is a comment
+  # this is a comment
     Given the minimalism
 
   Scenario: comment right after description

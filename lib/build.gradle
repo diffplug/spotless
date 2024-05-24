@@ -90,7 +90,7 @@ dependencies {
 	// flexmark
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.0'
 	// gherkin
-	gherkinCompileOnly 'io.cucumber:gherkin-utils:8.0.2'
+	gherkinCompileOnly 'io.cucumber:gherkin-utils:9.0.0'
 	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.0'
 	// googleJavaFormat
 	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.19.2'

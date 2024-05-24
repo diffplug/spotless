@@ -1082,7 +1082,7 @@ Uses a Gherkin pretty-printer that optionally allows configuring the number of s
 
 ```xml
 <gherkinUtils>
-  <version>8.0.2</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
+  <version>9.0.0</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
 </gherkinUtils>
 ```
 
