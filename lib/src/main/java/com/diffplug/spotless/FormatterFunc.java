@@ -115,7 +115,7 @@ public interface FormatterFunc {
 
 				@Override
 				public String apply(String unix, File file) throws Exception {
-					FormatterStepImpl.checkNotSentinel(file);
+					Formatter.checkNotSentinel(file);
 					return function.apply(resource, unix, file);
 				}
 
@@ -144,7 +144,7 @@ public interface FormatterFunc {
 
 		@Override
 		default String apply(String unix, File file) throws Exception {
-			FormatterStepImpl.checkNotSentinel(file);
+			Formatter.checkNotSentinel(file);
 			return applyWithFile(unix, file);
 		}
 
