@@ -22,4 +22,8 @@ public interface SerializedFunction<T, R> extends Serializable, ThrowingEx.Funct
 	static <T> SerializedFunction<T, T> identity() {
 		return t -> t;
 	}
+
+	static <T, R> SerializedFunction<T, R> alwaysReturns(R value) {
+		return unused -> value;
+	}
 }
