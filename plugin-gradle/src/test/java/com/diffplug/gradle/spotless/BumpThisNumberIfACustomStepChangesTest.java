@@ -17,15 +17,9 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
 class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHarness {
-	@Override
-	protected GradleRunner gradleRunner() throws IOException {
-		return super.gradleRunner().withGradleVersion("8.0");
-	}
-
 	private void writeBuildFile(String toInsert) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",

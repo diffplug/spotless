@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 	static final String SPOTLESS_MODERN = "spotlessModern";
 	static final String VER_GRADLE_min = "6.1.1";
 	static final String VER_GRADLE_javaPluginExtension = "7.1";
+	static final String VER_GRADLE_minVersionForCustom = "8.0";
 	private static final int MINIMUM_JRE = 11;
 
 	@Override

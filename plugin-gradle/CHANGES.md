@@ -4,6 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* Full, no-asterisk support of Gradle configuration cache. ([#1274](https://github.com/diffplug/spotless/issues/1274), giving up on [#987](https://github.com/diffplug/spotless/issues/987))
+  * In order to use `custom`, you must now use Gradle 8.0+. 
 * Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
 * Add support for formatting and sorting Maven POMs ([#2082](https://github.com/diffplug/spotless/issues/2082))
 ### Fixed
