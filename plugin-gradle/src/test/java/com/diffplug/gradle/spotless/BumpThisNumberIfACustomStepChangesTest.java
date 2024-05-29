@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,14 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
 class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHarness {
+	@Override
+	protected GradleRunner gradleRunner() throws IOException {
+		return super.gradleRunner().withGradleVersion("8.0");
+	}
 
 	private void writeBuildFile(String toInsert) throws IOException {
 		setFile("build.gradle").toLines(
