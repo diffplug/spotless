@@ -29,6 +29,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `sortpom` version to latest `3.2.1` -> `4.0.0`. ([#2049](https://github.com/diffplug/spotless/pull/2049), [#2078](https://github.com/diffplug/spotless/pull/2078), [#2115](https://github.com/diffplug/spotless/pull/2115))
 * Bump default `zjsonpatch` version to latest `0.4.14` -> `0.4.16`. ([#1969](https://github.com/diffplug/spotless/pull/1969))
 ### Removed
+* **BREAKING** Remove `FormatterStep.createNeverUpToDate` methods, they are available only in `testlib`. ([#2145](https://github.com/diffplug/spotless/pull/2145))
 * **BREAKING** Remove `JarState.getMavenCoordinate(String prefix)`. ([#1945](https://github.com/diffplug/spotless/pull/1945))
 * **BREAKING** Replace `PipeStepPair` with `FenceStep`. ([#1954](https://github.com/diffplug/spotless/pull/1954))
 * **BREAKING** Fully removed `Rome`, use `Biome` instead. ([#2119](https://github.com/diffplug/spotless/pull/2119))
