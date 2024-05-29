@@ -24,16 +24,11 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import javax.annotation.Nullable;
 
 /** Formatter which performs the full formatting. */
 public final class Formatter implements Serializable, AutoCloseable {
@@ -156,66 +151,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		public Formatter build() {
 			return new Formatter(name, lineEndingsPolicy, encoding, rootDir, steps,
 					exceptionPolicy == null ? FormatExceptionPolicy.failOnlyOnError() : exceptionPolicy);
-		}
-	}
-
-	/** Returns true iff the given file's formatting is up-to-date. */
-	public boolean isClean(File file) throws IOException {
-		Objects.requireNonNull(file);
-
-		String raw = new String(Files.readAllBytes(file.toPath()), encoding);
-		String unix = LineEnding.toUnix(raw);
-
-		// check the newlines (we can find these problems without even running the steps)
-		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
-		int windowsNewLines = raw.length() - unix.length();
-		if (lineEndingsPolicy.isUnix(file)) {
-			if (windowsNewLines != 0) {
-				return false;
-			}
-		} else {
-			if (windowsNewLines != totalNewLines) {
-				return false;
-			}
-		}
-
-		// check the other formats
-		String formatted = compute(unix, file);
-
-		// return true iff the formatted string equals the unix one
-		return formatted.equals(unix);
-	}
-
-	/** Applies formatting to the given file. */
-	public void applyTo(File file) throws IOException {
-		applyToAndReturnResultIfDirty(file);
-	}
-
-	/**
-	 * Applies formatting to the given file.
-	 * <p>
-	 * Returns null if the file was already clean, or the
-	 * formatted result with unix newlines if it was not.
-	 */
-	public @Nullable String applyToAndReturnResultIfDirty(File file) throws IOException {
-		Objects.requireNonNull(file);
-
-		byte[] rawBytes = Files.readAllBytes(file.toPath());
-		String raw = new String(rawBytes, encoding);
-		String rawUnix = LineEnding.toUnix(raw);
-
-		// enforce the format
-		String formattedUnix = compute(rawUnix, file);
-		// enforce the line endings
-		String formatted = computeLineEndings(formattedUnix, file);
-
-		// write out the file iff it has changed
-		byte[] formattedBytes = formatted.getBytes(encoding);
-		if (!Arrays.equals(rawBytes, formattedBytes)) {
-			Files.write(file.toPath(), formattedBytes, StandardOpenOption.TRUNCATE_EXISTING);
-			return formattedUnix;
-		} else {
-			return null;
 		}
 	}
 
