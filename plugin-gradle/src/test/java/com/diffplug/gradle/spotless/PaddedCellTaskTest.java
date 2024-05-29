@@ -34,6 +34,7 @@ import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.NeverUpToDateStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.TestProvisioner;
 
@@ -56,7 +57,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 		Bundle(String name, FormatterFunc function) throws IOException {
 			this.name = name;
 			file = setFile("src/test." + name).toContent("CCC");
-			FormatterStep step = FormatterStep.createNeverUpToDate(name, function);
+			FormatterStep step = NeverUpToDateStep.create(name, function);
 			source = createFormatTask(name, step);
 			check = createCheckTask(name, source);
 			apply = createApplyTask(name, source);

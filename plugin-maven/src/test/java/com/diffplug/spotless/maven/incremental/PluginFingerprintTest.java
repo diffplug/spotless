@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.NeverUpToDateStep;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class PluginFingerprintTest extends MavenIntegrationHarness {
@@ -162,7 +163,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 	}
 
 	private static FormatterStep formatterStep(String name) {
-		return FormatterStep.createNeverUpToDate(name, input -> input);
+		return NeverUpToDateStep.create(name, input -> input);
 	}
 
 	private static Formatter formatter(FormatterStep... steps) {

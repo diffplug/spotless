@@ -151,8 +151,8 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	static <State extends Serializable> FormatterStep createLazy(
 			String name,
 			ThrowingEx.Supplier<State> stateSupplier,
-			ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
-		return new FormatterStepImpl.Standard<>(name, stateSupplier, stateToFormatter);
+			SerializedFunction<State, FormatterFunc> stateToFormatter) {
+		return createLazy(name, stateSupplier, SerializedFunction.identity(), stateToFormatter);
 	}
 
 	/**
@@ -168,7 +168,7 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	static <State extends Serializable> FormatterStep create(
 			String name,
 			State state,
-			ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+			SerializedFunction<State, FormatterFunc> stateToFormatter) {
 		Objects.requireNonNull(state, "state");
 		return createLazy(name, () -> state, stateToFormatter);
 	}
@@ -185,7 +185,7 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	static FormatterStep createNeverUpToDateLazy(
 			String name,
 			ThrowingEx.Supplier<FormatterFunc> functionSupplier) {
-		return new FormatterStepImpl.NeverUpToDate(name, functionSupplier);
+		return new NeverUpToDateStep(name, functionSupplier);
 	}
 
 	/**
