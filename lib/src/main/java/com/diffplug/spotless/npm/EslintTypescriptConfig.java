@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,29 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.ThrowingEx;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class EslintTypescriptConfig extends EslintConfig {
-
-	private static final long serialVersionUID = -126864670181617006L;
-
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	@Nullable
-	private final transient File typescriptConfigPath;
+	private static final long serialVersionUID = 2L;
 
 	@SuppressWarnings("unused")
-	private final FileSignature typescriptConfigPathSignature;
+	private final FileSignature.Promised typescriptConfigPathSignature;
 
 	public EslintTypescriptConfig(@Nullable File eslintConfigPath, @Nullable String eslintConfigJs, @Nullable File typescriptConfigPath) {
 		super(eslintConfigPath, eslintConfigJs);
-		try {
-			this.typescriptConfigPath = typescriptConfigPath;
-			this.typescriptConfigPathSignature = typescriptConfigPath != null ? FileSignature.signAsList(this.typescriptConfigPath) : FileSignature.signAsList();
-		} catch (IOException e) {
-			throw ThrowingEx.asRuntime(e);
-		}
+		this.typescriptConfigPathSignature = typescriptConfigPath != null ? FileSignature.promise(typescriptConfigPath) : null;
 	}
 
 	@Override
 	public EslintConfig withEslintConfigPath(@Nullable File eslintConfigPath) {
-		return new EslintTypescriptConfig(eslintConfigPath, this.getEslintConfigJs(), this.typescriptConfigPath);
+		return new EslintTypescriptConfig(eslintConfigPath, this.getEslintConfigJs(), getTypescriptConfigPath());
 	}
 
 	@Nullable
 	public File getTypescriptConfigPath() {
-		return typescriptConfigPath;
+		return typescriptConfigPathSignature == null ? null : this.typescriptConfigPathSignature.get().getOnlyFile();
 	}
 }

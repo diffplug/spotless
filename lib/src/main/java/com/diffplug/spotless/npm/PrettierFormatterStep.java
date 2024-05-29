@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,7 @@ public class PrettierFormatterStep {
 							projectDir,
 							buildDir,
 							cacheDir,
-							npmPathResolver::resolveNpmExecutable,
-							npmPathResolver::resolveNodeExecutable));
+							npmPathResolver));
 			this.prettierConfig = requireNonNull(prettierConfig);
 		}
 
@@ -89,7 +88,7 @@ public class PrettierFormatterStep {
 		public FormatterFunc createFormatterFunc() {
 			try {
 				logger.info("creating formatter function (starting server)");
-				ServerProcessInfo prettierRestServer = npmRunServer();
+				ServerProcessInfo prettierRestServer = toRuntime().npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
 				return Closeable.ofDangerous(() -> endServer(restService, prettierRestServer), new PrettierFilePathPassingFormatterFunc(prettierConfigOptions, restService));
