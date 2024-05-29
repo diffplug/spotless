@@ -64,10 +64,10 @@ public class ClangFormatStep {
 	}
 
 	public FormatterStep create() {
-		return FormatterStep.createLazy(name(), this::createState, RoundtripState::state, State::toFunc);
+		return FormatterStep.createLazy(name(), this::createRoundtrip, RoundtripState::toEquality, EqualityState::toFunc);
 	}
 
-	private RoundtripState createState() throws IOException, InterruptedException {
+	private RoundtripState createRoundtrip() throws IOException, InterruptedException {
 		String howToInstall = "" +
 				"You can download clang-format from https://releases.llvm.org and " +
 				"then point Spotless to it with {@code pathToExe('/path/to/clang-format')} " +
@@ -98,13 +98,13 @@ public class ClangFormatStep {
 			this.exe = exe;
 		}
 
-		private State state() {
-			return new State(version, style, exe);
+		private EqualityState toEquality() {
+			return new EqualityState(version, style, exe);
 		}
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	static class State implements Serializable {
+	static class EqualityState implements Serializable {
 		private static final long serialVersionUID = -1825662356883926318L;
 		// used for up-to-date checks and caching
 		final String version;
@@ -113,7 +113,7 @@ public class ClangFormatStep {
 		// used for executing
 		private transient @Nullable List<String> args;
 
-		State(String version, @Nullable String style, ForeignExe pathToExe) {
+		EqualityState(String version, @Nullable String style, ForeignExe pathToExe) {
 			this.version = version;
 			this.style = style;
 			this.exe = Objects.requireNonNull(pathToExe);

@@ -60,10 +60,10 @@ public class ShfmtStep {
 	}
 
 	public FormatterStep create() {
-		return FormatterStep.createLazy(name(), this::createState, State::toFunc);
+		return FormatterStep.createLazy(name(), this::createRoundtrip, RoundtripState::toEquality, EqualityState::toFunc);
 	}
 
-	private State createState() throws IOException, InterruptedException {
+	private RoundtripState createRoundtrip() throws IOException, InterruptedException {
 		String howToInstall = "" +
 				"You can download shfmt from https://github.com/mvdan/sh and " +
 				"then point Spotless to it with {@code pathToExe('/path/to/shfmt')} " +
@@ -79,11 +79,27 @@ public class ShfmtStep {
 				.fixWrongVersion(
 						"You can tell Spotless to use the version you already have with {@code shfmt('{versionFound}')}" +
 								"or you can download the currently specified version, {version}.\n" + howToInstall);
-		return new State(this, exe);
+		return new RoundtripState(version, exe);
+	}
+
+	static class RoundtripState implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		final String version;
+		final ForeignExe exe;
+
+		RoundtripState(String version, ForeignExe exe) {
+			this.version = version;
+			this.exe = exe;
+		}
+
+		private EqualityState toEquality() {
+			return new EqualityState(version, exe);
+		}
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	static class State implements Serializable {
+	static class EqualityState implements Serializable {
 		private static final long serialVersionUID = -1825662356883926318L;
 
 		// used for up-to-date checks and caching
@@ -93,8 +109,8 @@ public class ShfmtStep {
 		// used for executing
 		private transient @Nullable List<String> args;
 
-		State(ShfmtStep step, ForeignExe pathToExe) {
-			this.version = step.version;
+		EqualityState(String version, ForeignExe pathToExe) {
+			this.version = version;
 			this.exe = Objects.requireNonNull(pathToExe);
 		}
 
