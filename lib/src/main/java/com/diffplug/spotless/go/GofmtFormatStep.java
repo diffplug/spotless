@@ -63,10 +63,10 @@ public class GofmtFormatStep {
 	}
 
 	public FormatterStep create() {
-		return FormatterStep.createLazy(name(), this::createState, GofmtFormatStep.State::toFunc);
+		return FormatterStep.createLazy(name(), this::createRountrip, RoundtripState::toEquality, EqualityState::toFunc);
 	}
 
-	private State createState() throws IOException, InterruptedException {
+	private RoundtripState createRountrip() throws IOException, InterruptedException {
 		String howToInstall = "gofmt is a part of standard go distribution. If spotless can't discover it automatically, " +
 				"you can point Spotless to the go binary with {@code pathToExe('/path/to/go')}";
 		final ForeignExe exe = ForeignExe.nameAndVersion("go", version)
@@ -76,18 +76,34 @@ public class GofmtFormatStep {
 				.fixWrongVersion(
 						"You can tell Spotless to use the version you already have with {@code gofmt('{versionFound}')}" +
 								"or you can install the currently specified Go version, {version}.\n" + howToInstall);
-		return new State(this, exe);
+		return new RoundtripState(version, exe);
+	}
+
+	static class RoundtripState implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		final String version;
+		final ForeignExe exe;
+
+		RoundtripState(String version, ForeignExe exe) {
+			this.version = version;
+			this.exe = exe;
+		}
+
+		private EqualityState toEquality() {
+			return new EqualityState(version, exe);
+		}
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	static class State implements Serializable {
+	static class EqualityState implements Serializable {
 		private static final long serialVersionUID = -1825662355363926318L;
 		// used for up-to-date checks and caching
 		final String version;
 		final transient ForeignExe exe;
 
-		public State(GofmtFormatStep step, ForeignExe goExecutable) {
-			this.version = step.version;
+		public EqualityState(String version, ForeignExe goExecutable) {
+			this.version = version;
 			this.exe = Objects.requireNonNull(goExecutable);
 		}
 

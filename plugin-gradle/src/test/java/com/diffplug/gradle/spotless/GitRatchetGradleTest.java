@@ -53,7 +53,7 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 
 	@Override
 	protected GradleRunner gradleRunner() throws IOException {
-		return super.gradleRunner().withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version);
+		return super.gradleRunner().withGradleVersion(GradleVersionSupport.CUSTOM_STEPS.version);
 	}
 
 	@ParameterizedTest

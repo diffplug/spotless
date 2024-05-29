@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,11 @@ import com.diffplug.common.base.StringPrinter;
 public class SpotlessPluginRedirect implements Plugin<Project> {
 	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)");
 
-	private static int badSemver(String input) {
+	static int badSemver(Project project) {
+		return badSemver(project.getGradle().getGradleVersion());
+	}
+
+	static int badSemver(String input) {
 		Matcher matcher = BAD_SEMVER.matcher(input);
 		if (!matcher.find() || matcher.start() != 0) {
 			throw new IllegalArgumentException("Version must start with " + BAD_SEMVER.pattern());
@@ -46,7 +50,7 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 
 	static boolean gradleIsTooOld(Project project) {
 		if (gradleIsTooOld == null) {
-			gradleIsTooOld = badSemver(project.getGradle().getGradleVersion()) < badSemver(SpotlessPlugin.VER_GRADLE_min);
+			gradleIsTooOld = badSemver(project) < badSemver(SpotlessPlugin.VER_GRADLE_min);
 		}
 		return gradleIsTooOld.booleanValue();
 	}

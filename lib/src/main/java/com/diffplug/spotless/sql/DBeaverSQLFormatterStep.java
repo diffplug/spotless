@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package com.diffplug.spotless.sql;
 
 import java.io.File;
-import java.io.Serializable;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
@@ -32,24 +31,14 @@ public class DBeaverSQLFormatterStep {
 	private DBeaverSQLFormatterStep() {}
 
 	public static FormatterStep create(Iterable<File> files) {
-		return FormatterStep.createLazy(NAME,
-				() -> new State(files),
-				State::createFormat);
+		return FormatterStep.create(NAME, FileSignature.promise(files),
+				FileSignature.Promised::get,
+				DBeaverSQLFormatterStep::createFormat);
 	}
 
-	static final class State implements Serializable {
-		private static final long serialVersionUID = 1L;
-
-		final FileSignature settingsSignature;
-
-		State(final Iterable<File> settingsFiles) throws Exception {
-			this.settingsSignature = FileSignature.signAsList(settingsFiles);
-		}
-
-		FormatterFunc createFormat() throws Exception {
-			FormatterProperties preferences = FormatterProperties.from(settingsSignature.files());
-			DBeaverSQLFormatter dbeaverSqlFormatter = new DBeaverSQLFormatter(preferences.getProperties());
-			return dbeaverSqlFormatter::format;
-		}
+	private static FormatterFunc createFormat(FileSignature settings) {
+		FormatterProperties preferences = FormatterProperties.from(settings.files());
+		DBeaverSQLFormatter dbeaverSqlFormatter = new DBeaverSQLFormatter(preferences.getProperties());
+		return dbeaverSqlFormatter::format;
 	}
 }

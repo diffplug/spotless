@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import com.diffplug.spotless.StepHarness;
 class DBeaverSQLFormatterStepTest extends ResourceHarness {
 
 	@Test
-	void behavior() throws Exception {
+	void behavior() {
 		FormatterStep step = DBeaverSQLFormatterStep.create(Collections.emptySet());
 		StepHarness.forStep(step)
 				.testResource("sql/dbeaver/full.dirty", "sql/dbeaver/full.clean")
@@ -40,21 +40,21 @@ class DBeaverSQLFormatterStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void behaviorWithConfigFile() throws Exception {
+	void behaviorWithConfigFile() {
 		FormatterStep step = DBeaverSQLFormatterStep.create(createTestFiles("sql/dbeaver/sqlConfig.properties"));
 		StepHarness.forStep(step)
 				.testResource("sql/dbeaver/create.dirty", "sql/dbeaver/create.clean");
 	}
 
 	@Test
-	void behaviorWithAlternativeConfigFile() throws Exception {
+	void behaviorWithAlternativeConfigFile() {
 		FormatterStep step = DBeaverSQLFormatterStep.create(createTestFiles("sql/dbeaver/sqlConfig2.properties"));
 		StepHarness.forStep(step)
 				.testResource("sql/dbeaver/create.dirty", "sql/dbeaver/create.clean.alternative");
 	}
 
 	@Test
-	void equality() throws Exception {
+	void equality() {
 		List<File> sqlConfig1 = createTestFiles("sql/dbeaver/sqlConfig.properties");
 		List<File> sqlConfig2 = createTestFiles("sql/dbeaver/sqlConfig2.properties");
 		new SerializableEqualityTester() {
