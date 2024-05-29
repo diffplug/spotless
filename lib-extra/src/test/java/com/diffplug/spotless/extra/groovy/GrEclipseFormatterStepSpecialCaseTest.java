@@ -16,12 +16,10 @@
 package com.diffplug.spotless.extra.groovy;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.tag.ForLintRefactor;
 
 public class GrEclipseFormatterStepSpecialCaseTest {
 	/**
@@ -31,8 +29,6 @@ public class GrEclipseFormatterStepSpecialCaseTest {
 	 *  works: ${parm == null ? "" : "<tag>parm</tag>"}
 	 */
 	@Test
-	@Disabled
-	@ForLintRefactor
 	public void issue_1657() {
 		Assertions.assertThrows(RuntimeException.class, () -> {
 			StepHarness.forStep(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()).build())

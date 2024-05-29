@@ -24,7 +24,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.tag.ForLintRefactor;
 
 public class GherkinUtilsStepTest {
 
@@ -60,8 +59,6 @@ public class GherkinUtilsStepTest {
 	}
 
 	@Test
-	@Disabled
-	@ForLintRefactor
 	public void handlesInvalidGherkin() {
 		assertThatThrownBy(() -> doWithResource(stepHarness, "invalidGherkin"))
 				.isInstanceOf(IllegalArgumentException.class)
@@ -69,8 +66,6 @@ public class GherkinUtilsStepTest {
 	}
 
 	@Test
-	@Disabled
-	@ForLintRefactor
 	public void handlesNotGherkin() {
 		assertThatThrownBy(() -> doWithResource(stepHarness, "notGherkin"))
 				.isInstanceOf(IllegalArgumentException.class)
