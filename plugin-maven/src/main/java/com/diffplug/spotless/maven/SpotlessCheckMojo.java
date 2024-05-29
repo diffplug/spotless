@@ -64,7 +64,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 	private MessageSeverity m2eIncrementalBuildMessageSeverity;
 
 	@Override
-	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
+	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		ImpactedFilesTracker counter = new ImpactedFilesTracker();
 
 		List<File> problemFiles = new ArrayList<>();
@@ -98,9 +98,9 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 		// We print the number of considered files which is useful when ratchetFrom is setup
 		if (counter.getTotal() > 0) {
 			getLog().info(String.format("Spotless.%s is keeping %s files clean - %s needs changes to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
-					formatter.getName(), counter.getTotal(), counter.getCleaned(), counter.getCheckedButAlreadyClean(), counter.getSkippedAsCleanCache()));
+					name, counter.getTotal(), counter.getCleaned(), counter.getCheckedButAlreadyClean(), counter.getSkippedAsCleanCache()));
 		} else {
-			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", formatter.getName()));
+			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", name));
 		}
 
 		if (!problemFiles.isEmpty()) {

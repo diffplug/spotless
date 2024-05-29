@@ -33,7 +33,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 	private static final long serialVersionUID = 1L;
 
 	// The name is used for logging purpose. It does not convey any applicative purpose
-	private String name;
 	private LineEnding.Policy lineEndingsPolicy;
 	private Charset encoding;
 	private List<FormatterStep> steps;
@@ -48,7 +47,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 
 	// override serialize output
 	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.writeObject(name);
 		out.writeObject(lineEndingsPolicy);
 		out.writeObject(encoding.name());
 		out.writeObject(steps);
@@ -58,7 +56,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 	// override serialize input
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		name = (String) in.readObject();
 		lineEndingsPolicy = (LineEnding.Policy) in.readObject();
 		encoding = Charset.forName((String) in.readObject());
 		steps = (List<FormatterStep>) in.readObject();
@@ -69,10 +66,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 	@SuppressWarnings("unused")
 	private void readObjectNoData() throws ObjectStreamException {
 		throw new UnsupportedOperationException();
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public LineEnding.Policy getLineEndingsPolicy() {
@@ -96,8 +89,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 	}
 
 	public static class Builder {
-		// optional parameters
-		private String name = "unnamed";
 		// required parameters
 		private LineEnding.Policy lineEndingsPolicy;
 		private Charset encoding;
@@ -105,11 +96,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 		private FormatExceptionPolicy exceptionPolicy;
 
 		private Builder() {}
-
-		public Builder name(String name) {
-			this.name = name;
-			return this;
-		}
 
 		public Builder lineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
 			this.lineEndingsPolicy = lineEndingsPolicy;
@@ -183,7 +169,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + name.hashCode();
 		result = prime * result + encoding.hashCode();
 		result = prime * result + lineEndingsPolicy.hashCode();
 		result = prime * result + steps.hashCode();
@@ -203,8 +188,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 			return false;
 		}
 		Formatter other = (Formatter) obj;
-		return name.equals(other.name) &&
-				encoding.equals(other.encoding) &&
+		return encoding.equals(other.encoding) &&
 				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&
 				steps.equals(other.steps) &&
 				exceptionPolicy.equals(other.exceptionPolicy);

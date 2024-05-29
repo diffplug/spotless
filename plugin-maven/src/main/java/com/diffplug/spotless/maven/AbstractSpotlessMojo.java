@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -208,7 +207,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(defaultValue = "false")
 	protected boolean m2eEnableForIncrementalBuild;
 
-	protected abstract void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
+	protected abstract void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
 
 	private static final int MINIMUM_JRE = 11;
 
@@ -237,11 +236,11 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		}
 
 		try (FormattersHolder formattersHolder = FormattersHolder.create(formatterFactoryToFiles, config);
-				UpToDateChecker upToDateChecker = createUpToDateChecker(formattersHolder.getFormatters())) {
-			for (Entry<Formatter, Supplier<Iterable<File>>> entry : formattersHolder.getFormattersWithFiles().entrySet()) {
-				Formatter formatter = entry.getKey();
-				Iterable<File> files = entry.getValue().get();
-				process(files, formatter, upToDateChecker);
+				UpToDateChecker upToDateChecker = createUpToDateChecker(formattersHolder.openFormatters.values())) {
+			for (FormatterFactory factory : formattersHolder.openFormatters.keySet()) {
+				Formatter formatter = formattersHolder.openFormatters.get(factory);
+				Iterable<File> files = formattersHolder.factoryToFiles.get(factory).get();
+				process(formattersHolder.nameFor(factory), files, formatter, upToDateChecker);
 			}
 		} catch (PluginException e) {
 			throw e.asMojoExecutionException();

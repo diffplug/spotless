@@ -100,9 +100,7 @@ public abstract class FormatterFactory {
 			formatterSteps = List.of(toggle.createFence().preserveWithin(formatterStepsBeforeToggle));
 		}
 
-		String formatterName = this.getClass().getSimpleName();
 		return Formatter.builder()
-				.name(formatterName)
 				.encoding(formatterEncoding)
 				.lineEndingsPolicy(formatterLineEndingPolicy)
 				.exceptionPolicy(new FormatExceptionPolicyStrict())
