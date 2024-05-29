@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
@@ -177,7 +178,8 @@ public final class CleanthatJavaStep implements java.io.Serializable {
 			public String apply(String input, File file) throws Exception {
 				if (file.isAbsolute()) {
 					// Cleanthat expects a relative file as input (relative to the root of the repository)
-					file = new File(".", file.getPath());
+					Path absolutePath = file.toPath();
+					file = absolutePath.subpath(1, absolutePath.getNameCount()).toFile();
 				}
 				return (String) formatterMethod.invoke(formatter, input, file);
 			}
