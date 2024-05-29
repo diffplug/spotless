@@ -79,6 +79,7 @@ public class EslintFormatterStep {
 	}
 
 	private static class State extends NpmFormatterStepStateBase implements Serializable {
+		private static final long serialVersionUID = 1L;
 
 		private final EslintConfig origEslintConfig;
 		private EslintConfig eslintConfigInUse;

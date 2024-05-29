@@ -23,6 +23,8 @@ import javax.annotation.Nullable;
 import com.diffplug.spotless.FileSignature;
 
 public class EslintConfig implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@SuppressWarnings("unused")
 	private final FileSignature.Promised eslintConfigPathSignature;
 	private final String eslintConfigJs;

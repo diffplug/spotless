@@ -22,6 +22,8 @@ import javax.annotation.Nullable;
 import com.diffplug.spotless.FileSignature;
 
 public class EslintTypescriptConfig extends EslintConfig {
+	private static final long serialVersionUID = 2L;
+
 	@SuppressWarnings("unused")
 	private final FileSignature.Promised typescriptConfigPathSignature;
 
