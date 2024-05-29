@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.glue.java;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,12 +32,13 @@ import eu.solven.cleanthat.engine.java.IJdkVersionConstants;
 import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorer;
 import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorerProperties;
 import eu.solven.cleanthat.formatter.LineEnding;
+import eu.solven.cleanthat.formatter.PathAndContent;
 
 /**
  * The glue for CleanThat: it is build over the version in build.gradle, but at runtime it will be executed over
  * the version loaded in JarState, which is by default defined in com.diffplug.spotless.java.CleanthatJavaStep#JVM_SUPPORT
  */
-public class JavaCleanthatRefactorerFunc implements FormatterFunc {
+public class JavaCleanthatRefactorerFunc implements FormatterFunc.NeedsFile {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JavaCleanthatRefactorerFunc.class);
 
 	private String jdkVersion;
@@ -56,20 +58,20 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 	}
 
 	@Override
-	public String apply(String input) throws Exception {
+	public String applyWithFile(String unix, File file) throws Exception {
 		// https://stackoverflow.com/questions/1771679/difference-between-threads-context-class-loader-and-normal-classloader
 		ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
 			// Ensure CleanThat main Thread has its custom classLoader while executing its refactoring
 			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-			return doApply(input);
+			return doApply(unix, file);
 		} finally {
 			// Restore the originalClassLoader
 			Thread.currentThread().setContextClassLoader(originalClassLoader);
 		}
 	}
 
-	private String doApply(String input) throws InterruptedException, IOException {
+	private String doApply(String input, File file) throws IOException {
 		// call some API that uses reflection without taking ClassLoader param
 		CleanthatEngineProperties engineProperties = CleanthatEngineProperties.builder().engineVersion(jdkVersion).build();
 
@@ -88,7 +90,9 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc {
 		LOGGER.debug("Processing sourceJdk={} included={} excluded={}", jdkVersion, included, excluded, includeDraft);
 		LOGGER.debug("Available mutators: {}", JavaRefactorer.getAllIncluded());
 
-		return refactorer.doFormat(input);
+		PathAndContent pathAndContent = new PathAndContent(file.toPath(), input);
+
+		return refactorer.doFormat(pathAndContent);
 	}
 
 }
