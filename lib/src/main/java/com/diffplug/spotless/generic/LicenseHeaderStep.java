@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,14 +120,12 @@ public final class LicenseHeaderStep {
 	}
 
 	public FormatterStep build() {
-		FormatterStep formatterStep = null;
-
+		FormatterStep formatterStep;
 		if (yearMode.get() == YearMode.SET_FROM_GIT) {
-			formatterStep = FormatterStep.createNeverUpToDateLazy(name, () -> {
+			formatterStep = FormatterStep.createLazy(name, () -> {
 				boolean updateYear = false; // doesn't matter
-				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
-				return FormatterFunc.needsFile(runtime::setLicenseHeaderYearsFromGitHistory);
-			});
+				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
+			}, step -> FormatterFunc.needsFile(step::format));
 		} else {
 			formatterStep = FormatterStep.createLazy(name, () -> {
 				// by default, we should update the year if the user is using ratchetFrom
@@ -146,11 +144,9 @@ public final class LicenseHeaderStep {
 				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
 			}, step -> FormatterFunc.needsFile(step::format));
 		}
-
 		if (contentPattern == null) {
 			return formatterStep;
 		}
-
 		return formatterStep.filterByContent(OnMatch.INCLUDE, contentPattern);
 	}
 
