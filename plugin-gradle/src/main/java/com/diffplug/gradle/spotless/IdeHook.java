@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.nio.file.Files;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.ByteStreams;
+import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.PaddedCell;
 
 class IdeHook {
 	final static String PROPERTY = "spotlessIdeHook";
@@ -55,7 +55,7 @@ class IdeHook {
 				} else {
 					bytes = Files.readAllBytes(file.toPath());
 				}
-				PaddedCell.DirtyState dirty = PaddedCell.calculateDirtyState(formatter, file, bytes);
+				DirtyState dirty = DirtyState.of(formatter, file, bytes).calculateDirtyState();
 				if (dirty.isClean()) {
 					dumpIsClean();
 				} else if (dirty.didNotConverge()) {
