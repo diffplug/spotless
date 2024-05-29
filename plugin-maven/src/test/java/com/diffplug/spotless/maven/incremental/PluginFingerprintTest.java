@@ -40,6 +40,7 @@ import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.NeverUpToDateStep;
+import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class PluginFingerprintTest extends MavenIntegrationHarness {
@@ -163,7 +164,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 	}
 
 	private static FormatterStep formatterStep(String name) {
-		return NeverUpToDateStep.create(name, input -> input);
+		return NeverUpToDateStep.create(name, SerializedFunction.identity());
 	}
 
 	private static Formatter formatter(FormatterStep... steps) {

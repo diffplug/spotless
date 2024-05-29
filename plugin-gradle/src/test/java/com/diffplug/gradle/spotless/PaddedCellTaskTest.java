@@ -31,11 +31,11 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.NeverUpToDateStep;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.TestProvisioner;
 
 class PaddedCellTaskTest extends ResourceHarness {
@@ -54,7 +54,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 		SpotlessCheck check;
 		SpotlessApply apply;
 
-		Bundle(String name, FormatterFunc function) throws IOException {
+		Bundle(String name, SerializedFunction<String, String> function) throws IOException {
 			this.name = name;
 			file = setFile("src/test." + name).toContent("CCC");
 			FormatterStep step = NeverUpToDateStep.create(name, function);

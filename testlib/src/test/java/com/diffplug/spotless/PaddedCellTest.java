@@ -37,15 +37,15 @@ class PaddedCellTest {
 	@TempDir
 	File rootFolder;
 
-	private void misbehaved(FormatterFunc step, String input, PaddedCell.Type expectedOutputType, String steps, String canonical) throws IOException {
+	private void misbehaved(SerializedFunction<String, String> step, String input, PaddedCell.Type expectedOutputType, String steps, String canonical) throws IOException {
 		testCase(step, input, expectedOutputType, steps, canonical, true);
 	}
 
-	private void wellBehaved(FormatterFunc step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
+	private void wellBehaved(SerializedFunction<String, String> step, String input, PaddedCell.Type expectedOutputType, String canonical) throws IOException {
 		testCase(step, input, expectedOutputType, canonical, canonical, false);
 	}
 
-	private void testCase(FormatterFunc step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
+	private void testCase(SerializedFunction<String, String> step, String input, PaddedCell.Type expectedOutputType, String expectedSteps, String canonical, boolean misbehaved) throws IOException {
 		List<FormatterStep> formatterSteps = new ArrayList<>();
 		formatterSteps.add(NeverUpToDateStep.create("step", step));
 		try (Formatter formatter = Formatter.builder()
