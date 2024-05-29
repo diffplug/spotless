@@ -40,6 +40,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.SerializableFileFilter;
+import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.ThrowingEx;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -119,13 +120,22 @@ public final class LicenseHeaderStep {
 		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
 	}
 
+	private static class SetLicenseHeaderYearsFromGitHistory implements SerializedFunction<Runtime, FormatterFunc> {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public FormatterFunc apply(Runtime input) throws Exception {
+			return FormatterFunc.needsFile(input::setLicenseHeaderYearsFromGitHistory);
+		}
+	}
+
 	public FormatterStep build() {
 		FormatterStep formatterStep;
 		if (yearMode.get() == YearMode.SET_FROM_GIT) {
 			formatterStep = FormatterStep.createLazy(name, () -> {
 				boolean updateYear = false; // doesn't matter
 				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
-			}, step -> FormatterFunc.needsFile(step::format));
+			}, new SetLicenseHeaderYearsFromGitHistory());
 		} else {
 			formatterStep = FormatterStep.createLazy(name, () -> {
 				// by default, we should update the year if the user is using ratchetFrom
