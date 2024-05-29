@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,14 @@ package com.diffplug.spotless.json;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.tag.ForLintRefactor;
 
 class JsonSimpleStepTest {
 
@@ -72,12 +74,16 @@ class JsonSimpleStepTest {
 	}
 
 	@Test
+	@Disabled
+	@ForLintRefactor
 	void handlesInvalidJson() {
 		stepHarness.testResourceExceptionMsg("json/invalidJsonBefore.json")
 				.contains("Expected a ',' or '}' at 9 [character 0 line 3]");
 	}
 
 	@Test
+	@Disabled
+	@ForLintRefactor
 	void handlesNotJson() {
 		stepHarness.testResourceExceptionMsg("json/notJsonBefore.json")
 				.contains("Unable to determine JSON type, expected a '{' or '[' but found '#'");

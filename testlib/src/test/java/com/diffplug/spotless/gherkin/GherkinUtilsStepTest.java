@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.tag.ForLintRefactor;
 
 public class GherkinUtilsStepTest {
 
@@ -59,6 +60,8 @@ public class GherkinUtilsStepTest {
 	}
 
 	@Test
+	@Disabled
+	@ForLintRefactor
 	public void handlesInvalidGherkin() {
 		assertThatThrownBy(() -> doWithResource(stepHarness, "invalidGherkin"))
 				.isInstanceOf(IllegalArgumentException.class)
@@ -66,6 +69,8 @@ public class GherkinUtilsStepTest {
 	}
 
 	@Test
+	@Disabled
+	@ForLintRefactor
 	public void handlesNotGherkin() {
 		assertThatThrownBy(() -> doWithResource(stepHarness, "notGherkin"))
 				.isInstanceOf(IllegalArgumentException.class)

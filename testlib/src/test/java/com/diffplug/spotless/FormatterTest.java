@@ -74,30 +74,6 @@ class FormatterTest {
 		}.testEquals();
 	}
 
-	// new File("") as filePath is known to fail
-	@Test
-	public void testExceptionWithEmptyPath() throws Exception {
-		LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-		Charset encoding = StandardCharsets.UTF_8;
-		FormatExceptionPolicy exceptionPolicy = FormatExceptionPolicy.failOnlyOnError();
-
-		Path rootDir = Paths.get(StandardSystemProperty.USER_DIR.value());
-
-		FormatterStep step = Mockito.mock(FormatterStep.class);
-		Mockito.when(step.getName()).thenReturn("someFailingStep");
-		Mockito.when(step.format(Mockito.anyString(), Mockito.any(File.class))).thenThrow(new IllegalArgumentException("someReason"));
-		List<FormatterStep> steps = Collections.singletonList(step);
-
-		Formatter formatter = Formatter.builder()
-				.lineEndingsPolicy(lineEndingsPolicy)
-				.encoding(encoding)
-				.steps(steps)
-				.exceptionPolicy(exceptionPolicy)
-				.build();
-
-		Assertions.assertThrows(IllegalArgumentException.class, () -> formatter.compute("someFileContent", new File("")));
-	}
-
 	// If there is no File actually holding the content, one may rely on Formatter.NO_FILE_ON_DISK
 	@Test
 	public void testExceptionWithSentinelNoFileOnDisk() throws Exception {

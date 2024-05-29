@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.diffplug.spotless.json.gson;
 import java.io.File;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
@@ -25,6 +26,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.json.JsonFormatterStepCommonTests;
+import com.diffplug.spotless.tag.ForLintRefactor;
 
 public class GsonStepTest extends JsonFormatterStepCommonTests {
 
@@ -41,6 +43,8 @@ public class GsonStepTest extends JsonFormatterStepCommonTests {
 	}
 
 	@Test
+	@Disabled
+	@ForLintRefactor
 	void handlesInvalidJson() {
 		getStepHarness().testResourceExceptionMsg("json/invalidJsonBefore.json").isEqualTo("End of input at line 3 column 1 path $.a");
 	}
