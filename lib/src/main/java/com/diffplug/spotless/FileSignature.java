@@ -125,6 +125,10 @@ public final class FileSignature implements Serializable {
 		return new Promised(MoreIterables.toNullHostileList(files), null);
 	}
 
+	public static Promised promise(File file) {
+		return new Promised(List.of(file), null);
+	}
+
 	/** Returns all of the files in this signature, throwing an exception if there are more or less than 1 file. */
 	public Collection<File> files() {
 		return Collections.unmodifiableList(files);
