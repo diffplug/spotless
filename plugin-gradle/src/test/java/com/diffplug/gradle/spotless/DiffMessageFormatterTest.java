@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
@@ -31,11 +30,11 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
+import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
 
 class DiffMessageFormatterTest extends ResourceHarness {
 
@@ -151,10 +150,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 	@Test
 	void whitespaceProblem() throws Exception {
 		Bundle spotless = create(setFile("testFile").toContent("A \nB\t\nC  \n"));
-		spotless.task.setSteps(List.of(FormatterStep.createNeverUpToDate("trimTrailing", input -> {
-			Pattern pattern = Pattern.compile("[ \t]+$", Pattern.UNIX_LINES | Pattern.MULTILINE);
-			return pattern.matcher(input).replaceAll("");
-		})));
+		spotless.task.setSteps(List.of(TrimTrailingWhitespaceStep.create()));
 		assertCheckFailure(spotless,
 				"    testFile",
 				"        @@ -1,3 +1,3 @@",

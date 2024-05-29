@@ -19,6 +19,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Made ShadowCopy (`npmInstallCache`) more robust by re-creating the cache dir if it goes missing ([#1984](https://github.com/diffplug/spotless/issues/1984),[2096](https://github.com/diffplug/spotless/pull/2096))
 * scalafmt.conf fileOverride section now works correctly ([#1854](https://github.com/diffplug/spotless/pull/1854))
 ### Changes
+* Bump default `cleanthat` version to latest `2.16` -> `2.20`. ([#1725](https://github.com/diffplug/spotless/pull/1725))
 * Bump default `gherkin-utils` version to latest `8.0.2` -> `9.0.0`. ([#1703](https://github.com/diffplug/spotless/pull/1703))
 * Bump default `google-java-format` version to latest `1.19.2` -> `1.22.0`. ([#2129](https://github.com/diffplug/spotless/pull/2129))
 * Bump default `jackson` version to latest `2.14.2` -> `2.17.1`. ([#1685](https://github.com/diffplug/spotless/pull/1685))
@@ -28,8 +29,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
 * Bump default `sortpom` version to latest `3.2.1` -> `4.0.0`. ([#2049](https://github.com/diffplug/spotless/pull/2049), [#2078](https://github.com/diffplug/spotless/pull/2078), [#2115](https://github.com/diffplug/spotless/pull/2115))
 * Bump default `zjsonpatch` version to latest `0.4.14` -> `0.4.16`. ([#1969](https://github.com/diffplug/spotless/pull/1969))
-* Bump default `cleanthat` version to latest `2.16` -> `2.20`. ([#1725](https://github.com/diffplug/spotless/pull/1725))
 ### Removed
+* **BREAKING** Remove `FormatterStep.createNeverUpToDate` methods, they are available only in `testlib`. ([#2145](https://github.com/diffplug/spotless/pull/2145))
 * **BREAKING** Remove `JarState.getMavenCoordinate(String prefix)`. ([#1945](https://github.com/diffplug/spotless/pull/1945))
 * **BREAKING** Replace `PipeStepPair` with `FenceStep`. ([#1954](https://github.com/diffplug/spotless/pull/1954))
 * **BREAKING** Fully removed `Rome`, use `Biome` instead. ([#2119](https://github.com/diffplug/spotless/pull/2119))

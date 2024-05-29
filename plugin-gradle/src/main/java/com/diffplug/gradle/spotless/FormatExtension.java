@@ -53,6 +53,7 @@ import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
@@ -427,7 +428,21 @@ public class FormatExtension {
 	 */
 	public void custom(String name, Closure<String> formatter) {
 		requireNonNull(formatter, "formatter");
-		custom(name, formatter::call);
+		Closure<String> dehydrated = formatter.dehydrate();
+		custom(name, new ClosureFormatterFunc(dehydrated));
+	}
+
+	static class ClosureFormatterFunc implements FormatterFunc, Serializable {
+		private final Closure<String> closure;
+
+		ClosureFormatterFunc(Closure<String> closure) {
+			this.closure = closure;
+		}
+
+		@Override
+		public String apply(String unixNewlines) {
+			return closure.call(unixNewlines);
+		}
 	}
 
 	/**
@@ -436,7 +451,7 @@ public class FormatExtension {
 	 */
 	public void custom(String name, FormatterFunc formatter) {
 		requireNonNull(formatter, "formatter");
-		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatter));
+		addStep(FormatterStep.createLazy(name, () -> globalState, SerializedFunction.alwaysReturns(formatter)));
 	}
 
 	/** Highly efficient find-replace char sequence. */
