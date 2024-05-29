@@ -158,6 +158,31 @@ public final class CleanthatJavaStep implements java.io.Serializable {
 			this.includeDraft = includeDraft;
 		}
 
+		private static class JvmSupportFormatterFunc implements FormatterFunc {
+
+			final Object formatter;
+			final Method formatterMethod;
+
+			private JvmSupportFormatterFunc(Object formatter, Method formatterMethod) {
+				this.formatter = formatter;
+				this.formatterMethod = formatterMethod;
+			}
+
+			@Override
+			public String apply(String input) throws Exception {
+				return apply(input, Formatter.NO_FILE_SENTINEL);
+			}
+
+			@Override
+			public String apply(String input, File file) throws Exception {
+				if (file.isAbsolute()) {
+					// Cleanthat expects a relative file as input (relative to the root of the repository)
+					file = new File(".", file.getPath());
+				}
+				return (String) formatterMethod.invoke(formatter, input, file);
+			}
+		}
+
 		FormatterFunc createFormat() {
 			ClassLoader classLoader = jarState.getClassLoader();
 
@@ -173,21 +198,7 @@ public final class CleanthatJavaStep implements java.io.Serializable {
 				throw new IllegalStateException("Issue executing the formatter", e);
 			}
 
-			FormatterFunc formatterFunc = new FormatterFunc() {
-				@Override
-				public String apply(String input) throws Exception {
-					return apply(input, Formatter.NO_FILE_SENTINEL);
-				}
-
-				@Override
-				public String apply(String input, File file) throws Exception {
-					if (file.isAbsolute()) {
-						// Cleanthat expects a relative file as input (relative to the root of the repository)
-						file = new File(".", file.getPath());
-					}
-					return (String) formatterMethod.invoke(formatter, input, file);
-				}
-			};
+			FormatterFunc formatterFunc = new JvmSupportFormatterFunc(formatter, formatterMethod);
 
 			return JVM_SUPPORT.suggestLaterVersionOnError(version, formatterFunc);
 		}
