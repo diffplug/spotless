@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 
 /** Formatter which performs the full formatting. */
@@ -128,28 +127,12 @@ public final class Formatter implements Serializable, AutoCloseable {
 	 * is guaranteed to also have unix line endings.
 	 */
 	public String compute(String unix, File file) {
-		ExceptionPerStep exceptionPerStep = new ExceptionPerStep(this);
-		String result = compute(unix, file, exceptionPerStep);
-		exceptionPerStep.rethrowFirstIfPresent();
-		return result;
-	}
-
-	/**
-	 * Returns the result of calling all of the FormatterSteps, while also
-	 * tracking any exceptions which are thrown.
-	 * <p>
-	 * The input must have unix line endings, and the output
-	 * is guaranteed to also have unix line endings.
-	 * <p>
-	 */
-	String compute(String unix, File file, ExceptionPerStep exceptionPerStep) {
 		Objects.requireNonNull(unix, "unix");
 		Objects.requireNonNull(file, "file");
 
-		ListIterator<FormatterStep> iter = steps.listIterator();
-		while (iter.hasNext()) {
+		for (FormatterStep step : steps) {
 			try {
-				String formatted = iter.next().format(unix, file);
+				String formatted = step.format(unix, file);
 				if (formatted == null) {
 					// This probably means it was a step that only checks
 					// for errors and doesn't actually have any fixes.
@@ -159,9 +142,12 @@ public final class Formatter implements Serializable, AutoCloseable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				// store the exception which was thrown, and stop execution so we don't alter line numbers
-				exceptionPerStep.set(iter.previousIndex(), e);
-				return unix;
+				// TODO: this is bad, but it won't matter when add support for linting
+				if (e instanceof RuntimeException) {
+					throw (RuntimeException) e;
+				} else {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		return unix;
