@@ -128,9 +128,13 @@ public final class Formatter implements Serializable, AutoCloseable {
 	 * is guaranteed to also have unix line endings.
 	 */
 	public String compute(String unix, File file) {
-		ExceptionPerStep exceptionPerStep = new ExceptionPerStep(this);
+		ValuePerStep<Throwable> exceptionPerStep = new ValuePerStep<>(this);
 		String result = compute(unix, file, exceptionPerStep);
-		exceptionPerStep.rethrowFirstIfPresent();
+		int firstExceptionIndex = exceptionPerStep.indexOfFirstValue();
+		if (firstExceptionIndex != -1) {
+			LintPolicy.error(exceptionPerStep.get(firstExceptionIndex), steps.get(firstExceptionIndex), file.getAbsolutePath());
+			throw ThrowingEx.asRuntimeRethrowError(exceptionPerStep.get(firstExceptionIndex));
+		}
 		return result;
 	}
 
@@ -142,7 +146,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 	 * is guaranteed to also have unix line endings.
 	 * <p>
 	 */
-	String compute(String unix, File file, ExceptionPerStep exceptionPerStep) {
+	String compute(String unix, File file, ValuePerStep<Throwable> exceptionPerStep) {
 		Objects.requireNonNull(unix, "unix");
 		Objects.requireNonNull(file, "file");
 
@@ -159,9 +163,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 					unix = LineEnding.toUnix(formatted);
 				}
 			} catch (Throwable e) {
-				// store the exception which was thrown, and stop execution so we don't alter line numbers
+				// store the exception which was thrown and keep going
 				exceptionPerStep.set(iter.previousIndex(), e);
-				return unix;
 			}
 		}
 		return unix;
