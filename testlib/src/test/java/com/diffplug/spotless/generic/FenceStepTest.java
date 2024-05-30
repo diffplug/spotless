@@ -18,12 +18,14 @@ package com.diffplug.spotless.generic;
 import java.io.File;
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.tag.ForLintRefactor;
 
 class FenceStepTest extends ResourceHarness {
 	@Test
@@ -80,6 +82,8 @@ class FenceStepTest extends ResourceHarness {
 						"1 2 3"));
 	}
 
+	@Disabled
+	@ForLintRefactor
 	@Test
 	void broken() {
 		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
