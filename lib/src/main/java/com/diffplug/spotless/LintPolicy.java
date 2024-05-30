@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,8 @@ package com.diffplug.spotless;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization implements FormatExceptionPolicy {
-	private static final long serialVersionUID = 1L;
-
+class LintPolicy {
 	private static final Logger logger = LoggerFactory.getLogger(Formatter.class);
-
-	@Override
-	public void handleError(Throwable e, FormatterStep step, String relativePath) {
-		if (e instanceof Error) {
-			error(e, step, relativePath);
-			throw ((Error) e);
-		} else {
-			warning(e, step, relativePath);
-		}
-	}
 
 	static void error(Throwable e, FormatterStep step, String relativePath) {
 		logger.error("Step '{}' found problem in '{}':\n{}", step.getName(), relativePath, e.getMessage(), e);
