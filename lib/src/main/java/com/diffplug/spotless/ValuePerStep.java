@@ -34,30 +34,27 @@ class ValuePerStep<T> extends AbstractList<T> {
 	}
 
 	@Override
-	public @Nullable T set(int index, T exception) {
+	public @Nullable T set(int index, T newValue) {
 		if (index < 0 || index >= size) {
 			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
 		}
 		if (this.value == null) {
 			this.valueIdx = index;
-			this.value = exception;
+			this.value = newValue;
 			return null;
 		} else if (this.multipleValues != null) {
 			T previousValue = (T) multipleValues[index];
-			multipleValues[index] = exception;
+			multipleValues[index] = newValue;
 			return previousValue;
 		} else {
 			if (index == valueIdx) {
 				T previousValue = this.value;
-				this.value = exception;
+				this.value = newValue;
 				return previousValue;
-			} else if (value == null) {
-				// everything is assumed null anyway so we don't need to do anything
-				return null;
 			} else {
 				multipleValues = new Object[size];
 				multipleValues[valueIdx] = this.value;
-				multipleValues[index] = exception;
+				multipleValues[index] = newValue;
 				return null;
 			}
 		}
