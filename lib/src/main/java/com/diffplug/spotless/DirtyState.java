@@ -101,7 +101,10 @@ public class DirtyState {
 		 * due to diverging idempotence.
 		 */
 		public DirtyState calculateDirtyState() {
-			return calculateDirtyState(new ValuePerStep<>(formatter));
+			ValuePerStep<Throwable> exceptionPerStep = new ValuePerStep<>(formatter);
+			DirtyState result = calculateDirtyState(exceptionPerStep);
+			LintPolicy.legacyBehavior(formatter, file, exceptionPerStep);
+			return result;
 		}
 
 		/**

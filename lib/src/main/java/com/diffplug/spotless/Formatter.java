@@ -129,13 +129,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 	public String compute(String unix, File file) {
 		ValuePerStep<Throwable> exceptionPerStep = new ValuePerStep<>(this);
 		String result = computeWithLint(unix, file, exceptionPerStep);
-		for (int i = 0; i < steps.size(); ++i) {
-			Throwable exception = exceptionPerStep.get(i);
-			if (exception != null && exception != LintState.formatStepCausedNoChange()) {
-				LintPolicy.error(exception, steps.get(i), file.getAbsolutePath());
-				throw ThrowingEx.asRuntimeRethrowError(exception);
-			}
-		}
+		LintPolicy.legacyBehavior(this, file, exceptionPerStep);
 		return result;
 	}
 

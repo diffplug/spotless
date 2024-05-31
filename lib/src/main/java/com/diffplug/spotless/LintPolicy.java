@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import java.io.File;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,5 +29,15 @@ class LintPolicy {
 
 	static void warning(Throwable e, FormatterStep step, String relativePath) {
 		logger.warn("Unable to apply step '{}' to '{}'", step.getName(), relativePath, e);
+	}
+
+	static void legacyBehavior(Formatter formatter, File file, ValuePerStep<Throwable> exceptionPerStep) {
+		for (int i = 0; i < formatter.getSteps().size(); ++i) {
+			Throwable exception = exceptionPerStep.get(i);
+			if (exception != null && exception != LintState.formatStepCausedNoChange()) {
+				LintPolicy.error(exception, formatter.getSteps().get(i), file.getName());
+				throw ThrowingEx.asRuntimeRethrowError(exception);
+			}
+		}
 	}
 }
