@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 
 /** Formatter which performs the full formatting. */
@@ -129,11 +128,13 @@ public final class Formatter implements Serializable, AutoCloseable {
 	 */
 	public String compute(String unix, File file) {
 		ValuePerStep<Throwable> exceptionPerStep = new ValuePerStep<>(this);
-		String result = compute(unix, file, exceptionPerStep);
-		int firstExceptionIndex = exceptionPerStep.indexOfFirstValue();
-		if (firstExceptionIndex != -1) {
-			LintPolicy.error(exceptionPerStep.get(firstExceptionIndex), steps.get(firstExceptionIndex), file.getAbsolutePath());
-			throw ThrowingEx.asRuntimeRethrowError(exceptionPerStep.get(firstExceptionIndex));
+		String result = computeWithLint(unix, file, exceptionPerStep);
+		for (int i = 0; i < steps.size(); ++i) {
+			Throwable exception = exceptionPerStep.get(i);
+			if (exception != null && exception != LintState.formatStepCausedNoChange()) {
+				LintPolicy.error(exception, steps.get(i), file.getAbsolutePath());
+				throw ThrowingEx.asRuntimeRethrowError(exception);
+			}
 		}
 		return result;
 	}
@@ -145,27 +146,38 @@ public final class Formatter implements Serializable, AutoCloseable {
 	 * The input must have unix line endings, and the output
 	 * is guaranteed to also have unix line endings.
 	 * <p>
+	 * It doesn't matter what is inside `ValuePerStep`, the value at every index will be overwritten
+	 * when the method returns.
 	 */
-	String compute(String unix, File file, ValuePerStep<Throwable> exceptionPerStep) {
+	String computeWithLint(String unix, File file, ValuePerStep<Throwable> exceptionPerStep) {
 		Objects.requireNonNull(unix, "unix");
 		Objects.requireNonNull(file, "file");
 
-		ListIterator<FormatterStep> iter = steps.listIterator();
-		while (iter.hasNext()) {
+		for (int i = 0; i < steps.size(); ++i) {
+			FormatterStep step = steps.get(i);
+			Throwable storeForStep;
 			try {
-				String formatted = iter.next().format(unix, file);
+				String formatted = step.format(unix, file);
 				if (formatted == null) {
 					// This probably means it was a step that only checks
 					// for errors and doesn't actually have any fixes.
 					// No exception was thrown so we can just continue.
+					storeForStep = LintState.formatStepCausedNoChange();
 				} else {
 					// Should already be unix-only, but some steps might misbehave.
-					unix = LineEnding.toUnix(formatted);
+					String clean = LineEnding.toUnix(formatted);
+					if (clean.equals(unix)) {
+						storeForStep = LintState.formatStepCausedNoChange();
+					} else {
+						storeForStep = null;
+						unix = LineEnding.toUnix(formatted);
+					}
 				}
 			} catch (Throwable e) {
 				// store the exception which was thrown and keep going
-				exceptionPerStep.set(iter.previousIndex(), e);
+				storeForStep = e;
 			}
+			exceptionPerStep.set(i, storeForStep);
 		}
 		return unix;
 	}

@@ -51,6 +51,9 @@ class ValuePerStep<T> extends AbstractList<T> {
 				T previousValue = this.value;
 				this.value = exception;
 				return previousValue;
+			} else if (value == null) {
+				// everything is assumed null anyway so we don't need to do anything
+				return null;
 			} else {
 				multipleValues = new Object[size];
 				multipleValues[valueIdx] = this.value;
