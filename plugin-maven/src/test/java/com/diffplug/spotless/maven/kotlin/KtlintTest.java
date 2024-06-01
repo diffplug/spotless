@@ -50,9 +50,9 @@ class KtlintTest extends MavenIntegrationHarness {
 
 	@Test
 	void testReadCodeStyleFromEditorConfigFile() throws Exception {
-		setFile(".editorconfig").toResource("kotlin/ktlint/intellij_idea/.editorconfig");
+		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
 		writePomWithKotlinSteps("<ktlint/>");
-		checkIntellijIdeaStyle();
+		checkKtlintOfficialStyle();
 	}
 
 	@Test
@@ -97,12 +97,5 @@ class KtlintTest extends MavenIntegrationHarness {
 		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.ktlintOfficial.clean");
-	}
-
-	private void checkIntellijIdeaStyle() throws Exception {
-		String path = "src/main/kotlin/Main.kt";
-		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.intellijIdea.clean");
 	}
 }
