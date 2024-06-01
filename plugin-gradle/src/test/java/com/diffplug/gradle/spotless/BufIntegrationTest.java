@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,22 @@ import com.diffplug.spotless.tag.BufTest;
 
 @BufTest
 class BufIntegrationTest extends GradleIntegrationHarness {
+	@Test
+	void bufLarge() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"  id 'com.diffplug.spotless'",
+				"}",
+				"spotless {",
+				"  protobuf {",
+				"    buf()",
+				"  }",
+				"}");
+		setFile("buf.proto").toResource("protobuf/buf/buf_large.proto");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("buf.proto").sameAsResource("protobuf/buf/buf_large.proto.clean");
+	}
+
 	@Test
 	void buf() throws IOException {
 		setFile("build.gradle").toLines(
