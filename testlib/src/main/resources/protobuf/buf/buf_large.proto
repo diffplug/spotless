@@ -1,0 +1,229 @@
+syntax = "proto3";
+
+package com.diffplug.gradle.spotless.buf.proto;
+
+option java_multiple_files = true;
+
+message Message {
+  string message = 1;
+}
+
+service Services {
+rpc Echo(Message) returns (Message);
+}
+
+message Message01 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message02 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message03 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message04 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message05 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message06 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message07 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message08 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message09 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message10 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message11 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message12 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message13 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message14 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message15 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message16 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message17 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+  string message9 = 9;
+}
+
+message Message18 {
+  string message1 = 1;
+  string message2 = 2;
+  string message3 = 3;
+  string message4 = 4;
+  string message5 = 5;
+  string message6 = 6;
+  string message7 = 7;
+  string message8 = 8;
+string message9 = 9;
+}

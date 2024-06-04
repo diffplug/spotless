@@ -5,7 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Full, no-asterisk support of Gradle configuration cache. ([#1274](https://github.com/diffplug/spotless/issues/1274), giving up on [#987](https://github.com/diffplug/spotless/issues/987))
-  * In order to use `custom`, you must now use Gradle 8.0+. 
+  * In order to use `custom`, you must now use Gradle 8.0+.
 * Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
 * Add support for formatting and sorting Maven POMs ([#2082](https://github.com/diffplug/spotless/issues/2082))
 ### Fixed
@@ -16,6 +16,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Fixed memory leak introduced in 6.21.0 ([#2067](https://github.com/diffplug/spotless/issues/2067))
 * Made ShadowCopy (`npmInstallCache`) more robust by re-creating the cache dir if it goes missing ([#1984](https://github.com/diffplug/spotless/issues/1984),[2096](https://github.com/diffplug/spotless/pull/2096))
 * scalafmt.conf fileOverride section now works correctly ([#1854](https://github.com/diffplug/spotless/pull/1854))
+* Fix stdin pipe is being closed exception on Windows for large .proto files ([#2147](https://github.com/diffplug/spotless/issues/2147))
 * Reworked ShadowCopy (`npmInstallCache`) to use atomic filesystem operations, resolving several race conditions that could arise ([#2151](https://github.com/diffplug/spotless/pull/2151))
 ### Changes
 * Bump default `cleanthat` version to latest `2.16` -> `2.20`. ([#1725](https://github.com/diffplug/spotless/pull/1725))
