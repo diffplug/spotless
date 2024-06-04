@@ -9,6 +9,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
 * Add support for formatting and sorting Maven POMs ([#2082](https://github.com/diffplug/spotless/issues/2082))
 ### Fixed
+* Check if ktlint_code_style is set in .editorconfig before overriding it ([#2143](https://github.com/diffplug/spotless/issues/2143))
 * Full no-asterisk support for configuration cache ([#2088](https://github.com/diffplug/spotless/pull/2088) closes [#1274](https://github.com/diffplug/spotless/issues/1274) and [#987](https://github.com/diffplug/spotless/issues/987)).
 * Ignore system git config when running tests ([#1990](https://github.com/diffplug/spotless/issues/1990))
 * Correctly provide EditorConfig property types for Ktlint ([#2052](https://github.com/diffplug/spotless/issues/2052))

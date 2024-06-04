@@ -93,19 +93,20 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 				.flatMap(loader -> loader.get().getRuleProviders().stream())
 				.collect(Collectors.toUnmodifiableSet());
 
-		EditorConfigOverride editorConfigOverride;
-		if (editorConfigOverrideMap.isEmpty()) {
-			editorConfigOverride = EditorConfigOverride.Companion.getEMPTY_EDITOR_CONFIG_OVERRIDE();
-		} else {
-			editorConfigOverride = createEditorConfigOverride(allRuleProviders.stream().map(
-					RuleProvider::createNewRuleInstance).collect(Collectors.toList()),
-					editorConfigOverrideMap);
-		}
 		EditorConfigDefaults editorConfig;
 		if (editorConfigPath == null || !Files.exists(editorConfigPath)) {
 			editorConfig = EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS();
 		} else {
 			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath, RuleProviderKt.propertyTypes(allRuleProviders));
+		}
+		EditorConfigOverride editorConfigOverride;
+		if (editorConfigOverrideMap.isEmpty()) {
+			editorConfigOverride = EditorConfigOverride.Companion.getEMPTY_EDITOR_CONFIG_OVERRIDE();
+		} else {
+			editorConfigOverride = createEditorConfigOverride(
+					editorConfig,
+					allRuleProviders.stream().map(RuleProvider::createNewRuleInstance).collect(Collectors.toList()),
+					editorConfigOverrideMap);
 		}
 
 		return new KtLintRuleEngine(
@@ -120,7 +121,7 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 	/**
 	 * Create EditorConfigOverride from user provided parameters.
 	 */
-	private static EditorConfigOverride createEditorConfigOverride(final List<Rule> rules, Map<String, Object> editorConfigOverrideMap) {
+	private static EditorConfigOverride createEditorConfigOverride(final EditorConfigDefaults editorConfig, final List<Rule> rules, Map<String, Object> editorConfigOverrideMap) {
 		// Get properties from rules in the rule sets
 		Stream<EditorConfigProperty<?>> ruleProperties = rules.stream()
 				.flatMap(rule -> rule.getUsesEditorConfigProperties().stream());
@@ -132,7 +133,9 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 				.collect(Collectors.toMap(EditorConfigProperty::getName, property -> property));
 
 		// The default style had been changed from intellij_idea to ktlint_official in version 1.0.0
-		if (!editorConfigOverrideMap.containsKey("ktlint_code_style")) {
+		boolean isCodeStyleDefinedInEditorConfig = editorConfig.getValue().getSections().stream()
+				.anyMatch(section -> section.getProperties().containsKey("ktlint_code_style"));
+		if (!isCodeStyleDefinedInEditorConfig && !editorConfigOverrideMap.containsKey("ktlint_code_style")) {
 			editorConfigOverrideMap.put("ktlint_code_style", "intellij_idea");
 		}
 
