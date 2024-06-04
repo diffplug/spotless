@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,6 +122,25 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    kotlin {",
 				"        ktlint()",
+				"    }",
+				"}");
+		checkKtlintOfficialStyle();
+	}
+
+	@Test
+	void testEditorConfigOverrideWithUnsetCodeStyleDoesNotOverrideEditorConfigCodeStyleWithDefault() throws IOException {
+		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint().editorConfigOverride([",
+				"	         ktlint_test_key: true,",
+				"        ])",
 				"    }",
 				"}");
 		checkKtlintOfficialStyle();
