@@ -58,6 +58,32 @@ public class LintState {
 		return result;
 	}
 
+	public String asString(File file, Formatter formatter) {
+		if (!isHasLints()) {
+			return "(none)";
+		} else {
+			StringBuilder result = new StringBuilder();
+			for (int i = 0; i < lintsPerStep.size(); i++) {
+				List<Lint> lints = lintsPerStep.get(i);
+				if (lints != null) {
+					FormatterStep step = formatter.getSteps().get(i);
+					for (Lint lint : lints) {
+						result.append(file.getName()).append(":").append(lint.getLineStart());
+						if (lint.getLineEnd() != lint.getLineStart()) {
+							result.append("-").append(lint.getLineEnd());
+						}
+						result.append(" ");
+						result.append(step.getName()).append("(").append(lint.getCode()).append(") ");
+						result.append(lint.getMsg());
+						result.append("\n");
+					}
+				}
+			}
+			result.setLength(result.length() - 1);
+			return result.toString();
+		}
+	}
+
 	public static LintState of(Formatter formatter, File file) throws IOException {
 		return of(formatter, file, Files.readAllBytes(file.toPath()));
 	}

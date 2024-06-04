@@ -18,14 +18,12 @@ package com.diffplug.spotless.generic;
 import java.io.File;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.tag.ForLintRefactor;
 
 class FenceStepTest extends ResourceHarness {
 	@Test
@@ -82,18 +80,16 @@ class FenceStepTest extends ResourceHarness {
 						"1 2 3"));
 	}
 
-	@Disabled
-	@ForLintRefactor
 	@Test
 	void broken() {
 		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Arrays.asList(ToCaseStep.upper()));
+				.preserveWithin(Arrays.asList(ReplaceStep.create("replace", "spotless:on", "REMOVED")));
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
-		StepHarness.forStepNoRoundtrip(fence).testExceptionMsg(StringPrinter.buildStringFromLines("A B C",
+		StepHarness.forStep(fence).expectLintsOf(StringPrinter.buildStringFromLines("A B C",
 				"spotless:off",
 				"D E F",
 				"spotless:on",
-				"G H I")).isEqualTo("An intermediate step removed a match of spotless:off spotless:on");
+				"G H I")).toBe("1-6 fence(fenceRemoved) An intermediate step removed a match of spotless:off spotless:on");
 	}
 
 	@Test
