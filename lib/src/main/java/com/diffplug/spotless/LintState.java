@@ -90,10 +90,10 @@ public class LintState {
 
 	public static LintState of(Formatter formatter, File file, byte[] rawBytes) {
 		var exceptions = new ValuePerStep<Throwable>(formatter);
-		var dirtyCalculation = DirtyState.of(formatter, file, rawBytes);
-		var dirty = dirtyCalculation.calculateDirtyState(exceptions);
+		var raw = new String(rawBytes, formatter.getEncoding());
+		var dirty = DirtyState.of(formatter, file, rawBytes, raw, exceptions);
 
-		String toLint = LineEnding.toUnix(dirty.isClean() || dirty.didNotConverge() ? dirtyCalculation.raw : new String(dirty.canonicalBytes(), formatter.getEncoding()));
+		String toLint = LineEnding.toUnix(dirty.isClean() || dirty.didNotConverge() ? raw : new String(dirty.canonicalBytes(), formatter.getEncoding()));
 
 		var lints = new ValuePerStep<List<Lint>>(formatter);
 		// if a step did not throw an exception, then it gets to check for lints if it wants
