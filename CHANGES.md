@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [3.0.0.BETA1] - 2024-06-04
 ### Added
 * `FileSignature.Promised` and `JarState.Promised` to facilitate round-trip serialization for the Gradle configuration cache. ([#1945](https://github.com/diffplug/spotless/pull/1945))
 * Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
