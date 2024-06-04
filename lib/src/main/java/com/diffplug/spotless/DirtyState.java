@@ -69,85 +69,52 @@ public class DirtyState {
 	static final DirtyState didNotConverge = new DirtyState(null);
 	static final DirtyState isClean = new DirtyState(null);
 
-	public static Calculation of(Formatter formatter, File file) throws IOException {
+	public static DirtyState of(Formatter formatter, File file) throws IOException {
 		return of(formatter, file, Files.readAllBytes(file.toPath()));
 	}
 
-	public static Calculation of(Formatter formatter, File file, byte[] rawBytes) {
-		return new Calculation(formatter, file, rawBytes);
-	}
-
-	public static class Calculation {
-		private final Formatter formatter;
-		private final File file;
-		private final byte[] rawBytes;
-		final String raw;
-
-		private Calculation(Formatter formatter, File file, byte[] rawBytes) {
-			this.formatter = formatter;
-			this.file = file;
-			this.rawBytes = rawBytes;
-			this.raw = new String(rawBytes, formatter.getEncoding());
-			// check that all characters were encodable
-			String encodingError = EncodingErrorMsg.msg(raw, rawBytes, formatter.getEncoding());
-			if (encodingError != null) {
-				throw new IllegalArgumentException(encodingError);
-			}
+	public static DirtyState of(Formatter formatter, File file, byte[] rawBytes) {
+		String raw = new String(rawBytes, formatter.getEncoding());
+		// check that all characters were encodable
+		String encodingError = EncodingErrorMsg.msg(raw, rawBytes, formatter.getEncoding());
+		if (encodingError != null) {
+			throw new IllegalArgumentException(encodingError);
 		}
 
-		/**
-		 * Calculates whether the given file is dirty according to a PaddedCell invocation of the given formatter.
-		 * DirtyState includes the clean state of the file, as well as a warning if we were not able to apply the formatter
-		 * due to diverging idempotence.
-		 */
-		public DirtyState calculateDirtyState() {
-			ValuePerStep<Throwable> exceptionPerStep = new ValuePerStep<>(formatter);
-			DirtyState result = calculateDirtyState(exceptionPerStep);
-			LintPolicy.legacyBehavior(formatter, file, exceptionPerStep);
-			return result;
+		String rawUnix = LineEnding.toUnix(raw);
+
+		// enforce the format
+		String formattedUnix = formatter.compute(rawUnix, file);
+		// convert the line endings if necessary
+		String formatted = formatter.computeLineEndings(formattedUnix, file);
+
+		// if F(input) == input, then the formatter is well-behaving and the input is clean
+		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
+		if (Arrays.equals(rawBytes, formattedBytes)) {
+			return isClean;
 		}
 
-		/**
-		 * Calculates whether the given file is dirty according to a PaddedCell invocation of the given formatter.
-		 * DirtyState includes the clean state of the file, as well as a warning if we were not able to apply the formatter
-		 * due to diverging idempotence.
-		 */
-		DirtyState calculateDirtyState(ValuePerStep<Throwable> exceptionPerStep) {
-			String rawUnix = LineEnding.toUnix(raw);
+		// F(input) != input, so we'll do a padded check
+		String doubleFormattedUnix = formatter.compute(formattedUnix, file);
+		if (doubleFormattedUnix.equals(formattedUnix)) {
+			// most dirty files are idempotent-dirty, so this is a quick-short circuit for that common case
+			return new DirtyState(formattedBytes);
+		}
 
-			// enforce the format
-			String formattedUnix = formatter.computeWithLint(rawUnix, file, exceptionPerStep);
-			// convert the line endings if necessary
-			String formatted = formatter.computeLineEndings(formattedUnix, file);
+		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
+		if (!cell.isResolvable()) {
+			return didNotConverge;
+		}
 
-			// if F(input) == input, then the formatter is well-behaving and the input is clean
-			byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
-			if (Arrays.equals(rawBytes, formattedBytes)) {
-				return isClean;
-			}
-
-			// F(input) != input, so we'll do a padded check
-			String doubleFormattedUnix = formatter.computeWithLint(formattedUnix, file, exceptionPerStep);
-			if (doubleFormattedUnix.equals(formattedUnix)) {
-				// most dirty files are idempotent-dirty, so this is a quick-short circuit for that common case
-				return new DirtyState(formattedBytes);
-			}
-
-			PaddedCell cell = PaddedCell.check(formatter, file, rawUnix, exceptionPerStep);
-			if (!cell.isResolvable()) {
-				return didNotConverge;
-			}
-
-			// get the canonical bytes
-			String canonicalUnix = cell.canonical();
-			String canonical = formatter.computeLineEndings(canonicalUnix, file);
-			byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
-			if (!Arrays.equals(rawBytes, canonicalBytes)) {
-				// and write them to disk if needed
-				return new DirtyState(canonicalBytes);
-			} else {
-				return isClean;
-			}
+		// get the canonical bytes
+		String canonicalUnix = cell.canonical();
+		String canonical = formatter.computeLineEndings(canonicalUnix, file);
+		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
+		if (!Arrays.equals(rawBytes, canonicalBytes)) {
+			// and write them to disk if needed
+			return new DirtyState(canonicalBytes);
+		} else {
+			return isClean;
 		}
 	}
 }

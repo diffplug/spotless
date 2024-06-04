@@ -78,7 +78,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 			}
 			buildContext.removeMessages(file);
 			try {
-				DirtyState dirtyState = DirtyState.of(formatter, file).calculateDirtyState();
+				DirtyState dirtyState = DirtyState.of(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					problemFiles.add(file);
 					if (buildContext.isIncremental()) {
