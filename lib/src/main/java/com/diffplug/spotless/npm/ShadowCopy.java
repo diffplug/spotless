@@ -17,6 +17,8 @@ package com.diffplug.spotless.npm;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystemException;
 import java.nio.file.FileVisitResult;
@@ -24,9 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.Duration;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
@@ -55,19 +56,47 @@ class ShadowCopy {
 	}
 
 	public void addEntry(String key, File orig) {
-		// prevent concurrent adding of entry with same key
-		if (!reserveSubFolder(key)) {
-			logger.debug("Shadow copy entry already in progress: {}. Awaiting finalization.", key);
+		File target = entry(key, orig.getName());
+		if (target.exists()) {
+			logger.debug("Shadow copy entry already exists, not overwriting: {}", key);
+		} else {
 			try {
-				NpmResourceHelper.awaitFileDeleted(markerFilePath(key).toFile(), Duration.ofSeconds(120));
-			} catch (TimeoutException e) {
-				throw new RuntimeException(e);
+				storeEntry(key, orig, target);
+			} catch (Throwable ex) {
+				// Log but don't fail
+				logger.warn("Unable to store cache entry for {}", key, ex);
 			}
 		}
+	}
+
+	private void storeEntry(String key, File orig, File target) throws IOException {
+		// Create a temp directory in the same directory as target
+		Files.createDirectories(target.toPath().getParent());
+		Path tempDirectory = Files.createTempDirectory(target.toPath().getParent(), key);
+		logger.debug("Will store entry {} to temporary directory {}, which is a sibling of the ultimate target {}", orig, tempDirectory, target);
+
 		try {
-			storeEntry(key, orig);
+			// Copy orig to temp dir
+			Files.walkFileTree(orig.toPath(), new CopyDirectoryRecursively(tempDirectory, orig.toPath()));
+			try {
+				logger.debug("Finished storing entry {}. Atomically moving temporary directory {} into final place {}", key, tempDirectory, target);
+				// Atomically rename the completed cache entry into place
+				Files.move(tempDirectory, target.toPath(), StandardCopyOption.ATOMIC_MOVE);
+			} catch (FileAlreadyExistsException | DirectoryNotEmptyException e) {
+				// Someone already beat us to it
+				logger.debug("Shadow copy entry now exists, not overwriting: {}", key);
+			} catch (AtomicMoveNotSupportedException e) {
+				logger.warn("The filesystem at {} does not support atomic moves. Spotless cannot safely cache on such a system due to race conditions. Caching has been skipped.", target.toPath().getParent(), e);
+			}
 		} finally {
-			cleanupReservation(key);
+			// Best effort to clean up
+			if (Files.exists(tempDirectory)) {
+				try {
+					Files.walkFileTree(tempDirectory, new DeleteDirectoryRecursively());
+				} catch (Throwable ex) {
+					logger.warn("Ignoring error while cleaning up temporary copy", ex);
+				}
+			}
 		}
 	}
 
@@ -75,40 +104,8 @@ class ShadowCopy {
 		return entry(key, fileName);
 	}
 
-	private void storeEntry(String key, File orig) {
-		File target = entry(key, orig.getName());
-		if (target.exists()) {
-			logger.debug("Shadow copy entry already exists: {}", key);
-			// delete directory "target" recursively
-			// https://stackoverflow.com/questions/3775694/deleting-folder-from-java
-			ThrowingEx.run(() -> Files.walkFileTree(target.toPath(), new DeleteDirectoryRecursively()));
-		}
-		// copy directory "orig" to "target" using hard links if possible or a plain copy otherwise
-		ThrowingEx.run(() -> Files.walkFileTree(orig.toPath(), new CopyDirectoryRecursively(target, orig)));
-	}
-
-	private void cleanupReservation(String key) {
-		ThrowingEx.run(() -> Files.delete(markerFilePath(key)));
-	}
-
-	private Path markerFilePath(String key) {
-		return Paths.get(shadowCopyRoot().getAbsolutePath(), key + ".marker");
-	}
-
 	private File entry(String key, String origName) {
 		return Paths.get(shadowCopyRoot().getAbsolutePath(), key, origName).toFile();
-	}
-
-	private boolean reserveSubFolder(String key) {
-		// put a marker file named "key".marker in "shadowCopyRoot" to make sure no other process is using it or return false if it already exists
-		try {
-			Files.createFile(Paths.get(shadowCopyRoot().getAbsolutePath(), key + ".marker"));
-			return true;
-		} catch (FileAlreadyExistsException e) {
-			return false;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public File copyEntryInto(String key, String origName, File targetParentFolder) {
@@ -118,7 +115,7 @@ class ShadowCopy {
 			ThrowingEx.run(() -> Files.walkFileTree(target.toPath(), new DeleteDirectoryRecursively()));
 		}
 		// copy directory "orig" to "target" using hard links if possible or a plain copy otherwise
-		ThrowingEx.run(() -> Files.walkFileTree(entry(key, origName).toPath(), new CopyDirectoryRecursively(target, entry(key, origName))));
+		ThrowingEx.run(() -> Files.walkFileTree(entry(key, origName).toPath(), new CopyDirectoryRecursively(target.toPath(), entry(key, origName).toPath())));
 		return target;
 	}
 
@@ -127,12 +124,12 @@ class ShadowCopy {
 	}
 
 	private static class CopyDirectoryRecursively extends SimpleFileVisitor<Path> {
-		private final File target;
-		private final File orig;
+		private final Path target;
+		private final Path orig;
 
 		private boolean tryHardLink = true;
 
-		public CopyDirectoryRecursively(File target, File orig) {
+		public CopyDirectoryRecursively(Path target, Path orig) {
 			this.target = target;
 			this.orig = orig;
 		}
@@ -140,7 +137,7 @@ class ShadowCopy {
 		@Override
 		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 			// create directory on target
-			Files.createDirectories(target.toPath().resolve(orig.toPath().relativize(dir)));
+			Files.createDirectories(target.resolve(orig.relativize(dir)));
 			return super.preVisitDirectory(dir, attrs);
 		}
 
@@ -149,7 +146,7 @@ class ShadowCopy {
 			// first try to hardlink, if that fails, copy
 			if (tryHardLink) {
 				try {
-					Files.createLink(target.toPath().resolve(orig.toPath().relativize(file)), file);
+					Files.createLink(target.resolve(orig.relativize(file)), file);
 					return super.visitFile(file, attrs);
 				} catch (UnsupportedOperationException | SecurityException | FileSystemException e) {
 					logger.debug("Shadow copy entry does not support hard links: {}. Switching to 'copy'.", file, e);
@@ -160,11 +157,12 @@ class ShadowCopy {
 				}
 			}
 			// copy file to target
-			Files.copy(file, target.toPath().resolve(orig.toPath().relativize(file)));
+			Files.copy(file, target.resolve(orig.relativize(file)));
 			return super.visitFile(file, attrs);
 		}
 	}
 
+	// https://stackoverflow.com/questions/3775694/deleting-folder-from-java
 	private static class DeleteDirectoryRecursively extends SimpleFileVisitor<Path> {
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {

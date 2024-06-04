@@ -15,6 +15,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Fixed memory leak introduced in 6.21.0 ([#2067](https://github.com/diffplug/spotless/issues/2067))
 * Made ShadowCopy (`npmInstallCache`) more robust by re-creating the cache dir if it goes missing ([#1984](https://github.com/diffplug/spotless/issues/1984),[2096](https://github.com/diffplug/spotless/pull/2096))
 * scalafmt.conf fileOverride section now works correctly ([#1854](https://github.com/diffplug/spotless/pull/1854))
+* Reworked ShadowCopy (`npmInstallCache`) to use atomic filesystem operations, resolving several race conditions that could arise ([#2151](https://github.com/diffplug/spotless/pull/2151))
 ### Changes
 * Bump default `cleanthat` version to latest `2.16` -> `2.20`. ([#1725](https://github.com/diffplug/spotless/pull/1725))
 * Bump default `gherkin-utils` version to latest `8.0.2` -> `9.0.0`. ([#1703](https://github.com/diffplug/spotless/pull/1703))
