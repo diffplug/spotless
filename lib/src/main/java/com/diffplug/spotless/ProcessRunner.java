@@ -163,6 +163,7 @@ public class ProcessRunner implements AutoCloseable {
 		}
 		// write stdin
 		process.getOutputStream().write(stdin);
+		process.getOutputStream().flush();
 		return new LongRunningProcess(process, args, outputFut, errorFut);
 	}
 
