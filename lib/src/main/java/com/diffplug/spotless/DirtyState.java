@@ -74,68 +74,47 @@ public class DirtyState {
 	}
 
 	public static DirtyState of(Formatter formatter, File file, byte[] rawBytes) {
-		return new Calculation(formatter, file, rawBytes).calculateDirtyState();
-	}
-
-	private static class Calculation {
-		private final Formatter formatter;
-		private final File file;
-		private final byte[] rawBytes;
-		private final String raw;
-
-		private Calculation(Formatter formatter, File file, byte[] rawBytes) {
-			this.formatter = formatter;
-			this.file = file;
-			this.rawBytes = rawBytes;
-			this.raw = new String(rawBytes, formatter.getEncoding());
-			// check that all characters were encodable
-			String encodingError = EncodingErrorMsg.msg(raw, rawBytes, formatter.getEncoding());
-			if (encodingError != null) {
-				throw new IllegalArgumentException(encodingError);
-			}
+		String raw = new String(rawBytes, formatter.getEncoding());
+		// check that all characters were encodable
+		String encodingError = EncodingErrorMsg.msg(raw, rawBytes, formatter.getEncoding());
+		if (encodingError != null) {
+			throw new IllegalArgumentException(encodingError);
 		}
 
-		/**
-		 * Calculates whether the given file is dirty according to a PaddedCell invocation of the given formatter.
-		 * DirtyState includes the clean state of the file, as well as a warning if we were not able to apply the formatter
-		 * due to diverging idempotence.
-		 */
-		public DirtyState calculateDirtyState() {
-			String rawUnix = LineEnding.toUnix(raw);
+		String rawUnix = LineEnding.toUnix(raw);
 
-			// enforce the format
-			String formattedUnix = formatter.compute(rawUnix, file);
-			// convert the line endings if necessary
-			String formatted = formatter.computeLineEndings(formattedUnix, file);
+		// enforce the format
+		String formattedUnix = formatter.compute(rawUnix, file);
+		// convert the line endings if necessary
+		String formatted = formatter.computeLineEndings(formattedUnix, file);
 
-			// if F(input) == input, then the formatter is well-behaving and the input is clean
-			byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
-			if (Arrays.equals(rawBytes, formattedBytes)) {
-				return isClean;
-			}
+		// if F(input) == input, then the formatter is well-behaving and the input is clean
+		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
+		if (Arrays.equals(rawBytes, formattedBytes)) {
+			return isClean;
+		}
 
-			// F(input) != input, so we'll do a padded check
-			String doubleFormattedUnix = formatter.compute(formattedUnix, file);
-			if (doubleFormattedUnix.equals(formattedUnix)) {
-				// most dirty files are idempotent-dirty, so this is a quick-short circuit for that common case
-				return new DirtyState(formattedBytes);
-			}
+		// F(input) != input, so we'll do a padded check
+		String doubleFormattedUnix = formatter.compute(formattedUnix, file);
+		if (doubleFormattedUnix.equals(formattedUnix)) {
+			// most dirty files are idempotent-dirty, so this is a quick-short circuit for that common case
+			return new DirtyState(formattedBytes);
+		}
 
-			PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
-			if (!cell.isResolvable()) {
-				return didNotConverge;
-			}
+		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
+		if (!cell.isResolvable()) {
+			return didNotConverge;
+		}
 
-			// get the canonical bytes
-			String canonicalUnix = cell.canonical();
-			String canonical = formatter.computeLineEndings(canonicalUnix, file);
-			byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
-			if (!Arrays.equals(rawBytes, canonicalBytes)) {
-				// and write them to disk if needed
-				return new DirtyState(canonicalBytes);
-			} else {
-				return isClean;
-			}
+		// get the canonical bytes
+		String canonicalUnix = cell.canonical();
+		String canonical = formatter.computeLineEndings(canonicalUnix, file);
+		byte[] canonicalBytes = canonical.getBytes(formatter.getEncoding());
+		if (!Arrays.equals(rawBytes, canonicalBytes)) {
+			// and write them to disk if needed
+			return new DirtyState(canonicalBytes);
+		} else {
+			return isClean;
 		}
 	}
 }
