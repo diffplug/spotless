@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.ThrowingEx;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 class ShadowCopy {
 
 	private static final Logger logger = LoggerFactory.getLogger(ShadowCopy.class);
@@ -69,6 +71,7 @@ class ShadowCopy {
 		}
 	}
 
+	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	private void storeEntry(String key, File orig, File target) throws IOException {
 		// Create a temp directory in the same directory as target
 		Files.createDirectories(target.toPath().getParent());
