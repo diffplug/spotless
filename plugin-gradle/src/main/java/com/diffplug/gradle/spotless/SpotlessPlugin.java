@@ -20,6 +20,7 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.SpotlessCache;
@@ -33,8 +34,8 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		if (SpotlessPluginRedirect.gradleIsTooOld(project)) {
-			throw new GradleException("Spotless requires Gradle " + VER_GRADLE_min + " or newer, this was " + project.getGradle().getGradleVersion());
+		if (SpotlessPluginRedirect.gradleIsTooOld()) {
+			throw new GradleException("Spotless requires Gradle " + VER_GRADLE_min + " or newer, this was " + GradleVersion.current().getVersion());
 		}
 		if (Jvm.version() < MINIMUM_JRE) {
 			throw new GradleException("Spotless requires JRE " + MINIMUM_JRE + " or newer, this was " + JavaVersion.current() + ".\n"
