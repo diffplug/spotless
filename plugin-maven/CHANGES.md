@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.44.0.BETA1] - 2024-06-04
 ### Added
 * Respect `.editorconfig` settings for formatting shell via `shfmt` ([#2031](https://github.com/diffplug/spotless/pull/2031))
 * Skip execution in M2E (incremental) builds by default ([#1814](https://github.com/diffplug/spotless/issues/1814), [#2037](https://github.com/diffplug/spotless/issues/2037))
