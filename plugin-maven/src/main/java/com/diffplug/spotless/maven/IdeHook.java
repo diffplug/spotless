@@ -49,7 +49,7 @@ class IdeHook {
 			} else {
 				bytes = Files.readAllBytes(file.toPath());
 			}
-			DirtyState dirty = DirtyState.of(formatter, file, bytes).calculateDirtyState();
+			DirtyState dirty = DirtyState.of(formatter, file, bytes);
 			if (dirty.isClean()) {
 				dumpIsClean();
 			} else if (dirty.didNotConverge()) {

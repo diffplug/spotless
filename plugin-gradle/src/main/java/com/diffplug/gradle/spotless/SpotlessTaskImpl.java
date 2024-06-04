@@ -102,7 +102,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			dirtyState = DirtyState.clean();
 		} else {
 			try {
-				dirtyState = DirtyState.of(formatter, input).calculateDirtyState();
+				dirtyState = DirtyState.of(formatter, input);
 			} catch (IOException e) {
 				throw new IOException("Issue processing file: " + input, e);
 			} catch (RuntimeException e) {

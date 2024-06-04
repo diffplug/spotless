@@ -60,7 +60,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 			}
 
 			try {
-				DirtyState dirtyState = DirtyState.of(formatter, file).calculateDirtyState();
+				DirtyState dirtyState = DirtyState.of(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					getLog().info(String.format("Writing clean file: %s", file));
 					dirtyState.writeCanonicalTo(file);

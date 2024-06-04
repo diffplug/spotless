@@ -69,15 +69,15 @@ public class DirtyState {
 	static final DirtyState didNotConverge = new DirtyState(null);
 	static final DirtyState isClean = new DirtyState(null);
 
-	public static Calculation of(Formatter formatter, File file) throws IOException {
+	public static DirtyState of(Formatter formatter, File file) throws IOException {
 		return of(formatter, file, Files.readAllBytes(file.toPath()));
 	}
 
-	public static Calculation of(Formatter formatter, File file, byte[] rawBytes) {
-		return new Calculation(formatter, file, rawBytes);
+	public static DirtyState of(Formatter formatter, File file, byte[] rawBytes) {
+		return new Calculation(formatter, file, rawBytes).calculateDirtyState();
 	}
 
-	public static class Calculation {
+	private static class Calculation {
 		private final Formatter formatter;
 		private final File file;
 		private final byte[] rawBytes;
