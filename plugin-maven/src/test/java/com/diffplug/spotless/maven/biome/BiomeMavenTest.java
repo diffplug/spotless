@@ -20,11 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.owasp.encoder.Encode.forXml;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
-import com.diffplug.spotless.tag.ForLintRefactor;
 
 class BiomeMavenTest extends MavenIntegrationHarness {
 	/**
@@ -192,8 +190,6 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	@Disabled
-	@ForLintRefactor
 	void failureWhenNotParseable() throws Exception {
 		writePomWithBiomeSteps("**/*.js", "<biome><version>1.2.0</version><language>json</language></biome>");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");

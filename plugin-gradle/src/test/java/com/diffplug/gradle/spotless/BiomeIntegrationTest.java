@@ -21,11 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.owasp.encoder.Encode;
-
-import com.diffplug.spotless.tag.ForLintRefactor;
 
 class BiomeIntegrationTest extends GradleIntegrationHarness {
 	/**
@@ -323,8 +320,6 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	@Disabled
-	@ForLintRefactor
 	void failureWhenNotParseable() throws Exception {
 		setFile("build.gradle").toLines(
 				"plugins {",

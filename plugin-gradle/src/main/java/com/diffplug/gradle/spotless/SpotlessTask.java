@@ -37,7 +37,6 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
-import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
@@ -115,14 +114,14 @@ public abstract class SpotlessTask extends DefaultTask {
 		return subtreeSha;
 	}
 
-	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
+	protected FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
 
-	public void setExceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
+	public void setExceptionPolicy(FormatExceptionPolicyStrict exceptionPolicy) {
 		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
 	}
 
 	@Input
-	public FormatExceptionPolicy getExceptionPolicy() {
+	public FormatExceptionPolicyStrict getExceptionPolicy() {
 		return exceptionPolicy;
 	}
 

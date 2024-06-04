@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -36,6 +37,17 @@ final class FilterByFileFormatterStep extends DelegateFormatterStep {
 			return delegateStep.format(raw, file);
 		} else {
 			return raw;
+		}
+	}
+
+	@Override
+	public List<Lint> lint(String content, File file) throws Exception {
+		Objects.requireNonNull(content, "content");
+		Objects.requireNonNull(file, "file");
+		if (filter.accept(file)) {
+			return delegateStep.lint(content, file);
+		} else {
+			return List.of();
 		}
 	}
 

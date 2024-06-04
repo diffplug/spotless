@@ -86,29 +86,29 @@ public final class PaddedCell {
 		byte[] rawBytes = ThrowingEx.get(() -> Files.readAllBytes(file.toPath()));
 		String raw = new String(rawBytes, formatter.getEncoding());
 		String original = LineEnding.toUnix(raw);
-		return check(formatter, file, original, MAX_CYCLE);
+		return check(formatter, file, original, MAX_CYCLE, new ValuePerStep<>(formatter));
 	}
 
 	public static PaddedCell check(Formatter formatter, File file, String originalUnix) {
-		return check(
-				Objects.requireNonNull(formatter, "formatter"),
-				Objects.requireNonNull(file, "file"),
-				Objects.requireNonNull(originalUnix, "originalUnix"),
-				MAX_CYCLE);
+		return check(formatter, file, originalUnix, new ValuePerStep<>(formatter));
+	}
+
+	public static PaddedCell check(Formatter formatter, File file, String originalUnix, ValuePerStep<Throwable> exceptionPerStep) {
+		return check(formatter, file, originalUnix, MAX_CYCLE, exceptionPerStep);
 	}
 
 	private static final int MAX_CYCLE = 10;
 
-	private static PaddedCell check(Formatter formatter, File file, String original, int maxLength) {
+	private static PaddedCell check(Formatter formatter, File file, String original, int maxLength, ValuePerStep<Throwable> exceptionPerStep) {
 		if (maxLength < 2) {
 			throw new IllegalArgumentException("maxLength must be at least 2");
 		}
-		String appliedOnce = formatter.compute(original, file);
+		String appliedOnce = formatter.computeWithLint(original, file, exceptionPerStep);
 		if (appliedOnce.equals(original)) {
 			return Type.CONVERGE.create(file, Collections.singletonList(appliedOnce));
 		}
 
-		String appliedTwice = formatter.compute(appliedOnce, file);
+		String appliedTwice = formatter.computeWithLint(appliedOnce, file, exceptionPerStep);
 		if (appliedOnce.equals(appliedTwice)) {
 			return Type.CONVERGE.create(file, Collections.singletonList(appliedOnce));
 		}
@@ -118,7 +118,7 @@ public final class PaddedCell {
 		appliedN.add(appliedTwice);
 		String input = appliedTwice;
 		while (appliedN.size() < maxLength) {
-			String output = formatter.compute(input, file);
+			String output = formatter.computeWithLint(input, file, exceptionPerStep);
 			if (output.equals(input)) {
 				return Type.CONVERGE.create(file, appliedN);
 			} else {

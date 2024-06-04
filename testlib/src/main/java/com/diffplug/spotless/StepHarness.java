@@ -24,6 +24,9 @@ import java.util.Arrays;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 
+import com.diffplug.selfie.Selfie;
+import com.diffplug.selfie.StringSelfie;
+
 /** An api for testing a {@code FormatterStep} that doesn't depend on the File path. DO NOT ADD FILE SUPPORT TO THIS, use {@link StepHarnessWithFile} if you need that. */
 public class StepHarness extends StepHarnessBase {
 	private StepHarness(Formatter formatter, RoundTrip roundTrip) {
@@ -110,5 +113,12 @@ public class StepHarness extends StepHarnessBase {
 				return Assertions.assertThat(rootCause.getMessage());
 			}
 		}
+	}
+
+	public StringSelfie expectLintsOf(String before) {
+		LintState state = LintState.of(formatter(), Formatter.NO_FILE_SENTINEL, before.getBytes(formatter().getEncoding()));
+		String assertAgainst = state.asString(Formatter.NO_FILE_SENTINEL, formatter());
+		String cleaned = assertAgainst.replace("NO_FILE_SENTINEL:", "");
+		return Selfie.expectSelfie(cleaned);
 	}
 }

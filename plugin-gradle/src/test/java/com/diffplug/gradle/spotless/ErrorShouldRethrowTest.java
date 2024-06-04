@@ -32,8 +32,6 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.tag.ForLintRefactor;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
-@Disabled
-@ForLintRefactor
 class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	private void writeBuild(String... toInsert) throws IOException {
 		List<String> lines = new ArrayList<>();
@@ -86,6 +84,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		runWithSuccess("> Task :processResources NO-SOURCE");
 	}
 
+	@Disabled
+	@ForLintRefactor
 	@Test
 	void unlessExemptedByStep() throws Exception {
 		writeBuild(
@@ -97,6 +97,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"Unable to apply step 'no swearing' to 'README.md'");
 	}
 
+	@Disabled
+	@ForLintRefactor
 	@Test
 	void unlessExemptedByPath() throws Exception {
 		writeBuild(
