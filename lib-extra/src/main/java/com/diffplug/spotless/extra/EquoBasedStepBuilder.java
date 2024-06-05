@@ -143,7 +143,7 @@ public abstract class EquoBasedStepBuilder {
 		return model;
 	}
 
-	static class EquoStep implements java.io.Serializable {
+	static class EquoStep implements Serializable {
 		private static final long serialVersionUID = 1;
 		private final String semanticVersion;
 		private final FileSignature.Promised settingsPromise;

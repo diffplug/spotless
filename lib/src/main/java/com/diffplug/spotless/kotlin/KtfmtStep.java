@@ -34,7 +34,7 @@ import com.diffplug.spotless.ThrowingEx;
 /**
  * Wraps up <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> as a FormatterStep.
  */
-public class KtfmtStep implements java.io.Serializable {
+public class KtfmtStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "0.49";
 	private static final String NAME = "ktfmt";

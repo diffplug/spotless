@@ -37,7 +37,7 @@ import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 
 /** A step for <a href="https://github.com/diffplug/freshmark">FreshMark</a>. */
-public class FreshMarkStep implements java.io.Serializable {
+public class FreshMarkStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final String DEFAULT_VERSION = "1.3.1";
