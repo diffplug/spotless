@@ -43,7 +43,7 @@ jobs:
       matrix:
         kind: [maven, gradle]
         # Test on the latest Java version once Gradle & Maven support it.
-        jre: [11, 17, 21]
+        jre: [11, 17, 21, 22]
         os: [ubuntu-latest]
         include:
           # test windows at the diagonals of the above matrix
