@@ -23,7 +23,7 @@ import com.diffplug.spotless.*;
 
 /** Wraps up <a href="https://github.com/palantir/palantir-java-format">palantir-java-format</a> fork of
  * <a href="https://github.com/google/google-java-format">google-java-format</a> as a FormatterStep. */
-public class PalantirJavaFormatStep implements java.io.Serializable {
+public class PalantirJavaFormatStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final boolean DEFAULT_FORMAT_JAVADOC = false;
 	private static final String DEFAULT_STYLE = "PALANTIR";

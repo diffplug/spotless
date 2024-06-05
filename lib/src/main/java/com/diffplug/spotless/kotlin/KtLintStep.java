@@ -34,7 +34,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/pinterest/ktlint">ktlint</a> as a FormatterStep. */
-public class KtLintStep implements java.io.Serializable {
+public class KtLintStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "1.2.1";
 	private static final String NAME = "ktlint";

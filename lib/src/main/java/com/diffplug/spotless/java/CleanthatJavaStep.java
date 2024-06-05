@@ -36,7 +36,7 @@ import com.diffplug.spotless.Provisioner;
  * @author Benoit Lacelle
  */
 // https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-to-add-a-new-formatterstep
-public final class CleanthatJavaStep implements java.io.Serializable {
+public final class CleanthatJavaStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "cleanthat";
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";

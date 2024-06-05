@@ -30,7 +30,7 @@ import com.diffplug.spotless.Provisioner;
  */
 // https://stackoverflow.com/questions/14515994/convert-json-string-to-pretty-print-json-output-using-jackson
 // https://stackoverflow.com/questions/60891174/i-want-to-load-a-yaml-file-possibly-edit-the-data-and-then-dump-it-again-how
-public class JacksonYamlStep implements java.io.Serializable {
+public class JacksonYamlStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:";
 	private static final String DEFAULT_VERSION = "2.14.1";
