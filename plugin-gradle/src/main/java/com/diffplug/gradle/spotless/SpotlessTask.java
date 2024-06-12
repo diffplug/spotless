@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
@@ -152,12 +153,18 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	protected final List<FormatterStep> steps = new ArrayList<>();
 
-	@Input
+	@Internal
 	public List<FormatterStep> getSteps() {
-		return Collections.unmodifiableList(steps);
+        return Collections.unmodifiableList(steps);
 	}
 
-	public void setSteps(List<FormatterStep> steps) {
+    /** Steps name are exposed as task input instead of steps to generate a consistent Gradle build cache key **/
+    @Input
+    public List<String> getStepsName() {
+        return steps.stream().map(FormatterStep::getName).collect(Collectors.toList());
+    }
+
+    public void setSteps(List<FormatterStep> steps) {
 		PluginGradlePreconditions.requireElementsNonNull(steps);
 		this.steps.clear();
 		this.steps.addAll(steps);

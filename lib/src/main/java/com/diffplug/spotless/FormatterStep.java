@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  * to not introduce any windows-style newlines as well.
  */
 public interface FormatterStep extends Serializable, AutoCloseable {
-	/** The name of the step, for debugging purposes. */
+    /** The name of the step, for debugging purposes and to uniquely identify a step when computing the Gradle Build Cache key. */
 	String getName();
 
 	/**
