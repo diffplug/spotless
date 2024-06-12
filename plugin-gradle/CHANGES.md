@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Gradle build cache miss due to volatility of SpotlessTask.steps input ([#2168](https://github.com/diffplug/spotless/issues/2168))
 
 ## [7.0.0.BETA1] - 2024-06-04
 ### Added
