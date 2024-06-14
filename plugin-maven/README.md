@@ -399,9 +399,9 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
   <version>0.51</version> <!-- optional -->
   <style>KOTLINLANG</style> <!-- optional, other options are META (default), GOOGLE and KOTLINLANG -->
   <maxWidth>120</maxWidth> <!-- optional -->
-	<blockIndent>4</blockIndent> <!-- optional -->
-	<continuationIndent>8</continuationIndent> <!-- optional -->
-	<removeUnusedImports>false</removeUnusedImports> <!-- optional -->
+  <blockIndent>4</blockIndent> <!-- optional -->
+  <continuationIndent>8</continuationIndent> <!-- optional -->
+  <removeUnusedImports>false</removeUnusedImports> <!-- optional -->
 </ktfmt>
 ```
 

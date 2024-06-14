@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.glue.ktfmt;
 
-import java.lang.reflect.Method;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
