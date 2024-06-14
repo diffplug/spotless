@@ -48,8 +48,6 @@ public class Ktfmt implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String version = this.version != null ? this.version : KtfmtStep.defaultVersion();
 		Style style = this.style != null ? Style.valueOf(this.style) : null;
-		System.err.println("STYLE = " + style);
-		System.err.println("VERSION = " + version);
 		KtfmtFormattingOptions options = new KtfmtFormattingOptions(maxWidth, blockIndent, continuationIndent, removeUnusedImports);
 		return KtfmtStep.create(version, config.getProvisioner(), style, options);
 	}

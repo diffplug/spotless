@@ -397,7 +397,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 ```xml
 <ktfmt>
   <version>0.51</version> <!-- optional -->
-  <style>KOTLINLANG</style> <!-- optional, other options are META (default), GOOGLE and KOTLINLANG -->
+  <style>KOTLINLANG</style> <!-- optional, options are META (default), GOOGLE and KOTLINLANG -->
   <maxWidth>120</maxWidth> <!-- optional -->
   <blockIndent>4</blockIndent> <!-- optional -->
   <continuationIndent>8</continuationIndent> <!-- optional -->
