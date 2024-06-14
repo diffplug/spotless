@@ -16,6 +16,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Renamed property `ktfmt` option `removeUnusedImport` -> `removeUnusedImports` to match `ktfmt`.  ([#2172](https://github.com/diffplug/spotless/pull/2172))
 ### Fixed
 * Fix compatibility issue introduced by `ktfmt` `0.51`. ([#2172](https://github.com/diffplug/spotless/issues/2172))
+### Added
+* Added option `manageTrailingCommas` to `ktfmt`.  ([#2177](https://github.com/diffplug/spotless/pull/2177))
 
 ## [3.0.0.BETA1] - 2024-06-04
 ### Added

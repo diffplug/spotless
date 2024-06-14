@@ -32,17 +32,22 @@ public final class KtfmtFormattingOptions {
 	private Integer continuationIndent;
 
 	@Nullable
-	private Boolean removeUnusedImport;
+	private Boolean removeUnusedImports;
+
+	@Nullable
+	private Boolean manageTrailingCommas;
 
 	public KtfmtFormattingOptions(
 			@Nullable Integer maxWidth,
 			@Nullable Integer blockIndent,
 			@Nullable Integer continuationIndent,
-			@Nullable Boolean removeUnusedImport) {
+			@Nullable Boolean removeUnusedImports,
+			@Nullable Boolean manageTrailingCommas) {
 		this.maxWidth = maxWidth;
 		this.blockIndent = blockIndent;
 		this.continuationIndent = continuationIndent;
-		this.removeUnusedImport = removeUnusedImport;
+		this.removeUnusedImports = removeUnusedImports;
+		this.manageTrailingCommas = manageTrailingCommas;
 	}
 
 	@Nonnull
@@ -61,8 +66,13 @@ public final class KtfmtFormattingOptions {
 	}
 
 	@Nonnull
-	public Optional<Boolean> getRemoveUnusedImport() {
-		return Optional.ofNullable(removeUnusedImport);
+	public Optional<Boolean> getRemoveUnusedImports() {
+		return Optional.ofNullable(removeUnusedImports);
+	}
+
+	@Nonnull
+	public Optional<Boolean> getManageTrailingCommas() {
+		return Optional.ofNullable(manageTrailingCommas);
 	}
 
 	public void setMaxWidth(int maxWidth) {
@@ -86,7 +96,11 @@ public final class KtfmtFormattingOptions {
 		this.continuationIndent = continuationIndent;
 	}
 
-	public void setRemoveUnusedImport(boolean removeUnusedImport) {
-		this.removeUnusedImport = removeUnusedImport;
+	public void setRemoveUnusedImports(boolean removeUnusedImports) {
+		this.removeUnusedImports = removeUnusedImports;
+	}
+
+	public void setManageTrailingCommas(boolean manageTrailingCommas) {
+		this.manageTrailingCommas = manageTrailingCommas;
 	}
 }

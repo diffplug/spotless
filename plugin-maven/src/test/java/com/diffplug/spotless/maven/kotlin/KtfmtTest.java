@@ -71,4 +71,13 @@ class KtfmtTest extends MavenIntegrationHarness {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("src/main/kotlin/main.kt").sameAsResource("kotlin/ktfmt/max-width-dropbox.clean");
 	}
+
+	@Test
+	void testKtfmtWithManageTrailingCommasOption() throws Exception {
+		writePomWithKotlinSteps("<ktfmt><version>0.49</version><style>DROPBOX</style><manageTrailingCommas>true</manageTrailingCommas></ktfmt>");
+
+		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/trailing-commas.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("src/main/kotlin/main.kt").sameAsResource("kotlin/ktfmt/trailing-commas.clean");
+	}
 }

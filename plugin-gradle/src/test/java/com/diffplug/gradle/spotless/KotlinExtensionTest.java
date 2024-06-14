@@ -59,6 +59,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"            it.setBlockIndent(4)",
 				"            it.setContinuationIndent(4)",
 				"            it.setRemoveUnusedImports(false)",
+				"            it.setManageTrailingCommas(false)",
 				"        }",
 				"    }",
 				"}");
