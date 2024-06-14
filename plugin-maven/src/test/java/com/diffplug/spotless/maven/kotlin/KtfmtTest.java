@@ -47,7 +47,7 @@ class KtfmtTest extends MavenIntegrationHarness {
 
 	@Test
 	void testKtfmtStyle() throws Exception {
-		writePomWithKotlinSteps("<ktfmt><style>DROPBOX</style></ktfmt>");
+		writePomWithKotlinSteps("<ktfmt><version>0.50</version><style>DROPBOX</style></ktfmt>");
 
 		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/basic.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -65,7 +65,7 @@ class KtfmtTest extends MavenIntegrationHarness {
 
 	@Test
 	void testKtfmtStyleWithMaxWidthOption() throws Exception {
-		writePomWithKotlinSteps("<ktfmt><style>DROPBOX</style><maxWidth>120</maxWidth></ktfmt>");
+		writePomWithKotlinSteps("<ktfmt><version>0.17</version><style>DROPBOX</style><maxWidth>120</maxWidth></ktfmt>");
 
 		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/max-width.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();

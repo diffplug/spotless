@@ -5,6 +5,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changes
 * Bump default `ktlint` version to latest `1.2.1` -> `1.3.0`. ([#2165](https://github.com/diffplug/spotless/pull/2165))
+* Bump default `ktfmt` version to latest `0.49` -> `0.51`. ([#2172](https://github.com/diffplug/spotless/pull/2172))
+### Fixed
+* Fixed `ktfmt` `0.51` compatiblity issues. ([#2171](https://github.com/diffplug/spotless/issues/2171))
 
 ## [7.0.0.BETA1] - 2024-06-04
 ### Added

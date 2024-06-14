@@ -109,6 +109,10 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 			addStep(createStep());
 		}
 
+		public ConfigurableStyle metaStyle() {
+			return style(KtfmtStep.Style.META);
+		}
+
 		public ConfigurableStyle dropboxStyle() {
 			return style(KtfmtStep.Style.DROPBOX);
 		}

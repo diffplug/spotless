@@ -54,11 +54,11 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        ktfmt().dropboxStyle().configure {",
+				"        ktfmt(\"0.50\").dropboxStyle().configure {",
 				"            it.setMaxWidth(4)",
 				"            it.setBlockIndent(4)",
 				"            it.setContinuationIndent(4)",
-				"            it.setRemoveUnusedImport(false)",
+				"            it.setRemoveUnusedImports(false)",
 				"        }",
 				"    }",
 				"}");

@@ -42,13 +42,15 @@ public class Ktfmt implements FormatterStepFactory {
 	private Integer continuationIndent;
 
 	@Parameter
-	private Boolean removeUnusedImport;
+	private Boolean removeUnusedImports;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String version = this.version != null ? this.version : KtfmtStep.defaultVersion();
 		Style style = this.style != null ? Style.valueOf(this.style) : null;
-		KtfmtFormattingOptions options = new KtfmtFormattingOptions(maxWidth, blockIndent, continuationIndent, removeUnusedImport);
+		System.err.println("STYLE = " + style);
+		System.err.println("VERSION = " + version);
+		KtfmtFormattingOptions options = new KtfmtFormattingOptions(maxWidth, blockIndent, continuationIndent, removeUnusedImports);
 		return KtfmtStep.create(version, config.getProvisioner(), style, options);
 	}
 }
