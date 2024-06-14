@@ -16,5 +16,5 @@
 package com.diffplug.spotless.glue.ktfmt;
 
 public enum KtfmtStyle {
-	DEFAULT, DROPBOX, GOOGLE, KOTLIN_LANG
+	META, GOOGLE, KOTLIN_LANG
 }

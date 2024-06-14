@@ -34,7 +34,7 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 	private final KtfmtFormattingOptions ktfmtFormattingOptions;
 
 	public KtfmtFormatterFunc() {
-		this(KtfmtStyle.DEFAULT, null);
+		this(KtfmtStyle.META, null);
 	}
 
 	public KtfmtFormatterFunc(@Nonnull KtfmtStyle style) {
@@ -59,11 +59,8 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 	private FormattingOptions createFormattingOptions() throws Exception {
 		FormattingOptions formattingOptions;
 		switch (style) {
-		case DEFAULT:
-			formattingOptions = new FormattingOptions();
-			break;
-		case DROPBOX:
-			formattingOptions = Formatter.DROPBOX_FORMAT;
+		case META:
+			formattingOptions = Formatter.META_FORMAT;
 			break;
 		case GOOGLE:
 			formattingOptions = Formatter.GOOGLE_FORMAT;
