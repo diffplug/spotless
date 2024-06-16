@@ -18,5 +18,5 @@ jobs:
       - name: gradle caching
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-home-cache-cleanup: true
+          cache-read-only: true
       - run: ./gradlew changelogPrint

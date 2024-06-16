@@ -31,6 +31,7 @@ jobs:
       - name: gradle caching
         uses: gradle/actions/setup-gradle@v3
         with:
+          cache-encryption-key: Da25KUVSE5jbGds2zXmfXw==
           gradle-home-cache-cleanup: true
       - name: spotlessCheck
         run: ./gradlew spotlessCheck
@@ -73,6 +74,7 @@ jobs:
       - name: gradle caching
         uses: gradle/actions/setup-gradle@v3
         with:
+          cache-encryption-key: Da25KUVSE5jbGds2zXmfXw==
           gradle-home-cache-cleanup: true
       - name: build (maven-only)
         if: matrix.kind == 'maven'
