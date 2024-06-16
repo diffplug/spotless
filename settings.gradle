@@ -20,7 +20,7 @@ plugins {
 	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
 	id 'io.github.davidburstrom.version-compatibility' version '0.5.0' apply false
 	// https://plugins.gradle.org/plugin/com.gradle.develocity
-	id 'com.gradle.develocity' version '3.17.4'
+	id 'com.gradle.develocity' version '3.17.5'
 	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
 	id 'dev.equo.ide' version '1.7.6' apply false
 }
