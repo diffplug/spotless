@@ -56,13 +56,13 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 		return new KtlintConfig(version, Collections.emptyMap(), Collections.emptyList());
 	}
 
-	/** Uses the <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> jar to format source code. */
+	/** Uses the <a href="https://github.com/facebook/ktfmt">ktfmt</a> jar to format source code. */
 	public KtfmtConfig ktfmt() {
 		return ktfmt(KtfmtStep.defaultVersion());
 	}
 
 	/**
-	 * Uses the given version of <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> and applies the dropbox style
+	 * Uses the given version of <a href="https://github.com/facebook/ktfmt">ktfmt</a> and applies the dropbox style
 	 * option to format source code.
 	 */
 	public KtfmtConfig ktfmt(String version) {

@@ -35,7 +35,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
 /**
- * Wraps up <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> as a FormatterStep.
+ * Wraps up <a href="https://github.com/facebook/ktfmt">ktfmt</a> as a FormatterStep.
  */
 public class KtfmtStep implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -67,11 +67,17 @@ public class KtfmtStep implements Serializable {
 	/**
 	 * Used to allow multiple style option through formatting options and since when is each of them available.
 	 *
-	 * @see <a href="https://github.com/facebook/ktfmt/blob/main/core/src/main/java/com/facebook/ktfmt/format/Formatter.kt#L45-L68">ktfmt source</a>
+	 * @see <a href="https://github.com/facebook/ktfmt/blob/v0.51/core/src/main/java/com/facebook/ktfmt/format/Formatter.kt#L45-L68">ktfmt source</a>
 	 */
 	public enum Style {
-		DEFAULT("DEFAULT_FORMAT", "0.0", "0.50"), META("META_FORMAT", "0.51"), DROPBOX("DROPBOX_FORMAT", "0.16", "0.50"), GOOGLE("GOOGLE_FORMAT", "0.19"), KOTLINLANG("KOTLINLANG_FORMAT", "0.21"),
+		// @formatter:off
+		DEFAULT("DEFAULT_FORMAT", "0.0", "0.50"),
+		META("META_FORMAT", "0.51"),
+		DROPBOX("DROPBOX_FORMAT", "0.16", "0.50"),
+		GOOGLE("GOOGLE_FORMAT", "0.19"),
+		KOTLINLANG("KOTLINLANG_FORMAT", "0.21"),
 		;
+		// @formatter:on
 
 		final private String format;
 		final private String since;
@@ -149,13 +155,6 @@ public class KtfmtStep implements Serializable {
 			this.removeUnusedImports = removeUnusedImports;
 		}
 	}
-
-	/**
-	 * The <code>format</code> method is available in the link below.
-	 *
-	 * @see <a href="https://github.com/facebook/ktfmt/blob/main/core/src/main/java/com/facebook/ktfmt/format/Formatter.kt#L78-L94">ktfmt source</a>
-	 */
-	private static final String FORMATTER_METHOD = "format";
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(Provisioner provisioner) {
@@ -293,7 +292,7 @@ public class KtfmtStep implements Serializable {
 		/**
 		 * The <code>format</code> method is available in the link below.
 		 *
-		 * @see <a href="https://github.com/facebook/ktfmt/blob/main/core/src/main/java/com/facebook/ktfmt/format/Formatter.kt#L78-L94">ktfmt source</a>
+		 * @see <a href="https://github.com/facebook/ktfmt/blob/v0.51/core/src/main/java/com/facebook/ktfmt/format/Formatter.kt#L78-L94">ktfmt source</a>
 		 */
 		static final String FORMATTER_METHOD = "format";
 
