@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,13 +56,13 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 		return new KtlintConfig(version, Collections.emptyMap(), Collections.emptyList());
 	}
 
-	/** Uses the <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> jar to format source code. */
+	/** Uses the <a href="https://github.com/facebook/ktfmt">ktfmt</a> jar to format source code. */
 	public KtfmtConfig ktfmt() {
 		return ktfmt(KtfmtStep.defaultVersion());
 	}
 
 	/**
-	 * Uses the given version of <a href="https://github.com/facebookincubator/ktfmt">ktfmt</a> and applies the dropbox style
+	 * Uses the given version of <a href="https://github.com/facebook/ktfmt">ktfmt</a> and applies the dropbox style
 	 * option to format source code.
 	 */
 	public KtfmtConfig ktfmt(String version) {
@@ -107,6 +107,10 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 			Objects.requireNonNull(version);
 			this.version = Objects.requireNonNull(version);
 			addStep(createStep());
+		}
+
+		public ConfigurableStyle metaStyle() {
+			return style(KtfmtStep.Style.META);
 		}
 
 		public ConfigurableStyle dropboxStyle() {

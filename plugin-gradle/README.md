@@ -388,12 +388,20 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
 
 ### ktfmt
 
-[homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases).
+[homepage](https://github.com/facebook/ktfmt). [changelog](https://github.com/facebook/ktfmt/releases).
 
 ```kotlin
 spotless {
   kotlin {
-    ktfmt('0.30').dropboxStyle() // version and dropbox style are optional
+    // version, style and all configurations here are optional
+    ktfmt("0.51").googleStyle().configure {
+      it.setMaxWidth(80)
+      it.setBlockIndent(4)
+      it.setContinuationIndent(4)
+      it.setRemoveUnusedImports(false)
+    }
+  }
+}
 ```
 
 <a name="applying-ktlint-to-kotlin-files"></a>
