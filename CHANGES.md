@@ -13,11 +13,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 * Bump default `ktlint` version to latest `1.2.1` -> `1.3.0`. ([#2165](https://github.com/diffplug/spotless/pull/2165))
 * Bump default `ktfmt` version to latest `0.49` -> `0.51`. ([#2172](https://github.com/diffplug/spotless/pull/2172))
-* Renamed property `ktfmt` option `removeUnusedImport` -> `removeUnusedImports` to match `ktfmt`.  ([#2172](https://github.com/diffplug/spotless/pull/2172))
+* Rename property `ktfmt` option `removeUnusedImport` -> `removeUnusedImports` to match `ktfmt`. ([#2172](https://github.com/diffplug/spotless/pull/2172))
 ### Fixed
 * Fix compatibility issue introduced by `ktfmt` `0.51`. ([#2172](https://github.com/diffplug/spotless/issues/2172))
 ### Added
-* Added option `manageTrailingCommas` to `ktfmt`.  ([#2177](https://github.com/diffplug/spotless/pull/2177))
+* Add option `manageTrailingCommas` to `ktfmt`. ([#2177](https://github.com/diffplug/spotless/pull/2177))
 
 ## [3.0.0.BETA1] - 2024-06-04
 ### Added
