@@ -126,17 +126,22 @@ public class KtfmtStep implements Serializable {
 		@Nullable
 		private Boolean removeUnusedImports = null;
 
+		@Nullable
+		private Boolean manageTrailingCommas = null;
+
 		public KtfmtFormattingOptions() {}
 
 		public KtfmtFormattingOptions(
 				@Nullable Integer maxWidth,
 				@Nullable Integer blockIndent,
 				@Nullable Integer continuationIndent,
-				@Nullable Boolean removeUnusedImports) {
+				@Nullable Boolean removeUnusedImports,
+				@Nullable Boolean manageTrailingCommas) {
 			this.maxWidth = maxWidth;
 			this.blockIndent = blockIndent;
 			this.continuationIndent = continuationIndent;
 			this.removeUnusedImports = removeUnusedImports;
+			this.manageTrailingCommas = manageTrailingCommas;
 		}
 
 		public void setMaxWidth(int maxWidth) {
@@ -153,6 +158,10 @@ public class KtfmtStep implements Serializable {
 
 		public void setRemoveUnusedImports(boolean removeUnusedImports) {
 			this.removeUnusedImports = removeUnusedImports;
+		}
+
+		public void setManageTrailingCommas(boolean manageTrailingCommas) {
+			this.manageTrailingCommas = manageTrailingCommas;
 		}
 	}
 
@@ -228,9 +237,9 @@ public class KtfmtStep implements Serializable {
 			}
 
 			final Constructor<?> optionsConstructor = ktfmtFormattingOptionsClass.getConstructor(
-					Integer.class, Integer.class, Integer.class, Boolean.class);
+					Integer.class, Integer.class, Integer.class, Boolean.class, Boolean.class);
 			final Object ktfmtFormattingOptions = optionsConstructor.newInstance(
-					options.maxWidth, options.blockIndent, options.continuationIndent, options.removeUnusedImports);
+					options.maxWidth, options.blockIndent, options.continuationIndent, options.removeUnusedImports, options.manageTrailingCommas);
 			if (style == null) {
 				final Constructor<?> constructor = formatterFuncClass.getConstructor(ktfmtFormattingOptionsClass);
 				return (FormatterFunc) constructor.newInstance(ktfmtFormattingOptions);
@@ -365,7 +374,7 @@ public class KtfmtStep implements Serializable {
 							/* continuationIndent = */ Optional.ofNullable(options.continuationIndent).orElse((Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)),
 							/* removeUnusedImports = */ Optional.ofNullable(options.removeUnusedImports).orElse((Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
 							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions),
-							/* manageTrailingCommas */ (Boolean) formattingOptionsClass.getMethod("getManageTrailingCommas").invoke(formattingOptions));
+							/* manageTrailingCommas */ Optional.ofNullable(options.manageTrailingCommas).orElse((Boolean) formattingOptionsClass.getMethod("getManageTrailingCommas").invoke(formattingOptions)));
 				}
 			}
 

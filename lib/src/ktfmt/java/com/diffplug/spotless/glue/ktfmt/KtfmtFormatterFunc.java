@@ -75,8 +75,8 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 					ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
 					ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
 					ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
-					formattingOptions.getManageTrailingCommas(),
-					ktfmtFormattingOptions.getRemoveUnusedImport().orElse(formattingOptions.getRemoveUnusedImports()),
+					ktfmtFormattingOptions.getManageTrailingCommas().orElse(formattingOptions.getManageTrailingCommas()),
+					ktfmtFormattingOptions.getRemoveUnusedImports().orElse(formattingOptions.getRemoveUnusedImports()),
 					formattingOptions.getDebuggingPrintOpsAfterFormatting());
 		}
 
