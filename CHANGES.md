@@ -15,7 +15,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `ktfmt` version to latest `0.49` -> `0.51`. ([#2172](https://github.com/diffplug/spotless/pull/2172))
 * Rename property `ktfmt` option `removeUnusedImport` -> `removeUnusedImports` to match `ktfmt`. ([#2172](https://github.com/diffplug/spotless/pull/2172))
 * Bump default `eclipse` version to latest `4.29` -> `4.32`. ([#2179](https://github.com/diffplug/spotless/pull/2179))
-* Bump default `greclipse` version to latest `4.49` -> `4.31`. ([#2179](https://github.com/diffplug/spotless/pull/2179))
+* Bump default `greclipse` version to latest `4.29` -> `4.31`. ([#2179](https://github.com/diffplug/spotless/pull/2179))
 * Bump default `cdt` version to latest `11.3` -> `11.6`. ([#2179](https://github.com/diffplug/spotless/pull/2179))
 ### Fixed
 * Fix compatibility issue introduced by `ktfmt` `0.51`. ([#2172](https://github.com/diffplug/spotless/issues/2172))
