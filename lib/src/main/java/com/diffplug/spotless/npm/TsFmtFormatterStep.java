@@ -94,7 +94,7 @@ public class TsFmtFormatterStep {
 		public FormatterFunc createFormatterFunc() {
 			try {
 				Map<String, Object> tsFmtOptions = unifyOptions();
-				ServerProcessInfo tsfmtRestServer = toRuntime().npmRunServer();
+				NpmServerProcessInfo tsfmtRestServer = toRuntime().npmRunServer();
 				TsFmtRestService restService = new TsFmtRestService(tsfmtRestServer.getBaseUrl());
 				return Closeable.ofDangerous(() -> endServer(restService, tsfmtRestServer), input -> restService.format(input, tsFmtOptions));
 			} catch (IOException e) {
@@ -116,7 +116,7 @@ public class TsFmtFormatterStep {
 			return unified;
 		}
 
-		private void endServer(TsFmtRestService restService, ServerProcessInfo restServer) throws Exception {
+		private void endServer(TsFmtRestService restService, NpmServerProcessInfo restServer) throws Exception {
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {

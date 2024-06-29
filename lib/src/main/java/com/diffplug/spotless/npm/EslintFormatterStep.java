@@ -73,9 +73,10 @@ public class EslintFormatterStep {
 		requireNonNull(provisioner);
 		requireNonNull(projectDir);
 		requireNonNull(buildDir);
-		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, eslintConfig),
-				State::createFormatterFunc);
+		return new EslintFormatterStep2(devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, eslintConfig);
+		//		return FormatterStep.createLazy(NAME,
+		//				() -> new State(NAME, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, eslintConfig),
+		//				State::createFormatterFunc);
 	}
 
 	private static class State extends NpmFormatterStepStateBase implements Serializable {
@@ -122,7 +123,7 @@ public class EslintFormatterStep {
 			try {
 				logger.info("Creating formatter function (starting server)");
 				Runtime runtime = toRuntime();
-				ServerProcessInfo eslintRestServer = runtime.npmRunServer();
+				NpmServerProcessInfo eslintRestServer = runtime.npmRunServer();
 				EslintRestService restService = new EslintRestService(eslintRestServer.getBaseUrl());
 				return Closeable.ofDangerous(() -> endServer(restService, eslintRestServer), new EslintFilePathPassingFormatterFunc(locations.projectDir(), runtime.nodeServerLayout().nodeModulesDir(), eslintConfigInUse, restService));
 			} catch (IOException e) {
@@ -130,7 +131,7 @@ public class EslintFormatterStep {
 			}
 		}
 
-		private void endServer(BaseNpmRestService restService, ServerProcessInfo restServer) throws Exception {
+		private void endServer(BaseNpmRestService restService, NpmServerProcessInfo restServer) throws Exception {
 			logger.info("Closing formatting function (ending server).");
 			try {
 				restService.shutdown();
