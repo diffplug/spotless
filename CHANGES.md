@@ -17,7 +17,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `eclipse` version to latest `4.29` -> `4.32`. ([#2179](https://github.com/diffplug/spotless/pull/2179))
 * Bump default `greclipse` version to latest `4.29` -> `4.32`. ([#2179](https://github.com/diffplug/spotless/pull/2179), [#2190](https://github.com/diffplug/spotless/pull/2190))
 * Bump default `cdt` version to latest `11.3` -> `11.6`. ([#2179](https://github.com/diffplug/spotless/pull/2179))
-* Fix `spaceBeforeSeparator` in Jackson formatter
+* Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))
 ### Fixed
 * Fix compatibility issue introduced by `ktfmt` `0.51`. ([#2172](https://github.com/diffplug/spotless/issues/2172))
 ### Added
