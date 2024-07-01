@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.SpotlessCache;
@@ -28,12 +29,13 @@ public class SpotlessPlugin implements Plugin<Project> {
 	static final String SPOTLESS_MODERN = "spotlessModern";
 	static final String VER_GRADLE_min = "6.1.1";
 	static final String VER_GRADLE_javaPluginExtension = "7.1";
+	static final String VER_GRADLE_minVersionForCustom = "8.0";
 	private static final int MINIMUM_JRE = 11;
 
 	@Override
 	public void apply(Project project) {
-		if (SpotlessPluginRedirect.gradleIsTooOld(project)) {
-			throw new GradleException("Spotless requires Gradle " + VER_GRADLE_min + " or newer, this was " + project.getGradle().getGradleVersion());
+		if (SpotlessPluginRedirect.gradleIsTooOld()) {
+			throw new GradleException("Spotless requires Gradle " + VER_GRADLE_min + " or newer, this was " + GradleVersion.current().getVersion());
 		}
 		if (Jvm.version() < MINIMUM_JRE) {
 			throw new GradleException("Spotless requires JRE " + MINIMUM_JRE + " or newer, this was " + JavaVersion.current() + ".\n"

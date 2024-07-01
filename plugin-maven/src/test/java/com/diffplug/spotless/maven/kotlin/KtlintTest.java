@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,17 @@ class KtlintTest extends MavenIntegrationHarness {
 	void testReadCodeStyleFromEditorConfigFile() throws Exception {
 		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
 		writePomWithKotlinSteps("<ktlint/>");
+		checkKtlintOfficialStyle();
+	}
+
+	@Test
+	void testEditorConfigOverrideWithUnsetCodeStyleDoesNotOverrideEditorConfigCodeStyleWithDefault() throws Exception {
+		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
+		writePomWithKotlinSteps("<ktlint>\n" +
+				"  <editorConfigOverride>\n" +
+				"    <ktlint_test_key>true</ktlint_test_key>\n" +
+				"  </editorConfigOverride>\n" +
+				"</ktlint>");
 		checkKtlintOfficialStyle();
 	}
 

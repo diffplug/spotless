@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,12 +71,6 @@ public interface FormatterFunc {
 			};
 		}
 
-		/** @deprecated synonym for {@link #ofDangerous(AutoCloseable, FormatterFunc)} */
-		@Deprecated
-		public static Closeable of(AutoCloseable closeable, FormatterFunc function) {
-			return ofDangerous(closeable, function);
-		}
-
 		@FunctionalInterface
 		interface ResourceFunc<T extends AutoCloseable> {
 			String apply(T resource, String unix) throws Exception;
@@ -121,7 +115,7 @@ public interface FormatterFunc {
 
 				@Override
 				public String apply(String unix, File file) throws Exception {
-					FormatterStepImpl.checkNotSentinel(file);
+					Formatter.checkNotSentinel(file);
 					return function.apply(resource, unix, file);
 				}
 
@@ -150,7 +144,7 @@ public interface FormatterFunc {
 
 		@Override
 		default String apply(String unix, File file) throws Exception {
-			FormatterStepImpl.checkNotSentinel(file);
+			Formatter.checkNotSentinel(file);
 			return applyWithFile(unix, file);
 		}
 

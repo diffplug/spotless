@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![MavenCentral](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.43.0-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.43.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.44.0.BETA1-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.44.0.BETA1/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -392,12 +392,17 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ### ktfmt
 
-[homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
+[homepage](https://github.com/facebook/ktfmt). [changelog](https://github.com/facebook/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
 
 ```xml
 <ktfmt>
-  <version>0.39</version> <!-- optional -->
-  <style>DEFAULT</style> <!-- optional, other options are DROPBOX, GOOGLE and KOTLINLANG -->
+  <version>0.51</version> <!-- optional -->
+  <style>KOTLINLANG</style> <!-- optional, options are META (default), GOOGLE and KOTLINLANG -->
+  <maxWidth>120</maxWidth> <!-- optional -->
+  <blockIndent>4</blockIndent> <!-- optional -->
+  <continuationIndent>8</continuationIndent> <!-- optional -->
+  <removeUnusedImports>false</removeUnusedImports> <!-- optional -->
+  <manageTrailingCommas>true</manageTrailingCommas> <!-- optional -->
 </ktfmt>
 ```
 
@@ -419,6 +424,8 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
   <editorConfigOverride> <!-- optional -->
     <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>
     <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>
+    <!-- intellij_idea is the default style we preset in Spotless, you can override it referring to https://pinterest.github.io/ktlint/latest/rules/code-styles. -->
+    <ktlint_code_style>intellij_idea</ktlint_code_style>
   </editorConfigOverride>
   <customRuleSets> <!-- optional -->
     <value>io.nlopez.compose.rules:ktlint:0.3.3</value>
@@ -666,6 +673,8 @@ All configuration settings are optional, they are described in detail [here](htt
   <indentBlankLines>false</indentBlankLines> <!-- Should empty lines be indented -->
 
   <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indented -->
+
+  <indentAttribute></indentAttribute> <!-- Should the xml attributes be indented -->
 
   <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles-->
 
@@ -1078,7 +1087,7 @@ Uses a Gherkin pretty-printer that optionally allows configuring the number of s
 
 ```xml
 <gherkinUtils>
-  <version>8.0.2</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
+  <version>9.0.0</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
 </gherkinUtils>
 ```
 
@@ -1327,12 +1336,6 @@ to true.
 a formatter that for the frontend written in Rust, which has a native binary, does not require Node.js and as such,
 is pretty fast. It can currently format JavaScript, TypeScript, JSX, and JSON, and may support
 [more frontend languages](https://biomejs.dev/internals/language-support/) such as CSS in the future.
-
-Note: Biome [was formerly called Rome](https://biomejs.dev/blog/annoucing-biome/). Configurations with
-the old `<rome>` tag and `rome(...)` function are still supported for the time being. This will be removed
-in a future version, you should migrate to the new `<biome>` tag or `biome(...)` function. The configuration
-remains the same, you only need to update the version. If you are using a custom `rome.json` configuration file,
-you need to rename it to `biome.json`.
 
 You can use Biome in any language-specific format for supported languages, but
 usually you will be creating a generic format.

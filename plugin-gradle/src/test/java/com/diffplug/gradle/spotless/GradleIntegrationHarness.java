@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
 	public enum GradleVersionSupport {
-		JRE_11("5.0"), MINIMUM(SpotlessPlugin.VER_GRADLE_min),
+		JRE_11("5.0"), MINIMUM(SpotlessPlugin.VER_GRADLE_min), CUSTOM_STEPS(SpotlessPlugin.VER_GRADLE_minVersionForCustom),
 		// technically, this API exists in 6.5, but the flags for it change in 6.6, so we build to that
 		CONFIGURATION_CACHE("6.6"),
 		// https://docs.gradle.org/7.5/userguide/configuration_cache.html#config_cache:stable
@@ -54,8 +54,11 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		GradleVersionSupport(String version) {
 			String minVersionForRunningJRE;
 			switch (Jvm.version()) {
-			case 22:
+			case 23:
 				// TODO: https://docs.gradle.org/current/userguide/compatibility.html
+			case 22:
+				minVersionForRunningJRE = "8.8";
+				break;
 			case 21:
 				minVersionForRunningJRE = "8.5";
 				break;
@@ -116,8 +119,14 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	}
 
 	protected GradleRunner gradleRunner() throws IOException {
+		GradleVersionSupport version;
+		if (newFile("build.gradle").exists() && read("build.gradle").contains("custom")) {
+			version = GradleVersionSupport.CUSTOM_STEPS;
+		} else {
+			version = GradleVersionSupport.MINIMUM;
+		}
 		return GradleRunner.create()
-				.withGradleVersion(GradleVersionSupport.MINIMUM.version)
+				.withGradleVersion(version.version)
 				.withProjectDir(rootFolder())
 				.withTestKitDir(getTestKitDir())
 				.withPluginClasspath();

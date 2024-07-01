@@ -15,12 +15,15 @@
  */
 package com.diffplug.spotless.java;
 
+import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
+import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
@@ -33,14 +36,14 @@ import com.diffplug.spotless.Provisioner;
  * @author Benoit Lacelle
  */
 // https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-to-add-a-new-formatterstep
-public final class CleanthatJavaStep implements java.io.Serializable {
+public final class CleanthatJavaStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "cleanthat";
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
 	/**
 	 * CleanThat changelog is available at <a href="https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD">here</a>.
 	 */
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.16");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.20");
 
 	private final JarState.Promised jarState;
 	private final String version;
@@ -156,6 +159,32 @@ public final class CleanthatJavaStep implements java.io.Serializable {
 			this.includeDraft = includeDraft;
 		}
 
+		private static class JvmSupportFormatterFunc implements FormatterFunc {
+
+			final Object formatter;
+			final Method formatterMethod;
+
+			private JvmSupportFormatterFunc(Object formatter, Method formatterMethod) {
+				this.formatter = formatter;
+				this.formatterMethod = formatterMethod;
+			}
+
+			@Override
+			public String apply(String input) throws Exception {
+				return apply(input, Formatter.NO_FILE_SENTINEL);
+			}
+
+			@Override
+			public String apply(String input, File file) throws Exception {
+				if (file.isAbsolute()) {
+					// Cleanthat expects a relative file as input (relative to the root of the repository)
+					Path absolutePath = file.toPath();
+					file = absolutePath.subpath(1, absolutePath.getNameCount()).toFile();
+				}
+				return (String) formatterMethod.invoke(formatter, input, file);
+			}
+		}
+
 		FormatterFunc createFormat() {
 			ClassLoader classLoader = jarState.getClassLoader();
 
@@ -166,12 +195,14 @@ public final class CleanthatJavaStep implements java.io.Serializable {
 				Constructor<?> formatterConstructor = formatterClazz.getConstructor(String.class, List.class, List.class, boolean.class);
 
 				formatter = formatterConstructor.newInstance(sourceJdkVersion, included, excluded, includeDraft);
-				formatterMethod = formatterClazz.getMethod("apply", String.class);
+				formatterMethod = formatterClazz.getMethod("apply", String.class, File.class);
 			} catch (ReflectiveOperationException e) {
 				throw new IllegalStateException("Issue executing the formatter", e);
 			}
 
-			return JVM_SUPPORT.suggestLaterVersionOnError(version, input -> (String) formatterMethod.invoke(formatter, input));
+			FormatterFunc formatterFunc = new JvmSupportFormatterFunc(formatter, formatterMethod);
+
+			return JVM_SUPPORT.suggestLaterVersionOnError(version, formatterFunc);
 		}
 	}
 }

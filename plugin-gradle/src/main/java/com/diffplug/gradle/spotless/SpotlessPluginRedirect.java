@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,14 @@ import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.common.base.StringPrinter;
 
 public class SpotlessPluginRedirect implements Plugin<Project> {
 	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)");
 
-	private static int badSemver(String input) {
+	static int badSemver(String input) {
 		Matcher matcher = BAD_SEMVER.matcher(input);
 		if (!matcher.find() || matcher.start() != 0) {
 			throw new IllegalArgumentException("Version must start with " + BAD_SEMVER.pattern());
@@ -37,18 +38,17 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 		return badSemver(Integer.parseInt(major), Integer.parseInt(minor));
 	}
 
+	static int badSemverOfGradle() {
+		return badSemver(GradleVersion.current().getVersion());
+	}
+
 	/** Ambiguous after 2147.483647.blah-blah */
 	private static int badSemver(int major, int minor) {
 		return major * 1_000_000 + minor;
 	}
 
-	static Boolean gradleIsTooOld;
-
-	static boolean gradleIsTooOld(Project project) {
-		if (gradleIsTooOld == null) {
-			gradleIsTooOld = badSemver(project.getGradle().getGradleVersion()) < badSemver(SpotlessPlugin.VER_GRADLE_min);
-		}
-		return gradleIsTooOld.booleanValue();
+	static boolean gradleIsTooOld() {
+		return badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_min);
 	}
 
 	@Override
@@ -72,8 +72,8 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 				"",
 				"If you like the idea behind 'ratchetFrom', you should checkout spotless-changelog",
 				"https://github.com/diffplug/spotless-changelog");
-		if (gradleIsTooOld(project)) {
-			errorMsg = errorMsg.replace("To migrate:\n", "To migrate:\n- Upgrade Gradle to " + SpotlessPlugin.VER_GRADLE_min + " or newer (you're on " + project.getGradle().getGradleVersion() + ")\n");
+		if (gradleIsTooOld()) {
+			errorMsg = errorMsg.replace("To migrate:\n", "To migrate:\n- Upgrade Gradle to " + SpotlessPlugin.VER_GRADLE_min + " or newer (you're on " + GradleVersion.current().getVersion() + ")\n");
 		}
 		throw new GradleException(errorMsg);
 	}

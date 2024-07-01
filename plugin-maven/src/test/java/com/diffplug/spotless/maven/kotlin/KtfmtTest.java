@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class KtfmtTest extends MavenIntegrationHarness {
 
 	@Test
 	void testKtfmtStyle() throws Exception {
-		writePomWithKotlinSteps("<ktfmt><style>DROPBOX</style></ktfmt>");
+		writePomWithKotlinSteps("<ktfmt><version>0.50</version><style>DROPBOX</style></ktfmt>");
 
 		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/basic.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -65,10 +65,19 @@ class KtfmtTest extends MavenIntegrationHarness {
 
 	@Test
 	void testKtfmtStyleWithMaxWidthOption() throws Exception {
-		writePomWithKotlinSteps("<ktfmt><style>DROPBOX</style><maxWidth>120</maxWidth></ktfmt>");
+		writePomWithKotlinSteps("<ktfmt><version>0.17</version><style>DROPBOX</style><maxWidth>120</maxWidth></ktfmt>");
 
 		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/max-width.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("src/main/kotlin/main.kt").sameAsResource("kotlin/ktfmt/max-width-dropbox.clean");
+	}
+
+	@Test
+	void testKtfmtWithManageTrailingCommasOption() throws Exception {
+		writePomWithKotlinSteps("<ktfmt><version>0.49</version><style>DROPBOX</style><manageTrailingCommas>true</manageTrailingCommas></ktfmt>");
+
+		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/trailing-commas.dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("src/main/kotlin/main.kt").sameAsResource("kotlin/ktfmt/trailing-commas.clean");
 	}
 }

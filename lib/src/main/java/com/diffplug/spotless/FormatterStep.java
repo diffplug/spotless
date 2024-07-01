@@ -47,19 +47,6 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	String format(String rawUnix, File file) throws Exception;
 
 	/**
-	 * Returns a new FormatterStep which will only apply its changes
-	 * to files which pass the given filter.
-	 *
-	 * @param contentPattern
-	 *            java regular expression used to filter out files which content doesn't contain pattern
-	 * @return FormatterStep
-	 */
-	@Deprecated
-	default FormatterStep filterByContentPattern(String contentPattern) {
-		return filterByContent(OnMatch.INCLUDE, contentPattern);
-	}
-
-	/**
 	 * Returns a new {@code FormatterStep} which, observing the value of {@code formatIfMatches},
 	 * will only apply, or not, its changes to files which pass the given filter.
 	 *
@@ -81,28 +68,6 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	 */
 	default FormatterStep filterByFile(SerializableFileFilter filter) {
 		return new FilterByFileFormatterStep(this, filter);
-	}
-
-	/**
-	 * Implements a FormatterStep in a strict way which guarantees correct and lazy implementation
-	 * of up-to-date checks.  This maximizes performance for cases where the FormatterStep is not
-	 * actually needed (e.g. don't load eclipse setting file unless this step is actually running)
-	 * while also ensuring that Gradle can detect changes in a step's settings to determine that
-	 * it needs to rerun a format.
-	 */
-	abstract class Strict<State extends Serializable> extends LazyForwardingEquality<State> implements FormatterStep {
-		private static final long serialVersionUID = 1L;
-
-		/**
-		 * Implements the formatting function strictly in terms
-		 * of the input data and the result of {@link #calculateState()}.
-		 */
-		protected abstract String format(State state, String rawUnix, File file) throws Exception;
-
-		@Override
-		public final String format(String rawUnix, File file) throws Exception {
-			return format(state(), rawUnix, file);
-		}
 	}
 
 	/**
@@ -164,8 +129,8 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	static <State extends Serializable> FormatterStep createLazy(
 			String name,
 			ThrowingEx.Supplier<State> stateSupplier,
-			ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
-		return new FormatterStepImpl.Standard<>(name, stateSupplier, stateToFormatter);
+			SerializedFunction<State, FormatterFunc> stateToFormatter) {
+		return createLazy(name, stateSupplier, SerializedFunction.identity(), stateToFormatter);
 	}
 
 	/**
@@ -181,38 +146,8 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	static <State extends Serializable> FormatterStep create(
 			String name,
 			State state,
-			ThrowingEx.Function<State, FormatterFunc> stateToFormatter) {
+			SerializedFunction<State, FormatterFunc> stateToFormatter) {
 		Objects.requireNonNull(state, "state");
 		return createLazy(name, () -> state, stateToFormatter);
-	}
-
-	/**
-	 * @param name
-	 *             The name of the formatter step
-	 * @param functionSupplier
-	 *             A supplier which will lazily generate the function
-	 *             used by the formatter step
-	 * @return A FormatterStep which will never report that it is up-to-date, because
-	 *         it is not equal to the serialized representation of itself.
-	 */
-	static FormatterStep createNeverUpToDateLazy(
-			String name,
-			ThrowingEx.Supplier<FormatterFunc> functionSupplier) {
-		return new FormatterStepImpl.NeverUpToDate(name, functionSupplier);
-	}
-
-	/**
-	 * @param name
-	 *             The name of the formatter step
-	 * @param function
-	 *             The function used by the formatter step
-	 * @return A FormatterStep which will never report that it is up-to-date, because
-	 *         it is not equal to the serialized representation of itself.
-	 */
-	static FormatterStep createNeverUpToDate(
-			String name,
-			FormatterFunc function) {
-		Objects.requireNonNull(function, "function");
-		return createNeverUpToDateLazy(name, () -> function);
 	}
 }

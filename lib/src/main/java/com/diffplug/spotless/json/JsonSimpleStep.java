@@ -29,7 +29,7 @@ import com.diffplug.spotless.Provisioner;
 /**
  * Simple JSON formatter which reformats the file according to the org.json library's default pretty-printing, but has no ability to customise more than the indentation size.
  */
-public final class JsonSimpleStep implements java.io.Serializable {
+public final class JsonSimpleStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "org.json:json:";
 	private static final String DEFAULT_VERSION = "20210307";

@@ -24,10 +24,10 @@ import org.gradle.api.services.BuildServiceParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.generic.ReplaceStep;
 
 class FormatTaskTest extends ResourceHarness {
 	private SpotlessTaskImpl spotlessTask;
@@ -62,7 +62,7 @@ class FormatTaskTest extends ResourceHarness {
 		File outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
 		spotlessTask.setTarget(Collections.singleton(testFile));
 
-		spotlessTask.setSteps(List.of(FormatterStep.createNeverUpToDate("double-p", content -> content.replace("pp", "p"))));
+		spotlessTask.setSteps(List.of(ReplaceStep.create("double-p", "pp", "p")));
 		Tasks.execute(spotlessTask);
 
 		assertFile(outputFile).hasContent("aple");

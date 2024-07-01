@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.SerializableFileFilter;
+import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.ThrowingEx;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -119,15 +120,22 @@ public final class LicenseHeaderStep {
 		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
 	}
 
-	public FormatterStep build() {
-		FormatterStep formatterStep = null;
+	private static class SetLicenseHeaderYearsFromGitHistory implements SerializedFunction<Runtime, FormatterFunc> {
+		private static final long serialVersionUID = 1L;
 
+		@Override
+		public FormatterFunc apply(Runtime input) throws Exception {
+			return FormatterFunc.needsFile(input::setLicenseHeaderYearsFromGitHistory);
+		}
+	}
+
+	public FormatterStep build() {
+		FormatterStep formatterStep;
 		if (yearMode.get() == YearMode.SET_FROM_GIT) {
-			formatterStep = FormatterStep.createNeverUpToDateLazy(name, () -> {
+			formatterStep = FormatterStep.createLazy(name, () -> {
 				boolean updateYear = false; // doesn't matter
-				Runtime runtime = new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
-				return FormatterFunc.needsFile(runtime::setLicenseHeaderYearsFromGitHistory);
-			});
+				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
+			}, new SetLicenseHeaderYearsFromGitHistory());
 		} else {
 			formatterStep = FormatterStep.createLazy(name, () -> {
 				// by default, we should update the year if the user is using ratchetFrom
@@ -146,11 +154,9 @@ public final class LicenseHeaderStep {
 				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
 			}, step -> FormatterFunc.needsFile(step::format));
 		}
-
 		if (contentPattern == null) {
 			return formatterStep;
 		}
-
 		return formatterStep.filterByContent(OnMatch.INCLUDE, contentPattern);
 	}
 

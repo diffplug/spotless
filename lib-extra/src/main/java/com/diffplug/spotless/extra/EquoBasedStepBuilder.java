@@ -53,12 +53,6 @@ public abstract class EquoBasedStepBuilder {
 	private Iterable<File> settingsFiles = new ArrayList<>();
 	private Map<String, String> p2Mirrors = Map.of();
 
-	/** @deprecated if you use this constructor you *must* call {@link #setVersion(String)} before calling {@link #build()} */
-	@Deprecated
-	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, SerializedFunction<State, FormatterFunc> stateToFormatter) {
-		this(formatterName, mavenProvisioner, null, stateToFormatter);
-	}
-
 	/** Initialize valid default configuration, taking latest version */
 	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, @Nullable String defaultVersion, SerializedFunction<State, FormatterFunc> stateToFormatter) {
 		this.formatterName = formatterName;
@@ -113,7 +107,7 @@ public abstract class EquoBasedStepBuilder {
 			}
 			var classpath = new ArrayList<File>();
 			var mavenDeps = new ArrayList<String>();
-			mavenDeps.add("dev.equo.ide:solstice:1.7.5");
+			mavenDeps.add("dev.equo.ide:solstice:1.7.6");
 			mavenDeps.add("com.diffplug.durian:durian-swt.os:4.2.0");
 			mavenDeps.addAll(query.getJarsOnMavenCentral());
 			classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
@@ -149,7 +143,7 @@ public abstract class EquoBasedStepBuilder {
 		return model;
 	}
 
-	static class EquoStep implements java.io.Serializable {
+	static class EquoStep implements Serializable {
 		private static final long serialVersionUID = 1;
 		private final String semanticVersion;
 		private final FileSignature.Promised settingsPromise;

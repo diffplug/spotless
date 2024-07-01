@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,36 +23,23 @@ import java.util.TreeMap;
 import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.ThrowingEx;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class PrettierConfig implements Serializable {
 
 	private static final long serialVersionUID = -8709340269833126583L;
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	@Nullable
-	private final transient File prettierConfigPath;
-
-	@SuppressWarnings("unused")
-	private final FileSignature prettierConfigPathSignature;
+	private final FileSignature.Promised prettierConfigPathSignature;
 
 	private final TreeMap<String, Object> options;
 
 	public PrettierConfig(@Nullable File prettierConfigPath, @Nullable Map<String, Object> options) {
-		try {
-			this.prettierConfigPath = prettierConfigPath;
-			this.prettierConfigPathSignature = prettierConfigPath != null ? FileSignature.signAsList(this.prettierConfigPath) : FileSignature.signAsList();
-			this.options = options == null ? new TreeMap<>() : new TreeMap<>(options);
-		} catch (IOException e) {
-			throw ThrowingEx.asRuntime(e);
-		}
+		this.prettierConfigPathSignature = prettierConfigPath == null ? null : FileSignature.promise(prettierConfigPath);
+		this.options = options == null ? new TreeMap<>() : new TreeMap<>(options);
 	}
 
 	@Nullable
 	public File getPrettierConfigPath() {
-		return prettierConfigPath;
+		return prettierConfigPathSignature == null ? null : prettierConfigPathSignature.get().getOnlyFile();
 	}
 
 	public Map<String, Object> getOptions() {

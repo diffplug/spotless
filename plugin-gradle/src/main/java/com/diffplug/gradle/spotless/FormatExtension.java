@@ -16,6 +16,8 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+import static com.diffplug.gradle.spotless.SpotlessPluginRedirect.badSemver;
+import static com.diffplug.gradle.spotless.SpotlessPluginRedirect.badSemverOfGradle;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -44,6 +46,7 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
@@ -53,6 +56,8 @@ import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.SerializedFunction;
+import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
@@ -67,7 +72,6 @@ import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
-import com.diffplug.spotless.rome.BiomeFlavor;
 
 import groovy.lang.Closure;
 
@@ -427,7 +431,21 @@ public class FormatExtension {
 	 */
 	public void custom(String name, Closure<String> formatter) {
 		requireNonNull(formatter, "formatter");
-		custom(name, formatter::call);
+		Closure<String> dehydrated = formatter.dehydrate();
+		custom(name, new ClosureFormatterFunc(dehydrated));
+	}
+
+	static class ClosureFormatterFunc implements FormatterFunc, Serializable {
+		private final Closure<String> closure;
+
+		ClosureFormatterFunc(Closure<String> closure) {
+			this.closure = closure;
+		}
+
+		@Override
+		public String apply(String unixNewlines) {
+			return closure.call(unixNewlines);
+		}
 	}
 
 	/**
@@ -436,7 +454,13 @@ public class FormatExtension {
 	 */
 	public void custom(String name, FormatterFunc formatter) {
 		requireNonNull(formatter, "formatter");
-		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatter));
+		if (badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_minVersionForCustom)) {
+			throw new GradleException("The 'custom' method is only available if you are using Gradle "
+					+ SpotlessPlugin.VER_GRADLE_minVersionForCustom
+					+ " or newer, this is "
+					+ GradleVersion.current().getVersion());
+		}
+		addStep(FormatterStep.createLazy(name, () -> globalState, SerializedFunction.alwaysReturns(formatter)));
 	}
 
 	/** Highly efficient find-replace char sequence. */
@@ -728,15 +752,15 @@ public class FormatExtension {
 	 * the file name. It should be specified as a formatter step for a generic
 	 * <code>format{ ... }</code>.
 	 */
-	public class BiomeGeneric extends RomeStepConfig<BiomeGeneric> {
+	public class BiomeGeneric extends BiomeStepConfig<BiomeGeneric> {
 		@Nullable
 		String language;
 
 		/**
-		 * Creates a new Rome config that downloads the Rome executable for the given
+		 * Creates a new Biome config that downloads the Biome executable for the given
 		 * version from the network.
 		 *
-		 * @param version Rome version to use. The default version is used when
+		 * @param version Biome version to use. The default version is used when
 		 *                <code>null</code>.
 		 */
 		public BiomeGeneric(String version) {
@@ -779,65 +803,6 @@ public class FormatExtension {
 		}
 	}
 
-	/**
-	 * Generic Rome formatter step that detects the language of the input file from
-	 * the file name. It should be specified as a formatter step for a generic
-	 * <code>format{ ... }</code>.
-	 *
-	 * @deprecated Rome has transitioned to Biome. This will be removed shortly.
-	 */
-	@Deprecated
-	public class RomeGeneric extends RomeStepConfig<RomeGeneric> {
-		@Nullable
-		String language;
-
-		/**
-		 * Creates a new Rome config that downloads the Rome executable for the given
-		 * version from the network.
-		 *
-		 * @param version Rome version to use. The default version is used when
-		 *                <code>null</code>.
-		 */
-		public RomeGeneric(String version) {
-			super(getProject(), FormatExtension.this::replaceStep, BiomeFlavor.ROME, version);
-		}
-
-		/**
-		 * Sets the language (syntax) of the input files to format. When
-		 * <code>null</code> or the empty string, the language is detected automatically
-		 * from the file name. Currently the following languages are supported by Rome:
-		 * <ul>
-		 * <li>js (JavaScript)</li>
-		 * <li>jsx (JavaScript + JSX)</li>
-		 * <li>js? (JavaScript or JavaScript + JSX, depending on the file
-		 * extension)</li>
-		 * <li>ts (TypeScript)</li>
-		 * <li>tsx (TypeScript + JSX)</li>
-		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
-		 * extension)</li>
-		 * <li>json (JSON)</li>
-		 * </ul>
-		 *
-		 * @param language The language of the files to format.
-		 * @return This step for further configuration.
-		 */
-		public RomeGeneric language(String language) {
-			this.language = language;
-			replaceStep();
-			return this;
-		}
-
-		@Override
-		protected String getLanguage() {
-			return language;
-		}
-
-		@Override
-		protected RomeGeneric getThis() {
-			return this;
-		}
-	}
-
 	/** Uses the default version of prettier. */
 	public PrettierConfig prettier() {
 		return prettier(PrettierFormatterStep.defaultDevDependencies());
@@ -860,39 +825,15 @@ public class FormatExtension {
 	 * offline, you can specify the path to the Biome executable via
 	 * {@code biome().pathToExe(...)}.
 	 */
-	public RomeStepConfig<?> biome() {
+	public BiomeStepConfig<?> biome() {
 		return biome(null);
 	}
 
 	/** Downloads the given Biome version from the network. */
-	public RomeStepConfig<?> biome(String version) {
+	public BiomeStepConfig<?> biome(String version) {
 		var biomeConfig = new BiomeGeneric(version);
 		addStep(biomeConfig.createStep());
 		return biomeConfig;
-	}
-
-	/**
-	 * Defaults to downloading the default Rome version from the network. To work
-	 * offline, you can specify the path to the Rome executable via
-	 * {@code rome().pathToExe(...)}.
-	 *
-	 * @deprecated Use {@link #biome(String)}.
-	 */
-	@Deprecated
-	public RomeStepConfig<?> rome() {
-		return rome(null);
-	}
-
-	/**
-	 * Downloads the given Rome version from the network.
-	 *
-	 * @deprecated Use {@link #biome(String)}.
-	 */
-	@Deprecated
-	public RomeStepConfig<?> rome(String version) {
-		var romeConfig = new RomeGeneric(version);
-		addStep(romeConfig.createStep());
-		return romeConfig;
 	}
 
 	/** Uses the default version of clang-format. */

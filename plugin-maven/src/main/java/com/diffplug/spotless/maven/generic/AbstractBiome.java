@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.rome;
+package com.diffplug.spotless.maven.generic;
 
 import java.nio.file.Paths;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.biome.BiomeFlavor;
+import com.diffplug.spotless.biome.BiomeStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.rome.BiomeFlavor;
-import com.diffplug.spotless.rome.RomeStep;
 
 /**
  * Factory for creating the Biome formatter step that can format format code in
@@ -32,11 +32,11 @@ import com.diffplug.spotless.rome.RomeStep;
  * "https://github.com/biomejs/biome">https://github.com/biomejs/biome</a>. It
  * delegates to the Biome CLI executable.
  */
-public abstract class AbstractRome implements FormatterStepFactory {
+public abstract class AbstractBiome implements FormatterStepFactory {
 	/** Biome flavor to use. */
 	private BiomeFlavor flavor;
 
-	protected AbstractRome(BiomeFlavor flavor) {
+	protected AbstractBiome(BiomeFlavor flavor) {
 		this.flavor = flavor;
 	}
 
@@ -133,13 +133,13 @@ public abstract class AbstractRome implements FormatterStepFactory {
 	 *               the currently executed project.
 	 * @return A builder for a Biome step.
 	 */
-	private RomeStep newBuilder(FormatterStepConfig config) {
+	private BiomeStep newBuilder(FormatterStepConfig config) {
 		if (pathToExe != null) {
 			var resolvedExePath = resolveExePath(config);
-			return RomeStep.withExePath(flavor, resolvedExePath);
+			return BiomeStep.withExePath(flavor, resolvedExePath);
 		} else {
 			var downloadDir = resolveDownloadDir(config);
-			return RomeStep.withExeDownload(flavor, version, downloadDir);
+			return BiomeStep.withExeDownload(flavor, version, downloadDir);
 		}
 	}
 

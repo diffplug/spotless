@@ -29,10 +29,10 @@ import com.diffplug.spotless.Provisioner;
  * Simple YAML formatter which reformats the file according to Jackson YAMLFactory.
  */
 // https://stackoverflow.com/questions/14515994/convert-json-string-to-pretty-print-json-output-using-jackson
-public class JacksonJsonStep implements java.io.Serializable {
+public class JacksonJsonStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.core:jackson-databind:";
-	private static final String DEFAULT_VERSION = "2.14.2";
+	private static final String DEFAULT_VERSION = "2.17.1";
 	public static final String NAME = "jacksonJson";
 
 	private final JarState.Promised jarState;

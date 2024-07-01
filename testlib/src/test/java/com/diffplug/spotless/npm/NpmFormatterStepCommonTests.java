@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.ThrowingEx;
 
 public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 
@@ -41,18 +41,18 @@ public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 
 	private File buildDir = null;
 
-	protected File buildDir() throws IOException {
+	protected File buildDir() {
 		if (this.buildDir == null) {
-			this.buildDir = newFolder("build-dir");
+			this.buildDir = ThrowingEx.get(() -> newFolder("build-dir"));
 		}
 		return this.buildDir;
 	}
 
 	private File projectDir = null;
 
-	protected File projectDir() throws IOException {
+	protected File projectDir() {
 		if (this.projectDir == null) {
-			this.projectDir = newFolder("project-dir");
+			this.projectDir = ThrowingEx.get(() -> newFolder("project-dir"));
 		}
 		return this.projectDir;
 	}

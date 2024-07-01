@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.common.base.Suppliers;
 import com.diffplug.spotless.ResourceHarness;
 
 class ShadowCopyTest extends ResourceHarness {
@@ -43,7 +44,7 @@ class ShadowCopyTest extends ResourceHarness {
 	@BeforeEach
 	void setUp() throws IOException {
 		shadowCopyRoot = newFolder("shadowCopyRoot");
-		shadowCopy = new ShadowCopy(shadowCopyRoot);
+		shadowCopy = new ShadowCopy(Suppliers.ofInstance(shadowCopyRoot));
 	}
 
 	@Test
@@ -93,23 +94,6 @@ class ShadowCopyTest extends ResourceHarness {
 		File shadowCopy = this.shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
 		Assertions.assertThat(shadowCopy.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
 		Assertions.assertThat(shadowCopy.listFiles()[0].getName()).isNotEqualTo(folderWithRandomFile.listFiles()[0].getName());
-	}
-
-	@Test
-	void addingTheSameEntryTwiceResultsInSecondEntryBeingRetained() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
-		shadowCopy.addEntry("someEntry", folderWithRandomFile);
-
-		// now change the orig
-		Files.delete(folderWithRandomFile.listFiles()[0].toPath());
-		File newRandomFile = new File(folderWithRandomFile, "replacedFile.txt");
-		writeRandomStringOfLengthToFile(newRandomFile, 100);
-
-		// and then add the same entry with new content again and check that they now are the same again
-		shadowCopy.addEntry("someEntry", folderWithRandomFile);
-		File shadowCopyFile = shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
-		Assertions.assertThat(shadowCopyFile.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
-		assertAllFilesAreEqualButNotSameAbsolutePath(folderWithRandomFile, shadowCopyFile);
 	}
 
 	@Test

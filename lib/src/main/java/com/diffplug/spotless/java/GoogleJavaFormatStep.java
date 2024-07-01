@@ -26,7 +26,7 @@ import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/google/google-java-format">google-java-format</a> as a FormatterStep. */
-public class GoogleJavaFormatStep implements java.io.Serializable {
+public class GoogleJavaFormatStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_STYLE = "GOOGLE";
 	private static final boolean DEFAULT_REFLOW_LONG_STRINGS = false;
@@ -121,7 +121,7 @@ public class GoogleJavaFormatStep implements java.io.Serializable {
 			.addMin(11, "1.8") // we only support google-java-format >= 1.8 due to api changes
 			.addMin(16, "1.10.0") // java 16 requires at least 1.10.0 due to jdk api changes in JavaTokenizer
 			.addMin(21, "1.17.0") // java 21 requires at least 1.17.0 due to https://github.com/google/google-java-format/issues/898
-			.add(11, "1.19.2"); // default version
+			.add(11, "1.22.0"); // default version
 
 	public static String defaultGroupArtifact() {
 		return MAVEN_COORDINATE;

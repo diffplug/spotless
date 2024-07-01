@@ -29,10 +29,10 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public class JsonPatchStep implements java.io.Serializable {
+public class JsonPatchStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.flipkart.zjsonpatch:zjsonpatch";
-	private static final String DEFAULT_VERSION = "0.4.14";
+	private static final String DEFAULT_VERSION = "0.4.16";
 	public static final String NAME = "apply-json-patch";
 
 	private final JarState.Promised jarState;

@@ -25,10 +25,10 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public class GherkinUtilsStep implements java.io.Serializable {
+public class GherkinUtilsStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "io.cucumber:gherkin-utils:";
-	private static final String DEFAULT_VERSION = "8.0.2";
+	private static final String DEFAULT_VERSION = "9.0.0";
 	public static final String NAME = "gherkinUtils";
 
 	private final JarState.Promised jarState;

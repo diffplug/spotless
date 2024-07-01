@@ -30,10 +30,10 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/scalameta/scalafmt">scalafmt</a> as a FormatterStep. */
-public class ScalaFmtStep implements java.io.Serializable {
+public class ScalaFmtStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	static final String DEFAULT_VERSION = "3.7.3";
+	static final String DEFAULT_VERSION = "3.8.1";
 
 	private static final String DEFAULT_SCALA_MAJOR_VERSION = "2.13";
 	private static final String NAME = "scalafmt";

@@ -80,7 +80,7 @@ dependencies {
 
 	// GLUE CODE (alphabetic order please)
 	// cleanthat
-	String VER_CLEANTHAT='2.17'
+	String VER_CLEANTHAT='2.20'
 	cleanthatCompileOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	compatCleanthat2Dot1CompileAndTestOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	// diktat old supported version 1.x
@@ -88,20 +88,20 @@ dependencies {
 	// diktat latest supported version 2.x
 	compatDiktat2Dot0Dot0CompileOnly "com.saveourtool.diktat:diktat-runner:2.0.0"
 	// flexmark
-	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.0'
+	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.8'
 	// gherkin
-	gherkinCompileOnly 'io.cucumber:gherkin-utils:8.0.2'
+	gherkinCompileOnly 'io.cucumber:gherkin-utils:9.0.0'
 	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.0'
 	// googleJavaFormat
-	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.19.2'
+	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.22.0'
 	// gson
 	gsonCompileOnly 'com.google.code.gson:gson:2.10.1'
 	// jackson
-	String VER_JACKSON='2.14.2'
+	String VER_JACKSON='2.17.1'
 	jacksonCompileOnly "com.fasterxml.jackson.core:jackson-databind:$VER_JACKSON"
 	jacksonCompileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$VER_JACKSON"
 	// ktfmt
-	ktfmtCompileOnly "com.facebook:ktfmt:0.47"
+	ktfmtCompileOnly "com.facebook:ktfmt:0.51"
 	ktfmtCompileOnly("com.google.googlejavaformat:google-java-format") {
 		version {
 			strictly '1.7' // for JDK 8 compatibility
@@ -126,12 +126,12 @@ dependencies {
 	// palantirJavaFormat
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
 	// scalafmt
-	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:3.7.3"
+	scalafmtCompileOnly "org.scalameta:scalafmt-core_2.13:3.8.1"
 	// sortPom
-	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:3.4.1'
+	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:4.0.0'
 	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.12'
 	// zjsonPatch
-	zjsonPatchCompileOnly 'com.flipkart.zjsonpatch:zjsonpatch:0.4.14'
+	zjsonPatchCompileOnly 'com.flipkart.zjsonpatch:zjsonpatch:0.4.16'
 }
 
 // we'll hold the core lib to a high standard
