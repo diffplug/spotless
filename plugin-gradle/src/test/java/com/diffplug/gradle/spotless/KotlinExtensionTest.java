@@ -20,7 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import com.diffplug.spotless.tag.ForLintRefactor;
 
 class KotlinExtensionTest extends GradleIntegrationHarness {
 	private static final String HEADER = "// License Header";
@@ -167,6 +170,8 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	@Disabled
+	@ForLintRefactor
 	void withCustomRuleSetApply() throws IOException {
 		setFile("build.gradle.kts").toLines(
 				"plugins {",

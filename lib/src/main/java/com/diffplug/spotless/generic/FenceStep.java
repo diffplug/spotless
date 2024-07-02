@@ -18,7 +18,6 @@ package com.diffplug.spotless.generic;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -177,7 +176,6 @@ public class FenceStep {
 					.encoding(StandardCharsets.UTF_8) // can be any UTF, doesn't matter
 					.lineEndingsPolicy(LineEnding.UNIX.createPolicy()) // just internal, won't conflict with user
 					.steps(steps)
-					.rootDir(Path.of("")) // TODO: error messages will be suboptimal for now, but it will get fixed when we ship linting
 					.build();
 		}
 

@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.assertj.core.api.AbstractStringAssert;
@@ -42,8 +41,6 @@ public class StepHarness extends StepHarnessBase {
 				.steps(Arrays.asList(steps))
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(StandardCharsets.UTF_8)
-				.rootDir(Paths.get(""))
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build());
 	}
 
@@ -57,8 +54,6 @@ public class StepHarness extends StepHarnessBase {
 				.steps(Arrays.asList(step))
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(StandardCharsets.UTF_8)
-				.rootDir(Paths.get(""))
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build(), RoundTrip.DONT_ROUNDTRIP);
 	}
 
