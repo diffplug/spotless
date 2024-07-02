@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Changed
+* Support toning down sortPom logging. ([#2185](https://github.com/diffplug/spotless/pull/2185))
 * Bump default `ktlint` version to latest `1.2.1` -> `1.3.0`. ([#2165](https://github.com/diffplug/spotless/pull/2165))
 * Bump default `ktfmt` version to latest `0.49` -> `0.51`. ([#2172](https://github.com/diffplug/spotless/pull/2172))
 * Rename property `ktfmt` option `removeUnusedImport` -> `removeUnusedImports` to match `ktfmt`. ([#2172](https://github.com/diffplug/spotless/pull/2172))
