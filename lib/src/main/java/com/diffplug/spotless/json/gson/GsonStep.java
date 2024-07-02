@@ -30,6 +30,7 @@ public class GsonStep implements Serializable {
 	private static final String MAVEN_COORDINATES = "com.google.code.gson:gson";
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Gson; maybe you set an incompatible version?";
 	public static final String NAME = "gson";
+	public static final String DEFAULT_VERSION = "2.11.0";
 
 	private final JarState.Promised jarState;
 	private final GsonConfig gsonConfig;

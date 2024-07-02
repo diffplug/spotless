@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.json.gson;
 
+import static com.diffplug.spotless.json.gson.GsonStep.DEFAULT_VERSION;
+
 import java.io.File;
 
 import org.assertj.core.api.Assertions;
@@ -27,8 +29,6 @@ import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.json.JsonFormatterStepCommonTests;
 
 public class GsonStepTest extends JsonFormatterStepCommonTests {
-
-	private static final String DEFAULT_VERSION = "2.10.1";
 
 	@Test
 	void handlesComplexNestedObject() {

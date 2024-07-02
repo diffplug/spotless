@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class Gson implements FormatterStepFactory {
-	private static final String DEFAULT_GSON_VERSION = "2.10.1";
-
 	@Parameter
 	int indentSpaces = Json.DEFAULT_INDENTATION;
 
@@ -36,7 +34,7 @@ public class Gson implements FormatterStepFactory {
 	boolean escapeHtml = false;
 
 	@Parameter
-	String version = DEFAULT_GSON_VERSION;
+	String version = GsonStep.DEFAULT_VERSION;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
