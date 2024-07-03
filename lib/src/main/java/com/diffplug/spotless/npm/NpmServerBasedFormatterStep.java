@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +40,7 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 	// => equals/hashcode should not include absolute paths and such
 	// => serialized/deserialized state can include absolute paths and such and should recreate a valid/runnable state
 
-	private final Map<NpmConfigElement, Object> configElements = new HashMap<>();
+	private final Map<NpmConfigElement, Serializable> configElements = new HashMap<>();
 
 	private final String name;
 
@@ -53,7 +54,7 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 			@Nonnull String packageJsonContent,
 			@Nonnull String serveScriptContent,
 			@Nullable String npmrcContent,
-			@Nullable Map<NpmConfigElement, Object> additionalConfigElements,
+			@Nullable Map<NpmConfigElement, Serializable> additionalConfigElements,
 			@Nonnull NpmFormatterStepLocations locations) {
 		this.name = Objects.requireNonNull(name);
 		this.configElements.put(GenericNpmConfigElement.PACKAGE_JSON_CONTENT, Objects.requireNonNull(packageJsonContent));
@@ -107,14 +108,14 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 		if (!(o instanceof NpmServerBasedFormatterStep))
 			return false;
 		NpmServerBasedFormatterStep that = (NpmServerBasedFormatterStep) o;
-		Map<NpmConfigElement, Object> thisConfig = equalsRelevantConfigElements(this.configElements);
-		Map<NpmConfigElement, Object> thatConfig = equalsRelevantConfigElements(that.configElements);
+		Map<NpmConfigElement, Serializable> thisConfig = equalsRelevantConfigElements(this.configElements);
+		Map<NpmConfigElement, Serializable> thatConfig = equalsRelevantConfigElements(that.configElements);
 		return Objects.equals(thisConfig, thatConfig) && Objects.equals(name, that.name);
 	}
 
-	private static Map<NpmConfigElement, Object> equalsRelevantConfigElements(Map<NpmConfigElement, Object> configElements) {
-		Map<NpmConfigElement, Object> result = new HashMap<>();
-		for (Map.Entry<NpmConfigElement, Object> entry : configElements.entrySet()) {
+	private static Map<NpmConfigElement, Serializable> equalsRelevantConfigElements(Map<NpmConfigElement, Serializable> configElements) {
+		Map<NpmConfigElement, Serializable> result = new HashMap<>();
+		for (Map.Entry<NpmConfigElement, Serializable> entry : configElements.entrySet()) {
 			if (entry.getKey().equalsHashcodeRelevant()) {
 				result.put(entry.getKey(), entry.getValue());
 			}
@@ -124,7 +125,7 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 
 	@Override
 	public int hashCode() {
-		Map<NpmConfigElement, Object> thisConfig = equalsRelevantConfigElements(this.configElements);
+		Map<NpmConfigElement, Serializable> thisConfig = equalsRelevantConfigElements(this.configElements);
 		return Objects.hash(thisConfig, name);
 	}
 
@@ -134,6 +135,7 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		// TODO (simschla, 27.06.2024): Implement serialization
 		System.out.println("TODO: Implement serialization - writeObject " + this);
+		out.defaultWriteObject();
 		//		out.writeObject(state());
 	}
 
@@ -141,6 +143,7 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		// TODO (simschla, 27.06.2024): Implement serialization
+		in.defaultReadObject();
 		System.out.println("TODO: Implement serialization - readObject " + this);
 		//		state = (T) Objects.requireNonNull(in.readObject());
 	}
@@ -154,12 +157,12 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 	// NpmServerBasedFormatterStep
 
 	@SuppressWarnings("unchecked")
-	protected <T> T configElement(@Nonnull NpmConfigElement element) {
+	protected <T extends Serializable> T configElement(@Nonnull NpmConfigElement element) {
 		return (T) configElements.get(element);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <T> T configElement(@Nonnull NpmConfigElement element, T newValue) {
+	protected <T extends Serializable> T configElement(@Nonnull NpmConfigElement element, T newValue) {
 		return (T) configElements.put(element, newValue);
 	}
 
