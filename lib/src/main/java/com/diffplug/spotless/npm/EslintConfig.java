@@ -17,20 +17,20 @@ package com.diffplug.spotless.npm;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.diffplug.spotless.FileSignature;
-
 public class EslintConfig implements Serializable {
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = -5436020379478813853L;
 
 	@SuppressWarnings("unused")
-	private final FileSignature.Promised eslintConfigPathSignature;
+	private final RoundtrippableFile eslintConfigPath;
 	private final String eslintConfigJs;
 
 	public EslintConfig(@Nullable File eslintConfigPath, @Nullable String eslintConfigJs) {
-		this.eslintConfigPathSignature = eslintConfigPath == null ? null : FileSignature.promise(eslintConfigPath);
+		this.eslintConfigPath = eslintConfigPath == null ? null : new RoundtrippableFile(eslintConfigPath);
 		this.eslintConfigJs = eslintConfigJs;
 	}
 
@@ -40,7 +40,7 @@ public class EslintConfig implements Serializable {
 
 	@Nullable
 	public File getEslintConfigPath() {
-		return eslintConfigPathSignature == null ? null : eslintConfigPathSignature.get().getOnlyFile();
+		return eslintConfigPath == null ? null : eslintConfigPath.file();
 	}
 
 	@Nullable
@@ -49,9 +49,24 @@ public class EslintConfig implements Serializable {
 	}
 
 	public EslintConfig verify() {
-		if (eslintConfigPathSignature == null && eslintConfigJs == null) {
+		if (eslintConfigPath == null && eslintConfigJs == null) {
 			throw new IllegalArgumentException("ESLint must be configured using either a configFile or a configJs - but both are null.");
 		}
 		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof EslintConfig))
+			return false;
+		EslintConfig that = (EslintConfig) o;
+		return Objects.equals(eslintConfigPath, that.eslintConfigPath) && Objects.equals(eslintConfigJs, that.eslintConfigJs);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(eslintConfigPath, eslintConfigJs);
 	}
 }

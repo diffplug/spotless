@@ -33,6 +33,18 @@ import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.npm.EslintRestService.FormatOption;
 
+/**
+ * Standard implementation of FormatterStep which cleanly enforces
+ * separation of a lazily computed "state" object whose serialized form
+ * is used as the basis for equality and hashCode, which is separate
+ * from the serialized form of the step itself, which can include absolute paths
+ * and such without interfering with buildcache keys.
+ */
+
+// => equals/hashcode should not include absolute paths and such
+
+// => serialized/deserialized state can include absolute paths and such and should recreate a valid/runnable state
+
 public class EslintFormatterStep2 extends NpmServerBasedFormatterStep {
 
 	private static final Logger logger = LoggerFactory.getLogger(EslintFormatterStep2.class);
@@ -40,8 +52,6 @@ public class EslintFormatterStep2 extends NpmServerBasedFormatterStep {
 	public static final String NAME = "eslint-format";
 
 	public static final String DEFAULT_ESLINT_VERSION = "^8.45.0";
-	private final EslintConfig origEslintConfig;
-	private EslintConfig eslintConfigInUse;
 
 	public static Map<String, String> defaultDevDependenciesForTypescript() {
 		return defaultDevDependenciesTypescriptWithEslint(DEFAULT_ESLINT_VERSION);
@@ -66,32 +76,36 @@ public class EslintFormatterStep2 extends NpmServerBasedFormatterStep {
 
 	public EslintFormatterStep2(@Nonnull Map<String, String> devDependencies, @Nonnull File projectDir, @Nonnull File buildDir, @Nonnull File cacheDir, @Nonnull NpmPathResolver npmPathResolver, @Nonnull EslintConfig eslintConfig) {
 		super(NAME,
-				new NpmConfig(
-						replaceDevDependencies(
-								NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class, "/com/diffplug/spotless/npm/eslint-package.json"),
-								new TreeMap<>(devDependencies)),
-						NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class,
-								"/com/diffplug/spotless/npm/common-serve.js",
-								"/com/diffplug/spotless/npm/eslint-serve.js"),
-						npmPathResolver.resolveNpmrcContent()),
-				new NpmFormatterStepLocations(
-						projectDir,
-						buildDir,
-						cacheDir,
-						npmPathResolver));
-		this.origEslintConfig = requireNonNull(eslintConfig.verify());
-		this.eslintConfigInUse = eslintConfig;
+				replaceDevDependencies(
+						NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class, "/com/diffplug/spotless/npm/eslint-package.json"),
+						new TreeMap<>(devDependencies)),
+				NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class,
+						"/com/diffplug/spotless/npm/common-serve.js",
+						"/com/diffplug/spotless/npm/eslint-serve.js"),
+				npmPathResolver.resolveNpmrcContent(),
+				Map.of(EslintConfigElement.ESLINT_CONFIG_ORIGINAL_ELEMENT, eslintConfig),
+				new NpmFormatterStepLocations(projectDir, buildDir, cacheDir, npmPathResolver));
+	}
+
+	protected EslintConfig origEslintConfig() {
+		return configElement(EslintConfigElement.ESLINT_CONFIG_ORIGINAL_ELEMENT);
+	}
+
+	protected EslintConfig eslintConfigInUse() {
+		return configElement(EslintConfigElement.ESLINT_CONFIG_IN_USE_ELEMENT);
 	}
 
 	@Override
 	protected void doPrepareNodeServerLayout(NodeServerLayout nodeServerLayout) throws IOException {
-		if (origEslintConfig.getEslintConfigPath() != null) {
+		if (origEslintConfig().getEslintConfigPath() != null) {
 			// If any config files are provided, we need to make sure they are at the same location as the node modules
 			// as eslint will try to resolve plugin/config names relatively to the config file location and some
 			// eslint configs contain relative paths to additional config files (such as tsconfig.json e.g.)
-			logger.debug("Copying config file <{}> to <{}> and using the copy", origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
-			File configFileCopy = NpmResourceHelper.copyFileToDir(origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
-			this.eslintConfigInUse = this.origEslintConfig.withEslintConfigPath(configFileCopy).verify();
+			logger.debug("Copying config file <{}> to <{}> and using the copy", origEslintConfig().getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
+			File configFileCopy = NpmResourceHelper.copyFileToDir(origEslintConfig().getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
+			configElement(EslintConfigElement.ESLINT_CONFIG_IN_USE_ELEMENT, origEslintConfig().withEslintConfigPath(configFileCopy).verify());
+		} else {
+			configElement(EslintConfigElement.ESLINT_CONFIG_IN_USE_ELEMENT, origEslintConfig().verify());
 		}
 	}
 
@@ -109,17 +123,26 @@ public class EslintFormatterStep2 extends NpmServerBasedFormatterStep {
 	}
 
 	private void setConfigToCallOptions(Map<FormatOption, Object> eslintCallOptions) {
-		if (this.eslintConfigInUse.getEslintConfigPath() != null) {
-			eslintCallOptions.put(FormatOption.ESLINT_OVERRIDE_CONFIG_FILE, this.eslintConfigInUse.getEslintConfigPath().getAbsolutePath());
+		if (eslintConfigInUse().getEslintConfigPath() != null) {
+			eslintCallOptions.put(FormatOption.ESLINT_OVERRIDE_CONFIG_FILE, eslintConfigInUse().getEslintConfigPath().getAbsolutePath());
 		}
-		if (this.eslintConfigInUse.getEslintConfigJs() != null) {
-			eslintCallOptions.put(FormatOption.ESLINT_OVERRIDE_CONFIG, this.eslintConfigInUse.getEslintConfigJs());
+		if (eslintConfigInUse().getEslintConfigJs() != null) {
+			eslintCallOptions.put(FormatOption.ESLINT_OVERRIDE_CONFIG, eslintConfigInUse().getEslintConfigJs());
 		}
-		if (this.eslintConfigInUse instanceof EslintTypescriptConfig) {
+		if (eslintConfigInUse() instanceof EslintTypescriptConfig) {
 			// if we are a ts config, see if we need to use specific paths or use default projectDir
-			File tsConfigFilePath = ((EslintTypescriptConfig) this.eslintConfigInUse).getTypescriptConfigPath();
+			File tsConfigFilePath = ((EslintTypescriptConfig) eslintConfigInUse()).getTypescriptConfigPath();
 			File tsConfigRootDir = tsConfigFilePath != null ? tsConfigFilePath.getParentFile() : this.locations.projectDir();
-			eslintCallOptions.put(FormatOption.TS_CONFIG_ROOT_DIR, this.nodeServerLayout.nodeModulesDir().getAbsoluteFile().toPath().relativize(tsConfigRootDir.getAbsoluteFile().toPath()).toString());
+			eslintCallOptions.put(FormatOption.TS_CONFIG_ROOT_DIR, this.nodeServerLayout().nodeModulesDir().getAbsoluteFile().toPath().relativize(tsConfigRootDir.getAbsoluteFile().toPath()).toString());
 		}
+	}
+
+	private enum EslintConfigElement implements NpmConfigElement {
+		ESLINT_CONFIG_ORIGINAL_ELEMENT, ESLINT_CONFIG_IN_USE_ELEMENT {
+			@Override
+			public boolean equalsHashcodeRelevant() {
+				return false;
+			}
+		};
 	}
 }

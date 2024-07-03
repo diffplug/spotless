@@ -21,6 +21,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
@@ -33,21 +35,43 @@ import com.diffplug.spotless.ThrowingEx;
 
 abstract class NpmServerBasedFormatterStep implements FormatterStep {
 
+	// dynamic equals/hascode impl
+	// => equals/hashcode should not include absolute paths and such
+	// => serialized/deserialized state can include absolute paths and such and should recreate a valid/runnable state
+
+	private final Map<NpmConfigElement, Object> configElements = new HashMap<>();
+
 	private final String name;
+
 	protected final NpmFormatterStepLocations locations;
 
-	protected final NodeServerLayout nodeServerLayout;
-	private final NodeServeApp nodeServeApp;
+	// prev
 
 	private NpmServerProcessInfo serverProcessInfo;
 
-	public NpmServerBasedFormatterStep(@Nonnull String name,
-			@Nonnull NpmConfig npmConfig, @Nonnull NpmFormatterStepLocations locations) {
+	protected NpmServerBasedFormatterStep(@Nonnull String name,
+			@Nonnull String packageJsonContent,
+			@Nonnull String serveScriptContent,
+			@Nullable String npmrcContent,
+			@Nullable Map<NpmConfigElement, Object> additionalConfigElements,
+			@Nonnull NpmFormatterStepLocations locations) {
 		this.name = Objects.requireNonNull(name);
+		this.configElements.put(GenericNpmConfigElement.PACKAGE_JSON_CONTENT, Objects.requireNonNull(packageJsonContent));
+		this.configElements.put(GenericNpmConfigElement.SERVE_SCRIPT_CONTENT, Objects.requireNonNull(serveScriptContent));
+		this.configElements.put(GenericNpmConfigElement.NPMRC_CONTENT, npmrcContent);
+		if (additionalConfigElements != null) {
+			this.configElements.putAll(additionalConfigElements);
+		}
 		this.locations = Objects.requireNonNull(locations);
-		this.nodeServerLayout = new NodeServerLayout(Objects.requireNonNull(locations).buildDir(), Objects.requireNonNull(npmConfig).getPackageJsonContent());
-		this.nodeServeApp = new NodeServeApp(nodeServerLayout, npmConfig, locations);
 	}
+
+	//	public NpmServerBasedFormatterStep(@Nonnull String name,
+	//			@Nonnull NpmConfig npmConfig, @Nonnull NpmFormatterStepLocations locations) {
+	//		this.name = Objects.requireNonNull(name);
+	//		this.locations = Objects.requireNonNull(locations);
+	//		this.nodeServerLayout = new NodeServerLayout(Objects.requireNonNull(locations).buildDir(), Objects.requireNonNull(npmConfig).getPackageJsonContent());
+	//		this.nodeServeApp = new NodeServeApp(nodeServerLayout, npmConfig, locations);
+	//	}
 
 	// FormatterStep
 
@@ -80,15 +104,28 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
-		if (o == null || getClass() != o.getClass())
+		if (!(o instanceof NpmServerBasedFormatterStep))
 			return false;
 		NpmServerBasedFormatterStep that = (NpmServerBasedFormatterStep) o;
-		return Objects.equals(name, that.name) && Objects.equals(nodeServerLayout, that.nodeServerLayout) && Objects.equals(nodeServeApp, that.nodeServeApp) && Objects.equals(serverProcessInfo, that.serverProcessInfo);
+		Map<NpmConfigElement, Object> thisConfig = equalsRelevantConfigElements(this.configElements);
+		Map<NpmConfigElement, Object> thatConfig = equalsRelevantConfigElements(that.configElements);
+		return Objects.equals(thisConfig, thatConfig) && Objects.equals(name, that.name);
+	}
+
+	private static Map<NpmConfigElement, Object> equalsRelevantConfigElements(Map<NpmConfigElement, Object> configElements) {
+		Map<NpmConfigElement, Object> result = new HashMap<>();
+		for (Map.Entry<NpmConfigElement, Object> entry : configElements.entrySet()) {
+			if (entry.getKey().equalsHashcodeRelevant()) {
+				result.put(entry.getKey(), entry.getValue());
+			}
+		}
+		return result;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, nodeServerLayout, nodeServeApp, serverProcessInfo);
+		Map<NpmConfigElement, Object> thisConfig = equalsRelevantConfigElements(this.configElements);
+		return Objects.hash(thisConfig, name);
 	}
 
 	// Serializable contract
@@ -116,6 +153,32 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 
 	// NpmServerBasedFormatterStep
 
+	@SuppressWarnings("unchecked")
+	protected <T> T configElement(@Nonnull NpmConfigElement element) {
+		return (T) configElements.get(element);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <T> T configElement(@Nonnull NpmConfigElement element, T newValue) {
+		return (T) configElements.put(element, newValue);
+	}
+
+	protected NodeServerLayout nodeServerLayout() {
+		return new NodeServerLayout(locations.buildDir(), configElement(GenericNpmConfigElement.PACKAGE_JSON_CONTENT));
+	}
+
+	protected NodeServeApp nodeServeApp() {
+		// TODO (simschla, 01.07.2024): maybe memoize this
+		return new NodeServeApp(nodeServerLayout(), npmConfig(), locations);
+	}
+
+	private NpmConfig npmConfig() {
+		return new NpmConfig(
+				configElement(GenericNpmConfigElement.PACKAGE_JSON_CONTENT),
+				configElement(GenericNpmConfigElement.SERVE_SCRIPT_CONTENT),
+				configElement(GenericNpmConfigElement.NPMRC_CONTENT));
+	}
+
 	protected void assertNodeServerDirReady() throws IOException {
 		if (needsPrepareNodeServerLayout()) {
 			// reinstall if missing
@@ -128,22 +191,22 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 	}
 
 	protected boolean needsPrepareNodeServerLayout() {
-		return nodeServeApp.needsPrepareNodeAppLayout();
+		return nodeServeApp().needsPrepareNodeAppLayout();
 	}
 
 	protected void prepareNodeServerLayout() throws IOException {
-		nodeServeApp.prepareNodeAppLayout();
-		doPrepareNodeServerLayout(nodeServerLayout);
+		nodeServeApp().prepareNodeAppLayout();
+		doPrepareNodeServerLayout(nodeServerLayout());
 	}
 
 	abstract protected void doPrepareNodeServerLayout(NodeServerLayout layout) throws IOException;
 
 	protected boolean needsPrepareNodeServer() {
-		return nodeServeApp.needsNpmInstall();
+		return nodeServeApp().needsNpmInstall();
 	}
 
 	protected void prepareNodeServer() throws IOException {
-		nodeServeApp.npmInstall();
+		nodeServeApp().npmInstall();
 	}
 
 	protected NpmServerProcessInfo npmRunServer() throws ServerStartException, IOException {
@@ -152,10 +215,10 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 		try {
 			// The npm process will output the randomly selected port of the http server process to 'server.port' file
 			// so in order to be safe, remove such a file if it exists before starting.
-			final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
+			final File serverPortFile = new File(nodeServerLayout().nodeModulesDir(), "server.port");
 			NpmResourceHelper.deleteFileIfExists(serverPortFile);
 			// start the http server in node
-			server = nodeServeApp.startNpmServeProcess();
+			server = nodeServeApp().startNpmServeProcess();
 
 			// await the readiness of the http server - wait for at most 60 seconds
 			try {
@@ -181,4 +244,23 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 	}
 
 	protected abstract String formatWithServer(NpmServerProcessInfo serverProcessInfo, String rawUnix, File file);
+
+	interface NpmConfigElement {
+		String name();
+
+		default boolean equalsHashcodeRelevant() {
+			return true;
+		};
+	}
+
+	enum GenericNpmConfigElement implements NpmConfigElement {
+		PACKAGE_JSON_CONTENT, SERVE_SCRIPT_CONTENT {
+			@Override
+			public boolean equalsHashcodeRelevant() {
+				return false;
+			}
+		},
+		NPMRC_CONTENT;
+
+	}
 }
