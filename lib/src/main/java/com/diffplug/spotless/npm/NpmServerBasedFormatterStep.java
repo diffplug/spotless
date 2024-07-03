@@ -66,14 +66,6 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 		this.locations = Objects.requireNonNull(locations);
 	}
 
-	//	public NpmServerBasedFormatterStep(@Nonnull String name,
-	//			@Nonnull NpmConfig npmConfig, @Nonnull NpmFormatterStepLocations locations) {
-	//		this.name = Objects.requireNonNull(name);
-	//		this.locations = Objects.requireNonNull(locations);
-	//		this.nodeServerLayout = new NodeServerLayout(Objects.requireNonNull(locations).buildDir(), Objects.requireNonNull(npmConfig).getPackageJsonContent());
-	//		this.nodeServeApp = new NodeServeApp(nodeServerLayout, npmConfig, locations);
-	//	}
-
 	// FormatterStep
 
 	@Override
@@ -133,19 +125,16 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 
 	// override serialize output
 	private void writeObject(ObjectOutputStream out) throws IOException {
-		// TODO (simschla, 27.06.2024): Implement serialization
-		System.out.println("TODO: Implement serialization - writeObject " + this);
+		// TODO (simschla, 27.06.2024): Implement custom serialization if needed
+		// TODO (simschla, 03.07.2024): Should we stop the server here if it is running?
 		out.defaultWriteObject();
-		//		out.writeObject(state());
 	}
 
 	// override serialize input
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		// TODO (simschla, 27.06.2024): Implement serialization
+		// TODO (simschla, 27.06.2024): Implement custom serialization if needed
 		in.defaultReadObject();
-		System.out.println("TODO: Implement serialization - readObject " + this);
-		//		state = (T) Objects.requireNonNull(in.readObject());
 	}
 
 	// override serialize input
@@ -171,7 +160,7 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 	}
 
 	protected NodeServeApp nodeServeApp() {
-		// TODO (simschla, 01.07.2024): maybe memoize this
+		// TODO (simschla, 01.07.2024): maybe memoize this if it turns out to be expensive
 		return new NodeServeApp(nodeServerLayout(), npmConfig(), locations);
 	}
 
@@ -246,6 +235,7 @@ abstract class NpmServerBasedFormatterStep implements FormatterStep {
 		}
 	}
 
+	// main contract method for specific subclasses
 	protected abstract String formatWithServer(NpmServerProcessInfo serverProcessInfo, String rawUnix, File file);
 
 	interface NpmConfigElement {
