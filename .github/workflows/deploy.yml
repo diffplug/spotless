@@ -46,6 +46,10 @@ jobs:
         with:
           java-version: 11
           distribution: 'temurin'
+      - name: gradle caching
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-home-cache-cleanup: true
       - name: Generate release name for lib
         if: github.event.inputs.to_publish == 'all' || github.event.inputs.to_publish == 'lib'
         run: |
@@ -91,18 +95,24 @@ jobs:
       - name: publish all
         if: "${{ github.event.inputs.to_publish == 'all' }}"
         run: |
+          ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all --no-configuration-cache
+          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }} --stacktrace --warning-mode all --no-configuration-cache
+          ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all --no-configuration-cache
           gh release create ${{ env.LIB_TAG }} --title '${{ env.LIB_NAME }}' --notes-file RELEASE_NOTES_FOR_LIB.md
           gh release create ${{ env.PLUGIN_GRADLE_TAG }} --title '${{ env.PLUGIN_GRADLE_NAME }}' --notes-file RELEASE_NOTES_FOR_PLUGIN_GRADLE.md
           gh release create ${{ env.PLUGIN_MAVEN_TAG }} --title '${{ env.PLUGIN_MAVEN_NAME }}' --notes-file RELEASE_NOTES_FOR_PLUGIN_MAVEN.md
       - name: publish just plugin-gradle
         if: "${{ github.event.inputs.to_publish == 'plugin-gradle' }}"
         run: |
+          ./gradlew :plugin-gradle:changelogPush -Prelease=true -Pgradle.publish.key=${{ secrets.GRADLE_KEY }} -Pgradle.publish.secret=${{ secrets.GRADLE_SECRET }} --stacktrace --warning-mode all --no-configuration-cache
           gh release create ${{ env.PLUGIN_GRADLE_TAG }} --title '${{ env.PLUGIN_GRADLE_NAME }}' --notes-file RELEASE_NOTES_FOR_PLUGIN_GRADLE.md
       - name: publish just plugin-maven
         if: "${{ github.event.inputs.to_publish == 'plugin-maven' }}"
         run: |
+          ./gradlew :plugin-maven:changelogPush -Prelease=true --stacktrace --warning-mode all --no-configuration-cache
           gh release create ${{ env.PLUGIN_MAVEN_TAG }} --title '${{ env.PLUGIN_MAVEN_NAME }}' --notes-file RELEASE_NOTES_FOR_PLUGIN_MAVEN.md
       - name: publish just lib
         if: "${{ github.event.inputs.to_publish == 'lib' }}"
         run: |
+          ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all --no-configuration-cache
           gh release create ${{ env.LIB_TAG }} --title '${{ env.LIB_NAME }}' --notes-file RELEASE_NOTES_FOR_LIB.md
