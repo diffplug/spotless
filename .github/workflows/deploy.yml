@@ -1,4 +1,4 @@
-# GH_TOKEN
+# GITHUB_TOKEN
 # NEXUS_USER
 # NEXUS_PASS64 (base64 NOTE: `base64` and `openssl base64` failed, had to use Java
 #   byte[] data = "{{password}}".getBytes(StandardCharsets.UTF_8);
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     name: deploy
     env:
-      gh_token: ${{ secrets.GH_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.NEXUS_USER }}
       ORG_GRADLE_PROJECT_nexus_pass64: ${{ secrets.NEXUS_PASS64 }}
       ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
