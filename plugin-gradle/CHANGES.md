@@ -44,6 +44,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `shfmt` version to latest `3.7.0` -> `3.8.0`. ([#2050](https://github.com/diffplug/spotless/pull/2050))
 * Bump default `sortpom` version to latest `3.2.1` -> `4.0.0`. ([#2049](https://github.com/diffplug/spotless/pull/2049), [#2078](https://github.com/diffplug/spotless/pull/2078), [#2115](https://github.com/diffplug/spotless/pull/2115))
 * Bump default `zjsonpatch` version to latest `0.4.14` -> `0.4.16`. ([#1969](https://github.com/diffplug/spotless/pull/1969))
+* Bump default `jackson` version to latest `2.17.1` -> `2.17.2`. ([#2195](https://github.com/diffplug/spotless/pull/2195))
 ### Removed
 * **BREAKING** Fully removed `Rome`, use `Biome` instead. ([#2119](https://github.com/diffplug/spotless/pull/2119))
 
