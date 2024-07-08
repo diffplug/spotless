@@ -20,11 +20,11 @@ spotlessChangelog {
 	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
 
 	if (kind == 'gradle') {
-		forceNextVersion '7.0.0.BETA1'
+		forceNextVersion '7.0.0.BETA2'
 	} else if (kind == 'maven') {
-		forceNextVersion '2.44.0.BETA1'
+		forceNextVersion '2.44.0.BETA2'
 	} else {
-		forceNextVersion '3.0.0.BETA1'
+		forceNextVersion '3.0.0.BETA2'
 	}
 }
 
