@@ -1,11 +1,15 @@
 String kind
+String releaseTitle
 if (project.name == 'plugin-gradle') {
 	kind = 'gradle'
+	releaseTitle = 'Gradle Plugin'
 } else if (project.name == 'plugin-maven') {
 	kind = 'maven'
+	releaseTitle = 'Maven Plugin'
 } else {
 	assert project == rootProject
 	kind = 'lib'
+	releaseTitle = 'Lib'
 }
 
 // the root project and plugins have their own changelogs
@@ -18,6 +22,8 @@ spotlessChangelog {
 	branch        'release'
 	tagPrefix     "${kind}/"
 	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
+	tagMessage '{{changes}}'
+	runAfterPush "gh release create ${kind}/{{version}} --title '${releaseTitle} v{{version}}' --notes-from-tag"
 
 	if (kind == 'gradle') {
 		forceNextVersion '7.0.0.BETA2'
