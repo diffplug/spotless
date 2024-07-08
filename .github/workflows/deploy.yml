@@ -1,4 +1,3 @@
-# GITHUB_TOKEN
 # NEXUS_USER
 # NEXUS_PASS64 (base64 NOTE: `base64` and `openssl base64` failed, had to use Java
 #   byte[] data = "{{password}}".getBytes(StandardCharsets.UTF_8);
