@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `cdt` version to latest `11.3` -> `11.6`. ([#2179](https://github.com/diffplug/spotless/pull/2179))
 * Bump default `gson` version to latest `2.10.1` -> `2.11.0`. ([#2128](https://github.com/diffplug/spotless/pull/2128))
 * Bump default `cleanthat` version to latest `2.20` -> `2.21`. ([#2210](https://github.com/diffplug/spotless/pull/2210))
+* Bump default `google-java-format` version to latest `1.22.0` -> `1.23.0`. ([#2212](https://github.com/diffplug/spotless/pull/2212))
 ### Fixed
 * Fix compatibility issue introduced by `ktfmt` `0.51`. ([#2172](https://github.com/diffplug/spotless/issues/2172))
 ### Added

@@ -93,7 +93,7 @@ dependencies {
 	gherkinCompileOnly 'io.cucumber:gherkin-utils:9.0.0'
 	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.0'
 	// googleJavaFormat
-	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.22.0'
+	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.23.0'
 	// gson
 	gsonCompileOnly 'com.google.code.gson:gson:2.11.0'
 	// jackson
