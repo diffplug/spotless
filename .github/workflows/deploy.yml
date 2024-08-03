@@ -43,7 +43,7 @@ jobs:
           java-version: 11
           distribution: 'temurin'
       - name: gradle caching
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-home-cache-cleanup: true
       - name: git fetch origin main
