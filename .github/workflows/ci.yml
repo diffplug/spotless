@@ -30,8 +30,6 @@ jobs:
           java-version: 11
       - name: gradle caching
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-home-cache-cleanup: true
       - name: spotlessCheck
         run: ./gradlew spotlessCheck
       - name: assemble testClasses
@@ -72,8 +70,6 @@ jobs:
           java-version: ${{ matrix.jre }}
       - name: gradle caching
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-home-cache-cleanup: true
       - name: build (maven-only)
         if: matrix.kind == 'maven'
         run: ./gradlew :plugin-maven:build -x spotlessCheck
