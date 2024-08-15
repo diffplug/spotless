@@ -1,9 +1,7 @@
 export class MyController extends AbstractController implements DisposeAware, CallbackAware {
-	public myValue: string[];
+public myValue: string[];
 
-	constructor(private readonly myService: Service, name: string, private readonly field: any) {
-		super(name);
-	}
+constructor(private readonly myService:Service,name:string,private readonly field:any){ super(name);}
 
-	// ...
+// ...
 }
