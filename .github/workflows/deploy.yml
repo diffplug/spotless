@@ -65,6 +65,3 @@ jobs:
         if: "${{ github.event.inputs.to_publish == 'lib' }}"
         run: |
           ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all --no-configuration-cache
-      - run: git checkout main
-      - run: git merge release --ff-only
-      - run: git push origin main
