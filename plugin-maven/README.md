@@ -232,7 +232,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <googleJavaFormat>
-  <version>1.8</version>                      <!-- optional, 1.8 is the minimum supported version for Java 11-->
+  <version>1.8</version>                      <!-- optional, 1.8 is the minimum supported version for Java 11 -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
   <formatJavadoc>false</formatJavadoc>        <!-- optional -->
@@ -660,9 +660,9 @@ All configuration settings are optional, they are described in detail [here](htt
 
   <lineSeparator>${line.separator}</lineSeparator> <!-- line separator to use -->
 
-  <expandEmptyElements>true</expandEmptyElements> <!-- Should empty elements be expanded-->
+  <expandEmptyElements>true</expandEmptyElements> <!-- Should empty elements be expanded -->
 
-  <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement> <!-- Should a space be added inside self-closing elements-->
+  <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement> <!-- Should a space be added inside self-closing elements -->
 
   <keepBlankLines>true</keepBlankLines> <!-- Keep empty lines -->
 
@@ -676,15 +676,15 @@ All configuration settings are optional, they are described in detail [here](htt
 
   <indentAttribute></indentAttribute> <!-- Should the xml attributes be indented -->
 
-  <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles-->
+  <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles -->
 
   <sortOrderFile></sortOrderFile> <!-- Custom sort order of elements: https://raw.githubusercontent.com/Ekryd/sortpom/master/sorter/src/main/resources/custom_1.xml -->
 
-  <sortDependencies></sortDependencies> <!-- Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+  <sortDependencies></sortDependencies> <!-- Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies -->
 
-  <sortDependencyManagement></sortDependencyManagement> <!-- Sort dependency management: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+  <sortDependencyManagement></sortDependencyManagement> <!-- Sort dependency management: https://github.com/Ekryd/sortpom/wiki/SortDependencies -->
 
-  <sortDependencyExclusions></sortDependencyExclusions> <!-- Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+  <sortDependencyExclusions></sortDependencyExclusions> <!-- Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies -->
 
   <sortPlugins></sortPlugins> <!-- Sort plugins: https://github.com/Ekryd/sortpom/wiki/SortPlugins -->
 
@@ -1505,7 +1505,7 @@ The following languages are currently recognized:
 
 <jsr223> <!-- specify replacements using JSR223 scripting -->
   <name>Greetings to Mars</name>
-  <dependency>org.codehaus.groovy:groovy-jsr223:3.0.9</dependency> <!-- optional, maven dependency, containing the jsr223 compatible scripting engine-->
+  <dependency>org.codehaus.groovy:groovy-jsr223:3.0.9</dependency> <!-- optional, maven dependency, containing the jsr223 compatible scripting engine -->
   <engine>groovy</engine> <!-- nashorn is provided by JDK 8-14, other engines can be loaded from the given dependency -->
   <script>source.replace('World','Mars');</script> <!-- the source variable contains the unformatted code, the returned value of the script is the formatted code -->
 </jsr223>
@@ -1513,7 +1513,7 @@ The following languages are currently recognized:
 <nativeCmd> <!-- run a native binary -->
   <name>Greetings to Mars from sed</name>
   <pathToExe>/usr/bin/sed</pathToExe> <!-- path to the binary, unformatted code is send via StdIn, formatted code is expected on StdOut -->
-  <arguments> <!-- optional, list with arguments for the binary call-->
+  <arguments> <!-- optional, list with arguments for the binary call -->
     <argument>s/World/Mars/g</argument>
   </arguments>
 </nativeCmd>
