@@ -39,7 +39,7 @@ import com.diffplug.spotless.ThrowingEx;
  */
 public class KtfmtStep implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = "0.51";
+	private static final String DEFAULT_VERSION = "0.52";
 	private static final String NAME = "ktfmt";
 	private static final String MAVEN_COORDINATE = "com.facebook:ktfmt:";
 
