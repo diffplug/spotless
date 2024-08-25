@@ -45,7 +45,7 @@ public class EslintFormatterStep {
 
 	public static final String NAME = "eslint-format";
 
-	public static final String DEFAULT_ESLINT_VERSION = "8.45.0";
+	public static final String DEFAULT_ESLINT_VERSION = "8.57.0";
 
 	public static Map<String, String> defaultDevDependenciesForTypescript() {
 		return defaultDevDependenciesTypescriptWithEslint(DEFAULT_ESLINT_VERSION);
