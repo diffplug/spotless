@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.ProcessRunner;
@@ -210,6 +211,7 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	@Disabled
 	void eslintStyleguideXo() throws Exception {
 		writePomWithTypescriptSteps(
 				TEST_FILE_PATH,

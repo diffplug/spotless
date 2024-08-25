@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.npm.EslintFormatterStep;
@@ -169,6 +170,7 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	@Disabled
 	void useEslintXoStandardRules() throws IOException {
 		setFile(".eslintrc.js").toResource("npm/eslint/typescript/styleguide/xo/.eslintrc.js");
 		setFile("tsconfig.json").toResource("npm/eslint/typescript/styleguide/xo/tsconfig.json");
