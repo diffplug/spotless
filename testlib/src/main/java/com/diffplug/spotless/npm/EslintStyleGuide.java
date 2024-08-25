@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ public enum EslintStyleGuide {
 		@Override
 		public @Nonnull Map<String, String> devDependencies() {
 			Map<String, String> dependencies = new LinkedHashMap<>();
-			dependencies.put("eslint-config-xo", "0.43.1");
+			dependencies.put("eslint-config-xo", "^0.43.1");
 			return dependencies;
 		}
 	};
