@@ -14,7 +14,7 @@ plugins {
 	// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
 	id 'com.github.spotbugs' version '6.0.20' apply false
 	// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
-	id 'com.diffplug.spotless-changelog' version '3.0.2' apply false
+	id 'com.diffplug.spotless-changelog' version '3.1.2' apply false
 	// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
 	id 'com.adarshr.test-logger' version '4.0.0' apply false
 	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
