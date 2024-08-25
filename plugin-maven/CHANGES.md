@@ -6,7 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Support toning down sortPom logging. ([#2185](https://github.com/diffplug/spotless/pull/2185))
 * Bump default `ktlint` version to latest `1.2.1` -> `1.3.0`. ([#2165](https://github.com/diffplug/spotless/pull/2165))
-* Bump default `ktfmt` version to latest `0.49` -> `0.51`. ([#2172](https://github.com/diffplug/spotless/pull/2172))
+* Bump default `ktfmt` version to latest `0.49` -> `0.52`. ([#2172](https://github.com/diffplug/spotless/pull/2172), [#2231](https://github.com/diffplug/spotless/pull/2231))
 * Rename property `ktfmt` option `removeUnusedImport` -> `removeUnusedImports` to match `ktfmt`. ([#2172](https://github.com/diffplug/spotless/pull/2172))
 * Bump default `eclipse` version to latest `4.29` -> `4.32`. ([#2179](https://github.com/diffplug/spotless/pull/2179))
 * Bump default `greclipse` version to latest `4.29` -> `4.32`. ([#2179](https://github.com/diffplug/spotless/pull/2179), [#2190](https://github.com/diffplug/spotless/pull/2190))
