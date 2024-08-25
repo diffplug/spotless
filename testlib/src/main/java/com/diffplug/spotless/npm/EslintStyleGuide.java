@@ -79,7 +79,7 @@ public enum EslintStyleGuide {
 		@Override
 		public @Nonnull Map<String, String> devDependencies() {
 			Map<String, String> dependencies = new LinkedHashMap<>();
-			dependencies.put("eslint-config-xo", "^0.43.1");
+			dependencies.put("eslint-config-xo", "0.43.1");
 			return dependencies;
 		}
 	};
