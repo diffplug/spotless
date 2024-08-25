@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [7.0.0.BETA2] - 2024-08-25
 ### Changed
 * Support toning down sortPom logging. ([#2185](https://github.com/diffplug/spotless/pull/2185))
 * Bump default `ktlint` version to latest `1.2.1` -> `1.3.0`. ([#2165](https://github.com/diffplug/spotless/pull/2165))
