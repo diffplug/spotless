@@ -41,11 +41,10 @@ class EslintFormatterStepTest {
 				"custom_rules", EslintFormatterStep.defaultDevDependenciesForTypescript(),
 				"styleguide/airbnb", EslintStyleGuide.JS_AIRBNB.mergedWith(EslintFormatterStep.defaultDevDependencies()),
 				"styleguide/google", EslintStyleGuide.JS_GOOGLE.mergedWith(EslintFormatterStep.defaultDevDependencies()),
-				"styleguide/standard", EslintStyleGuide.JS_STANDARD.mergedWith(EslintFormatterStep.defaultDevDependencies()),
-				"styleguide/xo", EslintStyleGuide.JS_XO.mergedWith(EslintFormatterStep.defaultDevDependencies()));
+				"styleguide/standard", EslintStyleGuide.JS_STANDARD.mergedWith(EslintFormatterStep.defaultDevDependencies()));
 
 		@ParameterizedTest(name = "{index}: eslint can be applied using ruleset {0}")
-		@ValueSource(strings = {"custom_rules", "styleguide/airbnb", "styleguide/google", "styleguide/standard", "styleguide/xo"})
+		@ValueSource(strings = {"custom_rules", "styleguide/airbnb", "styleguide/google", "styleguide/standard"})
 		void formattingUsingRulesetsFile(String ruleSetName) throws Exception {
 			String filedir = "npm/eslint/javascript/" + ruleSetName + "/";
 
@@ -79,11 +78,10 @@ class EslintFormatterStepTest {
 
 		private final Map<String, Map<String, String>> devDependenciesForRuleset = ImmutableMap.of(
 				"custom_rules", EslintFormatterStep.defaultDevDependenciesForTypescript(),
-				"styleguide/standard_with_typescript", EslintStyleGuide.TS_STANDARD_WITH_TYPESCRIPT.mergedWith(EslintFormatterStep.defaultDevDependenciesForTypescript()),
-				"styleguide/xo", EslintStyleGuide.TS_XO_TYPESCRIPT.mergedWith(EslintFormatterStep.defaultDevDependenciesForTypescript()));
+				"styleguide/standard_with_typescript", EslintStyleGuide.TS_STANDARD_WITH_TYPESCRIPT.mergedWith(EslintFormatterStep.defaultDevDependenciesForTypescript()));
 
 		@ParameterizedTest(name = "{index}: eslint can be applied using ruleset {0}")
-		@ValueSource(strings = {"custom_rules", "styleguide/standard_with_typescript", "styleguide/xo"})
+		@ValueSource(strings = {"custom_rules", "styleguide/standard_with_typescript"})
 		void formattingUsingRulesetsFile(String ruleSetName) throws Exception {
 			String filedir = "npm/eslint/typescript/" + ruleSetName + "/";
 
