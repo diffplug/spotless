@@ -2,8 +2,7 @@ plugins {
 	id 'java-library'
 	id 'io.github.davidburstrom.version-compatibility'
 }
-ext.artifactId = project.artifactIdLib
-version = rootProject.spotlessChangelog.versionNext
+
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 

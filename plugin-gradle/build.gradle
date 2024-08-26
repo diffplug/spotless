@@ -1,21 +1,15 @@
-apply from: rootProject.file('gradle/changelog.gradle')
-ext.artifactId = project.artifactIdGradle
-version = spotlessChangelog.versionNext
 apply plugin: 'java-library'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'java-gradle-plugin'
+apply from: rootProject.file('gradle/changelog.gradle')
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
 
 dependencies {
-	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
-		api projects.lib
-		api projects.libExtra
-	} else {
-		api "com.diffplug.spotless:spotless-lib:${rootProject.spotlessChangelog.versionLast}"
-		api "com.diffplug.spotless:spotless-lib-extra:${rootProject.spotlessChangelog.versionLast}"
-	}
+	api projects.lib
+	api projects.libExtra
+
 	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
