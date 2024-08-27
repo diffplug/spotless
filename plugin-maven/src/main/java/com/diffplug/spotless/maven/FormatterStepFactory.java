@@ -15,9 +15,15 @@
  */
 package com.diffplug.spotless.maven;
 
+import org.eclipse.aether.RepositorySystemSession;
+
 import com.diffplug.spotless.FormatterStep;
 
 public interface FormatterStepFactory {
 
 	FormatterStep newFormatterStep(FormatterStepConfig config);
+
+	default void init(RepositorySystemSession repositorySystemSession) {
+		// nothing
+	}
 }

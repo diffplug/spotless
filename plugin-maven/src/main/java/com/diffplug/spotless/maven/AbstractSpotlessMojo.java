@@ -379,6 +379,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private List<FormatterFactory> getFormatterFactories() {
 		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go))
 				.filter(Objects::nonNull)
+				.map(factory -> factory.init(repositorySystemSession))
 				.collect(toList());
 	}
 
