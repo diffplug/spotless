@@ -935,3 +935,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [1.0.0] - 2017-01-09
 * Initial release!
+
+
+
+[Unreleased]: https://github.com/diffplug/spotless/compare/lib/3.0.0.BETA2...HEAD
+[3.0.0.BETA2]: https://github.com/diffplug/spotless/releases/tag/lib/3.0.0.BETA2

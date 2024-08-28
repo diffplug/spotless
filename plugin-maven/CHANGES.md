@@ -860,3 +860,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Maven plugin written by [Konstantin Lutovich](https://github.com/lutovich).
 * Full support for the Java and Scala formatters.
 * Initial release, after user feedback we will ship `1.x`.
+
+
+
+[Unreleased]: https://github.com/diffplug/spotless/compare/maven/2.44.0.BETA2...HEAD
+[7.0.0.BETA2]: https://github.com/diffplug/spotless/releases/tag/maven/2.44.0.BETA2

@@ -1236,3 +1236,8 @@ Below is the algorithm used by git and spotless to determine the proper line end
 
 ## [0.1] - 2015-04-28
 * First release, to test out that we can release to jcenter and whatnot.
+
+
+
+[Unreleased]: https://github.com/diffplug/spotless/compare/gradle/7.0.0.BETA2...HEAD
+[7.0.0.BETA2]: https://github.com/diffplug/spotless/releases/tag/gradle/7.0.0.BETA2
