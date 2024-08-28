@@ -873,7 +873,7 @@ spotless {
 
 ## [3.30.0] - 2020-05-11
 ### Added
-* `-PspotlessIdeHook` which makes the VS Code extension faster and more reliable.  See [`IDE_INTEGRATION.md`](IDE_INTEGRATION.md) for more details. ([#568](https://github.com/diffplug/spotless/pull/568))
+* `-PspotlessIdeHook` which makes the VS Code extension faster and more reliable.  See [`IDE_HOOK.md`](IDE_HOOK.md) for more details. ([#568](https://github.com/diffplug/spotless/pull/568))
 
 ## [3.29.0] - 2020-05-05
 ### Added
