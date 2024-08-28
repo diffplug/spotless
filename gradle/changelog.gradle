@@ -25,13 +25,7 @@ spotlessChangelog {
 	tagMessage "${kind} v{{version}}\n\n{{changes}}"
 	runAfterPush "gh release create ${kind}/{{version}} --title '${releaseTitle} v{{version}}' --notes-from-tag"
 
-	if (kind == 'gradle') {
-		forceNextVersion '7.0.0.BETA2'
-	} else if (kind == 'maven') {
-		forceNextVersion '2.44.0.BETA2'
-	} else {
-		forceNextVersion '3.0.0.BETA2'
-	}
+	forceNextVersion getProperty('VERSION_NAME')
 }
 
 if (project == rootProject) {

@@ -9,9 +9,13 @@ repositories {
 	mavenCentral()
 }
 
-apply from: rootProject.file('gradle/java-publish.gradle')
-apply from: rootProject.file('gradle/changelog.gradle')
 allprojects {
+	if (findProject('POM_ARTIFACT_ID') != null) {
+		group = getProperty('GROUP')
+		description = getProperty('POM_DESCRIPTION')
+		ext.artifactId = getProperty('POM_ARTIFACT_ID')
+	}
+
 	apply from: rootProject.file('gradle/spotless.gradle')
 }
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
