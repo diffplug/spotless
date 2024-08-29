@@ -22,7 +22,7 @@ spotlessChangelog {
 	branch        'release'
 	tagPrefix     "${kind}/"
 	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
-	tagMessage "${kind} v{{version}}\n\n{{changes}}"
+	tagMessage "{{changes}}"
 	runAfterPush "gh release create ${kind}/{{version}} --title '${releaseTitle} v{{version}}' --notes-from-tag"
 
 	if (kind == 'gradle') {
