@@ -380,7 +380,7 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
     licenseHeader '/* (C)$YEAR */' // or licenseHeaderFile
   }
   kotlinGradle {
-    target '*.gradle.kts' // default target for kotlinGradle
+    target('*.gradle.kts') // default target for kotlinGradle
     ktlint() // or ktfmt() or prettier()
   }
 }
