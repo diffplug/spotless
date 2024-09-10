@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.diffplug.spotless.maven.rdf.Rdf;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -191,6 +193,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Go go;
+
+	@Parameter
+	private Rdf rdf;
 
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
@@ -377,7 +382,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go, rdf))
 				.filter(Objects::nonNull)
 				.collect(toList());
 	}

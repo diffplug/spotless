@@ -165,7 +165,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 
 		String raw = new String(Files.readAllBytes(file.toPath()), encoding);
 		String unix = LineEnding.toUnix(raw);
-
 		// check the newlines (we can find these problems without even running the steps)
 		int totalNewLines = (int) unix.codePoints().filter(val -> val == '\n').count();
 		int windowsNewLines = raw.length() - unix.length();
@@ -181,7 +180,6 @@ public final class Formatter implements Serializable, AutoCloseable {
 
 		// check the other formats
 		String formatted = compute(unix, file);
-
 		// return true iff the formatted string equals the unix one
 		return formatted.equals(unix);
 	}
