@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+* Add explicit support for CSS via biome. Formatting CSS via biome was already supported as a general
+  formatting step. Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
+
 ## [7.0.0.BETA2] - 2024-08-25
 ### Changed
 * Support toning down sortPom logging. ([#2185](https://github.com/diffplug/spotless/pull/2185))
