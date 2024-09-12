@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+* Use the Gradle user home directory by default for the download directory for the biome executable. Previously, the
+  plugin tried to use Maven's home directory, which is not always accessible by a Gradle plugin. ([#2187](https://github.com/diffplug/spotless/issues/2187))
+
 ## [7.0.0.BETA2] - 2024-08-25
 ### Changed
 * Support toning down sortPom logging. ([#2185](https://github.com/diffplug/spotless/pull/2185))
