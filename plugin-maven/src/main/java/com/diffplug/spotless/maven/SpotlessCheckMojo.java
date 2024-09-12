@@ -27,8 +27,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
@@ -64,7 +64,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 	private MessageSeverity m2eIncrementalBuildMessageSeverity;
 
 	@Override
-	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
+	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		ImpactedFilesTracker counter = new ImpactedFilesTracker();
 
 		List<File> problemFiles = new ArrayList<>();
@@ -78,11 +78,11 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 			}
 			buildContext.removeMessages(file);
 			try {
-				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+				DirtyState dirtyState = DirtyState.of(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
 					problemFiles.add(file);
 					if (buildContext.isIncremental()) {
-						Map.Entry<Integer, String> diffEntry = DiffMessageFormatter.diff(formatter, file);
+						Map.Entry<Integer, String> diffEntry = DiffMessageFormatter.diff(baseDir.toPath(), formatter, file);
 						buildContext.addMessage(file, diffEntry.getKey() + 1, 0, INCREMENTAL_MESSAGE_PREFIX + diffEntry.getValue(), m2eIncrementalBuildMessageSeverity.getSeverity(), null);
 					}
 					counter.cleaned();
@@ -98,15 +98,15 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 		// We print the number of considered files which is useful when ratchetFrom is setup
 		if (counter.getTotal() > 0) {
 			getLog().info(String.format("Spotless.%s is keeping %s files clean - %s needs changes to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
-					formatter.getName(), counter.getTotal(), counter.getCleaned(), counter.getCheckedButAlreadyClean(), counter.getSkippedAsCleanCache()));
+					name, counter.getTotal(), counter.getCleaned(), counter.getCheckedButAlreadyClean(), counter.getSkippedAsCleanCache()));
 		} else {
-			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", formatter.getName()));
+			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", name));
 		}
 
 		if (!problemFiles.isEmpty()) {
 			throw new MojoExecutionException(DiffMessageFormatter.builder()
 					.runToFix("Run 'mvn spotless:apply' to fix these violations.")
-					.formatter(formatter)
+					.formatter(baseDir.toPath(), formatter)
 					.problemFiles(problemFiles)
 					.getMessage());
 		}

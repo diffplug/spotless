@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Plugin;
@@ -37,7 +36,6 @@ import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -116,11 +114,9 @@ class NoopCheckerTest extends ResourceHarness {
 
 	private static Formatter dummyFormatter() {
 		return Formatter.builder()
-				.rootDir(Paths.get(""))
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(UTF_8)
 				.steps(singletonList(mock(FormatterStep.class, withSettings().serializable())))
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build();
 	}
 }

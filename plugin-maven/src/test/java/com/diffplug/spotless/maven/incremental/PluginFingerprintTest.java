@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +34,6 @@ import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -173,11 +171,9 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 
 	private static Formatter formatter(LineEnding lineEnding, FormatterStep... steps) {
 		return Formatter.builder()
-				.rootDir(Paths.get(""))
 				.lineEndingsPolicy(lineEnding.createPolicy())
 				.encoding(UTF_8)
 				.steps(Arrays.asList(steps))
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build();
 	}
 }
