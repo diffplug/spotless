@@ -10,7 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-
+### Added
+* Support for `rdf` ([#2261](https://github.com/diffplug/spotless/pull/2261))
 ## [3.0.0.BETA2] - 2024-08-25
 ### Changed
 * Support toning down sortPom logging. ([#2185](https://github.com/diffplug/spotless/pull/2185))
