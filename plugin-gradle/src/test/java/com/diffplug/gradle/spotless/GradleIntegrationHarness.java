@@ -54,8 +54,11 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		GradleVersionSupport(String version) {
 			String minVersionForRunningJRE;
 			switch (Jvm.version()) {
-			case 23:
+			case 24:
 				// TODO: https://docs.gradle.org/current/userguide/compatibility.html
+			case 23:
+				minVersionForRunningJRE = "8.10";
+				break;
 			case 22:
 				minVersionForRunningJRE = "8.8";
 				break;
