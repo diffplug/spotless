@@ -96,10 +96,6 @@ public class RdfFormatterConfig implements Serializable{
 			return this;
 		}
 
-		public RdfFormatterConfig build(){
-			return config;
-		}
-
 		public Builder verify(boolean verify) {
 			this.config.verify = verify;
 			return this;
@@ -108,6 +104,10 @@ public class RdfFormatterConfig implements Serializable{
 		public Builder verify() {
 			this.config.verify = true;
 			return this;
+		}
+
+		public RdfFormatterConfig build(){
+			return config;
 		}
 	}
 
