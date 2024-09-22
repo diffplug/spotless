@@ -43,7 +43,8 @@ public class RdfFormat implements FormatterStepFactory {
 		RdfFormatterConfig formatterConfig = RdfFormatterConfig
 			.builder()
 				.failOnWarning(failOnWarning)
-			.verify(verify)
+				.turtleFormatterVersion(turtleFormatterVersion)
+				.verify(verify)
 				.build();
 		try {
 			return RdfFormatterStep.create(formatterConfig,

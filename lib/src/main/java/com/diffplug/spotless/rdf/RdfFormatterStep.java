@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RdfFormatterStep implements Serializable{
-	public static final String LATEST_TURTLE_FORMATTER_VERSION = "1.2.12";
+	public static final String LATEST_TURTLE_FORMATTER_VERSION = "1.2.13";
 	public static long serialVersionUID = 1L;
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
