@@ -31,8 +31,7 @@ import com.diffplug.spotless.Provisioner;
 
 public class RdfFormatterStep implements Serializable {
 	public static final String LATEST_TURTLE_FORMATTER_VERSION = "1.2.13";
-	public static long serialVersionUID = 1L;
-	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	private static final long serialVersionUID = 1L;
 
 	private static final String TURTLE_FORMATTER_COORDINATES = "de.atextor:turtle-formatter";
 
@@ -64,8 +63,8 @@ public class RdfFormatterStep implements Serializable {
 		this.config = config;
 	}
 
-	static class State implements Serializable {
-		public static final long serialVersionUID = 1L;
+	public static class State implements Serializable {
+		private static final long serialVersionUID = 1L;
 
 		private final RdfFormatterConfig config;
 

@@ -60,14 +60,12 @@ public class ReflectionHelper {
 	private final Class<?> JenaLangClass;
 	private final Class<?> JenaRDFFormatClass;
 	private final Class<?> JenaGraphClass;
-	private final Class<?> JenaNode;
 	private final Class<?> JenaTriple;
 	private final Class<?> TurtleFormatFormattingStyleClass;
 	private final Class<?> TurtleFormatFormattingStyleBuilderClass;
 	private final Class<?> TurtleFormatFormatterClass;
 	private final Class<?> TurtleFormatKnownPrefix;
 
-	private final Method graphFindByNodes;
 	private final Method graphStream;
 	private final Method graphFindTriple;
 	private final Method contains;
@@ -110,9 +108,7 @@ public class ReflectionHelper {
 		this.isAnon = JenaRDFNodeClass.getMethod("isAnon");
 		this.getGraph = JenaModelClass.getMethod(("getGraph"));
 		this.JenaGraphClass = classLoader.loadClass("org.apache.jena.graph.Graph");
-		this.JenaNode = classLoader.loadClass("org.apache.jena.graph.Node");
 		this.JenaTriple = classLoader.loadClass("org.apache.jena.graph.Triple");
-		this.graphFindByNodes = JenaGraphClass.getMethod("find", JenaNode, JenaNode, JenaNode);
 		this.graphFindTriple = JenaGraphClass.getMethod("find", JenaTriple);
 		this.graphStream = JenaGraphClass.getMethod("stream");
 		this.tripleGetObject = JenaTriple.getMethod("getObject");
@@ -300,11 +296,7 @@ public class ReflectionHelper {
 			List<?> selectedEnumValueList = Arrays.stream(param.getEnumConstants()).filter(e -> {
 				try {
 					return e.getClass().getMethod("name").invoke(e).equals(parameterValueAsString);
-				} catch (IllegalAccessException ex) {
-					throw new RuntimeException(ex);
-				} catch (InvocationTargetException ex) {
-					throw new RuntimeException(ex);
-				} catch (NoSuchMethodException ex) {
+				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
 					throw new RuntimeException(ex);
 				}
 			}).collect(
@@ -317,11 +309,8 @@ public class ReflectionHelper {
 								Arrays.stream(param.getEnumConstants()).map(e -> {
 									try {
 										return (String) e.getClass().getMethod("name").invoke(e);
-									} catch (IllegalAccessException ex) {
-										throw new RuntimeException(ex);
-									} catch (InvocationTargetException ex) {
-										throw new RuntimeException(ex);
-									} catch (NoSuchMethodException ex) {
+									} catch (IllegalAccessException | InvocationTargetException |
+											 NoSuchMethodException ex) {
 										throw new RuntimeException(ex);
 									}
 								}).collect(
@@ -362,11 +351,7 @@ public class ReflectionHelper {
 		List<Object> ret = Arrays.stream(entries).map(e -> {
 			try {
 				return instantiate(type, e);
-			} catch (NoSuchMethodException ex) {
-				throw new RuntimeException(ex);
-			} catch (InvocationTargetException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 		}).collect(Collectors.toList());
@@ -378,11 +363,7 @@ public class ReflectionHelper {
 		return Arrays.stream(entries).map(e -> {
 			try {
 				return instantiate(type, e);
-			} catch (NoSuchMethodException ex) {
-				throw new RuntimeException(ex);
-			} catch (InvocationTargetException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 		}).collect(Collectors.toSet());
@@ -440,8 +421,7 @@ public class ReflectionHelper {
 			throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 		Field[] fields = TurtleFormatFormattingStyleClass.getDeclaredFields();
 		List<String> options = new ArrayList<>();
-		for (int i = 0; i < fields.length; i++) {
-			Field field = fields[i];
+		for (Field field : fields) {
 			if (field.getType().equals(TurtleFormatKnownPrefix)) {
 				Object knownPrefix = field.get(TurtleFormatFormattingStyleClass);
 				String prefix = (String) TurtleFormatKnownPrefix.getMethod("prefix").invoke(knownPrefix);
@@ -472,7 +452,7 @@ public class ReflectionHelper {
 					.sorted(Comparator.comparing(Method::getName)).collect(
 							Collectors.toList());
 			throw new RuntimeException(
-					String.format("Unrecognized configuration parameter name: %s. Candidates are:\n%s", optionName, candidates.stream().map(Method::getName).collect(
+					String.format("Unrecognized configuration parameter name: %s. Candidates are:%n%s", optionName, candidates.stream().map(Method::getName).collect(
 							Collectors.joining("\n\t", "\t", ""))));
 		}
 		if (methods.size() > 1) {
@@ -492,11 +472,6 @@ public class ReflectionHelper {
 
 	public Object getRDFFormat(String rdfFormat) throws NoSuchFieldException, IllegalAccessException {
 		return JenaRDFFormatClass.getDeclaredField(rdfFormat).get(JenaRDFFormatClass);
-	}
-
-	public Object sortedModel(Object model) {
-		return Proxy.newProxyInstance(classLoader, new Class[]{JenaModelClass},
-				new SortedModelInvocationHandler(this, model));
 	}
 
 	public Object parseToModel(String rawUnix, File file, Object lang)
@@ -519,9 +494,9 @@ public class ReflectionHelper {
 		return (long) size.invoke(model);
 	}
 
-	private class SortedModelInvocationHandler implements InvocationHandler {
-		private ReflectionHelper reflectionHelper;
-		private Object jenaModel;
+	private static class SortedModelInvocationHandler implements InvocationHandler {
+		private final ReflectionHelper reflectionHelper;
+		private final Object jenaModel;
 
 		public SortedModelInvocationHandler(ReflectionHelper reflectionHelper, Object jenaModel) {
 			this.reflectionHelper = reflectionHelper;
@@ -532,29 +507,21 @@ public class ReflectionHelper {
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			if (method.getName().equals("listSubjects") && method.getParameterCount() == 0) {
 				Object resIterator = method.invoke(jenaModel);
-				List resources = new ArrayList<>();
+				List<Object> resources = new ArrayList<>();
 				while (hasNext(resIterator)) {
 					resources.add(next(resIterator));
 				}
 				resources.sort(Comparator.comparing(x -> {
 					try {
 						return (String) x.getClass().getMethod("getURI").invoke(x);
-					} catch (IllegalAccessException e) {
-						throw new RuntimeException(e);
-					} catch (InvocationTargetException e) {
-						throw new RuntimeException(e);
-					} catch (NoSuchMethodException e) {
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 						throw new RuntimeException(e);
 					}
 				}).thenComparing(x -> {
-					Object anonId = null;
+					Object anonId;
 					try {
 						anonId = x.getClass().getMethod("getAnonId").invoke(x);
-					} catch (IllegalAccessException e) {
-						throw new RuntimeException(e);
-					} catch (InvocationTargetException e) {
-						throw new RuntimeException(e);
-					} catch (NoSuchMethodException e) {
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 						throw new RuntimeException(e);
 					}
 					if (anonId != null) {

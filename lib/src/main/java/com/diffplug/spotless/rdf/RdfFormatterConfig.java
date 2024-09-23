@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class RdfFormatterConfig implements Serializable {
-	private static final long serialVersionId = 1L;
+	private static final long serialVersionUID = 1L;
 	private boolean failOnWarning = true;
 	private String turtleFormatterVersion = RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION;
 	private boolean verify = true;

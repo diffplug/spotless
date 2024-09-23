@@ -92,7 +92,7 @@ public class ResourceHarness {
 					throw new RuntimeException(String.format("Resource not found in classpath: '%s' - did you mean '/%1$s'?", path));
 				}
 			}
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 				String resource;
 				while ((resource = br.readLine()) != null) {
 					filenames.add(resource);

@@ -19,26 +19,23 @@ import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.diffplug.spotless.FormatExceptionPolicy;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.LineEnding;
 
 public class RdfFormatterFunc implements FormatterFunc {
-	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	private static final Set<String> TURTLE_EXTENSIONS = Set.of("ttl", "turtle");
 	private static final Set<String> TRIG_EXTENSIONS = Set.of("trig");
 	private static final Set<String> NTRIPLES_EXTENSIONS = Set.of("n-triples", "ntriples", "nt");
 	private static final Set<String> NQUADS_EXTENSIONS = Set.of("n-quads", "nquads", "nq");
 
 	private final RdfFormatterStep.State state;
-	private final FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
 	private final ReflectionHelper reflectionHelper;
 
 	public RdfFormatterFunc(RdfFormatterStep.State state)
@@ -54,7 +51,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 
 	@Override
 	public String apply(String rawUnix, File file) throws Exception {
-		String filename = file.getName().toLowerCase();
+		String filename = file.getName().toLowerCase(Locale.US);
 		int lastDot = filename.lastIndexOf('.');
 		if (lastDot < 0) {
 			throw new IllegalArgumentException(
@@ -118,7 +115,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 		if (!reflectionHelper.areModelsIsomorphic(modelBefore, modelAfter)) {
 			long beforeSize = reflectionHelper.modelSize(modelBefore);
 			long afterSize = reflectionHelper.modelSize(modelAfter);
-			String diffResult = "[no diff information available]";
+			String diffResult;
 			if (beforeSize != afterSize) {
 				diffResult = String.format("< %,d triples", beforeSize);
 				diffResult += String.format("> %,d triples", afterSize);
@@ -144,9 +141,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 				.filter(triple -> {
 					try {
 						return !reflectionHelper.graphContainsSameTerm(graphAfter, triple);
-					} catch (InvocationTargetException e) {
-						throw new RuntimeException(e);
-					} catch (IllegalAccessException e) {
+					} catch (InvocationTargetException | IllegalAccessException e) {
 						throw new RuntimeException(e);
 					}
 				})
@@ -156,9 +151,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 				.filter(triple -> {
 					try {
 						return !reflectionHelper.graphContainsSameTerm(graphBefore, triple);
-					} catch (InvocationTargetException e) {
-						throw new RuntimeException(e);
-					} catch (IllegalAccessException e) {
+					} catch (InvocationTargetException | IllegalAccessException e) {
 						throw new RuntimeException(e);
 					}
 				})
