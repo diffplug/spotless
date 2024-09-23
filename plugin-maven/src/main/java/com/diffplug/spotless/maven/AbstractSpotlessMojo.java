@@ -59,6 +59,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.maven.antlr4.Antlr4;
 import com.diffplug.spotless.maven.cpp.Cpp;
+import com.diffplug.spotless.maven.css.Css;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.gherkin.Gherkin;
@@ -140,6 +141,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private List<Format> formats = Collections.emptyList();
+
+	@Parameter
+	private Css css;
 
 	@Parameter
 	private Groovy groovy;
@@ -377,7 +381,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, css, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go))
 				.filter(Objects::nonNull)
 				.map(factory -> factory.init(repositorySystemSession))
 				.collect(toList());

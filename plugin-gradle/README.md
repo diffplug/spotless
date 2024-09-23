@@ -1111,6 +1111,22 @@ spotless {
 }
 ```
 
+## CSS
+
+`com.diffplug.gradle.spotless.CssExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA2/com/diffplug/gradle/spotless/CssExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/CssExtension.java)
+
+```gradle
+spotless {
+  css {
+    target 'css/**/*.css' // default: '**/*.css'
+
+    biome('1.8.3')  // has its own section below
+  }
+}
+```
+
+Note regarding biome: Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
+
 ## Prettier
 
 [homepage](https://prettier.io/). [changelog](https://github.com/prettier/prettier/blob/master/CHANGELOG.md). [official plugins](https://prettier.io/docs/en/plugins.html#official-plugins). [community plugins](https://prettier.io/docs/en/plugins.html#community-plugins). Prettier is a formatter that can format almost every anything - JavaScript, JSX, Angular, Vue, Flow, TypeScript, CSS, Less, SCSS, HTML, JSON, GraphQL, Markdown (including GFM and MDX), and YAML.  It can format even more [using plugins](https://prettier.io/docs/en/plugins.html) (PHP, Ruby, Swift, XML, Apex, Elm, Java (!!), Kotlin, pgSQL, .properties, solidity, svelte, toml, shellscript, ...).
@@ -1310,6 +1326,8 @@ is pretty fast. It can currently format JavaScript, TypeScript, JSX, and JSON, a
 
 You can use Biome in any language-specific format for supported languages, but
 usually you will be creating a generic format.
+
+Note regarding biome: Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
 
 ```gradle
 spotless {

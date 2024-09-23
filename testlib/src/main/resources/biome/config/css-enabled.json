@@ -1,0 +1,19 @@
+{
+    "css": {
+      "linter": {
+        "enabled": true
+      },
+      "formatter": {
+        "enabled": true
+      }
+    },
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "tab",
+      "lineWidth": 80,
+      "formatWithErrors": false
+    },
+    "linter": {
+      "enabled": false
+    }
+  }
