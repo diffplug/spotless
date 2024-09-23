@@ -18,10 +18,14 @@ package com.diffplug.spotless.rdf;
 import java.io.File;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.net.URI;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -31,6 +35,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,6 +55,7 @@ public class ReflectionHelper {
 	private final Class<?> JenaStatementClass;
 	private final Class<?> JenaRDFNodeClass;
 	private final Class<?> JenaResourceClass;
+	private final Class<?> JenaPropertyClass;
 	private final Class<?> JenaModelFactoryClass;
 	private final Class<?> JenaLangClass;
 	private final Class<?> JenaRDFFormatClass;
@@ -59,6 +65,7 @@ public class ReflectionHelper {
 	private final Class<?> TurtleFormatFormattingStyleClass;
 	private final Class<?> TurtleFormatFormattingStyleBuilderClass;
 	private final Class<?> TurtleFormatFormatterClass;
+	private final Class<?> TurtleFormatKnownPrefix;
 
 	private final Method graphFindByNodes;
 	private final Method graphStream;
@@ -71,7 +78,11 @@ public class ReflectionHelper {
 	private final Method getGraph;
 	private final Method tripleGetObject;
 
-	public ReflectionHelper(RdfFormatterStep.State state) throws ClassNotFoundException, NoSuchMethodException {
+	private Object turtleFormatter = null;
+	private Object jenaModelInstance = null;
+
+	public ReflectionHelper(RdfFormatterStep.State state)
+			throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		this.state = state;
 		this.classLoader = state.getJarState().getClassLoader();
 		this.JenaRdfDataMgrClass = classLoader.loadClass("org.apache.jena.riot.RDFDataMgr");
@@ -82,6 +93,7 @@ public class ReflectionHelper {
 		this.JenaStmtIteratorClass = classLoader.loadClass("org.apache.jena.rdf.model.StmtIterator");
 		this.JenaRDFNodeClass = classLoader.loadClass("org.apache.jena.rdf.model.RDFNode");
 		this.JenaResourceClass = classLoader.loadClass("org.apache.jena.rdf.model.Resource");
+		this.JenaPropertyClass = classLoader.loadClass("org.apache.jena.rdf.model.Property");
 		this.JenaStatementClass = classLoader.loadClass("org.apache.jena.rdf.model.Statement");
 		this.JenaModelFactoryClass = classLoader.loadClass("org.apache.jena.rdf.model.ModelFactory");
 		this.JenaLangClass = classLoader.loadClass("org.apache.jena.riot.Lang");
@@ -91,8 +103,8 @@ public class ReflectionHelper {
 		Class<?>[] innerClasses = TurtleFormatFormattingStyleClass.getDeclaredClasses();
 		this.TurtleFormatFormattingStyleBuilderClass = Arrays.stream(innerClasses)
 				.filter(c -> c.getSimpleName().equals("FormattingStyleBuilder")).findFirst().get();
+		this.TurtleFormatKnownPrefix = Arrays.stream(innerClasses).filter(c -> c.getSimpleName().equals("KnownPrefix")).findFirst().get();
 		this.getSubject = JenaStatementClass.getMethod("getSubject");
-		;
 		this.getPredicate = JenaStatementClass.getMethod("getPredicate");
 		this.getObject = JenaStatementClass.getMethod("getObject");
 		this.isAnon = JenaRDFNodeClass.getMethod("isAnon");
@@ -105,6 +117,7 @@ public class ReflectionHelper {
 		this.graphStream = JenaGraphClass.getMethod("stream");
 		this.tripleGetObject = JenaTriple.getMethod("getObject");
 		this.contains = JenaGraphClass.getMethod("contains", JenaTriple);
+		this.jenaModelInstance = JenaModelFactoryClass.getMethod("createDefaultModel").invoke(JenaModelFactoryClass);
 	}
 
 	public Object getLang(String lang) throws NoSuchFieldException, IllegalAccessException {
@@ -243,12 +256,20 @@ public class ReflectionHelper {
 
 	public String formatWithTurtleFormatter(Object model)
 			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-		Object style = turtleFormatterStyle();
-		Object formatter = turtleFormatter(style);
+		Object formatter = getTurtleFormatter();
 		return (String) TurtleFormatFormatterClass.getMethod("apply", JenaModelClass).invoke(formatter, model);
 	}
 
-	private Object turtleFormatterStyle() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	private synchronized Object getTurtleFormatter()
+			throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+		if (this.turtleFormatter == null) {
+			Object style = newTurtleFormatterStyle();
+			this.turtleFormatter = newTurtleFormatter(style);
+		}
+		return this.turtleFormatter;
+	}
+
+	private Object newTurtleFormatterStyle() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Object builder = TurtleFormatFormattingStyleClass.getMethod("builder").invoke(TurtleFormatFormatterClass);
 		for (String optionName : state.getTurtleFormatterStyle().keySet()) {
 			Method method = getBuilderMethod(optionName);
@@ -260,12 +281,12 @@ public class ReflectionHelper {
 
 	public String formatWithTurtleFormatter(String ttlContent)
 			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-		Object style = turtleFormatterStyle();
-		Object formatter = turtleFormatter(style);
+		Object style = newTurtleFormatterStyle();
+		Object formatter = newTurtleFormatter(style);
 		return (String) TurtleFormatFormatterClass.getMethod("applyToContent", String.class).invoke(formatter, ttlContent);
 	}
 
-	private Object turtleFormatter(Object style)
+	private Object newTurtleFormatter(Object style)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Object formatter = TurtleFormatFormatterClass.getConstructor(TurtleFormatFormattingStyleClass)
 				.newInstance(style);
@@ -325,11 +346,120 @@ public class ReflectionHelper {
 			method.invoke(builder, Long.parseLong(parameterValueAsString));
 		} else if (param.equals(Float.class)) {
 			method.invoke(builder, Float.parseFloat(parameterValueAsString));
+		} else if (Set.class.isAssignableFrom(param)) {
+			method.invoke(builder, makeSetOf(((ParameterizedType) method.getGenericParameterTypes()[0]).getActualTypeArguments()[0], parameterValueAsString));
+		} else if (List.class.isAssignableFrom(param)) {
+			method.invoke(builder, makeListOf(((ParameterizedType) method.getGenericParameterTypes()[0]).getActualTypeArguments()[0], parameterValueAsString));
 		} else {
 			throw new IllegalArgumentException(String.format(
 					"Cannot handle turtle-formatter config option %s: parameters of type %s are not implemented in the spotless plugin yet",
 					method.getName(), param.getName()));
 		}
+	}
+
+	private Object makeListOf(Type type, String parameterValueAsString) {
+		String[] entries = split(parameterValueAsString);
+		List<Object> ret = Arrays.stream(entries).map(e -> {
+			try {
+				return instantiate(type, e);
+			} catch (NoSuchMethodException ex) {
+				throw new RuntimeException(ex);
+			} catch (InvocationTargetException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+		}).collect(Collectors.toList());
+		return ret;
+	}
+
+	private Object makeSetOf(Type type, String parameterValueAsString) {
+		String[] entries = split(parameterValueAsString);
+		return Arrays.stream(entries).map(e -> {
+			try {
+				return instantiate(type, e);
+			} catch (NoSuchMethodException ex) {
+				throw new RuntimeException(ex);
+			} catch (InvocationTargetException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+		}).collect(Collectors.toSet());
+	}
+
+	private Object instantiate(Type type, String stringRepresentation)
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		if (type.equals(String.class)) {
+			return stringRepresentation;
+		}
+		if (type.equals(JenaRDFNodeClass)) {
+			try {
+				String uri = tryToMakeUri(stringRepresentation);
+				return this.JenaModelClass.getMethod("createResource", String.class)
+						.invoke(this.jenaModelInstance, uri);
+			} catch (IllegalArgumentException e) {
+				return this.JenaModelClass.getMethod("createLiteral", String.class, String.class)
+						.invoke(this.jenaModelInstance, stringRepresentation, "");
+			}
+		}
+		if (type.equals(JenaResourceClass)) {
+			return this.JenaModelClass.getMethod("createResource", String.class).invoke(this.jenaModelInstance, tryToMakeUri(stringRepresentation));
+		}
+		if (type.equals(JenaPropertyClass)) {
+			String uri = tryToMakeUri(stringRepresentation);
+			if (uri != null) {
+				String localname = uri.replaceAll("^.+[#/]", "");
+				String namespace = uri.substring(0, uri.length() - localname.length());
+				return this.JenaModelClass.getMethod("createProperty", String.class, String.class)
+						.invoke(this.jenaModelInstance, namespace, localname);
+			}
+		}
+		if (type.equals(TurtleFormatKnownPrefix)) {
+			return getKnownPrefix(stringRepresentation);
+		}
+		throw new IllegalArgumentException(String.format("Cannot instantiate class %s from string representation %s", type, stringRepresentation));
+	}
+
+	private String tryToMakeUri(String stringRepresentation)
+			throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+		if (stringRepresentation.matches("[^:/]+:[^:/]+")) {
+			int colonIndex = stringRepresentation.indexOf(':');
+			//could be a known prefix
+			String prefix = stringRepresentation.substring(0, colonIndex);
+			Object knownPrefix = getKnownPrefix(prefix);
+			String base = this.TurtleFormatKnownPrefix.getMethod("iri").invoke(knownPrefix).toString();
+			return base + stringRepresentation.substring(colonIndex + 1);
+		}
+		// try to parse a URI - throws an IllegalArgumentException if it is not a URI
+		URI uri = URI.create(stringRepresentation);
+		return uri.toString();
+	}
+
+	private Object getKnownPrefix(String stringRepresentation)
+			throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+		Field[] fields = TurtleFormatFormattingStyleClass.getDeclaredFields();
+		List<String> options = new ArrayList<>();
+		for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			if (field.getType().equals(TurtleFormatKnownPrefix)) {
+				Object knownPrefix = field.get(TurtleFormatFormattingStyleClass);
+				String prefix = (String) TurtleFormatKnownPrefix.getMethod("prefix").invoke(knownPrefix);
+				options.add(prefix);
+				if (stringRepresentation.equals(prefix)) {
+					return knownPrefix;
+				}
+			}
+		}
+		throw new IllegalArgumentException(String.format("Unable to find FormattingStyle.KnownPrefix for prefix '%s'. Options are: %s", stringRepresentation, options.stream().collect(
+				Collectors.joining(",\n\t", "\n\t", "\n"))));
+	}
+
+	private static String[] split(String parameterValueAsString) {
+		if (parameterValueAsString == null || parameterValueAsString.isBlank()) {
+			return new String[0];
+		}
+		return parameterValueAsString.split("\\s*(,|,\\s*\n|\n)\\s*");
 	}
 
 	private Method getBuilderMethod(String optionName) {

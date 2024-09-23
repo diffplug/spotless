@@ -39,9 +39,12 @@ public class RdfFormatterFunc implements FormatterFunc {
 
 	private final RdfFormatterStep.State state;
 	private final FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
+	private final ReflectionHelper reflectionHelper;
 
-	public RdfFormatterFunc(RdfFormatterStep.State state) {
+	public RdfFormatterFunc(RdfFormatterStep.State state)
+			throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		this.state = state;
+		this.reflectionHelper = new ReflectionHelper(state);
 	}
 
 	@Override
@@ -62,7 +65,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 					String.format("File %s has no file extension, cannot determine RDF format", file.getAbsolutePath()));
 		}
 		String extension = filename.substring(lastDot + 1);
-		ReflectionHelper reflectionHelper = new ReflectionHelper(state);
+
 		try {
 			if (TURTLE_EXTENSIONS.contains(extension)) {
 				return formatTurtle(rawUnix, file, reflectionHelper);

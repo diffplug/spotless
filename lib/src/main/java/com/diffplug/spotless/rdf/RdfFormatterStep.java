@@ -17,6 +17,7 @@ package com.diffplug.spotless.rdf;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -51,7 +52,8 @@ public class RdfFormatterStep implements Serializable {
 		return new State(step.config, step.turtleFormatterStyle, step.jarState.get());
 	}
 
-	public static RdfFormatterFunc formatterFunc(State state) {
+	public static RdfFormatterFunc formatterFunc(State state)
+			throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		return new RdfFormatterFunc(state);
 	}
 
