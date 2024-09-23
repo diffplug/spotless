@@ -16,14 +16,10 @@
 package com.diffplug.spotless.rdf;
 
 import java.io.Serializable;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;

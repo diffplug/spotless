@@ -309,8 +309,7 @@ public class ReflectionHelper {
 								Arrays.stream(param.getEnumConstants()).map(e -> {
 									try {
 										return (String) e.getClass().getMethod("name").invoke(e);
-									} catch (IllegalAccessException | InvocationTargetException |
-											 NoSuchMethodException ex) {
+									} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
 										throw new RuntimeException(ex);
 									}
 								}).collect(

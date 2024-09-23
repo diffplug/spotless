@@ -16,15 +16,11 @@
 package com.diffplug.spotless.rdf;
 
 import java.io.File;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.LineEnding;
