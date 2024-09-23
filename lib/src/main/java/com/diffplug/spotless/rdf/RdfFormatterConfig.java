@@ -21,7 +21,6 @@ import java.util.Objects;
 public class RdfFormatterConfig implements Serializable {
 	private static final long serialVersionId = 1L;
 	private boolean failOnWarning = true;
-	private boolean useTurtleFormatter = true;
 	private String turtleFormatterVersion = RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION;
 	private boolean verify = true;
 
@@ -47,14 +46,6 @@ public class RdfFormatterConfig implements Serializable {
 		return new Builder();
 	}
 
-	public boolean isUseTurtleFormatter() {
-		return useTurtleFormatter;
-	}
-
-	public void setUseTurtleFormatter(boolean useTurtleFormatter) {
-		this.useTurtleFormatter = useTurtleFormatter;
-	}
-
 	public String getTurtleFormatterVersion() {
 		return turtleFormatterVersion;
 	}
@@ -74,15 +65,6 @@ public class RdfFormatterConfig implements Serializable {
 
 		public Builder failOnWarning(boolean fail) {
 			this.config.setFailOnWarning(fail);
-			return this;
-		}
-
-		public Builder useTurtleFormatter() {
-			return this.useTurtleFormatter(true);
-		}
-
-		public Builder useTurtleFormatter(boolean useTurtleFormatter) {
-			this.config.setUseTurtleFormatter(useTurtleFormatter);
 			return this;
 		}
 
@@ -113,12 +95,12 @@ public class RdfFormatterConfig implements Serializable {
 		if (!(o instanceof RdfFormatterConfig))
 			return false;
 		RdfFormatterConfig that = (RdfFormatterConfig) o;
-		return isFailOnWarning() == that.isFailOnWarning() && isUseTurtleFormatter() == that.isUseTurtleFormatter()
+		return isFailOnWarning() == that.isFailOnWarning()
 				&& Objects.equals(turtleFormatterVersion, that.turtleFormatterVersion);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(isFailOnWarning(), isUseTurtleFormatter(), turtleFormatterVersion);
+		return Objects.hash(isFailOnWarning(), turtleFormatterVersion);
 	}
 }

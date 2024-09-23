@@ -101,12 +101,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 			NoSuchFieldException, InstantiationException {
 		String formatted;
 		Object lang = reflectionHelper.getLang("TTL");
-		if (state.getConfig().isUseTurtleFormatter()) {
-			formatted = reflectionHelper.formatWithTurtleFormatter(rawUnix);
-		} else {
-			Object model = reflectionHelper.parseToModel(rawUnix, file, lang);
-			formatted = reflectionHelper.formatWithJena(model, reflectionHelper.getRDFFormat("TURTLE_PRETTY"));
-		}
+		formatted = reflectionHelper.formatWithTurtleFormatter(rawUnix);
 		if (state.getConfig().isVerify()) {
 			veryfyResult(rawUnix, file, reflectionHelper, lang, formatted);
 		}
