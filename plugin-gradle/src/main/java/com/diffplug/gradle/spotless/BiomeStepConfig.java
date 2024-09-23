@@ -170,7 +170,7 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	/**
 	 * Gets the language (syntax) of the input files to format. When
 	 * <code>null</code> or the empty string, the language is detected automatically
-	 * from the file name. Currently the following languages are supported by Biome:
+	 * from the file name. Currently, the following languages are supported by Biome:
 	 * <ul>
 	 * <li>js (JavaScript)</li>
 	 * <li>jsx (JavaScript + JSX)</li>
@@ -180,7 +180,9 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	 * <li>tsx (TypeScript + JSX)</li>
 	 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
 	 * extension)</li>
+	 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 	 * <li>json (JSON)</li>
+	 * <li>jsonc (JSON + comments)</li>
 	 * </ul>
 	 *
 	 * @return The language of the input files.

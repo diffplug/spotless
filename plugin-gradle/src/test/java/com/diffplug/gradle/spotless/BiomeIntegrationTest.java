@@ -19,19 +19,73 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 import org.owasp.encoder.Encode;
 
+/**
+ * Tests for the Biome formatter used via the Gradle spotless plugin.
+ */
 class BiomeIntegrationTest extends GradleIntegrationHarness {
+	/**
+	 * Tests that biome can be used as a JSON formatting step, using biome 1.8.3 which
+	 * requires opt-in.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void asCssStepExperimental() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    css {",
+				"        target '**/*.css'",
+				"        biome('1.8.3').configPath('configs')",
+				"    }",
+				"}");
+		setFile("biome_test.css").toResource("biome/css/fileBefore.css");
+		setFile("configs/biome.json").toResource("biome/config/css-enabled.json");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("biome_test.css").sameAsResource("biome/css/fileAfter.css");
+	}
+
+	/**
+	 * Tests that biome can be used as a JSON formatting step, using biome 1.9.0 which
+	 * does not require opt-in.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void asCssStepStable() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    css {",
+				"        target '**/*.css'",
+				"        biome('1.9.0')",
+				"    }",
+				"}");
+		setFile("biome_test.css").toResource("biome/css/fileBefore.css");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("biome_test.css").sameAsResource("biome/css/fileAfter.css");
+	}
+
 	/**
 	 * Tests that biome can be used as a generic formatting step.
 	 *
 	 * @throws Exception When a test failure occurs.
 	 */
 	@Test
-	void asGenericStep() throws IOException {
+	void asGenericStep() throws Exception {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",

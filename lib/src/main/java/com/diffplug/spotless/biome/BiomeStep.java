@@ -55,7 +55,7 @@ public class BiomeStep {
 	/**
 	 * The language (syntax) of the input files to format. When <code>null</code> or
 	 * the empty string, the language is detected automatically from the file name.
-	 * Currently the following languages are supported by Biome:
+	 * Currently, the following languages are supported by Biome:
 	 * <ul>
 	 * <li>js (JavaScript)</li>
 	 * <li>jsx (JavaScript + JSX)</li>
@@ -65,7 +65,9 @@ public class BiomeStep {
 	 * <li>tsx (TypeScript + JSX)</li>
 	 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
 	 * extension)</li>
+	 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 	 * <li>json (JSON)</li>
+	 * <li>jsonc (JSON + comments)</li>
 	 * </ul>
 	 */
 	private String language;
@@ -274,7 +276,9 @@ public class BiomeStep {
 	 * <li>tsx (TypeScript + JSX)</li>
 	 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
 	 * extension)</li>
+	 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 	 * <li>json (JSON)</li>
+	 * <li>jsonc (JSON + comments)</li>
 	 * </ul>
 	 *
 	 * @param language The language of the files to format.
@@ -450,7 +454,7 @@ public class BiomeStep {
 		 * expected language / syntax. Biome always determined the language from the file
 		 * extension. This method returns the file name for the desired language when a
 		 * language was requested explicitly, or the file name of the input file for
-		 * auto detection.
+		 * auto-detection.
 		 *
 		 * @param file File to be formatted.
 		 * @return The file name to pass to the Biome executable.
@@ -479,6 +483,10 @@ public class BiomeStep {
 				return "tsx".equals(ext) ? name : "file.tsx";
 			case "json":
 				return "json".equals(ext) ? name : "file.json";
+			case "jsonc":
+				return "jsonc".equals(ext) ? name : "file.jsonc";
+			case "css":
+				return "css".equals(ext) ? name : "file.css";
 			// so that we can support new languages such as css or yaml when Biome adds
 			// support for them without having to change the code
 			default:

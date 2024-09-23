@@ -1177,6 +1177,30 @@ Configuring some generic and TTL options:
 RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version that
 [turtle-formatter](https://github.com/atextor/turtle-formatter) depends on (not necessarily the latest).
 
+## CSS
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/css/Css.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/css).
+
+```xml
+<configuration>
+  <css>
+    <!-- These are the defaults, you can override if you want -->
+    <includes>
+      <include>src/main/css/**/*.css</include>
+      <include>src/test/css/**/*.css</include>
+    </includes>
+
+    <biome />          <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
+    </licenseHeader>
+  </css>
+</configuration>
+```
+
+Note regarding biome: Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
+
 ## Prettier
 
 [homepage](https://prettier.io/). [changelog](https://github.com/prettier/prettier/blob/master/CHANGELOG.md). [official plugins](https://prettier.io/docs/en/plugins.html#official-plugins). [community plugins](https://prettier.io/docs/en/plugins.html#community-plugins). Prettier is a formatter that can format almost every anything - JavaScript, JSX, Angular, Vue, Flow, TypeScript, CSS, Less, SCSS, HTML, JSON, GraphQL, Markdown (including GFM and MDX), and YAML.  It can format even more [using plugins](https://prettier.io/docs/en/plugins.html) (PHP, Ruby, Swift, XML, Apex, Elm, Java (!!), Kotlin, pgSQL, .properties, solidity, svelte, toml, shellscript, ...).
@@ -1399,6 +1423,8 @@ is pretty fast. It can currently format JavaScript, TypeScript, JSX, and JSON, a
 You can use Biome in any language-specific format for supported languages, but
 usually you will be creating a generic format.
 
+Note regarding CSS: Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
+
 ```xml
 <configuration>
   <formats>
@@ -1414,7 +1440,7 @@ usually you will be creating a generic format.
         <!-- (optional) Path to the directory with the biome.json conig file -->
         <configPath>${project.basedir}/path/to/config/dir</configPath>
 
-        <!-- (optional) Biome will auto detect the language based on the file extension. -->
+        <!-- (optional) Biome will auto-detect the language based on the file extension. -->
         <!-- See below for possible values. -->
         <language>ts</language>
       </prettier>

@@ -780,7 +780,9 @@ public class FormatExtension {
 		 * <li>tsx (TypeScript + JSX)</li>
 		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
 		 * extension)</li>
+		 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 		 * <li>json (JSON)</li>
+		 * <li>jsonc (JSON + comments)</li>
 		 * </ul>
 		 *
 		 * @param language The language of the files to format.
