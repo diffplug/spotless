@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,30 +79,28 @@ public class ResourceHarness {
 	 */
 	protected List<String> listTestResources(String path) throws IOException {
 		// add leading slash if required, otherwise resources won't be found
-		if (!path.startsWith("/")){
+		if (!path.startsWith("/")) {
 			path = path + "/";
 		}
 		List<String> filenames = new ArrayList<>();
 
-			try(InputStream in = ResourceHarness.class.getResourceAsStream(path)){
-				if (in == null) {
-					if (new File(path).isAbsolute()) {
-						throw new RuntimeException(String.format("Resource not found in classpath: '%s'", path));
-					} else {
-						throw new RuntimeException(String.format("Resource not found in classpath: '%s' - did you mean '/%1$s'?",path));
-					}
-				}
-				try(BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-					String resource;
-					while ((resource = br.readLine()) != null) {
-						filenames.add(resource);
-					}
+		try (InputStream in = ResourceHarness.class.getResourceAsStream(path)) {
+			if (in == null) {
+				if (new File(path).isAbsolute()) {
+					throw new RuntimeException(String.format("Resource not found in classpath: '%s'", path));
+				} else {
+					throw new RuntimeException(String.format("Resource not found in classpath: '%s' - did you mean '/%1$s'?", path));
 				}
 			}
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+				String resource;
+				while ((resource = br.readLine()) != null) {
+					filenames.add(resource);
+				}
+			}
+		}
 		return filenames;
 	}
-
-
 
 	protected String relativeToRoot(String path) {
 		return new File(path).toPath().relativize(rootFolder().toPath()).toString();

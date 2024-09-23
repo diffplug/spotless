@@ -15,20 +15,20 @@
  */
 package com.diffplug.spotless.rdf;
 
-import com.diffplug.spotless.FormatExceptionPolicy;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.LineEnding;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.diffplug.spotless.FormatExceptionPolicy;
+import com.diffplug.spotless.FormatExceptionPolicyStrict;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.LineEnding;
 
 public class RdfFormatterFunc implements FormatterFunc {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -44,20 +44,22 @@ public class RdfFormatterFunc implements FormatterFunc {
 		this.state = state;
 	}
 
-	@Override public String apply(String input) throws Exception {
+	@Override
+	public String apply(String input) throws Exception {
 		throw new UnsupportedOperationException("We need to know the filename so we can guess the RDF format. Use apply(String, File) instead!");
 	}
 
-	@Override public String apply(String rawUnix, File file) throws Exception {
+	@Override
+	public String apply(String rawUnix, File file) throws Exception {
 		String filename = file.getName().toLowerCase();
 		int lastDot = filename.lastIndexOf('.');
 		if (lastDot < 0) {
 			throw new IllegalArgumentException(
-				String.format("File %s has no file extension, cannot determine RDF format", file.getAbsolutePath()));
+					String.format("File %s has no file extension, cannot determine RDF format", file.getAbsolutePath()));
 		}
 		if (lastDot + 1 >= filename.length()) {
 			throw new IllegalArgumentException(
-				String.format("File %s has no file extension, cannot determine RDF format", file.getAbsolutePath()));
+					String.format("File %s has no file extension, cannot determine RDF format", file.getAbsolutePath()));
 		}
 		String extension = filename.substring(lastDot + 1);
 		ReflectionHelper reflectionHelper = new ReflectionHelper(state);
@@ -95,8 +97,8 @@ public class RdfFormatterFunc implements FormatterFunc {
 	}
 
 	private String formatTurtle(String rawUnix, File file, ReflectionHelper reflectionHelper)
-		throws NoSuchMethodException, InvocationTargetException, IllegalAccessException,
-		NoSuchFieldException, InstantiationException {
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException,
+			NoSuchFieldException, InstantiationException {
 		String formatted;
 		Object lang = reflectionHelper.getLang("TTL");
 		if (state.getConfig().isUseTurtleFormatter()) {
@@ -112,66 +114,65 @@ public class RdfFormatterFunc implements FormatterFunc {
 	}
 
 	private static void veryfyResult(String rawUnix, File file, ReflectionHelper reflectionHelper, Object lang,
-		String formatted) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+			String formatted) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		Object modelBefore = reflectionHelper.parseToModel(rawUnix, file, lang);
 		Object modelAfter = reflectionHelper.parseToModel(formatted, file, lang);
-		if (!reflectionHelper.areModelsIsomorphic(modelBefore, modelAfter)){
+		if (!reflectionHelper.areModelsIsomorphic(modelBefore, modelAfter)) {
 			long beforeSize = reflectionHelper.modelSize(modelBefore);
 			long afterSize = reflectionHelper.modelSize(modelAfter);
 			String diffResult = "[no diff information available]";
-			if (beforeSize != afterSize){
-				diffResult=String.format("< %,d triples", beforeSize);
+			if (beforeSize != afterSize) {
+				diffResult = String.format("< %,d triples", beforeSize);
 				diffResult += String.format("> %,d triples", afterSize);
 			} else {
 				diffResult = calculateDiff(reflectionHelper, modelBefore, modelAfter);
 			}
 			throw new IllegalStateException(
-				"Formatted RDF is not isomorphic with original, which means that formatting changed the data.\n"
-				+ "This could be a bug in the formatting system leading to data corruption and should be reported. \n"
-				+ "If you are not scared to lose data, you can disable this check by setting the config option 'verify' to 'false'"
-				+ "\n\nDiff:\n"
-			+ diffResult);
+					"Formatted RDF is not isomorphic with original, which means that formatting changed the data.\n"
+							+ "This could be a bug in the formatting system leading to data corruption and should be reported. \n"
+							+ "If you are not scared to lose data, you can disable this check by setting the config option 'verify' to 'false'"
+							+ "\n\nDiff:\n"
+							+ diffResult);
 		}
 	}
 
 	private static String calculateDiff(ReflectionHelper reflectionHelper, Object modelBefore, Object modelAfter)
-		throws InvocationTargetException, IllegalAccessException {
+			throws InvocationTargetException, IllegalAccessException {
 		String diffResult;
 		Object graphBefore = reflectionHelper.getGraph(modelBefore);
 		Object graphAfter = reflectionHelper.getGraph(modelAfter);
 
 		List<Object> onlyInBeforeContent = reflectionHelper.streamGraph(graphBefore)
-			.filter(triple -> {
-				try {
-					return !reflectionHelper.graphContainsSameTerm(graphAfter, triple);
-				} catch (InvocationTargetException e) {
-					throw new RuntimeException(e);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e);
-				}
-			})
-			.collect(Collectors.toList());
+				.filter(triple -> {
+					try {
+						return !reflectionHelper.graphContainsSameTerm(graphAfter, triple);
+					} catch (InvocationTargetException e) {
+						throw new RuntimeException(e);
+					} catch (IllegalAccessException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.collect(Collectors.toList());
 
 		List<Object> onlyInAfterContent = reflectionHelper.streamGraph(graphAfter)
-			.filter(triple -> {
-				try {
-					return !reflectionHelper.graphContainsSameTerm(graphBefore, triple);
-				} catch (InvocationTargetException e) {
-					throw new RuntimeException(e);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e);
-				}
-			})
-			.collect(Collectors.toList());
-		if (! (onlyInBeforeContent.isEmpty() && onlyInAfterContent.isEmpty())) {
+				.filter(triple -> {
+					try {
+						return !reflectionHelper.graphContainsSameTerm(graphBefore, triple);
+					} catch (InvocationTargetException e) {
+						throw new RuntimeException(e);
+					} catch (IllegalAccessException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.collect(Collectors.toList());
+		if (!(onlyInBeforeContent.isEmpty() && onlyInAfterContent.isEmpty())) {
 			diffResult = onlyInBeforeContent.stream().map(s -> String.format("< %s", s))
-				.collect(Collectors.joining("\n"));
+					.collect(Collectors.joining("\n"));
 			diffResult += "\n" + onlyInAfterContent.stream().map(s -> String.format("> %s", s)).collect(Collectors.joining("\n"));
 		} else {
 			diffResult = "'before' and 'after' content differs, but we don't know why. This is probably a bug.";
 		}
 		return diffResult;
 	}
-
 
 }

@@ -26,29 +26,29 @@ import com.diffplug.spotless.rdf.RdfFormatterConfig;
 import com.diffplug.spotless.rdf.RdfFormatterStep;
 
 public class RdfFormat implements FormatterStepFactory {
-   @Parameter
-   String turtleFormatterVersion = RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION;
+	@Parameter
+	String turtleFormatterVersion = RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION;
 
-   @Parameter
-   boolean failOnWarning = true;
+	@Parameter
+	boolean failOnWarning = true;
 
-   @Parameter
-   boolean verify = true;
+	@Parameter
+	boolean verify = true;
 
-   @Parameter
-   Map<String, String> turtle;
+	@Parameter
+	Map<String, String> turtle;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		RdfFormatterConfig formatterConfig = RdfFormatterConfig
-			.builder()
+				.builder()
 				.failOnWarning(failOnWarning)
 				.turtleFormatterVersion(turtleFormatterVersion)
 				.verify(verify)
 				.build();
 		try {
 			return RdfFormatterStep.create(formatterConfig,
-				turtle, config.getProvisioner());
+					turtle, config.getProvisioner());
 		} catch (Exception e) {
 			throw new RuntimeException("Error creating RDF formatter step", e);
 		}
