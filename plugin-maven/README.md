@@ -55,6 +55,7 @@ user@machine repo % mvn spotless:check
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
   - [Go](#go)
+  - [RDF](#RDF)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -1117,6 +1118,64 @@ Standard Go formatter, part of Go distribution.
   <goExecutablePath>/opt/sdks/go1.25.1/bin/go</goExecutablePath>
 </gofmt>
 ```
+
+## RDF
+
+### Generic Options
+
+List of generic configuration `parameters (type/default)` 
+
+* `failOnWarning (boolean/true)`: The Jena parser produces three levels of problem reports: warning, error, and fatal. By default, 
+the build fails for any of them. You can ignore warnings using this parameter. They will still be logged in the plugin's 
+output.
+* `verify (boolean/true)`: If `true`, the content before and after formatting is parsed to an RDF model and compared for isomorphicity.   
+* `turtleFormatterVersion (string|RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION)`: the version of turtle-formatter to use (see below).
+
+### Supported RDF formats: only TTL (at the moment)
+
+Formatting TTL is done using [turtle-formatter](https://github.com/atextor/turtle-formatter),
+which is highly configurable (have a look at the [Style Documentation](https://github.com/atextor/turtle-formatter?tab=readme-ov-file#customizing-the-style)) 
+and will handle blank nodes the way you'd hope.
+
+The style options can be configured via spotless. Wherever the style wants a URI (for example, for the `predicateOrder`, you can 
+use the abbreviated form if it is a `FormattingStyle.KnownPrefix` (currently `rdf`, `rdfs`, `xsd`, `owl`, `dcterms`)
+Error messages will give you hints. To configure the TTL formatting style, pass the configuration parameters under `<turtle>`
+
+### Examples
+Minimal:
+```xml
+<configuration>
+  <rdf>
+    <includes>
+      <include>**/*.ttl</include>
+    </includes>
+    <format/>
+  </rdf>
+</configuration>
+```
+Configuring some generic and TTL options:
+```xml
+<configuration>
+  <rdf>
+    <includes>
+      <include>**/*.ttl</include>
+    </includes>
+    <format>
+      <failOnWarning>false</failOnWarning>
+      <verify>false</verify>
+      <turtleFormatterVersion>1.2.13</turtleFormatterVersion>
+      <turtle>
+        <alignPrefixes>RIGHT</alignPrefixes>
+        <enableDoubleFormatting>true</enableDoubleFormatting>
+      </turtle>
+    </format>
+  </rdf>
+</configuration>
+```
+### Libraries and versions
+
+RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version that
+[turtle-formatter](https://github.com/atextor/turtle-formatter) depends on (not necessarily the latest).
 
 ## Prettier
 
