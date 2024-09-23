@@ -19,18 +19,19 @@ import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.SerializedFunction;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RdfFormatterFunc implements FormatterFunc {
-
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	private static final Set<String> TURTLE_EXTENSIONS = Set.of("ttl", "turtle");
 	private static final Set<String> TRIG_EXTENSIONS = Set.of("trig");
 	private static final Set<String> NTRIPLES_EXTENSIONS = Set.of("n-triples", "ntriples", "nt");
@@ -122,35 +123,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 				diffResult=String.format("< %,d triples", beforeSize);
 				diffResult += String.format("> %,d triples", afterSize);
 			} else {
-				List<Object> onlyInBeforeModel = new ArrayList<>();
-				List<Object> onlyInAfterModel = new ArrayList<>();
-				Object statementIterator = reflectionHelper.listModelStatements(modelBefore);
-				while(reflectionHelper.hasNext(statementIterator)){
-					Object statement = reflectionHelper.next(statementIterator);
-					if (!reflectionHelper.containsBlankNode(statement)) {
-						//don't compare statements with blank nodes. If the difference is there, that's just too bad
-						if (!reflectionHelper.containsStatement(modelAfter, statement)){
-							onlyInBeforeModel.add(statement);
-						}
-					}
-				}
-				statementIterator = reflectionHelper.listModelStatements(modelAfter);
-				while(reflectionHelper.hasNext(statementIterator)){
-					Object statement = reflectionHelper.next(statementIterator);
-					if (!reflectionHelper.containsBlankNode(statement)) {
-						//don't compare statements with blank nodes. If the difference is there, that's just too bad
-						if (!reflectionHelper.containsStatement(modelBefore, statement)){
-							onlyInAfterModel.add(statement);
-						}
-					}
-				}
-				if (! (onlyInBeforeModel.isEmpty() && onlyInAfterModel.isEmpty())) {
-					diffResult = onlyInBeforeModel.stream().map(s -> String.format("< %s", s))
-						.collect(Collectors.joining("\n"));
-					diffResult += "\n" + onlyInAfterModel.stream().map(s -> String.format("> %s", s)).collect(Collectors.joining("\n"));
-				} else {
-					diffResult = "The only differences are in statements with blank nodes - not shown here";
-				}
+				diffResult = calculateDiff(reflectionHelper, modelBefore, modelAfter);
 			}
 			throw new IllegalStateException(
 				"Formatted RDF is not isomorphic with original, which means that formatting changed the data.\n"
@@ -160,4 +133,45 @@ public class RdfFormatterFunc implements FormatterFunc {
 			+ diffResult);
 		}
 	}
+
+	private static String calculateDiff(ReflectionHelper reflectionHelper, Object modelBefore, Object modelAfter)
+		throws InvocationTargetException, IllegalAccessException {
+		String diffResult;
+		Object graphBefore = reflectionHelper.getGraph(modelBefore);
+		Object graphAfter = reflectionHelper.getGraph(modelAfter);
+
+		List<Object> onlyInBeforeContent = reflectionHelper.streamGraph(graphBefore)
+			.filter(triple -> {
+				try {
+					return !reflectionHelper.graphContainsSameTerm(graphAfter, triple);
+				} catch (InvocationTargetException e) {
+					throw new RuntimeException(e);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			})
+			.collect(Collectors.toList());
+
+		List<Object> onlyInAfterContent = reflectionHelper.streamGraph(graphAfter)
+			.filter(triple -> {
+				try {
+					return !reflectionHelper.graphContainsSameTerm(graphBefore, triple);
+				} catch (InvocationTargetException e) {
+					throw new RuntimeException(e);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			})
+			.collect(Collectors.toList());
+		if (! (onlyInBeforeContent.isEmpty() && onlyInAfterContent.isEmpty())) {
+			diffResult = onlyInBeforeContent.stream().map(s -> String.format("< %s", s))
+				.collect(Collectors.joining("\n"));
+			diffResult += "\n" + onlyInAfterContent.stream().map(s -> String.format("> %s", s)).collect(Collectors.joining("\n"));
+		} else {
+			diffResult = "'before' and 'after' content differs, but we don't know why. This is probably a bug.";
+		}
+		return diffResult;
+	}
+
+
 }

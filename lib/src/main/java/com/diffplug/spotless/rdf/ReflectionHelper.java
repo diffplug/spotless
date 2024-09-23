@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ReflectionHelper {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -52,11 +53,25 @@ public class ReflectionHelper {
 	private final Class<?> JenaModelFactoryClass;
 	private final Class<?> JenaLangClass;
 	private final Class<?> JenaRDFFormatClass;
+	private final Class<?> JenaGraphClass;
+	private final Class<?> JenaNode;
+	private final Class<?> JenaTriple;
 	private final Class<?> TurtleFormatFormattingStyleClass;
 	private final Class<?> TurtleFormatFormattingStyleBuilderClass;
 	private final Class<?> TurtleFormatFormatterClass;
 
-	public ReflectionHelper(RdfFormatterStep.State state) throws ClassNotFoundException {
+	private final Method graphFindByNodes;
+	private final Method graphStream;
+	private final Method graphFindTriple;
+	private final Method contains;
+	private final Method getSubject;
+	private final Method getPredicate;
+	private final Method getObject;
+	private final Method isAnon;
+	private final Method getGraph;
+	private final Method tripleGetObject;
+
+	public ReflectionHelper(RdfFormatterStep.State state) throws ClassNotFoundException, NoSuchMethodException {
 		this.state = state;
 		this.classLoader = state.getJarState().getClassLoader();
 		this.JenaRdfDataMgrClass = classLoader.loadClass("org.apache.jena.riot.RDFDataMgr");
@@ -76,6 +91,19 @@ public class ReflectionHelper {
 		Class<?>[] innerClasses = TurtleFormatFormattingStyleClass.getDeclaredClasses();
 		this.TurtleFormatFormattingStyleBuilderClass = Arrays.stream(innerClasses)
 			.filter(c -> c.getSimpleName().equals("FormattingStyleBuilder")).findFirst().get();
+		this.getSubject = JenaStatementClass.getMethod("getSubject");;
+		this.getPredicate = JenaStatementClass.getMethod("getPredicate");
+		this.getObject = JenaStatementClass.getMethod("getObject");
+		this.isAnon = JenaRDFNodeClass.getMethod("isAnon");
+		this.getGraph =JenaModelClass.getMethod(("getGraph"));
+		this.JenaGraphClass = classLoader.loadClass("org.apache.jena.graph.Graph");
+		this.JenaNode = classLoader.loadClass("org.apache.jena.graph.Node");
+		this.JenaTriple = classLoader.loadClass("org.apache.jena.graph.Triple");
+		this.graphFindByNodes = JenaGraphClass.getMethod("find", JenaNode, JenaNode,JenaNode);
+		this.graphFindTriple = JenaGraphClass.getMethod("find", JenaTriple);
+		this.graphStream = JenaGraphClass.getMethod("stream");
+		this.tripleGetObject = JenaTriple.getMethod("getObject");
+		this.contains =JenaGraphClass.getMethod("contains", JenaTriple);
 	}
 
 	public Object getLang(String lang) throws NoSuchFieldException, IllegalAccessException {
@@ -111,30 +139,40 @@ public class ReflectionHelper {
 	}
 
 	public boolean containsBlankNode(Object statement)
-		throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		Method getSubject = JenaStatementClass.getMethod("getSubject");
+		throws InvocationTargetException, IllegalAccessException {
 		Object subject = getSubject.invoke(statement);
-		Method isAnon = JenaRDFNodeClass.getMethod("isAnon");
 		if ((boolean) isAnon.invoke(subject)){
 			return true;
 		}
-		Method getPredicate = JenaStatementClass.getMethod("getPredicate");
 		Object predicate = getPredicate.invoke(statement);
 		if ((boolean) isAnon.invoke(predicate)){
 			return true;
 		}
-		Method getObject = JenaStatementClass.getMethod("getObject");
 		Object object = getObject.invoke(statement);
-		if ((boolean) isAnon.invoke(object)) {
-			return true;
-		}
-		return false;
+		return (boolean) isAnon.invoke(object);
 	}
 
 	public boolean containsStatement(Object model, Object statement)
 		throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		Method contains = JenaModelClass.getMethod("contains", JenaStatementClass);
 		return (boolean) contains.invoke(model, statement);
+	}
+
+	public boolean graphContainsSameTerm(Object graph, Object triple) throws InvocationTargetException, IllegalAccessException {
+		boolean found = (boolean) contains.invoke(graph, triple);
+		if (!found){
+			return false;
+		}
+		Iterator<Object> it  = (Iterator<Object>) graphFindTriple.invoke(graph, triple);
+		while(it.hasNext()){
+			Object foundTriple = it.next();
+			Object foundObject =  tripleGetObject.invoke(foundTriple);
+			Object searchedObject = tripleGetObject.invoke(triple);
+			if (!foundObject.equals(searchedObject)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private class DynamicErrorInvocationHandler implements InvocationHandler {
@@ -156,6 +194,10 @@ public class ReflectionHelper {
 			if (severity.equals("warning") && !state.getConfig().isFailOnWarning()) {
 				logger.warn("{}({},{}): {}", this.filePath, line, col, message);
 			} else {
+				if (severity.equals("warning")){
+					logger.error("Formatter fails because of a parser warning. To make the formatter succeed in"
+						+ "the presence of warnings, set the configuration parameter 'failOnWarning' to 'false' (default: 'true')");
+				}
 				throw new RuntimeException(
 					String.format("line %d, col %d: %s (severity: %s)", line, col, message, severity));
 			}
@@ -179,6 +221,16 @@ public class ReflectionHelper {
 		throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		JenaRdfParserClass.getMethod("parse", JenaModelClass).invoke(parser, model);
 	}
+
+	public Object getGraph(Object model) throws InvocationTargetException, IllegalAccessException {
+		return getGraph.invoke(model);
+	}
+
+	public Stream<Object> streamGraph(Object graph) throws InvocationTargetException, IllegalAccessException {
+		return (Stream<Object>) graphStream.invoke(graph);
+
+	}
+
 
 	public String formatWithJena(Object model, Object rdfFormat)
 		throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
