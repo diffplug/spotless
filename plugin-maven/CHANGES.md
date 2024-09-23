@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changed
+* Leverage local repository for Equo P2 cache. ([#2238](https://github.com/diffplug/spotless/pull/2238))
 
 ## [2.44.0.BETA2] - 2024-08-25
 ### Changed

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.eclipse.aether.RepositorySystemSession;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
@@ -40,6 +41,8 @@ public class Eclipse implements FormatterStepFactory {
 	@Parameter
 	private List<P2Mirror> p2Mirrors = new ArrayList<>();
 
+	private File cacheDirectory;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		EquoBasedStepBuilder eclipseConfig = EclipseJdtFormatterStep.createBuilder(stepConfig.getProvisioner());
@@ -49,6 +52,13 @@ public class Eclipse implements FormatterStepFactory {
 			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
 		}
 		eclipseConfig.setP2Mirrors(p2Mirrors);
+		if (null != cacheDirectory) {
+			eclipseConfig.setCacheDirectory(cacheDirectory);
+		}
 		return eclipseConfig.build();
+	}
+
+	public void init(RepositorySystemSession repositorySystemSession) {
+		this.cacheDirectory = repositorySystemSession.getLocalRepository().getBasedir();
 	}
 }
