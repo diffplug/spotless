@@ -27,12 +27,18 @@ public class JacksonJsonConfig extends JacksonConfig {
 
 	protected Map<String, Boolean> jsonFeatureToToggle = new LinkedHashMap<>();
 
+	protected Map<String, Boolean> jsonParserFeatureToToggle = new LinkedHashMap<>();
+
 	// https://github.com/revelc/formatter-maven-plugin/pull/280
 	// By default, Jackson adds a ' ' before separator, which is not standard with most IDE/JSON libraries
 	protected boolean spaceBeforeSeparator = false;
 
 	public Map<String, Boolean> getJsonFeatureToToggle() {
 		return Collections.unmodifiableMap(jsonFeatureToToggle);
+	}
+
+	public Map<String, Boolean> getJsonParserFeatureToToggle() {
+		return Collections.unmodifiableMap(jsonParserFeatureToToggle);
 	}
 
 	/**
@@ -47,6 +53,13 @@ public class JacksonJsonConfig extends JacksonConfig {
 	 */
 	public void appendJsonFeatureToToggle(Map<String, Boolean> features) {
 		this.jsonFeatureToToggle.putAll(features);
+	}
+
+	/**
+	 * Refers to com.fasterxml.jackson.core.JsonParser.Feature
+	 */
+	public void appendJsonParserFeatureToToggle(Map<String, Boolean> features) {
+		this.jsonParserFeatureToToggle.putAll(features);
 	}
 
 	public boolean isSpaceBeforeSeparator() {

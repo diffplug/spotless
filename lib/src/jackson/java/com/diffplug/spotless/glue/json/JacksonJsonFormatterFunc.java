@@ -21,6 +21,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonFactoryBuilder;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.core.util.Separators;
@@ -64,7 +65,12 @@ public class JacksonJsonFormatterFunc extends AJacksonFormatterFunc {
 
 			jsonFactory.configure(feature, toggle);
 		});
+		jacksonConfig.getJsonParserFeatureToToggle().forEach((rawFeature, toggle) -> {
+			// https://stackoverflow.com/questions/3735927/java-instantiating-an-enum-using-reflection
+			JsonParser.Feature feature = JsonParser.Feature.valueOf(rawFeature);
 
+			jsonFactory.configure(feature, toggle);
+		});
 		return jsonFactory;
 	}
 

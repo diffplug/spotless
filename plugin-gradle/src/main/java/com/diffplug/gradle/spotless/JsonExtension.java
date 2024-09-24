@@ -169,6 +169,15 @@ public class JsonExtension extends FormatExtension {
 			return this;
 		}
 
+		/**
+		 * Refers to com.fasterxml.jackson.core.JsonParser.Feature
+		 */
+		public JacksonJsonGradleConfig jsonParserFeature(String feature, boolean toggle) {
+			this.jacksonConfig.appendJsonParserFeatureToToggle(Collections.singletonMap(feature, toggle));
+			formatExtension.replaceStep(createStep());
+			return this;
+		}
+
 		@Override
 		public JacksonJsonGradleConfig self() {
 			return this;

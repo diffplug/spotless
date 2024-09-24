@@ -44,12 +44,16 @@ public class JacksonJson implements FormatterStepFactory {
 	@Parameter
 	private Map<String, Boolean> jsonFeatures = Collections.emptyMap();
 
+	@Parameter
+	private Map<String, Boolean> jsonParserFeatures = Collections.emptyMap();
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		JacksonJsonConfig jacksonConfig = new JacksonJsonConfig();
 
 		jacksonConfig.appendFeatureToToggle(features);
 		jacksonConfig.appendJsonFeatureToToggle(jsonFeatures);
+		jacksonConfig.appendJsonParserFeatureToToggle(jsonParserFeatures);
 		jacksonConfig.setSpaceBeforeSeparator(spaceBeforeSeparator);
 
 		return JacksonJsonStep
