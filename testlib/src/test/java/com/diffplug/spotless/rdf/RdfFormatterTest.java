@@ -15,8 +15,9 @@
  */
 package com.diffplug.spotless.rdf;
 
+import static org.junit.jupiter.api.condition.JRE.JAVA_17;
+
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +27,9 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.params.provider.Arguments;
 import org.opentest4j.AssertionFailedError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
@@ -37,8 +37,6 @@ import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
 public class RdfFormatterTest extends ResourceHarness {
-
-	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private static FormatterStep forTurtleFormatterVersion(String version) throws ClassNotFoundException {
 		return forTurtleFormatterVersionAndStyle(version, defaultStyle());
@@ -51,9 +49,10 @@ public class RdfFormatterTest extends ResourceHarness {
 				TestProvisioner.mavenCentral());
 	}
 
-	public RdfFormatterTest() throws ClassNotFoundException {}
+	public RdfFormatterTest() {}
 
 	@Test
+	@EnabledForJreRange(min = JAVA_17)
 	void testTurtleFormatter_1_2_12_DefaultStyle() throws IOException, ClassNotFoundException {
 		String inputDir = "/rdf/ttl/input/";
 		String expectedOutputDir = "/rdf/ttl/expected/v1.2.12-default/";
@@ -61,6 +60,7 @@ public class RdfFormatterTest extends ResourceHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(min = JAVA_17)
 	void testTurtleFormatter_1_2_12_style01() throws IOException, ClassNotFoundException {
 		String inputDir = "/rdf/ttl/input/";
 		String expectedOutputDir = "/rdf/ttl/expected/v1.2.12-style01/";
