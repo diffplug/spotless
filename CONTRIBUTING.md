@@ -164,13 +164,13 @@ concerning what you are working on:
 
 ```shell
 # Run only from test from the "lib" project
-gradlew :testlib:test --tests com.diffplug.spotless.generic.IndentStepTest
+./gradlew :testlib:test --tests com.diffplug.spotless.generic.IndentStepTest
 
 # Run only one test from the "plugin-maven" project
-gradlew :plugin-maven:test --tests com.diffplug.spotless.maven.pom.SortPomMavenTest
+./gradlew :plugin-maven:test --tests com.diffplug.spotless.maven.pom.SortPomMavenTest
 
 # Run only one test from the "plugin-gradle" project
-gradlew :plugin-gradle:test --tests com.diffplug.gradle.spotless.FreshMarkExtensionTest
+./gradlew :plugin-gradle:test --tests com.diffplug.gradle.spotless.FreshMarkExtensionTest
 ```
 
 ## Check and format code

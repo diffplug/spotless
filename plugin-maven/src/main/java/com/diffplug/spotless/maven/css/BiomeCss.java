@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven;
+package com.diffplug.spotless.maven.css;
 
-import org.eclipse.aether.RepositorySystemSession;
+import com.diffplug.spotless.biome.BiomeFlavor;
+import com.diffplug.spotless.maven.generic.AbstractBiome;
 
-import com.diffplug.spotless.FormatterStep;
+/**
+ * Biome formatter step for CSS.
+ */
+public class BiomeCss extends AbstractBiome {
+	public BiomeCss() {
+		super(BiomeFlavor.BIOME);
+	}
 
-public interface FormatterStepFactory {
-
-	FormatterStep newFormatterStep(FormatterStepConfig config);
-
-	default void init(RepositorySystemSession repositorySystemSession) {
-		// nothing
+	@Override
+	protected String getLanguage() {
+		return "css";
 	}
 }
