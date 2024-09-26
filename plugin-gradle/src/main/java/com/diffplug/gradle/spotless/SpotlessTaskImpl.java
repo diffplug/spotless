@@ -27,9 +27,12 @@ import javax.inject.Inject;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.CacheableTask;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.ChangeType;
 import org.gradle.work.FileChange;
@@ -46,11 +49,14 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	@Internal
 	abstract DirectoryProperty getProjectDir();
 
+	@Optional
+	@Input
+	public abstract Property<String> getSpotlessIdeHook();
+
 	void init(Provider<SpotlessTaskService> service) {
 		taskServiceProvider = service;
 		SpotlessTaskService.usesServiceTolerateTestFailure(this, service);
 		getTaskService().set(service);
-		getProjectDir().set(getProject().getProjectDir());
 	}
 
 	// this field is stupid, but we need it, see https://github.com/diffplug/spotless/issues/1260
@@ -82,11 +88,13 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			GitRatchetGradle ratchet = getRatchet();
 			for (FileChange fileChange : inputs.getFileChanges(target)) {
 				File input = fileChange.getFile();
-				if (fileChange.getChangeType() == ChangeType.REMOVED) {
-					deletePreviousResult(input);
-				} else {
-					if (input.isFile()) {
-						processInputFile(ratchet, formatter, input);
+				if (!getSpotlessIdeHook().isPresent() || input.equals(new File(getSpotlessIdeHook().get()))) {
+					if (fileChange.getChangeType() == ChangeType.REMOVED) {
+						deletePreviousResult(input);
+					} else {
+						if (input.isFile()) {
+							processInputFile(ratchet, formatter, input);
+						}
 					}
 				}
 			}
