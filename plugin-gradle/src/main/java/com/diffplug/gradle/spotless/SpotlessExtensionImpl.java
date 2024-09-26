@@ -73,6 +73,8 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 				if (ideHookPath != null) {
 					var ideHookFile = project.file(ideHookPath);
 					task.setEnabled(task.getTarget().contains(ideHookFile));
+					var newTarget = task.getTarget().filter(ideHookFile::equals);
+					task.setTarget(newTarget);
 				}
 			});
 		});
