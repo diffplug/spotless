@@ -51,6 +51,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 	@Override
 	protected void createFormatTasks(String name, FormatExtension formatExtension) {
 		TaskContainer tasks = project.getTasks();
+		String ideHookPath = (String) project.findProperty(PROPERTY);
 
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
@@ -59,7 +60,6 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.setGroup(TASK_GROUP);
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
-			task.getSpotlessIdeHook().set((String) project.findProperty(PROPERTY));
 			task.getProjectDir().set(project.getProjectDir());
 		});
 		project.afterEvaluate(unused -> {
@@ -70,6 +70,10 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 				}
 				// and now we'll setup the task
 				formatExtension.setupTask(task);
+				if (ideHookPath != null) {
+					var ideHookFile = project.file(ideHookPath);
+					task.setEnabled(task.getTarget().contains(ideHookFile));
+				}
 			});
 		});
 
@@ -78,6 +82,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.init(spotlessTask.get());
 			task.setGroup(TASK_GROUP);
 			task.dependsOn(spotlessTask);
+			task.setEnabled(spotlessTask.get().getEnabled());
 		});
 		rootApplyTask.configure(task -> {
 			task.dependsOn(applyTask);
@@ -88,7 +93,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.setGroup(TASK_GROUP);
 			task.init(source);
 			task.dependsOn(source);
-
+			task.setEnabled(spotlessTask.get().getEnabled());
 			// if the user runs both, make sure that apply happens first,
 			task.mustRunAfter(applyTask);
 		});

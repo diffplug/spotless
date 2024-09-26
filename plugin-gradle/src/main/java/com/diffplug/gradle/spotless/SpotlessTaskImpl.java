@@ -49,10 +49,6 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	@Internal
 	abstract DirectoryProperty getProjectDir();
 
-	@Optional
-	@Input
-	public abstract Property<String> getSpotlessIdeHook();
-
 	void init(Provider<SpotlessTaskService> service) {
 		taskServiceProvider = service;
 		SpotlessTaskService.usesServiceTolerateTestFailure(this, service);
@@ -88,13 +84,11 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			GitRatchetGradle ratchet = getRatchet();
 			for (FileChange fileChange : inputs.getFileChanges(target)) {
 				File input = fileChange.getFile();
-				if (!getSpotlessIdeHook().isPresent() || input.equals(new File(getSpotlessIdeHook().get()))) {
-					if (fileChange.getChangeType() == ChangeType.REMOVED) {
-						deletePreviousResult(input);
-					} else {
-						if (input.isFile()) {
-							processInputFile(ratchet, formatter, input);
-						}
+				if (fileChange.getChangeType() == ChangeType.REMOVED) {
+					deletePreviousResult(input);
+				} else {
+					if (input.isFile()) {
+						processInputFile(ratchet, formatter, input);
 					}
 				}
 			}
