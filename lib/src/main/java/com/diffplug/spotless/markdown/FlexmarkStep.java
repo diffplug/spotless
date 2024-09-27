@@ -39,7 +39,7 @@ public class FlexmarkStep implements Serializable {
 	public static final String NAME = "flexmark-java";
 
 	private final Promised jarState;
-	private final MutableDataSet options;
+	private final transient MutableDataSet options;
 
 	private FlexmarkStep(
 		final Promised jarState,
