@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReflectionHelper {
+class ReflectionHelper {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	private final RdfFormatterStep.State state;
 	private final ClassLoader classLoader;
