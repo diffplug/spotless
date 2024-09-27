@@ -50,6 +50,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 		taskServiceProvider = service;
 		SpotlessTaskService.usesServiceTolerateTestFailure(this, service);
 		getTaskService().set(service);
+		getProjectDir().set(getProject().getProjectDir());
 	}
 
 	// this field is stupid, but we need it, see https://github.com/diffplug/spotless/issues/1260

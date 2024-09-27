@@ -60,7 +60,6 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.setGroup(TASK_GROUP);
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
-			task.getProjectDir().set(project.getProjectDir());
 		});
 		project.afterEvaluate(unused -> {
 			spotlessTask.configure(task -> {
