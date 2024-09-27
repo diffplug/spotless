@@ -18,14 +18,12 @@ package com.diffplug.gradle.spotless;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.biome.BiomeFlavor;
@@ -210,23 +208,10 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	 * @return The directory for storing shared data.
 	 */
 	private File findDataDir() {
-		var currentRepo = project.getRepositories().stream().filter(r -> r instanceof MavenArtifactRepository)
-				.map(r -> (MavenArtifactRepository) r).filter(r -> "file".equals(r.getUrl().getScheme())).findAny()
-				.orElse(null);
-		// Temporarily add mavenLocal() repository to get its file URL
-		var localRepo = currentRepo != null ? (MavenArtifactRepository) currentRepo
-				: project.getRepositories().mavenLocal();
-		try {
-			// e.g. ~/.m2/repository/
-			var repoPath = Path.of(localRepo.getUrl());
-			var dataPath = repoPath.resolve("com").resolve("diffplug").resolve("spotless").resolve("spotless-data");
-			return dataPath.toAbsolutePath().toFile();
-		} finally {
-			// Remove mavenLocal() repository again if it was not part of the project
-			if (currentRepo == null) {
-				project.getRepositories().remove(localRepo);
-			}
-		}
+		// e.g. ~/.gradle/
+		var userHomeDir = project.getGradle().getGradleUserHomeDir().toPath();
+		var dataPath = userHomeDir.resolve("com").resolve("diffplug").resolve("spotless").resolve("spotless-data");
+		return dataPath.toAbsolutePath().toFile();
 	}
 
 	/**
@@ -249,7 +234,7 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	/**
 	 * Resolves the path to the Biome executable. When the path is only a file name,
 	 * do not perform any resolution and interpret it as a command that must be on
-	 * the user's path. Otherwise resolve the executable path against the project's
+	 * the user's path. Otherwise, resolve the executable path against the project's
 	 * base directory.
 	 *
 	 * @return The resolved path to the Biome executable.
