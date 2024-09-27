@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,11 @@ package com.diffplug.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -66,6 +69,41 @@ public class ResourceHarness {
 			throw new IOException("Failed to create " + targetDir);
 		}
 		return targetDir;
+	}
+
+	/**
+	 * List the resources found in the specified path (directory) on the classpath
+	 * @param path - absolute path using unix-style file separators (if it is relative, it will be made absolute before class path scanning)
+	 * @return the list of resources in that directory on the classpath, unix-style file separators
+	 * @throws IOException
+	 */
+	protected List<String> listTestResources(String path) throws IOException {
+		// add leading slash if required, otherwise resources won't be found
+		if (!path.startsWith("/")) {
+			path = path + "/";
+		}
+		List<String> filenames = new ArrayList<>();
+
+		try (InputStream in = ResourceHarness.class.getResourceAsStream(path)) {
+			if (in == null) {
+				if (new File(path).isAbsolute()) {
+					throw new RuntimeException(String.format("Resource not found in classpath: '%s'", path));
+				} else {
+					throw new RuntimeException(String.format("Resource not found in classpath: '%s' - did you mean '/%1$s'?", path));
+				}
+			}
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+				String resource;
+				while ((resource = br.readLine()) != null) {
+					filenames.add(resource);
+				}
+			}
+		}
+		return filenames;
+	}
+
+	protected String relativeToRoot(String path) {
+		return new File(path).toPath().relativize(rootFolder().toPath()).toString();
 	}
 
 	protected String read(String path) throws IOException {

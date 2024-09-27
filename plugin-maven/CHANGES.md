@@ -3,9 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Support for `rdf` ([#2261](https://github.com/diffplug/spotless/pull/2261))
 ### Changed
 * Leverage local repository for Equo P2 cache. ([#2238](https://github.com/diffplug/spotless/pull/2238))
-
 * Add explicit support for CSS via biome. Formatting CSS via biome was already supported as a general
   formatting step. Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
   ([#2259](https://github.com/diffplug/spotless/pull/2259))

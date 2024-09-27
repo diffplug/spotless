@@ -10,9 +10,10 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Support for `rdf` ([#2261](https://github.com/diffplug/spotless/pull/2261))
 ### Changed
 * Support configuring the Equo P2 cache. ([#2238](https://github.com/diffplug/spotless/pull/2238))
-
 * Add explicit support for JSONC / CSS via biome, via the file extensions `.css` and `.jsonc`. 
   ([#2259](https://github.com/diffplug/spotless/pull/2259))
 
