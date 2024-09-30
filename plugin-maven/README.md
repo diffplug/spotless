@@ -69,7 +69,7 @@ user@machine repo % mvn spotless:check
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `mvn spotless:apply` will do?](#how-do-i-preview-what-mvn-spotlessapply-will-do)
   - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
-  - [Example configurations (from real-world projects)](#examples)
+  - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
 
 ***Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.***
 
