@@ -38,7 +38,7 @@ public class BufStep {
 	}
 
 	public static String defaultVersion() {
-		return "1.24.0";
+		return "1.44.0";
 	}
 
 	private final String version;

@@ -56,6 +56,7 @@ user@machine repo % mvn spotless:check
   - [Gherkin](#gherkin)
   - [Go](#go)
   - [RDF](#RDF)
+  - [Protobuf](#protobuf) ([buf](#buf))
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -1176,6 +1177,36 @@ Configuring some generic and TTL options:
 
 RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version that
 [turtle-formatter](https://github.com/atextor/turtle-formatter) depends on (not necessarily the latest).
+
+## Protobuf
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/protobuf/Protobuf.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/protobuf).
+```xml
+<configuration>
+  <includes>  <!-- optiona: default is **/*.proto -->
+    <include>proto/*.proto<include>
+  <includes>
+
+  <excludes>  <!-- optiona: if you want to ignore auto generated protos -->
+    <include>target/**/<include>
+  <excludes>
+  
+  <protobuf>
+    <buf />  <!-- has its own section below -->
+  </css>
+</configuration>
+```
+
+### buf
+
+[homepage](https://buf.build/) [buf repo](https://github.com/bufbuild/buf).
+```xml
+ <buf>
+    <version>1.44.0</version>    <!-- optional -->
+    <pathToExe>/path/to/buf</pathToExe>  <!-- optional: if buf isn't in your path -->
+ </buf>        
+```
+
 
 ## CSS
 
