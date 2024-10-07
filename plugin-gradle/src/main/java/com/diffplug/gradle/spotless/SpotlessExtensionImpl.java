@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import org.gradle.api.tasks.TaskProvider;
 public class SpotlessExtensionImpl extends SpotlessExtension {
 	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
 
+	final static String PROPERTY = "spotlessIdeHook";
+
 	public SpotlessExtensionImpl(Project project) {
 		super(project);
 		rootCheckTask = project.getTasks().register(EXTENSION + CHECK, task -> {
@@ -48,15 +50,14 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 	@Override
 	protected void createFormatTasks(String name, FormatExtension formatExtension) {
-		boolean isIdeHook = project.hasProperty(IdeHook.PROPERTY);
 		TaskContainer tasks = project.getTasks();
+		String ideHookPath = (String) project.findProperty(PROPERTY);
 
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
 		TaskProvider<SpotlessTaskImpl> spotlessTask = tasks.register(taskName, SpotlessTaskImpl.class, task -> {
 			task.init(getRegisterDependenciesTask().getTaskService());
 			task.setGroup(TASK_GROUP);
-			task.setEnabled(!isIdeHook);
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});
@@ -68,6 +69,12 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 				}
 				// and now we'll setup the task
 				formatExtension.setupTask(task);
+				if (ideHookPath != null) {
+					var ideHookFile = project.file(ideHookPath);
+					task.setEnabled(task.getTarget().contains(ideHookFile));
+					var newTarget = task.getTarget().filter(ideHookFile::equals);
+					task.setTarget(newTarget);
+				}
 			});
 		});
 
@@ -75,25 +82,19 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
 			task.init(spotlessTask.get());
 			task.setGroup(TASK_GROUP);
-			task.setEnabled(!isIdeHook);
 			task.dependsOn(spotlessTask);
+			task.setEnabled(spotlessTask.get().getEnabled());
 		});
 		rootApplyTask.configure(task -> {
 			task.dependsOn(applyTask);
-
-			if (isIdeHook) {
-				// the rootApplyTask is no longer just a marker task, now it does a bit of work itself
-				task.doLast(unused -> IdeHook.performHook(spotlessTask.get()));
-			}
 		});
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
 			SpotlessTaskImpl source = spotlessTask.get();
 			task.setGroup(TASK_GROUP);
 			task.init(source);
-			task.setEnabled(!isIdeHook);
 			task.dependsOn(source);
-
+			task.setEnabled(spotlessTask.get().getEnabled());
 			// if the user runs both, make sure that apply happens first,
 			task.mustRunAfter(applyTask);
 		});
