@@ -80,7 +80,7 @@ dependencies {
 
 	// GLUE CODE (alphabetic order please)
 	// cleanthat
-	String VER_CLEANTHAT='2.21'
+	String VER_CLEANTHAT='2.22'
 	cleanthatCompileOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	compatCleanthat2Dot1CompileAndTestOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	// diktat old supported version 1.x
