@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,12 @@ class ImportOrderStepTest extends ResourceHarness {
 	@Test
 	void sortImportsFromArrayWithSubgroups() {
 		FormatterStep step = ImportOrderStep.forJava().createFrom("java|javax", "org|\\#com", "\\#");
+		StepHarness.forStep(step).testResource("java/importsorter/JavaCodeUnsortedImportsSubgroups.test", "java/importsorter/JavaCodeSortedImportsSubgroups.test");
+	}
+
+	@Test
+	void sortImportsFromArrayWithDuplicateEntries() {
+		FormatterStep step = ImportOrderStep.forJava().createFrom("java|javax", "java", "org|\\#com", "\\#");
 		StepHarness.forStep(step).testResource("java/importsorter/JavaCodeUnsortedImportsSubgroups.test", "java/importsorter/JavaCodeSortedImportsSubgroups.test");
 	}
 
