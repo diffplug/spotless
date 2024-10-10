@@ -11,7 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   ([#2259](https://github.com/diffplug/spotless/pull/2259))
 * Bump default `jackson` version to latest `2.17.2` -> `2.18.0`. ([#2279](https://github.com/diffplug/spotless/pull/2279))
 ### Fixed
-* Java import order, ignore duplicate group entries
+* Java import order, ignore duplicate group entries. ([#2293](https://github.com/diffplug/spotless/pull/2293))
 
 ## [7.0.0.BETA2] - 2024-08-25
 ### Changed
