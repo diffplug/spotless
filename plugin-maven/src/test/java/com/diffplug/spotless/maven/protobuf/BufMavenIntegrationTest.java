@@ -18,9 +18,10 @@ package com.diffplug.spotless.maven.protobuf;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
+import com.diffplug.spotless.tag.BufTest;
 
-class BufTest extends MavenIntegrationHarness {
-
+@BufTest
+class BufMavenIntegrationTest extends MavenIntegrationHarness {
 	@Test
 	void buf() throws Exception {
 		writePomWithProtobufSteps("<buf>", "</buf>");
