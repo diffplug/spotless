@@ -17,8 +17,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Support configuring the Equo P2 cache. ([#2238](https://github.com/diffplug/spotless/pull/2238))
 * Add explicit support for JSONC / CSS via biome, via the file extensions `.css` and `.jsonc`. 
   ([#2259](https://github.com/diffplug/spotless/pull/2259))
-* Bump default `jackson` version to latest `2.17.2` -> `2.18.0`. ([#2279](https://github.com/diffplug/spotless/pull/2279))
 * Bump default `buf` version to latest `1.24.0` -> `1.44.0`. ([#2291](https://github.com/diffplug/spotless/pull/2291))
+* Bump default `google-java-format` version to latest `1.23.0` -> `1.24.0`. ([#2294](https://github.com/diffplug/spotless/pull/2294))
+* Bump default `jackson` version to latest `2.17.2` -> `2.18.0`. ([#2279](https://github.com/diffplug/spotless/pull/2279))
 ### Fixed
 * Java import order, ignore duplicate group entries. ([#2293](https://github.com/diffplug/spotless/pull/2293))
 
