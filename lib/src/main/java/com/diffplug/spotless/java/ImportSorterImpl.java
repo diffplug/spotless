@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ final class ImportSorterImpl {
 	private static final String SUBGROUP_SEPARATOR = "|";
 
 	private final List<ImportsGroup> importsGroups;
+	private final Set<String> knownGroupings = new HashSet<>();
 	private final Map<String, List<String>> matchingImports = new HashMap<>();
 	private final List<String> notMatching = new ArrayList<>();
 	private final Set<String> allImportOrderItems = new HashSet<>();
@@ -44,10 +45,12 @@ final class ImportSorterImpl {
 
 		private final List<String> subGroups;
 
-		public ImportsGroup(String importOrder) {
+		public ImportsGroup(String importOrder, Set<String> knownGroupings) {
 			this.subGroups = Stream.of(importOrder.split("\\" + SUBGROUP_SEPARATOR, -1))
 					.map(this::normalizeStatic)
+					.filter(group -> !knownGroupings.contains(group))
 					.collect(Collectors.toList());
+			knownGroupings.addAll(this.subGroups);
 		}
 
 		private String normalizeStatic(String subgroup) {
@@ -80,7 +83,7 @@ final class ImportSorterImpl {
 
 	private ImportSorterImpl(List<String> importOrder, boolean wildcardsLast, boolean semanticSort,
 			Set<String> treatAsPackage, Set<String> treatAsClass) {
-		importsGroups = importOrder.stream().filter(Objects::nonNull).map(ImportsGroup::new).collect(Collectors.toList());
+		importsGroups = importOrder.stream().filter(Objects::nonNull).map(order -> new ImportsGroup(order, knownGroupings)).collect(Collectors.toList());
 		putStaticItemIfNotExists(importsGroups);
 		putCatchAllGroupIfNotExists(importsGroups);
 
@@ -107,13 +110,13 @@ final class ImportSorterImpl {
 				indexOfFirstStatic = i;
 			}
 		}
-		importsGroups.add(indexOfFirstStatic, new ImportsGroup(STATIC_KEYWORD));
+		importsGroups.add(indexOfFirstStatic, new ImportsGroup(STATIC_KEYWORD, this.knownGroupings));
 	}
 
 	private void putCatchAllGroupIfNotExists(List<ImportsGroup> importsGroups) {
 		boolean catchAllSubGroupExist = importsGroups.stream().anyMatch(group -> group.getSubGroups().contains(CATCH_ALL_SUBGROUP));
 		if (!catchAllSubGroupExist) {
-			importsGroups.add(new ImportsGroup(CATCH_ALL_SUBGROUP));
+			importsGroups.add(new ImportsGroup(CATCH_ALL_SUBGROUP, this.knownGroupings));
 		}
 	}
 
