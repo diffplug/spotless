@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +36,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
+import com.diffplug.spotless.ConfigurationCacheHack;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
@@ -150,17 +150,25 @@ public abstract class SpotlessTask extends DefaultTask {
 		return outputDirectory;
 	}
 
-	protected final List<FormatterStep> steps = new ArrayList<>();
+	private final List<FormatterStep> stepsInternalRoundtrip = new ConfigurationCacheHack.StepList(ConfigurationCacheHack.OptimizeFor.ROUNDTRIP);
+	private final List<FormatterStep> stepsInternalEquality = new ConfigurationCacheHack.StepList(ConfigurationCacheHack.OptimizeFor.EQUALITY);
+
+	@Internal
+	public List<FormatterStep> getStepsInternalRoundtrip() {
+		return Collections.unmodifiableList(stepsInternalRoundtrip);
+	}
 
 	@Input
-	public List<FormatterStep> getSteps() {
-		return Collections.unmodifiableList(steps);
+	public List<FormatterStep> getStepsInternalEquality() {
+		return Collections.unmodifiableList(stepsInternalEquality);
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
 		PluginGradlePreconditions.requireElementsNonNull(steps);
-		this.steps.clear();
-		this.steps.addAll(steps);
+		this.stepsInternalRoundtrip.clear();
+		this.stepsInternalEquality.clear();
+		this.stepsInternalRoundtrip.addAll(steps);
+		this.stepsInternalEquality.addAll(steps);
 	}
 
 	/** Returns the name of this format. */
@@ -179,7 +187,7 @@ public abstract class SpotlessTask extends DefaultTask {
 				.lineEndingsPolicy(getLineEndingsPolicy().get())
 				.encoding(Charset.forName(encoding))
 				.rootDir(getProjectDir().get().getAsFile().toPath())
-				.steps(steps)
+				.steps(stepsInternalRoundtrip)
 				.exceptionPolicy(exceptionPolicy)
 				.build();
 	}

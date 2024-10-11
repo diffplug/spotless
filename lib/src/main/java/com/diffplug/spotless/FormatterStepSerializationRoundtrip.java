@@ -26,6 +26,7 @@ class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, E
 	private final String name;
 	private final transient ThrowingEx.Supplier<RoundtripState> initializer;
 	private @Nullable RoundtripState roundtripStateInternal;
+	private @Nullable EqualityState equalityStateInternal;
 	private final SerializedFunction<RoundtripState, EqualityState> equalityStateExtractor;
 	private final SerializedFunction<EqualityState, FormatterFunc> equalityStateToFormatter;
 
@@ -43,10 +44,13 @@ class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, E
 
 	@Override
 	protected EqualityState stateSupplier() throws Exception {
-		if (roundtripStateInternal == null) {
-			roundtripStateInternal = initializer.get();
+		if (equalityStateInternal == null) {
+			if (roundtripStateInternal == null) {
+				roundtripStateInternal = initializer.get();
+			}
+			equalityStateInternal = equalityStateExtractor.apply(roundtripStateInternal);
 		}
-		return equalityStateExtractor.apply(roundtripStateInternal);
+		return equalityStateInternal;
 	}
 
 	@Override
@@ -56,8 +60,14 @@ class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, E
 
 	// override serialize output
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		if (roundtripStateInternal == null) {
-			roundtripStateInternal = ThrowingEx.get(initializer::get);
+		if (ConfigurationCacheHack.SERIALIZE_FOR_ROUNDTRIP) {
+			if (roundtripStateInternal == null) {
+				roundtripStateInternal = ThrowingEx.get(initializer::get);
+			}
+			equalityStateInternal = null;
+		} else {
+			equalityStateInternal = ThrowingEx.get(this::stateSupplier);
+			roundtripStateInternal = null;
 		}
 		out.defaultWriteObject();
 	}
