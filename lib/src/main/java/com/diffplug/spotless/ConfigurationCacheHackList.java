@@ -47,6 +47,7 @@ import java.util.Objects;
  * to make Spotless work with all of Gradle's cache systems at once.
  */
 public class ConfigurationCacheHackList implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
 	private final boolean optimizeForEquality;
 	private final ArrayList<Object> backingList = new ArrayList<>();
 

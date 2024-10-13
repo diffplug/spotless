@@ -20,10 +20,12 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, EqualityState extends Serializable> extends FormatterStepEqualityOnStateSerialization<EqualityState> {
 	private static final long serialVersionUID = 1L;
 	private final String name;
+	@SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED", justification = "HackClone")
 	private final transient ThrowingEx.Supplier<RoundtripState> initializer;
 	private @Nullable RoundtripState roundtripStateInternal;
 	private @Nullable EqualityState equalityStateInternal;
@@ -74,6 +76,8 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 	 * It works in conjunction with ConfigurationCacheHackList to allow Spotless to work with all of Gradle's cache systems.
 	 */
 	static class HackClone<RoundtripState extends Serializable, EqualityState extends Serializable> implements Serializable {
+		private static final long serialVersionUID = 1L;
+		@SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED", justification = "HackClone")
 		transient FormatterStepSerializationRoundtrip<?, ?> original;
 		boolean optimizeForEquality;
 		@Nullable
@@ -84,6 +88,7 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 			this.optimizeForEquality = optimizeForEquality;
 		}
 
+		@SuppressFBWarnings(value = "NP_NONNULL_PARAM_VIOLATION", justification = "HackClone")
 		private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 			if (cleaned == null) {
 				cleaned = new FormatterStepSerializationRoundtrip(original.name, null, original.equalityStateExtractor, original.equalityStateToFormatter);
