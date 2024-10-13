@@ -64,6 +64,13 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 		return equalityStateToFormatter.apply(equalityState);
 	}
 
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		if (roundtripStateInternal == null) {
+			roundtripStateInternal = ThrowingEx.get(this::roundtripStateSupplier);
+		}
+		out.defaultWriteObject();
+	}
+
 	HackClone<?, ?> hackClone(boolean optimizeForEquality) {
 		return new HackClone<>(this, optimizeForEquality);
 	}
