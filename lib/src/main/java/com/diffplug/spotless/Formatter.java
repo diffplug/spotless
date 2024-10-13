@@ -35,8 +35,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /** Formatter which performs the full formatting. */
 public final class Formatter implements Serializable, AutoCloseable {
 	private static final long serialVersionUID = 1L;
@@ -59,13 +57,11 @@ public final class Formatter implements Serializable, AutoCloseable {
 	}
 
 	// override serialize output
-	@SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeObject(name);
 		out.writeObject(lineEndingsPolicy);
 		out.writeObject(encoding.name());
 		out.writeObject(rootDir.toString());
-		ConfigurationCacheHack.SERIALIZE_FOR_ROUNDTRIP = true;
 		out.writeObject(steps);
 		out.writeObject(exceptionPolicy);
 	}

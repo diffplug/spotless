@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -150,17 +149,17 @@ public abstract class SpotlessTask extends DefaultTask {
 		return outputDirectory;
 	}
 
-	private final List<FormatterStep> stepsInternalRoundtrip = new ConfigurationCacheHack.StepList(ConfigurationCacheHack.OptimizeFor.ROUNDTRIP);
-	private final List<FormatterStep> stepsInternalEquality = new ConfigurationCacheHack.StepList(ConfigurationCacheHack.OptimizeFor.EQUALITY);
+	private final ConfigurationCacheHack.StepList stepsInternalRoundtrip = new ConfigurationCacheHack.StepList(ConfigurationCacheHack.OptimizeFor.ROUNDTRIP);
+	private final ConfigurationCacheHack.StepList stepsInternalEquality = new ConfigurationCacheHack.StepList(ConfigurationCacheHack.OptimizeFor.EQUALITY);
 
 	@Internal
-	public List<FormatterStep> getStepsInternalRoundtrip() {
-		return Collections.unmodifiableList(stepsInternalRoundtrip);
+	public ConfigurationCacheHack.StepList getStepsInternalRoundtrip() {
+		return stepsInternalRoundtrip;
 	}
 
 	@Input
-	public List<FormatterStep> getStepsInternalEquality() {
-		return Collections.unmodifiableList(stepsInternalEquality);
+	public ConfigurationCacheHack.StepList getStepsInternalEquality() {
+		return stepsInternalEquality;
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
@@ -187,7 +186,7 @@ public abstract class SpotlessTask extends DefaultTask {
 				.lineEndingsPolicy(getLineEndingsPolicy().get())
 				.encoding(Charset.forName(encoding))
 				.rootDir(getProjectDir().get().getAsFile().toPath())
-				.steps(stepsInternalRoundtrip)
+				.steps(stepsInternalRoundtrip.getSteps())
 				.exceptionPolicy(exceptionPolicy)
 				.build();
 	}
