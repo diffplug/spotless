@@ -66,6 +66,13 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 		return new HackClone<>(this, optimizeForEquality);
 	}
 
+	/**
+	 * This class has one setting (optimizeForEquality) and two pieces of data
+	 * - the original step, which is marked transient so it gets discarded during serialization
+	 * - the cleaned step, which is lazily created during serialization, and the serialized form is optimized for either equality or roundtrip integrity
+	 *
+	 * It works in conjunction with ConfigurationCacheHackList to allow Spotless to work with all of Gradle's cache systems.
+	 */
 	static class HackClone<RoundtripState extends Serializable, EqualityState extends Serializable> implements Serializable {
 		transient FormatterStepSerializationRoundtrip<?, ?> original;
 		boolean optimizeForEquality;
@@ -90,11 +97,6 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 		}
 
 		public FormatterStep rehydrate() {
-			try {
-				throw new Exception("rehydrate optimizeForEquality=" + optimizeForEquality + " orig=" + original + " cleaned=" + cleaned);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 			return original != null ? original : Objects.requireNonNull(cleaned, "how is clean null if this has been serialized?");
 		}
 

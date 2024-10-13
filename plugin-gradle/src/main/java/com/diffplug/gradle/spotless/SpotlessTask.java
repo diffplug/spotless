@@ -35,7 +35,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
-import com.diffplug.spotless.ConfigurationCacheHack;
+import com.diffplug.spotless.ConfigurationCacheHackList;
 import com.diffplug.spotless.FormatExceptionPolicy;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
@@ -149,16 +149,16 @@ public abstract class SpotlessTask extends DefaultTask {
 		return outputDirectory;
 	}
 
-	private final ConfigurationCacheHack.StepList stepsInternalRoundtrip = new ConfigurationCacheHack.StepList(ConfigurationCacheHack.OptimizeFor.ROUNDTRIP);
-	private final ConfigurationCacheHack.StepList stepsInternalEquality = new ConfigurationCacheHack.StepList(ConfigurationCacheHack.OptimizeFor.EQUALITY);
+	private final ConfigurationCacheHackList stepsInternalRoundtrip = ConfigurationCacheHackList.forRoundtrip();
+	private final ConfigurationCacheHackList stepsInternalEquality = ConfigurationCacheHackList.forEquality();
 
 	@Internal
-	public ConfigurationCacheHack.StepList getStepsInternalRoundtrip() {
+	public ConfigurationCacheHackList getStepsInternalRoundtrip() {
 		return stepsInternalRoundtrip;
 	}
 
 	@Input
-	public ConfigurationCacheHack.StepList getStepsInternalEquality() {
+	public ConfigurationCacheHackList getStepsInternalEquality() {
 		return stepsInternalEquality;
 	}
 
