@@ -87,8 +87,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		private Charset encoding;
 		private List<FormatterStep> steps;
 
-		private Builder() {
-		}
+		private Builder() {}
 
 		public Builder lineEndingsPolicy(LineEnding.Policy lineEndingsPolicy) {
 			this.lineEndingsPolicy = lineEndingsPolicy;
