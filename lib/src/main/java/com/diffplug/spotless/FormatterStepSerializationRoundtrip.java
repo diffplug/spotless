@@ -65,8 +65,18 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 	}
 
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		if (initializer != null && roundtripStateInternal == null) {
-			roundtripStateInternal = ThrowingEx.get(this::roundtripStateSupplier);
+		if (initializer == null) {
+			// then this instance was created by Gradle's ConfigurationCacheHackList and the following will hold true
+			if (roundtripStateInternal == null && equalityStateInternal == null) {
+				throw new IllegalStateException("If the initializer was null, then one of roundtripStateInternal or equalityStateInternal should be non-null, and neither was");
+			}
+		} else {
+			// this was a normal instance, which means we need to encode to roundtripStateInternal (since the initializer might not be serializable)
+			// and there's no reason to keep equalityStateInternal since we can always recompute it
+			if (roundtripStateInternal == null) {
+				roundtripStateInternal = ThrowingEx.get(this::roundtripStateSupplier);
+			}
+			equalityStateInternal = null;
 		}
 		out.defaultWriteObject();
 	}
