@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [7.0.0.BETA3] - 2024-10-15
 ### Added
 ### Changed
 * Use the Gradle user home directory by default for the download directory for the biome executable. Previously, the
