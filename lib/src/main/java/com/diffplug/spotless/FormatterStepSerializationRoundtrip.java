@@ -65,7 +65,7 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 	}
 
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		if (roundtripStateInternal == null) {
+		if (initializer != null && roundtripStateInternal == null) {
 			roundtripStateInternal = ThrowingEx.get(this::roundtripStateSupplier);
 		}
 		out.defaultWriteObject();
