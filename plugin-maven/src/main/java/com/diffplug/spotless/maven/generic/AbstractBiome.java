@@ -117,7 +117,9 @@ public abstract class AbstractBiome implements FormatterStepFactory {
 	 * <li>tsx (TypeScript + JSX)</li>
 	 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
 	 * extension)</li>
+	 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 	 * <li>json (JSON)</li>
+	 * <li>jsonc (JSON + comments)</li>
 	 * </ul>
 	 *
 	 * @return The language of the input files.

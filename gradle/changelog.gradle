@@ -1,13 +1,15 @@
 String kind
+String releaseTitle
 if (project.name == 'plugin-gradle') {
 	kind = 'gradle'
+	releaseTitle = 'Gradle Plugin'
 } else if (project.name == 'plugin-maven') {
 	kind = 'maven'
-} else if (project.name.startsWith('eclipse')) {
-	kind = 'ext-' + project.name
+	releaseTitle = 'Maven Plugin'
 } else {
 	assert project == rootProject
 	kind = 'lib'
+	releaseTitle = 'Lib'
 }
 
 // the root project and plugins have their own changelogs
@@ -20,11 +22,15 @@ spotlessChangelog {
 	branch        'release'
 	tagPrefix     "${kind}/"
 	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
-}
+	tagMessage "{{changes}}"
+	runAfterPush "gh release create ${kind}/{{version}} --title '${releaseTitle} v{{version}}' --notes-from-tag"
 
-if (gradle.startParameter.projectProperties.get('com.diffplug.spotless.include.ext.nop2') == 'true') {
-	tasks.named('changelogPrint') {
-		enabled = kind.startsWith('ext-')
+	if (kind == 'gradle') {
+		forceNextVersion '7.0.0.BETA3'
+	} else if (kind == 'maven') {
+		forceNextVersion '2.44.0.BETA3'
+	} else {
+		forceNextVersion '3.0.0.BETA3'
 	}
 }
 

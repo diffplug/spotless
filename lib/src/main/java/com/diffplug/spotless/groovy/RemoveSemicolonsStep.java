@@ -27,7 +27,7 @@ import com.diffplug.spotless.FormatterStep;
  *
  * @author Jose Luis Badano
  */
-public final class RemoveSemicolonsStep implements java.io.Serializable {
+public final class RemoveSemicolonsStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "Remove unnecessary semicolons";
 

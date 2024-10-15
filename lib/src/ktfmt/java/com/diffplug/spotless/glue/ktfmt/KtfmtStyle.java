@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,5 +16,5 @@
 package com.diffplug.spotless.glue.ktfmt;
 
 public enum KtfmtStyle {
-	DEFAULT, DROPBOX, GOOGLE, KOTLIN_LANG
+	META, GOOGLE, KOTLIN_LANG
 }

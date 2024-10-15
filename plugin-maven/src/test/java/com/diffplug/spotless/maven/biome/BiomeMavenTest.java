@@ -26,7 +26,40 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.tag.ForLintRefactor;
 
+/**
+ * Tests for the Biome formatter used via the Maven spotless plugin.
+ */
 class BiomeMavenTest extends MavenIntegrationHarness {
+	/**
+	 * Tests that biome can be used as a CSS formatting step, using biome 1.8.3
+	 * which requires opt-in.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void asCssStepExperimental() throws Exception {
+		writePomWithCssSteps("**/*.css", "<biome><version>1.8.3</version><configPath>configs</configPath></biome>");
+		setFile("biome_test.css").toResource("biome/css/fileBefore.css");
+		setFile("configs/biome.json").toResource("biome/config/css-enabled.json");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("biome_test.css").sameAsResource("biome/css/fileAfter.css");
+	}
+
+	/**
+	 * Tests that biome can be used as a CSS formatting step, with biome 1.9.0
+	 * which does not require opt-in.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void asCssStepStable() throws Exception {
+		writePomWithCssSteps("**/*.js", "<biome><version>1.9.0</version></biome>");
+		setFile("biome_test.css").toResource("biome/css/fileBefore.css");
+		var res = mavenRunner().withArguments("spotless:apply").runNoError();
+		System.out.println(res.stdOutUtf8());
+		assertFile("biome_test.css").sameAsResource("biome/css/fileAfter.css");
+	}
+
 	/**
 	 * Tests that Biome can be used as a generic formatting step.
 	 *

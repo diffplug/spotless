@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 import static com.diffplug.gradle.spotless.SpotlessPluginRedirect.badSemver;
+import static com.diffplug.gradle.spotless.SpotlessPluginRedirect.badSemverOfGradle;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -45,6 +46,7 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
@@ -452,11 +454,11 @@ public class FormatExtension {
 	 */
 	public void custom(String name, FormatterFunc formatter) {
 		requireNonNull(formatter, "formatter");
-		if (badSemver(getProject()) < badSemver(SpotlessPlugin.VER_GRADLE_minVersionForCustom)) {
+		if (badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_minVersionForCustom)) {
 			throw new GradleException("The 'custom' method is only available if you are using Gradle "
 					+ SpotlessPlugin.VER_GRADLE_minVersionForCustom
 					+ " or newer, this is "
-					+ getProject().getGradle().getGradleVersion());
+					+ GradleVersion.current().getVersion());
 		}
 		addStep(FormatterStep.createLazy(name, () -> globalState, SerializedFunction.alwaysReturns(formatter)));
 	}
@@ -778,7 +780,9 @@ public class FormatExtension {
 		 * <li>tsx (TypeScript + JSX)</li>
 		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
 		 * extension)</li>
+		 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 		 * <li>json (JSON)</li>
+		 * <li>jsonc (JSON + comments)</li>
 		 * </ul>
 		 *
 		 * @param language The language of the files to format.

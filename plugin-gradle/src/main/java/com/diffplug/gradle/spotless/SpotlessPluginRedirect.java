@@ -21,15 +21,12 @@ import java.util.regex.Pattern;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.util.GradleVersion;
 
 import com.diffplug.common.base.StringPrinter;
 
 public class SpotlessPluginRedirect implements Plugin<Project> {
 	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)");
-
-	static int badSemver(Project project) {
-		return badSemver(project.getGradle().getGradleVersion());
-	}
 
 	static int badSemver(String input) {
 		Matcher matcher = BAD_SEMVER.matcher(input);
@@ -41,18 +38,17 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 		return badSemver(Integer.parseInt(major), Integer.parseInt(minor));
 	}
 
+	static int badSemverOfGradle() {
+		return badSemver(GradleVersion.current().getVersion());
+	}
+
 	/** Ambiguous after 2147.483647.blah-blah */
 	private static int badSemver(int major, int minor) {
 		return major * 1_000_000 + minor;
 	}
 
-	static Boolean gradleIsTooOld;
-
-	static boolean gradleIsTooOld(Project project) {
-		if (gradleIsTooOld == null) {
-			gradleIsTooOld = badSemver(project) < badSemver(SpotlessPlugin.VER_GRADLE_min);
-		}
-		return gradleIsTooOld.booleanValue();
+	static boolean gradleIsTooOld() {
+		return badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_min);
 	}
 
 	@Override
@@ -76,8 +72,8 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 				"",
 				"If you like the idea behind 'ratchetFrom', you should checkout spotless-changelog",
 				"https://github.com/diffplug/spotless-changelog");
-		if (gradleIsTooOld(project)) {
-			errorMsg = errorMsg.replace("To migrate:\n", "To migrate:\n- Upgrade Gradle to " + SpotlessPlugin.VER_GRADLE_min + " or newer (you're on " + project.getGradle().getGradleVersion() + ")\n");
+		if (gradleIsTooOld()) {
+			errorMsg = errorMsg.replace("To migrate:\n", "To migrate:\n- Upgrade Gradle to " + SpotlessPlugin.VER_GRADLE_min + " or newer (you're on " + GradleVersion.current().getVersion() + ")\n");
 		}
 		throw new GradleException(errorMsg);
 	}

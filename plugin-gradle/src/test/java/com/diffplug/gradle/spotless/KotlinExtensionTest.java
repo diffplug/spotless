@@ -57,11 +57,12 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        ktfmt().dropboxStyle().configure {",
+				"        ktfmt(\"0.50\").dropboxStyle().configure {",
 				"            it.setMaxWidth(4)",
 				"            it.setBlockIndent(4)",
 				"            it.setContinuationIndent(4)",
-				"            it.setRemoveUnusedImport(false)",
+				"            it.setRemoveUnusedImports(false)",
+				"            it.setManageTrailingCommas(false)",
 				"        }",
 				"    }",
 				"}");
@@ -125,6 +126,25 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    kotlin {",
 				"        ktlint()",
+				"    }",
+				"}");
+		checkKtlintOfficialStyle();
+	}
+
+	@Test
+	void testEditorConfigOverrideWithUnsetCodeStyleDoesNotOverrideEditorConfigCodeStyleWithDefault() throws IOException {
+		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint().editorConfigOverride([",
+				"	         ktlint_test_key: true,",
+				"        ])",
 				"    }",
 				"}");
 		checkKtlintOfficialStyle();

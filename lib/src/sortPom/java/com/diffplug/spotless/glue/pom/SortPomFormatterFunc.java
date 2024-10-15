@@ -85,12 +85,18 @@ public class SortPomFormatterFunc implements FormatterFunc {
 				.setSortEntities(cfg.sortDependencies, cfg.sortDependencyExclusions, cfg.sortDependencyManagement,
 						cfg.sortPlugins, cfg.sortProperties, cfg.sortModules, cfg.sortExecutions)
 				.setIgnoreLineSeparators(false);
-		sortPom.setup(new MySortPomLogger(), builder.build());
+		sortPom.setup(new MySortPomLogger(cfg.quiet), builder.build());
 		sortPom.sortPom();
 		return Files.readString(pom.toPath(), Charset.forName(cfg.encoding));
 	}
 
 	private static class MySortPomLogger implements SortPomLogger {
+		private final boolean quiet;
+
+		public MySortPomLogger(boolean quiet) {
+			this.quiet = quiet;
+		}
+
 		@Override
 		public void warn(String content) {
 			logger.warn(content);
@@ -98,7 +104,9 @@ public class SortPomFormatterFunc implements FormatterFunc {
 
 		@Override
 		public void info(String content) {
-			logger.info(content);
+			if (!quiet) {
+				logger.info(content);
+			}
 		}
 
 		@Override

@@ -58,6 +58,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.maven.antlr4.Antlr4;
 import com.diffplug.spotless.maven.cpp.Cpp;
+import com.diffplug.spotless.maven.css.Css;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.gherkin.Gherkin;
@@ -71,7 +72,9 @@ import com.diffplug.spotless.maven.json.Json;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.markdown.Markdown;
 import com.diffplug.spotless.maven.pom.Pom;
+import com.diffplug.spotless.maven.protobuf.Protobuf;
 import com.diffplug.spotless.maven.python.Python;
+import com.diffplug.spotless.maven.rdf.Rdf;
 import com.diffplug.spotless.maven.scala.Scala;
 import com.diffplug.spotless.maven.shell.Shell;
 import com.diffplug.spotless.maven.sql.Sql;
@@ -141,6 +144,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private List<Format> formats = Collections.emptyList();
 
 	@Parameter
+	private Css css;
+
+	@Parameter
 	private Groovy groovy;
 
 	@Parameter
@@ -190,6 +196,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Go go;
+
+	@Parameter
+	private Rdf rdf;
+
+	@Parameter
+	private Protobuf protobuf;
 
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
@@ -376,8 +388,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, css, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go, rdf, protobuf))
 				.filter(Objects::nonNull)
+				.map(factory -> factory.init(repositorySystemSession))
 				.collect(toList());
 	}
 

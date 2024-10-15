@@ -28,7 +28,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public final class Jsr223Step implements java.io.Serializable {
+public final class Jsr223Step implements Serializable {
 	private static final long serialVersionUID = 1L;
 	@Nullable
 	private final JarState.Promised jarState;

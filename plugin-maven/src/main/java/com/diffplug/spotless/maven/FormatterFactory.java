@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.eclipse.aether.RepositorySystemSession;
 
 import com.diffplug.common.collect.Sets;
 import com.diffplug.spotless.Formatter;
@@ -191,5 +192,10 @@ public abstract class FormatterFactory {
 	private static boolean formatterStepOverriden(FormatterStepFactory global, List<FormatterStepFactory> allConfigured) {
 		return allConfigured.stream()
 				.anyMatch(configured -> configured.getClass() == global.getClass());
+	}
+
+	public FormatterFactory init(RepositorySystemSession repositorySystemSession) {
+		stepFactories.forEach(factory -> factory.init(repositorySystemSession));
+		return this;
 	}
 }

@@ -35,9 +35,39 @@ class KtfmtStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void dropboxStyle_0_18() throws Exception {
-		FormatterStep step = KtfmtStep.create("0.18", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, null);
+	void dropboxStyle_0_16() throws Exception {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		FormatterStep step = KtfmtStep.create("0.16", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic-dropboxstyle.clean");
+	}
+
+	@Test
+	void dropboxStyle_0_18() throws Exception {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		FormatterStep step = KtfmtStep.create("0.18", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
+		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic-dropboxstyle.clean");
+	}
+
+	@Test
+	void dropboxStyle_0_22() throws Exception {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		FormatterStep step = KtfmtStep.create("0.22", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
+		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic-dropboxstyle.clean");
+	}
+
+	@Test
+	void dropboxStyle_0_50() throws Exception {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		FormatterStep step = KtfmtStep.create("0.50", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
+		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic-dropboxstyle.clean");
+	}
+
+	@Test
+	void behaviorWithTrailingCommas() throws Exception {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		options.setManageTrailingCommas(true);
+		FormatterStep step = KtfmtStep.create("0.49", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
+		StepHarness.forStep(step).testResource("kotlin/ktfmt/trailing-commas.dirty", "kotlin/ktfmt/trailing-commas.clean");
 	}
 
 	@Test

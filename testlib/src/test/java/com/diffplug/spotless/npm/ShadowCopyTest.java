@@ -97,23 +97,6 @@ class ShadowCopyTest extends ResourceHarness {
 	}
 
 	@Test
-	void addingTheSameEntryTwiceResultsInSecondEntryBeingRetained() throws IOException {
-		File folderWithRandomFile = newFolderWithRandomFile();
-		shadowCopy.addEntry("someEntry", folderWithRandomFile);
-
-		// now change the orig
-		Files.delete(folderWithRandomFile.listFiles()[0].toPath());
-		File newRandomFile = new File(folderWithRandomFile, "replacedFile.txt");
-		writeRandomStringOfLengthToFile(newRandomFile, 100);
-
-		// and then add the same entry with new content again and check that they now are the same again
-		shadowCopy.addEntry("someEntry", folderWithRandomFile);
-		File shadowCopyFile = shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
-		Assertions.assertThat(shadowCopyFile.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
-		assertAllFilesAreEqualButNotSameAbsolutePath(folderWithRandomFile, shadowCopyFile);
-	}
-
-	@Test
 	void aFolderCanBeCopiedUsingShadowCopy() throws IOException {
 		File folderWithRandomFile = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);

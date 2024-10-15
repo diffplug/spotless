@@ -37,7 +37,7 @@ import com.diffplug.spotless.SerializedFunction;
  * <p>
  * Note: A type annotation is an annotation that is meta-annotated with {@code @Target({ElementType.TYPE_USE})}.
  */
-public final class FormatAnnotationsStep implements java.io.Serializable {
+public final class FormatAnnotationsStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
