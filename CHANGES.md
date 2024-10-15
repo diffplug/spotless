@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [3.0.0.BETA3] - 2024-10-15
 ### Added
 * Support for `rdf` ([#2261](https://github.com/diffplug/spotless/pull/2261))
 * Support for `buf` on maven plugin ([#2291](https://github.com/diffplug/spotless/pull/2291))
