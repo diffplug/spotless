@@ -37,6 +37,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
 
 import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2QueryCache;
@@ -52,6 +53,7 @@ public abstract class EquoBasedStepBuilder {
 	private String formatterVersion;
 	private Iterable<File> settingsFiles = new ArrayList<>();
 	private Map<String, String> p2Mirrors = Map.of();
+	private File cacheDirectory;
 
 	/** Initialize valid default configuration, taking latest version */
 	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, @Nullable String defaultVersion, SerializedFunction<State, FormatterFunc> stateToFormatter) {
@@ -75,6 +77,10 @@ public abstract class EquoBasedStepBuilder {
 
 	public void setP2Mirrors(Collection<P2Mirror> p2Mirrors) {
 		this.p2Mirrors = p2Mirrors.stream().collect(toMap(P2Mirror::getPrefix, P2Mirror::getUrl));
+	}
+
+	public void setCacheDirectory(File cacheDirectory) {
+		this.cacheDirectory = cacheDirectory;
 	}
 
 	protected abstract P2Model model(String version);
@@ -101,13 +107,16 @@ public abstract class EquoBasedStepBuilder {
 		var roundtrippableState = new EquoStep(formatterVersion, FileSignature.promise(settingsFiles), JarState.promise(() -> {
 			P2QueryResult query;
 			try {
+				if (null != cacheDirectory) {
+					CacheLocations.override_p2data = cacheDirectory.toPath().resolve("dev/equo/p2-data").toFile();
+				}
 				query = createModelWithMirrors().query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
 			} catch (Exception x) {
 				throw new IOException("Failed to load " + formatterName + ": " + x, x);
 			}
 			var classpath = new ArrayList<File>();
 			var mavenDeps = new ArrayList<String>();
-			mavenDeps.add("dev.equo.ide:solstice:1.7.6");
+			mavenDeps.add("dev.equo.ide:solstice:1.8.0");
 			mavenDeps.add("com.diffplug.durian:durian-swt.os:4.2.0");
 			mavenDeps.addAll(query.getJarsOnMavenCentral());
 			classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
@@ -143,7 +152,7 @@ public abstract class EquoBasedStepBuilder {
 		return model;
 	}
 
-	static class EquoStep implements java.io.Serializable {
+	static class EquoStep implements Serializable {
 		private static final long serialVersionUID = 1;
 		private final String semanticVersion;
 		private final FileSignature.Promised settingsPromise;

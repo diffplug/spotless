@@ -126,7 +126,7 @@ public class EclipseBasedStepBuilder {
 		this.settingsFiles = settingsFiles;
 	}
 
-	static class EclipseStep implements java.io.Serializable {
+	static class EclipseStep implements Serializable {
 		private static final long serialVersionUID = 1;
 		private final String semanticVersion;
 		private final String formatterStepExt;

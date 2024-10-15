@@ -29,9 +29,7 @@ jobs:
           distribution: "temurin"
           java-version: 11
       - name: gradle caching
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-home-cache-cleanup: true
+        uses: gradle/actions/setup-gradle@v4
       - name: spotlessCheck
         run: ./gradlew spotlessCheck
       - name: assemble testClasses
@@ -43,7 +41,7 @@ jobs:
       matrix:
         kind: [maven, gradle]
         # Test on the latest Java version once Gradle & Maven support it.
-        jre: [11, 17, 21]
+        jre: [11, 17, 21, 22]
         os: [ubuntu-latest]
         include:
           # test windows at the diagonals of the above matrix
@@ -71,9 +69,7 @@ jobs:
           distribution: "temurin"
           java-version: ${{ matrix.jre }}
       - name: gradle caching
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-home-cache-cleanup: true
+        uses: gradle/actions/setup-gradle@v4
       - name: build (maven-only)
         if: matrix.kind == 'maven'
         run: ./gradlew :plugin-maven:build -x spotlessCheck

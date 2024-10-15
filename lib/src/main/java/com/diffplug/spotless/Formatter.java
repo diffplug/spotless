@@ -32,7 +32,8 @@ import java.util.Objects;
 public final class Formatter implements Serializable, AutoCloseable {
 	private static final long serialVersionUID = 1L;
 
-	// The name is used for logging purpose. It does not convey any applicative purpose
+	// The name is used for logging purpose. It does not convey any applicative
+	// purpose
 	private LineEnding.Policy lineEndingsPolicy;
 	private Charset encoding;
 	private List<FormatterStep> steps;
@@ -215,12 +216,16 @@ public final class Formatter implements Serializable, AutoCloseable {
 		}
 	}
 
-	/** This Sentinel reference may be used to pass string content to a Formatter or FormatterStep when there is no actual File to format */
+	/**
+	 * This Sentinel reference may be used to pass string content to a Formatter or
+	 * FormatterStep when there is no actual File to format
+	 */
 	public static final File NO_FILE_SENTINEL = new File("NO_FILE_SENTINEL");
 
 	static void checkNotSentinel(File file) {
 		if (file == Formatter.NO_FILE_SENTINEL) {
-			throw new IllegalArgumentException("This step requires the underlying file. If this is a test, use StepHarnessWithFile");
+			throw new IllegalArgumentException(
+					"This step requires the underlying file. If this is a test, use StepHarnessWithFile");
 		}
 	}
 }

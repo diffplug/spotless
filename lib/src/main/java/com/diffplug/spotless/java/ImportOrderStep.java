@@ -42,7 +42,7 @@ import com.diffplug.spotless.SerializedFunction;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public final class ImportOrderStep implements java.io.Serializable {
+public final class ImportOrderStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final boolean WILDCARDS_LAST_DEFAULT = false;
 	private static final boolean SEMANTIC_SORT_DEFAULT = false;

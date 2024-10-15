@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,6 +163,7 @@ public class ProcessRunner implements AutoCloseable {
 		}
 		// write stdin
 		process.getOutputStream().write(stdin);
+		process.getOutputStream().flush();
 		process.getOutputStream().close();
 		return new LongRunningProcess(process, args, outputFut, errorFut);
 	}

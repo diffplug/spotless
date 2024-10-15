@@ -231,6 +231,12 @@ public abstract class SpotlessExtension {
 		format(GoExtension.NAME, GoExtension.class, closure);
 	}
 
+	/** Configures the special CSS-specific extension. */
+	public void css(Action<CssExtension> closure) {
+		requireNonNull(closure);
+		format(CssExtension.NAME, CssExtension.class, closure);
+	}
+
 	/** Configures the special POM-specific extension. */
 	public void pom(Action<PomExtension> closure) {
 		requireNonNull(closure);

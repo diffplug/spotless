@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.glue.ktfmt;
 
-import java.lang.reflect.Method;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -34,7 +32,7 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 	private final KtfmtFormattingOptions ktfmtFormattingOptions;
 
 	public KtfmtFormatterFunc() {
-		this(KtfmtStyle.DEFAULT, null);
+		this(KtfmtStyle.META, null);
 	}
 
 	public KtfmtFormatterFunc(@Nonnull KtfmtStyle style) {
@@ -42,7 +40,7 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 	}
 
 	public KtfmtFormatterFunc(@Nullable KtfmtFormattingOptions ktfmtFormattingOptions) {
-		this(KtfmtStyle.DEFAULT, ktfmtFormattingOptions);
+		this(KtfmtStyle.META, ktfmtFormattingOptions);
 	}
 
 	public KtfmtFormatterFunc(@Nonnull KtfmtStyle style, @Nullable KtfmtFormattingOptions ktfmtFormattingOptions) {
@@ -59,11 +57,8 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 	private FormattingOptions createFormattingOptions() throws Exception {
 		FormattingOptions formattingOptions;
 		switch (style) {
-		case DEFAULT:
-			formattingOptions = new FormattingOptions();
-			break;
-		case DROPBOX:
-			formattingOptions = Formatter.DROPBOX_FORMAT;
+		case META:
+			formattingOptions = Formatter.META_FORMAT;
 			break;
 		case GOOGLE:
 			formattingOptions = Formatter.GOOGLE_FORMAT;
@@ -72,30 +67,17 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 			formattingOptions = Formatter.KOTLINLANG_FORMAT;
 			break;
 		default:
-			throw new IllegalStateException("Unknown formatting option");
+			throw new IllegalStateException("Unknown formatting option " + style);
 		}
 
 		if (ktfmtFormattingOptions != null) {
-			try {
-				formattingOptions = formattingOptions.copy(
-						formattingOptions.getStyle(),
-						ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
-						ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
-						ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
-						ktfmtFormattingOptions.getRemoveUnusedImport().orElse(formattingOptions.getRemoveUnusedImports()),
-						formattingOptions.getDebuggingPrintOpsAfterFormatting(),
-						formattingOptions.getManageTrailingCommas());
-			} catch (NoSuchMethodError e) {
-				//noinspection JavaReflectionMemberAccess, ABI change from ktfmt 0.47
-				Method copyMethod = formattingOptions.getClass().getMethod("copy", FormattingOptions.Style.class, int.class, int.class, int.class, boolean.class, boolean.class);
-				formattingOptions = (FormattingOptions) copyMethod.invoke(formattingOptions,
-						formattingOptions.getStyle(),
-						ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
-						ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
-						ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
-						ktfmtFormattingOptions.getRemoveUnusedImport().orElse(formattingOptions.getRemoveUnusedImports()),
-						formattingOptions.getDebuggingPrintOpsAfterFormatting());
-			}
+			formattingOptions = formattingOptions.copy(
+					ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
+					ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
+					ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
+					ktfmtFormattingOptions.getManageTrailingCommas().orElse(formattingOptions.getManageTrailingCommas()),
+					ktfmtFormattingOptions.getRemoveUnusedImports().orElse(formattingOptions.getRemoveUnusedImports()),
+					formattingOptions.getDebuggingPrintOpsAfterFormatting());
 		}
 
 		return formattingOptions;

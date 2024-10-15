@@ -24,7 +24,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public class SortPomStep implements java.io.Serializable {
+public class SortPomStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.github.ekryd.sortpom:sortpom-sorter:";
 	public static final String NAME = "sortPom";

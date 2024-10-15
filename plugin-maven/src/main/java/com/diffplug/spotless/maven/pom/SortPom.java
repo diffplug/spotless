@@ -63,6 +63,9 @@ public class SortPom implements FormatterStepFactory {
 	String predefinedSortOrder = defaultValues.predefinedSortOrder;
 
 	@Parameter
+	boolean quiet = defaultValues.quiet;
+
+	@Parameter
 	String sortOrderFile = defaultValues.sortOrderFile;
 
 	@Parameter
@@ -101,6 +104,7 @@ public class SortPom implements FormatterStepFactory {
 		cfg.indentSchemaLocation = indentSchemaLocation;
 		cfg.indentAttribute = indentAttribute;
 		cfg.predefinedSortOrder = predefinedSortOrder;
+		cfg.quiet = quiet;
 		cfg.sortOrderFile = sortOrderFile;
 		cfg.sortDependencies = sortDependencies;
 		cfg.sortDependencyManagement = sortDependencyManagement;

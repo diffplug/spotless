@@ -45,6 +45,8 @@ public class SortPomCfg implements Serializable {
 
 	public String predefinedSortOrder = "recommended_2008_06";
 
+	public boolean quiet = false;
+
 	public String sortOrderFile = null;
 
 	public String sortDependencies = null;

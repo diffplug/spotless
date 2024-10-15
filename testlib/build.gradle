@@ -32,9 +32,10 @@ spotbugs {
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
-		// for Antlr4FormatterStepTest and KtLintStepTest
+		// for Antlr4FormatterStepTest, KtfmtStepTest, and KtLintStepTest
 		def args = [
-			'--add-opens=java.base/java.lang=ALL-UNNAMED'
+			'--add-opens=java.base/java.lang=ALL-UNNAMED',
+			'--add-opens=java.base/java.util=ALL-UNNAMED',
 		]
 		jvmArgs args
 	}

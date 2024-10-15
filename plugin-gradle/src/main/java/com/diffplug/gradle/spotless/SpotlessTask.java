@@ -17,8 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -37,6 +35,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
+import com.diffplug.spotless.ConfigurationCacheHackList;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
@@ -70,15 +69,23 @@ public abstract class SpotlessTask extends DefaultTask {
 		this.lineEndingsPolicy = lineEndingsPolicy;
 	}
 
-	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
+	/**
+	 * The sha of the tree at repository root, used for determining if an individual
+	 * *file* is clean according to git.
+	 */
 	private transient ObjectId rootTreeSha;
 	/**
-	 * The sha of the tree at the root of *this project*, used to determine if the git baseline has changed within this folder.
-	 * Using a more fine-grained tree (rather than the project root) allows Gradle to mark more subprojects as up-to-date
+	 * The sha of the tree at the root of *this project*, used to determine if the
+	 * git baseline has changed within this folder.
+	 * Using a more fine-grained tree (rather than the project root) allows Gradle
+	 * to mark more subprojects as up-to-date
 	 * compared to using the project root.
 	 */
 	private transient ObjectId subtreeSha = ObjectId.zeroId();
-	/** Stored so that the configuration cache can recreate the GitRatchetGradle state. */
+	/**
+	 * Stored so that the configuration cache can recreate the GitRatchetGradle
+	 * state.
+	 */
 	protected String ratchetFrom;
 
 	public void setupRatchet(String ratchetFrom) {
@@ -142,24 +149,33 @@ public abstract class SpotlessTask extends DefaultTask {
 		}
 	}
 
-	protected File outputDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(), "spotless/" + getName());
+	protected File outputDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(),
+			"spotless/" + getName());
 
 	@OutputDirectory
 	public File getOutputDirectory() {
 		return outputDirectory;
 	}
 
-	protected final List<FormatterStep> steps = new ArrayList<>();
+	private final ConfigurationCacheHackList stepsInternalRoundtrip = ConfigurationCacheHackList.forRoundtrip();
+	private final ConfigurationCacheHackList stepsInternalEquality = ConfigurationCacheHackList.forEquality();
+
+	@Internal
+	public ConfigurationCacheHackList getStepsInternalRoundtrip() {
+		return stepsInternalRoundtrip;
+	}
 
 	@Input
-	public List<FormatterStep> getSteps() {
-		return Collections.unmodifiableList(steps);
+	public ConfigurationCacheHackList getStepsInternalEquality() {
+		return stepsInternalEquality;
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
 		PluginGradlePreconditions.requireElementsNonNull(steps);
-		this.steps.clear();
-		this.steps.addAll(steps);
+		this.stepsInternalRoundtrip.clear();
+		this.stepsInternalEquality.clear();
+		this.stepsInternalRoundtrip.addAll(steps);
+		this.stepsInternalEquality.addAll(steps);
 	}
 
 	/** Returns the name of this format. */
@@ -176,7 +192,7 @@ public abstract class SpotlessTask extends DefaultTask {
 		return Formatter.builder()
 				.lineEndingsPolicy(getLineEndingsPolicy().get())
 				.encoding(Charset.forName(encoding))
-				.steps(steps)
+				.steps(stepsInternalRoundtrip.getSteps())
 				.build();
 	}
 }

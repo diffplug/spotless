@@ -117,6 +117,11 @@ public class PomExtension extends FormatExtension {
 			return this;
 		}
 
+		public SortPomGradleConfig quiet(boolean quiet) {
+			cfg.quiet = quiet;
+			return this;
+		}
+
 		public SortPomGradleConfig sortOrderFile(String sortOrderFile) {
 			cfg.sortOrderFile = sortOrderFile;
 			return this;
