@@ -78,7 +78,10 @@ public class DirtyState {
 	}
 
 	public static DirtyState of(Formatter formatter, File file, byte[] rawBytes, String raw) {
-		return of(formatter, file, rawBytes, raw, new ValuePerStep<>(formatter));
+		var valuePerStep = new ValuePerStep<Throwable>(formatter);
+		DirtyState state = of(formatter, file, rawBytes, raw, valuePerStep);
+		LintPolicy.legacyBehavior(formatter, file, valuePerStep);
+		return state;
 	}
 
 	public static DirtyState of(Formatter formatter, File file, byte[] rawBytes, String raw, ValuePerStep<Throwable> exceptionPerStep) {
