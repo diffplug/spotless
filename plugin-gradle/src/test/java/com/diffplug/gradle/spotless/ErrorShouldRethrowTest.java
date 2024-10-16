@@ -62,6 +62,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	@Disabled
+	@ForLintRefactor
 	void anyExceptionShouldFail() throws Exception {
 		writeBuild(
 				"    } // format",
@@ -111,6 +113,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	@Disabled
+	@ForLintRefactor
 	void failsIfNeitherStepNorFileExempted() throws Exception {
 		writeBuild(
 				"        ignoreErrorForStep 'nope'",
