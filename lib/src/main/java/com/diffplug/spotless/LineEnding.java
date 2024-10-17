@@ -16,8 +16,12 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -47,9 +51,11 @@ public enum LineEnding {
 	/** {@code \r\n} */
 	WINDOWS,
     /** {@code \n} */
-    UNIX,
+    UNIX,   
     /** {@code \r} */
-    MAC_CLASSIC;
+    MAC_CLASSIC,
+    /** preserve the line ending of the first line (no matter which format) */
+    PRESERVE;
 	// @formatter:on
 
 	/** Returns a {@link Policy} appropriate for files which are contained within the given rootFolder. */
@@ -81,6 +87,7 @@ public enum LineEnding {
 		case WINDOWS:			return WINDOWS_POLICY;
 		case UNIX:				return UNIX_POLICY;
 		case MAC_CLASSIC:		return MAC_CLASSIC_POLICY;
+		case PRESERVE:			return PRESERVE_POLICY;
 		default:	throw new UnsupportedOperationException(this + " is a path-specific line ending.");
 		}
 	}
@@ -100,9 +107,50 @@ public enum LineEnding {
 		}
 	}
 
+	static class PreserveLineEndingPolicy extends NoLambda.EqualityBasedOnSerialization implements Policy {
+        private static final long serialVersionUID = 2L;
+
+        @Override
+        public String getEndingFor(File file) {
+            // assume US-ASCII encoding (only line ending characters need to be decoded anyways)
+            try (Reader reader = new FileReader(file, StandardCharsets.US_ASCII)) {
+                return getEndingFor(reader);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Could not determine line ending of file: " + file, e);
+            }
+        }
+
+        static String getEndingFor(Reader reader) throws IOException {
+            char previousCharacter = 0;
+            char currentCharacter = 0;
+            int readResult;
+            while ((readResult = reader.read()) != -1) {
+                currentCharacter = (char)readResult;
+                if (currentCharacter == '\n') {
+                    if (previousCharacter == '\r') {
+                        return WINDOWS.str();
+                    } else {
+                        return UNIX.str();
+                    }
+                } else {
+                    if (previousCharacter == '\r') {
+                        return MAC_CLASSIC.str();
+                    }
+                }
+                previousCharacter = currentCharacter;
+            }
+            if (previousCharacter == '\r') {
+                return MAC_CLASSIC.str();
+            }
+            // assume UNIX line endings if no line ending was found
+            return UNIX.str();
+        }
+	}
+
 	private static final Policy WINDOWS_POLICY = new ConstantLineEndingPolicy(WINDOWS.str());
 	private static final Policy UNIX_POLICY = new ConstantLineEndingPolicy(UNIX.str());
     private static final Policy MAC_CLASSIC_POLICY = new ConstantLineEndingPolicy(MAC_CLASSIC.str());
+    private static final Policy PRESERVE_POLICY = new PreserveLineEndingPolicy();
 	private static final String _platformNative = System.getProperty("line.separator");
 	private static final Policy _platformNativePolicy = new ConstantLineEndingPolicy(_platformNative);
 	private static final boolean nativeIsWin = _platformNative.equals(WINDOWS.str());
