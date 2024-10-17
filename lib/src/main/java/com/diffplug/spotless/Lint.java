@@ -27,14 +27,19 @@ import java.util.Objects;
  * to Spotless, then it is by definition.
  */
 public final class Lint implements Serializable {
-	/** Returns a runtime exception which, if thrown, will lint the entire file. */
-	public static ShortcutException entireFile(String code, String msg) {
-		return new ShortcutException(Lint.create(code, msg, -1));
+	/** Returns a runtime exception which, if thrown, will create a lint at an undefined line. */
+	public static ShortcutException atUndefinedLine(String code, String msg) {
+		return new ShortcutException(Lint.create(code, msg, LINE_UNDEFINED));
 	}
 
 	/** Returns a runtime exception which, if thrown, will lint a specific line. */
 	public static ShortcutException atLine(int line, String code, String msg) {
 		return new ShortcutException(Lint.create(code, msg, line));
+	}
+
+	/** Returns a runtime exception which, if thrown, will lint a specific line range. */
+	public static ShortcutException atLineRange(int lineStart, int lineEnd, String code, String msg) {
+		return new ShortcutException(Lint.create(code, msg, lineStart, lineEnd));
 	}
 
 	/** Any exception which implements this interface will have its lints extracted and reported cleanly to the user. */
@@ -103,7 +108,11 @@ public final class Lint implements Serializable {
 	@Override
 	public String toString() {
 		if (lineStart == lineEnd) {
-			return lineStart + ": (" + code + ") " + msg;
+			if (lineStart == LINE_UNDEFINED) {
+				return "LINE_UNDEFINED: (" + code + ") " + msg;
+			} else {
+				return lineStart + ": (" + code + ") " + msg;
+			}
 		} else {
 			return lineStart + "-" + lineEnd + ": (" + code + ") " + msg;
 		}
@@ -163,4 +172,6 @@ public final class Lint implements Serializable {
 		}
 		return "";
 	}
+
+	public static final int LINE_UNDEFINED = -1;
 }

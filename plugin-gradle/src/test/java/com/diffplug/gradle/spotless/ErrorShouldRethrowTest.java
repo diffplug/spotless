@@ -43,7 +43,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		lines.add("        target file('README.md')");
 		lines.add("        custom 'no swearing', {");
 		lines.add("             if (it.toLowerCase(Locale.ROOT).contains('fubar')) {");
-		lines.add("                 throw com.diffplug.spotless.Lint.entireFile('swearing', 'No swearing!');");
+		lines.add("                 throw com.diffplug.spotless.Lint.atUndefinedLine('swearing', 'No swearing!');");
 		lines.add("             }");
 		lines.add("        }");
 		lines.addAll(Arrays.asList(toInsert));
@@ -68,8 +68,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		runWithFailure(
 				"> Task :spotlessMisc FAILED\n" +
 						"Step 'no swearing' found problem in 'README.md':\n" +
-						"-1: (swearing) No swearing!\n" +
-						"java.lang.Throwable: -1: (swearing) No swearing!");
+						"LINE_UNDEFINED: (swearing) No swearing!\n" +
+						"java.lang.Throwable: LINE_UNDEFINED: (swearing) No swearing!");
 	}
 
 	@Test
@@ -113,8 +113,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure("> Task :spotlessMisc FAILED\n" +
 				"Step 'no swearing' found problem in 'README.md':\n" +
-				"-1: (swearing) No swearing!\n" +
-				"java.lang.Throwable: -1: (swearing) No swearing!");
+				"LINE_UNDEFINED: (swearing) No swearing!\n" +
+				"java.lang.Throwable: LINE_UNDEFINED: (swearing) No swearing!");
 	}
 
 	private void runWithSuccess(String expectedToStartWith) throws Exception {
