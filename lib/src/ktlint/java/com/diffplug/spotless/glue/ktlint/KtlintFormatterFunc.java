@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,13 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	}
 
 	@Override
-	public String applyWithFile(String unix, File file) {
+	public String applyWithFile(String unix, File file) throws NoSuchFieldException, IllegalAccessException {
 		Path absoluteEditorConfigPath = null;
 		if (editorConfigPath != null) {
 			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().toPath();
 		}
 		return adapter.format(
+				unix,
 				file.toPath(),
 				absoluteEditorConfigPath,
 				editorConfigOverrideMap);

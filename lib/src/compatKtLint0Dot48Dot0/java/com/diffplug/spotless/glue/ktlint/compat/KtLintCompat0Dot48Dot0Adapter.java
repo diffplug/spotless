@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 
 	@Override
 	public String format(
+			String unix,
 			Path path,
 			Path editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap) {
@@ -105,7 +106,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 				editorConfig,
 				editorConfigOverride,
 				false)
-				.format(path, formatterCallback);
+				.format(unix, path, formatterCallback);
 	}
 
 	/**

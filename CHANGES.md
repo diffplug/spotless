@@ -19,6 +19,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 * **BREAKING** Moved `PaddedCell.DirtyState` to its own top-level class with new methods. ([#2148](https://github.com/diffplug/spotless/pull/2148))
   * **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use `DirtyState`.
+### Fixed
+* `ktlint` steps now read from the `string` instead of the `file` so they don't clobber earlier steps. (fixes [#1599](https://github.com/diffplug/spotless/issues/1599))
 
 ## [3.0.0.BETA3] - 2024-10-15
 ### Added
