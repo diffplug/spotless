@@ -15,7 +15,10 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
+import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Map;
 
 public interface KtLintCompatAdapter {
@@ -25,4 +28,18 @@ public interface KtLintCompatAdapter {
 			Path path,
 			Path editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap) throws NoSuchFieldException, IllegalAccessException;
+
+	static void setCodeContent(Object code, String content) {
+		AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+			try {
+				Field contentField = code.getClass().getDeclaredField("content");
+				contentField.setAccessible(true);
+				contentField.set(code, content);
+			} catch (NoSuchFieldException | IllegalAccessException e) {
+				// Handle exceptions as needed
+				throw new RuntimeException("Failed to set content field", e);
+			}
+			return null;
+		});
+	}
 }

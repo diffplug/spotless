@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -87,7 +86,7 @@ public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
 			String unix,
 			Path path,
 			Path editorConfigPath,
-			Map<String, Object> editorConfigOverrideMap) throws NoSuchFieldException, IllegalAccessException {
+			Map<String, Object> editorConfigOverrideMap) {
 		final FormatterCallback formatterCallback = new FormatterCallback();
 
 		Set<RuleProvider> allRuleProviders = ServiceLoader.load(RuleSetProviderV3.class, RuleSetProviderV3.class.getClassLoader())
@@ -112,10 +111,7 @@ public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
 
 		// create Code and then set the content to match previous steps in the Spotless pipeline
 		Code code = Code.Companion.fromPath(path);
-		Field contentField = code.getClass().getDeclaredField("content");
-		contentField.setAccessible(true);
-		contentField.set(code, unix);
-
+		KtLintCompatAdapter.setCodeContent(code, unix);
 		return new KtLintRuleEngine(
 				allRuleProviders,
 				editorConfig,
