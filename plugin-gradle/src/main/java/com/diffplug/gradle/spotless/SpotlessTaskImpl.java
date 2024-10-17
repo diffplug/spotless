@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -97,7 +96,6 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	@VisibleForTesting
 	void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input) throws IOException {
 		File output = getOutputFileWithBaseDir(input, outputDirectory);
-		File lint = getOutputFileWithBaseDir(input, lintDirectory);
 		getLogger().debug("Applying format to {} and writing to {}", input, output);
 		LintState lintState;
 		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
@@ -130,22 +128,15 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			var lints = lintState.getLints(formatter);
 			var first = lints.entrySet().iterator().next();
 			getExceptionPolicy().handleError(new Throwable(first.getValue().get(0).toString()), first.getKey(), FormatExtension.relativize(getProjectDir().get().getAsFile(), input));
-			//			Files.createDirectories(lint.toPath().getParent());
-			//			Files.write(lint.toPath(), lintState.asString().getBytes());
-		} else {
-			Files.deleteIfExists(lint.toPath());
 		}
 	}
 
 	private void deletePreviousResults(File input) throws IOException {
 		File output = getOutputFileWithBaseDir(input, outputDirectory);
-		File lint = getOutputFileWithBaseDir(input, lintDirectory);
-		for (File file : List.of(output, lint)) {
-			if (file.isDirectory()) {
-				getFs().delete(d -> d.delete(file));
-			} else {
-				Files.deleteIfExists(file.toPath());
-			}
+		if (output.isDirectory()) {
+			getFs().delete(d -> d.delete(output));
+		} else {
+			Files.deleteIfExists(output.toPath());
 		}
 	}
 
