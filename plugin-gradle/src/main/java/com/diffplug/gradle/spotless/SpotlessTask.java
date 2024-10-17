@@ -157,6 +157,14 @@ public abstract class SpotlessTask extends DefaultTask {
 		return outputDirectory;
 	}
 
+	protected File lintDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(),
+			"spotless-lint/" + getName());
+
+	@OutputDirectory
+	public File getLintDirectory() {
+		return lintDirectory;
+	}
+
 	private final ConfigurationCacheHackList stepsInternalRoundtrip = ConfigurationCacheHackList.forRoundtrip();
 	private final ConfigurationCacheHackList stepsInternalEquality = ConfigurationCacheHackList.forEquality();
 

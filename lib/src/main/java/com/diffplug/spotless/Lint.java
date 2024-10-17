@@ -27,6 +27,16 @@ import java.util.Objects;
  * to Spotless, then it is by definition.
  */
 public final class Lint implements Serializable {
+	/** Returns a runtime exception which, if thrown, will lint the entire file. */
+	public static ShortcutException entireFile(String code, String msg) {
+		return new ShortcutException(Lint.create(code, msg, -1));
+	}
+
+	/** Returns a runtime exception which, if thrown, will lint a specific line. */
+	public static ShortcutException atLine(int line, String code, String msg) {
+		return new ShortcutException(Lint.create(code, msg, line));
+	}
+
 	/** Any exception which implements this interface will have its lints extracted and reported cleanly to the user. */
 	public interface Has {
 		List<Lint> getLints();

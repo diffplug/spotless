@@ -84,7 +84,7 @@ public class DirtyState {
 		return state;
 	}
 
-	public static DirtyState of(Formatter formatter, File file, byte[] rawBytes, String raw, ValuePerStep<Throwable> exceptionPerStep) {
+	static DirtyState of(Formatter formatter, File file, byte[] rawBytes, String raw, ValuePerStep<Throwable> exceptionPerStep) {
 		// check that all characters were encodable
 		String encodingError = EncodingErrorMsg.msg(raw, rawBytes, formatter.getEncoding());
 		if (encodingError != null) {

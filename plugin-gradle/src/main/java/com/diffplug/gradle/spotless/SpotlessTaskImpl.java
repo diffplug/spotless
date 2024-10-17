@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -37,8 +38,8 @@ import org.gradle.work.InputChanges;
 
 import com.diffplug.common.annotations.VisibleForTesting;
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.extra.GitRatchet;
 
 @CacheableTask
@@ -83,7 +84,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			for (FileChange fileChange : inputs.getFileChanges(target)) {
 				File input = fileChange.getFile();
 				if (fileChange.getChangeType() == ChangeType.REMOVED) {
-					deletePreviousResult(input);
+					deletePreviousResults(input);
 				} else {
 					if (input.isFile()) {
 						processInputFile(ratchet, formatter, input);
@@ -95,24 +96,23 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 	@VisibleForTesting
 	void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input) throws IOException {
-		File output = getOutputFile(input);
+		File output = getOutputFileWithBaseDir(input, outputDirectory);
+		File lint = getOutputFileWithBaseDir(input, lintDirectory);
 		getLogger().debug("Applying format to {} and writing to {}", input, output);
-		DirtyState dirtyState;
+		LintState lintState;
 		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
-			dirtyState = DirtyState.clean();
+			lintState = LintState.clean();
 		} else {
 			try {
-				dirtyState = DirtyState.of(formatter, input);
-			} catch (IOException e) {
-				throw new IOException("Issue processing file: " + input, e);
-			} catch (RuntimeException e) {
+				lintState = LintState.of(formatter, input);
+			} catch (Throwable e) {
 				throw new IllegalArgumentException("Issue processing file: " + input, e);
 			}
 		}
-		if (dirtyState.isClean()) {
+		if (lintState.getDirtyState().isClean()) {
 			// Remove previous output if it exists
 			Files.deleteIfExists(output.toPath());
-		} else if (dirtyState.didNotConverge()) {
+		} else if (lintState.getDirtyState().didNotConverge()) {
 			getLogger().warn("Skipping '{}' because it does not converge.  Run {@code spotlessDiagnose} to understand why", input);
 		} else {
 			Path parentDir = output.toPath().getParent();
@@ -124,20 +124,32 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			Files.copy(input.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
 
 			getLogger().info(String.format("Writing clean file: %s", output));
-			dirtyState.writeCanonicalTo(output);
+			lintState.getDirtyState().writeCanonicalTo(output);
 		}
-	}
-
-	private void deletePreviousResult(File input) throws IOException {
-		File output = getOutputFile(input);
-		if (output.isDirectory()) {
-			getFs().delete(d -> d.delete(output));
+		if (lintState.isHasLints()) {
+			var lints = lintState.getLints(formatter);
+			var first = lints.entrySet().iterator().next();
+			getExceptionPolicy().handleError(new Throwable(first.getValue().get(0).toString()), first.getKey(), FormatExtension.relativize(getProjectDir().get().getAsFile(), input));
+			//			Files.createDirectories(lint.toPath().getParent());
+			//			Files.write(lint.toPath(), lintState.asString().getBytes());
 		} else {
-			Files.deleteIfExists(output.toPath());
+			Files.deleteIfExists(lint.toPath());
 		}
 	}
 
-	private File getOutputFile(File input) {
+	private void deletePreviousResults(File input) throws IOException {
+		File output = getOutputFileWithBaseDir(input, outputDirectory);
+		File lint = getOutputFileWithBaseDir(input, lintDirectory);
+		for (File file : List.of(output, lint)) {
+			if (file.isDirectory()) {
+				getFs().delete(d -> d.delete(file));
+			} else {
+				Files.deleteIfExists(file.toPath());
+			}
+		}
+	}
+
+	private File getOutputFileWithBaseDir(File input, File baseDir) {
 		File projectDir = getProjectDir().get().getAsFile();
 		String outputFileName = FormatExtension.relativize(projectDir, input);
 		if (outputFileName == null) {
@@ -147,6 +159,6 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 				printer.println("       target: " + input.getAbsolutePath());
 			}));
 		}
-		return new File(outputDirectory, outputFileName);
+		return new File(baseDir, outputFileName);
 	}
 }

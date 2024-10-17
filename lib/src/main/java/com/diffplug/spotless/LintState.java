@@ -41,6 +41,10 @@ public class LintState {
 		return lintsPerStep != null;
 	}
 
+	public boolean isClean() {
+		return dirtyState.isClean() && !isHasLints();
+	}
+
 	public Map<FormatterStep, List<Lint>> getLints(Formatter formatter) {
 		if (lintsPerStep == null) {
 			throw new IllegalStateException("Check `isHasLints` first!");
@@ -137,7 +141,7 @@ public class LintState {
 			List<Lint> lintsForStep;
 			if (exceptionForLint instanceof Lint.Has) {
 				lintsForStep = ((Lint.Has) exceptionForLint).getLints();
-			} else if (exceptionForLint != null) {
+			} else if (exceptionForLint != null && exceptionForLint != formatStepCausedNoChange()) {
 				lintsForStep = List.of(Lint.createFromThrowable(step, toLint, exceptionForLint));
 			} else {
 				lintsForStep = List.of();
@@ -148,6 +152,13 @@ public class LintState {
 		}
 		return new LintState(dirty, lints.indexOfFirstValue() == -1 ? null : lints);
 	}
+
+	/** Returns the DirtyState which corresponds to {@code isClean()}. */
+	public static LintState clean() {
+		return isClean;
+	}
+
+	private static final LintState isClean = new LintState(DirtyState.clean(), null);
 
 	static Throwable formatStepCausedNoChange() {
 		return FormatterCausedNoChange.INSTANCE;
