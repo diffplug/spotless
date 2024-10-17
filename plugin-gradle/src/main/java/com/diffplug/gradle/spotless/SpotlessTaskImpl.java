@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import org.gradle.work.InputChanges;
 
 import com.diffplug.common.annotations.VisibleForTesting;
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.extra.GitRatchet;
 
 @CacheableTask
@@ -97,12 +97,12 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input) throws IOException {
 		File output = getOutputFile(input);
 		getLogger().debug("Applying format to {} and writing to {}", input, output);
-		PaddedCell.DirtyState dirtyState;
+		DirtyState dirtyState;
 		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
-			dirtyState = PaddedCell.isClean();
+			dirtyState = DirtyState.clean();
 		} else {
 			try {
-				dirtyState = PaddedCell.calculateDirtyState(formatter, input);
+				dirtyState = DirtyState.of(formatter, input);
 			} catch (IOException e) {
 				throw new IOException("Issue processing file: " + input, e);
 			} catch (RuntimeException e) {

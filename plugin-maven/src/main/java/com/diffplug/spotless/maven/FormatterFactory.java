@@ -33,7 +33,6 @@ import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.RepositorySystemSession;
 
 import com.diffplug.common.collect.Sets;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -101,14 +100,10 @@ public abstract class FormatterFactory {
 			formatterSteps = List.of(toggle.createFence().preserveWithin(formatterStepsBeforeToggle));
 		}
 
-		String formatterName = this.getClass().getSimpleName();
 		return Formatter.builder()
-				.name(formatterName)
 				.encoding(formatterEncoding)
 				.lineEndingsPolicy(formatterLineEndingPolicy)
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.steps(formatterSteps)
-				.rootDir(config.getFileLocator().getBaseDir().toPath())
 				.build();
 	}
 

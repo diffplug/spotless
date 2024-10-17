@@ -37,12 +37,9 @@ public class StepHarnessWithFile extends StepHarnessBase {
 	/** Creates a harness for testing steps which do depend on the file. */
 	public static StepHarnessWithFile forStep(ResourceHarness harness, FormatterStep step) {
 		return forFormatter(harness, Formatter.builder()
-				.name(step.getName())
 				.encoding(StandardCharsets.UTF_8)
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.steps(Collections.singletonList(step))
-				.rootDir(harness.rootFolder().toPath())
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build());
 	}
 

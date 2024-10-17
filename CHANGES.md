@@ -73,6 +73,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * **BREAKING** Remove `JarState.getMavenCoordinate(String prefix)`. ([#1945](https://github.com/diffplug/spotless/pull/1945))
 * **BREAKING** Replace `PipeStepPair` with `FenceStep`. ([#1954](https://github.com/diffplug/spotless/pull/1954))
 * **BREAKING** Fully removed `Rome`, use `Biome` instead. ([#2119](https://github.com/diffplug/spotless/pull/2119))
+* **BREAKING** Moved `PaddedCell.DirtyState` to its own top-level class with new methods. ([#2148](https://github.com/diffplug/spotless/pull/2148))
+  * **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use `DirtyState`.
 
 ## [2.45.0] - 2024-01-23
 ### Added

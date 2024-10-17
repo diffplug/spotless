@@ -10,20 +10,19 @@ In order to use and combine `FormatterStep`, you first create a `Formatter`, whi
 
 - an encoding
 - a list of `FormatterStep`
-- a line endings policy (`LineEnding.GIT_ATTRIBUTES` is almost always the best choice)
+- a line endings policy (`LineEnding.GIT_ATTRIBUTES_FAST_ALLSAME` is almost always the best choice)
 
-Once you have an instance of `Formatter`, you can call `boolean isClean(File)`, or `void applyTo(File)` to either check or apply formatting to a file.  Spotless will then:
+Once you have an instance of `Formatter`, you can call `DirtyState.of(Formatter, File)`. Under the hood, Spotless will:
 
 - parse the raw bytes into a String according to the encoding
 - normalize its line endings to `\n`
 - pass the unix string to each `FormatterStep` one after the other
+- check for idempotence problems, and repeatedly apply the steps until the [result is stable](PADDEDCELL.md). 
 - apply line endings according to the policy
 
 You can also use lower-level methods like `String compute(String unix, File file)` if you'd like to do lower-level processing.
 
 All `FormatterStep` implement `Serializable`, `equals`, and `hashCode`, so build systems that support up-to-date checks can easily and correctly determine if any actions need to be taken.
-
-Spotless also provides `PaddedCell`, which makes it easy to diagnose and correct idempotence problems.
 
 ## Project layout
 
@@ -39,15 +38,16 @@ For the folders below in monospace text, they are published on MavenCentral at t
 
 ## How to add a new FormatterStep
 
-The easiest way to create a FormatterStep is `FormatterStep createNeverUpToDate(String name, FormatterFunc function)`, which you can use like this:
+The easiest way to create a FormatterStep is to just create `class FooStep implements FormatterStep`. It has one abstract method which is the formatting function, and you're ready to tinker. To work with the build plugins, this class will need to
 
-```java
-FormatterStep identityStep = FormatterStep.createNeverUpToDate("identity", unixStr -> unixStr)
-```
+- implement equality and hashcode
+- support lossless roundtrip serialization
 
-This creates a step which will fail up-to-date checks (it is equal only to itself), and will use the function you passed in to do the formatting pass.
+You can use `StepHarness` (if you don't care about the `File` argument) or `StepHarnessWithFile` to test. The harness will roundtrip serialize your step, check that it's equal to itself, and then perform all tests on the roundtripped step.
 
-To create a step which can handle up-to-date checks properly, use the method `<State extends Serializable> FormatterStep create(String name, State state, Function<State, FormatterFunc> stateToFormatter)`.  Here's an example:
+## Implementing equality in terms of serialization
+
+Spotless has infrastructure which uses the serialized form of your step to implement equality for you. Here is an example:
 
 ```java
 public final class ReplaceStep {
@@ -62,10 +62,10 @@ public final class ReplaceStep {
   private static final class State implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private final CharSequence target;
-    private final CharSequence replacement;
+    private final String target;
+    private final String replacement;
 
-    State(CharSequence target, CharSequence replacement) {
+    State(String target, String replacement) {
       this.target = target;
       this.replacement = replacement;
     }
@@ -82,8 +82,6 @@ The `FormatterStep` created above implements `equals` and `hashCode` based on th
 Oftentimes, a rule's state will be expensive to compute. `EclipseFormatterStep`, for example, depends on a formatting file.  Ideally, we would like to only pay the cost of the I/O needed to load that file if we have to - we'd like to create the FormatterStep now but load its state lazily at the last possible moment.  For this purpose, each of the `FormatterStep.create` methods has a lazy counterpart.  Here are their signatures:
 
 ```java
-FormatterStep createNeverUpToDate    (String name, FormatterFunc function                  )
-FormatterStep createNeverUpToDateLazy(String name, Supplier<FormatterFunc> functionSupplier)
 FormatterStep create    (String name, State state                  , Function<State, FormatterFunc> stateToFormatter)
 FormatterStep createLazy(String name, Supplier<State> stateSupplier, Function<State, FormatterFunc> stateToFormatter)
 ```
@@ -101,7 +99,7 @@ Here's a checklist for creating a new step for Spotless:
 
 ### Serialization roundtrip
 
-In order to support Gradle's configuration cache, all `FormatterStep` must be round-trip serializable. This is a bit tricky because step equality is based on the serialized form of the state, and `transient` is used to take absolute paths out of the equality check. To make this work, roundtrip compatible steps actually have *two* states:
+In order to support Gradle's configuration cache, all `FormatterStep` must be round-trip serializable. This is a bit tricky because step equality is based on the serialized form of the state, and `transient` can be used to take absolute paths out of the equality check. To make this work, roundtrip compatible steps can actually have *two* states:
 
 - `RoundtripState` which must be roundtrip serializable but has no equality constraints
   - `FileSignature.Promised` for settings files and `JarState.Promised` for the classpath 

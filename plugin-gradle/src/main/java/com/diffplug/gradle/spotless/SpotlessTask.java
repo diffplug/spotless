@@ -70,15 +70,23 @@ public abstract class SpotlessTask extends DefaultTask {
 		this.lineEndingsPolicy = lineEndingsPolicy;
 	}
 
-	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
+	/**
+	 * The sha of the tree at repository root, used for determining if an individual
+	 * *file* is clean according to git.
+	 */
 	private transient ObjectId rootTreeSha;
 	/**
-	 * The sha of the tree at the root of *this project*, used to determine if the git baseline has changed within this folder.
-	 * Using a more fine-grained tree (rather than the project root) allows Gradle to mark more subprojects as up-to-date
+	 * The sha of the tree at the root of *this project*, used to determine if the
+	 * git baseline has changed within this folder.
+	 * Using a more fine-grained tree (rather than the project root) allows Gradle
+	 * to mark more subprojects as up-to-date
 	 * compared to using the project root.
 	 */
 	private transient ObjectId subtreeSha = ObjectId.zeroId();
-	/** Stored so that the configuration cache can recreate the GitRatchetGradle state. */
+	/**
+	 * Stored so that the configuration cache can recreate the GitRatchetGradle
+	 * state.
+	 */
 	protected String ratchetFrom;
 
 	public void setupRatchet(String ratchetFrom) {
@@ -142,7 +150,8 @@ public abstract class SpotlessTask extends DefaultTask {
 		}
 	}
 
-	protected File outputDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(), "spotless/" + getName());
+	protected File outputDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(),
+			"spotless/" + getName());
 
 	@OutputDirectory
 	public File getOutputDirectory() {
@@ -182,12 +191,9 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	Formatter buildFormatter() {
 		return Formatter.builder()
-				.name(formatName())
 				.lineEndingsPolicy(getLineEndingsPolicy().get())
 				.encoding(Charset.forName(encoding))
-				.rootDir(getProjectDir().get().getAsFile().toPath())
 				.steps(stepsInternalRoundtrip.getSteps())
-				.exceptionPolicy(exceptionPolicy)
 				.build();
 	}
 }
