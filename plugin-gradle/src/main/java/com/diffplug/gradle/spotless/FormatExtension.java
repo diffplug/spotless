@@ -340,7 +340,7 @@ public class FormatExtension {
 			return null;
 		} else {
 			String relativized = destPath.substring(rootPath.length());
-			return relativized.startsWith("/") ? relativized.substring(1) : relativized;
+			return relativized.startsWith("/") || relativized.startsWith("\\") ? relativized.substring(1) : relativized;
 		}
 	}
 
