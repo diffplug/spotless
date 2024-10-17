@@ -89,6 +89,7 @@ dependencies {
 	compatDiktat2Dot0Dot0CompileOnly "com.saveourtool.diktat:diktat-runner:2.0.0"
 	// flexmark
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.8'
+	implementation 'com.vladsch.flexmark:flexmark-util-data:0.64.8'
 	// gherkin
 	gherkinCompileOnly 'io.cucumber:gherkin-utils:9.0.0'
 	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.16'
