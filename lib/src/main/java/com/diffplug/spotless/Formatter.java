@@ -128,28 +128,51 @@ public final class Formatter implements Serializable, AutoCloseable {
 	 * is guaranteed to also have unix line endings.
 	 */
 	public String compute(String unix, File file) {
+		ValuePerStep<Throwable> exceptionPerStep = new ValuePerStep<>(this);
+		String result = computeWithLint(unix, file, exceptionPerStep);
+		LintPolicy.legacyBehavior(this, file, exceptionPerStep);
+		return result;
+	}
+
+	/**
+	 * Returns the result of calling all of the FormatterSteps, while also
+	 * tracking any exceptions which are thrown.
+	 * <p>
+	 * The input must have unix line endings, and the output
+	 * is guaranteed to also have unix line endings.
+	 * <p>
+	 * It doesn't matter what is inside `ValuePerStep`, the value at every index will be overwritten
+	 * when the method returns.
+	 */
+	String computeWithLint(String unix, File file, ValuePerStep<Throwable> exceptionPerStep) {
 		Objects.requireNonNull(unix, "unix");
 		Objects.requireNonNull(file, "file");
 
-		for (FormatterStep step : steps) {
+		for (int i = 0; i < steps.size(); ++i) {
+			FormatterStep step = steps.get(i);
+			Throwable storeForStep;
 			try {
 				String formatted = step.format(unix, file);
 				if (formatted == null) {
 					// This probably means it was a step that only checks
 					// for errors and doesn't actually have any fixes.
 					// No exception was thrown so we can just continue.
+					storeForStep = LintState.formatStepCausedNoChange();
 				} else {
 					// Should already be unix-only, but some steps might misbehave.
-					unix = LineEnding.toUnix(formatted);
+					String clean = LineEnding.toUnix(formatted);
+					if (clean.equals(unix)) {
+						storeForStep = LintState.formatStepCausedNoChange();
+					} else {
+						storeForStep = null;
+						unix = LineEnding.toUnix(formatted);
+					}
 				}
 			} catch (Throwable e) {
-				// TODO: this is bad, but it won't matter when add support for linting
-				if (e instanceof RuntimeException) {
-					throw (RuntimeException) e;
-				} else {
-					throw new RuntimeException(e);
-				}
+				// store the exception which was thrown and keep going
+				storeForStep = e;
 			}
+			exceptionPerStep.set(i, storeForStep);
 		}
 		return unix;
 	}

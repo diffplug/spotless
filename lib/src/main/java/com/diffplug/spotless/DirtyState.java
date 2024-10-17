@@ -46,7 +46,7 @@ public class DirtyState {
 		return this == didNotConverge;
 	}
 
-	private byte[] canonicalBytes() {
+	byte[] canonicalBytes() {
 		if (canonicalBytes == null) {
 			throw new IllegalStateException("First make sure that {@code !isClean()} and {@code !didNotConverge()}");
 		}
@@ -74,7 +74,17 @@ public class DirtyState {
 	}
 
 	public static DirtyState of(Formatter formatter, File file, byte[] rawBytes) {
-		String raw = new String(rawBytes, formatter.getEncoding());
+		return of(formatter, file, rawBytes, new String(rawBytes, formatter.getEncoding()));
+	}
+
+	public static DirtyState of(Formatter formatter, File file, byte[] rawBytes, String raw) {
+		var valuePerStep = new ValuePerStep<Throwable>(formatter);
+		DirtyState state = of(formatter, file, rawBytes, raw, valuePerStep);
+		LintPolicy.legacyBehavior(formatter, file, valuePerStep);
+		return state;
+	}
+
+	static DirtyState of(Formatter formatter, File file, byte[] rawBytes, String raw, ValuePerStep<Throwable> exceptionPerStep) {
 		// check that all characters were encodable
 		String encodingError = EncodingErrorMsg.msg(raw, rawBytes, formatter.getEncoding());
 		if (encodingError != null) {
@@ -84,7 +94,7 @@ public class DirtyState {
 		String rawUnix = LineEnding.toUnix(raw);
 
 		// enforce the format
-		String formattedUnix = formatter.compute(rawUnix, file);
+		String formattedUnix = formatter.computeWithLint(rawUnix, file, exceptionPerStep);
 		// convert the line endings if necessary
 		String formatted = formatter.computeLineEndings(formattedUnix, file);
 
@@ -95,13 +105,13 @@ public class DirtyState {
 		}
 
 		// F(input) != input, so we'll do a padded check
-		String doubleFormattedUnix = formatter.compute(formattedUnix, file);
+		String doubleFormattedUnix = formatter.computeWithLint(formattedUnix, file, exceptionPerStep);
 		if (doubleFormattedUnix.equals(formattedUnix)) {
 			// most dirty files are idempotent-dirty, so this is a quick-short circuit for that common case
 			return new DirtyState(formattedBytes);
 		}
 
-		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix);
+		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix, exceptionPerStep);
 		if (!cell.isResolvable()) {
 			return didNotConverge;
 		}
