@@ -1,4 +1,6 @@
 /*
+ * Copyright 2024 DiffPlug
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,27 +24,27 @@ import org.junit.jupiter.api.Test;
 
 class LineEndingTest {
 
-    @Test
-    void testGetEndingFor() throws IOException {
-        assertLineEnding("\r", "\r");
-        assertLineEnding("\r", "Test\r");
-        assertLineEnding("\r", "Test\rTest2\n");
-        
-        assertLineEnding("\n", "Test");
-        
-        assertLineEnding("\r\n", "\r\n");
-        assertLineEnding("\r\n", "Test\r\n");
-        assertLineEnding("\r\n", "Test\r\nTest2\n");
+	@Test
+	void testGetEndingFor() throws IOException {
+		assertLineEnding("\r", "\r");
+		assertLineEnding("\r", "Test\r");
+		assertLineEnding("\r", "Test\rTest2\n");
 
-        assertLineEnding("\n", "\n");
-        assertLineEnding("\n", "Test\n");
-        assertLineEnding("\n", "Test\nTest2\r");
-        assertLineEnding("\n", "\n\t");
-    }
-    
-    static void assertLineEnding(String ending, String input) throws IOException {
-        try (Reader reader = new StringReader(input)) {
-            Assertions.assertEquals(ending, LineEnding.PreserveLineEndingPolicy.getEndingFor(reader));
-        }
-    }
+		assertLineEnding("\n", "Test");
+
+		assertLineEnding("\r\n", "\r\n");
+		assertLineEnding("\r\n", "Test\r\n");
+		assertLineEnding("\r\n", "Test\r\nTest2\n");
+
+		assertLineEnding("\n", "\n");
+		assertLineEnding("\n", "Test\n");
+		assertLineEnding("\n", "Test\nTest2\r");
+		assertLineEnding("\n", "\n\t");
+	}
+
+	static void assertLineEnding(String ending, String input) throws IOException {
+		try (Reader reader = new StringReader(input)) {
+			Assertions.assertEquals(ending, LineEnding.PreserveLineEndingPolicy.getEndingFor(reader));
+		}
+	}
 }

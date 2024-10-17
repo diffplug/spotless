@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public enum LineEnding {
 	/** {@code \r\n} */
 	WINDOWS,
     /** {@code \n} */
-    UNIX,   
+    UNIX,
     /** {@code \r} */
     MAC_CLASSIC,
     /** preserve the line ending of the first line (no matter which format) */
