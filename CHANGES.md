@@ -10,6 +10,9 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Support for line ending policy `PRESERVE` which just takes the first line ending of every given file as setting (no matter if `\n`, `\r\n` or `\r`) ([#2304](https://github.com/diffplug/spotless/pull/2304))
+
 
 ## [3.0.0.BETA3] - 2024-10-15
 ### Added
