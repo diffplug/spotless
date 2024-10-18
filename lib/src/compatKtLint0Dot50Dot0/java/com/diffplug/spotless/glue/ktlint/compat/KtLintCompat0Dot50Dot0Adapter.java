@@ -83,6 +83,7 @@ public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
 
 	@Override
 	public String format(
+			String unix,
 			Path path,
 			Path editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap) {
@@ -108,6 +109,9 @@ public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
 			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath, RuleProviderKt.propertyTypes(allRuleProviders));
 		}
 
+		// create Code and then set the content to match previous steps in the Spotless pipeline
+		Code code = Code.Companion.fromPath(path);
+		KtLintCompatAdapter.setCodeContent(code, unix);
 		return new KtLintRuleEngine(
 				allRuleProviders,
 				editorConfig,
@@ -115,7 +119,7 @@ public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
 				true,
 				false,
 				path.getFileSystem())
-				.format(Code.Companion.fromPath(path), formatterCallback);
+				.format(code, formatterCallback);
 	}
 
 	/**
