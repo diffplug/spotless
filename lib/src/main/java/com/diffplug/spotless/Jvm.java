@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,8 @@ public final class Jvm {
 	 * @param <V> Version type of formatter
 	 */
 	public static class Support<V> {
+		static final String LINT_CODE = "jvm-version";
+
 		private final String fmtName;
 		private final Comparator<? super V> fmtVersionComparator;
 		private final NavigableMap<Integer, V> jvm2fmtMaxVersion;
@@ -139,7 +141,7 @@ public final class Jvm {
 			Objects.requireNonNull(formatterVersion);
 			String error = buildUnsupportedFormatterMessage(formatterVersion);
 			if (!error.isEmpty()) {
-				throw new IllegalArgumentException(error);
+				throw Lint.atUndefinedLine(LINT_CODE, error).shortcut();
 			}
 		}
 

@@ -65,8 +65,9 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	void versionBelowMinimumRequiredVersionIsNotAllowed() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.2", "AOSP", TestProvisioner.mavenCentral());
 		StepHarness.forStepNoRoundtrip(step)
-				.testResourceExceptionMsg("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
-				.contains("you are using 1.2");
+				.expectLintsOfResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
+				.toBe("LINE_UNDEFINED google-java-format(jvm-version) You are running Spotless on JVM 21. This requires google-java-format of at least 1.17.0 (you are using 1.2).",
+						"");
 	}
 
 	@Test
@@ -74,8 +75,9 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	void versionBelowOneDotTenIsNotAllowed() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.9", "AOSP", TestProvisioner.mavenCentral());
 		StepHarness.forStepNoRoundtrip(step)
-				.testResourceExceptionMsg("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
-				.contains("you are using 1.9");
+				.expectLintsOfResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
+				.toBe("LINE_UNDEFINED google-java-format(jvm-version) You are running Spotless on JVM 21. This requires google-java-format of at least 1.17.0 (you are using 1.9).",
+						"");
 	}
 
 	@Test
