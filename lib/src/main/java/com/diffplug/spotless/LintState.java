@@ -72,13 +72,19 @@ public class LintState {
 				if (lints != null) {
 					FormatterStep step = formatter.getSteps().get(i);
 					for (Lint lint : lints) {
-						result.append(file.getName()).append(":").append(lint.getLineStart());
-						if (lint.getLineEnd() != lint.getLineStart()) {
-							result.append("-").append(lint.getLineEnd());
+						result.append(file.getName()).append(":");
+						if (lint.getLineStart() == Lint.LINE_UNDEFINED) {
+							result.append("LINE_UNDEFINED");
+						} else {
+							result.append("L");
+							result.append(lint.getLineStart());
+							if (lint.getLineEnd() != lint.getLineStart()) {
+								result.append("-").append(lint.getLineEnd());
+							}
 						}
 						result.append(" ");
-						result.append(step.getName()).append("(").append(lint.getCode()).append(") ");
-						result.append(lint.getMsg());
+						result.append(step.getName()).append("(").append(lint.getRuleId()).append(") ");
+						result.append(lint.getDetail());
 						result.append("\n");
 					}
 				}
@@ -111,7 +117,7 @@ public class LintState {
 						lints.set(i, lintsForStep);
 					}
 				} catch (Exception e) {
-					lints.set(i, List.of(Lint.createFromThrowable(step, toLint, e)));
+					lints.set(i, List.of(Lint.createFromThrowable(step, e)));
 				}
 			}
 		}
@@ -142,7 +148,7 @@ public class LintState {
 			if (exceptionForLint instanceof Lint.Has) {
 				lintsForStep = ((Lint.Has) exceptionForLint).getLints();
 			} else if (exceptionForLint != null && exceptionForLint != formatStepCausedNoChange()) {
-				lintsForStep = List.of(Lint.createFromThrowable(step, toLint, exceptionForLint));
+				lintsForStep = List.of(Lint.createFromThrowable(step, exceptionForLint));
 			} else {
 				lintsForStep = List.of();
 			}
