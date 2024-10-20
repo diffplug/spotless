@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,15 +29,11 @@ import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 
 class DiktatStepTest extends ResourceHarness {
-
 	@Test
 	void behavior() {
 		FormatterStep step = DiktatStep.create(TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step).testResourceExceptionMsg("kotlin/diktat/Unsolvable.kt").isEqualTo("There are 2 unfixed errors:" +
-				System.lineSeparator() + "Error on line: 12, column: 9 cannot be fixed automatically" +
-				System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()" +
-				System.lineSeparator() + "Error on line: 13, column: 9 cannot be fixed automatically" +
-				System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()");
+		StepHarnessWithFile.forStep(this, step).expectLintsOfResource("kotlin/diktat/Unsolvable.kt").toBe("L12 diktat(diktat-ruleset:debug-print) [DEBUG_PRINT] use a dedicated logging library: found println()",
+				"L13 diktat(diktat-ruleset:debug-print) [DEBUG_PRINT] use a dedicated logging library: found println()");
 	}
 
 	@Test
@@ -47,11 +43,8 @@ class DiktatStepTest extends ResourceHarness {
 		FileSignature config = signAsList(conf);
 
 		FormatterStep step = DiktatStep.create("1.2.1", TestProvisioner.mavenCentral(), config);
-		StepHarnessWithFile.forStep(this, step).testResourceExceptionMsg("kotlin/diktat/Unsolvable.kt").isEqualTo("There are 2 unfixed errors:" +
-				System.lineSeparator() + "Error on line: 1, column: 1 cannot be fixed automatically" +
-				System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()" +
-				System.lineSeparator() + "Error on line: 13, column: 9 cannot be fixed automatically" +
-				System.lineSeparator() + "[DEBUG_PRINT] use a dedicated logging library: found println()");
+		StepHarnessWithFile.forStep(this, step).expectLintsOfResource("kotlin/diktat/Unsolvable.kt").toBe("L1 diktat(diktat-ruleset:debug-print) [DEBUG_PRINT] use a dedicated logging library: found println()",
+				"L13 diktat(diktat-ruleset:debug-print) [DEBUG_PRINT] use a dedicated logging library: found println()");
 	}
 
 	@Test

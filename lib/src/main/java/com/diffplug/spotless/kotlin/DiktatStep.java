@@ -16,7 +16,6 @@
 package com.diffplug.spotless.kotlin;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -95,7 +94,7 @@ public class DiktatStep implements Serializable {
 		private final boolean isScript;
 		private final @Nullable FileSignature config;
 
-		State(JarState jar, String versionDiktat, boolean isScript, @Nullable FileSignature config) throws IOException {
+		State(JarState jar, String versionDiktat, boolean isScript, @Nullable FileSignature config) {
 			this.jar = jar;
 			this.versionDiktat = versionDiktat;
 			this.isScript = isScript;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,45 @@
  */
 package com.diffplug.spotless.glue.diktat.compat;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
-interface DiktatReporting {
+public interface DiktatReporting {
+	class Lint implements Serializable {
+		private static final long serialVersionUID = 1L;
+		public final int line;
+		public final String ruleId;
+		public final String detail;
+
+		Lint(int line, String ruleId, String detail) {
+			this.line = line;
+			this.ruleId = ruleId;
+			this.detail = detail;
+		}
+	}
+
+	class LintException extends RuntimeException {
+		public final List<Lint> lints;
+
+		LintException(List<Lint> lints) {
+			this.lints = lints;
+		}
+	}
+
 	static <T> void reportIfRequired(
 			List<T> errors,
 			ToIntFunction<T> lineGetter,
-			ToIntFunction<T> columnGetter,
+			Function<T, String> codeGetter,
 			Function<T, String> detailGetter) {
 		if (!errors.isEmpty()) {
-			StringBuilder error = new StringBuilder();
-			error.append("There are ").append(errors.size()).append(" unfixed errors:");
+			var lints = new ArrayList<Lint>();
 			for (T er : errors) {
-				error.append(System.lineSeparator())
-						.append("Error on line: ").append(lineGetter.applyAsInt(er))
-						.append(", column: ").append(columnGetter.applyAsInt(er))
-						.append(" cannot be fixed automatically")
-						.append(System.lineSeparator())
-						.append(detailGetter.apply(er));
+				lints.add(new Lint(lineGetter.applyAsInt(er), codeGetter.apply(er), detailGetter.apply(er)));
 			}
-			throw new AssertionError(error);
+			throw new LintException(lints);
 		}
 	}
 }
