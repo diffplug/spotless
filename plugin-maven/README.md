@@ -1784,11 +1784,15 @@ Spotless uses UTF-8 by default, but you can use [any encoding which Java support
 </configuration>
 ```
 
-Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports four line ending modes: `UNIX`, `WINDOWS`, `MAC_CLASSIC`, `PLATFORM_NATIVE`, `GIT_ATTRIBUTES`, `GIT_ATTRIBUTES_FAST_ALLSAME` and `PRESERVE`.  The default value is `GIT_ATTRIBUTES_FAST_ALLSAME`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time. `FAST_ALLSAME` just means that Spotless can assume that every file being formatted has the same line endings ([more info](https://github.com/diffplug/spotless/pull/1838)).
+Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports
 
-You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
+- constant modes (`UNIX`, `WINDOWS`, `MAC_CLASSIC`)
+- simple modes (`PLATFORM_NATIVE`, `PRESERVE`)
+- and git-aware modes (`GIT_ATTRIBUTES`, `GIT_ATTRIBUTES_FAST_ALLSAME`)
 
-Use `PRESERVE` in order to keep the existing line endings of a file. This policy enforces that all line endings equal the first one of the according file (no matter which line delimiter it is).
+The default value is `GIT_ATTRIBUTES_FAST_ALLSAME`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time. `FAST_ALLSAME` just means that Spotless can assume that every file being formatted has the same line endings ([more info](https://github.com/diffplug/spotless/pull/1838)).
+
+You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/). Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
 
 <a name="enforceCheck"></a>
 
