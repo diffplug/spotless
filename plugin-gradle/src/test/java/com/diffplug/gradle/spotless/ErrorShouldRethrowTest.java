@@ -43,7 +43,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		lines.add("        target file('README.md')");
 		lines.add("        custom 'no swearing', {");
 		lines.add("             if (it.toLowerCase(Locale.ROOT).contains('fubar')) {");
-		lines.add("                 throw com.diffplug.spotless.Lint.atUndefinedLine('swearing', 'No swearing!');");
+		lines.add("                 throw com.diffplug.spotless.Lint.atUndefinedLine('swearing', 'No swearing!').shortcut();");
 		lines.add("             }");
 		lines.add("        }");
 		lines.addAll(Arrays.asList(toInsert));
