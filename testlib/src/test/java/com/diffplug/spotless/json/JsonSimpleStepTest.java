@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,14 +73,33 @@ class JsonSimpleStepTest {
 
 	@Test
 	void handlesInvalidJson() {
-		stepHarness.testResourceExceptionMsg("json/invalidJsonBefore.json")
-				.contains("Expected a ',' or '}' at 9 [character 0 line 3]");
+		stepHarness.expectLintsOfResource("json/invalidJsonBefore.json").toBe("L3 jsonSimple(java.lang.IllegalArgumentException) Unable to format JSON",
+				"\tat com.diffplug.spotless.json.JsonSimpleStep$State.format(JsonSimpleStep.java:109)",
+				"\tat com.diffplug.spotless.json.JsonSimpleStep$State.lambda$toFormatter$0(JsonSimpleStep.java:94)",
+				"\tat com.diffplug.spotless.FormatterFunc.apply(FormatterFunc.java:33)",
+				"\tat com.diffplug.spotless.FormatterStepEqualityOnStateSerialization.format(FormatterStepEqualityOnStateSerialization.java:49)",
+				"\tat com.diffplug.spotless.LintState.of(LintState.java:141)",
+				"\tat com.diffplug.spotless.StepHarness.expectLintsOf(StepHarness.java:96)",
+				"\tat com.diffplug.spotless.StepHarness.expectLintsOfResource(StepHarness.java:92)",
+				"\tat com.diffplug.spotless.json.JsonSimpleStepTest.handlesInvalidJson(JsonSimpleStepTest.java:76)",
+				"\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)",
+				"(... and more)");
 	}
 
 	@Test
 	void handlesNotJson() {
-		stepHarness.testResourceExceptionMsg("json/notJsonBefore.json")
-				.contains("Unable to determine JSON type, expected a '{' or '[' but found '#'");
+		stepHarness.expectLintsOfResource("json/notJsonBefore.json")
+				.toBe("LINE_UNDEFINED jsonSimple(java.lang.IllegalArgumentException) Unable to determine JSON type, expected a '{' or '[' but found '#'",
+						"\tat com.diffplug.spotless.json.JsonSimpleStep$State.lambda$toFormatter$0(JsonSimpleStep.java:100)",
+						"\tat com.diffplug.spotless.FormatterFunc.apply(FormatterFunc.java:33)",
+						"\tat com.diffplug.spotless.FormatterStepEqualityOnStateSerialization.format(FormatterStepEqualityOnStateSerialization.java:49)",
+						"\tat com.diffplug.spotless.LintState.of(LintState.java:141)",
+						"\tat com.diffplug.spotless.StepHarness.expectLintsOf(StepHarness.java:96)",
+						"\tat com.diffplug.spotless.StepHarness.expectLintsOfResource(StepHarness.java:92)",
+						"\tat com.diffplug.spotless.json.JsonSimpleStepTest.handlesNotJson(JsonSimpleStepTest.java:91)",
+						"\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)",
+						"\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)",
+						"(... and more)");
 	}
 
 	@Test
