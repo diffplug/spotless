@@ -98,7 +98,7 @@ public class StepHarness extends StepHarnessBase {
 	}
 
 	static StringSelfie expectLintsOf(LintState state, Formatter formatter) {
-		String assertAgainst = state.asString(Formatter.NO_FILE_SENTINEL, formatter);
+		String assertAgainst = state.asStringOneLine(Formatter.NO_FILE_SENTINEL, formatter);
 		String cleaned = assertAgainst.replace("NO_FILE_SENTINEL:", "");
 
 		int numLines = 1;

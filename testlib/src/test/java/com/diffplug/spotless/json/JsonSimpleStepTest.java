@@ -73,33 +73,13 @@ class JsonSimpleStepTest {
 
 	@Test
 	void handlesInvalidJson() {
-		stepHarness.expectLintsOfResource("json/invalidJsonBefore.json").toBe("L3 jsonSimple(java.lang.IllegalArgumentException) Unable to format JSON",
-				"\tat com.diffplug.spotless.json.JsonSimpleStep$State.format(JsonSimpleStep.java:109)",
-				"\tat com.diffplug.spotless.json.JsonSimpleStep$State.lambda$toFormatter$0(JsonSimpleStep.java:94)",
-				"\tat com.diffplug.spotless.FormatterFunc.apply(FormatterFunc.java:33)",
-				"\tat com.diffplug.spotless.FormatterStepEqualityOnStateSerialization.format(FormatterStepEqualityOnStateSerialization.java:49)",
-				"\tat com.diffplug.spotless.LintState.of(LintState.java:141)",
-				"\tat com.diffplug.spotless.StepHarness.expectLintsOf(StepHarness.java:96)",
-				"\tat com.diffplug.spotless.StepHarness.expectLintsOfResource(StepHarness.java:92)",
-				"\tat com.diffplug.spotless.json.JsonSimpleStepTest.handlesInvalidJson(JsonSimpleStepTest.java:76)",
-				"\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)",
-				"(... and more)");
+		stepHarness.expectLintsOfResource("json/invalidJsonBefore.json").toBe("L3 jsonSimple(java.lang.IllegalArgumentException) Unable to format JSON (...)");
 	}
 
 	@Test
 	void handlesNotJson() {
 		stepHarness.expectLintsOfResource("json/notJsonBefore.json")
-				.toBe("LINE_UNDEFINED jsonSimple(java.lang.IllegalArgumentException) Unable to determine JSON type, expected a '{' or '[' but found '#'",
-						"\tat com.diffplug.spotless.json.JsonSimpleStep$State.lambda$toFormatter$0(JsonSimpleStep.java:100)",
-						"\tat com.diffplug.spotless.FormatterFunc.apply(FormatterFunc.java:33)",
-						"\tat com.diffplug.spotless.FormatterStepEqualityOnStateSerialization.format(FormatterStepEqualityOnStateSerialization.java:49)",
-						"\tat com.diffplug.spotless.LintState.of(LintState.java:141)",
-						"\tat com.diffplug.spotless.StepHarness.expectLintsOf(StepHarness.java:96)",
-						"\tat com.diffplug.spotless.StepHarness.expectLintsOfResource(StepHarness.java:92)",
-						"\tat com.diffplug.spotless.json.JsonSimpleStepTest.handlesNotJson(JsonSimpleStepTest.java:91)",
-						"\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)",
-						"\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)",
-						"(... and more)");
+				.toBe("LINE_UNDEFINED jsonSimple(java.lang.IllegalArgumentException) Unable to determine JSON type, expected a '{' or '[' but found '#' (...)");
 	}
 
 	@Test

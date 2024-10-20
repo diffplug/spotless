@@ -62,7 +62,15 @@ public class LintState {
 		return result;
 	}
 
-	public String asString(File file, Formatter formatter) {
+	public String asStringDetailed(File file, Formatter formatter) {
+		return asString(file, formatter, false);
+	}
+
+	public String asStringOneLine(File file, Formatter formatter) {
+		return asString(file, formatter, true);
+	}
+
+	private String asString(File file, Formatter formatter, boolean oneLine) {
 		if (!isHasLints()) {
 			return "(none)";
 		} else {
@@ -84,7 +92,16 @@ public class LintState {
 						}
 						result.append(" ");
 						result.append(step.getName()).append("(").append(lint.getRuleId()).append(") ");
-						result.append(lint.getDetail());
+
+						int firstNewline = lint.getDetail().indexOf('\n');
+						if (firstNewline == -1) {
+							result.append(lint.getDetail());
+						} else if (oneLine) {
+							result.append(lint.getDetail(), 0, firstNewline);
+							result.append(" (...)");
+						} else {
+							result.append(lint.getDetail());
+						}
 						result.append("\n");
 					}
 				}

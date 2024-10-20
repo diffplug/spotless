@@ -137,17 +137,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
 				stepHarness.expectLintsOfResource("npm/prettier/filetypes/scss/scss.dirty")
-						.toBe("1-35 prettier-format(prettier-format) com.diffplug.spotless.npm.SimpleRestClient$SimpleRestResponseException: Unexpected response status code at /prettier/format [HTTP 500] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\")",
-								"\tat com.diffplug.spotless.npm.SimpleRestClient.postJson(SimpleRestClient.java:72)",
-								"\tat com.diffplug.spotless.npm.SimpleRestClient.postJson(SimpleRestClient.java:46)",
-								"\tat com.diffplug.spotless.npm.PrettierRestService.format(PrettierRestService.java:46)",
-								"\tat com.diffplug.spotless.npm.PrettierFormatterStep$PrettierFilePathPassingFormatterFunc.applyWithFile(PrettierFormatterStep.java:125)",
-								"\tat com.diffplug.spotless.FormatterFunc$NeedsFile.apply(FormatterFunc.java:174)",
-								"\tat com.diffplug.spotless.FormatterFunc$Closeable$1.apply(FormatterFunc.java:73)",
-								"\tat com.diffplug.spotless.FormatterStepEqualityOnStateSerialization.format(FormatterStepEqualityOnStateSerialization.java:49)",
-								"\tat com.diffplug.spotless.LintState.of(LintState.java:135)",
-								"\tat com.diffplug.spotless.LintState.of(LintState.java:92)",
-								"(... and more)");
+						.toBe("LINE_UNDEFINED prettier-format(com.diffplug.spotless.npm.SimpleRestClient$SimpleRestResponseException) Unexpected response status code at /prettier/format [HTTP 500] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\") (...)");
 			}
 		}
 	}

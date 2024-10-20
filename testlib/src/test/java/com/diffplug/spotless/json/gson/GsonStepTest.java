@@ -39,32 +39,12 @@ public class GsonStepTest extends JsonFormatterStepCommonTests {
 
 	@Test
 	void handlesInvalidJson() {
-		getStepHarness().expectLintsOfResource("json/invalidJsonBefore.json").toBe("L3 gson(com.google.gson.JsonSyntaxException) java.io.EOFException: End of input at line 3 column 1 path $.a",
-				"\tat com.google.gson.Gson.fromJson(Gson.java:1370)",
-				"\tat com.google.gson.Gson.fromJson(Gson.java:1262)",
-				"\tat com.google.gson.Gson.fromJson(Gson.java:1171)",
-				"\tat com.google.gson.Gson.fromJson(Gson.java:1107)",
-				"\tat com.diffplug.spotless.glue.gson.GsonFormatterFunc.apply(GsonFormatterFunc.java:57)",
-				"\tat com.diffplug.spotless.FormatterFunc.apply(FormatterFunc.java:33)",
-				"\tat com.diffplug.spotless.FormatterStepEqualityOnStateSerialization.format(FormatterStepEqualityOnStateSerialization.java:49)",
-				"\tat com.diffplug.spotless.LintState.of(LintState.java:141)",
-				"\tat com.diffplug.spotless.StepHarness.expectLintsOf(StepHarness.java:96)",
-				"(... and more)");
+		getStepHarness().expectLintsOfResource("json/invalidJsonBefore.json").toBe("L3 gson(com.google.gson.JsonSyntaxException) java.io.EOFException: End of input at line 3 column 1 path $.a (...)");
 	}
 
 	@Test
 	void handlesNotJson() {
-		getStepHarness().expectLintsOfResource("json/notJsonBefore.json").toBe("LINE_UNDEFINED gson(java.lang.IllegalArgumentException) Unable to parse JSON",
-				"\tat com.diffplug.spotless.glue.gson.GsonFormatterFunc.apply(GsonFormatterFunc.java:59)",
-				"\tat com.diffplug.spotless.FormatterFunc.apply(FormatterFunc.java:33)",
-				"\tat com.diffplug.spotless.FormatterStepEqualityOnStateSerialization.format(FormatterStepEqualityOnStateSerialization.java:49)",
-				"\tat com.diffplug.spotless.LintState.of(LintState.java:141)",
-				"\tat com.diffplug.spotless.StepHarness.expectLintsOf(StepHarness.java:96)",
-				"\tat com.diffplug.spotless.StepHarness.expectLintsOfResource(StepHarness.java:92)",
-				"\tat com.diffplug.spotless.json.gson.GsonStepTest.handlesNotJson(GsonStepTest.java:57)",
-				"\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)",
-				"\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)",
-				"(... and more)");
+		getStepHarness().expectLintsOfResource("json/notJsonBefore.json").toBe("LINE_UNDEFINED gson(java.lang.IllegalArgumentException) Unable to parse JSON (...)");
 	}
 
 	@Test
@@ -97,17 +77,7 @@ public class GsonStepTest extends JsonFormatterStepCommonTests {
 	@Test
 	void handlesVersionIncompatibility() {
 		StepHarness.forStep(GsonStep.create(new GsonConfig(false, false, INDENT, "1.7"), TestProvisioner.mavenCentral()))
-				.expectLintsOf("").toBe("LINE_UNDEFINED gson(java.lang.IllegalStateException) There was a problem interacting with Gson; maybe you set an incompatible version?",
-						"\tat com.diffplug.spotless.json.gson.GsonStep$State.toFormatter(GsonStep.java:73)",
-						"\tat com.diffplug.spotless.FormatterStepSerializationRoundtrip.stateToFormatter(FormatterStepSerializationRoundtrip.java:64)",
-						"\tat com.diffplug.spotless.FormatterStepEqualityOnStateSerialization.format(FormatterStepEqualityOnStateSerialization.java:47)",
-						"\tat com.diffplug.spotless.LintState.of(LintState.java:141)",
-						"\tat com.diffplug.spotless.StepHarness.expectLintsOf(StepHarness.java:96)",
-						"\tat com.diffplug.spotless.json.gson.GsonStepTest.handlesVersionIncompatibility(GsonStepTest.java:100)",
-						"\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)",
-						"\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)",
-						"\tat org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:766)",
-						"(... and more)");
+				.expectLintsOf("").toBe("LINE_UNDEFINED gson(java.lang.IllegalStateException) There was a problem interacting with Gson; maybe you set an incompatible version? (...)");
 	}
 
 	@Override
