@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,25 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
-final class KtLintCompatReporting {
+public final class KtLintCompatReporting {
 
 	private KtLintCompatReporting() {}
 
 	static void report(int line, int column, String ruleId, String detail) {
-		throw new AssertionError("Error on line: " + line + ", column: " + column + "\nrule: " + ruleId + "\n" + detail);
+		throw new KtlintSpotlessException(line, ruleId, detail);
+	}
+
+	public static class KtlintSpotlessException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public final int line;
+		public final String ruleId;
+		public final String detail;
+
+		KtlintSpotlessException(int line, String ruleId, String detail) {
+			this.line = line;
+			this.ruleId = ruleId;
+			this.detail = detail;
+		}
 	}
 }
