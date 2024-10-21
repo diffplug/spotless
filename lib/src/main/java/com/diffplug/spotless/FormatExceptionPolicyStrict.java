@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.TreeSet;
  * A policy for handling exceptions in the format.  Any exceptions will
  * halt the build except for a specifically excluded path or step.
  */
-public class FormatExceptionPolicyStrict extends NoLambda.EqualityBasedOnSerialization implements FormatExceptionPolicy {
+public class FormatExceptionPolicyStrict extends NoLambda.EqualityBasedOnSerialization {
 	private static final long serialVersionUID = 1L;
 
 	private final Set<String> excludeSteps = new TreeSet<>();
@@ -39,18 +39,17 @@ public class FormatExceptionPolicyStrict extends NoLambda.EqualityBasedOnSeriali
 		excludePaths.add(Objects.requireNonNull(relativePath));
 	}
 
-	@Override
 	public void handleError(Throwable e, FormatterStep step, String relativePath) {
 		Objects.requireNonNull(e, "e");
 		Objects.requireNonNull(step, "step");
 		Objects.requireNonNull(relativePath, "relativePath");
 		if (excludeSteps.contains(step.getName())) {
-			FormatExceptionPolicyLegacy.warning(e, step, relativePath);
+			LintPolicy.warning(e, step, relativePath);
 		} else {
 			if (excludePaths.contains(relativePath)) {
-				FormatExceptionPolicyLegacy.warning(e, step, relativePath);
+				LintPolicy.warning(e, step, relativePath);
 			} else {
-				FormatExceptionPolicyLegacy.error(e, step, relativePath);
+				LintPolicy.error(e, step, relativePath);
 				throw ThrowingEx.asRuntimeRethrowError(e);
 			}
 		}

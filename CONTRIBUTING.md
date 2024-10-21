@@ -93,7 +93,6 @@ Here's a checklist for creating a new step for Spotless:
 - [ ] Class name ends in Step, `SomeNewStep`.
 - [ ] Class has a public static method named `create` that returns a `FormatterStep`.
 - [ ] Has a test class named `SomeNewStepTest` that uses `StepHarness` or `StepHarnessWithFile` to test the step.
-  - [ ] Start with `StepHarness.forStep(myStep).supportsRoundTrip(false)`, and then add round trip support as described in the next section. 
 - [ ] Test class has test methods to verify behavior.
 - [ ] Test class has a test method `equality()` which tests equality using `StepEqualityTester` (see existing methods for examples).
 
@@ -136,6 +135,15 @@ There are many great formatters (prettier, clang-format, black, etc.) which live
 - open a headless server and make http calls to it from Spotless (used by our [npm-based](https://github.com/diffplug/spotless/blob/main/lib/src/main/java/com/diffplug/spotless/npm/NpmFormatterStepStateBase.java) formatters such as prettier)
 
 Because of Spotless' up-to-date checking and [git ratcheting](https://github.com/diffplug/spotless/tree/main/plugin-gradle#ratchet), Spotless actually doesn't have to call formatters very often, so even an expensive shell call for every single invocation isn't that bad.  Anything that works is better than nothing, and we can always speed things up later if it feels too slow (but it probably won't).
+
+## Lints
+
+Spotless is primarily a formatter, not a linter. But, if something goes wrong during formatting, it's better to model that as a lint with line numbers rather than just a naked exception. There are two ways to go about this:
+
+- at any point during the formatting process, you can throw a `Lint.atLine(int line, ...)` exception. This will be caught and turned into a lint.
+- or you can override the `default List<Lint> lint(String content, File file)` method. This method will only run if the step did not already throw an exception.
+
+Don't go lint crazy! By default, all lints are build failures. Users have to suppress them explicitly if they want to continue.
 
 ## How to add a new plugin for a build system
 

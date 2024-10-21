@@ -11,7 +11,15 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+* APIs to support linting. (implemented in [#2148](https://github.com/diffplug/spotless/pull/2148) and [#2149](https://github.com/diffplug/spotless/pull/2149))
+  * Spotless is still primarily a formatter, not a linter. But when formatting fails, it's more flexible to model those failures as lints so that the formatting can continue and ideally we can also capture the line numbers causing the failure.
+  * `Lint` models a single change. A `FormatterStep` can create a lint by:
+    * throwing an exception during formatting, ideally `throw Lint.atLine(127, "code", "Well what happened was...")`
+    * or by implementing the `List<Lint> lint(String content, File file)` method to create multiple of them
 * Support for line ending policy `PRESERVE` which just takes the first line ending of every given file as setting (no matter if `\n`, `\r\n` or `\r`) ([#2304](https://github.com/diffplug/spotless/pull/2304))
+### Changes
+* **BREAKING** Moved `PaddedCell.DirtyState` to its own top-level class with new methods. ([#2148](https://github.com/diffplug/spotless/pull/2148))
+  * **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use `DirtyState`.
 ### Fixed
 * `ktlint` steps now read from the `string` instead of the `file` so they don't clobber earlier steps. (fixes [#1599](https://github.com/diffplug/spotless/issues/1599))
 

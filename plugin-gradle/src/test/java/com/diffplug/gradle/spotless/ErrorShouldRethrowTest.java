@@ -23,17 +23,13 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.CharMatcher;
 import com.diffplug.common.base.Splitter;
 import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.tag.ForLintRefactor;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
-@Disabled
-@ForLintRefactor
 class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	private void writeBuild(String... toInsert) throws IOException {
 		List<String> lines = new ArrayList<>();
@@ -47,7 +43,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		lines.add("        target file('README.md')");
 		lines.add("        custom 'no swearing', {");
 		lines.add("             if (it.toLowerCase(Locale.ROOT).contains('fubar')) {");
-		lines.add("                 throw new RuntimeException('No swearing!');");
+		lines.add("                 throw com.diffplug.spotless.Lint.atUndefinedLine('swearing', 'No swearing!').shortcut();");
 		lines.add("             }");
 		lines.add("        }");
 		lines.addAll(Arrays.asList(toInsert));
@@ -72,8 +68,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		runWithFailure(
 				"> Task :spotlessMisc FAILED\n" +
 						"Step 'no swearing' found problem in 'README.md':\n" +
-						"No swearing!\n" +
-						"java.lang.RuntimeException: No swearing!");
+						"LINE_UNDEFINED: (swearing) No swearing!\n" +
+						"java.lang.Throwable: LINE_UNDEFINED: (swearing) No swearing!");
 	}
 
 	@Test
@@ -86,7 +82,6 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		runWithSuccess("> Task :processResources NO-SOURCE");
 	}
 
-	@Test
 	void unlessExemptedByStep() throws Exception {
 		writeBuild(
 				"        ignoreErrorForStep 'no swearing'",
@@ -118,8 +113,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure("> Task :spotlessMisc FAILED\n" +
 				"Step 'no swearing' found problem in 'README.md':\n" +
-				"No swearing!\n" +
-				"java.lang.RuntimeException: No swearing!");
+				"LINE_UNDEFINED: (swearing) No swearing!\n" +
+				"java.lang.Throwable: LINE_UNDEFINED: (swearing) No swearing!");
 	}
 
 	private void runWithSuccess(String expectedToStartWith) throws Exception {

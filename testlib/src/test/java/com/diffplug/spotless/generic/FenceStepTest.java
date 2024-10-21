@@ -83,13 +83,13 @@ class FenceStepTest extends ResourceHarness {
 	@Test
 	void broken() {
 		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Arrays.asList(ToCaseStep.upper()));
+				.preserveWithin(Arrays.asList(ReplaceStep.create("replace", "spotless:on", "REMOVED")));
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
-		StepHarness.forStepNoRoundtrip(fence).testExceptionMsg(StringPrinter.buildStringFromLines("A B C",
+		StepHarness.forStep(fence).expectLintsOf(StringPrinter.buildStringFromLines("A B C",
 				"spotless:off",
 				"D E F",
 				"spotless:on",
-				"G H I")).isEqualTo("An intermediate step removed a match of spotless:off spotless:on");
+				"G H I")).toBe("1-6 fence(fenceRemoved) An intermediate step removed a match of spotless:off spotless:on");
 	}
 
 	@Test

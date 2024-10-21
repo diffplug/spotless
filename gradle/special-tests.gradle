@@ -18,7 +18,14 @@ tasks.withType(Test).configureEach {
 			maxFailures = 10
 		}
 	}
-
+	// selfie https://selfie.dev/jvm/get-started#gradle
+	environment project.properties.subMap([
+		"selfie"
+	]) // optional, see "Overwrite everything" below
+	inputs.files(fileTree("src/test") {
+		// optional, improves up-to-date checking
+		include "**/*.ss"
+	})
 	// https://docs.gradle.org/8.8/userguide/performance.html#execute_tests_in_parallel
 	maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
 }

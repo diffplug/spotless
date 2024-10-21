@@ -21,8 +21,8 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.Assertions;
+import com.diffplug.selfie.Selfie;
+import com.diffplug.selfie.StringSelfie;
 
 /** An api for testing a {@code FormatterStep} that doesn't depend on the File path. DO NOT ADD FILE SUPPORT TO THIS, use {@link StepHarnessWithFile} if you need that. */
 public class StepHarness extends StepHarnessBase {
@@ -88,27 +88,26 @@ public class StepHarness extends StepHarnessBase {
 		return testUnaffected(idempotentElement);
 	}
 
-	public AbstractStringAssert<?> testResourceExceptionMsg(String resourceBefore) {
-		return testExceptionMsg(ResourceHarness.getTestResource(resourceBefore));
+	public StringSelfie expectLintsOfResource(String before) {
+		return expectLintsOf(ResourceHarness.getTestResource(before));
 	}
 
-	public AbstractStringAssert<?> testExceptionMsg(String before) {
-		try {
-			formatter().compute(LineEnding.toUnix(before), Formatter.NO_FILE_SENTINEL);
-			throw new SecurityException("Expected exception");
-		} catch (Throwable e) {
-			if (e instanceof SecurityException) {
-				throw new AssertionError(e.getMessage());
-			} else {
-				Throwable rootCause = e;
-				while (rootCause.getCause() != null) {
-					if (rootCause instanceof IllegalStateException) {
-						break;
-					}
-					rootCause = rootCause.getCause();
-				}
-				return Assertions.assertThat(rootCause.getMessage());
-			}
+	public StringSelfie expectLintsOf(String before) {
+		LintState state = LintState.of(formatter(), Formatter.NO_FILE_SENTINEL, before.getBytes(formatter().getEncoding()));
+		return expectLintsOf(state, formatter());
+	}
+
+	static StringSelfie expectLintsOf(LintState state, Formatter formatter) {
+		String assertAgainst = state.asString(Formatter.NO_FILE_SENTINEL, formatter);
+		String cleaned = assertAgainst.replace("NO_FILE_SENTINEL:", "");
+
+		int numLines = 1;
+		int lineEnding = cleaned.indexOf('\n');
+		while (lineEnding != -1 && numLines < 10) {
+			++numLines;
+			lineEnding = cleaned.indexOf('\n', lineEnding + 1);
 		}
+		String toSnapshot = lineEnding == -1 ? cleaned : (cleaned.substring(0, lineEnding) + "\n(... and more)");
+		return Selfie.expectSelfie(toSnapshot);
 	}
 }

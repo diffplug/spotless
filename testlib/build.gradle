@@ -13,6 +13,8 @@ dependencies {
 	api "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	api "org.assertj:assertj-core:${VER_ASSERTJ}"
 	api "org.mockito:mockito-core:$VER_MOCKITO"
+	api "com.diffplug.selfie:selfie-lib:${VER_SELFIE}"
+	api "com.diffplug.selfie:selfie-runner-junit5:${VER_SELFIE}"
 	runtimeOnly "org.junit.platform:junit-platform-launcher"
 
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
