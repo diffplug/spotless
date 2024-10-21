@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.glue.ktlint.compat.*;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
@@ -65,10 +66,14 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 		if (editorConfigPath != null) {
 			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().toPath();
 		}
-		return adapter.format(
-				unix,
-				file.toPath(),
-				absoluteEditorConfigPath,
-				editorConfigOverrideMap);
+		try {
+			return adapter.format(
+					unix,
+					file.toPath(),
+					absoluteEditorConfigPath,
+					editorConfigOverrideMap);
+		} catch (KtLintCompatReporting.KtlintSpotlessException e) {
+			throw Lint.atLine(e.line, e.ruleId, e.detail).shortcut();
+		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,14 +73,13 @@ class JsonSimpleStepTest {
 
 	@Test
 	void handlesInvalidJson() {
-		stepHarness.testResourceExceptionMsg("json/invalidJsonBefore.json")
-				.contains("Expected a ',' or '}' at 9 [character 0 line 3]");
+		stepHarness.expectLintsOfResource("json/invalidJsonBefore.json").toBe("L3 jsonSimple(java.lang.IllegalArgumentException) Unable to format JSON (...)");
 	}
 
 	@Test
 	void handlesNotJson() {
-		stepHarness.testResourceExceptionMsg("json/notJsonBefore.json")
-				.contains("Unable to determine JSON type, expected a '{' or '[' but found '#'");
+		stepHarness.expectLintsOfResource("json/notJsonBefore.json")
+				.toBe("LINE_UNDEFINED jsonSimple(java.lang.IllegalArgumentException) Unable to determine JSON type, expected a '{' or '[' but found '#' (...)");
 	}
 
 	@Test

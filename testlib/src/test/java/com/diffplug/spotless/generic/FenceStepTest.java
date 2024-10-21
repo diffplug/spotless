@@ -89,7 +89,7 @@ class FenceStepTest extends ResourceHarness {
 				"spotless:off",
 				"D E F",
 				"spotless:on",
-				"G H I")).toBe("1-6 fence(fenceRemoved) An intermediate step removed a match of spotless:off spotless:on");
+				"G H I")).toBe("L1-6 fence(fenceRemoved) An intermediate step removed a match of spotless:off spotless:on");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,9 +77,7 @@ public class DiktatCompat1Dot2Dot5Adapter implements DiktatCompatAdapter {
 				false,
 				new EditorConfigOverride(),
 				false));
-
-		DiktatReporting.reportIfRequired(errors, LintError::getLine, LintError::getCol, LintError::getDetail);
-
+		DiktatReporting.reportIfRequired(errors, LintError::getLine, LintError::getRuleId, LintError::getDetail);
 		return result;
 	}
 }

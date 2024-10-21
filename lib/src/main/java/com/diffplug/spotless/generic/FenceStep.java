@@ -210,9 +210,8 @@ public class FenceStep {
 				} else {
 					pattern = regex.pattern();
 				}
-				throw new Lint.ShortcutException(Lint.create("fenceRemoved",
-						"An intermediate step removed a match of " + pattern,
-						startLine, endLine));
+				throw Lint.atLineRange(startLine, endLine, "fenceRemoved",
+						"An intermediate step removed a match of " + pattern).shortcut();
 			}
 		}
 
