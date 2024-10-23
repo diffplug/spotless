@@ -10,11 +10,34 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* APIs to support linting. (implemented in [#2148](https://github.com/diffplug/spotless/pull/2148) and [#2149](https://github.com/diffplug/spotless/pull/2149))
+  * Spotless is still primarily a formatter, not a linter. But when formatting fails, it's more flexible to model those failures as lints so that the formatting can continue and ideally we can also capture the line numbers causing the failure.
+  * `Lint` models a single change. A `FormatterStep` can create a lint by:
+    * throwing an exception during formatting, ideally `throw Lint.atLine(127, "code", "Well what happened was...")`
+    * or by implementing the `List<Lint> lint(String content, File file)` method to create multiple of them
+* Support for line ending policy `PRESERVE` which just takes the first line ending of every given file as setting (no matter if `\n`, `\r\n` or `\r`) ([#2304](https://github.com/diffplug/spotless/pull/2304))
+### Changes
+* **BREAKING** Moved `PaddedCell.DirtyState` to its own top-level class with new methods. ([#2148](https://github.com/diffplug/spotless/pull/2148))
+  * **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use `DirtyState`.
+### Fixed
+* `ktlint` steps now read from the `string` instead of the `file` so they don't clobber earlier steps. (fixes [#1599](https://github.com/diffplug/spotless/issues/1599))
+
+## [3.0.0.BETA3] - 2024-10-15
+### Added
+* Support for `rdf` ([#2261](https://github.com/diffplug/spotless/pull/2261))
+* Support for `buf` on maven plugin ([#2291](https://github.com/diffplug/spotless/pull/2291))
+* `ConfigurationCacheHack` so we can support Gradle's configuration cache and remote build cache at the same time. ([#2298](https://github.com/diffplug/spotless/pull/2298) fixes [#2168](https://github.com/diffplug/spotless/issues/2168))
 ### Changed
 * Support configuring the Equo P2 cache. ([#2238](https://github.com/diffplug/spotless/pull/2238))
-
 * Add explicit support for JSONC / CSS via biome, via the file extensions `.css` and `.jsonc`. 
   ([#2259](https://github.com/diffplug/spotless/pull/2259))
+* Bump default `buf` version to latest `1.24.0` -> `1.44.0`. ([#2291](https://github.com/diffplug/spotless/pull/2291))
+* Bump default `google-java-format` version to latest `1.23.0` -> `1.24.0`. ([#2294](https://github.com/diffplug/spotless/pull/2294))
+* Bump default `jackson` version to latest `2.17.2` -> `2.18.0`. ([#2279](https://github.com/diffplug/spotless/pull/2279))
+* Bump default `cleanthat` version to latest `2.21` -> `2.22`. ([#2296](https://github.com/diffplug/spotless/pull/2296))
+### Fixed
+* Java import order, ignore duplicate group entries. ([#2293](https://github.com/diffplug/spotless/pull/2293))
 
 ## [3.0.0.BETA2] - 2024-08-25
 ### Changed
@@ -62,6 +85,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * **BREAKING** Remove `JarState.getMavenCoordinate(String prefix)`. ([#1945](https://github.com/diffplug/spotless/pull/1945))
 * **BREAKING** Replace `PipeStepPair` with `FenceStep`. ([#1954](https://github.com/diffplug/spotless/pull/1954))
 * **BREAKING** Fully removed `Rome`, use `Biome` instead. ([#2119](https://github.com/diffplug/spotless/pull/2119))
+* **BREAKING** Moved `PaddedCell.DirtyState` to its own top-level class with new methods. ([#2148](https://github.com/diffplug/spotless/pull/2148))
+  * **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use `DirtyState`.
 
 ## [2.45.0] - 2024-01-23
 ### Added

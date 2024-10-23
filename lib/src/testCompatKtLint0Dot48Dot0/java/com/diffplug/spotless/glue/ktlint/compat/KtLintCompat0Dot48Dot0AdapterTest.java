@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,19 +33,19 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 	@Test
 	public void testDefaults(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
-		loadAndWriteText(path, "empty_class_body.kt");
+		var content = loadAndWriteText(path, "empty_class_body.kt");
 		final Path filePath = Paths.get(path.toString(), "empty_class_body.kt");
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 
-		String formatted = ktLintCompat0Dot48Dot0Adapter.format(filePath, null, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot48Dot0Adapter.format(content, filePath, null, editorConfigOverrideMap);
 		assertEquals("class empty_class_body\n", formatted);
 	}
 
 	@Test
 	public void testEditorConfigCanDisable(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot48Dot0Adapter ktLintCompat0Dot48Dot0Adapter = new KtLintCompat0Dot48Dot0Adapter();
-		loadAndWriteText(path, "fails_no_semicolons.kt");
+		var content = loadAndWriteText(path, "fails_no_semicolons.kt");
 		final Path filePath = Paths.get(path.toString(), "fails_no_semicolons.kt");
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
@@ -54,7 +54,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 		// ktlint_filename is an invalid rule in ktlint 0.48.0
 		editorConfigOverrideMap.put("ktlint_filename", "disabled");
 
-		String formatted = ktLintCompat0Dot48Dot0Adapter.format(filePath, null, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot48Dot0Adapter.format(content, filePath, null, editorConfigOverrideMap);
 		assertEquals("class fails_no_semicolons {\n\tval i = 0;\n}\n", formatted);
 	}
 

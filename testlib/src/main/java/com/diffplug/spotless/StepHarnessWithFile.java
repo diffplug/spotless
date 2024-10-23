@@ -18,12 +18,12 @@ package com.diffplug.spotless;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Objects;
 
-import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.Assertions;
+import com.diffplug.selfie.StringSelfie;
 
 /** An api for testing a {@code FormatterStep} that depends on the File path. */
 public class StepHarnessWithFile extends StepHarnessBase {
@@ -37,12 +37,9 @@ public class StepHarnessWithFile extends StepHarnessBase {
 	/** Creates a harness for testing steps which do depend on the file. */
 	public static StepHarnessWithFile forStep(ResourceHarness harness, FormatterStep step) {
 		return forFormatter(harness, Formatter.builder()
-				.name(step.getName())
 				.encoding(StandardCharsets.UTF_8)
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.steps(Collections.singletonList(step))
-				.rootDir(harness.rootFolder().toPath())
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build());
 	}
 
@@ -88,30 +85,17 @@ public class StepHarnessWithFile extends StepHarnessBase {
 		return testUnaffected(file, contentBefore);
 	}
 
-	public AbstractStringAssert<?> testResourceExceptionMsg(String resourceBefore) {
-		return testResourceExceptionMsg(resourceBefore, resourceBefore);
+	public StringSelfie expectLintsOfResource(String resource) {
+		return expectLintsOfResource(resource, resource);
 	}
 
-	public AbstractStringAssert<?> testResourceExceptionMsg(String filename, String resourceBefore) {
-		String contentBefore = ResourceHarness.getTestResource(resourceBefore);
-		File file = harness.setFile(filename).toContent(contentBefore);
-		return testExceptionMsg(file, contentBefore);
-	}
-
-	public AbstractStringAssert<?> testExceptionMsg(File file, String before) {
+	public StringSelfie expectLintsOfResource(String filename, String resource) {
 		try {
-			formatter().compute(LineEnding.toUnix(before), file);
-			throw new SecurityException("Expected exception");
-		} catch (Throwable e) {
-			if (e instanceof SecurityException) {
-				throw new AssertionError(e.getMessage());
-			} else {
-				Throwable rootCause = e;
-				while (rootCause.getCause() != null) {
-					rootCause = rootCause.getCause();
-				}
-				return Assertions.assertThat(rootCause.getMessage());
-			}
+			File file = harness.setFile(filename).toResource(resource);
+			LintState state = LintState.of(formatter(), file);
+			return StepHarness.expectLintsOf(state, formatter());
+		} catch (IOException e) {
+			throw new AssertionError(e);
 		}
 	}
 }

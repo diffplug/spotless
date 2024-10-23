@@ -17,9 +17,6 @@ package com.diffplug.spotless.json.gson;
 
 import static com.diffplug.spotless.json.gson.GsonStep.DEFAULT_VERSION;
 
-import java.io.File;
-
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
@@ -42,12 +39,12 @@ public class GsonStepTest extends JsonFormatterStepCommonTests {
 
 	@Test
 	void handlesInvalidJson() {
-		getStepHarness().testResourceExceptionMsg("json/invalidJsonBefore.json").isEqualTo("End of input at line 3 column 1 path $.a");
+		getStepHarness().expectLintsOfResource("json/invalidJsonBefore.json").toBe("L3 gson(com.google.gson.JsonSyntaxException) java.io.EOFException: End of input at line 3 column 1 path $.a (...)");
 	}
 
 	@Test
 	void handlesNotJson() {
-		getStepHarness().testResourceExceptionMsg("json/notJsonBefore.json").isEqualTo("Unable to format JSON");
+		getStepHarness().expectLintsOfResource("json/notJsonBefore.json").toBe("LINE_UNDEFINED gson(java.lang.IllegalArgumentException) Unable to parse JSON (...)");
 	}
 
 	@Test
@@ -79,10 +76,8 @@ public class GsonStepTest extends JsonFormatterStepCommonTests {
 
 	@Test
 	void handlesVersionIncompatibility() {
-		FormatterStep step = GsonStep.create(new GsonConfig(false, false, INDENT, "1.7"), TestProvisioner.mavenCentral());
-		Assertions.assertThatThrownBy(() -> step.format("", new File("")))
-				.isInstanceOf(IllegalStateException.class)
-				.hasMessage("There was a problem interacting with Gson; maybe you set an incompatible version?");
+		StepHarness.forStep(GsonStep.create(new GsonConfig(false, false, INDENT, "1.7"), TestProvisioner.mavenCentral()))
+				.expectLintsOf("").toBe("LINE_UNDEFINED gson(java.lang.IllegalStateException) There was a problem interacting with Gson; maybe you set an incompatible version? (...)");
 	}
 
 	@Override

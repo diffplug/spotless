@@ -18,7 +18,6 @@ package com.diffplug.spotless.generic;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,9 +27,9 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.Lint;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -102,7 +101,7 @@ public class FenceStep {
 		}
 
 		@Override
-		public String apply(Formatter formatter, String unix, File file) throws Exception {
+		protected String applySubclass(Formatter formatter, String unix, File file) {
 			List<String> groups = groupsZeroed();
 			Matcher matcher = regex.matcher(unix);
 			while (matcher.find()) {
@@ -131,7 +130,7 @@ public class FenceStep {
 		}
 
 		@Override
-		public String apply(Formatter formatter, String unix, File file) throws Exception {
+		protected String applySubclass(Formatter formatter, String unix, File file) {
 			storeGroups(unix);
 			String formatted = formatter.compute(unix, file);
 			return assembleGroups(formatted);
@@ -139,7 +138,7 @@ public class FenceStep {
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	public static abstract class BaseStep implements Serializable, FormatterStep, FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
+	private static abstract class BaseStep implements Serializable, FormatterStep {
 		final String name;
 		private static final long serialVersionUID = -2301848328356559915L;
 		final Pattern regex;
@@ -177,7 +176,6 @@ public class FenceStep {
 					.encoding(StandardCharsets.UTF_8) // can be any UTF, doesn't matter
 					.lineEndingsPolicy(LineEnding.UNIX.createPolicy()) // just internal, won't conflict with user
 					.steps(steps)
-					.rootDir(Path.of("")) // TODO: error messages will be suboptimal for now, but it will get fixed when we ship linting
 					.build();
 		}
 
@@ -200,8 +198,8 @@ public class FenceStep {
 				return builder.toString();
 			} else {
 				// these will be needed to generate Lints later on
-				// int startLine = 1 + (int) builder.toString().codePoints().filter(c -> c == '\n').count();
-				// int endLine = 1 + (int) unix.codePoints().filter(c -> c == '\n').count();
+				int startLine = 1 + (int) builder.toString().codePoints().filter(c -> c == '\n').count();
+				int endLine = 1 + (int) unix.codePoints().filter(c -> c == '\n').count();
 
 				// throw an error with either the full regex, or the nicer open/close pair
 				Matcher openClose = Pattern.compile("\\\\Q([\\s\\S]*?)\\\\E" + "\\Q([\\s\\S]*?)\\E" + "\\\\Q([\\s\\S]*?)\\\\E")
@@ -212,7 +210,8 @@ public class FenceStep {
 				} else {
 					pattern = regex.pattern();
 				}
-				throw new Error("An intermediate step removed a match of " + pattern);
+				throw Lint.atLineRange(startLine, endLine, "fenceRemoved",
+						"An intermediate step removed a match of " + pattern).shortcut();
 			}
 		}
 
@@ -223,14 +222,20 @@ public class FenceStep {
 
 		private transient Formatter formatter;
 
-		@Nullable
-		@Override
-		public String format(String rawUnix, File file) throws Exception {
+		private String apply(String rawUnix, File file) throws Exception {
 			if (formatter == null) {
 				formatter = buildFormatter();
 			}
-			return this.apply(formatter, rawUnix, file);
+			return applySubclass(formatter, rawUnix, file);
 		}
+
+		@Nullable
+		@Override
+		public String format(String rawUnix, File file) throws Exception {
+			return apply(rawUnix, file);
+		}
+
+		protected abstract String applySubclass(Formatter formatter, String unix, File file) throws Exception;
 
 		@Override
 		public boolean equals(Object o) {

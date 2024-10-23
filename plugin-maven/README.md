@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![MavenCentral](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.44.0.BETA2-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.44.0.BETA2/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.44.0.BETA3-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.44.0.BETA3/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -55,6 +55,8 @@ user@machine repo % mvn spotless:check
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
   - [Go](#go)
+  - [RDF](#RDF)
+  - [Protobuf](#protobuf) ([buf](#buf))
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -68,7 +70,7 @@ user@machine repo % mvn spotless:check
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `mvn spotless:apply` will do?](#how-do-i-preview-what-mvn-spotlessapply-will-do)
   - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
-  - [Example configurations (from real-world projects)](#examples)
+  - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
 
 ***Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.***
 
@@ -1118,6 +1120,94 @@ Standard Go formatter, part of Go distribution.
 </gofmt>
 ```
 
+## RDF
+
+### Generic Options
+
+List of generic configuration `parameters (type/default)` 
+
+* `failOnWarning (boolean/true)`: The Jena parser produces three levels of problem reports: warning, error, and fatal. By default, 
+the build fails for any of them. You can ignore warnings using this parameter. They will still be logged in the plugin's 
+output.
+* `verify (boolean/true)`: If `true`, the content before and after formatting is parsed to an RDF model and compared for isomorphicity.   
+* `turtleFormatterVersion (string|RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION)`: the version of turtle-formatter to use (see below).
+
+### Supported RDF formats: only TTL (at the moment)
+
+Formatting TTL is done using [turtle-formatter](https://github.com/atextor/turtle-formatter),
+which is highly configurable (have a look at the [Style Documentation](https://github.com/atextor/turtle-formatter?tab=readme-ov-file#customizing-the-style)) 
+and will handle blank nodes the way you'd hope.
+
+The style options can be configured via spotless. Wherever the style wants a URI (for example, for the `predicateOrder`, you can 
+use the abbreviated form if it is a `FormattingStyle.KnownPrefix` (currently `rdf`, `rdfs`, `xsd`, `owl`, `dcterms`)
+Error messages will give you hints. To configure the TTL formatting style, pass the configuration parameters under `<turtle>`
+
+### Examples
+Minimal:
+```xml
+<configuration>
+  <rdf>
+    <includes>
+      <include>**/*.ttl</include>
+    </includes>
+    <format/>
+  </rdf>
+</configuration>
+```
+Configuring some generic and TTL options:
+```xml
+<configuration>
+  <rdf>
+    <includes>
+      <include>**/*.ttl</include>
+    </includes>
+    <format>
+      <failOnWarning>false</failOnWarning>
+      <verify>false</verify>
+      <turtleFormatterVersion>1.2.13</turtleFormatterVersion>
+      <turtle>
+        <alignPrefixes>RIGHT</alignPrefixes>
+        <enableDoubleFormatting>true</enableDoubleFormatting>
+      </turtle>
+    </format>
+  </rdf>
+</configuration>
+```
+### Libraries and versions
+
+RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version that
+[turtle-formatter](https://github.com/atextor/turtle-formatter) depends on (not necessarily the latest).
+
+## Protobuf
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/protobuf/Protobuf.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/protobuf).
+```xml
+<configuration>
+  <includes>  <!-- optiona: default is **/*.proto -->
+    <include>proto/*.proto<include>
+  <includes>
+
+  <excludes>  <!-- optiona: if you want to ignore auto generated protos -->
+    <include>target/**/<include>
+  <excludes>
+  
+  <protobuf>
+    <buf />  <!-- has its own section below -->
+  </css>
+</configuration>
+```
+
+### buf
+
+[homepage](https://buf.build/) [buf repo](https://github.com/bufbuild/buf).
+```xml
+ <buf>
+    <version>1.44.0</version>    <!-- optional -->
+    <pathToExe>/path/to/buf</pathToExe>  <!-- optional: if buf isn't in your path -->
+ </buf>        
+```
+
+
 ## CSS
 
 [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/css/Css.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/css).
@@ -1694,9 +1784,15 @@ Spotless uses UTF-8 by default, but you can use [any encoding which Java support
 </configuration>
 ```
 
-Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports four line ending modes: `UNIX`, `WINDOWS`, `MAC_CLASSIC`, `PLATFORM_NATIVE`, `GIT_ATTRIBUTES`, and `GIT_ATTRIBUTES_FAST_ALLSAME`.  The default value is `GIT_ATTRIBUTES_FAST_ALLSAME`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time. `FAST_ALLSAME` just means that Spotless can assume that every file being formatted has the same line endings ([more info](https://github.com/diffplug/spotless/pull/1838)).
+Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports
 
-You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
+- constant modes (`UNIX`, `WINDOWS`, `MAC_CLASSIC`)
+- simple modes (`PLATFORM_NATIVE`, `PRESERVE`)
+- and git-aware modes (`GIT_ATTRIBUTES`, `GIT_ATTRIBUTES_FAST_ALLSAME`)
+
+The default value is `GIT_ATTRIBUTES_FAST_ALLSAME`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time. `FAST_ALLSAME` just means that Spotless can assume that every file being formatted has the same line endings ([more info](https://github.com/diffplug/spotless/pull/1838)).
+
+You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/). Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
 
 <a name="enforceCheck"></a>
 

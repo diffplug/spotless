@@ -51,7 +51,6 @@ class PaddedCellTest {
 		try (Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
 				.encoding(StandardCharsets.UTF_8)
-				.rootDir(rootFolder.toPath())
 				.steps(formatterSteps).build()) {
 
 			File file = new File(rootFolder, "input");

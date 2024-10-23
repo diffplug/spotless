@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		lines.add("        target file('README.md')");
 		lines.add("        custom 'no swearing', {");
 		lines.add("             if (it.toLowerCase(Locale.ROOT).contains('fubar')) {");
-		lines.add("                 throw new RuntimeException('No swearing!');");
+		lines.add("                 throw com.diffplug.spotless.Lint.atUndefinedLine('swearing', 'No swearing!').shortcut();");
 		lines.add("             }");
 		lines.add("        }");
 		lines.addAll(Arrays.asList(toInsert));
@@ -68,8 +68,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		runWithFailure(
 				"> Task :spotlessMisc FAILED\n" +
 						"Step 'no swearing' found problem in 'README.md':\n" +
-						"No swearing!\n" +
-						"java.lang.RuntimeException: No swearing!");
+						"LINE_UNDEFINED: (swearing) No swearing!\n" +
+						"java.lang.Throwable: LINE_UNDEFINED: (swearing) No swearing!");
 	}
 
 	@Test
@@ -82,7 +82,6 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		runWithSuccess("> Task :processResources NO-SOURCE");
 	}
 
-	@Test
 	void unlessExemptedByStep() throws Exception {
 		writeBuild(
 				"        ignoreErrorForStep 'no swearing'",
@@ -114,8 +113,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		setFile("README.md").toContent("This code is fubar.");
 		runWithFailure("> Task :spotlessMisc FAILED\n" +
 				"Step 'no swearing' found problem in 'README.md':\n" +
-				"No swearing!\n" +
-				"java.lang.RuntimeException: No swearing!");
+				"LINE_UNDEFINED: (swearing) No swearing!\n" +
+				"java.lang.Throwable: LINE_UNDEFINED: (swearing) No swearing!");
 	}
 
 	private void runWithSuccess(String expectedToStartWith) throws Exception {

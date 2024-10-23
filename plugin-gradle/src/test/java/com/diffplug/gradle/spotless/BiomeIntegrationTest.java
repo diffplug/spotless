@@ -22,12 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.owasp.encoder.Encode;
 
-/**
- * Tests for the Biome formatter used via the Gradle spotless plugin.
- */
 class BiomeIntegrationTest extends GradleIntegrationHarness {
 	/**
-	 * Tests that biome can be used as a JSON formatting step, using biome 1.8.3 which
+	 * Tests that biome can be used as a JSON formatting step, using biome 1.8.3
+	 * which
 	 * requires opt-in.
 	 *
 	 * @throws Exception When a test failure occurs.
@@ -54,7 +52,8 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 	}
 
 	/**
-	 * Tests that biome can be used as a JSON formatting step, using biome 1.9.0 which
+	 * Tests that biome can be used as a JSON formatting step, using biome 1.9.0
+	 * which
 	 * does not require opt-in.
 	 *
 	 * @throws Exception When a test failure occurs.
@@ -396,9 +395,12 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 	}
 
 	/**
-	 * Biome is hard-coded to ignore certain files, such as package.json. Since version 1.5.0,
-	 * the biome CLI does not output any formatted code anymore, whereas previously it printed
-	 * the input as-is. This tests checks that when the biome formatter outputs an empty string,
+	 * Biome is hard-coded to ignore certain files, such as package.json. Since
+	 * version 1.5.0,
+	 * the biome CLI does not output any formatted code anymore, whereas previously
+	 * it printed
+	 * the input as-is. This tests checks that when the biome formatter outputs an
+	 * empty string,
 	 * the contents of the file to format are used instead.
 	 *
 	 * @throws Exception When a test failure occurs.

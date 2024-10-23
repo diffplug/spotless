@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,13 @@
  */
 package com.diffplug.spotless;
 
+import java.io.File;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization implements FormatExceptionPolicy {
-	private static final long serialVersionUID = 1L;
-
+class LintPolicy {
 	private static final Logger logger = LoggerFactory.getLogger(Formatter.class);
-
-	@Override
-	public void handleError(Throwable e, FormatterStep step, String relativePath) {
-		if (e instanceof Error) {
-			error(e, step, relativePath);
-			throw ((Error) e);
-		} else {
-			warning(e, step, relativePath);
-		}
-	}
 
 	static void error(Throwable e, FormatterStep step, String relativePath) {
 		logger.error("Step '{}' found problem in '{}':\n{}", step.getName(), relativePath, e.getMessage(), e);
@@ -39,5 +29,15 @@ class FormatExceptionPolicyLegacy extends NoLambda.EqualityBasedOnSerialization 
 
 	static void warning(Throwable e, FormatterStep step, String relativePath) {
 		logger.warn("Unable to apply step '{}' to '{}'", step.getName(), relativePath, e);
+	}
+
+	static void legacyBehavior(Formatter formatter, File file, ValuePerStep<Throwable> exceptionPerStep) {
+		for (int i = 0; i < formatter.getSteps().size(); ++i) {
+			Throwable exception = exceptionPerStep.get(i);
+			if (exception != null && exception != LintState.formatStepCausedNoChange()) {
+				LintPolicy.error(exception, formatter.getSteps().get(i), file.getName());
+				throw ThrowingEx.asRuntimeRethrowError(exception);
+			}
+		}
 	}
 }

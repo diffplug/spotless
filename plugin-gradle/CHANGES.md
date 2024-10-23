@@ -3,10 +3,27 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Support for line ending policy `PRESERVE` which just takes the first line ending of every given file as setting (no matter if `\n`, `\r\n` or `\r`) ([#2304](https://github.com/diffplug/spotless/pull/2304))
+### Fixed
+* `ktlint` steps now read from the `string` instead of the `file` so they don't clobber earlier steps. (fixes [#1599](https://github.com/diffplug/spotless/issues/1599))
 
+## [7.0.0.BETA3] - 2024-10-15
+### Added
+### Changed
+* Use the Gradle user home directory by default for the download directory for the biome executable. Previously, the
+  plugin tried to use Maven's home directory, which is not always accessible by a Gradle plugin. ([#2187](https://github.com/diffplug/spotless/issues/2187))
 * Add explicit support for CSS via biome. Formatting CSS via biome was already supported as a general
   formatting step. Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
   ([#2259](https://github.com/diffplug/spotless/pull/2259))
+### Changed
+* Bump default `buf` version to latest `1.24.0` -> `1.44.0`. ([#2291](https://github.com/diffplug/spotless/pull/2291))
+* Bump default `google-java-format` version to latest `1.23.0` -> `1.24.0`. ([#2294](https://github.com/diffplug/spotless/pull/2294))
+* Bump default `jackson` version to latest `2.17.2` -> `2.18.0`. ([#2279](https://github.com/diffplug/spotless/pull/2279))
+* Bump default `cleanthat` version to latest `2.21` -> `2.22`. ([#2296](https://github.com/diffplug/spotless/pull/2296))
+### Fixed
+* Java import order, ignore duplicate group entries. ([#2293](https://github.com/diffplug/spotless/pull/2293))
+* Remote build cache shouldn't have cache misses anymore. ([#2298](https://github.com/diffplug/spotless/pull/2298) fixes [#2168](https://github.com/diffplug/spotless/issues/2168))
 
 ## [7.0.0.BETA2] - 2024-08-25
 ### Changed
