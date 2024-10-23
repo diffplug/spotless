@@ -189,4 +189,28 @@ public final class Lint implements Serializable {
 	}
 
 	public static final int LINE_UNDEFINED = -1;
+
+	public void addWarningMessageTo(StringBuilder buffer, String stepName, boolean oneLine) {
+		if (lineStart == Lint.LINE_UNDEFINED) {
+			buffer.append("LINE_UNDEFINED");
+		} else {
+			buffer.append("L");
+			buffer.append(lineStart);
+			if (lineEnd != lineStart) {
+				buffer.append("-").append(lineEnd);
+			}
+		}
+		buffer.append(" ");
+		buffer.append(stepName).append("(").append(ruleId).append(") ");
+
+		int firstNewline = detail.indexOf('\n');
+		if (firstNewline == -1) {
+			buffer.append(detail);
+		} else if (oneLine) {
+			buffer.append(detail, 0, firstNewline);
+			buffer.append(" (...)");
+		} else {
+			buffer.append(detail);
+		}
+	}
 }

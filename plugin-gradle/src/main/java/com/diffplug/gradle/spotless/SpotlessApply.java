@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
@@ -30,7 +31,8 @@ public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
 	public void performAction() {
 		getTaskService().get().registerApplyAlreadyRan(this);
 		ConfigurableFileTree cleanFiles = getConfigCacheWorkaround().fileTree().from(getSpotlessCleanDirectory().get());
-		if (cleanFiles.isEmpty()) {
+		ConfigurableFileTree lintsFiles = getConfigCacheWorkaround().fileTree().from(getSpotlessLintsDirectory().get());
+		if (cleanFiles.isEmpty() && lintsFiles.isEmpty()) {
 			getState().setDidWork(sourceDidWork());
 		} else {
 			cleanFiles.visit(new FileVisitor() {
@@ -51,6 +53,10 @@ public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
 					}
 				}
 			});
+			if (!lintsFiles.isEmpty()) {
+				boolean detailed = false;
+				throw new GradleException(super.allLintsErrorMsgDetailed(lintsFiles, detailed));
+			}
 		}
 	}
 }

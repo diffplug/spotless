@@ -21,23 +21,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class LintPolicy {
-	private static final Logger logger = LoggerFactory.getLogger(Formatter.class);
-
-	static void error(Throwable e, FormatterStep step, String relativePath) {
-		logger.error("Step '{}' found problem in '{}':\n{}", step.getName(), relativePath, e.getMessage(), e);
-	}
-
-	static void warning(Throwable e, FormatterStep step, String relativePath) {
-		logger.warn("Unable to apply step '{}' to '{}'", step.getName(), relativePath, e);
-	}
-
 	static void legacyBehavior(Formatter formatter, File file, ValuePerStep<Throwable> exceptionPerStep) {
 		for (int i = 0; i < formatter.getSteps().size(); ++i) {
 			Throwable exception = exceptionPerStep.get(i);
 			if (exception != null && exception != LintState.formatStepCausedNoChange()) {
-				LintPolicy.error(exception, formatter.getSteps().get(i), file.getName());
+				logger.error("Step '{}' found problem in '{}':\n{}", formatter.getSteps().get(i), file.getName(), exception.getMessage(), exception);
 				throw ThrowingEx.asRuntimeRethrowError(exception);
 			}
 		}
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(Formatter.class);
 }
