@@ -49,7 +49,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 			}
 		});
 		File file;
-		File cleanFile;
+		File outputFile;
 		SpotlessTaskImpl source;
 		SpotlessCheck check;
 		SpotlessApply apply;
@@ -61,7 +61,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 			source = createFormatTask(name, step);
 			check = createCheckTask(name, source);
 			apply = createApplyTask(name, source);
-			cleanFile = new File(source.getCleanDirectory() + "/src", file.getName());
+			outputFile = new File(source.getCleanDirectory() + "/src", file.getName());
 		}
 
 		private SpotlessTaskImpl createFormatTask(String name, FormatterStep step) {
@@ -143,10 +143,10 @@ class PaddedCellTaskTest extends ResourceHarness {
 		converge.format();
 		diverge.format();
 
-		assertFile(wellbehaved.cleanFile).hasContent("42");	// cycle -> first element in cycle
-		assertFile(cycle.cleanFile).hasContent("A");		// cycle -> first element in cycle
-		assertFile(converge.cleanFile).hasContent("");	// converge -> converges
-		assertThat(diverge.cleanFile).doesNotExist();	// diverge -> no change
+		assertFile(wellbehaved.outputFile).hasContent("42");	// cycle -> first element in cycle
+		assertFile(cycle.outputFile).hasContent("A");		// cycle -> first element in cycle
+		assertFile(converge.outputFile).hasContent("");	// converge -> converges
+		assertThat(diverge.outputFile).doesNotExist();	// diverge -> no change
 	}
 
 	@Test
