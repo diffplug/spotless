@@ -53,6 +53,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Linting](#linting)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
@@ -138,6 +139,39 @@ Spotless requires JRE 11+ and Gradle 6.1.1 or newer.
 
 - If you're stuck on JRE 8, use [`id 'com.diffplug.spotless' version '6.13.0'` or older](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#6130---2023-01-14).
 - If you're stuck on an older version of Gradle, [`id 'com.diffplug.gradle.spotless' version '4.5.1'` supports all the way back to Gradle 2.x](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#451---2020-07-04).
+
+### Linting
+
+Starting in version `7.0.0`, Spotless now supports linting in addition to formatting. To Spotless, all lints are errors which must be either fixed or suppressed. Lints show up like this:
+
+```console
+user@machine repo % ./gradlew build
+:spotlessJavaCheck FAILED
+  The following files had format violations:
+  src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
+    -\t\t····if·(targets.length·==·0)·{
+    +\t\tif·(targets.length·==·0)·{
+  Resolve these lints or suppress with `suppressLintsFor`
+```
+
+To suppress lints, you can do this:
+
+```gradle
+spotless {
+  suppressLintsFor { // applies to all formats
+    file = 'src/blah/blah'
+  }
+  kotlin {
+    ktfmt()
+    suppressLintsFor { // applies to only the kotlin formats
+      step = 'ktlint'
+      shortCode = 'rename'
+    }
+  }
+}
+```
+
+Spotless is primarily a formatter, _not_ a linter. In our opinion, a linter is just a broken formatter. But formatters do break sometimes, and representing these failures as lints that can be suppressed is more useful than just giving up.
 
 <a name="applying-to-java-source"></a>
 
