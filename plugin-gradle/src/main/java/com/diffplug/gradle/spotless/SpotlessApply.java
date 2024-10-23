@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,11 +29,11 @@ public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
 	@TaskAction
 	public void performAction() {
 		getTaskService().get().registerApplyAlreadyRan(this);
-		ConfigurableFileTree files = getConfigCacheWorkaround().fileTree().from(getSpotlessOutDirectory().get());
-		if (files.isEmpty()) {
+		ConfigurableFileTree cleanFiles = getConfigCacheWorkaround().fileTree().from(getSpotlessCleanDirectory().get());
+		if (cleanFiles.isEmpty()) {
 			getState().setDidWork(sourceDidWork());
 		} else {
-			files.visit(new FileVisitor() {
+			cleanFiles.visit(new FileVisitor() {
 				@Override
 				public void visitDir(FileVisitDetails fileVisitDetails) {
 

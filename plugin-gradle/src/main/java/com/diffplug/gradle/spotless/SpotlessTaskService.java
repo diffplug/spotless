@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	static abstract class ClientTask extends DefaultTask {
 		@Internal
-		abstract Property<File> getSpotlessOutDirectory();
+		abstract Property<File> getSpotlessCleanDirectory();
 
 		@Internal
 		abstract Property<SpotlessTaskService> getTaskService();
@@ -117,7 +117,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 		void init(SpotlessTaskImpl impl) {
 			usesServiceTolerateTestFailure(this, impl.getTaskServiceProvider());
-			getSpotlessOutDirectory().set(impl.getOutputDirectory());
+			getSpotlessCleanDirectory().set(impl.getCleanDirectory());
 			getTaskService().set(impl.getTaskService());
 			getProjectDir().set(impl.getProjectDir());
 		}
