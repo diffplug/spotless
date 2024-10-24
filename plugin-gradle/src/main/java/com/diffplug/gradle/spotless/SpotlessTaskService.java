@@ -199,7 +199,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 					}
 				}
 			}
-			builder.setLength(builder.length() - 1); // remove trailing newline
+			builder.append("Resolve these lints or suppress with `suppressLintsFor`");
 			return builder.toString();
 		}
 	}

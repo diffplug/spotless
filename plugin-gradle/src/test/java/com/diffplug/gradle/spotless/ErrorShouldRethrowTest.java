@@ -70,7 +70,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"* What went wrong:",
 				"Execution failed for task ':spotlessMiscCheck'.",
 				"> There were 1 lint error(s), they must be fixed or suppressed.",
-				"  README.md:LINE_UNDEFINED noSwearingStep(swearing) No swearing!");
+				"  README.md:LINE_UNDEFINED noSwearingStep(swearing) No swearing!",
+				"  Resolve these lints or suppress with `suppressLintsFor`");
 	}
 
 	@Test
@@ -119,7 +120,8 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"* What went wrong:",
 				"Execution failed for task ':spotlessMiscCheck'.",
 				"> There were 1 lint error(s), they must be fixed or suppressed.",
-				"  README.md:LINE_UNDEFINED noSwearingStep(swearing) No swearing!");
+				"  README.md:LINE_UNDEFINED noSwearingStep(swearing) No swearing!",
+				"  Resolve these lints or suppress with `suppressLintsFor`");
 	}
 
 	private void expectSuccess() throws Exception {

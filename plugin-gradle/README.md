@@ -146,11 +146,10 @@ Starting in version `7.0.0`, Spotless now supports linting in addition to format
 
 ```console
 user@machine repo % ./gradlew build
-:spotlessJavaCheck FAILED
-  The following files had format violations:
-  src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
-    -\t\t····if·(targets.length·==·0)·{
-    +\t\tif·(targets.length·==·0)·{
+:spotlessKotlinCheck FAILED
+  There were 2 lint error(s), they must be fixed or suppressed.
+    src/main/kotlin/com/diffplug/Foo.kt:L7 ktlint(standard:no-wildcard-imports) Wildcard import
+    src/main/kotlin/com/diffplug/Bar.kt:L9 ktlint(standard:no-wildcard-imports) Wildcard import 
   Resolve these lints or suppress with `suppressLintsFor`
 ```
 
@@ -158,14 +157,11 @@ To suppress lints, you can do this:
 
 ```gradle
 spotless {
-  suppressLintsFor { // applies to all formats
-    file = 'src/blah/blah'
-  }
   kotlin {
-    ktfmt()
-    suppressLintsFor { // applies to only the kotlin formats
+    ktlint()
+    suppressLintsFor {
       step = 'ktlint'
-      shortCode = 'rename'
+      shortCode = 'standard:no-wildcard-imports'
     }
   }
 }
