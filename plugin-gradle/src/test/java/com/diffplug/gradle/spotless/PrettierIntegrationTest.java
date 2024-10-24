@@ -226,7 +226,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
-		Assertions.assertThat(spotlessApply.getOutput()).contains("could not infer a parser");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("Could not infer a parser");
 		Assertions.assertThat(spotlessApply.getOutput()).contains("prettier-plugin-java");
 	}
 
