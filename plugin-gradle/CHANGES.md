@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [7.0.0.BETA4] - 2024-10-24
 ### Added
 * Support for line ending policy `PRESERVE` which just takes the first line ending of every given file as setting (no matter if `\n`, `\r\n` or `\r`) ([#2304](https://github.com/diffplug/spotless/pull/2304))
 * New `suppressLintsFor` DSL ([docs](https://github.com/diffplug/spotless/tree/main/plugin-gradle#linting)) ([#2307](https://github.com/diffplug/spotless/pull/2307))
