@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,11 +40,11 @@ class IdeHookTest extends GradleIntegrationHarness {
 				"spotless {",
 				"  format 'misc', {",
 				"    target 'DIRTY.md', 'CLEAN.md'",
-				"    custom 'lowercase', { str -> str.toLowerCase(Locale.ROOT) }",
+				"    addStep com.diffplug.spotless.TestingOnly.lowercase()",
 				"  }",
 				"  format 'diverge', {",
 				"    target 'DIVERGE.md'",
-				"    custom 'diverge', { str -> str + ' ' }",
+				"    addStep com.diffplug.spotless.TestingOnly.diverge()",
 				"  }",
 				"}");
 		dirty = new File(rootFolder(), "DIRTY.md");
