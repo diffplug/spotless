@@ -86,7 +86,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	@Test
 	void unlessExemptedByStep() throws Exception {
 		writeBuild(
-				"        ignoreErrorForStep 'no swearing'",
+				"        ignoreErrorForStep 'noSwearingStep'",
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");

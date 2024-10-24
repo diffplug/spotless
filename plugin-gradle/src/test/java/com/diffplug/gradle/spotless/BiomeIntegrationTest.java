@@ -387,11 +387,11 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 
-		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
-		assertThat(spotlessApply.getOutput()).contains("spotlessMybiome FAILED");
+		var spotlessApply = gradleRunner().withArguments("spotlessApply").buildAndFail();
+		assertThat(spotlessApply.getOutput()).contains("spotlessMybiomeApply FAILED");
 		assertFile("biome_test.js").sameAsResource("biome/js/fileBefore.js");
 		assertThat(spotlessApply.getOutput()).contains("Format with errors is disabled.");
-		assertThat(spotlessApply.getOutput()).contains("Step 'biome' found problem in 'biome_test.js'");
+		assertThat(spotlessApply.getOutput()).contains("biome_test.js:LINE_UNDEFINED biome(java.lang.RuntimeException)");
 	}
 
 	/**
