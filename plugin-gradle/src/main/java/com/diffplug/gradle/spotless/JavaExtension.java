@@ -282,7 +282,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public EclipseConfig eclipse() {
-		return new EclipseConfig(EclipseJdtFormatterStep.defaultVersion());
+		return eclipse(EclipseJdtFormatterStep.defaultVersion());
 	}
 
 	public EclipseConfig eclipse(String version) {
@@ -290,7 +290,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public class EclipseConfig {
-		private final EquoBasedStepBuilder builder;
+		private final EclipseJdtFormatterStep.Builder builder;
 
 		EclipseConfig(String version) {
 			builder = EclipseJdtFormatterStep.createBuilder(provisioner());
@@ -298,11 +298,31 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			addStep(builder.build());
 		}
 
-		public void configFile(Object... configFiles) {
+		public EclipseConfig configFile(Object... configFiles) {
 			requireElementsNonNull(configFiles);
 			Project project = getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembers(String memberCategoryOrder, boolean doNotSortFields) {
+			requireElementsNonNull(memberCategoryOrder);
+			builder.setMembersOrdering(memberCategoryOrder, doNotSortFields);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembers(
+			String memberCategoryOrder,
+			boolean doNotSortFields,
+			String visibilityOrder) {
+			requireElementsNonNull(memberCategoryOrder);
+			requireElementsNonNull(visibilityOrder);
+			builder.setMembersOrdering(memberCategoryOrder, doNotSortFields);
+			builder.setVisibilityOrdering(visibilityOrder);
+			replaceStep(builder.build());
+			return this;
 		}
 
 		public EclipseConfig withP2Mirrors(Map<String, String> mirrors) {

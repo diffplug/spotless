@@ -33,6 +33,34 @@ public class EclipseJdtFormatterStepSpecialCaseTest {
 		EquoBasedStepBuilder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 		builder.setPreferences(List.of(file));
 		StepHarness.forStep(builder.build())
-				.testResource("java/eclipse/AbstractType.test", "java/eclipse/AbstractType.clean");
+			.testResource("java/eclipse/AbstractType.test", "java/eclipse/AbstractType.clean");
+	}
+
+	@Test
+	public void sort_members_no_fields() {
+		ClassLoader classLoader = getClass().getClassLoader();
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.setMembersOrdering("SF,SI,SM,F,I,C,M,T", true);
+		StepHarness.forStep(builder.build())
+			.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembersNoFields.clean");
+	}
+
+	@Test
+	public void sort_members() {
+		ClassLoader classLoader = getClass().getClassLoader();
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.setMembersOrdering("SF,SI,SM,F,I,C,M,T", false);
+		StepHarness.forStep(builder.build())
+			.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembers.clean");
+	}
+
+	@Test
+	public void sort_members_and_by_visibility() {
+		ClassLoader classLoader = getClass().getClassLoader();
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.setMembersOrdering("SF,SI,SM,F,I,C,M,T", false);
+		builder.setVisibilityOrdering("B,R,D,V");
+		StepHarness.forStep(builder.build())
+			.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembersByVisibility.clean");
 	}
 }
