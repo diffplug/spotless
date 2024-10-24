@@ -1,0 +1,33 @@
+package com.diffplug.spotless.extra.glue.jdt;
+
+public class SortExample {
+	public static final int Z;
+	private static final int A;
+	static {
+		Z = 1;
+		A = 0;
+	}
+	public final int b = 1;
+	public final int f = 1;
+	protected final int d = 1;
+	protected final int e = 1;
+	final boolean _1 = false;
+	final int a = 1;
+	final int z = 1;
+	private final int c = 1;
+	class Nested {
+		public static final String B = "B";
+		protected static final String D = "D";
+		private static final String C = "C";
+		public void b() {
+		}
+		protected void d() {
+		}
+		void a() {
+		}
+		void z() {
+		}
+		private void c() {
+		}
+	}
+}

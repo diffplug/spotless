@@ -34,18 +34,21 @@ public class EclipseJdtFormatterStepImpl {
 	public static final String LINE_DELIMITER = "\n";
 
 	private final CodeFormatter codeFormatter;
+	private final EclipseJdtSortMembers.SortProperties sortProperties;
 
-	public EclipseJdtFormatterStepImpl(Properties settings) {
-		Map<String, String> options = settings.entrySet().stream().collect(Collectors.toMap(
-				e -> String.valueOf(e.getKey()),
-				e -> String.valueOf(e.getValue()),
-				(prev, next) -> next,
-				HashMap::new));
+	public EclipseJdtFormatterStepImpl(Properties formatterSettings, Map<String, String> sortProperties) {
+		Map<String, String> options = formatterSettings.entrySet().stream().collect(Collectors.toMap(
+			e -> String.valueOf(e.getKey()),
+			e -> String.valueOf(e.getValue()),
+			(prev, next) -> next,
+			HashMap::new));
 		this.codeFormatter = new DefaultCodeFormatter(options);
+		this.sortProperties = EclipseJdtSortMembers.SortProperties.from(sortProperties);
 	}
 
 	/** Formatting Java string, distinguishing module-info and compilation unit by file name */
 	public String format(String raw, File file) throws Exception {
+		raw = sort(raw);
 		int kind = (file.getName().equals(IModule.MODULE_INFO_JAVA) ? CodeFormatter.K_MODULE_INFO
 				: CodeFormatter.K_COMPILATION_UNIT) | CodeFormatter.F_INCLUDE_COMMENTS;
 		TextEdit edit = codeFormatter.format(kind, raw, 0, raw.length(), 0, LINE_DELIMITER);
@@ -56,5 +59,10 @@ public class EclipseJdtFormatterStepImpl {
 			edit.apply(doc);
 			return doc.get();
 		}
+	}
+
+	/** Sort members in Java string */
+	public String sort(String raw) {
+		return EclipseJdtSortMembers.sortMember(raw, sortProperties);
 	}
 }
