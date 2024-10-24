@@ -49,21 +49,15 @@ public class LintSuppression implements java.io.Serializable {
 		this.shortCode = Objects.requireNonNull(shortCode);
 	}
 
-	public boolean suppresses(String relativePath, FormatterStep step, Lint lint) {
-		return !allows(relativePath, step, lint);
-	}
-
-	private boolean allows(String relativePath, FormatterStep step, Lint lint) {
-		if (!file.equals(ALL) && !file.equals(relativePath)) {
-			return false;
+	public boolean suppresses(String relativePath, FormatterStep formatterStep, Lint lint) {
+		if (file.equals(ALL) || file.equals(relativePath)) {
+			if (step.equals(ALL) || formatterStep.getName().equals(this.step)) {
+				if (shortCode.equals(ALL) || lint.getRuleId().equals(this.shortCode)) {
+					return true;
+				}
+			}
 		}
-		if (!this.step.equals(ALL) && !this.step.equals(step.getName())) {
-			return false;
-		}
-		if (!this.shortCode.equals(ALL) && !this.shortCode.equals(lint.getRuleId())) {
-			return false;
-		}
-		return true;
+		return false;
 	}
 
 	public void ensureDoesNotSuppressAll() {
