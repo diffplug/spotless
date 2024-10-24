@@ -26,11 +26,11 @@ spotlessChangelog {
 	runAfterPush "gh release create ${kind}/{{version}} --title '${releaseTitle} v{{version}}' --notes-from-tag"
 
 	if (kind == 'gradle') {
-		forceNextVersion '7.0.0.BETA3'
+		forceNextVersion '7.0.0.BETA4'
 	} else if (kind == 'maven') {
-		forceNextVersion '2.44.0.BETA3'
+		forceNextVersion '2.44.0.BETA4'
 	} else {
-		forceNextVersion '3.0.0.BETA3'
+		forceNextVersion '3.0.0.BETA4'
 	}
 }
 
