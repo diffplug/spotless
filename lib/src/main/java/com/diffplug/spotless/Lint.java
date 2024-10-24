@@ -37,28 +37,28 @@ public final class Lint implements Serializable {
 		return new Lint(line, ruleId, detail);
 	}
 
-	public static Lint atLineRange(int lineStart, int lineEnd, String ruleId, String detail) {
-		return new Lint(lineStart, lineEnd, ruleId, detail);
+	public static Lint atLineRange(int lineStart, int lineEnd, String shortCode, String detail) {
+		return new Lint(lineStart, lineEnd, shortCode, detail);
 	}
 
 	private static final long serialVersionUID = 1L;
 
 	private int lineStart, lineEnd; // 1-indexed, inclusive
-	private String ruleId; // e.g. CN_IDIOM https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#cn-class-implements-cloneable-but-does-not-define-or-use-clone-method-cn-idiom
+	private String shortCode; // e.g. CN_IDIOM https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#cn-class-implements-cloneable-but-does-not-define-or-use-clone-method-cn-idiom
 	private String detail;
 
-	private Lint(int lineStart, int lineEnd, String ruleId, String detail) {
+	private Lint(int lineStart, int lineEnd, String shortCode, String detail) {
 		if (lineEnd < lineStart) {
 			throw new IllegalArgumentException("lineEnd must be >= lineStart: lineStart=" + lineStart + " lineEnd=" + lineEnd);
 		}
 		this.lineStart = lineStart;
 		this.lineEnd = lineEnd;
-		this.ruleId = LineEnding.toUnix(ruleId);
+		this.shortCode = LineEnding.toUnix(shortCode);
 		this.detail = LineEnding.toUnix(detail);
 	}
 
-	private Lint(int line, String ruleId, String detail) {
-		this(line, line, ruleId, detail);
+	private Lint(int line, String shortCode, String detail) {
+		this(line, line, shortCode, detail);
 	}
 
 	public int getLineStart() {
@@ -69,8 +69,8 @@ public final class Lint implements Serializable {
 		return lineEnd;
 	}
 
-	public String getRuleId() {
-		return ruleId;
+	public String getShortCode() {
+		return shortCode;
 	}
 
 	public String getDetail() {
@@ -115,12 +115,12 @@ public final class Lint implements Serializable {
 	public String toString() {
 		if (lineStart == lineEnd) {
 			if (lineStart == LINE_UNDEFINED) {
-				return "LINE_UNDEFINED: (" + ruleId + ") " + detail;
+				return "LINE_UNDEFINED: (" + shortCode + ") " + detail;
 			} else {
-				return "L" + lineStart + ": (" + ruleId + ") " + detail;
+				return "L" + lineStart + ": (" + shortCode + ") " + detail;
 			}
 		} else {
-			return "L" + lineStart + "-" + lineEnd + ": (" + ruleId + ") " + detail;
+			return "L" + lineStart + "-" + lineEnd + ": (" + shortCode + ") " + detail;
 		}
 	}
 
@@ -131,12 +131,12 @@ public final class Lint implements Serializable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		Lint lint = (Lint) o;
-		return lineStart == lint.lineStart && lineEnd == lint.lineEnd && Objects.equals(ruleId, lint.ruleId) && Objects.equals(detail, lint.detail);
+		return lineStart == lint.lineStart && lineEnd == lint.lineEnd && Objects.equals(shortCode, lint.shortCode) && Objects.equals(detail, lint.detail);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(lineStart, lineEnd, ruleId, detail);
+		return Objects.hash(lineStart, lineEnd, shortCode, detail);
 	}
 
 	/** Attempts to parse a line number from the given exception. */
@@ -201,7 +201,7 @@ public final class Lint implements Serializable {
 			}
 		}
 		buffer.append(" ");
-		buffer.append(stepName).append("(").append(ruleId).append(") ");
+		buffer.append(stepName).append("(").append(shortCode).append(") ");
 
 		int firstNewline = detail.indexOf('\n');
 		if (firstNewline == -1) {

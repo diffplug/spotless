@@ -21,16 +21,16 @@ public class LintSuppression implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final String ALL = "*";
-	private String file = ALL;
+	private String path = ALL;
 	private String step = ALL;
 	private String shortCode = ALL;
 
-	public String getFile() {
-		return file;
+	public String getPath() {
+		return path;
 	}
 
-	public void setFile(String file) {
-		this.file = Objects.requireNonNull(file);
+	public void setPath(String path) {
+		this.path = Objects.requireNonNull(path);
 	}
 
 	public String getStep() {
@@ -50,9 +50,9 @@ public class LintSuppression implements java.io.Serializable {
 	}
 
 	public boolean suppresses(String relativePath, FormatterStep formatterStep, Lint lint) {
-		if (file.equals(ALL) || file.equals(relativePath)) {
+		if (path.equals(ALL) || path.equals(relativePath)) {
 			if (step.equals(ALL) || formatterStep.getName().equals(this.step)) {
-				if (shortCode.equals(ALL) || lint.getRuleId().equals(this.shortCode)) {
+				if (shortCode.equals(ALL) || lint.getShortCode().equals(this.shortCode)) {
 					return true;
 				}
 			}
@@ -61,7 +61,7 @@ public class LintSuppression implements java.io.Serializable {
 	}
 
 	public void ensureDoesNotSuppressAll() {
-		boolean suppressAll = file.equals(ALL) && step.equals(ALL) && shortCode.equals(ALL);
+		boolean suppressAll = path.equals(ALL) && step.equals(ALL) && shortCode.equals(ALL);
 		if (suppressAll) {
 			throw new IllegalArgumentException("You must specify a specific `file`, `step`, or `shortCode`.");
 		}
@@ -74,18 +74,18 @@ public class LintSuppression implements java.io.Serializable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		LintSuppression that = (LintSuppression) o;
-		return Objects.equals(file, that.file) && Objects.equals(step, that.step) && Objects.equals(shortCode, that.shortCode);
+		return Objects.equals(path, that.path) && Objects.equals(step, that.step) && Objects.equals(shortCode, that.shortCode);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(file, step, shortCode);
+		return Objects.hash(path, step, shortCode);
 	}
 
 	@Override
 	public String toString() {
 		return "LintSuppression{" +
-				"file='" + file + '\'' +
+				"file='" + path + '\'' +
 				", step='" + step + '\'' +
 				", code='" + shortCode + '\'' +
 				'}';

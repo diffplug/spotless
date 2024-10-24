@@ -50,8 +50,8 @@ public class LintSuppressionTest {
 		assertThat(noSuppressions.isHasLints()).isTrue();
 		removesLint(s -> s.setStep("blah")).isFalse();
 		removesLint(s -> s.setStep("endWithNewline")).isTrue();
-		removesLint(s -> s.setFile("blah")).isFalse();
-		removesLint(s -> s.setFile("testFile")).isTrue();
+		removesLint(s -> s.setPath("blah")).isFalse();
+		removesLint(s -> s.setPath("testFile")).isTrue();
 		removesLint(s -> s.setShortCode("blah")).isFalse();
 		removesLint(s -> s.setShortCode("66")).isTrue();
 	}
