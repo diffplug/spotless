@@ -18,16 +18,16 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.Nullable;
 
 public class LintState {
 	private final DirtyState dirtyState;
-	private @Nullable List<List<Lint>> lintsPerStep;
+	private final @Nullable List<List<Lint>> lintsPerStep;
 
 	LintState(DirtyState dirtyState, @Nullable List<List<Lint>> lintsPerStep) {
 		this.dirtyState = dirtyState;
@@ -64,35 +64,40 @@ public class LintState {
 		return result;
 	}
 
-	public void removeSuppressedLints(Formatter formatter, String relativePath, List<LintSuppression> suppressions) {
+	public LintState withRemovedSuppressions(Formatter formatter, String relativePath, List<LintSuppression> suppressions) {
 		if (lintsPerStep == null) {
-			return;
+			return this;
 		}
 		if (formatter.getSteps().size() != lintsPerStep.size()) {
 			throw new IllegalStateException("LintState was created with a different formatter!");
 		}
+		boolean changed = false;
+		ValuePerStep<List<Lint>> perStepFiltered = new ValuePerStep<>(formatter);
 		for (int i = 0; i < lintsPerStep.size(); i++) {
 			FormatterStep step = formatter.getSteps().get(i);
-			List<Lint> lints = lintsPerStep.get(i);
-			if (lints != null) {
+			List<Lint> lintsOriginal = lintsPerStep.get(i);
+			if (lintsOriginal != null) {
+				List<Lint> lints = new ArrayList<>(lintsOriginal);
 				Iterator<Lint> iter = lints.iterator();
 				while (iter.hasNext()) {
 					Lint lint = iter.next();
 					for (LintSuppression suppression : suppressions) {
 						if (suppression.suppresses(relativePath, step, lint)) {
+							changed = true;
 							iter.remove();
 							break;
 						}
 					}
 				}
-				if (lints.isEmpty()) {
-					lintsPerStep.set(i, null);
-					if (lintsPerStep.stream().allMatch(Objects::isNull)) {
-						lintsPerStep = null;
-						return;
-					}
+				if (!lints.isEmpty()) {
+					perStepFiltered.set(i, lints);
 				}
 			}
+		}
+		if (changed) {
+			return new LintState(dirtyState, perStepFiltered.indexOfFirstValue() == -1 ? null : perStepFiltered);
+		} else {
+			return this;
 		}
 	}
 

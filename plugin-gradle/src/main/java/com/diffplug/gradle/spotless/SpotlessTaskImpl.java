@@ -118,8 +118,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			lintState = LintState.clean();
 		} else {
 			try {
-				lintState = LintState.of(formatter, input);
-				lintState.removeSuppressedLints(formatter, relativePath, getLintSuppressions());
+				lintState = LintState.of(formatter, input).withRemovedSuppressions(formatter, relativePath, getLintSuppressions());
 			} catch (Throwable e) {
 				throw new IllegalArgumentException("Issue processing file: " + input, e);
 			}

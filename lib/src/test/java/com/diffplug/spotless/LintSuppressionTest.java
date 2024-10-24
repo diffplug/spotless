@@ -46,8 +46,7 @@ public class LintSuppressionTest {
 
 	@Test
 	public void testMatchSingle() {
-		var noSuppressions = dummyLintState();
-		noSuppressions.removeSuppressedLints(formatter(), "file", List.of());
+		var noSuppressions = dummyLintState().withRemovedSuppressions(formatter(), "file", List.of());
 		assertThat(noSuppressions.isHasLints()).isTrue();
 		removesLint(s -> s.setStep("blah")).isFalse();
 		removesLint(s -> s.setStep("endWithNewline")).isTrue();
@@ -77,8 +76,7 @@ public class LintSuppressionTest {
 		var s = new LintSuppression();
 		suppression.accept(s);
 
-		var ls = dummyLintState();
-		ls.removeSuppressedLints(formatter(), "testFile", List.of(s));
+		var ls = dummyLintState().withRemovedSuppressions(formatter(), "testFile", List.of(s));
 		return assertThat(!ls.isHasLints());
 	}
 }
