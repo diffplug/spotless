@@ -55,9 +55,9 @@ public class LintState {
 		}
 		LinkedHashMap<String, List<Lint>> result = new LinkedHashMap<>();
 		for (int i = 0; i < lintsPerStep.size(); i++) {
-			FormatterStep step = formatter.getSteps().get(i);
 			List<Lint> lints = lintsPerStep.get(i);
 			if (lints != null) {
+				FormatterStep step = formatter.getSteps().get(i);
 				result.put(step.getName(), lints);
 			}
 		}

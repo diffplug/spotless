@@ -141,7 +141,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		for (int i = 0; i < formatter.getSteps().size(); ++i) {
 			Throwable exception = exceptionPerStep.get(i);
 			if (exception != null && exception != LintState.formatStepCausedNoChange()) {
-				logger.error("Step '{}' found problem in '{}':\n{}", formatter.getSteps().get(i), file.getName(), exception.getMessage(), exception);
+				logger.error("Step '{}' found problem in '{}':\n{}", formatter.getSteps().get(i).getName(), file.getName(), exception.getMessage(), exception);
 				throw ThrowingEx.asRuntimeRethrowError(exception);
 			}
 		}
