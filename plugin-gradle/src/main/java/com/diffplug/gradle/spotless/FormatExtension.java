@@ -170,6 +170,7 @@ public class FormatExtension {
 
 	final List<LintSuppression> lintSuppressions = new ArrayList<>();
 
+	/** Suppresses any lints which meet the supplied criteria. */
 	public void suppressLintsFor(Action<LintSuppression> lintSuppression) {
 		LintSuppression suppression = new LintSuppression();
 		lintSuppression.execute(suppression);
@@ -177,16 +178,26 @@ public class FormatExtension {
 		lintSuppressions.add(suppression);
 	}
 
-	/** Ignores errors in the given step. */
+	/**
+	 * Ignores errors in the given step.
+	 *
+	 * @deprecated Use {@link #suppressLintsFor(Action)} instead.
+	 */
 	@Deprecated
 	public void ignoreErrorForStep(String stepName) {
+		System.err.println("`ignoreErrorForStep('" + stepName + "') is deprecated, use `suppressLintsFor { step = '" + stepName + "' }` instead.");
 		suppressLintsFor(it -> it.setStep(stepName));
 	}
 
-	/** Ignores errors for the given relative path. */
+	/**
+	 * Ignores errors for the given relative path.
+	 *
+	 * @deprecated Use {@link #suppressLintsFor(Action)} instead.
+	 */
 	@Deprecated
 	public void ignoreErrorForPath(String relativePath) {
-		suppressLintsFor(it -> it.setFile(relativePath));
+		System.err.println("`ignoreErrorForPath('" + relativePath + "') is deprecated, use `suppressLintsFor { path = '" + relativePath + "' }` instead.");
+		suppressLintsFor(it -> it.setPath(relativePath));
 	}
 
 	/**
