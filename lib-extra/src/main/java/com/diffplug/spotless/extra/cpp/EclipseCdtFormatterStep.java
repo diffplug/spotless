@@ -18,6 +18,7 @@ package com.diffplug.spotless.extra.cpp;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
+import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
@@ -45,7 +46,7 @@ public final class EclipseCdtFormatterStep {
 
 	/** Provides default configuration */
 	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), EclipseCdtFormatterStep::apply) {
+		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), EclipseCdtFormatterStep::apply, ImmutableMap.builder()) {
 			@Override
 			protected P2Model model(String version) {
 				var model = new P2Model();
