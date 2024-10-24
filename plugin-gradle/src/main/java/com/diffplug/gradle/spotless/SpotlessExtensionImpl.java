@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 	@Override
 	protected void createFormatTasks(String name, FormatExtension formatExtension) {
-		boolean isIdeHook = project.hasProperty(IdeHook.PROPERTY);
+		IdeHook.State ideHook = new IdeHook.State(project);
 		TaskContainer tasks = project.getTasks();
 
 		// create the SpotlessTask
@@ -56,7 +56,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		TaskProvider<SpotlessTaskImpl> spotlessTask = tasks.register(taskName, SpotlessTaskImpl.class, task -> {
 			task.init(getRegisterDependenciesTask().getTaskService());
 			task.setGroup(TASK_GROUP);
-			task.setEnabled(!isIdeHook);
+			task.getIdeHookState().set(ideHook);
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});
@@ -75,23 +75,18 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
 			task.init(spotlessTask.get());
 			task.setGroup(TASK_GROUP);
-			task.setEnabled(!isIdeHook);
+			task.setEnabled(ideHook.path == null);
 			task.dependsOn(spotlessTask);
 		});
 		rootApplyTask.configure(task -> {
-			task.dependsOn(applyTask);
-
-			if (isIdeHook) {
-				// the rootApplyTask is no longer just a marker task, now it does a bit of work itself
-				task.doLast(unused -> IdeHook.performHook(spotlessTask.get()));
-			}
+			task.dependsOn(ideHook.path == null ? applyTask : spotlessTask);
 		});
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
 			SpotlessTaskImpl source = spotlessTask.get();
 			task.setGroup(TASK_GROUP);
 			task.init(source);
-			task.setEnabled(!isIdeHook);
+			task.setEnabled(ideHook.path == null);
 			task.dependsOn(source);
 
 			// if the user runs both, make sure that apply happens first,

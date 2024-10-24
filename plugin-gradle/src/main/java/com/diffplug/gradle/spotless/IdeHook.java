@@ -19,12 +19,34 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import javax.annotation.Nullable;
+
+import org.gradle.api.Project;
+
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.ByteStreams;
 import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.NoLambda;
 
 class IdeHook {
+	static class State extends NoLambda.EqualityBasedOnSerialization {
+		final @Nullable String path;
+		final boolean useStdIn;
+		final boolean useStdOut;
+
+		State(Project project) {
+			path = (String) project.findProperty(PROPERTY);
+			if (path != null) {
+				useStdIn = project.hasProperty(USE_STD_IN);
+				useStdOut = project.hasProperty(USE_STD_OUT);
+			} else {
+				useStdIn = false;
+				useStdOut = false;
+			}
+		}
+	}
+
 	final static String PROPERTY = "spotlessIdeHook";
 	final static String USE_STD_IN = "spotlessIdeHookUseStdIn";
 	final static String USE_STD_OUT = "spotlessIdeHookUseStdOut";
@@ -33,9 +55,8 @@ class IdeHook {
 		System.err.println("IS CLEAN");
 	}
 
-	static void performHook(SpotlessTaskImpl spotlessTask) {
-		String path = (String) spotlessTask.getProject().property(PROPERTY);
-		File file = new File(path);
+	static void performHook(SpotlessTaskImpl spotlessTask, IdeHook.State state) {
+		File file = new File(state.path);
 		if (!file.isAbsolute()) {
 			System.err.println("Argument passed to " + PROPERTY + " must be an absolute path");
 			return;
@@ -50,7 +71,7 @@ class IdeHook {
 					}
 				}
 				byte[] bytes;
-				if (spotlessTask.getProject().hasProperty(USE_STD_IN)) {
+				if (state.useStdIn) {
 					bytes = ByteStreams.toByteArray(System.in);
 				} else {
 					bytes = Files.readAllBytes(file.toPath());
@@ -63,7 +84,7 @@ class IdeHook {
 					System.err.println("Run 'spotlessDiagnose' for details https://github.com/diffplug/spotless/blob/main/PADDEDCELL.md");
 				} else {
 					System.err.println("IS DIRTY");
-					if (spotlessTask.getProject().hasProperty(USE_STD_OUT)) {
+					if (state.useStdOut) {
 						dirty.writeCanonicalTo(System.out);
 					} else {
 						dirty.writeCanonicalTo(file);

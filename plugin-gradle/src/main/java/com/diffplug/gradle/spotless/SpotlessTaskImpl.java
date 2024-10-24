@@ -29,9 +29,12 @@ import javax.inject.Inject;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.CacheableTask;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.ChangeType;
 import org.gradle.work.FileChange;
@@ -46,6 +49,10 @@ import com.diffplug.spotless.extra.GitRatchet;
 
 @CacheableTask
 public abstract class SpotlessTaskImpl extends SpotlessTask {
+	@Input
+	@Optional
+	abstract Property<IdeHook.State> getIdeHookState();
+
 	@Internal
 	abstract DirectoryProperty getProjectDir();
 
@@ -69,6 +76,12 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
+		IdeHook.State ideHook = getIdeHookState().getOrNull();
+		if (ideHook != null && ideHook.path != null) {
+			IdeHook.performHook(this, ideHook);
+			return;
+		}
+
 		SpotlessTaskService taskService = getTaskService().get();
 		taskService.registerSourceAlreadyRan(this);
 		if (target == null) {
