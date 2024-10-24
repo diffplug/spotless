@@ -34,6 +34,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.ChangeType;
 import org.gradle.work.FileChange;
@@ -49,6 +50,7 @@ import com.diffplug.spotless.extra.GitRatchet;
 @CacheableTask
 public abstract class SpotlessTaskImpl extends SpotlessTask {
 	@Input
+	@Optional
 	abstract Property<IdeHook.State> getIdeHookState();
 
 	@Internal
