@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /** Formatter which performs the full formatting. */
 public final class Formatter implements Serializable, AutoCloseable {
 	private static final long serialVersionUID = 1L;
@@ -130,9 +133,21 @@ public final class Formatter implements Serializable, AutoCloseable {
 	public String compute(String unix, File file) {
 		ValuePerStep<Throwable> exceptionPerStep = new ValuePerStep<>(this);
 		String result = computeWithLint(unix, file, exceptionPerStep);
-		LintPolicy.legacyBehavior(this, file, exceptionPerStep);
+		legacyErrorBehavior(this, file, exceptionPerStep);
 		return result;
 	}
+
+	static void legacyErrorBehavior(Formatter formatter, File file, ValuePerStep<Throwable> exceptionPerStep) {
+		for (int i = 0; i < formatter.getSteps().size(); ++i) {
+			Throwable exception = exceptionPerStep.get(i);
+			if (exception != null && exception != LintState.formatStepCausedNoChange()) {
+				logger.error("Step '{}' found problem in '{}':\n{}", formatter.getSteps().get(i), file.getName(), exception.getMessage(), exception);
+				throw ThrowingEx.asRuntimeRethrowError(exception);
+			}
+		}
+	}
+
+	private static final Logger logger = LoggerFactory.getLogger(Formatter.class);
 
 	/**
 	 * Returns the result of calling all of the FormatterSteps, while also
