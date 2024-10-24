@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -36,10 +37,10 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
 import com.diffplug.spotless.ConfigurationCacheHackList;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.extra.GitRatchet;
 
 public abstract class SpotlessTask extends DefaultTask {
@@ -121,15 +122,15 @@ public abstract class SpotlessTask extends DefaultTask {
 		return subtreeSha;
 	}
 
-	protected FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
+	protected List<LintSuppression> lintSuppressions = new ArrayList<>();
 
-	public void setExceptionPolicy(FormatExceptionPolicyStrict exceptionPolicy) {
-		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
+	public void setLintSuppressions(List<LintSuppression> lintSuppressions) {
+		this.lintSuppressions = Objects.requireNonNull(lintSuppressions);
 	}
 
 	@Input
-	public FormatExceptionPolicyStrict getExceptionPolicy() {
-		return exceptionPolicy;
+	public List<LintSuppression> getLintSuppressions() {
+		return lintSuppressions;
 	}
 
 	protected FileCollection target;
@@ -149,12 +150,20 @@ public abstract class SpotlessTask extends DefaultTask {
 		}
 	}
 
-	protected File outputDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(),
-			"spotless/" + getName());
+	protected File cleanDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(),
+			"spotless-clean/" + getName());
 
 	@OutputDirectory
-	public File getOutputDirectory() {
-		return outputDirectory;
+	public File getCleanDirectory() {
+		return cleanDirectory;
+	}
+
+	protected File lintsDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(),
+			"spotless-lints/" + getName());
+
+	@OutputDirectory
+	public File getLintsDirectory() {
+		return lintsDirectory;
 	}
 
 	private final ConfigurationCacheHackList stepsInternalRoundtrip = ConfigurationCacheHackList.forRoundtrip();

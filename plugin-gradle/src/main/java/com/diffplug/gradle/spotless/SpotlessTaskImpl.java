@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -38,6 +40,7 @@ import org.gradle.work.InputChanges;
 import com.diffplug.common.annotations.VisibleForTesting;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.extra.GitRatchet;
 
@@ -74,19 +77,31 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 		if (!inputs.isIncremental()) {
 			getLogger().info("Not incremental: removing prior outputs");
-			getFs().delete(d -> d.delete(outputDirectory));
-			Files.createDirectories(outputDirectory.toPath());
+			getFs().delete(d -> d.delete(cleanDirectory));
+			getFs().delete(d -> d.delete(lintsDirectory));
+			Files.createDirectories(cleanDirectory.toPath());
+			Files.createDirectories(lintsDirectory.toPath());
 		}
 
 		try (Formatter formatter = buildFormatter()) {
 			GitRatchetGradle ratchet = getRatchet();
 			for (FileChange fileChange : inputs.getFileChanges(target)) {
 				File input = fileChange.getFile();
+				File projectDir = getProjectDir().get().getAsFile();
+				String relativePath = FormatExtension.relativize(projectDir, input);
+				if (relativePath == null) {
+					throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
+						printer.println("Spotless error! All target files must be within the project dir.");
+						printer.println("  project dir: " + projectDir.getAbsolutePath());
+						printer.println("       target: " + input.getAbsolutePath());
+					}));
+				}
 				if (fileChange.getChangeType() == ChangeType.REMOVED) {
-					deletePreviousResults(input);
+					deletePreviousResults(cleanDirectory, relativePath);
+					deletePreviousResults(lintsDirectory, relativePath);
 				} else {
 					if (input.isFile()) {
-						processInputFile(ratchet, formatter, input);
+						processInputFile(ratchet, formatter, input, relativePath);
 					}
 				}
 			}
@@ -94,62 +109,51 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	}
 
 	@VisibleForTesting
-	void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input) throws IOException {
-		File output = getOutputFileWithBaseDir(input, outputDirectory);
-		getLogger().debug("Applying format to {} and writing to {}", input, output);
+	void processInputFile(@Nullable GitRatchet ratchet, Formatter formatter, File input, String relativePath) throws IOException {
+		File cleanFile = new File(cleanDirectory, relativePath);
+		File lintFile = new File(lintsDirectory, relativePath);
+		getLogger().debug("Applying format to {} and writing to {}", input, cleanFile);
 		LintState lintState;
 		if (ratchet != null && ratchet.isClean(getProjectDir().get().getAsFile(), getRootTreeSha(), input)) {
 			lintState = LintState.clean();
 		} else {
 			try {
-				lintState = LintState.of(formatter, input);
+				lintState = LintState.of(formatter, input).withRemovedSuppressions(formatter, relativePath, getLintSuppressions());
 			} catch (Throwable e) {
 				throw new IllegalArgumentException("Issue processing file: " + input, e);
 			}
 		}
 		if (lintState.getDirtyState().isClean()) {
 			// Remove previous output if it exists
-			Files.deleteIfExists(output.toPath());
+			Files.deleteIfExists(cleanFile.toPath());
 		} else if (lintState.getDirtyState().didNotConverge()) {
-			getLogger().warn("Skipping '{}' because it does not converge.  Run {@code spotlessDiagnose} to understand why", input);
+			getLogger().warn("Skipping '{}' because it does not converge.  Run {@code spotlessDiagnose} to understand why", relativePath);
 		} else {
-			Path parentDir = output.toPath().getParent();
+			Path parentDir = cleanFile.toPath().getParent();
 			if (parentDir == null) {
-				throw new IllegalStateException("Every file has a parent folder. But not: " + output);
+				throw new IllegalStateException("Every file has a parent folder. But not: " + cleanFile);
 			}
 			Files.createDirectories(parentDir);
 			// Need to copy the original file to the tmp location just to remember the file attributes
-			Files.copy(input.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+			Files.copy(input.toPath(), cleanFile.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
 
-			getLogger().info(String.format("Writing clean file: %s", output));
-			lintState.getDirtyState().writeCanonicalTo(output);
+			getLogger().info(String.format("Writing clean file: %s", cleanFile));
+			lintState.getDirtyState().writeCanonicalTo(cleanFile);
 		}
-		if (lintState.isHasLints()) {
-			var lints = lintState.getLints(formatter);
-			var first = lints.entrySet().iterator().next();
-			getExceptionPolicy().handleError(new Throwable(first.getValue().get(0).toString()), first.getKey(), FormatExtension.relativize(getProjectDir().get().getAsFile(), input));
+		if (!lintState.isHasLints()) {
+			Files.deleteIfExists(lintFile.toPath());
+		} else {
+			LinkedHashMap<String, List<Lint>> lints = lintState.getLintsByStep(formatter);
+			SerializableMisc.toFile(lints, lintFile);
 		}
 	}
 
-	private void deletePreviousResults(File input) throws IOException {
-		File output = getOutputFileWithBaseDir(input, outputDirectory);
+	private void deletePreviousResults(File baseDir, String subpath) throws IOException {
+		File output = new File(baseDir, subpath);
 		if (output.isDirectory()) {
 			getFs().delete(d -> d.delete(output));
 		} else {
 			Files.deleteIfExists(output.toPath());
 		}
-	}
-
-	private File getOutputFileWithBaseDir(File input, File baseDir) {
-		File projectDir = getProjectDir().get().getAsFile();
-		String outputFileName = FormatExtension.relativize(projectDir, input);
-		if (outputFileName == null) {
-			throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
-				printer.println("Spotless error! All target files must be within the project dir.");
-				printer.println("  project dir: " + projectDir.getAbsolutePath());
-				printer.println("       target: " + input.getAbsolutePath());
-			}));
-		}
-		return new File(baseDir, outputFileName);
 	}
 }

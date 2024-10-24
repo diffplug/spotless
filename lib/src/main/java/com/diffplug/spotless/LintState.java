@@ -18,9 +18,10 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -28,7 +29,7 @@ public class LintState {
 	private final DirtyState dirtyState;
 	private final @Nullable List<List<Lint>> lintsPerStep;
 
-	private LintState(DirtyState dirtyState, @Nullable List<List<Lint>> lintsPerStep) {
+	LintState(DirtyState dirtyState, @Nullable List<List<Lint>> lintsPerStep) {
 		this.dirtyState = dirtyState;
 		this.lintsPerStep = lintsPerStep;
 	}
@@ -45,21 +46,59 @@ public class LintState {
 		return dirtyState.isClean() && !isHasLints();
 	}
 
-	public Map<FormatterStep, List<Lint>> getLints(Formatter formatter) {
+	public LinkedHashMap<String, List<Lint>> getLintsByStep(Formatter formatter) {
 		if (lintsPerStep == null) {
 			throw new IllegalStateException("Check `isHasLints` first!");
 		}
 		if (lintsPerStep.size() != formatter.getSteps().size()) {
 			throw new IllegalStateException("LintState was created with a different formatter!");
 		}
-		Map<FormatterStep, List<Lint>> result = new LinkedHashMap<>();
+		LinkedHashMap<String, List<Lint>> result = new LinkedHashMap<>();
 		for (int i = 0; i < lintsPerStep.size(); i++) {
 			List<Lint> lints = lintsPerStep.get(i);
 			if (lints != null) {
-				result.put(formatter.getSteps().get(i), lints);
+				FormatterStep step = formatter.getSteps().get(i);
+				result.put(step.getName(), lints);
 			}
 		}
 		return result;
+	}
+
+	public LintState withRemovedSuppressions(Formatter formatter, String relativePath, List<LintSuppression> suppressions) {
+		if (lintsPerStep == null) {
+			return this;
+		}
+		if (formatter.getSteps().size() != lintsPerStep.size()) {
+			throw new IllegalStateException("LintState was created with a different formatter!");
+		}
+		boolean changed = false;
+		ValuePerStep<List<Lint>> perStepFiltered = new ValuePerStep<>(formatter);
+		for (int i = 0; i < lintsPerStep.size(); i++) {
+			FormatterStep step = formatter.getSteps().get(i);
+			List<Lint> lintsOriginal = lintsPerStep.get(i);
+			if (lintsOriginal != null) {
+				List<Lint> lints = new ArrayList<>(lintsOriginal);
+				Iterator<Lint> iter = lints.iterator();
+				while (iter.hasNext()) {
+					Lint lint = iter.next();
+					for (LintSuppression suppression : suppressions) {
+						if (suppression.suppresses(relativePath, step, lint)) {
+							changed = true;
+							iter.remove();
+							break;
+						}
+					}
+				}
+				if (!lints.isEmpty()) {
+					perStepFiltered.set(i, lints);
+				}
+			}
+		}
+		if (changed) {
+			return new LintState(dirtyState, perStepFiltered.indexOfFirstValue() == -1 ? null : perStepFiltered);
+		} else {
+			return this;
+		}
 	}
 
 	public String asStringDetailed(File file, Formatter formatter) {
@@ -81,27 +120,7 @@ public class LintState {
 					FormatterStep step = formatter.getSteps().get(i);
 					for (Lint lint : lints) {
 						result.append(file.getName()).append(":");
-						if (lint.getLineStart() == Lint.LINE_UNDEFINED) {
-							result.append("LINE_UNDEFINED");
-						} else {
-							result.append("L");
-							result.append(lint.getLineStart());
-							if (lint.getLineEnd() != lint.getLineStart()) {
-								result.append("-").append(lint.getLineEnd());
-							}
-						}
-						result.append(" ");
-						result.append(step.getName()).append("(").append(lint.getRuleId()).append(") ");
-
-						int firstNewline = lint.getDetail().indexOf('\n');
-						if (firstNewline == -1) {
-							result.append(lint.getDetail());
-						} else if (oneLine) {
-							result.append(lint.getDetail(), 0, firstNewline);
-							result.append(" (...)");
-						} else {
-							result.append(lint.getDetail());
-						}
+						lint.addWarningMessageTo(result, step.getName(), oneLine);
 						result.append("\n");
 					}
 				}

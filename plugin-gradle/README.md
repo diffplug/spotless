@@ -53,6 +53,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Linting](#linting)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
@@ -74,11 +75,8 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
-      - javascript, jsx, angular, vue, flow, typescript, css, less, scss, html, json, graphql, markdown, ymaml
     - [clang-format](#clang-format)
-      - c, c++, c#, objective-c, protobuf, javascript, java
     - [eclipse web tools platform](#eclipse-web-tools-platform)
-      - css, html, js, json, xml
     - [Biome](#biome) ([binary detection](#biome-binary), [config file](#biome-configuration-file), [input language](#biome-input-language))
 - **Language independent**
   - [Generic steps](#generic-steps)
@@ -141,6 +139,35 @@ Spotless requires JRE 11+ and Gradle 6.1.1 or newer.
 
 - If you're stuck on JRE 8, use [`id 'com.diffplug.spotless' version '6.13.0'` or older](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#6130---2023-01-14).
 - If you're stuck on an older version of Gradle, [`id 'com.diffplug.gradle.spotless' version '4.5.1'` supports all the way back to Gradle 2.x](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#451---2020-07-04).
+
+### Linting
+
+Starting in version `7.0.0`, Spotless now supports linting in addition to formatting. To Spotless, all lints are errors which must be either fixed or suppressed. Lints show up like this:
+
+```console
+user@machine repo % ./gradlew build
+:spotlessKotlinCheck FAILED
+  There were 2 lint error(s), they must be fixed or suppressed.
+    src/main/kotlin/com/diffplug/Foo.kt:L7 ktlint(standard:no-wildcard-imports) Wildcard import
+    src/main/kotlin/com/diffplug/Bar.kt:L9 ktlint(standard:no-wildcard-imports) Wildcard import 
+  Resolve these lints or suppress with `suppressLintsFor`
+```
+
+To suppress lints, you can do this:
+
+```gradle
+spotless {
+  kotlin {
+    ktlint()
+    suppressLintsFor {
+      step = 'ktlint'
+      shortCode = 'standard:no-wildcard-imports'
+    }
+  }
+}
+```
+
+Spotless is primarily a formatter, _not_ a linter. In our opinion, a linter is just a broken formatter. But formatters do break sometimes, and representing these failures as lints that can be suppressed is more useful than just giving up.
 
 <a name="applying-to-java-source"></a>
 

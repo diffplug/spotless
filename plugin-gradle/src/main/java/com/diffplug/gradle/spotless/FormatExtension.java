@@ -49,11 +49,11 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
 
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
@@ -168,16 +168,36 @@ public class FormatExtension {
 		encoding = requireNonNull(charset);
 	}
 
-	final FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
+	final List<LintSuppression> lintSuppressions = new ArrayList<>();
 
-	/** Ignores errors in the given step. */
-	public void ignoreErrorForStep(String stepName) {
-		exceptionPolicy.excludeStep(requireNonNull(stepName));
+	/** Suppresses any lints which meet the supplied criteria. */
+	public void suppressLintsFor(Action<LintSuppression> lintSuppression) {
+		LintSuppression suppression = new LintSuppression();
+		lintSuppression.execute(suppression);
+		suppression.ensureDoesNotSuppressAll();
+		lintSuppressions.add(suppression);
 	}
 
-	/** Ignores errors for the given relative path. */
+	/**
+	 * Ignores errors in the given step.
+	 *
+	 * @deprecated Use {@link #suppressLintsFor(Action)} instead.
+	 */
+	@Deprecated
+	public void ignoreErrorForStep(String stepName) {
+		System.err.println("`ignoreErrorForStep('" + stepName + "') is deprecated, use `suppressLintsFor { step = '" + stepName + "' }` instead.");
+		suppressLintsFor(it -> it.setStep(stepName));
+	}
+
+	/**
+	 * Ignores errors for the given relative path.
+	 *
+	 * @deprecated Use {@link #suppressLintsFor(Action)} instead.
+	 */
+	@Deprecated
 	public void ignoreErrorForPath(String relativePath) {
-		exceptionPolicy.excludePath(requireNonNull(relativePath));
+		System.err.println("`ignoreErrorForPath('" + relativePath + "') is deprecated, use `suppressLintsFor { path = '" + relativePath + "' }` instead.");
+		suppressLintsFor(it -> it.setPath(relativePath));
 	}
 
 	/**
@@ -996,7 +1016,7 @@ public class FormatExtension {
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
-		task.setExceptionPolicy(exceptionPolicy);
+		task.setLintSuppressions(lintSuppressions);
 		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;

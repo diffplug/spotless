@@ -11,7 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-* APIs to support linting. (implemented in [#2148](https://github.com/diffplug/spotless/pull/2148) and [#2149](https://github.com/diffplug/spotless/pull/2149))
+* APIs to support linting. (implemented in [#2148](https://github.com/diffplug/spotless/pull/2148), [#2149](https://github.com/diffplug/spotless/pull/2149), [#2307](https://github.com/diffplug/spotless/pull/2307))
   * Spotless is still primarily a formatter, not a linter. But when formatting fails, it's more flexible to model those failures as lints so that the formatting can continue and ideally we can also capture the line numbers causing the failure.
   * `Lint` models a single change. A `FormatterStep` can create a lint by:
     * throwing an exception during formatting, ideally `throw Lint.atLine(127, "code", "Well what happened was...")`
