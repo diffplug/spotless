@@ -21,14 +21,15 @@ import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
 public class LintState {
 	private final DirtyState dirtyState;
-	private final @Nullable List<List<Lint>> lintsPerStep;
+	private @Nullable List<List<Lint>> lintsPerStep;
 
-	private LintState(DirtyState dirtyState, @Nullable List<List<Lint>> lintsPerStep) {
+	LintState(DirtyState dirtyState, @Nullable List<List<Lint>> lintsPerStep) {
 		this.dirtyState = dirtyState;
 		this.lintsPerStep = lintsPerStep;
 	}
@@ -67,6 +68,9 @@ public class LintState {
 		if (lintsPerStep == null) {
 			return;
 		}
+		if (formatter.getSteps().size() != lintsPerStep.size()) {
+			throw new IllegalStateException("LintState was created with a different formatter!");
+		}
 		for (int i = 0; i < lintsPerStep.size(); i++) {
 			FormatterStep step = formatter.getSteps().get(i);
 			List<Lint> lints = lintsPerStep.get(i);
@@ -83,6 +87,10 @@ public class LintState {
 				}
 				if (lints.isEmpty()) {
 					lintsPerStep.set(i, null);
+					if (lintsPerStep.stream().allMatch(Objects::isNull)) {
+						lintsPerStep = null;
+						return;
+					}
 				}
 			}
 		}
