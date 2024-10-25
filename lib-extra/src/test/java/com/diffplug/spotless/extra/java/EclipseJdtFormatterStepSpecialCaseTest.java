@@ -24,10 +24,10 @@ import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 
-public class EclipseJdtFormatterStepSpecialCaseTest {
+class EclipseJdtFormatterStepSpecialCaseTest {
 	/** https://github.com/diffplug/spotless/issues/1638 */
 	@Test
-	public void issue_1638() {
+	void issue_1638() {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File file = new File(classLoader.getResource("eclipse_formatter_issue_1638.xml").getFile());
 		EquoBasedStepBuilder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
@@ -37,7 +37,7 @@ public class EclipseJdtFormatterStepSpecialCaseTest {
 	}
 
 	@Test
-	public void sort_members_no_fields() {
+	void sort_members_no_fields() {
 		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 		builder.setMembersOrdering("SF,SI,SM,F,I,C,M,T", true);
 		StepHarness.forStep(builder.build())
@@ -45,7 +45,7 @@ public class EclipseJdtFormatterStepSpecialCaseTest {
 	}
 
 	@Test
-	public void sort_members() {
+	void sort_members() {
 		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 		builder.setMembersOrdering("SF,SI,SM,F,I,C,M,T", false);
 		StepHarness.forStep(builder.build())
@@ -53,7 +53,7 @@ public class EclipseJdtFormatterStepSpecialCaseTest {
 	}
 
 	@Test
-	public void sort_members_and_by_visibility() {
+	void sort_members_by_visibility() {
 		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 		builder.setMembersOrdering("SF,SI,SM,F,I,C,M,T", false);
 		builder.setVisibilityOrdering("B,R,D,V");
