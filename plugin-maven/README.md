@@ -430,7 +430,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
     <ktlint_code_style>intellij_idea</ktlint_code_style>
   </editorConfigOverride>
   <customRuleSets> <!-- optional -->
-    <value>io.nlopez.compose.rules:ktlint:0.3.3</value>
+    <value>io.nlopez.compose.rules:ktlint:0.4.16</value>
   </customRuleSets>
 </ktlint>
 ```

@@ -178,7 +178,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"    kotlin {",
 				"        ktlint(\"1.0.1\")",
 				"        .customRuleSets(listOf(",
-				"            \"io.nlopez.compose.rules:ktlint:0.3.3\"",
+				"            \"io.nlopez.compose.rules:ktlint:0.4.16\"",
 				"        ))",
 				"        .editorConfigOverride(mapOf(",
 				"            \"ktlint_function_naming_ignore_when_annotated_with\" to \"Composable\"",
