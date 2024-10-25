@@ -9,6 +9,13 @@ public class SortExample {
 	public final int f = 1;
 	public final int b = 1;
 	final boolean _1 = false;
+	static void s1() {}
+	private static void s2() {}
+	public static void s3() {}
+	protected static void s4() {}
+	SortExample(int b, int c) {}
+	SortExample(int a) {}
+	SortExample() {}
 	class Nested {
 		void z() {}
 		private static final String C = "C";
@@ -21,8 +28,10 @@ public class SortExample {
 	}
 	public static final int Z;
 	private static final int A;
+	static final int B  =1;
+	protected static final int C= 2;
 	static {
-		Z = 1;
+		Z = 9;
 		A = 0;
 	}
 }

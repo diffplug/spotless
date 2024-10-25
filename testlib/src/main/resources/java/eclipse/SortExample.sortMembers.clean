@@ -2,10 +2,20 @@ package com.diffplug.spotless.extra.glue.jdt;
 
 public class SortExample {
 	private static final int A;
+	static final int B = 1;
+	protected static final int C = 2;
 	public static final int Z;
 	static {
-		Z = 1;
+		Z = 9;
 		A = 0;
+	}
+	static void s1() {
+	}
+	private static void s2() {
+	}
+	public static void s3() {
+	}
+	protected static void s4() {
 	}
 	final boolean _1 = false;
 	final int a = 1;
@@ -15,6 +25,12 @@ public class SortExample {
 	protected final int e = 1;
 	public final int f = 1;
 	final int z = 1;
+	SortExample() {
+	}
+	SortExample(int a) {
+	}
+	SortExample(int b, int c) {
+	}
 	class Nested {
 		public static final String B = "B";
 		private static final String C = "C";
