@@ -37,6 +37,7 @@ import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
 /**
  * This class is derived and adapted code from the Eclipse JDT project (Derivative Works according to EPL 2.0 license).
  */
+@SuppressFBWarnings(value = "SE_COMPARATOR_SHOULD_BE_SERIALIZABLE", justification = "this comparator is not meant to be serialized")
 class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 
 	static final int TYPE_INDEX = 0;
@@ -96,62 +97,60 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 		this.visibilityOffsets = visibilityOffsets;
 	}
 
+	@SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "we only accept valid tokens in the order string, otherwise we fall back to default value")
 	static boolean fillVisibilityOffsets(String preferencesString, int[] offsets) {
 		StringTokenizer tokenizer = new StringTokenizer(preferencesString, ",");
 		int i = 0;
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
-			if (token != null) {
-				switch (token) {
-				case "B":
-					offsets[PUBLIC_INDEX] = i++;
-					break;
-				case "D":
-					offsets[DEFAULT_INDEX] = i++;
-					break;
-				case "R":
-					offsets[PROTECTED_INDEX] = i++;
-					break;
-				case "V":
-					offsets[PRIVATE_INDEX] = i++;
-				}
+			switch (token) {
+			case "B":
+				offsets[PUBLIC_INDEX] = i++;
+				break;
+			case "D":
+				offsets[DEFAULT_INDEX] = i++;
+				break;
+			case "R":
+				offsets[PROTECTED_INDEX] = i++;
+				break;
+			case "V":
+				offsets[PRIVATE_INDEX] = i++;
 			}
 		}
 		return i == N_VISIBILITIES;
 	}
 
-	static boolean fillMemberCategoryOffsets(String preferencesString, int[] offsets) {
-		StringTokenizer tokenizer = new StringTokenizer(preferencesString, ",");
+	@SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "we only accept valid tokens in the order string, otherwise we fall back to default value")
+	static boolean fillMemberCategoryOffsets(String orderString, int[] offsets) {
+		StringTokenizer tokenizer = new StringTokenizer(orderString, ",");
 		int i = 0;
 		offsets[8] = i++;
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
-			if (token != null) {
-				switch (token) {
-				case "C":
-					offsets[CONSTRUCTORS_INDEX] = i++;
-					break;
-				case "F":
-					offsets[FIELDS_INDEX] = i++;
-					break;
-				case "I":
-					offsets[INIT_INDEX] = i++;
-					break;
-				case "M":
-					offsets[METHOD_INDEX] = i++;
-					break;
-				case "T":
-					offsets[TYPE_INDEX] = i++;
-					break;
-				case "SF":
-					offsets[STATIC_FIELDS_INDEX] = i++;
-					break;
-				case "SI":
-					offsets[STATIC_INIT_INDEX] = i++;
-					break;
-				case "SM":
-					offsets[STATIC_METHODS_INDEX] = i++;
-				}
+			switch (token) {
+			case "C":
+				offsets[CONSTRUCTORS_INDEX] = i++;
+				break;
+			case "F":
+				offsets[FIELDS_INDEX] = i++;
+				break;
+			case "I":
+				offsets[INIT_INDEX] = i++;
+				break;
+			case "M":
+				offsets[METHOD_INDEX] = i++;
+				break;
+			case "T":
+				offsets[TYPE_INDEX] = i++;
+				break;
+			case "SF":
+				offsets[STATIC_FIELDS_INDEX] = i++;
+				break;
+			case "SI":
+				offsets[STATIC_INIT_INDEX] = i++;
+				break;
+			case "SM":
+				offsets[STATIC_METHODS_INDEX] = i++;
 			}
 		}
 		return i == N_CATEGORIES;
@@ -219,6 +218,7 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 	 * @see CompilationUnitSorter#sort(int, org.eclipse.jdt.core.ICompilationUnit, int[], java.util.Comparator, int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
+	@SuppressFBWarnings(value = "BC_UNCONFIRMED_CAST", justification = "when switching to a more recent Java version, we can avoid those unconfirmed casts")
 	public int compare(BodyDeclaration bodyDeclaration1, BodyDeclaration bodyDeclaration2) {
 		boolean preserved1 = doNotSortFields && isSortPreserved(bodyDeclaration1);
 		boolean preserved2 = doNotSortFields && isSortPreserved(bodyDeclaration2);

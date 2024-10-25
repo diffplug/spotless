@@ -28,42 +28,9 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.internal.core.CompilationUnit;
-import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.SortElementsOperation;
 
 public class EclipseJdtSortMembers {
-
-	private static CompilationUnit compilationUnit(String code) {
-		return new CompilationUnit(null, null, null) {
-			private final Buffer buffer = new Buffer(code);
-
-			@Override
-			public IBuffer getBuffer() {
-				return buffer;
-			}
-
-			@Override
-			public JavaProject getJavaProject() {
-				return new JavaProject(null, null) {
-					@Override
-					public Map<String, String> getOptions(boolean inheritJavaCoreOptions) {
-						return Map.of();
-					}
-				};
-			}
-
-			@Override
-			public Map<String, String> getOptions(boolean inheritJavaCoreOptions) {
-				return Map.of();
-			}
-
-			@Override
-			public ICompilationUnit getPrimary() {
-				return this;
-			}
-		};
-	}
 
 	static String sortMember(String code, SortProperties properties) {
 		if (!properties.enabled) {
@@ -71,7 +38,7 @@ public class EclipseJdtSortMembers {
 		}
 
 		try {
-			CompilationUnit compilationUnit = compilationUnit(code);
+			CompilationUnit compilationUnit = new CompilationUnit(code);
 			DefaultJavaElementComparator comparator = DefaultJavaElementComparator.of(
 					properties.doNotSortFields,
 					properties.membersOrder,
@@ -156,6 +123,45 @@ public class EclipseJdtSortMembers {
 
 		public void setContents(String contents) {
 			this.contents = contents;
+		}
+	}
+
+	@SuppressFBWarnings(value = "EQ_DOESNT_OVERRIDE_EQUALS", justification = "the equals method shouldn't be called in the sort members use case")
+	private static class CompilationUnit extends org.eclipse.jdt.internal.core.CompilationUnit {
+		private final Buffer buffer;
+
+		CompilationUnit(String code) {
+			super(null, null, null);
+			buffer = new Buffer(code);
+		}
+
+		@Override
+		public IBuffer getBuffer() {
+			return buffer;
+		}
+
+		@Override
+		public JavaProject getJavaProject() {
+			return JavaProject.INSTANCE;
+		}
+
+		@Override
+		public Map<String, String> getOptions(boolean inheritJavaCoreOptions) {
+			return Map.of();
+		}
+
+		@Override
+		public ICompilationUnit getPrimary() {
+			return this;
+		}
+	}
+
+	private static class JavaProject extends org.eclipse.jdt.internal.core.JavaProject {
+		static final JavaProject INSTANCE = new JavaProject();
+
+		@Override
+		public Map<String, String> getOptions(boolean inheritJavaCoreOptions) {
+			return Map.of();
 		}
 	}
 
