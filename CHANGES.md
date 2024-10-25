@@ -10,7 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-### Changes
+### Changed
 * Bump default `ktlint` version to latest `1.3.0` -> `1.4.0`. ([#2314](https://github.com/diffplug/spotless/pull/2314))
 
 ## [3.0.0.BETA4] - 2024-10-24
@@ -21,7 +21,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
     * throwing an exception during formatting, ideally `throw Lint.atLine(127, "code", "Well what happened was...")`
     * or by implementing the `List<Lint> lint(String content, File file)` method to create multiple of them
 * Support for line ending policy `PRESERVE` which just takes the first line ending of every given file as setting (no matter if `\n`, `\r\n` or `\r`) ([#2304](https://github.com/diffplug/spotless/pull/2304))
-### Changes
+### Changed
 * **BREAKING** Moved `PaddedCell.DirtyState` to its own top-level class with new methods. ([#2148](https://github.com/diffplug/spotless/pull/2148))
   * **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use `DirtyState`.
 ### Fixed
