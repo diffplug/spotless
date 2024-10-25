@@ -159,6 +159,10 @@ public class EclipseJdtSortMembers {
 	private static class JavaProject extends org.eclipse.jdt.internal.core.JavaProject {
 		static final JavaProject INSTANCE = new JavaProject();
 
+		JavaProject() {
+			super(null, null);
+		}
+
 		@Override
 		public Map<String, String> getOptions(boolean inheritJavaCoreOptions) {
 			return Map.of();
