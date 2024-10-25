@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,10 @@ public class EclipseJdtFormatterStepImpl {
 
 	public EclipseJdtFormatterStepImpl(Properties formatterSettings, Map<String, String> sortProperties) {
 		Map<String, String> options = formatterSettings.entrySet().stream().collect(Collectors.toMap(
-			e -> String.valueOf(e.getKey()),
-			e -> String.valueOf(e.getValue()),
-			(prev, next) -> next,
-			HashMap::new));
+				e -> String.valueOf(e.getKey()),
+				e -> String.valueOf(e.getValue()),
+				(prev, next) -> next,
+				HashMap::new));
 		this.codeFormatter = new DefaultCodeFormatter(options);
 		this.sortProperties = EclipseJdtSortMembers.SortProperties.from(sortProperties);
 	}

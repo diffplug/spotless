@@ -57,11 +57,11 @@ public final class EclipseJdtFormatterStep {
 		private final ImmutableMap.Builder<String, String> stepProperties;
 
 		Builder(
-			String formatterName,
-			Provisioner mavenProvisioner,
-			String defaultVersion,
-			SerializedFunction<State, FormatterFunc> stateToFormatter,
-			ImmutableMap.Builder<String, String> stepProperties) {
+				String formatterName,
+				Provisioner mavenProvisioner,
+				String defaultVersion,
+				SerializedFunction<State, FormatterFunc> stateToFormatter,
+				ImmutableMap.Builder<String, String> stepProperties) {
 			super(formatterName, mavenProvisioner, defaultVersion, stateToFormatter, stepProperties);
 			this.stepProperties = stepProperties;
 		}

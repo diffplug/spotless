@@ -33,7 +33,6 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.CleanthatJavaStep;
@@ -314,9 +313,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		}
 
 		public EclipseConfig sortMembers(
-			String memberCategoryOrder,
-			boolean doNotSortFields,
-			String visibilityOrder) {
+				String memberCategoryOrder,
+				boolean doNotSortFields,
+				String visibilityOrder) {
 			requireElementsNonNull(memberCategoryOrder);
 			requireElementsNonNull(visibilityOrder);
 			builder.setMembersOrdering(memberCategoryOrder, doNotSortFields);

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2024 DiffPlug
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.diffplug.spotless.extra.glue.jdt;
 
 import org.eclipse.core.runtime.Assert;
@@ -10,14 +25,17 @@ import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+/**
+ * This class is derived and adapted code from the Eclipse JDT project (Derivative Works according to EPL 2.0 license).
+ */
 class JdtFlags {
 
-	static final int VISIBILITY_CODE_INVALID= 	-1;
+	static final int VISIBILITY_CODE_INVALID = -1;
 
 	static boolean isStatic(BodyDeclaration bodyDeclaration) {
 		if (isNestedInterfaceOrAnnotation(bodyDeclaration))
 			return true;
-		int nodeType= bodyDeclaration.getNodeType();
+		int nodeType = bodyDeclaration.getNodeType();
 		if (nodeType != ASTNode.METHOD_DECLARATION
 				&& nodeType != ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION
 				&& isInterfaceOrAnnotationMember(bodyDeclaration))
@@ -30,7 +48,7 @@ class JdtFlags {
 	}
 
 	private static boolean isPackageVisible(BodyDeclaration bodyDeclaration) {
-		return (! isPrivate(bodyDeclaration) && ! isProtected(bodyDeclaration) && ! isPublic(bodyDeclaration));
+		return (!isPrivate(bodyDeclaration) && !isProtected(bodyDeclaration) && !isPublic(bodyDeclaration));
 	}
 
 	private static boolean isPrivate(BodyDeclaration bodyDeclaration) {
@@ -52,8 +70,8 @@ class JdtFlags {
 	}
 
 	private static boolean isInterfaceOrAnnotation(ASTNode node) {
-		boolean isInterface= (node instanceof TypeDeclaration) && ((TypeDeclaration) node).isInterface();
-		boolean isAnnotation= node instanceof AnnotationTypeDeclaration;
+		boolean isInterface = (node instanceof TypeDeclaration) && ((TypeDeclaration) node).isInterface();
+		boolean isAnnotation = node instanceof AnnotationTypeDeclaration;
 		return isInterface || isAnnotation;
 	}
 

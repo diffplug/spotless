@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class EclipseJdtFormatterStepSpecialCaseTest {
 		EquoBasedStepBuilder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 		builder.setPreferences(List.of(file));
 		StepHarness.forStep(builder.build())
-			.testResource("java/eclipse/AbstractType.test", "java/eclipse/AbstractType.clean");
+				.testResource("java/eclipse/AbstractType.test", "java/eclipse/AbstractType.clean");
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class EclipseJdtFormatterStepSpecialCaseTest {
 		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 		builder.setMembersOrdering("SF,SI,SM,F,I,C,M,T", true);
 		StepHarness.forStep(builder.build())
-			.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembersNoFields.clean");
+				.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembersNoFields.clean");
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class EclipseJdtFormatterStepSpecialCaseTest {
 		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 		builder.setMembersOrdering("SF,SI,SM,F,I,C,M,T", false);
 		StepHarness.forStep(builder.build())
-			.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembers.clean");
+				.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembers.clean");
 	}
 
 	@Test
@@ -61,6 +61,6 @@ public class EclipseJdtFormatterStepSpecialCaseTest {
 		builder.setMembersOrdering("SF,SI,SM,F,I,C,M,T", false);
 		builder.setVisibilityOrdering("B,R,D,V");
 		StepHarness.forStep(builder.build())
-			.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembersByVisibility.clean");
+				.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembersByVisibility.clean");
 	}
 }

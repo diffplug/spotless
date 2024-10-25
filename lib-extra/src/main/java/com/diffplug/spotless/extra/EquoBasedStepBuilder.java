@@ -59,11 +59,11 @@ public abstract class EquoBasedStepBuilder {
 
 	/** Initialize valid default configuration, taking latest version */
 	public EquoBasedStepBuilder(
-		String formatterName,
-		Provisioner mavenProvisioner,
-		@Nullable String defaultVersion,
-		SerializedFunction<State, FormatterFunc> stateToFormatter,
-		ImmutableMap.Builder<String, String> stepProperties) {
+			String formatterName,
+			Provisioner mavenProvisioner,
+			@Nullable String defaultVersion,
+			SerializedFunction<State, FormatterFunc> stateToFormatter,
+			ImmutableMap.Builder<String, String> stepProperties) {
 
 		this.formatterName = formatterName;
 		this.mavenProvisioner = mavenProvisioner;
@@ -169,10 +169,10 @@ public abstract class EquoBasedStepBuilder {
 		private final ImmutableMap<String, String> stepProperties;
 
 		EquoStep(
-			String semanticVersion,
-			FileSignature.Promised settingsPromise,
-			JarState.Promised jarPromise,
-			ImmutableMap<String, String> stepProperties) {
+				String semanticVersion,
+				FileSignature.Promised settingsPromise,
+				JarState.Promised jarPromise,
+				ImmutableMap<String, String> stepProperties) {
 
 			this.semanticVersion = semanticVersion;
 			this.settingsPromise = settingsPromise;
