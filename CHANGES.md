@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changed
 * Bump default `ktlint` version to latest `1.3.0` -> `1.4.0`. ([#2314](https://github.com/diffplug/spotless/pull/2314))
+* Add _Sort Members_ feature based on [Eclipse JDT](plugin-gradle/README.md#eclipse-jdt) implementation. ([#2312](https://github.com/diffplug/spotless/pull/2312))
 
 ## [3.0.0.BETA4] - 2024-10-24
 ### Added
