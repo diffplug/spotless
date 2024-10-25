@@ -287,7 +287,7 @@ spotless {
     // optional: specify ordering of members of the same category by the visibility within the category
     // B,R,D,V = Public, Protected, Package, Private
     val visibilityOrder = "B,R,D,V"
-    eclipse().sortMembers(membersSortOrder, doNotSortFields, visibilityOrder)
+    eclipse().sortMembers(memberCategoryOrder, doNotSortFields, visibilityOrder)
 ```
 
 ### formatAnnotations
