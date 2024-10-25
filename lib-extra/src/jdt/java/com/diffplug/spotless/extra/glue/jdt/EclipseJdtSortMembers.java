@@ -19,7 +19,7 @@ import org.eclipse.jdt.internal.core.SortElementsOperation;
 
 public class EclipseJdtSortMembers {
 
-	private static CompilationUnit compilationUnit(String code, Map<String, String> options, Map<String, String> compilerOptions) {
+	private static CompilationUnit compilationUnit(String code) {
 		return new CompilationUnit(null, null, null) {
 			private final Buffer buffer = new Buffer(code);
 
@@ -33,14 +33,14 @@ public class EclipseJdtSortMembers {
 				return new JavaProject(null, null) {
 					@Override
 					public Map<String, String> getOptions(boolean inheritJavaCoreOptions) {
-						return compilerOptions;
+						return Map.of();
 					}
 				};
 			}
 
 			@Override
 			public Map<String, String> getOptions(boolean inheritJavaCoreOptions) {
-				return options;
+				return Map.of();
 			}
 
 			@Override
@@ -56,8 +56,12 @@ public class EclipseJdtSortMembers {
 		}
 
 		try {
-			CompilationUnit compilationUnit = compilationUnit(code, properties.compilationUnitOptions, properties.compilerOptions);
-			DefaultJavaElementComparator comparator = DefaultJavaElementComparator.of(properties.doNotSortFields, properties.membersOrder, properties.sortByVisibility, properties.visibilityOrder);
+			CompilationUnit compilationUnit = compilationUnit(code);
+			DefaultJavaElementComparator comparator = DefaultJavaElementComparator.of(
+				properties.doNotSortFields,
+				properties.membersOrder,
+				properties.sortByVisibility,
+				properties.visibilityOrder);
 			new Sorter(AST.getJLSLatest(), compilationUnit, null, comparator).sort();
 			String content = compilationUnit.getBuffer().getContents();
 			if (content != null) {
@@ -161,8 +165,6 @@ public class EclipseJdtSortMembers {
 	}
 
 	static class SortProperties {
-		final Map<String, String> compilationUnitOptions;
-		final Map<String, String> compilerOptions;
 		final boolean doNotSortFields;
 		final boolean enabled;
 		final String membersOrder;
@@ -174,17 +176,13 @@ public class EclipseJdtSortMembers {
 			String membersOrder,
 			boolean doNotSortFields,
 			boolean sortByVisibility,
-			String visibilityOrder,
-			Map<String, String> compilationUnitOptions,
-			Map<String, String> compilerOptions
+			String visibilityOrder
 		) {
 			this.enabled = enabled;
 			this.membersOrder = membersOrder;
 			this.doNotSortFields = doNotSortFields;
 			this.sortByVisibility = sortByVisibility;
 			this.visibilityOrder = visibilityOrder;
-			this.compilationUnitOptions = compilationUnitOptions;
-			this.compilerOptions = compilerOptions;
 		}
 
 		static SortProperties from(Map<String, String> properties) {
@@ -196,7 +194,7 @@ public class EclipseJdtSortMembers {
 			// At the moment we see no need for the following options, but they may become important, idk.
 			Map<String, String> compilationUnitOptions = Map.of();
 			Map<String, String> compilerOptions = Map.of();
-			return new SortProperties(enabled, membersOrder, doNotSortFields, sortByVisibility, visibilityOrder, compilationUnitOptions, compilerOptions);
+			return new SortProperties(enabled, membersOrder, doNotSortFields, sortByVisibility, visibilityOrder);
 		}
 	}
 }
