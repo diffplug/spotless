@@ -273,8 +273,8 @@ control system). It is turned off by default, but you might want to consider ena
 for a project.
 
 The format to specify the sort order follows the `outlinesortoption` and `org.eclipse.jdt.ui.visibility.order`
-properties that can be found in the workspace folder of your Eclipse IDE (look up the
-file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in your workspace directory).
+properties that can be found in the workspace folder of your Eclipse IDE. Look up the
+file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in your workspace directory.
 
 ```gradle
 spotless {
