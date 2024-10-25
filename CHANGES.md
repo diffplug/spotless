@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [3.0.0.BETA4] - 2024-10-24
 ### Added
 * APIs to support linting. (implemented in [#2148](https://github.com/diffplug/spotless/pull/2148), [#2149](https://github.com/diffplug/spotless/pull/2149), [#2307](https://github.com/diffplug/spotless/pull/2307))
   * Spotless is still primarily a formatter, not a linter. But when formatting fails, it's more flexible to model those failures as lints so that the formatting can continue and ideally we can also capture the line numbers causing the failure.
