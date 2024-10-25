@@ -270,7 +270,7 @@ spotless {
 Not only can you format your code with Eclipse JDT, but you can also sort the members as you know it from Eclipse IDE.
 This ensures that the methods are always in sorted order (and thus reduces the likelihood of collisions in a version 
 control system). It is turned off by default, but you might want to consider enabling it when setting coding standards
-for the rest of the team.
+for a project.
 
 The format to specify the sort order follows the `outlinesortoption` and `org.eclipse.jdt.ui.visibility.order`
 properties that can be found in the workspace folder of your Eclipse IDE (look up the
