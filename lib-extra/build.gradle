@@ -87,7 +87,6 @@ p2deps {
 	into 'jdtCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
 		install 'org.eclipse.jdt.core'
-		install 'org.eclipse.jdt.core.manipulation'
 	}
 }
 

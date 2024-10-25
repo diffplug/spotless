@@ -32,7 +32,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.util.CompilationUnitSorter;
-import org.eclipse.jdt.internal.corext.dom.ASTNodes;
+import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
 
 /**
  * This class is derived and adapted code from the Eclipse JDT project (Derivative Works according to EPL 2.0 license).
@@ -382,6 +382,8 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 	}
 
 	private String buildSignature(Type type) {
-		return ASTNodes.asString(type);
+		NaiveASTFlattener flattener = new NaiveASTFlattener();
+		type.accept(flattener);
+		return flattener.getResult();
 	}
 }
