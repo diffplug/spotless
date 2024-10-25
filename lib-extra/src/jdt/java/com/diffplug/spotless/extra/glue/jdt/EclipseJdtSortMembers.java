@@ -196,9 +196,6 @@ public class EclipseJdtSortMembers {
 			boolean doNotSortFields = Boolean.parseBoolean(properties.getOrDefault("members.doNotSortFields", "true"));
 			boolean sortByVisibility = Boolean.parseBoolean(properties.getOrDefault("visibility.order.enabled", "false"));
 			String visibilityOrder = properties.getOrDefault("visibility.order", "");
-			// At the moment we see no need for the following options, but they may become important, idk.
-			Map<String, String> compilationUnitOptions = Map.of();
-			Map<String, String> compilerOptions = Map.of();
 			return new SortProperties(enabled, membersOrder, doNotSortFields, sortByVisibility, visibilityOrder);
 		}
 	}
