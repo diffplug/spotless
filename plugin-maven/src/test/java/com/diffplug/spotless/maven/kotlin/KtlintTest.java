@@ -80,7 +80,7 @@ class KtlintTest extends MavenIntegrationHarness {
 	void testWithCustomRuleSetApply() throws Exception {
 		writePomWithKotlinSteps("<ktlint>\n" +
 				"  <customRuleSets>\n" +
-				"    <value>io.nlopez.compose.rules:ktlint:0.3.3</value>\n" +
+				"    <value>io.nlopez.compose.rules:ktlint:0.4.16</value>\n" +
 				"  </customRuleSets>\n" +
 				"  <editorConfigOverride>\n" +
 				"    <ktlint_function_naming_ignore_when_annotated_with>Composable</ktlint_function_naming_ignore_when_annotated_with>\n" +
