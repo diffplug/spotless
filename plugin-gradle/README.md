@@ -264,10 +264,31 @@ spotless {
     eclipse('4.26').configFile('eclipse-prefs.xml')
     // if the access to the p2 repositories is restricted, mirrors can be
     // specified using a URI prefix map as follows:
-    eclipse().withP2Mirrors(['https://download.eclipse.org/eclipse/updates/4.29/':'https://some.internal.mirror/4-29-updates-p2/'])
-       
+    eclipse().withP2Mirrors(['https://download.eclipse.org/eclipse/updates/4.29/':'https://some.internal.mirror/4-29-updates-p2/']) 
 ```
 
+Not only can you format your code with Eclipse JDT, but you can also sort the members as you know it from Eclipse IDE.
+This ensures that the methods are always in sorted order (and thus reduces the likelihood of collisions in a version 
+control system). It is turned off by default, but you might want to consider enabling it when setting coding standards
+for the rest of the team.
+
+The format to specify the sort order follows the `outlinesortoption` and `org.eclipse.jdt.ui.visibility.order`
+properties that can be found in the workspace folder of your Eclipse IDE (look up the
+file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in your workspace directory).
+
+```gradle
+spotless {
+  java {
+    // specify the sort order of the member categories
+    // SF,SI,SM,F,I,C,M,T = Static Fields, Static Initializers, Static Methods, Fields, Initializers, Constructors, Methods, (Nested) Types
+    val memberCategoryOrder = "SF,SI,SM,F,I,C,M,T"
+    val doNotSortFields = true
+    eclipse().sortMembers(memberCategoryOrder, doNotSortFields)
+    // optional: specify ordering of members of the same category by the visibility within the category
+    // B,R,D,V = Public, Protected, Package, Private
+    val visibilityOrder = "B,R,D,V"
+    eclipse().sortMembers(membersSortOrder, doNotSortFields, visibilityOrder)
+```
 
 ### formatAnnotations
 
