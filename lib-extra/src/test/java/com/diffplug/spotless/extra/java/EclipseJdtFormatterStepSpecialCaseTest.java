@@ -86,11 +86,10 @@ class EclipseJdtFormatterStepSpecialCaseTest {
 				.testResource("java/eclipse/SortExample.localDoNotSortFields.test", "java/eclipse/SortExample.localDoNotSortFields.clean");
 	}
 
-
 	@Test
 	void sort_members_local_enabled_true() {
 		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 		StepHarness.forStep(builder.build())
-			.testResource("java/eclipse/SortExample.localEnabledTrue.test", "java/eclipse/SortExample.localEnabledTrue.clean");
+				.testResource("java/eclipse/SortExample.localEnabledTrue.test", "java/eclipse/SortExample.localEnabledTrue.clean");
 	}
 }
