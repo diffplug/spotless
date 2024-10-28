@@ -261,10 +261,49 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <eclipse>
-  <version>4.26</version>                     <!-- optional version of Eclipse Formatter -->
-  <file>${project.basedir}/eclipse-formatter.xml</file> <!-- optional -->
+  <!-- Optional: Specify the Eclipse JDT version to use. -->
+  <version>4.26</version>
+  <!-- Optional: Specify a file which contains all formatting options. -->
+  <file>${project.basedir}/eclipse-formatter.xml</file>
 </eclipse>
 ```
+
+#### Sort Members
+
+Not only can you format your code with Eclipse JDT, but you can also sort the members as you know it from Eclipse IDE.
+This ensures that the methods are always in sorted order (and thus reduces the likelihood of collisions in a version
+control system). It is turned off by default, but you might want to consider enabling it when setting coding standards
+for a project.
+
+The format to specify the sort order follows the `outlinesortoption` and `org.eclipse.jdt.ui.visibility.order`
+properties that can be found in the workspace folder of your Eclipse IDE. You can look at the
+file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in your workspace directory.
+
+###### Define Sort Members settings on project level
+
+```xml
+<eclipse>
+  <!-- Optional: Enable the Sort Members feature globally. (default: false) -->
+  <sortMembersEnabled>true</sortMembersEnabled>
+  <!-- Optional: Specify the sort order of the member categories. (default: T,SF,SI,SM,F,I,C,M)
+       SF,SI,SM,F,I,C,M,T = Static Fields, Static Initializers, Static Methods, Fields, Initializers, Constructors, Methods, (Nested) Types -->
+  <sortMembersOrder>SF,SI,SM,F,I,C,M,T</sortMembersOrder>
+  <!-- Optional: Enable the reordering of fields, enum constants, and initializers. (default: true) -->
+  <sortMembersDoNotSortFields>false</sortMembersDoNotSortFields>
+  <!-- Optional: Enable reordering of members of the same category by the visibility within the category. (default: false) -->
+  <sortMembersVisibilityOrderEnabled>true</sortMembersVisibilityOrderEnabled>
+  <!-- Optional: Specify the ordering of members of the same category by the visibility within the category. (default: B,V,R,D)
+       B,R,D,V = Public, Protected, Package, Private -->
+  <sortMembersVisibilityOrder>B,R,D,V</sortMembersVisibilityOrder>
+</eclipse>
+```
+
+###### Overwrite Sort Members settings on file level
+
+You can enable/disable the globally defined sort properties on file level by adding the following comments:
+- `// @SortMembers:enabled=false` - disable the Sort Members feature for this file
+- `// @SortMembers:doNotSortFields=true` - disable the sorting of static and instance fields
+- `// @SortMembers:sortByVisibility=false` - don't sort members by its visibility modifier
 
 ### formatAnnotations
 

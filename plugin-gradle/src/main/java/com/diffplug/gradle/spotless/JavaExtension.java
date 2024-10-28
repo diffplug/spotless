@@ -305,21 +305,34 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
-		public EclipseConfig sortMembers(String memberCategoryOrder, boolean doNotSortFields) {
-			requireElementsNonNull(memberCategoryOrder);
-			builder.setMembersOrdering(memberCategoryOrder, doNotSortFields);
+		public EclipseConfig sortMembersDoNotSortFields(boolean doNotSortFields) {
+			builder.sortMembersDoNotSortFields(doNotSortFields);
 			replaceStep(builder.build());
 			return this;
 		}
 
-		public EclipseConfig sortMembers(
-				String memberCategoryOrder,
-				boolean doNotSortFields,
-				String visibilityOrder) {
-			requireElementsNonNull(memberCategoryOrder);
-			requireElementsNonNull(visibilityOrder);
-			builder.setMembersOrdering(memberCategoryOrder, doNotSortFields);
-			builder.setVisibilityOrdering(visibilityOrder);
+		public EclipseConfig sortMembersEnabled(boolean enabled) {
+			builder.sortMembersEnabled(enabled);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersOrder(String order) {
+			requireElementsNonNull(order);
+			builder.sortMembersOrder(order);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersVisibilityOrder(String order) {
+			requireElementsNonNull(order);
+			builder.sortMembersVisibilityOrder(order);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersVisibilityOrderEnabled(boolean enabled) {
+			builder.sortMembersVisibilityOrderEnabled(enabled);
 			replaceStep(builder.build());
 			return this;
 		}

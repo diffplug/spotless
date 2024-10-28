@@ -236,11 +236,11 @@ public class EclipseJdtSortMembers {
 		}
 
 		static SortProperties from(Map<String, String> properties) {
-			boolean enabled = Boolean.parseBoolean(properties.getOrDefault("members.order.enabled", "false"));
-			String membersOrder = properties.getOrDefault("members.order", "");
-			boolean doNotSortFields = Boolean.parseBoolean(properties.getOrDefault("members.doNotSortFields", "true"));
-			boolean sortByVisibility = Boolean.parseBoolean(properties.getOrDefault("visibility.order.enabled", "false"));
-			String visibilityOrder = properties.getOrDefault("visibility.order", "");
+			boolean enabled = Boolean.parseBoolean(properties.getOrDefault("sp_cleanup.sort_members", "false"));
+			String membersOrder = properties.getOrDefault("outlinesortoption", "");
+			boolean doNotSortFields = !Boolean.parseBoolean(properties.getOrDefault("sp_cleanup.sort_members_all", "false"));
+			boolean sortByVisibility = Boolean.parseBoolean(properties.getOrDefault("org.eclipse.jdt.ui.enable.visibility.order", "false"));
+			String visibilityOrder = properties.getOrDefault("org.eclipse.jdt.ui.visibility.order", "");
 			return new SortProperties(enabled, membersOrder, doNotSortFields, sortByVisibility, visibilityOrder);
 		}
 	}

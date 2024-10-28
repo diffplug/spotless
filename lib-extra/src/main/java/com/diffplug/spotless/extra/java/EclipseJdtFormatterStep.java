@@ -74,17 +74,6 @@ public final class EclipseJdtFormatterStep {
 			return model;
 		}
 
-		public void setMembersOrdering(String order, boolean doNotSortFields) {
-			stepProperties.put("members.order.enabled", "true");
-			stepProperties.put("members.order", order);
-			stepProperties.put("members.doNotSortFields", Boolean.toString(doNotSortFields));
-		}
-
-		public void setVisibilityOrdering(String order) {
-			stepProperties.put("visibility.order.enabled", "true");
-			stepProperties.put("visibility.order", order);
-		}
-
 		@Override
 		public void setVersion(String version) {
 			if (version.endsWith(".0")) {
@@ -93,6 +82,27 @@ public final class EclipseJdtFormatterStep {
 				version = newVersion;
 			}
 			super.setVersion(version);
+		}
+
+		public void sortMembersDoNotSortFields(boolean doNotSortFields) {
+			boolean sortAllMembers = !doNotSortFields;
+			stepProperties.put("sp_cleanup.sort_members_all", String.valueOf(sortAllMembers));
+		}
+
+		public void sortMembersEnabled(boolean enabled) {
+			stepProperties.put("sp_cleanup.sort_members", String.valueOf(enabled));
+		}
+
+		public void sortMembersOrder(String order) {
+			stepProperties.put("outlinesortoption", order);
+		}
+
+		public void sortMembersVisibilityOrder(String order) {
+			stepProperties.put("org.eclipse.jdt.ui.visibility.order", order);
+		}
+
+		public void sortMembersVisibilityOrderEnabled(boolean enabled) {
+			stepProperties.put("org.eclipse.jdt.ui.enable.visibility.order", String.valueOf(enabled));
 		}
 	}
 }
