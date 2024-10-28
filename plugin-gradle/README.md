@@ -267,6 +267,8 @@ spotless {
     eclipse().withP2Mirrors(['https://download.eclipse.org/eclipse/updates/4.29/':'https://some.internal.mirror/4-29-updates-p2/']) 
 ```
 
+#### Sort Members
+
 Not only can you format your code with Eclipse JDT, but you can also sort the members as you know it from Eclipse IDE.
 This ensures that the methods are always in sorted order (and thus reduces the likelihood of collisions in a version 
 control system). It is turned off by default, but you might want to consider enabling it when setting coding standards
@@ -275,6 +277,8 @@ for a project.
 The format to specify the sort order follows the `outlinesortoption` and `org.eclipse.jdt.ui.visibility.order`
 properties that can be found in the workspace folder of your Eclipse IDE. Look up the
 file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in your workspace directory.
+
+###### Define Sort Members settings on project level
 
 ```gradle
 spotless {
@@ -289,6 +293,13 @@ spotless {
     val visibilityOrder = "B,R,D,V"
     eclipse().sortMembers(memberCategoryOrder, doNotSortFields, visibilityOrder)
 ```
+
+###### Overwrite Sort Members settings on file level
+
+You can enable/disable the sort properties on file level by adding the following comments:
+- `// @SortMembers:enabled=false` - disable the Sort Members feature for this file
+- `// @SortMembers:doNotSortFields=true` - disable the sorting of static and instance fields
+- `// @SortMembers:sortByVisibility=false` - don't sort members by its visibility modifier
 
 ### formatAnnotations
 

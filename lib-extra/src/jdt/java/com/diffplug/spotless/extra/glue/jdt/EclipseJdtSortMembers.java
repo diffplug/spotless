@@ -17,6 +17,9 @@ package com.diffplug.spotless.extra.glue.jdt;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -32,18 +35,41 @@ import org.eclipse.jdt.internal.core.SortElementsOperation;
 
 public class EclipseJdtSortMembers {
 
-	static String sortMember(String code, SortProperties properties) {
-		if (!properties.enabled) {
+	private static final Pattern PATTERN_DO_NOT_SORT_FIELDS = Pattern.compile("@SortMembers:doNotSortFields\\s*=\\s*(false|true)");
+	private static final Pattern PATTERN_ENABLED = Pattern.compile("@SortMembers:enabled\\s*=\\s*(false|true)");
+	private static final Pattern PATTERN_SORT_BY_VISIBILITY = Pattern.compile("@SortMembers:sortByVisibility\\s*=\\s*(false|true)");
+
+	static SortProperties localProperties(SortProperties globalProperties, String code) {
+		Optional<Boolean> localDoNotSortFields = testOverwriteProperty(PATTERN_DO_NOT_SORT_FIELDS, code);
+		Optional<Boolean> localEnabled = testOverwriteProperty(PATTERN_ENABLED, code);
+		Optional<Boolean> localSortByVisibility = testOverwriteProperty(PATTERN_SORT_BY_VISIBILITY, code);
+		if (localDoNotSortFields.isEmpty() && localEnabled.isEmpty() && localSortByVisibility.isEmpty()) {
+			return globalProperties;
+		}
+		boolean doNotSortFields = localDoNotSortFields.orElse(globalProperties.doNotSortFields);
+		boolean enabled = localEnabled.orElse(globalProperties.enabled);
+		boolean sortByVisibility = localSortByVisibility.orElse(globalProperties.sortByVisibility);
+		return new SortProperties(
+				enabled,
+				globalProperties.membersOrder,
+				doNotSortFields,
+				sortByVisibility,
+				globalProperties.visibilityOrder);
+	}
+
+	static String sortMember(String code, SortProperties globalProperties) {
+		SortProperties localProperties = localProperties(globalProperties, code);
+		if (!localProperties.enabled) {
 			return code;
 		}
 
 		try {
 			CompilationUnit compilationUnit = new CompilationUnit(code);
 			DefaultJavaElementComparator comparator = DefaultJavaElementComparator.of(
-					properties.doNotSortFields,
-					properties.membersOrder,
-					properties.sortByVisibility,
-					properties.visibilityOrder);
+					localProperties.doNotSortFields,
+					localProperties.membersOrder,
+					localProperties.sortByVisibility,
+					localProperties.visibilityOrder);
 			new Sorter(AST.getJLSLatest(), compilationUnit, null, comparator).sort();
 			String content = compilationUnit.getBuffer().getContents();
 			if (content != null) {
@@ -53,6 +79,15 @@ public class EclipseJdtSortMembers {
 			throw new RuntimeException(e);
 		}
 		return code;
+	}
+
+	static Optional<Boolean> testOverwriteProperty(Pattern pattern, String code) {
+		Matcher matcher = pattern.matcher(code);
+		if (matcher.find()) {
+			String flag = matcher.group(1);
+			return Optional.of(Boolean.valueOf(flag));
+		}
+		return Optional.empty();
 	}
 
 	private static class Buffer implements IBuffer {
