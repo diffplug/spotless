@@ -23,6 +23,8 @@ plugins {
 	id 'com.gradle.develocity' version '3.19.1'
 	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
 	id 'dev.equo.ide' version '1.7.8' apply false
+	// https://github.com/graalvm/native-build-tools/releases
+	id 'org.graalvm.buildtools.native' version '0.10.2' apply false
 }
 
 dependencyResolutionManagement {
@@ -76,6 +78,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = 'spotless'
 
+include 'cli'		// command-line interface
 include 'lib'		// reusable library with no dependencies
 include 'testlib'	// library for sharing test infrastructure between the projects below
 
@@ -99,3 +102,4 @@ def getStartProperty(java.lang.String name) {
 if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true') {
 	include 'plugin-maven'	// maven-specific glue code
 }
+

@@ -1,0 +1,62 @@
+plugins {
+	id 'org.graalvm.buildtools.native'
+}
+apply from: rootProject.file('gradle/changelog.gradle')
+ext.artifactId = project.artifactIdGradle
+version = spotlessChangelog.versionNext
+apply plugin: 'java-library'
+apply plugin: 'application'
+apply from: rootProject.file('gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
+
+dependencies {
+	// todo, unify with plugin-gradle/build.gradle -- BEGIN
+	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
+		api projects.lib
+		api projects.libExtra
+	} else {
+		api "com.diffplug.spotless:spotless-lib:${rootProject.spotlessChangelog.versionLast}"
+		api "com.diffplug.spotless:spotless-lib-extra:${rootProject.spotlessChangelog.versionLast}"
+	}
+	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+
+	testImplementation projects.testlib
+	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
+	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
+	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	testImplementation 'org.owasp.encoder:encoder:1.3.1'
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+	// todo, unify with plugin-gradle/build.gradle -- END
+
+	implementation "info.picocli:picocli:${VER_PICOCLI}"
+	annotationProcessor "info.picocli:picocli-codegen:${VER_PICOCLI}"
+}
+
+compileJava {
+	options.compilerArgs += [
+		"-Aproject=${project.group}/${project.name}"
+	]
+}
+
+tasks.withType(org.graalvm.buildtools.gradle.tasks.GenerateResourcesConfigFile).configureEach {
+	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
+}
+tasks.withType(org.graalvm.buildtools.gradle.tasks.BuildNativeImageTask).configureEach {
+	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
+}
+
+// use tasks 'nativeCompile' and 'nativeRun' to compile and run the native image
+graalvmNative {
+	binaries {
+		main {
+			imageName = 'spotless'
+			mainClass = 'com.diffplug.spotless.cli.SpotlessCLI'
+			sharedLibrary = false
+
+			runtimeArgs.add('--user=ABC')
+		}
+	}
+}
