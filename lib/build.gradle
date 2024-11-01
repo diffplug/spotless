@@ -101,7 +101,7 @@ dependencies {
 	jacksonCompileOnly "com.fasterxml.jackson.core:jackson-databind:$VER_JACKSON"
 	jacksonCompileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$VER_JACKSON"
 	// ktfmt
-	ktfmtCompileOnly "com.facebook:ktfmt:0.52"
+	ktfmtCompileOnly "com.facebook:ktfmt:0.53"
 	ktfmtCompileOnly("com.google.googlejavaformat:google-java-format") {
 		version {
 			strictly '1.7' // for JDK 8 compatibility
