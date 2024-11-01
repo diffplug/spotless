@@ -16,11 +16,16 @@
 package com.diffplug.spotless.cli.subcommands.steps.generic;
 
 import java.io.File;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import com.diffplug.spotless.FormatterStep;
 
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "ignoreme")
-public class RemoveMeLaterSubCommand extends SpotlessStepSubCommand {
+public class RemoveMeLaterSubCommand extends SpotlessFormatterStepSubCommand {
 
 	@CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
 	LicenseHeaderOption licenseHeaderOption;
@@ -30,5 +35,11 @@ public class RemoveMeLaterSubCommand extends SpotlessStepSubCommand {
 		String header;
 		@CommandLine.Option(names = {"--header-file", "-f"}, required = true)
 		File headerFile;
+	}
+
+	@Nonnull
+	@Override
+	public List<FormatterStep> prepareFormatterSteps() {
+		return List.of();
 	}
 }

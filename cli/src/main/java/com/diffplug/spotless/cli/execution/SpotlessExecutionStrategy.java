@@ -17,11 +17,12 @@ package com.diffplug.spotless.cli.execution;
 
 import static picocli.CommandLine.executeHelpRequest;
 
-import java.util.function.Function;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import com.diffplug.spotless.cli.SpotlessCommand;
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.cli.subcommands.SpotlessActionCommand;
-import com.diffplug.spotless.cli.subcommands.steps.SpotlessCLIStep;
+import com.diffplug.spotless.cli.subcommands.steps.SpotlessCLIFormatterStep;
 
 import picocli.CommandLine;
 
@@ -37,42 +38,28 @@ public class SpotlessExecutionStrategy implements CommandLine.IExecutionStrategy
 
 	private Integer runSpotlessActions(CommandLine.ParseResult parseResult) {
 		// 1. run setup (for combining steps handled as subcommands)
+		List<FormatterStep> steps = prepareFormatterSteps(parseResult);
 
-		// TODO: maybe collect a list of steps and pass them to the spotless action in step 2?
-		Integer prepareResult = runSpotlessRecursive(parseResult, this::prepareStep);
-		if (prepareResult != null) {
-			return prepareResult;
-		}
 		// 2. run spotless steps
-		return runSpotlessRecursive(parseResult, this::executeSpotlessAction);
+		return executeSpotlessAction(parseResult, steps);
 	}
 
-	private Integer runSpotlessRecursive(CommandLine.ParseResult parseResult, Function<SpotlessCommand, Integer> action) {
-		SpotlessCommand spotlessCommand = parseResult.commandSpec().commandLine().getCommand();
-		Integer result = action.apply(spotlessCommand);
-		if (result != null) {
-			return result;
-		}
-		for (CommandLine.ParseResult subCommand : parseResult.subcommands()) {
-			Integer subResult = runSpotlessRecursive(subCommand, action);
-			if (subResult != null) {
-				return subResult;
-			}
-		}
-		return null;
+	private List<FormatterStep> prepareFormatterSteps(CommandLine.ParseResult parseResult) {
+		return parseResult.asCommandLineList().stream()
+				.map(CommandLine::getCommand)
+				.filter(command -> command instanceof SpotlessCLIFormatterStep)
+				.map(SpotlessCLIFormatterStep.class::cast)
+				.flatMap(step -> step.prepareFormatterSteps().stream())
+				.collect(Collectors.toList());
 	}
 
-	private Integer prepareStep(SpotlessCommand spotlessCommand) {
-		if (spotlessCommand instanceof SpotlessCLIStep) {
-			((SpotlessCLIStep) spotlessCommand).prepare();
-		}
-		return null;
-	}
-
-	private Integer executeSpotlessAction(SpotlessCommand spotlessCommand) {
-		if (spotlessCommand instanceof SpotlessActionCommand) {
-			return ((SpotlessActionCommand) spotlessCommand).executeSpotlessAction();
-		}
-		return null;
+	private Integer executeSpotlessAction(CommandLine.ParseResult parseResult, List<FormatterStep> steps) {
+		return parseResult.asCommandLineList().stream()
+				.map(CommandLine::getCommand)
+				.filter(command -> command instanceof SpotlessActionCommand)
+				.map(SpotlessActionCommand.class::cast)
+				.findFirst()
+				.map(spotlessActionCommand -> spotlessActionCommand.executeSpotlessAction(steps))
+				.orElse(-1);
 	}
 }

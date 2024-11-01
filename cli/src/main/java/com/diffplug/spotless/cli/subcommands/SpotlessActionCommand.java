@@ -15,8 +15,13 @@
  */
 package com.diffplug.spotless.cli.subcommands;
 
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.cli.SpotlessCommand;
 
 public interface SpotlessActionCommand extends SpotlessCommand {
-	Integer executeSpotlessAction();
+	Integer executeSpotlessAction(@Nonnull List<FormatterStep> formatterSteps);
 }

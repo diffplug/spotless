@@ -15,8 +15,14 @@
  */
 package com.diffplug.spotless.cli.subcommands.steps;
 
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.cli.SpotlessCommand;
 
-public interface SpotlessCLIStep extends SpotlessCommand {
-	void prepare();
+public interface SpotlessCLIFormatterStep extends SpotlessCommand {
+	@Nonnull
+	List<FormatterStep> prepareFormatterSteps();
 }

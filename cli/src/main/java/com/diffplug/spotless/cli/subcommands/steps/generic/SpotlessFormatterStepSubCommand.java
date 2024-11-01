@@ -15,15 +15,9 @@
  */
 package com.diffplug.spotless.cli.subcommands.steps.generic;
 
-import com.diffplug.spotless.cli.subcommands.steps.SpotlessCLIStep;
+import com.diffplug.spotless.cli.subcommands.steps.SpotlessCLIFormatterStep;
 
 import picocli.CommandLine;
 
 @CommandLine.Command(mixinStandardHelpOptions = true)
-public abstract class SpotlessStepSubCommand implements SpotlessCLIStep {
-
-	@Override
-	public void prepare() {
-		System.out.println("Prepare SpotlessStepSubCommand " + getClass().getSimpleName() + ", abc!");
-	}
-}
+public abstract class SpotlessFormatterStepSubCommand implements SpotlessCLIFormatterStep {}

@@ -15,6 +15,11 @@
  */
 package com.diffplug.spotless.cli.subcommands;
 
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.cli.subcommands.steps.generic.LicenseHeader;
 import com.diffplug.spotless.cli.subcommands.steps.generic.RemoveMeLaterSubCommand;
 
@@ -31,8 +36,9 @@ import picocli.CommandLine;
 public abstract class SpotlessActionSubCommand implements SpotlessActionCommand {
 
 	@Override
-	public Integer executeSpotlessAction() {
+	public Integer executeSpotlessAction(@Nonnull List<FormatterStep> formatterSteps) {
 		System.out.println("Hello " + getClass().getSimpleName() + ", abc!");
+		formatterSteps.forEach(step -> System.out.println("Step: " + step));
 		return 0;
 	}
 }

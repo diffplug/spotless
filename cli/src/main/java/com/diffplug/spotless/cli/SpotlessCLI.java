@@ -34,9 +34,10 @@ public class SpotlessCLI implements SpotlessCommand {
 
 	public static void main(String... args) {
 		//		args = new String[]{"--version"};
-		args = new String[]{"apply", "license-header", "--header-file", "abc.txt", "license-header", "--header", "abc"};
+		args = new String[]{"apply", "license-header", "--header-file", "CHANGES.md", "--delimiter-for", "java", "license-header", "--header", "abc"};
 		int exitCode = new CommandLine(new SpotlessCLI())
 				.setExecutionStrategy(new SpotlessExecutionStrategy())
+				.setCaseInsensitiveEnumValuesAllowed(true)
 				.execute(args);
 		System.exit(exitCode);
 	}
