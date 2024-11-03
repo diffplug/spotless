@@ -92,7 +92,7 @@ jobs:
         if: matrix.kind == 'shfmt'
         run: ./gradlew testShfmt
       - name: junit result
-        uses: mikepenz/action-junit-report@v4
+        uses: mikepenz/action-junit-report@v5
         if: always() # always run even if the previous step fails
         with:
           check_name: JUnit ${{ matrix.kind }} ${{ matrix.jre }} ${{ matrix.os }}
