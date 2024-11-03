@@ -279,8 +279,6 @@ The format to specify the sort order follows the `outlinesortoption` and `org.ec
 properties that can be found in the workspace folder of your Eclipse IDE. You can look at the
 file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in your workspace directory.
 
-###### Define Sort Members settings on project level
-
 ```xml
 <eclipse>
   <!-- Optional: Enable the Sort Members feature globally. (default: false) -->
@@ -297,8 +295,6 @@ file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in y
   <sortMembersVisibilityOrder>B,R,D,V</sortMembersVisibilityOrder>
 </eclipse>
 ```
-
-###### Overwrite Sort Members settings on file level
 
 You can enable/disable the globally defined sort properties on file level by adding the following comments:
 - `// @SortMembers:enabled=false` - disable the Sort Members feature for this file
