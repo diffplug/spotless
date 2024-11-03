@@ -33,7 +33,6 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.CleanthatJavaStep;
@@ -282,7 +281,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public EclipseConfig eclipse() {
-		return new EclipseConfig(EclipseJdtFormatterStep.defaultVersion());
+		return eclipse(EclipseJdtFormatterStep.defaultVersion());
 	}
 
 	public EclipseConfig eclipse(String version) {
@@ -290,7 +289,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public class EclipseConfig {
-		private final EquoBasedStepBuilder builder;
+		private final EclipseJdtFormatterStep.Builder builder;
 
 		EclipseConfig(String version) {
 			builder = EclipseJdtFormatterStep.createBuilder(provisioner());
@@ -298,11 +297,44 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			addStep(builder.build());
 		}
 
-		public void configFile(Object... configFiles) {
+		public EclipseConfig configFile(Object... configFiles) {
 			requireElementsNonNull(configFiles);
 			Project project = getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersDoNotSortFields(boolean doNotSortFields) {
+			builder.sortMembersDoNotSortFields(doNotSortFields);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersEnabled(boolean enabled) {
+			builder.sortMembersEnabled(enabled);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersOrder(String order) {
+			requireElementsNonNull(order);
+			builder.sortMembersOrder(order);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersVisibilityOrder(String order) {
+			requireElementsNonNull(order);
+			builder.sortMembersVisibilityOrder(order);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersVisibilityOrderEnabled(boolean enabled) {
+			builder.sortMembersVisibilityOrderEnabled(enabled);
+			replaceStep(builder.build());
+			return this;
 		}
 
 		public EclipseConfig withP2Mirrors(Map<String, String> mirrors) {

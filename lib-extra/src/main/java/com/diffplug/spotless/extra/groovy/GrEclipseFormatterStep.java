@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Properties;
 
+import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
@@ -39,7 +40,7 @@ public final class GrEclipseFormatterStep {
 	}
 
 	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), GrEclipseFormatterStep::apply) {
+		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), GrEclipseFormatterStep::apply, ImmutableMap.builder()) {
 			@Override
 			protected P2Model model(String version) {
 				if (!version.startsWith("4.")) {

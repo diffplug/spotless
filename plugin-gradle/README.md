@@ -264,10 +264,42 @@ spotless {
     eclipse('4.26').configFile('eclipse-prefs.xml')
     // if the access to the p2 repositories is restricted, mirrors can be
     // specified using a URI prefix map as follows:
-    eclipse().withP2Mirrors(['https://download.eclipse.org/eclipse/updates/4.29/':'https://some.internal.mirror/4-29-updates-p2/'])
-       
+    eclipse().withP2Mirrors(['https://download.eclipse.org/eclipse/updates/4.29/':'https://some.internal.mirror/4-29-updates-p2/']) 
 ```
 
+#### Sort Members
+
+Not only can you format your code with Eclipse JDT, but you can also sort the members as you know it from Eclipse IDE.
+This ensures that the methods are always in sorted order (and thus reduces the likelihood of collisions in a version 
+control system). It is turned off by default, but you might want to consider enabling it when setting coding standards
+for a project.
+
+The format to specify the sort order follows the `outlinesortoption` and `org.eclipse.jdt.ui.visibility.order`
+properties that can be found in the workspace folder of your Eclipse IDE. You can look at the
+file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in your workspace directory.
+
+```gradle
+spotless {
+  java {
+    eclipse()
+      // Optional: Enable the Sort Members feature globally. (default: false)
+      .sortMembersEnabled(true)
+      // Optional: Specify the sort order of the member categories. (default: T,SF,SI,SM,F,I,C,M)
+      //   SF,SI,SM,F,I,C,M,T = Static Fields, Static Initializers, Static Methods, Fields, Initializers, Constructors, Methods, (Nested) Types
+      .sortMembersOrder("SF,SI,SM,F,I,C,M,T")
+      // Optional: Enable the reordering of fields, enum constants, and initializers. (default: true)
+      .sortMembersDoNotSortFields(false)
+      // Optional: Enable reordering of members of the same category by the visibility within the category. (default: false)
+      .sortMembersVisibilityOrderEnabled(true)
+      // Optional: Specify the ordering of members of the same category by the visibility within the category. (default: B,V,R,D)
+      //   B,R,D,V = Public, Protected, Package, Private
+      .sortMembersVisibilityOrder("B,R,D,V")
+```
+
+You can enable/disable the globally defined sort properties on file level by adding the following comments:
+- `// @SortMembers:enabled=false` - disable the Sort Members feature for this file
+- `// @SortMembers:doNotSortFields=true` - disable the sorting of static and instance fields
+- `// @SortMembers:sortByVisibility=false` - don't sort members by its visibility modifier
 
 ### formatAnnotations
 

@@ -14,6 +14,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * New `suppressLintsFor` DSL ([docs](https://github.com/diffplug/spotless/tree/main/plugin-gradle#linting)) ([#2307](https://github.com/diffplug/spotless/pull/2307))
   * `ignoreErrorForStep` and `ignoreErrorForPath` are now deprecated aliases of `suppressLintsFor`
   * Spotless is still a formatter not a linter, it just models formatting failures as lints rather than stopping execution (resolves [#287](https://github.com/diffplug/spotless/issues/287))
+* Add _Sort Members_ feature based on [Eclipse JDT](README.md#eclipse-jdt) implementation. ([#2312](https://github.com/diffplug/spotless/pull/2312))
 ### Fixed
 * `ktlint` steps now read from the `string` instead of the `file` so they don't clobber earlier steps. (fixes [#1599](https://github.com/diffplug/spotless/issues/1599))
 

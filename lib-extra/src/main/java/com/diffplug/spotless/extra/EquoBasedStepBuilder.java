@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import javax.annotation.Nullable;
 
+import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterProperties;
@@ -50,17 +51,25 @@ public abstract class EquoBasedStepBuilder {
 	private final String formatterName;
 	private final Provisioner mavenProvisioner;
 	private final SerializedFunction<State, FormatterFunc> stateToFormatter;
+	private final ImmutableMap.Builder<String, String> stepProperties;
 	private String formatterVersion;
 	private Iterable<File> settingsFiles = new ArrayList<>();
 	private Map<String, String> p2Mirrors = Map.of();
 	private File cacheDirectory;
 
 	/** Initialize valid default configuration, taking latest version */
-	public EquoBasedStepBuilder(String formatterName, Provisioner mavenProvisioner, @Nullable String defaultVersion, SerializedFunction<State, FormatterFunc> stateToFormatter) {
+	public EquoBasedStepBuilder(
+			String formatterName,
+			Provisioner mavenProvisioner,
+			@Nullable String defaultVersion,
+			SerializedFunction<State, FormatterFunc> stateToFormatter,
+			ImmutableMap.Builder<String, String> stepProperties) {
+
 		this.formatterName = formatterName;
 		this.mavenProvisioner = mavenProvisioner;
 		this.formatterVersion = defaultVersion;
 		this.stateToFormatter = stateToFormatter;
+		this.stepProperties = stepProperties;
 	}
 
 	public void setVersion(String version) {
@@ -125,7 +134,7 @@ public abstract class EquoBasedStepBuilder {
 				classpath.add(nested.getValue());
 			}
 			return JarState.preserveOrder(classpath);
-		}));
+		}), stepProperties.build());
 		return FormatterStep.create(formatterName, roundtrippableState, EquoStep::state, stateToFormatter);
 	}
 
@@ -157,15 +166,22 @@ public abstract class EquoBasedStepBuilder {
 		private final String semanticVersion;
 		private final FileSignature.Promised settingsPromise;
 		private final JarState.Promised jarPromise;
+		private final ImmutableMap<String, String> stepProperties;
 
-		EquoStep(String semanticVersion, FileSignature.Promised settingsPromise, JarState.Promised jarPromise) {
+		EquoStep(
+				String semanticVersion,
+				FileSignature.Promised settingsPromise,
+				JarState.Promised jarPromise,
+				ImmutableMap<String, String> stepProperties) {
+
 			this.semanticVersion = semanticVersion;
 			this.settingsPromise = settingsPromise;
 			this.jarPromise = jarPromise;
+			this.stepProperties = stepProperties;
 		}
 
 		private State state() {
-			return new State(semanticVersion, jarPromise.get(), settingsPromise.get());
+			return new State(semanticVersion, jarPromise.get(), settingsPromise.get(), stepProperties);
 		}
 	}
 
@@ -178,11 +194,13 @@ public abstract class EquoBasedStepBuilder {
 		final String semanticVersion;
 		final JarState jarState;
 		final FileSignature settingsFiles;
+		final ImmutableMap<String, String> stepProperties;
 
-		public State(String semanticVersion, JarState jarState, FileSignature settingsFiles) {
+		public State(String semanticVersion, JarState jarState, FileSignature settingsFiles, ImmutableMap<String, String> stepProperties) {
 			this.semanticVersion = semanticVersion;
 			this.jarState = jarState;
 			this.settingsFiles = settingsFiles;
+			this.stepProperties = stepProperties;
 		}
 
 		public JarState getJarState() {
@@ -195,6 +213,10 @@ public abstract class EquoBasedStepBuilder {
 
 		public Properties getPreferences() {
 			return FormatterProperties.from(settingsFiles.files()).getProperties();
+		}
+
+		public ImmutableMap<String, String> getStepProperties() {
+			return stepProperties;
 		}
 	}
 }
