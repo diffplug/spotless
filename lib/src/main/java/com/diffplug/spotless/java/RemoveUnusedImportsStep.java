@@ -51,7 +51,7 @@ public class RemoveUnusedImportsStep implements Serializable {
 		case GJF:
 			return GoogleJavaFormatStep.createRemoveUnusedImportsOnly(provisioner);
 		case CLEANTHAT:
-			return CleanthatJavaStep.create(CleanthatJavaStep.defaultGroupArtifact(), CleanthatJavaStep.defaultVersion(), "99.9", List.of(CLEANTHAT_MUTATOR), List.of(), false, provisioner);
+			return CleanthatJavaStep.createWithStepName(NAME, CleanthatJavaStep.defaultGroupArtifact(), CleanthatJavaStep.defaultVersion(), "99.9", List.of(CLEANTHAT_MUTATOR), List.of(), false, provisioner);
 		default:
 			throw new IllegalArgumentException("Invalid unusedImportRemover: " + unusedImportRemover);
 		}
