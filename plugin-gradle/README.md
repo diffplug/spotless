@@ -1075,7 +1075,7 @@ spotless {
 
 ## YAML
 
-- `com.diffplug.gradle.spotless.YamlExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/JsonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/YamlExtension.java)
+- `com.diffplug.gradle.spotless.YamlExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/YamlExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/YamlExtension.java)
 
 ```gradle
 spotless {
