@@ -87,14 +87,14 @@ public class GoogleJavaFormatStep implements Serializable {
 
 	/** Creates a step which formats everything - groupArtifact, code, import order, and unused imports - and optionally reflows long strings. */
 	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc) {
-		return createInternally(groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, false);
+		return createInternally(NAME, groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, false);
 	}
 
 	static FormatterStep createRemoveUnusedImportsOnly(Provisioner provisioner) {
-		return createInternally(MAVEN_COORDINATE, defaultVersion(), defaultStyle(), provisioner, defaultReflowLongStrings(), defaultReorderImports(), defaultFormatJavadoc(), true);
+		return createInternally(RemoveUnusedImportsStep.NAME, MAVEN_COORDINATE, defaultVersion(), defaultStyle(), provisioner, defaultReflowLongStrings(), defaultReorderImports(), defaultFormatJavadoc(), true);
 	}
 
-	private static FormatterStep createInternally(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean removeImports) {
+	private static FormatterStep createInternally(String name, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean removeImports) {
 		Objects.requireNonNull(groupArtifact, "groupArtifact");
 		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
 			throw new IllegalArgumentException("groupArtifact must be in the form 'groupId:artifactId'");

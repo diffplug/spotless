@@ -25,7 +25,7 @@ import com.diffplug.spotless.Provisioner;
 /** Uses google-java-format or cleanthat.UnnecessaryImport, but only to remove unused imports. */
 public class RemoveUnusedImportsStep implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final String NAME = "removeUnusedImports";
+	static final String NAME = "removeUnusedImports";
 
 	static final String GJF = "google-java-format";
 	static final String CLEANTHAT = "cleanthat-javaparser-unnecessaryimport";
