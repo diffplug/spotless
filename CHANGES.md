@@ -15,6 +15,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Add _Sort Members_ feature based on [Eclipse JDT](plugin-gradle/README.md#eclipse-jdt) implementation. ([#2312](https://github.com/diffplug/spotless/pull/2312))
 * Bump default `jackson` version to latest `2.18.0` -> `2.18.1`. ([#2319](https://github.com/diffplug/spotless/pull/2319))
 * Bump default `ktfmt` version to latest `0.52` -> `0.53`. ([#2320](https://github.com/diffplug/spotless/pull/2320)
+### Fixed
+* You can now use `removeUnusedImports` and `googleJavaFormat` at the same time again. (fixes [#2159](https://github.com/diffplug/spotless/issues/2159))
 
 ## [3.0.0.BETA4] - 2024-10-24
 ### Added
