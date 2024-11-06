@@ -15,15 +15,17 @@
  */
 package com.diffplug.spotless.cli;
 
+import java.util.List;
+
 import com.diffplug.spotless.cli.execution.SpotlessExecutionStrategy;
 import com.diffplug.spotless.cli.subcommands.SpotlessApply;
 import com.diffplug.spotless.cli.subcommands.SpotlessCheck;
+import com.diffplug.spotless.cli.version.SpotlessCLIVersionProvider;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "spotless cli", mixinStandardHelpOptions = true, version = "spotless ${version}", // https://picocli.info/#_dynamic_version_information
-		description = "Runs spotless", subcommands = {SpotlessCheck.class, SpotlessApply.class})
+@Command(name = "spotless", mixinStandardHelpOptions = true, versionProvider = SpotlessCLIVersionProvider.class, description = "Runs spotless", subcommands = {SpotlessCheck.class, SpotlessApply.class})
 public class SpotlessCLI implements SpotlessCommand {
 
 	@CommandLine.Option(names = {"-V", "--version"}, versionHelp = true, description = "Print version information and exit")
@@ -32,9 +34,13 @@ public class SpotlessCLI implements SpotlessCommand {
 	@CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
 	boolean usageHelpRequested;
 
+	@CommandLine.Option(names = {"--target", "-t"}, required = true, arity = "1..*", description = "The target files to format", scope = CommandLine.ScopeType.INHERIT)
+	public List<String> targets;
+
 	public static void main(String... args) {
 		//		args = new String[]{"--version"};
-		args = new String[]{"apply", "license-header", "--header-file", "CHANGES.md", "--delimiter-for", "java", "license-header", "--header", "abc"};
+		//		args = new String[]{"apply", "license-header", "--header-file", "CHANGES.md", "--delimiter-for", "java", "license-header", "--header", "abc"};
+		args = new String[]{"apply", "--target", "src/poc/java/**/*.java", "license-header", "--header", "abc", "--delimiter-for", "java", "license-header", "--header-file", "TestHeader.txt"};
 		int exitCode = new CommandLine(new SpotlessCLI())
 				.setExecutionStrategy(new SpotlessExecutionStrategy())
 				.setCaseInsensitiveEnumValuesAllowed(true)

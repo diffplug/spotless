@@ -84,6 +84,7 @@ public class LicenseHeader extends SpotlessFormatterStepSubCommand {
 	}
 
 	private String delimiter() {
+		// TODO (simschla, 01.11.2024): here should somehow be automatically determined which type is needed (e.g. by file extension of files to be formatted)
 		if (licenseHeaderDelimiterOption == null) {
 			return DefaultDelimiterType.JAVA.delimiterExpression;
 		}
