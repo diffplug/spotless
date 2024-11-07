@@ -18,13 +18,11 @@ package com.diffplug.spotless.cli;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
@@ -69,9 +67,7 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand {
 		try (Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(lineEnding.createPolicy())
 				.encoding(encoding)
-				.rootDir(Paths.get(".")) // TODO root dir?
 				.steps(formatterSteps)
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.build()) {
 
 			boolean success = targetResolver.resolveTargets()
