@@ -1,5 +1,7 @@
 plugins {
 	id 'org.graalvm.buildtools.native'
+	id 'application'
+	id 'com.gradleup.shadow'
 }
 apply from: rootProject.file('gradle/changelog.gradle')
 ext.artifactId = project.artifactIdGradle
@@ -46,6 +48,12 @@ tasks.withType(org.graalvm.buildtools.gradle.tasks.GenerateResourcesConfigFile).
 }
 tasks.withType(org.graalvm.buildtools.gradle.tasks.BuildNativeImageTask).configureEach {
 	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
+}
+
+application {
+	mainClass = 'com.diffplug.spotless.cli.SpotlessCLI'
+	applicationName = 'spotless'
+	archivesBaseName = 'spotless-cli'
 }
 
 // use tasks 'nativeCompile' and 'nativeRun' to compile and run the native image
