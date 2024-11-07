@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.cli.subcommands;
+package com.diffplug.spotless.cli.steps;
 
-import picocli.CommandLine;
+import java.util.List;
 
-@CommandLine.Command(name = "apply", description = "Runs spotless apply")
-public class SpotlessApply extends SpotlessActionSubCommand {
+import javax.annotation.Nonnull;
 
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.cli.SpotlessCommand;
+
+public interface SpotlessCLIFormatterStep extends SpotlessCommand {
+	@Nonnull
+	List<FormatterStep> prepareFormatterSteps();
 }

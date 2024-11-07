@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.cli.subcommands.SpotlessActionCommand;
-import com.diffplug.spotless.cli.subcommands.steps.SpotlessCLIFormatterStep;
+import com.diffplug.spotless.cli.SpotlessAction;
+import com.diffplug.spotless.cli.steps.SpotlessCLIFormatterStep;
 
 import picocli.CommandLine;
 
@@ -56,10 +56,10 @@ public class SpotlessExecutionStrategy implements CommandLine.IExecutionStrategy
 	private Integer executeSpotlessAction(CommandLine.ParseResult parseResult, List<FormatterStep> steps) {
 		return parseResult.asCommandLineList().stream()
 				.map(CommandLine::getCommand)
-				.filter(command -> command instanceof SpotlessActionCommand)
-				.map(SpotlessActionCommand.class::cast)
+				.filter(command -> command instanceof SpotlessAction)
+				.map(SpotlessAction.class::cast)
 				.findFirst()
-				.map(spotlessActionCommand -> spotlessActionCommand.executeSpotlessAction(steps))
+				.map(spotlessAction -> spotlessAction.executeSpotlessAction(steps))
 				.orElse(-1);
 	}
 }

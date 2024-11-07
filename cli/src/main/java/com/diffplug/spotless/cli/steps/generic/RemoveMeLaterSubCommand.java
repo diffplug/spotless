@@ -13,16 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.cli.subcommands.steps;
+package com.diffplug.spotless.cli.steps.generic;
 
+import java.io.File;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.cli.SpotlessCommand;
 
-public interface SpotlessCLIFormatterStep extends SpotlessCommand {
+import picocli.CommandLine;
+
+@CommandLine.Command(name = "ignoreme")
+public class RemoveMeLaterSubCommand extends SpotlessFormatterStepSubCommand {
+
+	@CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
+	LicenseHeaderOption licenseHeaderOption;
+
+	static class LicenseHeaderOption {
+		@CommandLine.Option(names = {"--header", "-H"}, required = true)
+		String header;
+		@CommandLine.Option(names = {"--header-file", "-f"}, required = true)
+		File headerFile;
+	}
+
 	@Nonnull
-	List<FormatterStep> prepareFormatterSteps();
+	@Override
+	public List<FormatterStep> prepareFormatterSteps() {
+		return List.of();
+	}
 }
