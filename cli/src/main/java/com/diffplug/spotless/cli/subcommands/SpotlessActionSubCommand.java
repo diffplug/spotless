@@ -28,7 +28,6 @@ import javax.xml.transform.Result;
 import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.cli.SpotlessCLI;
 import com.diffplug.spotless.cli.core.TargetResolver;
@@ -55,8 +54,8 @@ public abstract class SpotlessActionSubCommand implements SpotlessActionCommand 
 		TargetResolver targetResolver = new TargetResolver(parent.targets);
 
 		try (Formatter formatter = Formatter.builder()
-				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.encoding(Charset.defaultCharset()) // TODO charset!
+				.lineEndingsPolicy(parent.lineEnding.createPolicy())
+				.encoding(parent.encoding)
 				.rootDir(Paths.get(".")) // TODO root dir?
 				.steps(formatterSteps)
 				.exceptionPolicy(new FormatExceptionPolicyStrict())
