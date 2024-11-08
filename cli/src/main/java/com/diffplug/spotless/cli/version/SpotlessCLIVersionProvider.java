@@ -15,12 +15,18 @@
  */
 package com.diffplug.spotless.cli.version;
 
+import java.util.Properties;
+
 import picocli.CommandLine;
 
 public class SpotlessCLIVersionProvider implements CommandLine.IVersionProvider {
 
 	@Override
 	public String[] getVersion() throws Exception {
-		return new String[]{"Spotless CLI 1.0.0", "TODO"};
+		// load application.properties
+		Properties properties = new Properties();
+		properties.load(getClass().getResourceAsStream("/application.properties"));
+		String version = properties.getProperty("cli.version");
+		return new String[]{"Spotless CLI version " + version};
 	}
 }

@@ -38,8 +38,11 @@ dependencies {
 }
 
 compileJava {
+	// options for picocli codegen
+	// https://github.com/remkop/picocli/tree/main/picocli-codegen#222-other-options
 	options.compilerArgs += [
-		"-Aproject=${project.group}/${project.name}"
+		"-Aproject=${project.group}/${project.name}",
+		"-Aother.resource.bundles=application"
 	]
 }
 
@@ -48,6 +51,29 @@ tasks.withType(org.graalvm.buildtools.gradle.tasks.GenerateResourcesConfigFile).
 }
 tasks.withType(org.graalvm.buildtools.gradle.tasks.BuildNativeImageTask).configureEach {
 	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
+}
+
+tasks.withType(ProcessResources).configureEach(new ApplicationPropertiesProcessResourcesAction(project.version))
+
+class ApplicationPropertiesProcessResourcesAction implements Action<ProcessResources> {
+
+	private final String cliVersion
+
+	ApplicationPropertiesProcessResourcesAction(String cliVersion) {
+		this.cliVersion = cliVersion
+	}
+
+	@Override
+	void execute(ProcessResources processResources) {
+		processResources.filesMatching("application.properties") {
+			filter(
+					org.apache.tools.ant.filters.ReplaceTokens,
+					tokens: [
+						'cli.version': cliVersion
+					]
+					)
+		}
+	}
 }
 
 application {
@@ -63,8 +89,6 @@ graalvmNative {
 			imageName = 'spotless'
 			mainClass = 'com.diffplug.spotless.cli.SpotlessCLI'
 			sharedLibrary = false
-
-			runtimeArgs.add('--user=ABC')
 		}
 	}
 }
