@@ -101,7 +101,8 @@ public class TargetResolver {
 					}
 				}));
 		return collected.stream()
-				.map(Path::toAbsolutePath);
+				.map(Path::normalize);
+		//				.map(Path::toAbsolutePath);
 	}
 
 	private static boolean isGlobPathPart(String part) {
