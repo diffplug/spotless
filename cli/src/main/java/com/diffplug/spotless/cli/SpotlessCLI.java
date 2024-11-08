@@ -18,8 +18,6 @@ package com.diffplug.spotless.cli;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -28,6 +26,8 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.ThrowingEx;
+import com.diffplug.spotless.cli.core.SpotlessActionContext;
+import com.diffplug.spotless.cli.core.TargetFileTypeInferer;
 import com.diffplug.spotless.cli.core.TargetResolver;
 import com.diffplug.spotless.cli.execution.SpotlessExecutionStrategy;
 import com.diffplug.spotless.cli.help.OptionConstants;
@@ -41,7 +41,7 @@ import picocli.CommandLine.Command;
 @Command(name = "spotless", mixinStandardHelpOptions = true, versionProvider = SpotlessCLIVersionProvider.class, description = "Runs spotless", subcommandsRepeatable = true, subcommands = {
 		LicenseHeader.class,
 		RemoveMeLaterSubCommand.class})
-public class SpotlessCLI implements SpotlessAction, SpotlessCommand {
+public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessActionContextProvider {
 
 	@CommandLine.Option(names = {"-V", "--version"}, versionHelp = true, description = "Print version information and exit.")
 	boolean versionRequested;
@@ -71,70 +71,46 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand {
 				.steps(formatterSteps)
 				.build()) {
 
-			ResultType resultType = targetResolver.resolveTargets() // TODO result
+			ResultType resultType = targetResolver.resolveTargets()
 					.parallel() // needed?
 					.map(path -> ThrowingEx.get(() -> new Result(path, LintState.of(formatter, path.toFile())))) // TODO handle suppressions, see SpotlessTaskImpl
 					.map(result -> this.handleResult(formatter, result))
 					.reduce(ResultType.CLEAN, ResultType::combineWith);
-			System.out.println("Hello " + getClass().getSimpleName() + ", abc! Files: " + new TargetResolver(targets).resolveTargets().collect(Collectors.toList()));
-			System.out.println("result: " + resultType);
-			formatterSteps.forEach(step -> System.out.println("Step: " + step));
-			return 0;
+			return spotlessMode.translateResultTypeToExitCode(resultType);
 		}
 	}
 
 	private ResultType handleResult(Formatter formatter, Result result) {
 		if (result.lintState.isClean()) {
-			System.out.println("File is clean: " + result.target.toFile().getName());
+			//			System.out.println("File is clean: " + result.target.toFile().getName());
 			return ResultType.CLEAN;
 		}
 		if (result.lintState.getDirtyState().didNotConverge()) {
-			System.out.println("File did not converge: " + result.target.toFile().getName());
+			System.err.println("File did not converge: " + result.target.toFile().getName()); // TODO: where to print the output to?
 			return ResultType.DID_NOT_CONVERGE;
 		}
-		this.spotlessMode.action.accept(formatter, result);
+		this.spotlessMode.handleResult(formatter, result);
 		return ResultType.DIRTY;
 
-		/*
-		if (lintState.getDirtyState().isClean()) {
-			// Remove previous output if it exists
-			Files.deleteIfExists(cleanFile.toPath());
-		} else if (lintState.getDirtyState().didNotConverge()) {
-			getLogger().warn("Skipping '{}' because it does not converge.  Run {@code spotlessDiagnose} to understand why", relativePath);
-		} else {
-			Path parentDir = cleanFile.toPath().getParent();
-			if (parentDir == null) {
-				throw new IllegalStateException("Every file has a parent folder. But not: " + cleanFile);
-			}
-			Files.createDirectories(parentDir);
-			// Need to copy the original file to the tmp location just to remember the file attributes
-			Files.copy(input.toPath(), cleanFile.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
-
-			getLogger().info(String.format("Writing clean file: %s", cleanFile));
-			lintState.getDirtyState().writeCanonicalTo(cleanFile);
-		}
-		if (!lintState.isHasLints()) {
-			Files.deleteIfExists(lintFile.toPath());
-		} else {
-			LinkedHashMap<String, List<Lint>> lints = lintState.getLintsByStep(formatter);
-			SerializableMisc.toFile(lints, lintFile);
-		}
-		 */
 	}
 
-	//	private void writeBack(Result result) {
-	//		if (result.updated != null) {
-	//			ThrowingEx.run(() -> Files.writeString(result.target, result.updated, Charset.defaultCharset())); // TODO charset!
-	//		}
-	//				System.out.println("Writing back to file:" + result.target + " with content:\n" + result.updated);
-	//	}
+	private TargetResolver targetResolver() {
+		return new TargetResolver(targets);
+	}
+
+	@Override
+	public SpotlessActionContext spotlessActionContext() {
+		TargetResolver targetResolver = targetResolver();
+		TargetFileTypeInferer targetFileTypeInferer = new TargetFileTypeInferer(targetResolver);
+		return new SpotlessActionContext(targetFileTypeInferer.inferTargetFileType());
+	}
 
 	public static void main(String... args) {
 		if (args.length == 0) {
 			//		args = new String[]{"--version"};
 			//					args = new String[]{"license-header", "--header-file", "CHANGES.md", "--delimiter-for", "java", "license-header", "--header", "abc"};
 
-			args = new String[]{"--mode=CHECK", "--target", "src/poc/java/**/*.java", "--encoding=UTF-8", "license-header", "--header", "abc", "--delimiter-for", "java", "license-header", "--header-file", "TestHeader.txt"};
+			args = new String[]{"--mode=CHECK", "--target", "src/poc/java/**/*.java", "--encoding=UTF-8", "license-header", "--header", "abc", "license-header", "--header-file", "TestHeader.txt"};
 			//			args = new String[]{"--version"};
 		}
 		int exitCode = new CommandLine(new SpotlessCLI())
@@ -145,19 +121,54 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand {
 	}
 
 	private enum SpotlessMode {
-		CHECK(((formatter, result) -> {
-			if (result.lintState.isHasLints()) {
-				result.lintState.asStringOneLine(result.target.toFile(), formatter);
-			} else {
-				System.out.println(String.format("%s is violating formatting rules.", result.target));
+		CHECK {
+			@Override
+			void handleResult(Formatter formatter, Result result) {
+				if (result.lintState.isHasLints()) {
+					result.lintState.asStringOneLine(result.target.toFile(), formatter);
+				} else {
+					System.out.println(String.format("%s is violating formatting rules.", result.target));
+				}
 			}
-		})), APPLY(((formatter, result) -> ThrowingEx.run(() -> result.lintState.getDirtyState().writeCanonicalTo(result.target.toFile()))));
 
-		private final BiConsumer<Formatter, Result> action;
+			@Override
+			Integer translateResultTypeToExitCode(ResultType resultType) {
+				if (resultType == ResultType.CLEAN) {
+					return 0;
+				}
+				if (resultType == ResultType.DIRTY) {
+					return 1;
+				}
+				if (resultType == ResultType.DID_NOT_CONVERGE) {
+					return -1;
+				}
+				throw new IllegalStateException("Unexpected result type: " + resultType);
+			}
+		},
+		APPLY {
+			@Override
+			void handleResult(Formatter formatter, Result result) {
+				ThrowingEx.run(() -> result.lintState.getDirtyState().writeCanonicalTo(result.target.toFile()));
+			}
 
-		SpotlessMode(BiConsumer<Formatter, Result> action) {
-			this.action = action;
-		}
+			@Override
+			Integer translateResultTypeToExitCode(ResultType resultType) {
+				if (resultType == ResultType.CLEAN) {
+					return 0;
+				}
+				if (resultType == ResultType.DIRTY) {
+					return 0;
+				}
+				if (resultType == ResultType.DID_NOT_CONVERGE) {
+					return -1;
+				}
+				throw new IllegalStateException("Unexpected result type: " + resultType);
+			}
+		};
+
+		abstract void handleResult(Formatter formatter, Result result);
+
+		abstract Integer translateResultTypeToExitCode(ResultType resultType);
 
 	}
 

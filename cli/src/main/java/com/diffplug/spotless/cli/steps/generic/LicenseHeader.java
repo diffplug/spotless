@@ -24,6 +24,8 @@ import javax.annotation.Nonnull;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.antlr4.Antlr4Defaults;
+import com.diffplug.spotless.cli.core.SpotlessActionContext;
+import com.diffplug.spotless.cli.core.TargetFileTypeInferer;
 import com.diffplug.spotless.cpp.CppDefaults;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.kotlin.KotlinConstants;
@@ -37,8 +39,8 @@ public class LicenseHeader extends SpotlessFormatterStepSubCommand {
 	@CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
 	LicenseHeaderSourceOption licenseHeaderSourceOption;
 
-	@CommandLine.ArgGroup(exclusive = true, multiplicity = "0..1")
-	LicenseHeaderDelimiterOption licenseHeaderDelimiterOption;
+	@CommandLine.Option(names = {"--delimiter", "-d"}, required = false, description = "The delimiter to use for the license header. If not provided, the default delimiter for the file type will be used (if available, otherwise java is assumed).")
+	String delimiter;
 
 	static class LicenseHeaderSourceOption {
 		@CommandLine.Option(names = {"--header", "-H"}, required = true)
@@ -47,29 +49,10 @@ public class LicenseHeader extends SpotlessFormatterStepSubCommand {
 		File headerFile;
 	}
 
-	static class LicenseHeaderDelimiterOption {
-
-		@CommandLine.Option(names = {"--delimiter", "-d"}, required = true)
-		String delimiter;
-
-		@CommandLine.Option(names = {"--delimiter-for", "-D"}, required = true)
-		DefaultDelimiterType defaultDelimiterType;
-	}
-
-	enum DefaultDelimiterType {
-		JAVA(LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER), CPP(CppDefaults.DELIMITER_EXPR), ANTLR4(Antlr4Defaults.licenseHeaderDelimiter()), GROOVY(LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER), PROTOBUF(ProtobufConstants.LICENSE_HEADER_DELIMITER), KOTLIN(KotlinConstants.LICENSE_HEADER_DELIMITER);
-
-		private final String delimiterExpression;
-
-		DefaultDelimiterType(String delimiterExpression) {
-			this.delimiterExpression = delimiterExpression;
-		}
-	}
-
 	@Nonnull
 	@Override
-	public List<FormatterStep> prepareFormatterSteps() {
-		FormatterStep licenseHeaderStep = LicenseHeaderStep.headerDelimiter(headerSource(), delimiter())
+	public List<FormatterStep> prepareFormatterSteps(SpotlessActionContext context) {
+		FormatterStep licenseHeaderStep = LicenseHeaderStep.headerDelimiter(headerSource(), delimiter(context.targetFileType()))
 				// TODO add more config options
 				.build();
 		return List.of(licenseHeaderStep);
@@ -83,15 +66,30 @@ public class LicenseHeader extends SpotlessFormatterStepSubCommand {
 		}
 	}
 
-	private String delimiter() {
-		// TODO (simschla, 01.11.2024): here should somehow be automatically determined which type is needed (e.g. by file extension of files to be formatted)
-		if (licenseHeaderDelimiterOption == null) {
-			return DefaultDelimiterType.JAVA.delimiterExpression;
-		}
-		if (licenseHeaderDelimiterOption.delimiter != null) {
-			return licenseHeaderDelimiterOption.delimiter;
+	private String delimiter(TargetFileTypeInferer.TargetFileType inferredFileType) {
+		if (delimiter != null) {
+			return delimiter;
 		} else {
-			return licenseHeaderDelimiterOption.defaultDelimiterType.delimiterExpression;
+			return inferredDelimiterType(inferredFileType);
+		}
+	}
+
+	private String inferredDelimiterType(TargetFileTypeInferer.TargetFileType inferredFileType) {
+		switch (inferredFileType.fileType()) {
+		case JAVA:
+			// fall through
+		case GROOVY:
+			return LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER;
+		case CPP:
+			return CppDefaults.DELIMITER_EXPR;
+		case ANTLR4:
+			return Antlr4Defaults.licenseHeaderDelimiter();
+		case PROTOBUF:
+			return ProtobufConstants.LICENSE_HEADER_DELIMITER;
+		case KOTLIN:
+			return KotlinConstants.LICENSE_HEADER_DELIMITER;
+		default:
+			return LicenseHeaderStep.DEFAULT_JAVA_HEADER_DELIMITER;
 		}
 	}
 }

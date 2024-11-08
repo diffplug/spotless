@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.cli.steps;
+package com.diffplug.spotless.cli;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.cli.SpotlessCommand;
 import com.diffplug.spotless.cli.core.SpotlessActionContext;
 
-public interface SpotlessCLIFormatterStep extends SpotlessCommand {
+public interface SpotlessActionContextProvider {
 
-	@Nonnull
-	List<FormatterStep> prepareFormatterSteps(SpotlessActionContext context);
-
+	SpotlessActionContext spotlessActionContext();
 }

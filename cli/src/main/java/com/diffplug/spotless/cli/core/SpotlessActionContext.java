@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.cli.steps;
+package com.diffplug.spotless.cli.core;
 
-import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.cli.SpotlessCommand;
-import com.diffplug.spotless.cli.core.SpotlessActionContext;
+public class SpotlessActionContext {
 
-public interface SpotlessCLIFormatterStep extends SpotlessCommand {
+	private final TargetFileTypeInferer.TargetFileType targetFileType;
+
+	public SpotlessActionContext(@Nonnull TargetFileTypeInferer.TargetFileType targetFileType) {
+		this.targetFileType = Objects.requireNonNull(targetFileType);
+	}
 
 	@Nonnull
-	List<FormatterStep> prepareFormatterSteps(SpotlessActionContext context);
-
+	public TargetFileTypeInferer.TargetFileType targetFileType() {
+		return targetFileType;
+	}
 }

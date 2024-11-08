@@ -15,9 +15,26 @@
  */
 package com.diffplug.spotless.cli.steps.generic;
 
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.cli.core.SpotlessActionContext;
 import com.diffplug.spotless.cli.steps.SpotlessCLIFormatterStep;
 
 import picocli.CommandLine;
 
 @CommandLine.Command(mixinStandardHelpOptions = true)
-public abstract class SpotlessFormatterStepSubCommand implements SpotlessCLIFormatterStep {}
+public abstract class SpotlessFormatterStepSubCommand implements SpotlessCLIFormatterStep {
+
+	@Nonnull
+	@Override
+	public List<FormatterStep> prepareFormatterSteps(SpotlessActionContext context) {
+		return prepareFormatterSteps();
+	}
+
+	protected List<FormatterStep> prepareFormatterSteps() {
+		throw new IllegalStateException("This method must be overridden or not be called");
+	}
+}

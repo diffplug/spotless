@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.cli.SpotlessAction;
+import com.diffplug.spotless.cli.SpotlessActionContextProvider;
+import com.diffplug.spotless.cli.core.SpotlessActionContext;
 import com.diffplug.spotless.cli.steps.SpotlessCLIFormatterStep;
 
 import picocli.CommandLine;
@@ -37,19 +39,32 @@ public class SpotlessExecutionStrategy implements CommandLine.IExecutionStrategy
 	}
 
 	private Integer runSpotlessActions(CommandLine.ParseResult parseResult) {
-		// 1. run setup (for combining steps handled as subcommands)
-		List<FormatterStep> steps = prepareFormatterSteps(parseResult);
+		// 1. prepare context
+		SpotlessActionContext context = provideSpotlessActionContext(parseResult);
 
-		// 2. run spotless steps
+		// 2. run setup (for combining steps handled as subcommands)
+		List<FormatterStep> steps = prepareFormatterSteps(parseResult, context);
+
+		// 3. run spotless steps
 		return executeSpotlessAction(parseResult, steps);
 	}
 
-	private List<FormatterStep> prepareFormatterSteps(CommandLine.ParseResult parseResult) {
+	private SpotlessActionContext provideSpotlessActionContext(CommandLine.ParseResult parseResult) {
+		return parseResult.asCommandLineList().stream()
+				.map(CommandLine::getCommand)
+				.filter(command -> command instanceof SpotlessActionContextProvider)
+				.map(SpotlessActionContextProvider.class::cast)
+				.findFirst()
+				.map(SpotlessActionContextProvider::spotlessActionContext)
+				.orElseThrow(() -> new IllegalStateException("No SpotlessActionContextProvider found"));
+	}
+
+	private List<FormatterStep> prepareFormatterSteps(CommandLine.ParseResult parseResult, SpotlessActionContext context) {
 		return parseResult.asCommandLineList().stream()
 				.map(CommandLine::getCommand)
 				.filter(command -> command instanceof SpotlessCLIFormatterStep)
 				.map(SpotlessCLIFormatterStep.class::cast)
-				.flatMap(step -> step.prepareFormatterSteps().stream())
+				.flatMap(step -> step.prepareFormatterSteps(context).stream())
 				.collect(Collectors.toList());
 	}
 
