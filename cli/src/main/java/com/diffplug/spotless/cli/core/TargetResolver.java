@@ -29,8 +29,11 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
 
 import com.diffplug.spotless.ThrowingEx;
 
@@ -38,8 +41,11 @@ public class TargetResolver {
 
 	private final List<String> targets;
 
-	public TargetResolver(List<String> targets) {
-		this.targets = targets;
+	private final FileResolver fileResolver;
+
+	public TargetResolver(@Nonnull Path baseDir, @Nonnull List<String> targets) {
+		this.fileResolver = new FileResolver(baseDir);
+		this.targets = Objects.requireNonNull(targets);
 	}
 
 	public Stream<Path> resolveTargets() {
@@ -54,7 +60,15 @@ public class TargetResolver {
 		if (isGlob) {
 			return resolveGlob(target);
 		}
-		return resolveDir(Path.of(target));
+		Path targetPath = fileResolver.resolvePath(Path.of(target));
+		if (Files.isReadable(targetPath)) {
+			return Stream.of(targetPath);
+		}
+		if (Files.isDirectory(targetPath)) {
+			return resolveDir(targetPath);
+		}
+		// TODO log warn?
+		return Stream.empty();
 	}
 
 	private Stream<Path> resolveDir(Path startDir) {
@@ -81,7 +95,7 @@ public class TargetResolver {
 				.takeWhile(not(TargetResolver::isGlobPathPart))
 				.collect(Collectors.toList());
 
-		startDir = Path.of(glob.startsWith(File.separator) ? File.separator : "", startDirParts.toArray(String[]::new));
+		startDir = Path.of(glob.startsWith(File.separator) ? File.separator : fileResolver.baseDir().toString(), startDirParts.toArray(String[]::new));
 		globPart = Stream.of(parts)
 				.skip(startDirParts.size())
 				.collect(Collectors.joining(File.separator));

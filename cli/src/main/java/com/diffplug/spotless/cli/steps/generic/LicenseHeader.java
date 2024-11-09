@@ -52,17 +52,17 @@ public class LicenseHeader extends SpotlessFormatterStepSubCommand {
 	@Nonnull
 	@Override
 	public List<FormatterStep> prepareFormatterSteps(SpotlessActionContext context) {
-		FormatterStep licenseHeaderStep = LicenseHeaderStep.headerDelimiter(headerSource(), delimiter(context.targetFileType()))
+		FormatterStep licenseHeaderStep = LicenseHeaderStep.headerDelimiter(headerSource(context), delimiter(context.targetFileType()))
 				// TODO add more config options
 				.build();
 		return List.of(licenseHeaderStep);
 	}
 
-	private ThrowingEx.Supplier<String> headerSource() {
+	private ThrowingEx.Supplier<String> headerSource(SpotlessActionContext context) {
 		if (licenseHeaderSourceOption.header != null) {
 			return () -> licenseHeaderSourceOption.header;
 		} else {
-			return () -> ThrowingEx.get(() -> Files.readString(licenseHeaderSourceOption.headerFile.toPath()));
+			return () -> ThrowingEx.get(() -> Files.readString(context.resolveFile(licenseHeaderSourceOption.headerFile).toPath()));
 		}
 	}
 

@@ -21,26 +21,25 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-public class SpotlessActionContext {
+public class FileResolver {
+	private final Path baseDir;
 
-	private final TargetFileTypeInferer.TargetFileType targetFileType;
-	private final FileResolver fileResolver;
-
-	public SpotlessActionContext(@Nonnull TargetFileTypeInferer.TargetFileType targetFileType, @Nonnull FileResolver fileResolver) {
-		this.targetFileType = Objects.requireNonNull(targetFileType);
-		this.fileResolver = fileResolver;
+	public FileResolver(@Nonnull Path baseDir) {
+		this.baseDir = Objects.requireNonNull(baseDir);
 	}
 
-	@Nonnull
-	public TargetFileTypeInferer.TargetFileType targetFileType() {
-		return targetFileType;
+	Path baseDir() {
+		return baseDir;
 	}
 
 	public File resolveFile(File file) {
-		return fileResolver.resolveFile(file);
+		return resolvePath(file.toPath()).toFile();
 	}
 
 	public Path resolvePath(Path path) {
-		return fileResolver.resolvePath(path);
+		if (path.isAbsolute()) {
+			return path;
+		}
+		return baseDir.resolve(path);
 	}
 }

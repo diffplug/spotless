@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.cli;
 
+import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;
@@ -26,6 +27,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.ThrowingEx;
+import com.diffplug.spotless.cli.core.FileResolver;
 import com.diffplug.spotless.cli.core.SpotlessActionContext;
 import com.diffplug.spotless.cli.core.TargetFileTypeInferer;
 import com.diffplug.spotless.cli.core.TargetResolver;
@@ -52,6 +54,9 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 	@CommandLine.Option(names = {"--mode", "-m"}, defaultValue = "APPLY", description = "The mode to run spotless in." + OptionConstants.VALID_VALUES_SUFFIX + OptionConstants.DEFAULT_VALUE_SUFFIX, scope = CommandLine.ScopeType.INHERIT)
 	SpotlessMode spotlessMode;
 
+	@CommandLine.Option(names = {"--basedir"}, hidden = true, description = "The base directory to run spotless in. Intended for testing purposes only.")
+	Path baseDir;
+
 	@CommandLine.Option(names = {"--target", "-t"}, required = true, arity = "1..*", description = "The target files to format.", scope = CommandLine.ScopeType.INHERIT)
 	public List<String> targets;
 
@@ -63,7 +68,7 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 
 	@Override
 	public Integer executeSpotlessAction(@Nonnull List<FormatterStep> formatterSteps) {
-		TargetResolver targetResolver = new TargetResolver(targets);
+		TargetResolver targetResolver = targetResolver();
 
 		try (Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(lineEnding.createPolicy())
@@ -89,20 +94,22 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 			System.err.println("File did not converge: " + result.target.toFile().getName()); // TODO: where to print the output to?
 			return ResultType.DID_NOT_CONVERGE;
 		}
-		this.spotlessMode.handleResult(formatter, result);
-		return ResultType.DIRTY;
-
+		return this.spotlessMode.handleResult(formatter, result);
 	}
 
 	private TargetResolver targetResolver() {
-		return new TargetResolver(targets);
+		return new TargetResolver(baseDir == null ? Path.of(File.separator) : baseDir, targets);
+	}
+
+	private Path baseDir() {
+		return baseDir == null ? Path.of(File.separator) : baseDir;
 	}
 
 	@Override
 	public SpotlessActionContext spotlessActionContext() {
 		TargetResolver targetResolver = targetResolver();
 		TargetFileTypeInferer targetFileTypeInferer = new TargetFileTypeInferer(targetResolver);
-		return new SpotlessActionContext(targetFileTypeInferer.inferTargetFileType());
+		return new SpotlessActionContext(targetFileTypeInferer.inferTargetFileType(), new FileResolver(baseDir()));
 	}
 
 	public static void main(String... args) {
@@ -113,22 +120,31 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 			args = new String[]{"--mode=CHECK", "--target", "src/poc/java/**/*.java", "--encoding=UTF-8", "license-header", "--header", "abc", "license-header", "--header-file", "TestHeader.txt"};
 			//			args = new String[]{"--version"};
 		}
-		int exitCode = new CommandLine(new SpotlessCLI())
-				.setExecutionStrategy(new SpotlessExecutionStrategy())
-				.setCaseInsensitiveEnumValuesAllowed(true)
+		int exitCode = createCommandLine(createInstance())
 				.execute(args);
 		System.exit(exitCode);
+	}
+
+	static SpotlessCLI createInstance() {
+		return new SpotlessCLI();
+	}
+
+	static CommandLine createCommandLine(SpotlessCLI spotlessCLI) {
+		return new CommandLine(spotlessCLI)
+				.setExecutionStrategy(new SpotlessExecutionStrategy())
+				.setCaseInsensitiveEnumValuesAllowed(true);
 	}
 
 	private enum SpotlessMode {
 		CHECK {
 			@Override
-			void handleResult(Formatter formatter, Result result) {
+			ResultType handleResult(Formatter formatter, Result result) {
 				if (result.lintState.isHasLints()) {
 					result.lintState.asStringOneLine(result.target.toFile(), formatter);
 				} else {
 					System.out.println(String.format("%s is violating formatting rules.", result.target));
 				}
+				return ResultType.DIRTY;
 			}
 
 			@Override
@@ -147,8 +163,14 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 		},
 		APPLY {
 			@Override
-			void handleResult(Formatter formatter, Result result) {
+			ResultType handleResult(Formatter formatter, Result result) {
+				if (result.lintState.isHasLints()) {
+					// something went wrong, we should not apply the changes
+					System.err.println("File has lints: " + result.target.toFile().getName());
+					return ResultType.DIRTY;
+				}
 				ThrowingEx.run(() -> result.lintState.getDirtyState().writeCanonicalTo(result.target.toFile()));
+				return ResultType.CLEAN;
 			}
 
 			@Override
@@ -166,7 +188,7 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 			}
 		};
 
-		abstract void handleResult(Formatter formatter, Result result);
+		abstract ResultType handleResult(Formatter formatter, Result result);
 
 		abstract Integer translateResultTypeToExitCode(ResultType resultType);
 

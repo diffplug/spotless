@@ -1,6 +1,5 @@
 plugins {
 	id 'org.graalvm.buildtools.native'
-	id 'application'
 	id 'com.gradleup.shadow'
 }
 apply from: rootProject.file('gradle/changelog.gradle')
@@ -35,6 +34,11 @@ dependencies {
 
 	implementation "info.picocli:picocli:${VER_PICOCLI}"
 	annotationProcessor "info.picocli:picocli-codegen:${VER_PICOCLI}"
+}
+
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	testLogging.showStandardStreams = true
 }
 
 compileJava {
