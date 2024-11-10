@@ -381,6 +381,7 @@ public final class FormatAnnotationsStep implements Serializable {
 					"UpperBoundBottom",
 					"UpperBoundLiteral",
 					"UpperBoundUnknown",
+					"Valid",
 					"ValueTypeAnno",
 					"VariableNameDefaultBottom",
 					"VariableNameDefaultMiddle",
