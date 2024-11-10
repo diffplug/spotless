@@ -16,8 +16,6 @@
 package com.diffplug.spotless.cli;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,19 +27,31 @@ import com.diffplug.spotless.cli.steps.SpotlessCLIFormatterStep;
 
 import picocli.CommandLine;
 
-public class SpotlessCLIRunner {
+public abstract class SpotlessCLIRunner {
 
 	private File workingDir = new File(".");
 
 	private final List<String> args = new ArrayList<>();
 
 	public static SpotlessCLIRunner create() {
-		return new SpotlessCLIRunner();
+		return new SpotlessCLIRunnerInSameThread();
+	}
+
+	public static SpotlessCLIRunner createExternalProcess() {
+		return new SpotlessCLIRunnerInExternalJavaProcess();
+	}
+
+	public static SpotlessCLIRunner createNative() {
+		return new SpotlessCLIRunnerInNativeExternalProcess();
 	}
 
 	public SpotlessCLIRunner withWorkingDir(@NotNull File workingDir) {
 		this.workingDir = Objects.requireNonNull(workingDir);
-		return withOption("--basedir", workingDir.getAbsolutePath());
+		return this;
+	}
+
+	protected File workingDir() {
+		return workingDir;
 	}
 
 	public SpotlessCLIRunner withOption(@NotNull String option) {
@@ -80,7 +90,7 @@ public class SpotlessCLIRunner {
 	}
 
 	public Result run() {
-		Result result = executeCommand();
+		Result result = executeCommand(args);
 		if (result.executionException() != null) {
 			throwRuntimeException("Error while executing Spotless CLI command", result);
 		}
@@ -91,7 +101,7 @@ public class SpotlessCLIRunner {
 	}
 
 	public Result runAndFail() {
-		Result result = executeCommand();
+		Result result = executeCommand(args);
 		if (result.executionException() != null) {
 			throwRuntimeException("Error while executing Spotless CLI command", result);
 		}
@@ -113,31 +123,7 @@ public class SpotlessCLIRunner {
 		throw new RuntimeException(sb.toString());
 	}
 
-	private Result executeCommand() {
-		SpotlessCLI cli = SpotlessCLI.createInstance();
-		CommandLine commandLine = SpotlessCLI.createCommandLine(cli);
-
-		StringWriter out = new StringWriter();
-		StringWriter err = new StringWriter();
-
-		try (PrintWriter outWriter = new PrintWriter(out);
-				PrintWriter errWriter = new PrintWriter(err)) {
-			commandLine.setOut(outWriter);
-			commandLine.setErr(errWriter);
-			Exception executionException = null;
-			Integer exitCode = null;
-			try {
-				exitCode = commandLine.execute(args.toArray(new String[0]));
-			} catch (Exception e) {
-				executionException = e;
-			}
-
-			// finalize
-			outWriter.flush();
-			errWriter.flush();
-			return new Result(exitCode, executionException, out.toString(), err.toString());
-		}
-	}
+	protected abstract Result executeCommand(List<String> args);
 
 	public static class Result {
 
@@ -146,7 +132,7 @@ public class SpotlessCLIRunner {
 		private final String stdErr;
 		private final Exception executionException;
 
-		private Result(@Nullable Integer exitCode, @Nullable Exception executionException, @NotNull String stdOut, @NotNull String stdErr) {
+		protected Result(@Nullable Integer exitCode, @Nullable Exception executionException, @NotNull String stdOut, @NotNull String stdErr) {
 			this.exitCode = exitCode;
 			this.executionException = executionException;
 			this.stdOut = Objects.requireNonNull(stdOut);

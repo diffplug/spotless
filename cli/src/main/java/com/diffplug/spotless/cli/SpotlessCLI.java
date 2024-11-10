@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.cli;
 
-import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;
@@ -98,11 +97,11 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 	}
 
 	private TargetResolver targetResolver() {
-		return new TargetResolver(baseDir == null ? Path.of(File.separator) : baseDir, targets);
+		return new TargetResolver(baseDir(), targets);
 	}
 
 	private Path baseDir() {
-		return baseDir == null ? Path.of(File.separator) : baseDir;
+		return baseDir == null ? Path.of(System.getProperty("user.dir")) : baseDir;
 	}
 
 	@Override

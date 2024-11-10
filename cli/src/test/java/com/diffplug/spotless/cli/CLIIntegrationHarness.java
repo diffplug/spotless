@@ -20,6 +20,8 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.tag.CliNativeTest;
+import com.diffplug.spotless.tag.CliProcessTest;
 
 public abstract class CLIIntegrationHarness extends ResourceHarness {
 
@@ -43,7 +45,19 @@ public abstract class CLIIntegrationHarness extends ResourceHarness {
 	}
 
 	protected SpotlessCLIRunner cliRunner() {
-		return SpotlessCLIRunner.create()
+		return createRunnerForTag()
 				.withWorkingDir(rootFolder());
+	}
+
+	private SpotlessCLIRunner createRunnerForTag() {
+		CliProcessTest cliProcessTest = getClass().getAnnotation(CliProcessTest.class);
+		if (cliProcessTest != null) {
+			return SpotlessCLIRunner.createExternalProcess();
+		}
+		CliNativeTest cliNativeTest = getClass().getAnnotation(CliNativeTest.class);
+		if (cliNativeTest != null) {
+			return SpotlessCLIRunner.createNative();
+		}
+		return SpotlessCLIRunner.create();
 	}
 }

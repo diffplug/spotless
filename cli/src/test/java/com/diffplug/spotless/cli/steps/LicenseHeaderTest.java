@@ -23,7 +23,7 @@ import com.diffplug.spotless.cli.CLIIntegrationHarness;
 import com.diffplug.spotless.cli.SpotlessCLIRunner;
 import com.diffplug.spotless.cli.steps.generic.LicenseHeader;
 
-public class LicenseHeaderSubcommandTest extends CLIIntegrationHarness {
+public class LicenseHeaderTest extends CLIIntegrationHarness {
 
 	@Test
 	void assertHeaderMustBeSpecified() {

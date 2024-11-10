@@ -96,3 +96,14 @@ graalvmNative {
 		}
 	}
 }
+
+tasks.withType(Test).configureEach {
+	if (it.name == 'testCliProcess') {
+		it.dependsOn('shadowJar')
+		it.systemProperty 'spotless.cli.shadowJar', tasks.shadowJar.archiveFile.get().asFile
+	}
+	if (it.name == 'testCliNative') {
+		it.dependsOn('nativeCompile')
+		it.systemProperty 'spotless.cli.nativeImage', tasks.nativeCompile.outputFile.get().asFile
+	}
+}
