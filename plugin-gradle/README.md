@@ -262,6 +262,10 @@ spotless {
     eclipse()
     // optional: you can specify a specific version and/or config file
     eclipse('4.26').configFile('eclipse-prefs.xml')
+    // Or supply the configuration as a string
+    eclipse('4.26').config("""
+    ...
+    """)
     // if the access to the p2 repositories is restricted, mirrors can be
     // specified using a URI prefix map as follows:
     eclipse().withP2Mirrors(['https://download.eclipse.org/eclipse/updates/4.29/':'https://some.internal.mirror/4-29-updates-p2/']) 
@@ -418,6 +422,10 @@ spotless {
     greclipse()
     // optional: you can specify a specific version or config file(s), version matches the Eclipse Platform
     greclipse('4.26').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
+    // Or supply the configuration as a string
+    greclipse('4.26').config("""
+    ...
+    """)
 ```
 
 Groovy-Eclipse formatting errors/warnings lead per default to a build failure. This behavior can be changed by adding the property/key value `ignoreFormatterProblems=true` to a configuration file. In this scenario, files causing problems, will not be modified by this formatter step.
@@ -572,6 +580,10 @@ spotles {
   cpp {
     // version and configFile are both optional
     eclipseCdt('4.13.0').configFile('eclipse-cdt.xml')
+    // Or supply the configuration as a string
+    eclipseCdt('4.13.0').config("""
+    ...
+    """)
   }
 }
 ```

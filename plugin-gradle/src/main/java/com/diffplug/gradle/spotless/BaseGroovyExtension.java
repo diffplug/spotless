@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -68,6 +69,13 @@ public abstract class BaseGroovyExtension extends FormatExtension {
 			requireElementsNonNull(configFiles);
 			Project project = extension.getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
+			extension.replaceStep(builder.build());
+			return this;
+		}
+
+		public GrEclipseConfig config(String... configs) {
+			requireElementsNonNull(configs);
+			builder.setPreferences(List.of(configs));
 			extension.replaceStep(builder.build());
 			return this;
 		}

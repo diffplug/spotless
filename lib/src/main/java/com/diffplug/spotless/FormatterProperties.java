@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,12 @@ package com.diffplug.spotless;
 
 import static com.diffplug.spotless.MoreIterables.toNullHostileList;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,6 +75,25 @@ public final class FormatterProperties {
 		FormatterProperties properties = new FormatterProperties();
 		nonNullFiles.forEach(properties::add);
 		return properties;
+	}
+
+	public static FormatterProperties fromContent(Iterable<String> content) throws IllegalArgumentException {
+		List<String> nonNullElements = toNullHostileList(content);
+		FormatterProperties properties = new FormatterProperties();
+		nonNullElements.forEach(contentElement -> {
+			try (InputStream is = new ByteArrayInputStream(contentElement.getBytes(StandardCharsets.UTF_8))) {
+				properties.properties.load(is);
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Unable to load properties: " + contentElement);
+			}
+		});
+		return properties;
+	}
+
+	public static FormatterProperties merge(Properties... properties) {
+		FormatterProperties merged = new FormatterProperties();
+		List.of(properties).stream().forEach((source) -> merged.properties.putAll(source));
+		return merged;
 	}
 
 	/**
