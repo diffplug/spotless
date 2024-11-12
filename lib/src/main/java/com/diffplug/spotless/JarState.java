@@ -37,6 +37,13 @@ import java.util.stream.Collectors;
  * catch changes in a SNAPSHOT version.
  */
 public final class JarState implements Serializable {
+
+	private static ClassLoader OVERRIDE_CLASS_LOADER = null;
+
+	public static void setOverrideClassLoader(ClassLoader overrideClassLoader) {
+		OVERRIDE_CLASS_LOADER = overrideClassLoader;
+	}
+
 	/** A lazily evaluated JarState, which becomes a set of files when serialized. */
 	public static class Promised implements Serializable {
 		private static final long serialVersionUID = 1L;
@@ -133,6 +140,9 @@ public final class JarState implements Serializable {
 	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
 	 */
 	public ClassLoader getClassLoader() {
+		if (OVERRIDE_CLASS_LOADER != null) {
+			return OVERRIDE_CLASS_LOADER;
+		}
 		return SpotlessCache.instance().classloader(this);
 	}
 
@@ -145,6 +155,9 @@ public final class JarState implements Serializable {
 	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
 	 */
 	public ClassLoader getClassLoader(Serializable key) {
+		if (OVERRIDE_CLASS_LOADER != null) {
+			return OVERRIDE_CLASS_LOADER;
+		}
 		return SpotlessCache.instance().classloader(key, this);
 	}
 }

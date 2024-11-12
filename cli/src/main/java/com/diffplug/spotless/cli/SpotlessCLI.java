@@ -32,8 +32,9 @@ import com.diffplug.spotless.cli.core.TargetFileTypeInferer;
 import com.diffplug.spotless.cli.core.TargetResolver;
 import com.diffplug.spotless.cli.execution.SpotlessExecutionStrategy;
 import com.diffplug.spotless.cli.help.OptionConstants;
-import com.diffplug.spotless.cli.steps.generic.LicenseHeader;
-import com.diffplug.spotless.cli.steps.generic.RemoveMeLaterSubCommand;
+import com.diffplug.spotless.cli.steps.GoogleJavaFormat;
+import com.diffplug.spotless.cli.steps.LicenseHeader;
+import com.diffplug.spotless.cli.steps.RemoveMeLater;
 import com.diffplug.spotless.cli.version.SpotlessCLIVersionProvider;
 
 import picocli.CommandLine;
@@ -41,7 +42,8 @@ import picocli.CommandLine.Command;
 
 @Command(name = "spotless", mixinStandardHelpOptions = true, versionProvider = SpotlessCLIVersionProvider.class, description = "Runs spotless", subcommandsRepeatable = true, subcommands = {
 		LicenseHeader.class,
-		RemoveMeLaterSubCommand.class})
+		RemoveMeLater.class,
+		GoogleJavaFormat.class})
 public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessActionContextProvider {
 
 	@CommandLine.Option(names = {"-V", "--version"}, versionHelp = true, description = "Print version information and exit.")
@@ -76,7 +78,8 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 				.build()) {
 
 			ResultType resultType = targetResolver.resolveTargets()
-					.parallel() // needed?
+					.parallel()
+					.peek(path -> System.out.printf("%s: formatting %s%n", Thread.currentThread().getName(), path))
 					.map(path -> ThrowingEx.get(() -> new Result(path, LintState.of(formatter, path.toFile())))) // TODO handle suppressions, see SpotlessTaskImpl
 					.map(result -> this.handleResult(formatter, result))
 					.reduce(ResultType.CLEAN, ResultType::combineWith);
@@ -116,7 +119,8 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 			//		args = new String[]{"--version"};
 			//					args = new String[]{"license-header", "--header-file", "CHANGES.md", "--delimiter-for", "java", "license-header", "--header", "abc"};
 
-			args = new String[]{"--mode=CHECK", "--target", "src/poc/java/**/*.java", "--encoding=UTF-8", "license-header", "--header", "abc", "license-header", "--header-file", "TestHeader.txt"};
+			//			args = new String[]{"--mode=CHECK", "--target", "src/poc/java/**/*.java", "--encoding=UTF-8", "license-header", "--header", "abc", "license-header", "--header-file", "TestHeader.txt"};
+			args = new String[]{"--basedir", "cli", "--target", "src/poc/java/**/*.java", "--encoding=UTF-8", "google-java-format"};
 			//			args = new String[]{"--version"};
 		}
 		int exitCode = createCommandLine(createInstance())
@@ -166,6 +170,7 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 				if (result.lintState.isHasLints()) {
 					// something went wrong, we should not apply the changes
 					System.err.println("File has lints: " + result.target.toFile().getName());
+					System.err.println("lint:\n" + result.lintState.asStringDetailed(result.target.toFile(), formatter));
 					return ResultType.DIRTY;
 				}
 				ThrowingEx.run(() -> result.lintState.getDirtyState().writeCanonicalTo(result.target.toFile()));

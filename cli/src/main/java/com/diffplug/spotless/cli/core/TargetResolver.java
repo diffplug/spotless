@@ -49,13 +49,16 @@ public class TargetResolver {
 	}
 
 	public Stream<Path> resolveTargets() {
-		return targets.stream()
-				.flatMap(this::resolveTarget);
+		return targets.parallelStream()
+				.map(this::resolveTarget)
+				.reduce(Stream::concat) // beware! when using flatmap, the stream goes to sequential
+				.orElse(Stream.empty());
 	}
 
 	private Stream<Path> resolveTarget(String target) {
 
 		final boolean isGlob = target.contains("*") || target.contains("?");
+		System.out.println("isGlob: " + isGlob + " target: " + target);
 
 		if (isGlob) {
 			return resolveGlob(target);
@@ -83,7 +86,7 @@ public class TargetResolver {
 						return FileVisitResult.CONTINUE;
 					}
 				}));
-		return collected.stream();
+		return collected.parallelStream();
 	}
 
 	private Stream<Path> resolveGlob(String glob) {
@@ -108,13 +111,15 @@ public class TargetResolver {
 				new SimpleFileVisitor<>() {
 					@Override
 					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-						if (matcher.matches(file)) {
+						Path relativeFile = startDir.relativize(file);
+						if (matcher.matches(relativeFile)) {
+							System.out.println("Matched: " + file);
 							collected.add(file);
 						}
 						return FileVisitResult.CONTINUE;
 					}
 				}));
-		return collected.stream()
+		return collected.parallelStream()
 				.map(Path::normalize);
 		//				.map(Path::toAbsolutePath);
 	}

@@ -36,6 +36,14 @@ dependencies {
 	annotationProcessor "info.picocli:picocli-codegen:${VER_PICOCLI}"
 }
 
+dependencies {
+	[
+		'com.google.googlejavaformat:google-java-format:1.24.0'
+	].each {
+		implementation it
+	}
+}
+
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	testLogging.showStandardStreams = true
@@ -88,13 +96,43 @@ application {
 
 // use tasks 'nativeCompile' and 'nativeRun' to compile and run the native image
 graalvmNative {
+	agent {
+		enabled = true
+		defaultMode = "standard"
+		metadataCopy {
+			inputTaskNames.add('test')
+			mergeWithExisting = true
+		}
+	}
 	binaries {
 		main {
 			imageName = 'spotless'
 			mainClass = 'com.diffplug.spotless.cli.SpotlessCLI'
 			sharedLibrary = false
+			useFatJar = true // use shadowJar as input to have same classpath
+
+			// optimizations, see https://www.graalvm.org/latest/reference-manual/native-image/optimizations-and-performance/
+			//buildArgs.add('-O3') // on production builds
+
+			// the following options are required for GJF
+			// see: <https://github.com/google/google-java-format/issues/894#issuecomment-1430408909>
+			buildArgs.add('-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED')
+			buildArgs.add('-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED')
+			buildArgs.add('-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED')
+			buildArgs.add('-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED')
+			buildArgs.add('-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED')
+
+			buildArgs.add('--initialize-at-build-time=com.sun.tools.javac.file.Locations')
+
+			buildArgs.add('-H:IncludeResourceBundles=com.sun.tools.javac.resources.compiler')
+			buildArgs.add('-H:IncludeResourceBundles=com.sun.tools.javac.resources.javac')
 		}
 	}
+}
+
+tasks.named('nativeCompile') {
+	dependsOn('shadowJar')
+	classpathJar = tasks.shadowJar.archiveFile.get().asFile
 }
 
 tasks.withType(Test).configureEach {

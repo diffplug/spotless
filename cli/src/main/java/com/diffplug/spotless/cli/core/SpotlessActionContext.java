@@ -21,6 +21,8 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
+import com.diffplug.spotless.Provisioner;
+
 public class SpotlessActionContext {
 
 	private final TargetFileTypeInferer.TargetFileType targetFileType;
@@ -42,5 +44,9 @@ public class SpotlessActionContext {
 
 	public Path resolvePath(Path path) {
 		return fileResolver.resolvePath(path);
+	}
+
+	public Provisioner provisioner() {
+		return CliJarProvisioner.INSTANCE;
 	}
 }

@@ -13,33 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.cli.steps.generic;
+package com.diffplug.spotless.cli.steps;
 
-import java.io.File;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.cli.core.SpotlessActionContext;
 
 import picocli.CommandLine;
 
-@CommandLine.Command(name = "ignoreme")
-public class RemoveMeLaterSubCommand extends SpotlessFormatterStepSubCommand {
-
-	@CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
-	LicenseHeaderOption licenseHeaderOption;
-
-	static class LicenseHeaderOption {
-		@CommandLine.Option(names = {"--header", "-H"}, required = true)
-		String header;
-		@CommandLine.Option(names = {"--header-file", "-f"}, required = true)
-		File headerFile;
-	}
+@CommandLine.Command(mixinStandardHelpOptions = true)
+public abstract class SpotlessFormatterStep implements SpotlessCLIFormatterStep {
 
 	@Nonnull
 	@Override
-	public List<FormatterStep> prepareFormatterSteps() {
-		return List.of();
+	public List<FormatterStep> prepareFormatterSteps(SpotlessActionContext context) {
+		return prepareFormatterSteps();
+	}
+
+	protected List<FormatterStep> prepareFormatterSteps() {
+		throw new IllegalStateException("This method must be overridden or not be called");
 	}
 }
