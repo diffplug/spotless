@@ -94,6 +94,9 @@ application {
 	archivesBaseName = 'spotless-cli'
 }
 
+
+def nativeCompileMetaDir = project.layout.buildDirectory.dir('nativeCompile/src/main/resources/native-image/' + project.group + '/' + project.name)
+
 // use tasks 'nativeCompile' and 'nativeRun' to compile and run the native image
 graalvmNative {
 	agent {
@@ -101,8 +104,16 @@ graalvmNative {
 		defaultMode = "standard"
 		metadataCopy {
 			inputTaskNames.add('test')
-			mergeWithExisting = true
+			mergeWithExisting = false
+			outputDirectories.add(nativeCompileMetaDir.get().asFile.path)
 		}
+		tasksToInstrumentPredicate = new java.util.function.Predicate<Task>() {
+					@Override
+					boolean test(Task task) {
+						println ("Instrumenting task: " + task.name + " " + task.name == 'test')
+						return task.name == 'test'
+					}
+				}
 	}
 	binaries {
 		main {
@@ -130,12 +141,38 @@ graalvmNative {
 	}
 }
 
+
+tasks.named('metadataCopy') {
+	dependsOn('test')
+}
+
 tasks.named('nativeCompile') {
 	dependsOn('shadowJar')
 	classpathJar = tasks.shadowJar.archiveFile.get().asFile
 }
 
+
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+	dependsOn('metadataCopy') // produces graalvm agent info
+	from(nativeCompileMetaDir.get().asFile.path) {
+		into('META-INF/native-image/' + project.group + '/' + project.name)
+	}
+}
+
+gradle.taskGraph.whenReady { graph ->
+	if (graph.hasTask('nativeCompile') || graph.hasTask('metadataCopy') || graph.hasTask('shadowJar')) {
+		// enable graalvm agent using property here instead of command line `-Pagent=standard`
+		// this collects information about reflective access and resources used by the application (e.g. GJF)
+		project.property('agent', 'standard')
+	}
+}
+
 tasks.withType(Test).configureEach {
+	if (it.name == 'test') {
+		if (project.hasProperty('agent')) {
+			it.inputs.property('agent', project.property('agent')) // make sure to re-run tests if agent changes
+		}
+	}
 	if (it.name == 'testCliProcess') {
 		it.dependsOn('shadowJar')
 		it.systemProperty 'spotless.cli.shadowJar', tasks.shadowJar.archiveFile.get().asFile
