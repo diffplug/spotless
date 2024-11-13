@@ -27,7 +27,7 @@ import picocli.CommandLine;
 @CommandLine.Command(name = "google-java-format", description = "Runs google java format")
 public class GoogleJavaFormat extends SpotlessFormatterStep {
 
-	@CommandLine.Option(names = {"--style", "-s"}, required = false, defaultValue = "GOOGLE", description = "The style to use for the google java format." + OptionConstants.VALID_VALUES_SUFFIX + OptionConstants.DEFAULT_VALUE_SUFFIX)
+	@CommandLine.Option(names = {"--style", "-s"}, required = false, defaultValue = "GOOGLE", description = "The style to use for the google java format." + OptionConstants.VALID_AND_DEFAULT_VALUES_SUFFIX)
 	Style style;
 
 	@CommandLine.Option(names = {"--reflow-long-strings", "-r"}, required = false, defaultValue = "false", description = "Reflow long strings." + OptionConstants.DEFAULT_VALUE_SUFFIX)

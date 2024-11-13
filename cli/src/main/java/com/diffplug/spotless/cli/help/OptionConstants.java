@@ -17,9 +17,13 @@ package com.diffplug.spotless.cli.help;
 
 public final class OptionConstants {
 
-	public static final String VALID_VALUES_SUFFIX = " One of: ${COMPLETION-CANDIDATES}";
+	public static final String NEW_LINE = "%n  ";
 
-	public static final String DEFAULT_VALUE_SUFFIX = " (default: ${DEFAULT-VALUE})";
+	public static final String VALID_VALUES_SUFFIX = NEW_LINE + "One of: ${COMPLETION-CANDIDATES}";
+
+	public static final String DEFAULT_VALUE_SUFFIX = NEW_LINE + "(default: ${DEFAULT-VALUE})";
+
+	public static final String VALID_AND_DEFAULT_VALUES_SUFFIX = VALID_VALUES_SUFFIX + DEFAULT_VALUE_SUFFIX;
 
 	private OptionConstants() {
 		// no instance

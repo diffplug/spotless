@@ -43,9 +43,9 @@ public class LicenseHeader extends SpotlessFormatterStep {
 	String delimiter;
 
 	static class LicenseHeaderSourceOption {
-		@CommandLine.Option(names = {"--header", "-H"}, required = true)
+		@CommandLine.Option(names = {"--header", "-H"}, required = true, description = "The license header content to apply. May contain @|YELLOW $YEAR|@ as placeholder.")
 		String header;
-		@CommandLine.Option(names = {"--header-file", "-f"}, required = true)
+		@CommandLine.Option(names = {"--header-file", "-f"}, required = true, description = "The license header content in a file to apply.%n  May contain @|YELLOW $YEAR|@ as placeholder.")
 		File headerFile;
 	}
 

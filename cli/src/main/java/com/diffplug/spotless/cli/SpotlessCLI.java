@@ -34,35 +34,37 @@ import com.diffplug.spotless.cli.execution.SpotlessExecutionStrategy;
 import com.diffplug.spotless.cli.help.OptionConstants;
 import com.diffplug.spotless.cli.steps.GoogleJavaFormat;
 import com.diffplug.spotless.cli.steps.LicenseHeader;
-import com.diffplug.spotless.cli.steps.RemoveMeLater;
 import com.diffplug.spotless.cli.version.SpotlessCLIVersionProvider;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "spotless", mixinStandardHelpOptions = true, versionProvider = SpotlessCLIVersionProvider.class, description = "Runs spotless", subcommandsRepeatable = true, subcommands = {
+@Command(name = "spotless", mixinStandardHelpOptions = true, versionProvider = SpotlessCLIVersionProvider.class, description = "Runs spotless", synopsisSubcommandLabel = "[FORMATTING_STEPS]", commandListHeading = "%nAvailable formatting steps:%n", subcommandsRepeatable = true, subcommands = {
 		LicenseHeader.class,
-		RemoveMeLater.class,
 		GoogleJavaFormat.class})
 public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessActionContextProvider {
 
-	@CommandLine.Option(names = {"--mode", "-m"}, defaultValue = "APPLY", description = "The mode to run spotless in." + OptionConstants.VALID_VALUES_SUFFIX + OptionConstants.DEFAULT_VALUE_SUFFIX, scope = CommandLine.ScopeType.INHERIT)
+	@CommandLine.Spec
+	CommandLine.Model.CommandSpec spec; // injected by picocli
+
+	@CommandLine.Option(names = {"--mode", "-m"}, defaultValue = "APPLY", description = "The mode to run spotless in." + OptionConstants.VALID_AND_DEFAULT_VALUES_SUFFIX)
 	SpotlessMode spotlessMode;
 
 	@CommandLine.Option(names = {"--basedir"}, hidden = true, description = "The base directory to run spotless in. Intended for testing purposes only.")
 	Path baseDir;
 
-	@CommandLine.Option(names = {"--target", "-t"}, required = true, arity = "1..*", description = "The target files to format.", scope = CommandLine.ScopeType.INHERIT)
+	@CommandLine.Option(names = {"--target", "-t"}, description = "The target files to format.")
 	public List<String> targets;
 
-	@CommandLine.Option(names = {"--encoding", "-e"}, defaultValue = "ISO8859-1", description = "The encoding of the files to format." + OptionConstants.DEFAULT_VALUE_SUFFIX, scope = CommandLine.ScopeType.INHERIT)
+	@CommandLine.Option(names = {"--encoding", "-e"}, defaultValue = "UTF-8", description = "The encoding of the files to format." + OptionConstants.DEFAULT_VALUE_SUFFIX)
 	public Charset encoding;
 
-	@CommandLine.Option(names = {"--line-ending", "-l"}, defaultValue = "UNIX", description = "The line ending of the files to format." + OptionConstants.VALID_VALUES_SUFFIX + OptionConstants.DEFAULT_VALUE_SUFFIX, scope = CommandLine.ScopeType.INHERIT)
+	@CommandLine.Option(names = {"--line-ending", "-l"}, defaultValue = "UNIX", description = "The line ending of the files to format." + OptionConstants.VALID_AND_DEFAULT_VALUES_SUFFIX)
 	public LineEnding lineEnding;
 
 	@Override
 	public Integer executeSpotlessAction(@Nonnull List<FormatterStep> formatterSteps) {
+		validateTargets();
 		TargetResolver targetResolver = targetResolver();
 
 		try (Formatter formatter = Formatter.builder()
@@ -78,6 +80,12 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 					.map(result -> this.handleResult(formatter, result))
 					.reduce(ResultType.CLEAN, ResultType::combineWith);
 			return spotlessMode.translateResultTypeToExitCode(resultType);
+		}
+	}
+
+	private void validateTargets() {
+		if (targets == null || targets.isEmpty()) { // cannot use `required = true` because of the subcommands
+			throw new CommandLine.ParameterException(spec.commandLine(), "Error: Missing required argument (specify one of these): (--target=<targets> | -t)");
 		}
 	}
 
@@ -103,6 +111,7 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 
 	@Override
 	public SpotlessActionContext spotlessActionContext() {
+		validateTargets();
 		TargetResolver targetResolver = targetResolver();
 		TargetFileTypeInferer targetFileTypeInferer = new TargetFileTypeInferer(targetResolver);
 		return new SpotlessActionContext(targetFileTypeInferer.inferTargetFileType(), new FileResolver(baseDir()));
