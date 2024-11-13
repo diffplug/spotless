@@ -46,12 +46,6 @@ import picocli.CommandLine.Command;
 		GoogleJavaFormat.class})
 public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessActionContextProvider {
 
-	@CommandLine.Option(names = {"-V", "--version"}, versionHelp = true, description = "Print version information and exit.")
-	boolean versionRequested;
-
-	@CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "Display this help message and exit.")
-	boolean usageHelpRequested;
-
 	@CommandLine.Option(names = {"--mode", "-m"}, defaultValue = "APPLY", description = "The mode to run spotless in." + OptionConstants.VALID_VALUES_SUFFIX + OptionConstants.DEFAULT_VALUE_SUFFIX, scope = CommandLine.ScopeType.INHERIT)
 	SpotlessMode spotlessMode;
 
