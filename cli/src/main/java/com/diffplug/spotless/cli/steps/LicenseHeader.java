@@ -26,6 +26,7 @@ import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.antlr4.Antlr4Defaults;
 import com.diffplug.spotless.cli.core.SpotlessActionContext;
 import com.diffplug.spotless.cli.core.TargetFileTypeInferer;
+import com.diffplug.spotless.cli.help.OptionConstants;
 import com.diffplug.spotless.cpp.CppDefaults;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.kotlin.KotlinConstants;
@@ -39,7 +40,7 @@ public class LicenseHeader extends SpotlessFormatterStep {
 	@CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
 	LicenseHeaderSourceOption licenseHeaderSourceOption;
 
-	@CommandLine.Option(names = {"--delimiter", "-d"}, required = false, description = "The delimiter to use for the license header. If not provided, the default delimiter for the file type will be used (if available, otherwise java is assumed).")
+	@CommandLine.Option(names = {"--delimiter", "-d"}, required = false, description = "The delimiter to use for the license header. If not provided, the delimiter will be guessed based on the first few files we find. Otherwise, 'java' will be assumed.")
 	String delimiter;
 
 	static class LicenseHeaderSourceOption {
@@ -49,13 +50,26 @@ public class LicenseHeader extends SpotlessFormatterStep {
 		File headerFile;
 	}
 
-	// TODO add more config options
+	@CommandLine.Option(names = {"--year-mode", "-m"}, required = false, defaultValue = "PRESERVE", description = "How and if the year in the copyright header should be updated." + OptionConstants.VALID_AND_DEFAULT_VALUES_SUFFIX)
+	LicenseHeaderStep.YearMode yearMode;
+
+	@CommandLine.Option(names = {"--year-separator", "-Y"}, required = false, defaultValue = LicenseHeaderStep.DEFAULT_YEAR_DELIMITER, description = "The separator to use for the year range in the license header." + OptionConstants.DEFAULT_VALUE_SUFFIX)
+	String yearSeparator;
+
+	@CommandLine.Option(names = {"--skip-lines-matching", "-s"}, required = false, description = "Skip lines matching the given regex pattern before inserting the licence header.")
+	String skipLinesMatching;
+
+	@CommandLine.Option(names = {"--content-pattern", "-c"}, required = false, description = "The pattern to match the content of the file before inserting the licence header. (If the file content does not match the pattern, the header will not be inserted/updated.)")
+	String contentPattern;
 
 	@Nonnull
 	@Override
 	public List<FormatterStep> prepareFormatterSteps(SpotlessActionContext context) {
 		FormatterStep licenseHeaderStep = LicenseHeaderStep.headerDelimiter(headerSource(context), delimiter(context.targetFileType()))
-				// TODO add more config options
+				.withYearMode(yearMode)
+				.withYearSeparator(yearSeparator)
+				.withSkipLinesMatching(skipLinesMatching)
+				.withContentPattern(contentPattern)
 				.build();
 		return List.of(licenseHeaderStep);
 	}

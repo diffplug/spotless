@@ -17,10 +17,13 @@ package com.diffplug.spotless.cli.steps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.cli.CLIIntegrationHarness;
 import com.diffplug.spotless.cli.SpotlessCLIRunner;
+import com.diffplug.spotless.generic.LicenseHeaderStep;
 
 public class LicenseHeaderTest extends CLIIntegrationHarness {
 
@@ -74,5 +77,91 @@ public class LicenseHeaderTest extends CLIIntegrationHarness {
 				.run();
 
 		assertFile("TestFile.java").hasContent("/* License */\n/* keep me */\npublic class TestFile {}");
+	}
+
+	@Test
+	void assertYearModeIsApplied() {
+		setFile("TestFile.java").toContent("/* License (c) 2022 */\npublic class TestFile {}");
+
+		SpotlessCLIRunner.Result result = cliRunner()
+				.withTargets("TestFile.java")
+				.withStep(LicenseHeader.class)
+				.withOption("--header", "/* License (c) $YEAR */")
+				.withOption("--year-mode", LicenseHeaderStep.YearMode.UPDATE_TO_TODAY.toString())
+				.run();
+
+		assertFile("TestFile.java").hasContent("/* License (c) 2022-" + LocalDate.now().getYear() + " */\npublic class TestFile {}");
+	}
+
+	@Test
+	void assertYearSeparatorIsApplied() {
+		setFile("TestFile.java").toContent("/* License (c) 2022...2023 */\npublic class TestFile {}");
+
+		SpotlessCLIRunner.Result result = cliRunner()
+				.withTargets("TestFile.java")
+				.withStep(LicenseHeader.class)
+				.withOption("--header", "/* License (c) $YEAR */")
+				.withOption("--year-mode", LicenseHeaderStep.YearMode.UPDATE_TO_TODAY.toString())
+
+				.withOption("--year-separator", "...")
+				.run();
+
+		assertFile("TestFile.java").hasContent("/* License (c) 2022..." + LocalDate.now().getYear() + " */\npublic class TestFile {}");
+	}
+
+	@Test
+	void assertSkipLinesMatchingIsApplied() {
+		setFile("TestFile.java").toContent("/* skip me */\npublic class TestFile {}");
+
+		SpotlessCLIRunner.Result result = cliRunner()
+				.withTargets("TestFile.java")
+				.withStep(LicenseHeader.class)
+				.withOption("--header", "/* License */")
+				.withOption("--skip-lines-matching", ".*skip me.*")
+				.run();
+
+		assertFile("TestFile.java").hasContent("/* skip me */\n/* License */\npublic class TestFile {}");
+	}
+
+	@Test
+	void assertPreserveModeIsApplied() {
+		setFile("TestFile.java").toContent("/* License (c) 2022 */\npublic class TestFile {}");
+
+		SpotlessCLIRunner.Result result = cliRunner()
+				.withTargets("TestFile.java")
+				.withStep(LicenseHeader.class)
+				.withOption("--header", "/* License (c) $YEAR */")
+				.withOption("--year-mode", LicenseHeaderStep.YearMode.PRESERVE.toString())
+				.run();
+
+		assertFile("TestFile.java").hasContent("/* License (c) 2022 */\npublic class TestFile {}");
+	}
+
+	@Test
+	void assertContentPatternIsAppliedIfMatching() {
+		setFile("TestFile.java").toContent("public class TestFile {}");
+
+		SpotlessCLIRunner.Result result = cliRunner()
+				.withTargets("TestFile.java")
+				.withStep(LicenseHeader.class)
+				.withOption("--header", "/* License */")
+				.withOption("--content-pattern", ".*TestFile.*")
+				.run();
+
+		assertFile("TestFile.java").hasContent("/* License */\npublic class TestFile {}");
+	}
+
+	@Test
+	void assertContentPatternIsNotAppliedIfNotMatching() {
+		setFile("TestFile.java").toContent("public class TestFile {}");
+
+		SpotlessCLIRunner.Result result = cliRunner()
+				.withTargets("TestFile.java")
+				.withStep(LicenseHeader.class)
+				.withOption("--header", "/* License */")
+				.withOption("--content-pattern", ".*NonExistent.*")
+				.run();
+
+		assertFile("TestFile.java").hasContent("public class TestFile {}");
 	}
 }
