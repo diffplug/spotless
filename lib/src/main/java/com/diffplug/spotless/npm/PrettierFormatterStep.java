@@ -17,12 +17,16 @@ package com.diffplug.spotless.npm;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nonnull;
 
@@ -57,7 +61,30 @@ public class PrettierFormatterStep {
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
 				() -> new State(NAME, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, prettierConfig),
-				State::createFormatterFunc);
+				PrettierFormatterStep::cachedStateToFormatterFunc);
+	}
+
+	// TODO (simschla, 21.11.2024): this is a hack for the POC
+	// problem is, that the function is instantiated multiple times for cli call, which
+	// results in concurrent initialization of the node_modules dir and starting multiple
+	// server instances.
+	// I'm not sure if this is intended/expected or if it is a bug, will have to check with the team.
+	// For now, I will cache the formatter function based on the state, so that it is only initialized once.
+	private static final ConcurrentHashMap<String, FormatterFunc> CACHED_FORMATTERS = new ConcurrentHashMap<>();
+
+	public static FormatterFunc cachedStateToFormatterFunc(State state) {
+		String serializedState = serializeToBase64(state);
+		return CACHED_FORMATTERS.computeIfAbsent(serializedState, key -> state.createFormatterFunc());
+	}
+
+	private static String serializeToBase64(State state) {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(state);
+			return Base64.getEncoder().encodeToString(baos.toByteArray());
+		} catch (IOException e) {
+			throw ThrowingEx.asRuntime(e);
+		}
 	}
 
 	private static class State extends NpmFormatterStepStateBase implements Serializable {

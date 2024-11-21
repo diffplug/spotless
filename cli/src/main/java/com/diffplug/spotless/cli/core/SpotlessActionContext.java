@@ -27,10 +27,12 @@ public class SpotlessActionContext {
 
 	private final TargetFileTypeInferer.TargetFileType targetFileType;
 	private final FileResolver fileResolver;
+	private final ExecutionLayout executionLayout;
 
-	public SpotlessActionContext(@Nonnull TargetFileTypeInferer.TargetFileType targetFileType, @Nonnull FileResolver fileResolver) {
+	private SpotlessActionContext(@Nonnull TargetFileTypeInferer.TargetFileType targetFileType, @Nonnull FileResolver fileResolver, @Nonnull SpotlessCommandLineStream commandLineStream) {
 		this.targetFileType = Objects.requireNonNull(targetFileType);
-		this.fileResolver = fileResolver;
+		this.fileResolver = Objects.requireNonNull(fileResolver);
+		this.executionLayout = ExecutionLayout.create(fileResolver, Objects.requireNonNull(commandLineStream));
 	}
 
 	@Nonnull
@@ -48,5 +50,38 @@ public class SpotlessActionContext {
 
 	public Provisioner provisioner() {
 		return CliJarProvisioner.INSTANCE;
+	}
+
+	public ExecutionLayout executionLayout() {
+		return executionLayout;
+	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	public static class Builder {
+		private TargetFileTypeInferer.TargetFileType targetFileType;
+		private FileResolver fileResolver;
+		private SpotlessCommandLineStream commandLineStream;
+
+		public Builder targetFileType(TargetFileTypeInferer.TargetFileType targetFileType) {
+			this.targetFileType = targetFileType;
+			return this;
+		}
+
+		public Builder fileResolver(FileResolver fileResolver) {
+			this.fileResolver = fileResolver;
+			return this;
+		}
+
+		public Builder commandLineStream(SpotlessCommandLineStream commandLineStream) {
+			this.commandLineStream = commandLineStream;
+			return this;
+		}
+
+		public SpotlessActionContext build() {
+			return new SpotlessActionContext(targetFileType, fileResolver, commandLineStream);
+		}
 	}
 }

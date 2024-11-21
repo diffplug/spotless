@@ -54,7 +54,9 @@ compileJava {
 	// https://github.com/remkop/picocli/tree/main/picocli-codegen#222-other-options
 	options.compilerArgs += [
 		"-Aproject=${project.group}/${project.name}",
-		"-Aother.resource.bundles=application"
+		"-Aother.resource.bundles=application",
+		// patterns require double-escaping (one escape is removed by groovy, the other one is needed in the resulting json file)
+		"-Aother.resource.patterns=.*\\\\.properties,.*\\\\.json,.*\\\\.js"
 	]
 }
 
@@ -100,7 +102,7 @@ def nativeCompileMetaDir = project.layout.buildDirectory.dir('nativeCompile/src/
 // use tasks 'nativeCompile' and 'nativeRun' to compile and run the native image
 graalvmNative {
 	agent {
-		enabled = true
+		enabled = true // we would love to make this dynamic, but it's not possible
 		defaultMode = "standard"
 		metadataCopy {
 			inputTaskNames.add('test')
@@ -110,8 +112,11 @@ graalvmNative {
 		tasksToInstrumentPredicate = new java.util.function.Predicate<Task>() {
 					@Override
 					boolean test(Task task) {
-						println ("Instrumenting task: " + task.name + " " + task.name == 'test')
+						//						if (project.hasProperty('agent')) {
+						println ("Instrumenting task: " + task.name + " " + task.name == 'test' + "proj: " + task.project.hasProperty('agent'))
 						return task.name == 'test'
+						//						}
+						//						return false
 					}
 				}
 	}
@@ -159,16 +164,18 @@ tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.Shadow
 	}
 }
 
-gradle.taskGraph.whenReady { graph ->
-	if (graph.hasTask('nativeCompile') || graph.hasTask('metadataCopy') || graph.hasTask('shadowJar')) {
+gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
+	//	println "Graph: " + graph.allTasks*.name
+	if (graph.hasTask(':cli:nativeCompile') || graph.hasTask(':cli:metadataCopy') || graph.hasTask(':cli:shadowJar')) {
 		// enable graalvm agent using property here instead of command line `-Pagent=standard`
 		// this collects information about reflective access and resources used by the application (e.g. GJF)
-		project.property('agent', 'standard')
+		project.ext.agent = 'standard'
 	}
 }
 
 tasks.withType(Test).configureEach {
 	if (it.name == 'test') {
+		it.outputs.dir(nativeCompileMetaDir)
 		if (project.hasProperty('agent')) {
 			it.inputs.property('agent', project.property('agent')) // make sure to re-run tests if agent changes
 		}

@@ -13,12 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.cli;
+package com.diffplug.spotless.cli.steps;
 
-import com.diffplug.spotless.cli.core.SpotlessActionContext;
-import com.diffplug.spotless.cli.core.SpotlessCommandLineStream;
+import java.util.function.Supplier;
 
-public interface SpotlessActionContextProvider {
+import javax.annotation.Nullable;
 
-	SpotlessActionContext spotlessActionContext(SpotlessCommandLineStream commandLineStream);
+import com.diffplug.common.base.Suppliers;
+
+public class OptionDefaultUse<T> {
+
+	@Nullable
+	private final T obj;
+
+	private OptionDefaultUse(@Nullable T obj) {
+		this.obj = obj;
+	}
+
+	public static <T> OptionDefaultUse<T> use(@Nullable T obj) {
+		return new OptionDefaultUse<>(obj);
+	}
+
+	public T orIfNullGet(Supplier<T> supplier) {
+		return obj != null ? obj : supplier.get();
+	}
+
+	public T orIfNull(T other) {
+		return orIfNullGet(Suppliers.ofInstance(other));
+	}
 }

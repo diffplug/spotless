@@ -28,12 +28,14 @@ import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.cli.core.FileResolver;
 import com.diffplug.spotless.cli.core.SpotlessActionContext;
+import com.diffplug.spotless.cli.core.SpotlessCommandLineStream;
 import com.diffplug.spotless.cli.core.TargetFileTypeInferer;
 import com.diffplug.spotless.cli.core.TargetResolver;
 import com.diffplug.spotless.cli.execution.SpotlessExecutionStrategy;
 import com.diffplug.spotless.cli.help.OptionConstants;
 import com.diffplug.spotless.cli.steps.GoogleJavaFormat;
 import com.diffplug.spotless.cli.steps.LicenseHeader;
+import com.diffplug.spotless.cli.steps.Prettier;
 import com.diffplug.spotless.cli.version.SpotlessCLIVersionProvider;
 
 import picocli.CommandLine;
@@ -41,7 +43,8 @@ import picocli.CommandLine.Command;
 
 @Command(name = "spotless", mixinStandardHelpOptions = true, versionProvider = SpotlessCLIVersionProvider.class, description = "Runs spotless", synopsisSubcommandLabel = "[FORMATTING_STEPS]", commandListHeading = "%nAvailable formatting steps:%n", subcommandsRepeatable = true, subcommands = {
 		LicenseHeader.class,
-		GoogleJavaFormat.class})
+		GoogleJavaFormat.class,
+		Prettier.class})
 public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessActionContextProvider {
 
 	@CommandLine.Spec
@@ -110,11 +113,15 @@ public class SpotlessCLI implements SpotlessAction, SpotlessCommand, SpotlessAct
 	}
 
 	@Override
-	public SpotlessActionContext spotlessActionContext() {
+	public SpotlessActionContext spotlessActionContext(SpotlessCommandLineStream commandLineStream) {
 		validateTargets();
 		TargetResolver targetResolver = targetResolver();
 		TargetFileTypeInferer targetFileTypeInferer = new TargetFileTypeInferer(targetResolver);
-		return new SpotlessActionContext(targetFileTypeInferer.inferTargetFileType(), new FileResolver(baseDir()));
+		return SpotlessActionContext.builder()
+				.targetFileType(targetFileTypeInferer.inferTargetFileType())
+				.fileResolver(new FileResolver(baseDir()))
+				.commandLineStream(commandLineStream)
+				.build();
 	}
 
 	public static void main(String... args) {

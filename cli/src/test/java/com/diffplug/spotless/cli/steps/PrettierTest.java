@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.cli;
+package com.diffplug.spotless.cli.steps;
 
-import com.diffplug.spotless.cli.core.SpotlessActionContext;
-import com.diffplug.spotless.cli.core.SpotlessCommandLineStream;
+import com.diffplug.spotless.cli.CLIIntegrationHarness;
 
-public interface SpotlessActionContextProvider {
+public class PrettierTest extends CLIIntegrationHarness {
 
-	SpotlessActionContext spotlessActionContext(SpotlessCommandLineStream commandLineStream);
+	// TODO
+
 }

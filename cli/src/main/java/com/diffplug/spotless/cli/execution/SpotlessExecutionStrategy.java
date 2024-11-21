@@ -21,10 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.cli.SpotlessAction;
-import com.diffplug.spotless.cli.SpotlessActionContextProvider;
 import com.diffplug.spotless.cli.core.SpotlessActionContext;
-import com.diffplug.spotless.cli.steps.SpotlessCLIFormatterStep;
+import com.diffplug.spotless.cli.core.SpotlessCommandLineStream;
 
 import picocli.CommandLine;
 
@@ -35,44 +33,35 @@ public class SpotlessExecutionStrategy implements CommandLine.IExecutionStrategy
 		if (helpResult != null) {
 			return helpResult;
 		}
-		return runSpotlessActions(parseResult);
+		return runSpotlessActions(SpotlessCommandLineStream.of(parseResult));
 	}
 
-	private Integer runSpotlessActions(CommandLine.ParseResult parseResult) {
+	private Integer runSpotlessActions(SpotlessCommandLineStream commandLineStream) {
 		// 1. prepare context
-		SpotlessActionContext context = provideSpotlessActionContext(parseResult);
+		SpotlessActionContext context = provideSpotlessActionContext(commandLineStream);
 
 		// 2. run setup (for combining steps handled as subcommands)
-		List<FormatterStep> steps = prepareFormatterSteps(parseResult, context);
+		List<FormatterStep> steps = prepareFormatterSteps(commandLineStream, context);
 
 		// 3. run spotless steps
-		return executeSpotlessAction(parseResult, steps);
+		return executeSpotlessAction(commandLineStream, steps);
 	}
 
-	private SpotlessActionContext provideSpotlessActionContext(CommandLine.ParseResult parseResult) {
-		return parseResult.asCommandLineList().stream()
-				.map(CommandLine::getCommand)
-				.filter(command -> command instanceof SpotlessActionContextProvider)
-				.map(SpotlessActionContextProvider.class::cast)
+	private SpotlessActionContext provideSpotlessActionContext(SpotlessCommandLineStream commandLineStream) {
+		return commandLineStream.contextProviders()
 				.findFirst()
-				.map(SpotlessActionContextProvider::spotlessActionContext)
+				.map(provider -> provider.spotlessActionContext(commandLineStream))
 				.orElseThrow(() -> new IllegalStateException("No SpotlessActionContextProvider found"));
 	}
 
-	private List<FormatterStep> prepareFormatterSteps(CommandLine.ParseResult parseResult, SpotlessActionContext context) {
-		return parseResult.asCommandLineList().stream()
-				.map(CommandLine::getCommand)
-				.filter(command -> command instanceof SpotlessCLIFormatterStep)
-				.map(SpotlessCLIFormatterStep.class::cast)
+	private List<FormatterStep> prepareFormatterSteps(SpotlessCommandLineStream commandLineStream, SpotlessActionContext context) {
+		return commandLineStream.formatterSteps()
 				.flatMap(step -> step.prepareFormatterSteps(context).stream())
 				.collect(Collectors.toList());
 	}
 
-	private Integer executeSpotlessAction(CommandLine.ParseResult parseResult, List<FormatterStep> steps) {
-		return parseResult.asCommandLineList().stream()
-				.map(CommandLine::getCommand)
-				.filter(command -> command instanceof SpotlessAction)
-				.map(SpotlessAction.class::cast)
+	private Integer executeSpotlessAction(SpotlessCommandLineStream commandLineStream, List<FormatterStep> steps) {
+		return commandLineStream.actions()
 				.findFirst()
 				.map(spotlessAction -> spotlessAction.executeSpotlessAction(steps))
 				.orElse(-1);
