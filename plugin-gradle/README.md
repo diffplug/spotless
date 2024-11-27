@@ -1791,6 +1791,7 @@ If you use this feature, you will get an error if you use a formatter in a subpr
 * [Goomph](https://github.com/diffplug/goomph) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/goomph/blob/v1.0.0/build.gradle#L78-L99))
 * [FreshMark](https://github.com/diffplug/freshmark) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/freshmark/blob/v1.3.0/build.gradle#L52-L73))
 * [JScriptBox](https://github.com/diffplug/jscriptbox) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/jscriptbox/blob/v3.0.0/build.gradle#L45-L65))
+* [Compose Guard](https://github.com/j-roskopf/ComposeGuard) ([direct link to spotless section in its build.gradle.kts](https://github.com/j-roskopf/ComposeGuard/blob/main/compose-guard/build.gradle.kts#L28-L48))
 * (Your project here)
 
 <!---freshmark /javadoc -->
