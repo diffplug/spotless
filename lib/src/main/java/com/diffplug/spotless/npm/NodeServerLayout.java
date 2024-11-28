@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.diffplug.spotless.npm;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -109,5 +110,20 @@ class NodeServerLayout {
 				this.packageJsonFile,
 				this.serveJsFile,
 				this.npmrcFile);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		NodeServerLayout that = (NodeServerLayout) o;
+		return Objects.equals(nodeModulesDir, that.nodeModulesDir) && Objects.equals(packageJsonFile, that.packageJsonFile) && Objects.equals(packageLockJsonFile, that.packageLockJsonFile) && Objects.equals(serveJsFile, that.serveJsFile) && Objects.equals(npmrcFile, that.npmrcFile);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(nodeModulesDir, packageJsonFile, packageLockJsonFile, serveJsFile, npmrcFile);
 	}
 }
