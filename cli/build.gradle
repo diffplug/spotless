@@ -79,11 +79,12 @@ class ApplicationPropertiesProcessResourcesAction implements Action<ProcessResou
 
 	@Override
 	void execute(ProcessResources processResources) {
+		def localCliVersion = cliVersion // prevent issues with decorated closure
 		processResources.filesMatching("application.properties") {
 			filter(
 					org.apache.tools.ant.filters.ReplaceTokens,
 					tokens: [
-						'cli.version': cliVersion
+						'cli.version': localCliVersion
 					]
 					)
 		}
