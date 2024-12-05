@@ -15,10 +15,45 @@
  */
 package com.diffplug.spotless.cli.steps;
 
-import com.diffplug.spotless.cli.CLIIntegrationHarness;
+import java.io.IOException;
 
+import org.junit.jupiter.api.Test;
+
+import com.diffplug.spotless.cli.CLIIntegrationHarness;
+import com.diffplug.spotless.cli.SpotlessCLIRunner;
+import com.diffplug.spotless.tag.NpmTest;
+
+@NpmTest
 public class PrettierTest extends CLIIntegrationHarness {
 
 	// TODO
+
+	@Test
+	void itRunsPrettierForTsFilesWithOptions() throws IOException {
+		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
+
+		SpotlessCLIRunner.Result result = cliRunner()
+				.withTargets("test.ts")
+				.withStep(Prettier.class)
+				.withOption("--prettier-config-option", "printWidth=20")
+				.withOption("--prettier-config-option", "parser=typescript")
+				.run();
+
+		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
+	}
+
+	@Test
+	void itRunsPrettierForTsFilesWithOptionFile() throws Exception {
+		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc.yml");
+		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
+
+		SpotlessCLIRunner.Result result = cliRunner()
+				.withTargets("test.ts")
+				.withStep(Prettier.class)
+				.withOption("--prettier-config-path", ".prettierrc.yml")
+				.run();
+
+		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
+	}
 
 }

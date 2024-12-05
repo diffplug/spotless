@@ -102,10 +102,11 @@ def nativeCompileMetaDir = project.layout.buildDirectory.dir('nativeCompile/src/
 // use tasks 'nativeCompile' and 'nativeRun' to compile and run the native image
 graalvmNative {
 	agent {
-		enabled = true // we would love to make this dynamic, but it's not possible
+		enabled = !project.hasProperty('skipGraalAgent') // we would love to make this dynamic, but it's not possible
 		defaultMode = "standard"
 		metadataCopy {
 			inputTaskNames.add('test')
+			inputTaskNames.add('testNpm')
 			mergeWithExisting = false
 			outputDirectories.add(nativeCompileMetaDir.get().asFile.path)
 		}
@@ -114,7 +115,7 @@ graalvmNative {
 					boolean test(Task task) {
 						//						if (project.hasProperty('agent')) {
 						println ("Instrumenting task: " + task.name + " " + task.name == 'test' + "proj: " + task.project.hasProperty('agent'))
-						return task.name == 'test'
+						return task.name == 'test' || task.name == 'testNpm'
 						//						}
 						//						return false
 					}
@@ -148,7 +149,7 @@ graalvmNative {
 
 
 tasks.named('metadataCopy') {
-	dependsOn('test')
+	dependsOn('test', 'testNpm')
 }
 
 tasks.named('nativeCompile') {
@@ -174,17 +175,17 @@ gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
 }
 
 tasks.withType(Test).configureEach {
-	if (it.name == 'test') {
+	if (it.name == 'test' || it.name == 'testNpm') {
 		it.outputs.dir(nativeCompileMetaDir)
 		if (project.hasProperty('agent')) {
 			it.inputs.property('agent', project.property('agent')) // make sure to re-run tests if agent changes
 		}
 	}
-	if (it.name == 'testCliProcess') {
+	if (it.name == 'testCliProcess' || it.name == 'testCliProcessNpm') {
 		it.dependsOn('shadowJar')
 		it.systemProperty 'spotless.cli.shadowJar', tasks.shadowJar.archiveFile.get().asFile
 	}
-	if (it.name == 'testCliNative') {
+	if (it.name == 'testCliNative' || it.name == 'testCliNativeNpm') {
 		it.dependsOn('nativeCompile')
 		it.systemProperty 'spotless.cli.nativeImage', tasks.nativeCompile.outputFile.get().asFile
 	}

@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.diffplug.spotless.cli.steps.BuildDirGloballyReusable;
 import com.diffplug.spotless.cli.steps.SpotlessCLIFormatterStep;
@@ -32,17 +33,20 @@ public class ExecutionLayout {
 	private final SpotlessCommandLineStream commandLineStream;
 	private final ChecksumCalculator checksumCalculator;
 
-	private ExecutionLayout(@Nonnull FileResolver fileResolver, SpotlessCommandLineStream commandLineStream) {
+	private ExecutionLayout(@Nonnull FileResolver fileResolver, @Nonnull SpotlessCommandLineStream commandLineStream) {
 		this.fileResolver = Objects.requireNonNull(fileResolver);
-		this.commandLineStream = commandLineStream;
+		this.commandLineStream = Objects.requireNonNull(commandLineStream);
 		this.checksumCalculator = new ChecksumCalculator();
 	}
 
-	public static ExecutionLayout create(FileResolver fileResolver, SpotlessCommandLineStream commandLineStream) {
+	public static ExecutionLayout create(@Nonnull FileResolver fileResolver, @Nonnull SpotlessCommandLineStream commandLineStream) {
 		return new ExecutionLayout(fileResolver, commandLineStream);
 	}
 
-	public Optional<Path> find(Path searchPath) {
+	public Optional<Path> find(@Nullable Path searchPath) {
+		if (searchPath == null) {
+			return Optional.empty();
+		}
 		Path found = fileResolver.resolvePath(searchPath);
 		if (found.toFile().canRead()) {
 			return Optional.of(found);

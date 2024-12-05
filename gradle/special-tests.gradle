@@ -9,7 +9,9 @@ def special = [
 	'npm',
 	'shfmt',
 	'cliProcess',
-	'cliNative'
+	'cliProcessNpm',
+	'cliNative',
+	'cliNativeNpm'
 ]
 
 boolean isCiServer = System.getenv().containsKey("CI")

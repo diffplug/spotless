@@ -23,12 +23,12 @@ import static com.diffplug.spotless.cli.steps.OptionDefaultUse.use;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.cli.core.ExecutionLayout;
@@ -64,7 +64,7 @@ public class Prettier extends SpotlessFormatterStep {
 	Path prettierConfigPath;
 
 	@CommandLine.Option(names = {"--prettier-config-option", "-c"}, description = "The Prettier configuration options.")
-	Map<String, Object> prettierConfigOptions;
+	Map<String, String> prettierConfigOptions;
 
 	@Nonnull
 	@Override
@@ -76,7 +76,7 @@ public class Prettier extends SpotlessFormatterStep {
 				.withExplicitNodeExecutable(explicitNodeExecutable)
 				.withExplicitNpmrcFile(explicitNpmrcFile)
 				.withAdditionalNpmrcLocations(additionalNpmrcLocations())
-				.withPrettierConfigOptions(prettierConfigOptions)
+				.withPrettierConfigOptions(prettierConfigOptions())
 				.withPrettierConfigPath(prettierConfigPath)
 				.build();
 
@@ -85,24 +85,30 @@ public class Prettier extends SpotlessFormatterStep {
 		return List.of(prettierFormatterStep);
 	}
 
-	private static FormatterStep adapt(FormatterStep step) {
-		return new FormatterStep() {
-			@Override
-			public String getName() {
-				return step.getName();
+	private Map<String, Object> prettierConfigOptions() {
+		if (prettierConfigOptions == null) {
+			return Collections.emptyMap();
+		}
+		Map<String, Object> normalized = new LinkedHashMap<>();
+		prettierConfigOptions.forEach((key, value) -> {
+			if (value == null) {
+				normalized.put(key, null);
+			} else {
+				normalized.put(key, normalizePrettierOption(key, value));
 			}
+		});
+		return normalized;
+	}
 
-			@Nullable
-			@Override
-			public String format(String rawUnix, File file) throws Exception {
-				return step.format(rawUnix, file);
-			}
-
-			@Override
-			public void close() throws Exception {
-				step.close();
-			}
-		};
+	private Object normalizePrettierOption(String key, String value) {
+		if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+			return Boolean.parseBoolean(value);
+		}
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return value;
+		}
 	}
 
 	private Map<String, String> devDependencies() {
@@ -205,7 +211,7 @@ public class Prettier extends SpotlessFormatterStep {
 							asFile(explicitNpmrcFile),
 							asFiles(additionalNpmrcLocations)),
 					new PrettierConfig(
-							asFile(prettierConfigPath),
+							asFile(prettierConfigPath != null ? layout.find(prettierConfigPath).orElseThrow() : null),
 							prettierConfigOptions));
 			return step;
 		}
