@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * You can now use `removeUnusedImports` and `googleJavaFormat` at the same time again. (fixes [#2159](https://github.com/diffplug/spotless/issues/2159))
 * The default list of type annotations used by `formatAnnotations` now includes Jakarta Validation's `Valid` and constraints validations (fixes [#2334](https://github.com/diffplug/spotless/issues/2334))
+* `indentWith[Spaces|Tabs]` has been deprecated in favor of `leadingTabsToSpaces` and `leadingSpacesToTabs`. ([#2350](https://github.com/diffplug/spotless/pull/2350) fixes [#794](https://github.com/diffplug/spotless/issues/794))
 
 ## [7.0.0.BETA4] - 2024-10-24
 ### Added

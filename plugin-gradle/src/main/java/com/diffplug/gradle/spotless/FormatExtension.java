@@ -47,6 +47,8 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.spotless.FormatterFunc;
@@ -77,6 +79,9 @@ import groovy.lang.Closure;
 
 /** Adds a {@code spotless{Name}Check} and {@code spotless{Name}Apply} task. */
 public class FormatExtension {
+
+	private static final Logger logger = LoggerFactory.getLogger(FormatExtension.class);
+
 	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
 
@@ -505,23 +510,51 @@ public class FormatExtension {
 	}
 
 	/** Ensures that the files are indented using spaces. */
+	public void leadingTabsToSpaces(int spacesPerTab) {
+		addStep(IndentStep.Type.SPACE.create(spacesPerTab));
+	}
+
+	@Deprecated
 	public void indentWithSpaces(int numSpacesPerTab) {
-		addStep(IndentStep.Type.SPACE.create(numSpacesPerTab));
+		logDeprecation("indentWithSpaces", "leadingTabsToSpaces");
+		leadingTabsToSpaces(numSpacesPerTab);
 	}
 
 	/** Ensures that the files are indented using spaces. */
-	public void indentWithSpaces() {
+	public void leadingTabsToSpaces() {
 		addStep(IndentStep.Type.SPACE.create());
 	}
 
-	/** Ensures that the files are indented using tabs. */
-	public void indentWithTabs(int tabToSpaces) {
-		addStep(IndentStep.Type.TAB.create(tabToSpaces));
+	@Deprecated
+	public void indentWithSpaces() {
+		logDeprecation("indentWithSpaces", "leadingTabsToSpaces");
+		leadingTabsToSpaces();
 	}
 
 	/** Ensures that the files are indented using tabs. */
-	public void indentWithTabs() {
+	public void leadingSpacesToTabs(int spacesPerTab) {
+		addStep(IndentStep.Type.TAB.create(spacesPerTab));
+	}
+
+	@Deprecated
+	public void indentWithTabs(int tabToSpaces) {
+		logDeprecation("indentWithTabs", "leadingSpacesToTabs");
+		leadingSpacesToTabs(tabToSpaces);
+	}
+
+	/** Ensures that the files are indented using tabs. */
+	public void leadingSpacesToTabs() {
 		addStep(IndentStep.Type.TAB.create());
+	}
+
+	@Deprecated
+	public void indentWithTabs() {
+		logDeprecation("indentWithTabs", "leadingSpacesToTabs");
+		leadingSpacesToTabs();
+	}
+
+	private static void logDeprecation(String methodName, String replacement) {
+		logger.warn("'{}' is deprecated, use '{}' in your gradle build script instead.", methodName, replacement);
 	}
 
 	/** Ensures formatting of files via native binary. */

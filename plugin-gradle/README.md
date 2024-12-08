@@ -109,7 +109,7 @@ spotless {
 
     // define the steps to apply to those files
     trimTrailingWhitespace()
-    indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
+    leadingSpacesToTabs() // or leadingTabsToSpaces. Takes an integer argument if you don't like 4
     endWithNewline()
   }
   java {
