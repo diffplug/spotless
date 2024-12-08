@@ -121,7 +121,7 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		setFile(".gitattributes").toContent("* text eol=lf");
 	}
 
-	protected GradleRunner gradleRunner() throws IOException {
+	public GradleRunner gradleRunner() throws IOException {
 		GradleVersionSupport version;
 		if (newFile("build.gradle").exists() && read("build.gradle").contains("custom")) {
 			version = GradleVersionSupport.CUSTOM_STEPS;
@@ -136,11 +136,11 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	}
 
 	/** Dumps the complete file contents of the folder to the console. */
-	protected String getContents() {
+	public String getContents() {
 		return getContents(subPath -> !subPath.startsWith(".gradle"));
 	}
 
-	protected String getContents(Predicate<String> subpathsToInclude) {
+	public String getContents(Predicate<String> subpathsToInclude) {
 		return StringPrinter.buildString(printer -> Errors.rethrow().run(() -> iterateFiles(subpathsToInclude, (subpath, file) -> {
 			printer.println("### " + subpath + " ###");
 			try {
@@ -152,18 +152,18 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	}
 
 	/** Dumps the filtered file listing of the folder to the console. */
-	protected String listFiles(Predicate<String> subpathsToInclude) {
+	public String listFiles(Predicate<String> subpathsToInclude) {
 		return StringPrinter.buildString(printer -> iterateFiles(subpathsToInclude, (subPath, file) -> {
 			printer.println(subPath + " [" + getFileAttributes(file) + "]");
 		}));
 	}
 
 	/** Dumps the file listing of the folder to the console. */
-	protected String listFiles() {
+	public String listFiles() {
 		return listFiles(subPath -> !subPath.startsWith(".gradle"));
 	}
 
-	protected void iterateFiles(Predicate<String> subpathsToInclude, BiConsumer<String, File> consumer) {
+	public void iterateFiles(Predicate<String> subpathsToInclude, BiConsumer<String, File> consumer) {
 		TreeDef<File> treeDef = TreeDef.forFile(Errors.rethrow());
 		List<File> files = TreeStream.depthFirst(treeDef, rootFolder())
 				.filter(File::isFile)
@@ -180,20 +180,20 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		}
 	}
 
-	protected String getFileAttributes(File file) {
+	public String getFileAttributes(File file) {
 		return (file.canRead() ? "r" : "-") + (file.canWrite() ? "w" : "-") + (file.canExecute() ? "x" : "-");
 	}
 
-	protected void checkRunsThenUpToDate() throws IOException {
+	public void checkRunsThenUpToDate() throws IOException {
 		checkIsUpToDate(false);
 		checkIsUpToDate(true);
 	}
 
-	protected void applyIsUpToDate(boolean upToDate) throws IOException {
+	public void applyIsUpToDate(boolean upToDate) throws IOException {
 		taskIsUpToDate("spotlessApply", upToDate);
 	}
 
-	protected void checkIsUpToDate(boolean upToDate) throws IOException {
+	public void checkIsUpToDate(boolean upToDate) throws IOException {
 		taskIsUpToDate("spotlessCheck", upToDate);
 	}
 
@@ -215,13 +215,13 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		}
 	}
 
-	protected static List<String> outcomes(BuildResult build, TaskOutcome outcome) {
+	public static List<String> outcomes(BuildResult build, TaskOutcome outcome) {
 		return build.taskPaths(outcome).stream()
 				.filter(s -> !s.equals(":spotlessInternalRegisterDependencies"))
 				.collect(Collectors.toList());
 	}
 
-	protected static List<BuildTask> outcomes(BuildResult build) {
+	public static List<BuildTask> outcomes(BuildResult build) {
 		return build.getTasks().stream()
 				.filter(t -> !t.getPath().equals(":spotlessInternalRegisterDependencies"))
 				.collect(Collectors.toList());
