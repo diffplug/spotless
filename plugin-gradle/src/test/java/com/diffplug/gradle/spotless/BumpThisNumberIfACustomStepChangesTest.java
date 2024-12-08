@@ -39,7 +39,7 @@ class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHarness {
 	}
 
 	@Override
-	protected void applyIsUpToDate(boolean upToDate) throws IOException {
+	public void applyIsUpToDate(boolean upToDate) throws IOException {
 		super.applyIsUpToDate(upToDate);
 		assertFile("README.md").hasContent("abc");
 	}
