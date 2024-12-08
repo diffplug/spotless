@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.Predicates;
 
+@Disabled("https://status.npmjs.org/ shows npm services down on 12/8/2024, should undisable this later")
 class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 
 	@Test
