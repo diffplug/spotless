@@ -214,7 +214,7 @@ public class TypescriptExtension extends FormatExtension {
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
-			return EslintFormatterStep.create(devDependencies, provisioner(), project.getProjectDir(),
+			return EslintFormatterStep.create(devDependencies, project.getProjectDir(),
 					project.getLayout().getBuildDirectory().getAsFile().get(), npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(),
 							Arrays.asList(project.getProjectDir(), project.getRootDir())),
