@@ -52,7 +52,7 @@ interface NativeCmdIntegrationTest {
 		@Override
 		public GradleRunner gradleRunner() throws IOException {
 			setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
-			setFile("settings.gradle").toContent("enableFeaturePreview(\"STABLE_CONFIGURATION_CACHE\")");
+			setFile("gradle.properties").toContent("org.gradle.configuration-cache=true");
 			return super.gradleRunner().withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version);
 		}
 	}
