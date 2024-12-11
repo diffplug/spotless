@@ -48,7 +48,7 @@ class JavaEclipseTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"",
 				"spotless {",
-				"  java {  eclipse().configProperties(\"\"\"",
+				"  java {  eclipse().configXml(\"\"\"",
 				"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>",
 				"<profiles version=\"12\">",
 				"  <profile kind=\"CodeFormatterProfile\" name=\"Spotless\" version=\"12\">",
