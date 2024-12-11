@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 class JavaEclipseTest extends GradleIntegrationHarness {
 	@Test
-	void settingsWithContentWithoutFile() throws IOException {
+	void settingsWithProprtiesContent() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"  id 'com.diffplug.spotless'",
@@ -32,6 +32,29 @@ class JavaEclipseTest extends GradleIntegrationHarness {
 				"spotless {",
 				"  java {  eclipse().configProperties(\"\"\"",
 				"valid_line_oriented.prefs.string=string",
+				"\"\"\")  }",
+				"}");
+
+		gradleRunner().withArguments("spotlessApply").build();
+	}
+
+	@Test
+	void settingsWithXmlContent() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"  id 'com.diffplug.spotless'",
+				"  id 'java'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"  java {  eclipse().configProperties(\"\"\"",
+				"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>",
+				"<profiles version=\"12\">",
+				"  <profile kind=\"CodeFormatterProfile\" name=\"Spotless\" version=\"12\">",
+				"    <setting id=\"valid_line_oriented.prefs.string\" value=\"string\" />",
+				"  </profile>",
+				"</profiles>",
 				"\"\"\")  }",
 				"}");
 
