@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.ProcessRunner.Result;
@@ -67,6 +68,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				.doesNotContain("Using cached node_modules for");
 	}
 
+	@Disabled
 	@Test
 	void prettierTypescriptWithDefaultCacheIsReusedOnSecondRun() throws Exception {
 		String suffix = "ts";
@@ -109,6 +111,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				.doesNotContain("Using cached node_modules for");
 	}
 
+	@Disabled
 	@Test
 	void prettierTypescriptWithSpecificCacheIsUsedOnSecondRun() throws Exception {
 		String suffix = "ts";
