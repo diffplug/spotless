@@ -115,6 +115,35 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		}
 	}
 
+	@ParameterizedTest(name = "{index}: useEditorconfig with prettier {0}")
+	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+	void useEditorconfig(String prettierVersion) throws IOException {
+		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc_noop.yml");
+		setFile(".editorconfig").toResource("npm/prettier/config/.editorconfig_20");
+		setFile("build.gradle").toLines(
+			"plugins {",
+			"    id 'com.diffplug.spotless'",
+			"}",
+			"repositories { mavenCentral() }",
+			"spotless {",
+			"    format 'mytypescript', {",
+			"        target 'test.ts'",
+			"        prettier('" + prettierVersion + "').configFile('.prettierrc.yml').editorconfig(true)",
+			"    }",
+			"}");
+		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		switch (prettierVersion) {
+			case PRETTIER_VERSION_2:
+				assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
+				break;
+			case PRETTIER_VERSION_3:
+				assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_3.clean");
+				break;
+		}
+	}
+
 	@ParameterizedTest(name = "{index}: chooseParserBasedOnFilename with prettier {0}")
 	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
 	void chooseParserBasedOnFilename(String prettierVersion) throws IOException {

@@ -769,6 +769,9 @@ public class FormatExtension {
 		@Nullable
 		Map<String, Object> prettierConfig;
 
+		@Nullable
+		Boolean editorconfig;
+
 		final Map<String, String> devDependencies;
 
 		PrettierConfig(Map<String, String> devDependencies) {
@@ -788,6 +791,12 @@ public class FormatExtension {
 			return this;
 		}
 
+		public PrettierConfig editorconfig(Boolean editorconfig) {
+			this.editorconfig = editorconfig;
+			replaceStep();
+			return this;
+		}
+
 		@Override
 		protected FormatterStep createStep() {
 			final Project project = getProject();
@@ -797,7 +806,7 @@ public class FormatExtension {
 							Arrays.asList(project.getProjectDir(), project.getRootDir())),
 					new com.diffplug.spotless.npm.PrettierConfig(
 							this.prettierConfigFile != null ? project.file(this.prettierConfigFile) : null,
-							this.prettierConfig));
+							this.prettierConfig, this.editorconfig));
 		}
 	}
 

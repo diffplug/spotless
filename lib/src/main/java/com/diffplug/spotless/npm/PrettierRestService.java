@@ -25,13 +25,16 @@ public class PrettierRestService extends BaseNpmRestService {
 		super(baseUrl);
 	}
 
-	public String resolveConfig(File prettierConfigPath, Map<String, Object> prettierConfigOptions) {
+	public String resolveConfig(File prettierConfigPath, Map<String, Object> prettierConfigOptions, Boolean editorconfig) {
 		Map<String, Object> jsonProperties = new LinkedHashMap<>();
 		if (prettierConfigPath != null) {
 			jsonProperties.put("prettier_config_path", prettierConfigPath.getAbsolutePath());
 		}
 		if (prettierConfigOptions != null) {
 			jsonProperties.put("prettier_config_options", JsonWriter.of(prettierConfigOptions).toJsonRawValue());
+		}
+		if (editorconfig != null) {
+			jsonProperties.put("editorconfig", editorconfig);
 		}
 		return restClient.postJson("/prettier/config-options", jsonProperties);
 	}

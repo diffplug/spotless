@@ -69,7 +69,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 					buildDir(),
 					null,
 					npmPathResolver(),
-					new PrettierConfig(prettierRc, null));
+					new PrettierConfig(prettierRc, null, null));
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);
@@ -96,7 +96,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 					buildDir(),
 					null,
 					npmPathResolver(),
-					new PrettierConfig(null, ImmutableMap.of("filepath", "anyname.json"))); // should select parser based on this name
+					new PrettierConfig(null, ImmutableMap.of("filepath", "anyname.json"), null)); // should select parser based on this name
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);
@@ -118,7 +118,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 					buildDir(),
 					null,
 					npmPathResolver(),
-					new PrettierConfig(null, Collections.emptyMap()));
+					new PrettierConfig(null, Collections.emptyMap(), null));
 
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
 				stepHarness.testResource("test.json", dirtyFile, cleanFile);
@@ -134,7 +134,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 					buildDir(),
 					null,
 					npmPathResolver(),
-					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
+					new PrettierConfig(null, ImmutableMap.of("parser", "postcss"), null));
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
 				stepHarness.expectLintsOfResource("npm/prettier/filetypes/scss/scss.dirty")
 						.toBe("LINE_UNDEFINED prettier-format(com.diffplug.spotless.npm.SimpleRestClient$SimpleRestResponseException) Unexpected response status code at /prettier/format [HTTP 500] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\") (...)");
@@ -170,19 +170,27 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 		@ParameterizedTest(name = "{index}: defaults are applied with prettier {0}")
 		@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
 		void defaultsAreApplied(String prettierVersion) throws Exception {
-			runFormatTest(prettierVersion, new PrettierConfig(null, ImmutableMap.of("parser", "typescript")), "defaults_prettier_" + major(prettierVersion));
+			runFormatTest(prettierVersion, new PrettierConfig(null, ImmutableMap.of("parser", "typescript"), null), "defaults_prettier_" + major(prettierVersion));
 		}
 
 		@ParameterizedTest(name = "{index}: config file options are applied with prettier {0}")
 		@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
 		void configFileOptionsAreApplied(String prettierVersion) throws Exception {
-			runFormatTest(prettierVersion, new PrettierConfig(createTestFile(FILEDIR + ".prettierrc.yml"), null), "configfile_prettier_" + major(prettierVersion));
+			runFormatTest(prettierVersion, new PrettierConfig(createTestFile(FILEDIR + ".prettierrc.yml"), null, null), "configfile_prettier_" + major(prettierVersion));
 		}
 
-		@ParameterizedTest(name = "{index}: config file options can be overriden with prettier {0}")
+		@ParameterizedTest(name = "{index}: config file options can be overridden with prettier {0}")
 		@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
-		void configFileOptionsCanBeOverriden(String prettierVersion) throws Exception {
-			runFormatTest(prettierVersion, new PrettierConfig(createTestFile(FILEDIR + ".prettierrc.yml"), ImmutableMap.of("printWidth", 300)), "override_prettier_" + major(prettierVersion));
+		void configFileOptionsCanBeOverridden(String prettierVersion) throws Exception {
+			runFormatTest(prettierVersion, new PrettierConfig(createTestFile(FILEDIR + ".prettierrc.yml"), ImmutableMap.of("printWidth", 300), null), "override_prettier_" + major(prettierVersion));
+		}
+
+		@ParameterizedTest(name = "{index}: config file options can be extended with editorconfig with prettier {0}")
+		@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
+		void configFileOptionsCanBeExtendedWithEditorconfig(String prettierVersion) throws Exception {
+			setFile(".editorconfig").toResource(FILEDIR + ".editorconfig_300");
+			File prettierConfigFile = setFile(".prettierrc.yml").toResource(FILEDIR + ".prettierrc_noop.yml");
+			runFormatTest(prettierVersion, new PrettierConfig(prettierConfigFile, null, true), "override_prettier_" + major(prettierVersion));
 		}
 
 		private String major(String semVer) {
@@ -194,7 +202,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 	void equality() {
 		new SerializableEqualityTester() {
 			String prettierVersion = "3.0.0";
-			PrettierConfig config = new PrettierConfig(null, Map.of("parser", "typescript"));
+			PrettierConfig config = new PrettierConfig(null, Map.of("parser", "typescript"), null);
 
 			@Override
 			protected void setupTest(API api) {
@@ -203,7 +211,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 				// change the groupArtifact, and it's different
 				prettierVersion = "2.8.8";
 				api.areDifferentThan();
-				config = new PrettierConfig(null, Map.of("parser", "css"));
+				config = new PrettierConfig(null, Map.of("parser", "css"), null);
 				api.areDifferentThan();
 			}
 
