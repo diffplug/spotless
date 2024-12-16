@@ -36,6 +36,7 @@ import com.diffplug.spotless.ForeignExe;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ProcessRunner;
+import com.diffplug.spotless.ThrowingEx;
 
 public final class IdeaStep {
 
@@ -120,15 +121,21 @@ public final class IdeaStep {
 
 		@Override
 		public String applyWithFile(String unix, File file) throws Exception {
-			List<String> params = getParams(file);
+			// since we cannot directly work with the file, we need to write the unix string to a temporary file
+			File tempFile = File.createTempFile("spotless", file.getName());
+			try {
+				Files.write(tempFile.toPath(), unix.getBytes(StandardCharsets.UTF_8));
+				List<String> params = getParams(tempFile);
 
-			try (ProcessRunner runner = new ProcessRunner()) {
-				var result = runner.exec(params);
+				try (ProcessRunner runner = new ProcessRunner()) {
+					var result = runner.exec(params);
+					LOGGER.debug("command finished with stdout: {}",
+							result.assertExitZero(StandardCharsets.UTF_8));
 
-				LOGGER.debug("command finished with stdout: {}",
-						result.assertExitZero(StandardCharsets.UTF_8));
-
-				return Files.readString(file.toPath());
+					return Files.readString(tempFile.toPath(), StandardCharsets.UTF_8);
+				}
+			} finally {
+				Files.delete(tempFile.toPath());
 			}
 		}
 
@@ -143,7 +150,7 @@ public final class IdeaStep {
 				builder.add("-s");
 				builder.add(codeStyleSettingsPath);
 			}
-			builder.add(file.toString());
+			builder.add(ThrowingEx.get(file::getCanonicalPath));
 			return builder.build().collect(Collectors.toList());
 		}
 	}
