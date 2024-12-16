@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
@@ -56,15 +57,15 @@ public final class IdeaStep {
 	}
 
 	public static FormatterStep create(boolean withDefaults,
-			@Nullable String binaryPath, @Nullable String configPath) {
+			@Nullable String binaryPath, @Nullable String codeStyleSettingsPath) {
 		return FormatterStep.createLazy("IDEA",
-				() -> createState(withDefaults, binaryPath, configPath),
+				() -> createState(withDefaults, binaryPath, codeStyleSettingsPath),
 				state -> state);
 	}
 
 	private static State createState(boolean withDefaults,
-			@Nullable String binaryPath, @Nullable String configPath) {
-		return new State(withDefaults, binaryPath, configPath);
+			@Nullable String binaryPath, @Nullable String codeStyleSettingsPath) {
+		return new State(withDefaults, binaryPath, codeStyleSettingsPath);
 	}
 
 	private static class State
@@ -75,13 +76,13 @@ public final class IdeaStep {
 
 		private String binaryPath;
 		@Nullable
-		private String configPath;
+		private String codeStyleSettingsPath;
 		private boolean withDefaults;
 
 		private State(boolean withDefaults, @Nullable String binaryPath,
-				@Nullable String configPath) {
+				@Nullable String codeStyleSettingsPath) {
 			this.withDefaults = withDefaults;
-			this.configPath = configPath;
+			this.codeStyleSettingsPath = codeStyleSettingsPath;
 			this.binaryPath = Objects.requireNonNullElse(binaryPath, DEFAULT_IDEA);
 			resolveFullBinaryPathAndCheckVersion();
 		}
@@ -89,10 +90,11 @@ public final class IdeaStep {
 		private void resolveFullBinaryPathAndCheckVersion() {
 			var exe = ForeignExe
 					.nameAndVersion(this.binaryPath, "IntelliJ IDEA")
+					.pathToExe(pathToExe())
 					.versionRegex(Pattern.compile("(IntelliJ IDEA) .*"))
 					.fixCantFind(
 							"IDEA executable cannot be found on your machine, "
-									+ "please install it and put idea binary to PATH; or report the problem")
+									+ "please install it and put idea binary to PATH, provide a valid path to the executable or report the problem")
 					.fixWrongVersion("Provided binary is not IDEA, "
 							+ "please check it and fix the problem; or report the problem");
 			try {
@@ -103,6 +105,17 @@ public final class IdeaStep {
 				throw new IllegalArgumentException(
 						"binary cannot be found, process was interrupted", e);
 			}
+		}
+
+		@CheckForNull
+		private String pathToExe() {
+			if (binaryPath == null) {
+				throw new IllegalStateException("binaryPath is not set");
+			}
+			if (new File(binaryPath).exists()) {
+				return binaryPath;
+			}
+			return null; // search in PATH
 		}
 
 		@Override
@@ -126,9 +139,9 @@ public final class IdeaStep {
 			if (withDefaults) {
 				builder.add("-allowDefaults");
 			}
-			if (configPath != null) {
+			if (codeStyleSettingsPath != null) {
 				builder.add("-s");
-				builder.add(configPath);
+				builder.add(codeStyleSettingsPath);
 			}
 			builder.add(file.toString());
 			return builder.build().collect(Collectors.toList());
