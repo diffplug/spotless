@@ -18,13 +18,17 @@ tasks.withType(Test).configureEach {
 			maxRetries = 2
 			maxFailures = 10
 		}
-
-		// There are only 2 cores in each GitHub Action Runner, we use all of them here.
-		maxParallelForks = Runtime.getRuntime().availableProcessors()
-	} else {
-		// https://docs.gradle.org/8.4/userguide/performance.html#execute_tests_in_parallel
-		maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
 	}
+	// selfie https://selfie.dev/jvm/get-started#gradle
+	environment project.properties.subMap([
+		"selfie"
+	]) // optional, see "Overwrite everything" below
+	inputs.files(fileTree("src/test") {
+		// optional, improves up-to-date checking
+		include "**/*.ss"
+	})
+	// https://docs.gradle.org/8.8/userguide/performance.html#execute_tests_in_parallel
+	maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
 }
 tasks.named('test').configure {
 	useJUnitPlatform {

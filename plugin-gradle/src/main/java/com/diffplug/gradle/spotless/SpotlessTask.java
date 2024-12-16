@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -37,21 +36,16 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.Incremental;
 
-import com.diffplug.gradle.spotless.JvmLocalCache.LiveCache;
-import com.diffplug.spotless.FormatExceptionPolicy;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
+import com.diffplug.spotless.ConfigurationCacheHackList;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.extra.GitRatchet;
 
 public abstract class SpotlessTask extends DefaultTask {
 	@Internal
 	abstract Property<SpotlessTaskService> getTaskService();
-
-	protected <T> LiveCache<T> createLive(String keyName) {
-		return JvmLocalCache.createLive(this, keyName);
-	}
 
 	// set by SpotlessExtension, but possibly overridden by FormatExtension
 	protected String encoding = "UTF-8";
@@ -65,26 +59,34 @@ public abstract class SpotlessTask extends DefaultTask {
 		this.encoding = Objects.requireNonNull(encoding);
 	}
 
-	protected final LiveCache<Provider<LineEnding.Policy>> lineEndingsPolicy = createLive("lineEndingsPolicy");
+	protected Provider<LineEnding.Policy> lineEndingsPolicy = null;
 
 	@Input
 	public Provider<LineEnding.Policy> getLineEndingsPolicy() {
-		return lineEndingsPolicy.get();
+		return lineEndingsPolicy;
 	}
 
 	public void setLineEndingsPolicy(Provider<LineEnding.Policy> lineEndingsPolicy) {
-		this.lineEndingsPolicy.set(lineEndingsPolicy);
+		this.lineEndingsPolicy = lineEndingsPolicy;
 	}
 
-	/** The sha of the tree at repository root, used for determining if an individual *file* is clean according to git. */
+	/**
+	 * The sha of the tree at repository root, used for determining if an individual
+	 * *file* is clean according to git.
+	 */
 	private transient ObjectId rootTreeSha;
 	/**
-	 * The sha of the tree at the root of *this project*, used to determine if the git baseline has changed within this folder.
-	 * Using a more fine-grained tree (rather than the project root) allows Gradle to mark more subprojects as up-to-date
+	 * The sha of the tree at the root of *this project*, used to determine if the
+	 * git baseline has changed within this folder.
+	 * Using a more fine-grained tree (rather than the project root) allows Gradle
+	 * to mark more subprojects as up-to-date
 	 * compared to using the project root.
 	 */
 	private transient ObjectId subtreeSha = ObjectId.zeroId();
-	/** Stored so that the configuration cache can recreate the GitRatchetGradle state. */
+	/**
+	 * Stored so that the configuration cache can recreate the GitRatchetGradle
+	 * state.
+	 */
 	protected String ratchetFrom;
 
 	public void setupRatchet(String ratchetFrom) {
@@ -120,15 +122,15 @@ public abstract class SpotlessTask extends DefaultTask {
 		return subtreeSha;
 	}
 
-	protected FormatExceptionPolicy exceptionPolicy = new FormatExceptionPolicyStrict();
+	protected List<LintSuppression> lintSuppressions = new ArrayList<>();
 
-	public void setExceptionPolicy(FormatExceptionPolicy exceptionPolicy) {
-		this.exceptionPolicy = Objects.requireNonNull(exceptionPolicy);
+	public void setLintSuppressions(List<LintSuppression> lintSuppressions) {
+		this.lintSuppressions = Objects.requireNonNull(lintSuppressions);
 	}
 
 	@Input
-	public FormatExceptionPolicy getExceptionPolicy() {
-		return exceptionPolicy;
+	public List<LintSuppression> getLintSuppressions() {
+		return lintSuppressions;
 	}
 
 	protected FileCollection target;
@@ -148,29 +150,41 @@ public abstract class SpotlessTask extends DefaultTask {
 		}
 	}
 
-	protected File outputDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(), "spotless/" + getName());
+	protected File cleanDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(),
+			"spotless-clean/" + getName());
 
 	@OutputDirectory
-	public File getOutputDirectory() {
-		return outputDirectory;
+	public File getCleanDirectory() {
+		return cleanDirectory;
 	}
 
-	protected final LiveCache<List<FormatterStep>> steps = createLive("steps");
-	{
-		steps.set(new ArrayList<FormatterStep>());
+	protected File lintsDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(),
+			"spotless-lints/" + getName());
+
+	@OutputDirectory
+	public File getLintsDirectory() {
+		return lintsDirectory;
+	}
+
+	private final ConfigurationCacheHackList stepsInternalRoundtrip = ConfigurationCacheHackList.forRoundtrip();
+	private final ConfigurationCacheHackList stepsInternalEquality = ConfigurationCacheHackList.forEquality();
+
+	@Internal
+	public ConfigurationCacheHackList getStepsInternalRoundtrip() {
+		return stepsInternalRoundtrip;
 	}
 
 	@Input
-	public List<FormatterStep> getSteps() {
-		return Collections.unmodifiableList(steps.get());
+	public ConfigurationCacheHackList getStepsInternalEquality() {
+		return stepsInternalEquality;
 	}
 
 	public void setSteps(List<FormatterStep> steps) {
-		this.steps.set(PluginGradlePreconditions.requireElementsNonNull(steps));
-	}
-
-	public boolean addStep(FormatterStep step) {
-		return this.steps.get().add(Objects.requireNonNull(step));
+		PluginGradlePreconditions.requireElementsNonNull(steps);
+		this.stepsInternalRoundtrip.clear();
+		this.stepsInternalEquality.clear();
+		this.stepsInternalRoundtrip.addAll(steps);
+		this.stepsInternalEquality.addAll(steps);
 	}
 
 	/** Returns the name of this format. */
@@ -185,12 +199,9 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	Formatter buildFormatter() {
 		return Formatter.builder()
-				.name(formatName())
-				.lineEndingsPolicy(lineEndingsPolicy.get().get())
+				.lineEndingsPolicy(getLineEndingsPolicy().get())
 				.encoding(Charset.forName(encoding))
-				.rootDir(getProjectDir().get().getAsFile().toPath())
-				.steps(steps.get())
-				.exceptionPolicy(exceptionPolicy)
+				.steps(stepsInternalRoundtrip.getSteps())
 				.build();
 	}
 }

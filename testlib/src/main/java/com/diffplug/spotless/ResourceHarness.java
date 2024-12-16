@@ -17,8 +17,11 @@ package com.diffplug.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -50,17 +53,17 @@ public class ResourceHarness {
 	File folderDontUseDirectly;
 
 	/** Returns the root folder (canonicalized to fix OS X issue) */
-	protected File rootFolder() {
+	public File rootFolder() {
 		return Errors.rethrow().get(() -> folderDontUseDirectly.getCanonicalFile());
 	}
 
 	/** Returns a new child of the root folder. */
-	protected File newFile(String subpath) {
+	public File newFile(String subpath) {
 		return new File(rootFolder(), subpath);
 	}
 
 	/** Creates and returns a new child-folder of the root folder. */
-	protected File newFolder(String subpath) throws IOException {
+	public File newFolder(String subpath) throws IOException {
 		File targetDir = newFile(subpath);
 		if (!targetDir.mkdir()) {
 			throw new IOException("Failed to create " + targetDir);
@@ -68,15 +71,50 @@ public class ResourceHarness {
 		return targetDir;
 	}
 
-	protected String read(String path) throws IOException {
+	/**
+	 * List the resources found in the specified path (directory) on the classpath
+	 * @param path - absolute path using unix-style file separators (if it is relative, it will be made absolute before class path scanning)
+	 * @return the list of resources in that directory on the classpath, unix-style file separators
+	 * @throws IOException
+	 */
+	public List<String> listTestResources(String path) throws IOException {
+		// add leading slash if required, otherwise resources won't be found
+		if (!path.startsWith("/")) {
+			path = path + "/";
+		}
+		List<String> filenames = new ArrayList<>();
+
+		try (InputStream in = ResourceHarness.class.getResourceAsStream(path)) {
+			if (in == null) {
+				if (new File(path).isAbsolute()) {
+					throw new RuntimeException(String.format("Resource not found in classpath: '%s'", path));
+				} else {
+					throw new RuntimeException(String.format("Resource not found in classpath: '%s' - did you mean '/%1$s'?", path));
+				}
+			}
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+				String resource;
+				while ((resource = br.readLine()) != null) {
+					filenames.add(resource);
+				}
+			}
+		}
+		return filenames;
+	}
+
+	public String relativeToRoot(String path) {
+		return new File(path).toPath().relativize(rootFolder().toPath()).toString();
+	}
+
+	public String read(String path) throws IOException {
 		return read(newFile(path).toPath(), StandardCharsets.UTF_8);
 	}
 
-	protected String read(Path path, Charset encoding) throws IOException {
+	public String read(Path path, Charset encoding) throws IOException {
 		return new String(Files.readAllBytes(path), encoding);
 	}
 
-	protected void replace(String path, String toReplace, String replaceWith) throws IOException {
+	public void replace(String path, String toReplace, String replaceWith) throws IOException {
 		String before = read(path);
 		String after = before.replace(toReplace, replaceWith);
 		if (before.equals(after)) {
@@ -86,7 +124,7 @@ public class ResourceHarness {
 	}
 
 	/** Returns the contents of the given file from the src/test/resources directory. */
-	protected static String getTestResource(String filename) {
+	public static String getTestResource(String filename) {
 		Optional<URL> resourceUrl = getTestResourceUrl(filename);
 		if (resourceUrl.isPresent()) {
 			return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(resourceUrl.get(), StandardCharsets.UTF_8)));
@@ -94,7 +132,7 @@ public class ResourceHarness {
 		throw new IllegalArgumentException("No such resource " + filename);
 	}
 
-	protected static boolean existsTestResource(String filename) {
+	public static boolean existsTestResource(String filename) {
 		return getTestResourceUrl(filename).isPresent();
 	}
 
@@ -104,7 +142,7 @@ public class ResourceHarness {
 	}
 
 	/** Returns Files (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
-	protected List<File> createTestFiles(String... filenames) {
+	public List<File> createTestFiles(String... filenames) {
 		List<File> files = new ArrayList<>(filenames.length);
 		for (String filename : filenames) {
 			files.add(createTestFile(filename));
@@ -113,7 +151,7 @@ public class ResourceHarness {
 	}
 
 	/** Returns a File (in a temporary folder) which has the contents of the given file from the src/test/resources directory. */
-	protected File createTestFile(String filename) {
+	public File createTestFile(String filename) {
 		return createTestFile(filename, UnaryOperator.identity());
 	}
 
@@ -121,7 +159,7 @@ public class ResourceHarness {
 	 * Returns a File (in a temporary folder) which has the contents, possibly processed, of the given file from the
 	 * src/test/resources directory.
 	 */
-	protected File createTestFile(String filename, UnaryOperator<String> fileContentsProcessor) {
+	public File createTestFile(String filename, UnaryOperator<String> fileContentsProcessor) {
 		int lastSlash = filename.lastIndexOf('/');
 		String name = lastSlash >= 0 ? filename.substring(lastSlash) : filename;
 		File file = newFile(name);
@@ -131,12 +169,12 @@ public class ResourceHarness {
 	}
 
 	@CheckReturnValue
-	protected ReadAsserter assertFile(String path) {
+	public ReadAsserter assertFile(String path) {
 		return new ReadAsserter(newFile(path));
 	}
 
 	@CheckReturnValue
-	protected ReadAsserter assertFile(File file) {
+	public ReadAsserter assertFile(File file) {
 		return new ReadAsserter(file);
 	}
 
@@ -181,7 +219,7 @@ public class ResourceHarness {
 		}
 	}
 
-	protected WriteAsserter setFile(String path) {
+	public WriteAsserter setFile(String path) {
 		return new WriteAsserter(newFile(path));
 	}
 

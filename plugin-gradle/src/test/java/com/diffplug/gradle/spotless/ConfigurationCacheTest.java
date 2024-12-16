@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,12 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 public class ConfigurationCacheTest extends GradleIntegrationHarness {
 	@Override
-	protected GradleRunner gradleRunner() throws IOException {
+	public GradleRunner gradleRunner() throws IOException {
 		setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
 		setFile("settings.gradle").toContent("enableFeaturePreview(\"STABLE_CONFIGURATION_CACHE\")");
 		return super.gradleRunner().withGradleVersion(GradleVersionSupport.STABLE_CONFIGURATION_CACHE.version);
@@ -65,8 +62,7 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(max = JRE.JAVA_20)
-	public void jvmLocalCache() throws IOException {
+	public void multipleRuns() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -93,14 +89,5 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 		gradleRunner().withArguments("spotlessCheck").buildAndFail();
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
-
-		// the withDebug forces it to start a new deamon, but only in Gradle 8.3 and older
-		// starting with Gradle 8.5 this doesn't work anymore
-		// and we need Gradle 8.5 for Java 21
-		// so we can't test this on Java 21 for now
-		BuildResult failure = gradleRunner().withDebug(true).withArguments("spotlessApply", "--stacktrace").buildAndFail();
-		failure.getOutput().contains("Spotless daemon-local cache is stale. Regenerate the cache with\n" +
-				"  rm -rf .gradle/configuration-cache\n" +
-				"For more information see #123\n");
 	}
 }

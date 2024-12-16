@@ -56,10 +56,10 @@ public class BlackStep {
 	}
 
 	public FormatterStep create() {
-		return FormatterStep.createLazy(name(), this::createState, RoundtripState::state, State::toFunc);
+		return FormatterStep.createLazy(name(), this::createRoundtrip, RoundtripState::toEquality, EqualityState::toFunc);
 	}
 
-	private RoundtripState createState() {
+	private RoundtripState createRoundtrip() {
 		String trackingIssue = "\n  github issue to handle this better: https://github.com/diffplug/spotless/issues/674";
 		ForeignExe exeAbsPath = ForeignExe.nameAndVersion("black", version)
 				.pathToExe(pathToExe)
@@ -80,13 +80,13 @@ public class BlackStep {
 			this.exe = exe;
 		}
 
-		private State state() {
-			return new State(version, exe);
+		private EqualityState toEquality() {
+			return new EqualityState(version, exe);
 		}
 	}
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	static class State implements Serializable {
+	static class EqualityState implements Serializable {
 		private static final long serialVersionUID = -1825662356883926318L;
 		// used for up-to-date checks and caching
 		final String version;
@@ -94,7 +94,7 @@ public class BlackStep {
 		// used for executing
 		private transient @Nullable String[] args;
 
-		State(String version, ForeignExe exeAbsPath) {
+		EqualityState(String version, ForeignExe exeAbsPath) {
 			this.version = version;
 			this.exe = Objects.requireNonNull(exeAbsPath);
 		}

@@ -14,9 +14,9 @@ output = [
   ].join('\n');
 -->
 [![Gradle plugin](https://img.shields.io/badge/plugins.gradle.org-com.diffplug.spotless-blue.svg)](https://plugins.gradle.org/plugin/com.diffplug.spotless)
-[![Changelog](https://img.shields.io/badge/changelog-6.25.0-blue.svg)](CHANGES.md)
+[![Changelog](https://img.shields.io/badge/changelog-7.0.0.BETA4-blue.svg)](CHANGES.md)
 [![MavenCentral](https://img.shields.io/badge/mavencentral-here-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-plugin-gradle%22)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/index.html)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/index.html)
 
 [![VS Code plugin](https://img.shields.io/badge/IDE-VS_Code-blueviolet.svg)](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)
 [![IntelliJ plugin](https://img.shields.io/badge/IDE-IntelliJ-blueviolet.svg)](https://plugins.jetbrains.com/plugin/18321-spotless-gradle)
@@ -53,6 +53,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Linting](#linting)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
@@ -65,6 +66,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Flexmark](#flexmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
+  - [Maven POM](#maven-pom) ([sortPom](#sortpom))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Biome](#biome))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Biome](#biome))
   - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [Biome](#biome), [jsonPatch](#jsonPatch))
@@ -73,11 +75,8 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Gherkin](#gherkin)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
-      - javascript, jsx, angular, vue, flow, typescript, css, less, scss, html, json, graphql, markdown, ymaml
     - [clang-format](#clang-format)
-      - c, c++, c#, objective-c, protobuf, javascript, java
     - [eclipse web tools platform](#eclipse-web-tools-platform)
-      - css, html, js, json, xml
     - [Biome](#biome) ([binary detection](#biome-binary), [config file](#biome-configuration-file), [input language](#biome-input-language))
 - **Language independent**
   - [Generic steps](#generic-steps)
@@ -110,7 +109,7 @@ spotless {
 
     // define the steps to apply to those files
     trimTrailingWhitespace()
-    indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
+    leadingSpacesToTabs() // or leadingTabsToSpaces. Takes an integer argument if you don't like 4
     endWithNewline()
   }
   java {
@@ -129,10 +128,10 @@ spotless {
 ```
 
 Spotless consists of a list of formats (in the example above, `misc` and `java`), and each format has:
-- a `target` (the files to format), which you set with [`target`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#target-java.lang.Object...-) and [`targetExclude`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#targetExclude-java.lang.Object...-)
-- a list of `FormatterStep`, which are just `String -> String` functions, such as [`replace`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#replace-java.lang.String-java.lang.CharSequence-java.lang.CharSequence-), [`replaceRegex`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#replaceRegex-java.lang.String-java.lang.String-java.lang.String-), [`trimTrailingWhitespace`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#replace-java.lang.String-java.lang.CharSequence-java.lang.CharSequence-), [`custom`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#custom-java.lang.String-groovy.lang.Closure-), [`prettier`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#prettier--), [`eclipseWtp`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#eclipseWtp-com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep-), [`licenseHeader`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#licenseHeader-java.lang.String-java.lang.String-) etc.
+- a `target` (the files to format), which you set with [`target`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#target-java.lang.Object...-) and [`targetExclude`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#targetExclude-java.lang.Object...-)
+- a list of `FormatterStep`, which are just `String -> String` functions, such as [`replace`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#replace-java.lang.String-java.lang.CharSequence-java.lang.CharSequence-), [`replaceRegex`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#replaceRegex-java.lang.String-java.lang.String-java.lang.String-), [`trimTrailingWhitespace`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#replace-java.lang.String-java.lang.CharSequence-java.lang.CharSequence-), [`custom`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#custom-java.lang.String-groovy.lang.Closure-), [`prettier`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#prettier--), [`eclipseWtp`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#eclipseWtp-com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep-), [`licenseHeader`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#licenseHeader-java.lang.String-java.lang.String-) etc.
 
-All the generic steps live in [`FormatExtension`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html), and there are many language-specific steps which live in its language-specific subclasses, which are described below.
+All the generic steps live in [`FormatExtension`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html), and there are many language-specific steps which live in its language-specific subclasses, which are described below.
 
 ### Requirements
 
@@ -141,11 +140,40 @@ Spotless requires JRE 11+ and Gradle 6.1.1 or newer.
 - If you're stuck on JRE 8, use [`id 'com.diffplug.spotless' version '6.13.0'` or older](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#6130---2023-01-14).
 - If you're stuck on an older version of Gradle, [`id 'com.diffplug.gradle.spotless' version '4.5.1'` supports all the way back to Gradle 2.x](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#451---2020-07-04).
 
+### Linting
+
+Starting in version `7.0.0`, Spotless now supports linting in addition to formatting. To Spotless, all lints are errors which must be either fixed or suppressed. Lints show up like this:
+
+```console
+user@machine repo % ./gradlew build
+:spotlessKotlinCheck FAILED
+  There were 2 lint error(s), they must be fixed or suppressed.
+    src/main/kotlin/com/diffplug/Foo.kt:L7 ktlint(standard:no-wildcard-imports) Wildcard import
+    src/main/kotlin/com/diffplug/Bar.kt:L9 ktlint(standard:no-wildcard-imports) Wildcard import 
+  Resolve these lints or suppress with `suppressLintsFor`
+```
+
+To suppress lints, you can do this:
+
+```gradle
+spotless {
+  kotlin {
+    ktlint()
+    suppressLintsFor {
+      step = 'ktlint'
+      shortCode = 'standard:no-wildcard-imports'
+    }
+  }
+}
+```
+
+Spotless is primarily a formatter, _not_ a linter. In our opinion, a linter is just a broken formatter. But formatters do break sometimes, and representing these failures as lints that can be suppressed is more useful than just giving up.
+
 <a name="applying-to-java-source"></a>
 
 ## Java
 
-`com.diffplug.gradle.spotless.JavaExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/JavaExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JavaExtension.java)
+`com.diffplug.gradle.spotless.JavaExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/JavaExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JavaExtension.java)
 
 ```gradle
 spotless {
@@ -226,7 +254,7 @@ spotless {
 
 ### eclipse jdt
 
-[homepage](https://www.eclipse.org/downloads/packages/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter). See [here](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the config file mentioned below.
+[homepage](https://download.eclipse.org/eclipse/downloads/). See [here](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the config file mentioned below.
 
 ```gradle
 spotless {
@@ -234,8 +262,48 @@ spotless {
     eclipse()
     // optional: you can specify a specific version and/or config file
     eclipse('4.26').configFile('eclipse-prefs.xml')
+    // Or supply the configuration as a string
+    eclipse('4.26').configProperties("""
+    ...
+    """)
+    // if the access to the p2 repositories is restricted, mirrors can be
+    // specified using a URI prefix map as follows:
+    eclipse().withP2Mirrors(['https://download.eclipse.org/eclipse/updates/4.29/':'https://some.internal.mirror/4-29-updates-p2/']) 
 ```
 
+#### Sort Members
+
+Not only can you format your code with Eclipse JDT, but you can also sort the members as you know it from Eclipse IDE.
+This ensures that the methods are always in sorted order (and thus reduces the likelihood of collisions in a version 
+control system). It is turned off by default, but you might want to consider enabling it when setting coding standards
+for a project.
+
+The format to specify the sort order follows the `outlinesortoption` and `org.eclipse.jdt.ui.visibility.order`
+properties that can be found in the workspace folder of your Eclipse IDE. You can look at the
+file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in your workspace directory.
+
+```gradle
+spotless {
+  java {
+    eclipse()
+      // Optional: Enable the Sort Members feature globally. (default: false)
+      .sortMembersEnabled(true)
+      // Optional: Specify the sort order of the member categories. (default: T,SF,SI,SM,F,I,C,M)
+      //   SF,SI,SM,F,I,C,M,T = Static Fields, Static Initializers, Static Methods, Fields, Initializers, Constructors, Methods, (Nested) Types
+      .sortMembersOrder("SF,SI,SM,F,I,C,M,T")
+      // Optional: Enable the reordering of fields, enum constants, and initializers. (default: true)
+      .sortMembersDoNotSortFields(false)
+      // Optional: Enable reordering of members of the same category by the visibility within the category. (default: false)
+      .sortMembersVisibilityOrderEnabled(true)
+      // Optional: Specify the ordering of members of the same category by the visibility within the category. (default: B,V,R,D)
+      //   B,R,D,V = Public, Protected, Package, Private
+      .sortMembersVisibilityOrder("B,R,D,V")
+```
+
+You can enable/disable the globally defined sort properties on file level by adding the following comments:
+- `// @SortMembers:enabled=false` - disable the Sort Members feature for this file
+- `// @SortMembers:doNotSortFields=true` - disable the sorting of static and instance fields
+- `// @SortMembers:sortByVisibility=false` - don't sort members by its visibility modifier
 
 ### formatAnnotations
 
@@ -304,8 +372,8 @@ spotless {
 
 ## Groovy
 
-- `com.diffplug.gradle.spotless.GroovyExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/GroovyExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GroovyExtension.java)
-- `com.diffplug.gradle.spotless.GroovyGradleExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/GroovyGradleExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GroovyGradleExtension.java)
+- `com.diffplug.gradle.spotless.GroovyExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/GroovyExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GroovyExtension.java)
+- `com.diffplug.gradle.spotless.GroovyGradleExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/GroovyGradleExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GroovyGradleExtension.java)
 
 Configuration for Groovy is similar to [Java](#java), in that it also supports `licenseHeader` and `importOrder`.
 
@@ -354,14 +422,18 @@ spotless {
     greclipse()
     // optional: you can specify a specific version or config file(s), version matches the Eclipse Platform
     greclipse('4.26').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
+    // Or supply the configuration as a string
+    greclipse('4.26').configProperties("""
+    ...
+    """)
 ```
 
 Groovy-Eclipse formatting errors/warnings lead per default to a build failure. This behavior can be changed by adding the property/key value `ignoreFormatterProblems=true` to a configuration file. In this scenario, files causing problems, will not be modified by this formatter step.
 
 ## Kotlin
 
-- `com.diffplug.gradle.spotless.KotlinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/KotlinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinExtension.java)
-- `com.diffplug.gradle.spotless.KotlinGradleExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/KotlinGradleExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinGradleExtension.java)
+- `com.diffplug.gradle.spotless.KotlinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/KotlinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinExtension.java)
+- `com.diffplug.gradle.spotless.KotlinGradleExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/KotlinGradleExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinGradleExtension.java)
 
 ```gradle
 spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
@@ -375,7 +447,7 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
     licenseHeader '/* (C)$YEAR */' // or licenseHeaderFile
   }
   kotlinGradle {
-    target '*.gradle.kts' // default target for kotlinGradle
+    target('*.gradle.kts') // default target for kotlinGradle
     ktlint() // or ktfmt() or prettier()
   }
 }
@@ -383,12 +455,21 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
 
 ### ktfmt
 
-[homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases).
+[homepage](https://github.com/facebook/ktfmt). [changelog](https://github.com/facebook/ktfmt/releases).
 
 ```kotlin
 spotless {
   kotlin {
-    ktfmt('0.30').dropboxStyle() // version and dropbox style are optional
+    // version, style and all configurations here are optional
+    ktfmt("0.51").googleStyle().configure {
+      it.setMaxWidth(80)
+      it.setBlockIndent(4)
+      it.setContinuationIndent(4)
+      it.setRemoveUnusedImports(false)
+      it.setManageTrailingCommas(false)
+    }
+  }
+}
 ```
 
 <a name="applying-ktlint-to-kotlin-files"></a>
@@ -413,11 +494,13 @@ spotless {
       .editorConfigOverride(
         mapOf(
           "indent_size" to 2,
+          // intellij_idea is the default style we preset in Spotless, you can override it referring to https://pinterest.github.io/ktlint/latest/rules/code-styles.
+          "ktlint_code_style" to "intellij_idea",
         )
       )
       .customRuleSets(
         listOf(
-          "io.nlopez.compose.rules:ktlint:0.3.3"
+          "io.nlopez.compose.rules:ktlint:0.4.16"
         )
       )
   }
@@ -439,7 +522,7 @@ spotless {
 
 ## Scala
 
-`com.diffplug.gradle.spotless.ScalaExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/ScalaExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ScalaExtension.java)
+`com.diffplug.gradle.spotless.ScalaExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/ScalaExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ScalaExtension.java)
 
 ```gradle
 spotless {
@@ -471,7 +554,7 @@ spotless {
 
 ## C/C++
 
-`com.diffplug.gradle.spotless.CppExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/CppExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/CppExtension.java)
+`com.diffplug.gradle.spotless.CppExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/CppExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/CppExtension.java)
 
 ```gradle
 spotless {
@@ -497,13 +580,17 @@ spotles {
   cpp {
     // version and configFile are both optional
     eclipseCdt('4.13.0').configFile('eclipse-cdt.xml')
+    // Or supply the configuration as a string
+    eclipseCdt('4.13.0').configProperties("""
+    ...
+    """)
   }
 }
 ```
 
 ## Python
 
-`com.diffplug.gradle.spotless.PythonExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/PythonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/PythonExtension.java)
+`com.diffplug.gradle.spotless.PythonExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/PythonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/PythonExtension.java)
 
 ```gradle
 spotless {
@@ -539,7 +626,7 @@ black().pathToExe('C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe')
 
 ### buf
 
-`com.diffplug.gradle.spotless.ProtobufExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/ProtobufExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ProtobufExtension.java)
+`com.diffplug.gradle.spotless.ProtobufExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/ProtobufExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ProtobufExtension.java)
 
 **WARNING** this step **must** be the first step in the chain, steps before it will be ignored. Thumbs up [this issue](https://github.com/bufbuild/buf/issues/1035) for a resolution, see [here](https://github.com/diffplug/spotless/pull/1208#discussion_r1264439669) for more details on the problem.
 
@@ -571,7 +658,7 @@ buf {
 
 ## FreshMark
 
-`com.diffplug.gradle.spotless.FreshMarkExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FreshMarkExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/FreshMarkExtension.java)
+`com.diffplug.gradle.spotless.FreshMarkExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FreshMarkExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/FreshMarkExtension.java)
 
 [homepage](https://github.com/diffplug/freshmark). [changelog](https://github.com/diffplug/freshmark/blob/master/CHANGES.md). FreshMark lets you generate markdown in the comments of your markdown.  This helps to keep badges and links up-to-date (see the source for this file), and can
 also be helpful for generating complex tables (see the source for [the parent readme](../README.md)).
@@ -592,7 +679,7 @@ spotless {
 
 ## Flexmark
 
-`com.diffplug.gradle.spotless.FlexmarkExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FlexmarkExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/FlexmarkExtension.java)
+`com.diffplug.gradle.spotless.FlexmarkExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FlexmarkExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/FlexmarkExtension.java)
 
 [homepage](https://github.com/vsch/flexmark-java). Flexmark is a flexible Commonmark/Markdown parser that can be used to format Markdown files. It supports different [flavors of Markdown](https://github.com/vsch/flexmark-java#markdown-processor-emulation) and [many formatting options](https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options).
 
@@ -611,7 +698,7 @@ spotless {
 
 ## Antlr4
 
-`com.diffplug.gradle.spotless.Antlr4Extension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/Antlr4Extension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/Antlr4Extension.java)
+`com.diffplug.gradle.spotless.Antlr4Extension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/Antlr4Extension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/Antlr4Extension.java)
 
 ```gradle
 spotless {
@@ -636,7 +723,7 @@ antlr4formatter('1.2.1') // version is optional
 
 ## SQL
 
-`com.diffplug.gradle.spotless.SqlExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/SqlExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/SqlExtension.java)
+`com.diffplug.gradle.spotless.SqlExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/SqlExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/SqlExtension.java)
 
 ```gradle
 spotless {
@@ -672,11 +759,58 @@ sql.formatter.indent.type=space
 sql.formatter.indent.size=4
 ```
 
+## Maven POM
+
+`com.diffplug.gradle.spotless.PomExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/PomExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/PomExtension.java)
+
+```gradle
+spotless {
+  pom {
+    target('pom.xml') // default value, you can change if you want
+
+    sortPom()  // has its own section below
+  }
+}
+```
+
+### sortPom
+
+[homepage](https://github.com/Ekryd/sortpom).
+
+All configuration settings are optional, they are described in detail [here](https://github.com/Ekryd/sortpom/wiki/Parameters).
+
+```gradle
+spotless {
+  pom {
+    sortPom('4.0.0')
+      .encoding('UTF-8') // The encoding of the pom files
+      .lineSeparator(System.getProperty('line.separator')) // line separator to use
+      .expandEmptyElements(true) // Should empty elements be expanded
+      .spaceBeforeCloseEmptyElement(false) // Should a space be added inside self-closing elements
+      .keepBlankLines(true) // Keep empty lines
+      .endWithNewline(true) // Whether sorted pom ends with a newline
+      .nrOfIndentSpace(2) // Indentation
+      .indentBlankLines(false) // Should empty lines be indented
+      .indentSchemaLocation(false) // Should schema locations be indented
+      .indentAttribute(null) // Should the xml attributes be indented
+      .predefinedSortOrder('recommended_2008_06') // Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles
+      .sortOrderFile(null) // Custom sort order of elements: https://raw.githubusercontent.com/Ekryd/sortpom/master/sorter/src/main/resources/custom_1.xml
+      .sortDependencies(null) // Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies
+      .sortDependencyManagement(null) // Sort dependency management: https://github.com/Ekryd/sortpom/wiki/SortDependencies
+      .sortDependencyExclusions(null) // Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies
+      .sortPlugins(null) // Sort plugins: https://github.com/Ekryd/sortpom/wiki/SortPlugins
+      .sortProperties(false) // Sort properties
+      .sortModules(false) // Sort modules
+      .sortExecutions(false) // Sort plugin executions
+  }
+}
+```
+
 <a name="applying-to-typescript-source"></a>
 
 ## Typescript
 
-- `com.diffplug.gradle.spotless.TypescriptExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/TypescriptExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/TypescriptExtension.java)
+- `com.diffplug.gradle.spotless.TypescriptExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/TypescriptExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/TypescriptExtension.java)
 
 ```gradle
 spotless {
@@ -770,7 +904,7 @@ For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmr
 
 ## Javascript
 
-- `com.diffplug.gradle.spotless.JavascriptExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/JavascriptExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JavascriptExtension.java)
+- `com.diffplug.gradle.spotless.JavascriptExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/JavascriptExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JavascriptExtension.java)
 
 ```gradle
 spotless {
@@ -794,8 +928,6 @@ hence you are required to provide resolvable file paths for config files, or alt
 
 The configuration is very similar to the [ESLint (Typescript)](#eslint-typescript) configuration. In javascript, *no*
 `tsconfig.json` is supported.
-
-```gradle
 
 ```gradle
 spotless {
@@ -835,7 +967,7 @@ For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmr
 
 ## JSON
 
-- `com.diffplug.gradle.spotless.JsonExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/JsonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JsonExtension.java)
+- `com.diffplug.gradle.spotless.JsonExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/JsonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/JsonExtension.java)
 
 ```gradle
 spotless {
@@ -955,7 +1087,7 @@ spotless {
 
 ## YAML
 
-- `com.diffplug.gradle.spotless.YamlExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/JsonExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/YamlExtension.java)
+- `com.diffplug.gradle.spotless.YamlExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/YamlExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/YamlExtension.java)
 
 ```gradle
 spotless {
@@ -987,7 +1119,7 @@ spotless {
 
 ## Shell
 
-`com.diffplug.gradle.spotless.ShellExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/ShellExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ShellExtension.java)
+`com.diffplug.gradle.spotless.ShellExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/ShellExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/ShellExtension.java)
 
 ```gradle
 spotless {
@@ -1007,7 +1139,7 @@ When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.edit
 Refer to the `shfmt` [man page](https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd) for `.editorconfig` settings. 
 
 ```gradle
-shfmt('3.7.0') // version is optional
+shfmt('3.8.0') // version is optional
 
 // if shfmt is not on your path, you must specify its location manually
 shfmt().pathToExe('/opt/homebrew/bin/shfmt')
@@ -1023,7 +1155,7 @@ shfmt().pathToExe('/opt/homebrew/bin/shfmt')
 
 ## Gherkin
 
-- `com.diffplug.gradle.spotless.GherkinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/GherkinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GherkinExtension.java)
+- `com.diffplug.gradle.spotless.GherkinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/GherkinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GherkinExtension.java)
 
 ```gradle
 spotless {
@@ -1045,10 +1177,26 @@ spotless {
   gherkin {
     target 'src/**/*.feature'     // required to be set explicitly
     gherkinUtils()
-      .version('8.0.2')           // optional: custom version of 'io.cucumber:gherkin-utils'
+      .version('9.0.0')           // optional: custom version of 'io.cucumber:gherkin-utils'
   }
 }
 ```
+
+## CSS
+
+`com.diffplug.gradle.spotless.CssExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/CssExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/CssExtension.java)
+
+```gradle
+spotless {
+  css {
+    target 'css/**/*.css' // default: '**/*.css'
+
+    biome('1.8.3')  // has its own section below
+  }
+}
+```
+
+Note regarding biome: Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
 
 ## Prettier
 
@@ -1247,14 +1395,10 @@ a formatter that for the frontend written in Rust, which has a native binary, do
 is pretty fast. It can currently format JavaScript, TypeScript, JSX, and JSON, and may support
 [more frontend languages](https://biomejs.dev/internals/language-support/) such as CSS in the future.
 
-Note: Biome [was formerly called Rome](https://biomejs.dev/blog/annoucing-biome/). Configurations with
-the old `<rome>` tag and `rome(...)` function are still supported for the time being. This will be removed
-in a future version, you should migrate to the new `<biome>` tag or `biome(...)` function. The configuration
-remains the same, you only need to update the version. If you are using a custom `rome.json` configuration file,
-you need to rename it to `biome.json`.
-
 You can use Biome in any language-specific format for supported languages, but
 usually you will be creating a generic format.
+
+Note regarding biome: Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
 
 ```gradle
 spotless {
@@ -1441,7 +1585,7 @@ Once a file's license header has a valid year, whether it is a year (`2020`) or 
 * `2017` -> `2017-2020`
 * `2017-2019` -> `2017-2020`
 
-See the [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.LicenseHeaderConfig.html) for a complete listing of options.
+See the [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.LicenseHeaderConfig.html) for a complete listing of options.
 
 <a name="retroactively-populating-year-range-from-git-history"></a>
 
@@ -1504,7 +1648,13 @@ spotless {
     encoding 'Cp1252' // except java, which will be Cp1252
 ```
 
-Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports four line ending modes: `UNIX`, `WINDOWS`, `MAC_CLASSIC`, `PLATFORM_NATIVE`, `GIT_ATTRIBUTES`, and `GIT_ATTRIBUTES_FAST_ALLSAME`.  The default value is `GIT_ATTRIBUTES_FAST_ALLSAME`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time. `FAST_ALLSAME` just means that Spotless can assume that every file being formatted has the same line endings ([more info](https://github.com/diffplug/spotless/pull/1838)).
+Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports
+
+- constant modes (`UNIX`, `WINDOWS`, `MAC_CLASSIC`)
+- simple modes (`PLATFORM_NATIVE`, `PRESERVE`)
+- and git-aware modes (`GIT_ATTRIBUTES`, `GIT_ATTRIBUTES_FAST_ALLSAME`)
+
+The default value is `GIT_ATTRIBUTES_FAST_ALLSAME`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time. `FAST_ALLSAME` just means that Spotless can assume that every file being formatted has the same line endings ([more info](https://github.com/diffplug/spotless/pull/1838)).
 
 You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
 
@@ -1521,9 +1671,9 @@ spotless {
     custom 'lowercase', { str -> str.toLowerCase() }
 ```
 
-However, custom rules will disable up-to-date checking and caching, unless you read [this javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) and follow its instructions carefully.
+However, custom rules will disable up-to-date checking and caching, unless you read [this javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#bumpThisNumberIfACustomStepChanges-int-) and follow its instructions carefully.
 
-Another option is to create proper `FormatterStep` in your `buildSrc`, and then call [`addStep`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#addStep-com.diffplug.spotless.FormatterStep-).  The contributing guide describes [how to do this](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-to-add-a-new-formatterstep).  If the step is generally-useful, we hope you'll open a PR to share it!
+Another option is to create proper `FormatterStep` in your `buildSrc`, and then call [`addStep`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#addStep-com.diffplug.spotless.FormatterStep-).  The contributing guide describes [how to do this](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-to-add-a-new-formatterstep).  If the step is generally-useful, we hope you'll open a PR to share it!
 
 
 ```gradle
@@ -1556,11 +1706,11 @@ spotless {
   format 'foo', com.acme.FooLanguageExtension, {
 ```
 
-If you'd like to create a one-off Spotless task outside of the `check`/`apply` framework, see [`FormatExtension.createIndependentApplyTask`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#createIndependentApplyTask-java.lang.String-).
+If you'd like to create a one-off Spotless task outside of the `check`/`apply` framework, see [`FormatExtension.createIndependentApplyTask`](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#createIndependentApplyTask-java.lang.String-).
 
 ## Inception (languages within languages within...)
 
-In very rare cases, you might want to format e.g. javascript which is written inside JSP templates, or maybe java within a markdown file, or something wacky like that.  You can specify hunks within a file using either open/close tags or a regex with a single capturing group, and then specify rules within it, like so.  See [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/6.25.0/com/diffplug/gradle/spotless/FormatExtension.html#withinBlocks-java.lang.String-java.lang.String-java.lang.String-org.gradle.api.Action-) for more details.
+In very rare cases, you might want to format e.g. javascript which is written inside JSP templates, or maybe java within a markdown file, or something wacky like that.  You can specify hunks within a file using either open/close tags or a regex with a single capturing group, and then specify rules within it, like so.  See [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.0.BETA4/com/diffplug/gradle/spotless/FormatExtension.html#withinBlocks-java.lang.String-java.lang.String-java.lang.String-org.gradle.api.Action-) for more details.
 
 ```gradle
 import com.diffplug.gradle.spotless.JavaExtension
@@ -1653,6 +1803,7 @@ If you use this feature, you will get an error if you use a formatter in a subpr
 * [Goomph](https://github.com/diffplug/goomph) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/goomph/blob/v1.0.0/build.gradle#L78-L99))
 * [FreshMark](https://github.com/diffplug/freshmark) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/freshmark/blob/v1.3.0/build.gradle#L52-L73))
 * [JScriptBox](https://github.com/diffplug/jscriptbox) ([direct link to spotless section in its build.gradle](https://github.com/diffplug/jscriptbox/blob/v3.0.0/build.gradle#L45-L65))
+* [Compose Guard](https://github.com/j-roskopf/ComposeGuard) ([direct link to spotless section in its build.gradle.kts](https://github.com/j-roskopf/ComposeGuard/blob/main/compose-guard/build.gradle.kts#L28-L48))
 * (Your project here)
 
 <!---freshmark /javadoc -->

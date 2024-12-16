@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,16 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.SerializedFunction;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public final class ImportOrderStep {
+public final class ImportOrderStep implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private static final boolean WILDCARDS_LAST_DEFAULT = false;
 	private static final boolean SEMANTIC_SORT_DEFAULT = false;
 	private static final Set<String> TREAT_AS_PACKAGE_DEFAULT = Set.of();
@@ -84,9 +88,9 @@ public final class ImportOrderStep {
 
 	private FormatterStep createFrom(boolean wildcardsLast, boolean semanticSort, Set<String> treatAsPackage,
 			Set<String> treatAsClass, Supplier<List<String>> importOrder) {
-		return FormatterStep.createLazy("importOrder",
-				() -> new State(importOrder.get(), lineFormat, wildcardsLast, semanticSort, treatAsPackage,
-						treatAsClass),
+		return FormatterStep.create("importOrder",
+				new State(importOrder.get(), lineFormat, wildcardsLast, semanticSort, treatAsPackage, treatAsClass),
+				SerializedFunction.identity(),
 				State::toFormatter);
 	}
 
@@ -121,8 +125,12 @@ public final class ImportOrderStep {
 		private final TreeSet<String> treatAsPackage;
 		private final TreeSet<String> treatAsClass;
 
-		State(List<String> importOrder, String lineFormat, boolean wildcardsLast, boolean semanticSort,
-				Set<String> treatAsPackage, Set<String> treatAsClass) {
+		State(List<String> importOrder,
+				String lineFormat,
+				boolean wildcardsLast,
+				boolean semanticSort,
+				@Nullable Set<String> treatAsPackage,
+				@Nullable Set<String> treatAsClass) {
 			this.importOrder = importOrder;
 			this.lineFormat = lineFormat;
 			this.wildcardsLast = wildcardsLast;

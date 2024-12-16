@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import com.diffplug.spotless.json.gson.GsonConfig;
 
 public class GsonFormatterFunc implements FormatterFunc {
 
-	private static final String FAILED_TO_PARSE_ERROR_MESSAGE = "Unable to format JSON";
+	private static final String FAILED_TO_PARSE_ERROR_MESSAGE = "Unable to parse JSON";
 
 	private final Gson gson;
 	private final GsonConfig gsonConfig;
@@ -56,7 +56,7 @@ public class GsonFormatterFunc implements FormatterFunc {
 		} else {
 			JsonElement jsonElement = gson.fromJson(inputString, JsonElement.class);
 			if (jsonElement == null) {
-				throw new AssertionError(FAILED_TO_PARSE_ERROR_MESSAGE);
+				throw new IllegalArgumentException(FAILED_TO_PARSE_ERROR_MESSAGE);
 			}
 			if (gsonConfig.isSortByKeys()) {
 				jsonElement = sortByKeys(jsonElement);

@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.kotlin;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
@@ -35,14 +34,28 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/pinterest/ktlint">ktlint</a> as a FormatterStep. */
-public class KtLintStep {
-	// prevent direct instantiation
-	private KtLintStep() {}
-
-	private static final String DEFAULT_VERSION = "1.1.1";
+public class KtLintStep implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_VERSION = "1.5.0";
 	private static final String NAME = "ktlint";
 	private static final String MAVEN_COORDINATE_0_DOT = "com.pinterest:ktlint:";
 	private static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";
+
+	private final JarState.Promised jarState;
+	@Nullable
+	private final FileSignature.Promised config;
+	private final Map<String, Object> editorConfigOverride;
+	private final String version;
+
+	private KtLintStep(String version,
+			JarState.Promised jarState,
+			@Nullable FileSignature config,
+			Map<String, Object> editorConfigOverride) {
+		this.version = version;
+		this.jarState = jarState;
+		this.config = config != null ? config.asPromise() : null;
+		this.editorConfigOverride = editorConfigOverride;
+	}
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), provisioner);
@@ -59,13 +72,21 @@ public class KtLintStep {
 			List<String> customRuleSets) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new State(version, provisioner, editorConfig, editorConfigOverride, customRuleSets),
+		String ktlintCoordinate = (version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version;
+		Set<String> mavenCoordinates = new HashSet<>(customRuleSets);
+		mavenCoordinates.add(ktlintCoordinate);
+		return FormatterStep.create(NAME,
+				new KtLintStep(version, JarState.promise(() -> JarState.from(mavenCoordinates, provisioner)), editorConfig, editorConfigOverride),
+				KtLintStep::equalityState,
 				State::createFormat);
 	}
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
+	}
+
+	private State equalityState() {
+		return new State(version, jarState.get(), config != null ? config.get() : null, editorConfigOverride);
 	}
 
 	private static final class State implements Serializable {
@@ -78,16 +99,12 @@ public class KtLintStep {
 		private final FileSignature editorConfigPath;
 
 		State(String version,
-				Provisioner provisioner,
+				JarState jarState,
 				@Nullable FileSignature editorConfigPath,
-				Map<String, Object> editorConfigOverride,
-				List<String> customRuleSets) throws IOException {
+				Map<String, Object> editorConfigOverride) {
 			this.version = version;
+			this.jarState = jarState;
 			this.editorConfigOverride = new TreeMap<>(editorConfigOverride);
-			String ktlintCoordinate = (version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version;
-			Set<String> mavenCoordinates = new HashSet<>(customRuleSets);
-			mavenCoordinates.add(ktlintCoordinate);
-			this.jarState = JarState.from(mavenCoordinates, provisioner);
 			this.editorConfigPath = editorConfigPath;
 		}
 

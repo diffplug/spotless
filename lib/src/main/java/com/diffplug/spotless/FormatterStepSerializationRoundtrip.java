@@ -16,20 +16,23 @@
 package com.diffplug.spotless;
 
 import java.io.IOException;
-import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.util.Objects;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, EqualityState extends Serializable> extends FormatterStepEqualityOnStateSerialization<EqualityState> {
+final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, EqualityState extends Serializable> extends FormatterStepEqualityOnStateSerialization<EqualityState> {
 	private static final long serialVersionUID = 1L;
 	private final String name;
+	@SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED", justification = "HackClone")
 	private final transient ThrowingEx.Supplier<RoundtripState> initializer;
 	private @Nullable RoundtripState roundtripStateInternal;
+	private @Nullable EqualityState equalityStateInternal;
 	private final SerializedFunction<RoundtripState, EqualityState> equalityStateExtractor;
 	private final SerializedFunction<EqualityState, FormatterFunc> equalityStateToFormatter;
 
-	public FormatterStepSerializationRoundtrip(String name, ThrowingEx.Supplier<RoundtripState> initializer, SerializedFunction<RoundtripState, EqualityState> equalityStateExtractor, SerializedFunction<EqualityState, FormatterFunc> equalityStateToFormatter) {
+	FormatterStepSerializationRoundtrip(String name, ThrowingEx.Supplier<RoundtripState> initializer, SerializedFunction<RoundtripState, EqualityState> equalityStateExtractor, SerializedFunction<EqualityState, FormatterFunc> equalityStateToFormatter) {
 		this.name = name;
 		this.initializer = initializer;
 		this.equalityStateExtractor = equalityStateExtractor;
@@ -41,12 +44,19 @@ class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, E
 		return name;
 	}
 
-	@Override
-	protected EqualityState stateSupplier() throws Exception {
+	private RoundtripState roundtripStateSupplier() throws Exception {
 		if (roundtripStateInternal == null) {
 			roundtripStateInternal = initializer.get();
 		}
-		return equalityStateExtractor.apply(roundtripStateInternal);
+		return roundtripStateInternal;
+	}
+
+	@Override
+	protected EqualityState stateSupplier() throws Exception {
+		if (equalityStateInternal == null) {
+			equalityStateInternal = equalityStateExtractor.apply(roundtripStateSupplier());
+		}
+		return equalityStateInternal;
 	}
 
 	@Override
@@ -54,19 +64,77 @@ class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, E
 		return equalityStateToFormatter.apply(equalityState);
 	}
 
-	// override serialize output
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		if (roundtripStateInternal == null) {
-			roundtripStateInternal = ThrowingEx.get(initializer::get);
+		if (initializer == null) {
+			// then this instance was created by Gradle's ConfigurationCacheHackList and the following will hold true
+			if (roundtripStateInternal == null && equalityStateInternal == null) {
+				throw new IllegalStateException("If the initializer was null, then one of roundtripStateInternal or equalityStateInternal should be non-null, and neither was");
+			}
+		} else {
+			// this was a normal instance, which means we need to encode to roundtripStateInternal (since the initializer might not be serializable)
+			// and there's no reason to keep equalityStateInternal since we can always recompute it
+			if (roundtripStateInternal == null) {
+				roundtripStateInternal = ThrowingEx.get(this::roundtripStateSupplier);
+			}
+			equalityStateInternal = null;
 		}
 		out.defaultWriteObject();
 	}
 
-	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-		in.defaultReadObject();
+	HackClone<?, ?> hackClone(boolean optimizeForEquality) {
+		return new HackClone<>(this, optimizeForEquality);
 	}
 
-	private void readObjectNoData() throws ObjectStreamException {
-		throw new UnsupportedOperationException();
+	/**
+	 * This class has one setting (optimizeForEquality) and two pieces of data
+	 * - the original step, which is marked transient so it gets discarded during serialization
+	 * - the cleaned step, which is lazily created during serialization, and the serialized form is optimized for either equality or roundtrip integrity
+	 *
+	 * It works in conjunction with ConfigurationCacheHackList to allow Spotless to work with all of Gradle's cache systems.
+	 */
+	static class HackClone<RoundtripState extends Serializable, EqualityState extends Serializable> implements Serializable {
+		private static final long serialVersionUID = 1L;
+		@SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED", justification = "HackClone")
+		transient FormatterStepSerializationRoundtrip<?, ?> original;
+		boolean optimizeForEquality;
+		@Nullable
+		FormatterStepSerializationRoundtrip cleaned;
+
+		HackClone(@Nullable FormatterStepSerializationRoundtrip<RoundtripState, EqualityState> original, boolean optimizeForEquality) {
+			this.original = original;
+			this.optimizeForEquality = optimizeForEquality;
+		}
+
+		@SuppressFBWarnings(value = "NP_NONNULL_PARAM_VIOLATION", justification = "HackClone")
+		private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+			if (cleaned == null) {
+				cleaned = new FormatterStepSerializationRoundtrip(original.name, null, original.equalityStateExtractor, original.equalityStateToFormatter);
+				if (optimizeForEquality) {
+					cleaned.equalityStateInternal = ThrowingEx.get(original::stateSupplier);
+				} else {
+					cleaned.roundtripStateInternal = ThrowingEx.get(original::roundtripStateSupplier);
+				}
+			}
+			out.defaultWriteObject();
+		}
+
+		public FormatterStep rehydrate() {
+			return original != null ? original : Objects.requireNonNull(cleaned, "how is clean null if this has been serialized?");
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			if (o == null || getClass() != o.getClass())
+				return false;
+			HackClone<?, ?> that = (HackClone<?, ?>) o;
+			return optimizeForEquality == that.optimizeForEquality && rehydrate().equals(that.rehydrate());
+		}
+
+		@Override
+		public int hashCode() {
+			return rehydrate().hashCode() ^ Boolean.hashCode(optimizeForEquality);
+		}
 	}
 }

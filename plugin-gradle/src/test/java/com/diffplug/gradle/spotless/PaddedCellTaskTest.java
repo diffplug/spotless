@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.gradle.api.Project;
 import org.gradle.api.provider.Provider;
@@ -30,10 +31,11 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.NeverUpToDateStep;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.TestProvisioner;
 
 class PaddedCellTaskTest extends ResourceHarness {
@@ -52,20 +54,20 @@ class PaddedCellTaskTest extends ResourceHarness {
 		SpotlessCheck check;
 		SpotlessApply apply;
 
-		Bundle(String name, FormatterFunc function) throws IOException {
+		Bundle(String name, SerializedFunction<String, String> function) throws IOException {
 			this.name = name;
 			file = setFile("src/test." + name).toContent("CCC");
-			FormatterStep step = FormatterStep.createNeverUpToDate(name, function);
+			FormatterStep step = NeverUpToDateStep.create(name, function);
 			source = createFormatTask(name, step);
 			check = createCheckTask(name, source);
 			apply = createApplyTask(name, source);
-			outputFile = new File(source.getOutputDirectory() + "/src", file.getName());
+			outputFile = new File(source.getCleanDirectory() + "/src", file.getName());
 		}
 
 		private SpotlessTaskImpl createFormatTask(String name, FormatterStep step) {
 			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
 			task.init(taskService);
-			task.addStep(step);
+			task.setSteps(List.of(step));
 			task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
 			task.setTarget(Collections.singletonList(file));
 			return task;

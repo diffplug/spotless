@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,10 +44,5 @@ public class Javascript extends FormatterFactory {
 
 	public void addBiome(BiomeJs biome) {
 		addStepFactory(biome);
-	}
-
-	@Deprecated
-	public void addRome(RomeJs rome) {
-		addStepFactory(rome);
 	}
 }

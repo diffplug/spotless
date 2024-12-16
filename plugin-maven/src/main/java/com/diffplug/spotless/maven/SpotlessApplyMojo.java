@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.PaddedCell;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
 /**
@@ -42,7 +42,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 	private boolean spotlessIdeHookUseStdOut;
 
 	@Override
-	protected void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
+	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		if (isIdeHook()) {
 			IdeHook.performHook(files, formatter, spotlessIdeHook, spotlessIdeHookUseStdIn, spotlessIdeHookUseStdOut);
 			return;
@@ -60,9 +60,9 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 			}
 
 			try {
-				PaddedCell.DirtyState dirtyState = PaddedCell.calculateDirtyState(formatter, file);
+				DirtyState dirtyState = DirtyState.of(formatter, file);
 				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
-					getLog().info(String.format("Writing clean file: %s", file));
+					getLog().info(String.format("clean file: %s", file));
 					dirtyState.writeCanonicalTo(file);
 					buildContext.refresh(file);
 					counter.cleaned();
@@ -79,9 +79,9 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 		// We print the number of considered files which is useful when ratchetFrom is setup
 		if (counter.getTotal() > 0) {
 			getLog().info(String.format("Spotless.%s is keeping %s files clean - %s were changed to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
-					formatter.getName(), counter.getTotal(), counter.getCleaned(), counter.getCheckedButAlreadyClean(), counter.getSkippedAsCleanCache()));
+					name, counter.getTotal(), counter.getCleaned(), counter.getCheckedButAlreadyClean(), counter.getSkippedAsCleanCache()));
 		} else {
-			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", formatter.getName()));
+			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", name));
 		}
 	}
 

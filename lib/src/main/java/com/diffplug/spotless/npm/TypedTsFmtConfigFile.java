@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,8 @@ package com.diffplug.spotless.npm;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Locale;
-
-import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.ThrowingEx;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class TypedTsFmtConfigFile implements Serializable {
 
@@ -35,18 +29,9 @@ public class TypedTsFmtConfigFile implements Serializable {
 
 	private final File configFile;
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	@SuppressWarnings("unused")
-	private final FileSignature configFileSignature;
-
 	public TypedTsFmtConfigFile(TsConfigFileType configFileType, File configFile) {
 		this.configFileType = requireNonNull(configFileType);
 		this.configFile = requireNonNull(configFile);
-		try {
-			this.configFileSignature = FileSignature.signAsList(configFile);
-		} catch (IOException e) {
-			throw ThrowingEx.asRuntime(e);
-		}
 	}
 
 	TsConfigFileType configFileType() {

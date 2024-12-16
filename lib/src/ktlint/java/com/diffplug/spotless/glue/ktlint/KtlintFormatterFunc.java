@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.glue.ktlint.compat.*;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
@@ -60,14 +61,19 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	}
 
 	@Override
-	public String applyWithFile(String unix, File file) {
+	public String applyWithFile(String unix, File file) throws NoSuchFieldException, IllegalAccessException {
 		Path absoluteEditorConfigPath = null;
 		if (editorConfigPath != null) {
 			absoluteEditorConfigPath = editorConfigPath.getOnlyFile().toPath();
 		}
-		return adapter.format(
-				file.toPath(),
-				absoluteEditorConfigPath,
-				editorConfigOverrideMap);
+		try {
+			return adapter.format(
+					unix,
+					file.toPath(),
+					absoluteEditorConfigPath,
+					editorConfigOverrideMap);
+		} catch (KtLintCompatReporting.KtlintSpotlessException e) {
+			throw Lint.atLine(e.line, e.ruleId, e.detail).shortcut();
+		}
 	}
 }

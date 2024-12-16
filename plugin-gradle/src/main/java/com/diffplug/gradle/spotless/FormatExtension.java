@@ -16,6 +16,8 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+import static com.diffplug.gradle.spotless.SpotlessPluginRedirect.badSemver;
+import static com.diffplug.gradle.spotless.SpotlessPluginRedirect.badSemverOfGradle;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -44,15 +46,20 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.util.GradleVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.SerializedFunction;
+import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
@@ -67,12 +74,14 @@ import com.diffplug.spotless.generic.ReplaceStep;
 import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
 import com.diffplug.spotless.npm.NpmPathResolver;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
-import com.diffplug.spotless.rome.BiomeFlavor;
 
 import groovy.lang.Closure;
 
 /** Adds a {@code spotless{Name}Check} and {@code spotless{Name}Apply} task. */
 public class FormatExtension {
+
+	private static final Logger logger = LoggerFactory.getLogger(FormatExtension.class);
+
 	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
 
@@ -164,16 +173,36 @@ public class FormatExtension {
 		encoding = requireNonNull(charset);
 	}
 
-	final FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
+	final List<LintSuppression> lintSuppressions = new ArrayList<>();
 
-	/** Ignores errors in the given step. */
-	public void ignoreErrorForStep(String stepName) {
-		exceptionPolicy.excludeStep(requireNonNull(stepName));
+	/** Suppresses any lints which meet the supplied criteria. */
+	public void suppressLintsFor(Action<LintSuppression> lintSuppression) {
+		LintSuppression suppression = new LintSuppression();
+		lintSuppression.execute(suppression);
+		suppression.ensureDoesNotSuppressAll();
+		lintSuppressions.add(suppression);
 	}
 
-	/** Ignores errors for the given relative path. */
+	/**
+	 * Ignores errors in the given step.
+	 *
+	 * @deprecated Use {@link #suppressLintsFor(Action)} instead.
+	 */
+	@Deprecated
+	public void ignoreErrorForStep(String stepName) {
+		System.err.println("`ignoreErrorForStep('" + stepName + "') is deprecated, use `suppressLintsFor { step = '" + stepName + "' }` instead.");
+		suppressLintsFor(it -> it.setStep(stepName));
+	}
+
+	/**
+	 * Ignores errors for the given relative path.
+	 *
+	 * @deprecated Use {@link #suppressLintsFor(Action)} instead.
+	 */
+	@Deprecated
 	public void ignoreErrorForPath(String relativePath) {
-		exceptionPolicy.excludePath(requireNonNull(relativePath));
+		System.err.println("`ignoreErrorForPath('" + relativePath + "') is deprecated, use `suppressLintsFor { path = '" + relativePath + "' }` instead.");
+		suppressLintsFor(it -> it.setPath(relativePath));
 	}
 
 	/**
@@ -335,7 +364,8 @@ public class FormatExtension {
 		if (!destPath.startsWith(rootPath)) {
 			return null;
 		} else {
-			return destPath.substring(rootPath.length());
+			String relativized = destPath.substring(rootPath.length());
+			return relativized.startsWith("/") || relativized.startsWith("\\") ? relativized.substring(1) : relativized;
 		}
 	}
 
@@ -427,7 +457,21 @@ public class FormatExtension {
 	 */
 	public void custom(String name, Closure<String> formatter) {
 		requireNonNull(formatter, "formatter");
-		custom(name, formatter::call);
+		Closure<String> dehydrated = formatter.dehydrate();
+		custom(name, new ClosureFormatterFunc(dehydrated));
+	}
+
+	static class ClosureFormatterFunc implements FormatterFunc, Serializable {
+		private final Closure<String> closure;
+
+		ClosureFormatterFunc(Closure<String> closure) {
+			this.closure = closure;
+		}
+
+		@Override
+		public String apply(String unixNewlines) {
+			return closure.call(unixNewlines);
+		}
 	}
 
 	/**
@@ -436,7 +480,13 @@ public class FormatExtension {
 	 */
 	public void custom(String name, FormatterFunc formatter) {
 		requireNonNull(formatter, "formatter");
-		addStep(FormatterStep.createLazy(name, () -> globalState, unusedState -> formatter));
+		if (badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_minVersionForCustom)) {
+			throw new GradleException("The 'custom' method is only available if you are using Gradle "
+					+ SpotlessPlugin.VER_GRADLE_minVersionForCustom
+					+ " or newer, this is "
+					+ GradleVersion.current().getVersion());
+		}
+		addStep(FormatterStep.createLazy(name, () -> globalState, SerializedFunction.alwaysReturns(formatter)));
 	}
 
 	/** Highly efficient find-replace char sequence. */
@@ -460,23 +510,51 @@ public class FormatExtension {
 	}
 
 	/** Ensures that the files are indented using spaces. */
+	public void leadingTabsToSpaces(int spacesPerTab) {
+		addStep(IndentStep.Type.SPACE.create(spacesPerTab));
+	}
+
+	@Deprecated
 	public void indentWithSpaces(int numSpacesPerTab) {
-		addStep(IndentStep.Type.SPACE.create(numSpacesPerTab));
+		logDeprecation("indentWithSpaces", "leadingTabsToSpaces");
+		leadingTabsToSpaces(numSpacesPerTab);
 	}
 
 	/** Ensures that the files are indented using spaces. */
-	public void indentWithSpaces() {
+	public void leadingTabsToSpaces() {
 		addStep(IndentStep.Type.SPACE.create());
 	}
 
-	/** Ensures that the files are indented using tabs. */
-	public void indentWithTabs(int tabToSpaces) {
-		addStep(IndentStep.Type.TAB.create(tabToSpaces));
+	@Deprecated
+	public void indentWithSpaces() {
+		logDeprecation("indentWithSpaces", "leadingTabsToSpaces");
+		leadingTabsToSpaces();
 	}
 
 	/** Ensures that the files are indented using tabs. */
-	public void indentWithTabs() {
+	public void leadingSpacesToTabs(int spacesPerTab) {
+		addStep(IndentStep.Type.TAB.create(spacesPerTab));
+	}
+
+	@Deprecated
+	public void indentWithTabs(int tabToSpaces) {
+		logDeprecation("indentWithTabs", "leadingSpacesToTabs");
+		leadingSpacesToTabs(tabToSpaces);
+	}
+
+	/** Ensures that the files are indented using tabs. */
+	public void leadingSpacesToTabs() {
 		addStep(IndentStep.Type.TAB.create());
+	}
+
+	@Deprecated
+	public void indentWithTabs() {
+		logDeprecation("indentWithTabs", "leadingSpacesToTabs");
+		leadingSpacesToTabs();
+	}
+
+	private static void logDeprecation(String methodName, String replacement) {
+		logger.warn("'{}' is deprecated, use '{}' in your gradle build script instead.", methodName, replacement);
 	}
 
 	/** Ensures formatting of files via native binary. */
@@ -728,15 +806,15 @@ public class FormatExtension {
 	 * the file name. It should be specified as a formatter step for a generic
 	 * <code>format{ ... }</code>.
 	 */
-	public class BiomeGeneric extends RomeStepConfig<BiomeGeneric> {
+	public class BiomeGeneric extends BiomeStepConfig<BiomeGeneric> {
 		@Nullable
 		String language;
 
 		/**
-		 * Creates a new Rome config that downloads the Rome executable for the given
+		 * Creates a new Biome config that downloads the Biome executable for the given
 		 * version from the network.
 		 *
-		 * @param version Rome version to use. The default version is used when
+		 * @param version Biome version to use. The default version is used when
 		 *                <code>null</code>.
 		 */
 		public BiomeGeneric(String version) {
@@ -756,7 +834,9 @@ public class FormatExtension {
 		 * <li>tsx (TypeScript + JSX)</li>
 		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
 		 * extension)</li>
+		 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 		 * <li>json (JSON)</li>
+		 * <li>jsonc (JSON + comments)</li>
 		 * </ul>
 		 *
 		 * @param language The language of the files to format.
@@ -775,65 +855,6 @@ public class FormatExtension {
 
 		@Override
 		protected BiomeGeneric getThis() {
-			return this;
-		}
-	}
-
-	/**
-	 * Generic Rome formatter step that detects the language of the input file from
-	 * the file name. It should be specified as a formatter step for a generic
-	 * <code>format{ ... }</code>.
-	 *
-	 * @deprecated Rome has transitioned to Biome. This will be removed shortly.
-	 */
-	@Deprecated
-	public class RomeGeneric extends RomeStepConfig<RomeGeneric> {
-		@Nullable
-		String language;
-
-		/**
-		 * Creates a new Rome config that downloads the Rome executable for the given
-		 * version from the network.
-		 *
-		 * @param version Rome version to use. The default version is used when
-		 *                <code>null</code>.
-		 */
-		public RomeGeneric(String version) {
-			super(getProject(), FormatExtension.this::replaceStep, BiomeFlavor.ROME, version);
-		}
-
-		/**
-		 * Sets the language (syntax) of the input files to format. When
-		 * <code>null</code> or the empty string, the language is detected automatically
-		 * from the file name. Currently the following languages are supported by Rome:
-		 * <ul>
-		 * <li>js (JavaScript)</li>
-		 * <li>jsx (JavaScript + JSX)</li>
-		 * <li>js? (JavaScript or JavaScript + JSX, depending on the file
-		 * extension)</li>
-		 * <li>ts (TypeScript)</li>
-		 * <li>tsx (TypeScript + JSX)</li>
-		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
-		 * extension)</li>
-		 * <li>json (JSON)</li>
-		 * </ul>
-		 *
-		 * @param language The language of the files to format.
-		 * @return This step for further configuration.
-		 */
-		public RomeGeneric language(String language) {
-			this.language = language;
-			replaceStep();
-			return this;
-		}
-
-		@Override
-		protected String getLanguage() {
-			return language;
-		}
-
-		@Override
-		protected RomeGeneric getThis() {
 			return this;
 		}
 	}
@@ -860,39 +881,15 @@ public class FormatExtension {
 	 * offline, you can specify the path to the Biome executable via
 	 * {@code biome().pathToExe(...)}.
 	 */
-	public RomeStepConfig<?> biome() {
+	public BiomeStepConfig<?> biome() {
 		return biome(null);
 	}
 
 	/** Downloads the given Biome version from the network. */
-	public RomeStepConfig<?> biome(String version) {
+	public BiomeStepConfig<?> biome(String version) {
 		var biomeConfig = new BiomeGeneric(version);
 		addStep(biomeConfig.createStep());
 		return biomeConfig;
-	}
-
-	/**
-	 * Defaults to downloading the default Rome version from the network. To work
-	 * offline, you can specify the path to the Rome executable via
-	 * {@code rome().pathToExe(...)}.
-	 *
-	 * @deprecated Use {@link #biome(String)}.
-	 */
-	@Deprecated
-	public RomeStepConfig<?> rome() {
-		return rome(null);
-	}
-
-	/**
-	 * Downloads the given Rome version from the network.
-	 *
-	 * @deprecated Use {@link #biome(String)}.
-	 */
-	@Deprecated
-	public RomeStepConfig<?> rome(String version) {
-		var romeConfig = new RomeGeneric(version);
-		addStep(romeConfig.createStep());
-		return romeConfig;
 	}
 
 	/** Uses the default version of clang-format. */
@@ -1052,7 +1049,7 @@ public class FormatExtension {
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
-		task.setExceptionPolicy(exceptionPolicy);
+		task.setLintSuppressions(lintSuppressions);
 		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
@@ -1067,8 +1064,9 @@ public class FormatExtension {
 		}
 		task.setSteps(steps);
 		Directory projectDir = getProject().getLayout().getProjectDirectory();
+		LineEnding lineEndings = getLineEndings();
 		task.setLineEndingsPolicy(
-				getProject().provider(() -> getLineEndings().createPolicy(projectDir.getAsFile(), () -> totalTarget)));
+				getProject().provider(() -> lineEndings.createPolicy(projectDir.getAsFile(), () -> totalTarget)));
 		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
 		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
 	}

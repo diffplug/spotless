@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,9 @@ public class SortPom implements FormatterStepFactory {
 	boolean keepBlankLines = defaultValues.keepBlankLines;
 
 	@Parameter
+	boolean endWithNewline = defaultValues.endWithNewline;
+
+	@Parameter
 	int nrOfIndentSpace = defaultValues.nrOfIndentSpace;
 
 	@Parameter
@@ -54,7 +57,13 @@ public class SortPom implements FormatterStepFactory {
 	boolean indentSchemaLocation = defaultValues.indentSchemaLocation;
 
 	@Parameter
+	String indentAttribute = defaultValues.indentAttribute;
+
+	@Parameter
 	String predefinedSortOrder = defaultValues.predefinedSortOrder;
+
+	@Parameter
+	boolean quiet = defaultValues.quiet;
 
 	@Parameter
 	String sortOrderFile = defaultValues.sortOrderFile;
@@ -89,10 +98,13 @@ public class SortPom implements FormatterStepFactory {
 		cfg.expandEmptyElements = expandEmptyElements;
 		cfg.spaceBeforeCloseEmptyElement = spaceBeforeCloseEmptyElement;
 		cfg.keepBlankLines = keepBlankLines;
+		cfg.endWithNewline = endWithNewline;
 		cfg.nrOfIndentSpace = nrOfIndentSpace;
 		cfg.indentBlankLines = indentBlankLines;
 		cfg.indentSchemaLocation = indentSchemaLocation;
+		cfg.indentAttribute = indentAttribute;
 		cfg.predefinedSortOrder = predefinedSortOrder;
+		cfg.quiet = quiet;
 		cfg.sortOrderFile = sortOrderFile;
 		cfg.sortDependencies = sortDependencies;
 		cfg.sortDependencyManagement = sortDependencyManagement;

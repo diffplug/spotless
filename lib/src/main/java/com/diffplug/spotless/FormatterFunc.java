@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -30,6 +31,14 @@ public interface FormatterFunc {
 
 	default String apply(String unix, File file) throws Exception {
 		return apply(unix);
+	}
+
+	/**
+	 * Calculates a list of lints against the given content.
+	 * By default, that's just an throwables thrown by the lint.
+	 */
+	default List<Lint> lint(String content, File file) throws Exception {
+		return List.of();
 	}
 
 	/**
@@ -71,15 +80,17 @@ public interface FormatterFunc {
 			};
 		}
 
-		/** @deprecated synonym for {@link #ofDangerous(AutoCloseable, FormatterFunc)} */
-		@Deprecated
-		public static Closeable of(AutoCloseable closeable, FormatterFunc function) {
-			return ofDangerous(closeable, function);
-		}
-
 		@FunctionalInterface
 		interface ResourceFunc<T extends AutoCloseable> {
 			String apply(T resource, String unix) throws Exception;
+
+			/**
+			 * Calculates a list of lints against the given content.
+			 * By default, that's just an throwables thrown by the lint.
+			 */
+			default List<Lint> lint(T resource, String unix) throws Exception {
+				return List.of();
+			}
 		}
 
 		/** Creates a {@link FormatterFunc.Closeable} which uses the given resource to execute the format function. */
@@ -107,6 +118,10 @@ public interface FormatterFunc {
 		@FunctionalInterface
 		interface ResourceFuncNeedsFile<T extends AutoCloseable> {
 			String apply(T resource, String unix, File file) throws Exception;
+
+			default List<Lint> lint(T resource, String content, File file) throws Exception {
+				return List.of();
+			}
 		}
 
 		/** Creates a {@link FormatterFunc.Closeable} which uses the given resource to execute the file-dependent format function. */
@@ -121,13 +136,18 @@ public interface FormatterFunc {
 
 				@Override
 				public String apply(String unix, File file) throws Exception {
-					FormatterStepImpl.checkNotSentinel(file);
+					Formatter.checkNotSentinel(file);
 					return function.apply(resource, unix, file);
 				}
 
 				@Override
 				public String apply(String unix) throws Exception {
 					return apply(unix, Formatter.NO_FILE_SENTINEL);
+				}
+
+				@Override
+				public List<Lint> lint(String content, File file) throws Exception {
+					return function.lint(resource, content, file);
 				}
 			};
 		}
@@ -150,7 +170,7 @@ public interface FormatterFunc {
 
 		@Override
 		default String apply(String unix, File file) throws Exception {
-			FormatterStepImpl.checkNotSentinel(file);
+			Formatter.checkNotSentinel(file);
 			return applyWithFile(unix, file);
 		}
 

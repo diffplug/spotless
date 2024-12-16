@@ -7,7 +7,7 @@ version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
-String VER_SOLSTICE = '1.7.5'
+String VER_SOLSTICE = '1.8.0'
 dependencies {
 	api projects.lib
 	// misc useful utilities
@@ -18,6 +18,10 @@ dependencies {
 	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
 	// for eclipse
 	implementation "dev.equo.ide:solstice:${VER_SOLSTICE}"
+	// the osgi dep is included in solstice, but it has some CVE's against it.
+	// 3.18.500 is the oldest, most-compatible version with no CVE's
+	// https://central.sonatype.com/artifact/org.eclipse.platform/org.eclipse.osgi/versions
+	implementation "org.eclipse.platform:org.eclipse.osgi:3.18.500"
 
 	// testing
 	testImplementation projects.testlib
@@ -95,4 +99,3 @@ spotbugs {
 	// LOW|MEDIUM|DEFAULT|HIGH (low = sensitive to even minor mistakes).
 	reportLevel = com.github.spotbugs.snom.Confidence.valueOf('LOW')
 }
-

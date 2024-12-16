@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 	private final KtfmtFormattingOptions ktfmtFormattingOptions;
 
 	public KtfmtFormatterFunc() {
-		this(KtfmtStyle.DEFAULT, null);
+		this(KtfmtStyle.META, null);
 	}
 
 	public KtfmtFormatterFunc(@Nonnull KtfmtStyle style) {
@@ -40,7 +40,7 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 	}
 
 	public KtfmtFormatterFunc(@Nullable KtfmtFormattingOptions ktfmtFormattingOptions) {
-		this(KtfmtStyle.DEFAULT, ktfmtFormattingOptions);
+		this(KtfmtStyle.META, ktfmtFormattingOptions);
 	}
 
 	public KtfmtFormatterFunc(@Nonnull KtfmtStyle style, @Nullable KtfmtFormattingOptions ktfmtFormattingOptions) {
@@ -54,14 +54,11 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 		return Formatter.format(createFormattingOptions(), input);
 	}
 
-	private FormattingOptions createFormattingOptions() {
+	private FormattingOptions createFormattingOptions() throws Exception {
 		FormattingOptions formattingOptions;
 		switch (style) {
-		case DEFAULT:
-			formattingOptions = new FormattingOptions();
-			break;
-		case DROPBOX:
-			formattingOptions = Formatter.DROPBOX_FORMAT;
+		case META:
+			formattingOptions = Formatter.META_FORMAT;
 			break;
 		case GOOGLE:
 			formattingOptions = Formatter.GOOGLE_FORMAT;
@@ -70,16 +67,16 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 			formattingOptions = Formatter.KOTLINLANG_FORMAT;
 			break;
 		default:
-			throw new IllegalStateException("Unknown formatting option");
+			throw new IllegalStateException("Unknown formatting option " + style);
 		}
 
 		if (ktfmtFormattingOptions != null) {
 			formattingOptions = formattingOptions.copy(
-					formattingOptions.getStyle(),
 					ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
 					ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
 					ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
-					ktfmtFormattingOptions.getRemoveUnusedImport().orElse(formattingOptions.getRemoveUnusedImports()),
+					ktfmtFormattingOptions.getManageTrailingCommas().orElse(formattingOptions.getManageTrailingCommas()),
+					ktfmtFormattingOptions.getRemoveUnusedImports().orElse(formattingOptions.getRemoveUnusedImports()),
 					formattingOptions.getDebuggingPrintOpsAfterFormatting());
 		}
 

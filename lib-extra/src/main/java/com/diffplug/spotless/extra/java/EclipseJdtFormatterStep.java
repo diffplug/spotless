@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 package com.diffplug.spotless.extra.java;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Properties;
 
+import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 
 import dev.equo.solstice.p2.P2Model;
@@ -31,40 +34,75 @@ public final class EclipseJdtFormatterStep {
 	private EclipseJdtFormatterStep() {}
 
 	private static final String NAME = "eclipse jdt formatter";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "4.26").add(17, "4.29");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "4.26").add(17, "4.32");
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
-	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), EclipseJdtFormatterStep::apply) {
-			@Override
-			protected P2Model model(String version) {
-				var model = new P2Model();
-				addPlatformRepo(model, version);
-				model.getInstall().add("org.eclipse.jdt.core");
-				return model;
-			}
-
-			@Override
-			public void setVersion(String version) {
-				if (version.endsWith(".0")) {
-					String newVersion = version.substring(0, version.length() - 2);
-					System.err.println("Recommend replacing '" + version + "' with '" + newVersion + "' for Eclipse JDT");
-					version = newVersion;
-				}
-				super.setVersion(version);
-			}
-		};
+	public static EclipseJdtFormatterStep.Builder createBuilder(Provisioner provisioner) {
+		return new EclipseJdtFormatterStep.Builder(NAME, provisioner, defaultVersion(), EclipseJdtFormatterStep::apply, ImmutableMap.builder());
 	}
 
 	private static FormatterFunc apply(EquoBasedStepBuilder.State state) throws Exception {
 		JVM_SUPPORT.assertFormatterSupported(state.getSemanticVersion());
 		Class<?> formatterClazz = state.getJarState().getClassLoader().loadClass("com.diffplug.spotless.extra.glue.jdt.EclipseJdtFormatterStepImpl");
-		var formatter = formatterClazz.getConstructor(Properties.class).newInstance(state.getPreferences());
+		var formatter = formatterClazz.getConstructor(Properties.class, Map.class).newInstance(state.getPreferences(), state.getStepProperties());
 		var method = formatterClazz.getMethod("format", String.class, File.class);
 		FormatterFunc formatterFunc = (FormatterFunc.NeedsFile) (input, file) -> (String) method.invoke(formatter, input, file);
 		return JVM_SUPPORT.suggestLaterVersionOnError(state.getSemanticVersion(), formatterFunc);
+	}
+
+	public static class Builder extends EquoBasedStepBuilder {
+		private final ImmutableMap.Builder<String, String> stepProperties;
+
+		Builder(
+				String formatterName,
+				Provisioner mavenProvisioner,
+				String defaultVersion,
+				SerializedFunction<State, FormatterFunc> stateToFormatter,
+				ImmutableMap.Builder<String, String> stepProperties) {
+			super(formatterName, mavenProvisioner, defaultVersion, stateToFormatter, stepProperties);
+			this.stepProperties = stepProperties;
+		}
+
+		@Override
+		protected P2Model model(String version) {
+			var model = new P2Model();
+			addPlatformRepo(model, version);
+			model.getInstall().add("org.eclipse.jdt.core");
+			return model;
+		}
+
+		@Override
+		public void setVersion(String version) {
+			if (version.endsWith(".0")) {
+				String newVersion = version.substring(0, version.length() - 2);
+				System.err.println("Recommend replacing '" + version + "' with '" + newVersion + "' for Eclipse JDT");
+				version = newVersion;
+			}
+			super.setVersion(version);
+		}
+
+		public void sortMembersDoNotSortFields(boolean doNotSortFields) {
+			boolean sortAllMembers = !doNotSortFields;
+			stepProperties.put("sp_cleanup.sort_members_all", String.valueOf(sortAllMembers));
+		}
+
+		public void sortMembersEnabled(boolean enabled) {
+			stepProperties.put("sp_cleanup.sort_members", String.valueOf(enabled));
+		}
+
+		public void sortMembersOrder(String order) {
+			stepProperties.put("outlinesortoption", order);
+		}
+
+		public void sortMembersVisibilityOrder(String order) {
+			stepProperties.put("org.eclipse.jdt.ui.visibility.order", order);
+		}
+
+		public void sortMembersVisibilityOrderEnabled(boolean enabled) {
+			stepProperties.put("org.eclipse.jdt.ui.enable.visibility.order", String.valueOf(enabled));
+		}
 	}
 }

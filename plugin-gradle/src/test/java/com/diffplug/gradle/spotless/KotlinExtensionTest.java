@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,11 +54,12 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless {",
 				"    kotlin {",
-				"        ktfmt().dropboxStyle().configure {",
+				"        ktfmt(\"0.50\").dropboxStyle().configure {",
 				"            it.setMaxWidth(4)",
 				"            it.setBlockIndent(4)",
 				"            it.setContinuationIndent(4)",
-				"            it.setRemoveUnusedImport(false)",
+				"            it.setRemoveUnusedImports(false)",
+				"            it.setManageTrailingCommas(false)",
 				"        }",
 				"    }",
 				"}");
@@ -128,6 +129,25 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void testEditorConfigOverrideWithUnsetCodeStyleDoesNotOverrideEditorConfigCodeStyleWithDefault() throws IOException {
+		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    kotlin {",
+				"        ktlint().editorConfigOverride([",
+				"	         ktlint_test_key: true,",
+				"        ])",
+				"    }",
+				"}");
+		checkKtlintOfficialStyle();
+	}
+
+	@Test
 	void testSetEditorConfigCanOverrideEditorConfigFile() throws IOException {
 		setFile(".editorconfig").toResource("kotlin/ktlint/intellij_idea/.editorconfig");
 		setFile("build.gradle").toLines(
@@ -158,7 +178,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"    kotlin {",
 				"        ktlint(\"1.0.1\")",
 				"        .customRuleSets(listOf(",
-				"            \"io.nlopez.compose.rules:ktlint:0.3.3\"",
+				"            \"io.nlopez.compose.rules:ktlint:0.4.16\"",
 				"        ))",
 				"        .editorConfigOverride(mapOf(",
 				"            \"ktlint_function_naming_ignore_when_annotated_with\" to \"Composable\"",

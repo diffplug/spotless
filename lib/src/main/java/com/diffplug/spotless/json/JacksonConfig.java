@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A DTO holding the basic for Jackson-based formatters
@@ -36,7 +37,7 @@ public class JacksonConfig implements Serializable {
 		DEFAULT_FEATURE_TOGGLES = defaultFeatureToggles;
 	}
 
-	protected Map<String, Boolean> featureToToggle = new LinkedHashMap<>(DEFAULT_FEATURE_TOGGLES);
+	protected Map<String, Boolean> featureToToggle = new TreeMap<>(DEFAULT_FEATURE_TOGGLES);
 
 	public Map<String, Boolean> getFeatureToToggle() {
 		return Collections.unmodifiableMap(featureToToggle);

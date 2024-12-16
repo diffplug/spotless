@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,17 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** A step for <a href="https://github.com/vsch/flexmark-java">flexmark-java</a>. */
-public class FlexmarkStep {
-	// prevent direct instantiation
-	private FlexmarkStep() {}
-
+public class FlexmarkStep implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "0.64.8";
-	private static final String NAME = "flexmark-java";
 	private static final String MAVEN_COORDINATE = "com.vladsch.flexmark:flexmark-all:";
+	public static final String NAME = "flexmark-java";
+
+	private final JarState.Promised jarState;
+
+	private FlexmarkStep(JarState.Promised jarState) {
+		this.jarState = jarState;
+	}
 
 	/** Creates a formatter step for the default version. */
 	public static FormatterStep create(Provisioner provisioner) {
@@ -42,8 +46,9 @@ public class FlexmarkStep {
 	public static FormatterStep create(String version, Provisioner provisioner) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner)),
+		return FormatterStep.create(NAME,
+				new FlexmarkStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner))),
+				FlexmarkStep::equalityState,
 				State::createFormat);
 	}
 
@@ -51,11 +56,14 @@ public class FlexmarkStep {
 		return DEFAULT_VERSION;
 	}
 
+	private State equalityState() {
+		return new State(jarState.get());
+	}
+
 	private static class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		/** The jar that contains the formatter. */
-		final JarState jarState;
+		private final JarState jarState;
 
 		State(JarState jarState) {
 			this.jarState = jarState;
@@ -67,6 +75,5 @@ public class FlexmarkStep {
 			final Constructor<?> constructor = formatterFunc.getConstructor();
 			return (FormatterFunc) constructor.newInstance();
 		}
-
 	}
 }

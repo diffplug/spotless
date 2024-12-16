@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
@@ -45,6 +48,14 @@ class FormatterPropertiesTest extends ResourceHarness {
 			RESOURCES_ROOT_DIR + "invalid_xml_properties.xml"
 	};
 
+	private List<String> validPropertiesResources() {
+		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> !it.endsWith(".xml")).collect(Collectors.toList());
+	}
+
+	private List<String> invalidPropertiesResources() {
+		return List.of(INVALID_SETTINGS_RESOURCES).stream().filter(it -> !it.endsWith(".xml")).collect(Collectors.toList());
+	}
+
 	private static final String[] VALID_VALUES = {
 			"string",
 			"true",
@@ -57,6 +68,18 @@ class FormatterPropertiesTest extends ResourceHarness {
 		for (String settingsResource : VALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
 			FormatterProperties preferences = FormatterProperties.from(settingsFile);
+			assertFor(preferences)
+					.containsSpecificValuesOf(settingsFile)
+					.containsCommonValueOf(settingsFile);
+		}
+	}
+
+	@Test
+	void differentPropertyFileTypes_content_properties() throws IOException {
+		for (String settingsResource : validPropertiesResources()) {
+			File settingsFile = createTestFile(settingsResource);
+			String content = Files.readString(settingsFile.toPath());
+			FormatterProperties preferences = FormatterProperties.fromPropertiesContent(List.of(content));
 			assertFor(preferences)
 					.containsSpecificValuesOf(settingsFile)
 					.containsCommonValueOf(settingsFile);
@@ -78,12 +101,48 @@ class FormatterPropertiesTest extends ResourceHarness {
 	}
 
 	@Test
+	void multiplePropertyFiles_content_properties() throws IOException {
+		LinkedList<File> settingsFiles = new LinkedList<>();
+		LinkedList<String> content = new LinkedList<>();
+		for (String settingsResource : validPropertiesResources()) {
+			File settingsFile = createTestFile(settingsResource);
+			content.add(Files.readString(settingsFile.toPath()));
+			settingsFiles.add(settingsFile);
+		}
+		FormatterProperties preferences = FormatterProperties.fromPropertiesContent(content);
+		/* Settings are loaded / overridden in the sequence they are configured. */
+		assertFor(preferences)
+				.containsSpecificValuesOf(settingsFiles)
+				.containsCommonValueOf(settingsFiles.getLast());
+	}
+
+	@Test
 	void invalidPropertyFiles() throws IOException {
 		for (String settingsResource : INVALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
 			boolean exceptionCaught = false;
 			try {
 				FormatterProperties.from(settingsFile);
+			} catch (IllegalArgumentException ex) {
+				exceptionCaught = true;
+				assertThat(ex.getMessage())
+						.as("IllegalArgumentException does not contain absolute path of file '%s'", settingsFile.getName())
+						.contains(settingsFile.getAbsolutePath());
+			}
+			assertThat(exceptionCaught)
+					.as("No IllegalArgumentException thrown when parsing '%s'", settingsFile.getName())
+					.isTrue();
+		}
+	}
+
+	@Test
+	void invalidPropertyFiles_content_properties() throws IOException {
+		for (String settingsResource : invalidPropertiesResources()) {
+			File settingsFile = createTestFile(settingsResource);
+			String content = Files.readString(settingsFile.toPath());
+			boolean exceptionCaught = false;
+			try {
+				FormatterProperties.fromPropertiesContent(List.of(content));
 			} catch (IllegalArgumentException ex) {
 				exceptionCaught = true;
 				assertThat(ex.getMessage())

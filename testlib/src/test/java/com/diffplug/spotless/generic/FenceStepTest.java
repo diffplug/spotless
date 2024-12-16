@@ -16,27 +16,21 @@
 package com.diffplug.spotless.generic;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Objects;
-
-import javax.annotation.Nullable;
 
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
-import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.StepHarnessWithFile;
 
 class FenceStepTest extends ResourceHarness {
 	@Test
 	void single() {
 		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Arrays.asList(createNeverUpToDateSerializable("lowercase", String::toLowerCase)));
-		StepHarness harness = StepHarness.forSteps(fence);
+				.preserveWithin(Arrays.asList(ToCaseStep.lower()));
+		StepHarness harness = StepHarness.forStep(fence);
 		harness.test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -55,8 +49,8 @@ class FenceStepTest extends ResourceHarness {
 	@Test
 	void multiple() {
 		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Arrays.asList(createNeverUpToDateSerializable("lowercase", String::toLowerCase)));
-		StepHarness harness = StepHarness.forSteps(fence);
+				.preserveWithin(Arrays.asList(ToCaseStep.lower()));
+		StepHarness harness = StepHarness.forStep(fence);
 		harness.test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
@@ -89,21 +83,20 @@ class FenceStepTest extends ResourceHarness {
 	@Test
 	void broken() {
 		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
-				.preserveWithin(Arrays.asList(createNeverUpToDateSerializable("uppercase", String::toUpperCase)));
-		StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, fence);
+				.preserveWithin(Arrays.asList(ReplaceStep.create("replace", "spotless:on", "REMOVED")));
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
-		harness.testExceptionMsg(newFile("test"), StringPrinter.buildStringFromLines("A B C",
+		StepHarness.forStep(fence).expectLintsOf(StringPrinter.buildStringFromLines("A B C",
 				"spotless:off",
 				"D E F",
 				"spotless:on",
-				"G H I")).isEqualTo("An intermediate step removed a match of spotless:off spotless:on");
+				"G H I")).toBe("L1-6 fence(fenceRemoved) An intermediate step removed a match of spotless:off spotless:on");
 	}
 
 	@Test
 	void andApply() {
 		FormatterStep fence = FenceStep.named("fence").openClose("<lower>", "</lower>")
-				.applyWithin(Arrays.asList(createNeverUpToDateSerializable("lowercase", String::toLowerCase)));
-		StepHarness.forSteps(fence).test(
+				.applyWithin(Arrays.asList(ToCaseStep.lower()));
+		StepHarness.forStep(fence).test(
 				StringPrinter.buildStringFromLines(
 						"A B C",
 						"<lower>",
@@ -118,39 +111,45 @@ class FenceStepTest extends ResourceHarness {
 						"G H I"));
 	}
 
-	/**
-	 * @param name
-	 *             The name of the formatter step
-	 * @param function
-	 *             The function used by the formatter step
-	 * @return A FormatterStep which will never report that it is up-to-date, because
-	 *         it is not equal to the serialized representation of itself.
-	 */
-	static <T extends FormatterFunc & Serializable> FormatterStep createNeverUpToDateSerializable(
-			String name,
-			T function) {
-		Objects.requireNonNull(function, "function");
-		return new NeverUpToDateSerializable(name, function);
-	}
+	static class ToCaseStep implements FormatterStep {
+		static ToCaseStep upper() {
+			return new ToCaseStep(true);
+		}
 
-	static class NeverUpToDateSerializable<T extends FormatterFunc & Serializable> implements FormatterStep, Serializable {
-		private final String name;
-		private final T formatterFunc;
+		static ToCaseStep lower() {
+			return new ToCaseStep(false);
+		}
 
-		private NeverUpToDateSerializable(String name, T formatterFunc) {
-			this.name = name;
-			this.formatterFunc = formatterFunc;
+		private final boolean uppercase;
+
+		ToCaseStep(boolean uppercase) {
+			this.uppercase = uppercase;
 		}
 
 		@Override
 		public String getName() {
-			return name;
+			return uppercase ? "uppercase" : "lowercase";
 		}
 
-		@Nullable
+		@org.jetbrains.annotations.Nullable
 		@Override
 		public String format(String rawUnix, File file) throws Exception {
-			return formatterFunc.apply(rawUnix, file);
+			return uppercase ? rawUnix.toUpperCase() : rawUnix.toLowerCase();
+		}
+
+		@Override
+		public void close() throws Exception {
+
+		}
+
+		@Override
+		public int hashCode() {
+			return getName().hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj instanceof ToCaseStep && getName().equals(((ToCaseStep) obj).getName());
 		}
 	}
 }

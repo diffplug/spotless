@@ -23,15 +23,31 @@ import com.diffplug.spotless.*;
 
 /** Wraps up <a href="https://github.com/palantir/palantir-java-format">palantir-java-format</a> fork of
  * <a href="https://github.com/google/google-java-format">google-java-format</a> as a FormatterStep. */
-public class PalantirJavaFormatStep {
-	// prevent direct instantiation
-	private PalantirJavaFormatStep() {}
-
+public class PalantirJavaFormatStep implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private static final boolean DEFAULT_FORMAT_JAVADOC = false;
 	private static final String DEFAULT_STYLE = "PALANTIR";
 	private static final String NAME = "palantir-java-format";
 	public static final String MAVEN_COORDINATE = "com.palantir.javaformat:palantir-java-format:";
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.1.0").add(11, "2.28.0").add(21, "2.39.0");
+
+	/** The jar that contains the formatter. */
+	private final JarState.Promised jarState;
+	/** Version of the formatter jar. */
+	private final String formatterVersion;
+	private final String style;
+	/** Whether to format Java docs. */
+	private final boolean formatJavadoc;
+
+	private PalantirJavaFormatStep(JarState.Promised jarState,
+			String formatterVersion,
+			String style,
+			boolean formatJavadoc) {
+		this.jarState = jarState;
+		this.formatterVersion = formatterVersion;
+		this.style = style;
+		this.formatJavadoc = formatJavadoc;
+	}
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
 	public static FormatterStep create(Provisioner provisioner) {
@@ -60,8 +76,9 @@ public class PalantirJavaFormatStep {
 		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
 
-		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + version, provisioner), version, style, formatJavadoc),
+		return FormatterStep.create(NAME,
+				new PalantirJavaFormatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner)), version, style, formatJavadoc),
+				PalantirJavaFormatStep::equalityState,
 				State::createFormat);
 	}
 
@@ -80,15 +97,16 @@ public class PalantirJavaFormatStep {
 		return DEFAULT_FORMAT_JAVADOC;
 	}
 
+	private State equalityState() {
+		return new State(jarState.get(), formatterVersion, style, formatJavadoc);
+	}
+
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		/** The jar that contains the formatter. */
 		private final JarState jarState;
-		/** Version of the formatter jar. */
 		private final String formatterVersion;
 		private final String style;
-		/** Whether to format Java docs. */
 		private final boolean formatJavadoc;
 
 		State(JarState jarState, String formatterVersion, String style, boolean formatJavadoc) {

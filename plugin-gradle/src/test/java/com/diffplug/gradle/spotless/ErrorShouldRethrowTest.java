@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
-import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.common.base.CharMatcher;
-import com.diffplug.common.base.Splitter;
-import com.diffplug.spotless.LineEnding;
+import com.diffplug.selfie.Selfie;
+import com.diffplug.selfie.StringSelfie;
 
 /** Tests the desired behavior from https://github.com/diffplug/spotless/issues/46. */
 class ErrorShouldRethrowTest extends GradleIntegrationHarness {
@@ -41,9 +38,9 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 		lines.add("    format 'misc', {");
 		lines.add("        lineEndings 'UNIX'");
 		lines.add("        target file('README.md')");
-		lines.add("        custom 'no swearing', {");
+		lines.add("        custom 'noSwearingStep', {");
 		lines.add("             if (it.toLowerCase(Locale.ROOT).contains('fubar')) {");
-		lines.add("                 throw new RuntimeException('No swearing!');");
+		lines.add("                 throw com.diffplug.spotless.Lint.atUndefinedLine('swearing', 'No swearing!').shortcut();");
 		lines.add("             }");
 		lines.add("        }");
 		lines.addAll(Arrays.asList(toInsert));
@@ -56,7 +53,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fun.");
-		runWithSuccess("> Task :spotlessMisc");
+		expectSuccess();
 	}
 
 	@Test
@@ -65,11 +62,16 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithFailure(
-				"> Task :spotlessMisc FAILED\n" +
-						"Step 'no swearing' found problem in 'README.md':\n" +
-						"No swearing!\n" +
-						"java.lang.RuntimeException: No swearing!");
+		expectFailureAndConsoleToBe().toBe("> Task :spotlessMisc",
+				"> Task :spotlessMiscCheck FAILED",
+				"",
+				"FAILURE: Build failed with an exception.",
+				"",
+				"* What went wrong:",
+				"Execution failed for task ':spotlessMiscCheck'.",
+				"> There were 1 lint error(s), they must be fixed or suppressed.",
+				"  README.md:LINE_UNDEFINED noSwearingStep(swearing) No swearing!",
+				"  Resolve these lints or suppress with `suppressLintsFor`");
 	}
 
 	@Test
@@ -79,18 +81,17 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"    enforceCheck false",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :processResources NO-SOURCE");
+		expectSuccess();
 	}
 
 	@Test
 	void unlessExemptedByStep() throws Exception {
 		writeBuild(
-				"        ignoreErrorForStep 'no swearing'",
+				"        ignoreErrorForStep 'noSwearingStep'",
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :spotlessMisc\n" +
-				"Unable to apply step 'no swearing' to 'README.md'");
+		expectSuccess();
 	}
 
 	@Test
@@ -100,8 +101,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithSuccess("> Task :spotlessMisc\n" +
-				"Unable to apply step 'no swearing' to 'README.md'");
+		expectSuccess();
 	}
 
 	@Test
@@ -112,33 +112,29 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 				"    } // format",
 				"}     // spotless");
 		setFile("README.md").toContent("This code is fubar.");
-		runWithFailure("> Task :spotlessMisc FAILED\n" +
-				"Step 'no swearing' found problem in 'README.md':\n" +
-				"No swearing!\n" +
-				"java.lang.RuntimeException: No swearing!");
+		expectFailureAndConsoleToBe().toBe("> Task :spotlessMisc",
+				"> Task :spotlessMiscCheck FAILED",
+				"",
+				"FAILURE: Build failed with an exception.",
+				"",
+				"* What went wrong:",
+				"Execution failed for task ':spotlessMiscCheck'.",
+				"> There were 1 lint error(s), they must be fixed or suppressed.",
+				"  README.md:LINE_UNDEFINED noSwearingStep(swearing) No swearing!",
+				"  Resolve these lints or suppress with `suppressLintsFor`");
 	}
 
-	private void runWithSuccess(String expectedToStartWith) throws Exception {
-		BuildResult result = gradleRunner().withArguments("check").build();
-		assertResultAndMessages(result, TaskOutcome.SUCCESS, expectedToStartWith);
+	private void expectSuccess() throws Exception {
+		gradleRunner().withArguments("check", "--stacktrace").build();
 	}
 
-	private void runWithFailure(String expectedToStartWith) throws Exception {
+	private StringSelfie expectFailureAndConsoleToBe() throws Exception {
 		BuildResult result = gradleRunner().withArguments("check").buildAndFail();
-		assertResultAndMessages(result, TaskOutcome.FAILED, expectedToStartWith);
-	}
-
-	private void assertResultAndMessages(BuildResult result, TaskOutcome outcome, String expectedToStartWith) {
 		String output = result.getOutput();
 		int register = output.indexOf(":spotlessInternalRegisterDependencies");
 		int firstNewlineAfterThat = output.indexOf('\n', register + 1);
-		String useThisToMatch = output.substring(firstNewlineAfterThat);
-
-		int numNewlines = CharMatcher.is('\n').countIn(expectedToStartWith);
-		List<String> actualLines = Splitter.on('\n').splitToList(LineEnding.toUnix(useThisToMatch.trim()));
-		String actualStart = String.join("\n", actualLines.subList(0, numNewlines + 1));
-		Assertions.assertThat(actualStart).isEqualTo(expectedToStartWith);
-		Assertions.assertThat(outcomes(result, outcome).size() + outcomes(result, TaskOutcome.UP_TO_DATE).size() + outcomes(result, TaskOutcome.NO_SOURCE).size())
-				.isEqualTo(outcomes(result).size());
+		int firstTry = output.indexOf("\n* Try:");
+		String useThisToMatch = output.substring(firstNewlineAfterThat, firstTry).trim();
+		return Selfie.expectSelfie(useThisToMatch);
 	}
 }

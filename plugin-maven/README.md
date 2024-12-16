@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![MavenCentral](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.43.0-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.43.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.44.0.BETA4-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.44.0.BETA4/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -55,6 +55,8 @@ user@machine repo % mvn spotless:check
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
   - [Go](#go)
+  - [RDF](#RDF)
+  - [Protobuf](#protobuf) ([buf](#buf))
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -68,7 +70,7 @@ user@machine repo % mvn spotless:check
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `mvn spotless:apply` will do?](#how-do-i-preview-what-mvn-spotlessapply-will-do)
   - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
-  - [Example configurations (from real-world projects)](#examples)
+  - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
 
 ***Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.***
 
@@ -232,7 +234,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <googleJavaFormat>
-  <version>1.8</version>                      <!-- optional, 1.8 is minimum supported version -->
+  <version>1.8</version>                      <!-- optional, 1.8 is the minimum supported version for Java 11 -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
   <formatJavadoc>false</formatJavadoc>        <!-- optional -->
@@ -255,14 +257,49 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ### eclipse jdt
 
-[homepage](https://www.eclipse.org/downloads/packages/). [compatible versions](https://github.com/diffplug/spotless/tree/main/lib-extra/src/main/resources/com/diffplug/spotless/extra/eclipse_jdt_formatter). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/Eclipse.java). See [here](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the config file mentioned below.
+[homepage](https://download.eclipse.org/eclipse/downloads/). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/Eclipse.java). See [here](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the config file mentioned below.
 
 ```xml
 <eclipse>
-  <version>4.26</version>                     <!-- optional version of Eclipse Formatter -->
-  <file>${project.basedir}/eclipse-formatter.xml</file> <!-- optional -->
+  <!-- Optional: Specify the Eclipse JDT version to use. -->
+  <version>4.26</version>
+  <!-- Optional: Specify a file which contains all formatting options. -->
+  <file>${project.basedir}/eclipse-formatter.xml</file>
 </eclipse>
 ```
+
+#### Sort Members
+
+Not only can you format your code with Eclipse JDT, but you can also sort the members as you know it from Eclipse IDE.
+This ensures that the methods are always in sorted order (and thus reduces the likelihood of collisions in a version
+control system). It is turned off by default, but you might want to consider enabling it when setting coding standards
+for a project.
+
+The format to specify the sort order follows the `outlinesortoption` and `org.eclipse.jdt.ui.visibility.order`
+properties that can be found in the workspace folder of your Eclipse IDE. You can look at the
+file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in your workspace directory.
+
+```xml
+<eclipse>
+  <!-- Optional: Enable the Sort Members feature globally. (default: false) -->
+  <sortMembersEnabled>true</sortMembersEnabled>
+  <!-- Optional: Specify the sort order of the member categories. (default: T,SF,SI,SM,F,I,C,M)
+       SF,SI,SM,F,I,C,M,T = Static Fields, Static Initializers, Static Methods, Fields, Initializers, Constructors, Methods, (Nested) Types -->
+  <sortMembersOrder>SF,SI,SM,F,I,C,M,T</sortMembersOrder>
+  <!-- Optional: Enable the reordering of fields, enum constants, and initializers. (default: true) -->
+  <sortMembersDoNotSortFields>false</sortMembersDoNotSortFields>
+  <!-- Optional: Enable reordering of members of the same category by the visibility within the category. (default: false) -->
+  <sortMembersVisibilityOrderEnabled>true</sortMembersVisibilityOrderEnabled>
+  <!-- Optional: Specify the ordering of members of the same category by the visibility within the category. (default: B,V,R,D)
+       B,R,D,V = Public, Protected, Package, Private -->
+  <sortMembersVisibilityOrder>B,R,D,V</sortMembersVisibilityOrder>
+</eclipse>
+```
+
+You can enable/disable the globally defined sort properties on file level by adding the following comments:
+- `// @SortMembers:enabled=false` - disable the Sort Members feature for this file
+- `// @SortMembers:doNotSortFields=true` - disable the sorting of static and instance fields
+- `// @SortMembers:sortByVisibility=false` - don't sort members by its visibility modifier
 
 ### formatAnnotations
 
@@ -392,12 +429,17 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ### ktfmt
 
-[homepage](https://github.com/facebookincubator/ktfmt). [changelog](https://github.com/facebookincubator/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
+[homepage](https://github.com/facebook/ktfmt). [changelog](https://github.com/facebook/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
 
 ```xml
 <ktfmt>
-  <version>0.39</version> <!-- optional -->
-  <style>DEFAULT</style> <!-- optional, other options are DROPBOX, GOOGLE and KOTLINLANG -->
+  <version>0.51</version> <!-- optional -->
+  <style>KOTLINLANG</style> <!-- optional, options are META (default), GOOGLE and KOTLINLANG -->
+  <maxWidth>120</maxWidth> <!-- optional -->
+  <blockIndent>4</blockIndent> <!-- optional -->
+  <continuationIndent>8</continuationIndent> <!-- optional -->
+  <removeUnusedImports>false</removeUnusedImports> <!-- optional -->
+  <manageTrailingCommas>true</manageTrailingCommas> <!-- optional -->
 </ktfmt>
 ```
 
@@ -419,9 +461,11 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
   <editorConfigOverride> <!-- optional -->
     <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>
     <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>
+    <!-- intellij_idea is the default style we preset in Spotless, you can override it referring to https://pinterest.github.io/ktlint/latest/rules/code-styles. -->
+    <ktlint_code_style>intellij_idea</ktlint_code_style>
   </editorConfigOverride>
   <customRuleSets> <!-- optional -->
-    <value>io.nlopez.compose.rules:ktlint:0.3.3</value>
+    <value>io.nlopez.compose.rules:ktlint:0.4.16</value>
   </customRuleSets>
 </ktlint>
 ```
@@ -653,25 +697,31 @@ All configuration settings are optional, they are described in detail [here](htt
 
   <lineSeparator>${line.separator}</lineSeparator> <!-- line separator to use -->
 
-  <expandEmptyElements>true</expandEmptyElements> <!-- Should empty elements be expanded-->
+  <expandEmptyElements>true</expandEmptyElements> <!-- Should empty elements be expanded -->
 
-  <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement> <!-- Should a space be added inside self-closing elements-->
+  <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement> <!-- Should a space be added inside self-closing elements -->
 
   <keepBlankLines>true</keepBlankLines> <!-- Keep empty lines -->
+
+  <endWithNewline>true</endWithNewline> <!-- Whether sorted pom ends with a newline -->
 
   <nrOfIndentSpace>2</nrOfIndentSpace> <!-- Indentation -->
 
   <indentBlankLines>false</indentBlankLines> <!-- Should empty lines be indented -->
 
-  <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indended -->
+  <indentSchemaLocation>false</indentSchemaLocation> <!-- Should schema locations be indented -->
 
-  <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles-->
+  <indentAttribute></indentAttribute> <!-- Should the xml attributes be indented -->
+
+  <predefinedSortOrder>recommended_2008_06</predefinedSortOrder> <!-- Sort order of elements: https://github.com/Ekryd/sortpom/wiki/PredefinedSortOrderProfiles -->
 
   <sortOrderFile></sortOrderFile> <!-- Custom sort order of elements: https://raw.githubusercontent.com/Ekryd/sortpom/master/sorter/src/main/resources/custom_1.xml -->
 
-  <sortDependencies></sortDependencies> <!-- Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+  <sortDependencies></sortDependencies> <!-- Sort dependencies: https://github.com/Ekryd/sortpom/wiki/SortDependencies -->
 
-  <sortDependencyExclusions></sortDependencyExclusions> <!-- Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies-->
+  <sortDependencyManagement></sortDependencyManagement> <!-- Sort dependency management: https://github.com/Ekryd/sortpom/wiki/SortDependencies -->
+
+  <sortDependencyExclusions></sortDependencyExclusions> <!-- Sort dependency exclusions: https://github.com/Ekryd/sortpom/wiki/SortDependencies -->
 
   <sortPlugins></sortPlugins> <!-- Sort plugins: https://github.com/Ekryd/sortpom/wiki/SortPlugins -->
 
@@ -1045,7 +1095,7 @@ When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.edit
 
 ```xml
 <shfmt>
-  <version>3.7.0</version>                         <!-- optional: Custom version of 'mvdan/sh' -->
+  <version>3.8.0</version>                         <!-- optional: Custom version of 'mvdan/sh' -->
   <pathToExe>/opt/homebrew/bin/shfmt</pathToExe>   <!-- optional: if shfmt is not on your path, you must specify its location manually -->
 </shfmt>
 ```
@@ -1074,7 +1124,7 @@ Uses a Gherkin pretty-printer that optionally allows configuring the number of s
 
 ```xml
 <gherkinUtils>
-  <version>8.0.2</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
+  <version>9.0.0</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
 </gherkinUtils>
 ```
 
@@ -1104,6 +1154,118 @@ Standard Go formatter, part of Go distribution.
   <goExecutablePath>/opt/sdks/go1.25.1/bin/go</goExecutablePath>
 </gofmt>
 ```
+
+## RDF
+
+### Generic Options
+
+List of generic configuration `parameters (type/default)` 
+
+* `failOnWarning (boolean/true)`: The Jena parser produces three levels of problem reports: warning, error, and fatal. By default, 
+the build fails for any of them. You can ignore warnings using this parameter. They will still be logged in the plugin's 
+output.
+* `verify (boolean/true)`: If `true`, the content before and after formatting is parsed to an RDF model and compared for isomorphicity.   
+* `turtleFormatterVersion (string|RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION)`: the version of turtle-formatter to use (see below).
+
+### Supported RDF formats: only TTL (at the moment)
+
+Formatting TTL is done using [turtle-formatter](https://github.com/atextor/turtle-formatter),
+which is highly configurable (have a look at the [Style Documentation](https://github.com/atextor/turtle-formatter?tab=readme-ov-file#customizing-the-style)) 
+and will handle blank nodes the way you'd hope.
+
+The style options can be configured via spotless. Wherever the style wants a URI (for example, for the `predicateOrder`, you can 
+use the abbreviated form if it is a `FormattingStyle.KnownPrefix` (currently `rdf`, `rdfs`, `xsd`, `owl`, `dcterms`)
+Error messages will give you hints. To configure the TTL formatting style, pass the configuration parameters under `<turtle>`
+
+### Examples
+Minimal:
+```xml
+<configuration>
+  <rdf>
+    <includes>
+      <include>**/*.ttl</include>
+    </includes>
+    <format/>
+  </rdf>
+</configuration>
+```
+Configuring some generic and TTL options:
+```xml
+<configuration>
+  <rdf>
+    <includes>
+      <include>**/*.ttl</include>
+    </includes>
+    <format>
+      <failOnWarning>false</failOnWarning>
+      <verify>false</verify>
+      <turtleFormatterVersion>1.2.13</turtleFormatterVersion>
+      <turtle>
+        <alignPrefixes>RIGHT</alignPrefixes>
+        <enableDoubleFormatting>true</enableDoubleFormatting>
+      </turtle>
+    </format>
+  </rdf>
+</configuration>
+```
+### Libraries and versions
+
+RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version that
+[turtle-formatter](https://github.com/atextor/turtle-formatter) depends on (not necessarily the latest).
+
+## Protobuf
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/protobuf/Protobuf.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/protobuf).
+```xml
+<configuration>
+  <includes>  <!-- optiona: default is **/*.proto -->
+    <include>proto/*.proto<include>
+  <includes>
+
+  <excludes>  <!-- optiona: if you want to ignore auto generated protos -->
+    <include>target/**/<include>
+  <excludes>
+  
+  <protobuf>
+    <buf />  <!-- has its own section below -->
+  </css>
+</configuration>
+```
+
+### buf
+
+[homepage](https://buf.build/) [buf repo](https://github.com/bufbuild/buf).
+```xml
+ <buf>
+    <version>1.44.0</version>    <!-- optional -->
+    <pathToExe>/path/to/buf</pathToExe>  <!-- optional: if buf isn't in your path -->
+ </buf>        
+```
+
+
+## CSS
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/css/Css.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/css).
+
+```xml
+<configuration>
+  <css>
+    <!-- These are the defaults, you can override if you want -->
+    <includes>
+      <include>src/main/css/**/*.css</include>
+      <include>src/test/css/**/*.css</include>
+    </includes>
+
+    <biome />          <!-- has its own section below -->
+
+    <licenseHeader>
+      <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
+    </licenseHeader>
+  </css>
+</configuration>
+```
+
+Note regarding biome: Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
 
 ## Prettier
 
@@ -1324,14 +1486,10 @@ a formatter that for the frontend written in Rust, which has a native binary, do
 is pretty fast. It can currently format JavaScript, TypeScript, JSX, and JSON, and may support
 [more frontend languages](https://biomejs.dev/internals/language-support/) such as CSS in the future.
 
-Note: Biome [was formerly called Rome](https://biomejs.dev/blog/annoucing-biome/). Configurations with
-the old `<rome>` tag and `rome(...)` function are still supported for the time being. This will be removed
-in a future version, you should migrate to the new `<biome>` tag or `biome(...)` function. The configuration
-remains the same, you only need to update the version. If you are using a custom `rome.json` configuration file,
-you need to rename it to `biome.json`.
-
 You can use Biome in any language-specific format for supported languages, but
 usually you will be creating a generic format.
+
+Note regarding CSS: Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
 
 ```xml
 <configuration>
@@ -1348,7 +1506,7 @@ usually you will be creating a generic format.
         <!-- (optional) Path to the directory with the biome.json conig file -->
         <configPath>${project.basedir}/path/to/config/dir</configPath>
 
-        <!-- (optional) Biome will auto detect the language based on the file extension. -->
+        <!-- (optional) Biome will auto-detect the language based on the file extension. -->
         <!-- See below for possible values. -->
         <language>ts</language>
       </prettier>
@@ -1498,7 +1656,7 @@ The following languages are currently recognized:
 
 <jsr223> <!-- specify replacements using JSR223 scripting -->
   <name>Greetings to Mars</name>
-  <dependency>org.codehaus.groovy:groovy-jsr223:3.0.9</dependency> <!-- optional, maven dependency, containing the jsr223 compatible scripting engine-->
+  <dependency>org.codehaus.groovy:groovy-jsr223:3.0.9</dependency> <!-- optional, maven dependency, containing the jsr223 compatible scripting engine -->
   <engine>groovy</engine> <!-- nashorn is provided by JDK 8-14, other engines can be loaded from the given dependency -->
   <script>source.replace('World','Mars');</script> <!-- the source variable contains the unformatted code, the returned value of the script is the formatted code -->
 </jsr223>
@@ -1506,7 +1664,7 @@ The following languages are currently recognized:
 <nativeCmd> <!-- run a native binary -->
   <name>Greetings to Mars from sed</name>
   <pathToExe>/usr/bin/sed</pathToExe> <!-- path to the binary, unformatted code is send via StdIn, formatted code is expected on StdOut -->
-  <arguments> <!-- optional, list with arguments for the binary call-->
+  <arguments> <!-- optional, list with arguments for the binary call -->
     <argument>s/World/Mars/g</argument>
   </arguments>
 </nativeCmd>
@@ -1661,9 +1819,15 @@ Spotless uses UTF-8 by default, but you can use [any encoding which Java support
 </configuration>
 ```
 
-Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports four line ending modes: `UNIX`, `WINDOWS`, `MAC_CLASSIC`, `PLATFORM_NATIVE`, `GIT_ATTRIBUTES`, and `GIT_ATTRIBUTES_FAST_ALLSAME`.  The default value is `GIT_ATTRIBUTES_FAST_ALLSAME`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time. `FAST_ALLSAME` just means that Spotless can assume that every file being formatted has the same line endings ([more info](https://github.com/diffplug/spotless/pull/1838)).
+Line endings can also be set globally or per-format using the `lineEndings` property.  Spotless supports
 
-You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/).  Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
+- constant modes (`UNIX`, `WINDOWS`, `MAC_CLASSIC`)
+- simple modes (`PLATFORM_NATIVE`, `PRESERVE`)
+- and git-aware modes (`GIT_ATTRIBUTES`, `GIT_ATTRIBUTES_FAST_ALLSAME`)
+
+The default value is `GIT_ATTRIBUTES_FAST_ALLSAME`, and *we highly recommend that you* ***do not change*** *this value*.  Git has opinions about line endings, and if Spotless and git disagree, then you're going to have a bad time. `FAST_ALLSAME` just means that Spotless can assume that every file being formatted has the same line endings ([more info](https://github.com/diffplug/spotless/pull/1838)).
+
+You can easily set the line endings of different files using [a `.gitattributes` file](https://help.github.com/articles/dealing-with-line-endings/). Here's an example `.gitattributes` which sets all files to unix newlines: `* text eol=lf`.
 
 <a name="enforceCheck"></a>
 
@@ -1693,6 +1857,28 @@ cmd> mvn spotless:apply -DspotlessFiles=my/file/pattern.java,more/generic/.*-pat
 ```
 
 The patterns are matched using `String#matches(String)` against the absolute file path.
+
+## Does Spotless support incremental builds in Eclipse?
+
+Spotless comes with [m2e](https://eclipse.dev/m2e/) support. However, by default its execution is skipped in incremental builds as most developers want to fix all issues in one go via explicit `mvn spotless:apply` prior to raising a PR and don't want to be bothered with Spotless issues during working on the source code in the IDE.
+To enable it use the following parameter
+
+```
+<configuration>
+    <m2eEnableForIncrementalBuild>true</m2eEnableForIncrementalBuild><!-- this is false by default -->
+</configuration>
+```
+
+In addition Eclipse problem markers are being emitted for goal `check`. By default they have the severity `WARNING`.
+You can adjust this with 
+
+```
+<configuration>
+    <m2eIncrementalBuildMessageSeverity>ERROR</m2eIncrementalBuildMessageSeverity><!-- WARNING or ERROR -->
+</configuration>
+```
+
+Note that for Incremental build support the goals have to be bound to a phase prior to `test`.
 
 <a name="examples"></a>
 

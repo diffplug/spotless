@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,6 +36,7 @@ import com.pinterest.ktlint.rule.engine.api.LintError;
 import com.pinterest.ktlint.rule.engine.core.api.Rule;
 import com.pinterest.ktlint.rule.engine.core.api.RuleId;
 import com.pinterest.ktlint.rule.engine.core.api.RuleProvider;
+import com.pinterest.ktlint.rule.engine.core.api.RuleProviderKt;
 import com.pinterest.ktlint.rule.engine.core.api.RuleSetId;
 import com.pinterest.ktlint.rule.engine.core.api.editorconfig.CodeStyleEditorConfigPropertyKt;
 import com.pinterest.ktlint.rule.engine.core.api.editorconfig.EditorConfigProperty;
@@ -83,6 +82,7 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 
 	@Override
 	public String format(
+			String unix,
 			Path path,
 			Path editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap) {
@@ -93,34 +93,33 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 				.flatMap(loader -> loader.get().getRuleProviders().stream())
 				.collect(Collectors.toUnmodifiableSet());
 
+		EditorConfigDefaults editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath, RuleProviderKt.propertyTypes(allRuleProviders));
 		EditorConfigOverride editorConfigOverride;
 		if (editorConfigOverrideMap.isEmpty()) {
 			editorConfigOverride = EditorConfigOverride.Companion.getEMPTY_EDITOR_CONFIG_OVERRIDE();
 		} else {
-			editorConfigOverride = createEditorConfigOverride(allRuleProviders.stream().map(
-					RuleProvider::createNewRuleInstance).collect(Collectors.toList()),
+			editorConfigOverride = createEditorConfigOverride(
+					editorConfig,
+					allRuleProviders.stream().map(RuleProvider::createNewRuleInstance).collect(Collectors.toList()),
 					editorConfigOverrideMap);
 		}
-		EditorConfigDefaults editorConfig;
-		if (editorConfigPath == null || !Files.exists(editorConfigPath)) {
-			editorConfig = EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS();
-		} else {
-			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath, Collections.emptySet());
-		}
 
+		// create Code and then set the content to match previous steps in the Spotless pipeline
+		Code code = Code.Companion.fromPath(path);
+		KtLintCompatAdapter.setCodeContent(code, unix);
 		return new KtLintRuleEngine(
 				allRuleProviders,
 				editorConfig,
 				editorConfigOverride,
 				false,
 				path.getFileSystem())
-				.format(Code.Companion.fromPath(path), formatterCallback);
+				.format(code, formatterCallback);
 	}
 
 	/**
 	 * Create EditorConfigOverride from user provided parameters.
 	 */
-	private static EditorConfigOverride createEditorConfigOverride(final List<Rule> rules, Map<String, Object> editorConfigOverrideMap) {
+	private static EditorConfigOverride createEditorConfigOverride(final EditorConfigDefaults editorConfig, final List<Rule> rules, Map<String, Object> editorConfigOverrideMap) {
 		// Get properties from rules in the rule sets
 		Stream<EditorConfigProperty<?>> ruleProperties = rules.stream()
 				.flatMap(rule -> rule.getUsesEditorConfigProperties().stream());
@@ -132,7 +131,9 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 				.collect(Collectors.toMap(EditorConfigProperty::getName, property -> property));
 
 		// The default style had been changed from intellij_idea to ktlint_official in version 1.0.0
-		if (!editorConfigOverrideMap.containsKey("ktlint_code_style")) {
+		boolean isCodeStyleDefinedInEditorConfig = editorConfig.getValue().getSections().stream()
+				.anyMatch(section -> section.getProperties().containsKey("ktlint_code_style"));
+		if (!isCodeStyleDefinedInEditorConfig && !editorConfigOverrideMap.containsKey("ktlint_code_style")) {
 			editorConfigOverrideMap.put("ktlint_code_style", "intellij_idea");
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,26 +20,40 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import java.io.File;
 import java.io.IOException;
 
+import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
-class NativeCmdIntegrationTest extends GradleIntegrationHarness {
+interface NativeCmdIntegrationTest {
 	@Test
-	void nativeCmd() throws IOException {
+	default void nativeCmd() throws IOException {
 		// This will only work if /usr/bin/sed is available
 		assumeThat(new File("/usr/bin/sed")).exists();
 
-		setFile("build.gradle").toLines(
+		GradleIntegrationHarness harness = (GradleIntegrationHarness) this;
+		harness.setFile("build.gradle").toLines(
 				"plugins {",
 				"  id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
+				"  lineEndings 'UNIX'",
 				"  format 'test', {",
-				"    target '**/*.txt'",
+				"    target '*.txt'",
 				"    nativeCmd('sed', '/usr/bin/sed', ['s/placeholder/replaced/g'])",
 				"  }",
 				"}");
-		setFile("test.txt").toResource("native_cmd/dirty.txt");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("test.txt").sameAsResource("native_cmd/clean.txt");
+		harness.setFile("test.txt").toResource("native_cmd/dirty.txt");
+		harness.gradleRunner().withArguments("spotlessApply", "--stacktrace").build();
+		harness.assertFile("test.txt").sameAsResource("native_cmd/clean.txt");
+	}
+
+	class NativeCmdWithoutConfigCacheTest extends GradleIntegrationHarness implements NativeCmdIntegrationTest {}
+
+	class NativeCmdWithConfigCacheTest extends GradleIntegrationHarness implements NativeCmdIntegrationTest {
+		@Override
+		public GradleRunner gradleRunner() throws IOException {
+			setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
+			setFile("gradle.properties").toContent("org.gradle.configuration-cache=true");
+			return super.gradleRunner().withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version);
+		}
 	}
 }

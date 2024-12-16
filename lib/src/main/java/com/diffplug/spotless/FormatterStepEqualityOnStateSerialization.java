@@ -18,6 +18,7 @@ package com.diffplug.spotless;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -49,6 +50,14 @@ abstract class FormatterStepEqualityOnStateSerialization<State extends Serializa
 	}
 
 	@Override
+	public List<Lint> lint(String content, File file) throws Exception {
+		if (formatter == null) {
+			formatter = stateToFormatter(state());
+		}
+		return formatter.lint(content, file);
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (o == null) {
 			return false;
@@ -64,7 +73,8 @@ abstract class FormatterStepEqualityOnStateSerialization<State extends Serializa
 		return Arrays.hashCode(serializedState());
 	}
 
-	void cleanupFormatterFunc() {
+	@Override
+	public void close() {
 		if (formatter instanceof FormatterFunc.Closeable) {
 			((FormatterFunc.Closeable) formatter).close();
 			formatter = null;

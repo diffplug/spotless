@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -64,11 +65,19 @@ public abstract class BaseGroovyExtension extends FormatExtension {
 			extension.addStep(builder.build());
 		}
 
-		public void configFile(Object... configFiles) {
+		public GrEclipseConfig configFile(Object... configFiles) {
 			requireElementsNonNull(configFiles);
 			Project project = extension.getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			extension.replaceStep(builder.build());
+			return this;
+		}
+
+		public GrEclipseConfig configProperties(String... configs) {
+			requireElementsNonNull(configs);
+			builder.setPropertyPreferences(List.of(configs));
+			extension.replaceStep(builder.build());
+			return this;
 		}
 
 		public GrEclipseConfig withP2Mirrors(Map<String, String> mirrors) {

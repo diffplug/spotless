@@ -22,4 +22,22 @@ public interface SerializedFunction<T, R> extends Serializable, ThrowingEx.Funct
 	static <T> SerializedFunction<T, T> identity() {
 		return t -> t;
 	}
+
+	static <T, R> SerializedFunction<T, R> alwaysReturns(R value) {
+		return new AlwaysReturns(value);
+	}
+
+	class AlwaysReturns<T, R> implements SerializedFunction<T, R> {
+		private static final long serialVersionUID = 1L;
+		private final R value;
+
+		AlwaysReturns(R value) {
+			this.value = value;
+		}
+
+		@Override
+		public R apply(T t) {
+			return value;
+		}
+	}
 }

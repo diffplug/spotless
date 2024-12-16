@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.ProcessRunner;
@@ -56,6 +55,17 @@ class KtlintTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	void testEditorConfigOverrideWithUnsetCodeStyleDoesNotOverrideEditorConfigCodeStyleWithDefault() throws Exception {
+		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
+		writePomWithKotlinSteps("<ktlint>\n" +
+				"  <editorConfigOverride>\n" +
+				"    <ktlint_test_key>true</ktlint_test_key>\n" +
+				"  </editorConfigOverride>\n" +
+				"</ktlint>");
+		checkKtlintOfficialStyle();
+	}
+
+	@Test
 	void testSetEditorConfigCanOverrideEditorConfigFile() throws Exception {
 		setFile(".editorconfig").toResource("kotlin/ktlint/intellij_idea/.editorconfig");
 		writePomWithKotlinSteps("<ktlint>\n" +
@@ -70,7 +80,7 @@ class KtlintTest extends MavenIntegrationHarness {
 	void testWithCustomRuleSetApply() throws Exception {
 		writePomWithKotlinSteps("<ktlint>\n" +
 				"  <customRuleSets>\n" +
-				"    <value>io.nlopez.compose.rules:ktlint:0.3.3</value>\n" +
+				"    <value>io.nlopez.compose.rules:ktlint:0.4.16</value>\n" +
 				"  </customRuleSets>\n" +
 				"  <editorConfigOverride>\n" +
 				"    <ktlint_function_naming_ignore_when_annotated_with>Composable</ktlint_function_naming_ignore_when_annotated_with>\n" +
@@ -78,7 +88,7 @@ class KtlintTest extends MavenIntegrationHarness {
 				"</ktlint>");
 		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/listScreen.dirty");
 		ProcessRunner.Result result = mavenRunner().withArguments("spotless:check").runHasError();
-		assertTrue(result.toString().contains("Composable functions that return Unit should start with an uppercase letter."));
+		Assertions.assertThat(result.toString()).contains("Composable functions that return Unit should start with an uppercase letter.");
 	}
 
 	private void checkKtlintOfficialStyle() throws Exception {

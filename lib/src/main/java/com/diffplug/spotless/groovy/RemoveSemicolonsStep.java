@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,8 @@ import com.diffplug.spotless.FormatterStep;
  *
  * @author Jose Luis Badano
  */
-public final class RemoveSemicolonsStep {
+public final class RemoveSemicolonsStep implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private static final String NAME = "Remove unnecessary semicolons";
 
 	private RemoveSemicolonsStep() {
@@ -35,9 +36,9 @@ public final class RemoveSemicolonsStep {
 	}
 
 	public static FormatterStep create() {
-		return FormatterStep.createLazy(NAME,
-				State::new,
-				RemoveSemicolonsStep.State::toFormatter);
+		return FormatterStep.create(NAME,
+				new State(),
+				State::toFormatter);
 	}
 
 	private static final class State implements Serializable {
@@ -64,7 +65,7 @@ public final class RemoveSemicolonsStep {
 		 * @return the line without the last semicolon
 		 */
 		private String removeSemicolon(String line) {
-			// find last semicolon in a string a remove it
+			// Find the last semicolon in a string and remove it.
 			int lastSemicolon = line.lastIndexOf(";");
 			if (lastSemicolon != -1 && lastSemicolon == line.length() - 1) {
 				return line.substring(0, lastSemicolon);

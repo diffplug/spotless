@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,20 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileVisitDetails;
+import org.gradle.api.file.FileVisitor;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -36,6 +43,7 @@ import org.gradle.tooling.events.OperationCompletionListener;
 
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
+import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.Provisioner;
 
 /**
@@ -104,7 +112,10 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	static abstract class ClientTask extends DefaultTask {
 		@Internal
-		abstract Property<File> getSpotlessOutDirectory();
+		abstract Property<File> getSpotlessCleanDirectory();
+
+		@Internal
+		abstract Property<File> getSpotlessLintsDirectory();
 
 		@Internal
 		abstract Property<SpotlessTaskService> getTaskService();
@@ -117,7 +128,8 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 		void init(SpotlessTaskImpl impl) {
 			usesServiceTolerateTestFailure(this, impl.getTaskServiceProvider());
-			getSpotlessOutDirectory().set(impl.getOutputDirectory());
+			getSpotlessCleanDirectory().set(impl.getCleanDirectory());
+			getSpotlessLintsDirectory().set(impl.getLintsDirectory());
 			getTaskService().set(impl.getTaskService());
 			getProjectDir().set(impl.getProjectDir());
 		}
@@ -153,6 +165,42 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 		protected boolean applyHasRun() {
 			return service().apply.containsKey(sourceTaskPath());
+		}
+
+		protected String allLintsErrorMsgDetailed(ConfigurableFileTree lintsFiles, boolean detailed) {
+			AtomicInteger total = new AtomicInteger(0);
+			TreeMap<String, LinkedHashMap<String, List<Lint>>> allLints = new TreeMap<>();
+			lintsFiles.visit(new FileVisitor() {
+				@Override
+				public void visitDir(FileVisitDetails fileVisitDetails) {
+
+				}
+
+				@Override
+				public void visitFile(FileVisitDetails fileVisitDetails) {
+					String path = fileVisitDetails.getPath();
+					getLogger().debug("Reading lints for " + path);
+					LinkedHashMap<String, List<Lint>> lints = SerializableMisc.fromFile(LinkedHashMap.class, fileVisitDetails.getFile());
+					allLints.put(path, lints);
+					lints.values().forEach(list -> total.addAndGet(list.size()));
+				}
+			});
+			StringBuilder builder = new StringBuilder();
+			builder.append("There were " + total.get() + " lint error(s), they must be fixed or suppressed.\n");
+			for (Map.Entry<String, LinkedHashMap<String, List<Lint>>> lintsPerFile : allLints.entrySet()) {
+				for (Map.Entry<String, List<Lint>> stepLints : lintsPerFile.getValue().entrySet()) {
+					String stepName = stepLints.getKey();
+					for (Lint lint : stepLints.getValue()) {
+						builder.append(lintsPerFile.getKey());
+						builder.append(":");
+						boolean oneLine = !detailed;
+						lint.addWarningMessageTo(builder, stepName, oneLine);
+						builder.append("\n");
+					}
+				}
+			}
+			builder.append("Resolve these lints or suppress with `suppressLintsFor`");
+			return builder.toString();
 		}
 	}
 }

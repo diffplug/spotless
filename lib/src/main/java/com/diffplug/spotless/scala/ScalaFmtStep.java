@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,15 +30,23 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/scalameta/scalafmt">scalafmt</a> as a FormatterStep. */
-public class ScalaFmtStep {
-	// prevent direct instantiation
-	private ScalaFmtStep() {}
+public class ScalaFmtStep implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-	static final String DEFAULT_VERSION = "3.7.3";
+	static final String DEFAULT_VERSION = "3.8.1";
 
 	private static final String DEFAULT_SCALA_MAJOR_VERSION = "2.13";
-	static final String NAME = "scalafmt";
-	static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_";
+	private static final String NAME = "scalafmt";
+	private static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_";
+
+	private final JarState.Promised jarState;
+	@Nullable
+	private final File configFile;
+
+	private ScalaFmtStep(JarState.Promised jarState, @Nullable File configFile) {
+		this.jarState = jarState;
+		this.configFile = configFile;
+	}
 
 	public static FormatterStep create(Provisioner provisioner) {
 		return create(defaultVersion(), defaultScalaMajorVersion(), provisioner, null);
@@ -51,8 +59,9 @@ public class ScalaFmtStep {
 	public static FormatterStep create(String version, @Nullable String scalaMajorVersion, Provisioner provisioner, @Nullable File configFile) {
 		String finalScalaMajorVersion = scalaMajorVersion == null ? DEFAULT_SCALA_MAJOR_VERSION : scalaMajorVersion;
 
-		return FormatterStep.createLazy(NAME,
-				() -> new State(JarState.from(MAVEN_COORDINATE + finalScalaMajorVersion + ":" + version, provisioner), configFile),
+		return FormatterStep.create(NAME,
+				new ScalaFmtStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + finalScalaMajorVersion + ":" + version, provisioner)), configFile),
+				ScalaFmtStep::equalityState,
 				State::createFormat);
 	}
 
@@ -64,11 +73,15 @@ public class ScalaFmtStep {
 		return DEFAULT_SCALA_MAJOR_VERSION;
 	}
 
-	static final class State implements Serializable {
+	private State equalityState() throws IOException {
+		return new State(jarState.get(), configFile);
+	}
+
+	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		final JarState jarState;
-		final FileSignature configSignature;
+		private final JarState jarState;
+		private final FileSignature configSignature;
 
 		State(JarState jarState, @Nullable File configFile) throws IOException {
 			this.jarState = jarState;

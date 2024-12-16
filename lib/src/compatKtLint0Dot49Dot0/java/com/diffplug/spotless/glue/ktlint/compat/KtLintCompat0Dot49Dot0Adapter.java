@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine;
 import com.pinterest.ktlint.rule.engine.api.LintError;
 import com.pinterest.ktlint.rule.engine.core.api.Rule;
 import com.pinterest.ktlint.rule.engine.core.api.RuleProvider;
+import com.pinterest.ktlint.rule.engine.core.api.RuleProviderKt;
 import com.pinterest.ktlint.rule.engine.core.api.editorconfig.CodeStyleEditorConfigPropertyKt;
 import com.pinterest.ktlint.rule.engine.core.api.editorconfig.EditorConfigProperty;
 import com.pinterest.ktlint.rule.engine.core.api.editorconfig.EndOfLinePropertyKt;
@@ -120,6 +121,7 @@ public class KtLintCompat0Dot49Dot0Adapter implements KtLintCompatAdapter {
 
 	@Override
 	public String format(
+			String unix,
 			Path path,
 			Path editorConfigPath,
 			Map<String, Object> editorConfigOverrideMap) {
@@ -142,16 +144,19 @@ public class KtLintCompat0Dot49Dot0Adapter implements KtLintCompatAdapter {
 		if (editorConfigPath == null || !Files.exists(editorConfigPath)) {
 			editorConfig = EditorConfigDefaults.Companion.getEMPTY_EDITOR_CONFIG_DEFAULTS();
 		} else {
-			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath);
+			editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath, RuleProviderKt.propertyTypes(allRuleProviders));
 		}
 
+		// create Code and then set the content to match previous steps in the Spotless pipeline
+		Code code = Code.Companion.fromPath(path);
+		KtLintCompatAdapter.setCodeContent(code, unix);
 		return new KtLintRuleEngine(
 				allRuleProviders,
 				editorConfig,
 				editorConfigOverride,
 				false,
 				path.getFileSystem())
-				.format(Code.Companion.fromPath(path), formatterCallback);
+				.format(code, formatterCallback);
 	}
 
 	/**

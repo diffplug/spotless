@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,6 @@ public class SpotlessTaskImplTest {
 		File input = Paths.get("unitTests", "projectDir", "someInput").toFile();
 		Formatter formatter = Mockito.mock(Formatter.class);
 
-		Assertions.assertThatThrownBy(() -> task.processInputFile(null, formatter, input)).hasMessageContaining(input.toString());
+		Assertions.assertThatThrownBy(() -> task.processInputFile(null, formatter, input, "someInput")).hasMessageContaining(input.toString());
 	}
 }

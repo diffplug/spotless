@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
@@ -27,27 +28,42 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public final class Jsr223Step {
-	// prevent direct instantiation
-	private Jsr223Step() {}
+public final class Jsr223Step implements Serializable {
+	private static final long serialVersionUID = 1L;
+	@Nullable
+	private final JarState.Promised jarState;
+	private final String engine;
+	private final String script;
 
-	public static FormatterStep create(String name, String dependency, CharSequence engine, CharSequence script, Provisioner provisioner) {
+	private Jsr223Step(@Nullable JarState.Promised jarState, String engine, String script) {
+		this.jarState = jarState;
+		this.engine = engine;
+		this.script = script;
+	}
+
+	public static FormatterStep create(String name, @Nullable String dependency, CharSequence engine, CharSequence script, Provisioner provisioner) {
 		Objects.requireNonNull(name, "name");
 		Objects.requireNonNull(engine, "engine");
 		Objects.requireNonNull(script, "script");
-		return FormatterStep.createLazy(name,
-				() -> new State(dependency == null ? null : JarState.from(dependency, provisioner), engine, script),
+		return FormatterStep.create(name,
+				new Jsr223Step(dependency == null ? null : JarState.promise(() -> JarState.from(dependency, provisioner)), engine.toString(), script.toString()),
+				Jsr223Step::equalityState,
 				State::toFormatter);
+	}
+
+	private State equalityState() {
+		return new State(jarState == null ? null : jarState.get(), engine, script);
 	}
 
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
+		@Nullable
 		private final JarState jarState;
 		private final String engine;
 		private final String script;
 
-		State(JarState jarState, CharSequence engine, CharSequence script) {
+		State(@Nullable JarState jarState, CharSequence engine, CharSequence script) {
 			this.jarState = jarState;
 			this.engine = engine.toString();
 			this.script = script.toString();

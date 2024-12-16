@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless.glue.pom;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
@@ -46,22 +47,56 @@ public class SortPomFormatterFunc implements FormatterFunc {
 			writer.write(input);
 		}
 		SortPomImpl sortPom = new SortPomImpl();
-		sortPom.setup(new MySortPomLogger(), PluginParameters.builder()
+		PluginParameters.Builder builder = PluginParameters.builder()
 				.setPomFile(pom)
 				.setFileOutput(false, null, null, false)
-				.setEncoding(cfg.encoding)
-				.setFormatting(cfg.lineSeparator, cfg.expandEmptyElements, cfg.spaceBeforeCloseEmptyElement, cfg.keepBlankLines)
-				.setIndent(cfg.nrOfIndentSpace, cfg.indentBlankLines, cfg.indentSchemaLocation)
+				.setEncoding(cfg.encoding);
+		try {
+			builder = builder
+					.setFormatting(cfg.lineSeparator, cfg.expandEmptyElements, cfg.spaceBeforeCloseEmptyElement,
+							cfg.keepBlankLines, cfg.endWithNewline);
+		} catch (NoSuchMethodError e) {
+			try {
+				Method method = PluginParameters.Builder.class
+						.getMethod("setFormatting", String.class, boolean.class, boolean.class, boolean.class);
+				builder = (PluginParameters.Builder) method
+						.invoke(builder, cfg.lineSeparator, cfg.expandEmptyElements, cfg.spaceBeforeCloseEmptyElement,
+								cfg.keepBlankLines);
+			} catch (ReflectiveOperationException | RuntimeException ignore) {
+				throw e;
+			}
+		}
+		try {
+			builder = builder
+					.setIndent(cfg.nrOfIndentSpace, cfg.indentBlankLines, cfg.indentSchemaLocation,
+							cfg.indentAttribute);
+		} catch (NoSuchMethodError e) {
+			try {
+				Method method = PluginParameters.Builder.class
+						.getMethod("setIndent", int.class, boolean.class, boolean.class);
+				builder = (PluginParameters.Builder) method
+						.invoke(builder, cfg.nrOfIndentSpace, cfg.indentBlankLines, cfg.indentSchemaLocation);
+			} catch (ReflectiveOperationException | RuntimeException ignore) {
+				throw e;
+			}
+		}
+		builder = builder
 				.setSortOrder(cfg.sortOrderFile, cfg.predefinedSortOrder)
 				.setSortEntities(cfg.sortDependencies, cfg.sortDependencyExclusions, cfg.sortDependencyManagement,
 						cfg.sortPlugins, cfg.sortProperties, cfg.sortModules, cfg.sortExecutions)
-				.setIgnoreLineSeparators(false)
-				.build());
+				.setIgnoreLineSeparators(false);
+		sortPom.setup(new MySortPomLogger(cfg.quiet), builder.build());
 		sortPom.sortPom();
 		return Files.readString(pom.toPath(), Charset.forName(cfg.encoding));
 	}
 
 	private static class MySortPomLogger implements SortPomLogger {
+		private final boolean quiet;
+
+		public MySortPomLogger(boolean quiet) {
+			this.quiet = quiet;
+		}
+
 		@Override
 		public void warn(String content) {
 			logger.warn(content);
@@ -69,7 +104,9 @@ public class SortPomFormatterFunc implements FormatterFunc {
 
 		@Override
 		public void info(String content) {
-			logger.info(content);
+			if (!quiet) {
+				logger.info(content);
+			}
 		}
 
 		@Override
