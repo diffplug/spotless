@@ -140,6 +140,7 @@ public final class IdeaStep {
 		}
 
 		private List<String> getParams(File file) {
+			/* https://www.jetbrains.com/help/idea/command-line-formatter.html */
 			var builder = Stream.<String> builder();
 			builder.add(binaryPath);
 			builder.add("format");
