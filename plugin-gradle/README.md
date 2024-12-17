@@ -262,8 +262,12 @@ spotless {
     eclipse()
     // optional: you can specify a specific version and/or config file
     eclipse('4.26').configFile('eclipse-prefs.xml')
-    // Or supply the configuration as a string
+    // Or supply the configuration properties as a string
     eclipse('4.26').configProperties("""
+    ...
+    """)
+    // Or supply the configuration XML as a string
+    eclipse('4.26').configXml("""
     ...
     """)
     // if the access to the p2 repositories is restricted, mirrors can be
@@ -422,8 +426,12 @@ spotless {
     greclipse()
     // optional: you can specify a specific version or config file(s), version matches the Eclipse Platform
     greclipse('4.26').configFile('spotless.eclipseformat.xml', 'org.codehaus.groovy.eclipse.ui.prefs')
-    // Or supply the configuration as a string
+    // Or supply the configuration properties as a string
     greclipse('4.26').configProperties("""
+    ...
+    """)
+    // Or supply the configuration XML as a string
+    greclipse('4.26').configXml("""
     ...
     """)
 ```
@@ -580,8 +588,12 @@ spotles {
   cpp {
     // version and configFile are both optional
     eclipseCdt('4.13.0').configFile('eclipse-cdt.xml')
-    // Or supply the configuration as a string
+    // Or supply the configuration properties as a string
     eclipseCdt('4.13.0').configProperties("""
+    ...
+    """)
+    // Or supply the configuration XML as a string
+    eclipseCdt('4.13.0').configXml("""
     ...
     """)
   }
