@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
  */
 package com.diffplug.spotless.extra.cpp;
 
+import static org.junit.jupiter.api.condition.JRE.JAVA_17;
+
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -30,6 +33,7 @@ class EclipseCdtFormatterStepTest extends EquoResourceHarness {
 
 	@ParameterizedTest
 	@MethodSource
+	@EnabledForJreRange(min = JAVA_17)
 	void formatWithVersion(String version) throws Exception {
 		harnessFor(version).test("main.c",
 				"#include <a.h>;\nint main(int argc,   \nchar *argv[]) {}",
@@ -37,6 +41,6 @@ class EclipseCdtFormatterStepTest extends EquoResourceHarness {
 	}
 
 	private static Stream<String> formatWithVersion() {
-		return Stream.of("10.6", "10.7", EclipseCdtFormatterStep.defaultVersion());
+		return Stream.of("11.0", "11.6", EclipseCdtFormatterStep.defaultVersion());
 	}
 }
