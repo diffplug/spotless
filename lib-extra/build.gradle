@@ -50,6 +50,9 @@ def NEEDS_P2_DEPS = [
 	'groovy',
 	'jdt'
 ]
+if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+	NEEDS_P2_DEPS.remove('cdt')
+}
 for (needsP2 in NEEDS_P2_DEPS) {
 	sourceSets.register(needsP2) {
 		compileClasspath += sourceSets.main.output
@@ -74,11 +77,12 @@ tasks.withType(Test).configureEach {
 
 apply plugin: 'dev.equo.p2deps'
 p2deps {
-	// (alphabetic order please)
-	into 'cdtCompileOnly', {
-		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-		p2repo 'https://download.eclipse.org/tools/cdt/releases/11.0/'
-		install 'org.eclipse.cdt.core'
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+		into 'cdtCompileOnly', {
+			p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+			p2repo 'https://download.eclipse.org/tools/cdt/releases/11.0/'
+			install 'org.eclipse.cdt.core'
+		}
 	}
 	into 'groovyCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'

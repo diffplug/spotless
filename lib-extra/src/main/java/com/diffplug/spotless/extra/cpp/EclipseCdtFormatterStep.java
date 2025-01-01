@@ -38,7 +38,7 @@ public final class EclipseCdtFormatterStep {
 	private EclipseCdtFormatterStep() {}
 
 	private static final String NAME = "eclipse cdt formatter";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "11.0").add(17, "11.6");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(17, "11.6");
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
