@@ -103,6 +103,7 @@ public class FenceStep {
 	}
 
 	private static class RoundtripAndEqualityState implements Serializable {
+		private static final long serialVersionUID = 272603249547598947L;
 		final String regexPattern;
 		final int regexFlags;
 		final Kind kind;
