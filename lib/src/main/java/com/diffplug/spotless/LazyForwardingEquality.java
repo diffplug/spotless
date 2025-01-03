@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -110,6 +111,15 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 			throw ThrowingEx.asRuntime(e);
 		}
 		return byteOutput.toByteArray();
+	}
+
+	static Object fromBytes(byte[] bytes) {
+		ByteArrayInputStream byteOutput = new ByteArrayInputStream(bytes);
+		try (ObjectInputStream objectOutput = new ObjectInputStream(byteOutput)) {
+			return objectOutput.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			throw ThrowingEx.asRuntime(e);
+		}
 	}
 
 	/** Ensures that the lazy state has been evaluated. */

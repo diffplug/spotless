@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 	private @Nullable RoundtripState roundtripStateInternal;
 	private @Nullable EqualityState equalityStateInternal;
 	private final SerializedFunction<RoundtripState, EqualityState> equalityStateExtractor;
-	private final SerializedFunction<EqualityState, FormatterFunc> equalityStateToFormatter;
+	private final SerializedFunction<EqualityState, ? extends FormatterFunc> equalityStateToFormatter;
 
-	FormatterStepSerializationRoundtrip(String name, ThrowingEx.Supplier<RoundtripState> initializer, SerializedFunction<RoundtripState, EqualityState> equalityStateExtractor, SerializedFunction<EqualityState, FormatterFunc> equalityStateToFormatter) {
+	FormatterStepSerializationRoundtrip(String name, ThrowingEx.Supplier<RoundtripState> initializer, SerializedFunction<RoundtripState, EqualityState> equalityStateExtractor, SerializedFunction<EqualityState, ? extends FormatterFunc> equalityStateToFormatter) {
 		this.name = name;
 		this.initializer = initializer;
 		this.equalityStateExtractor = equalityStateExtractor;

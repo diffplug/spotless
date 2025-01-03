@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 			String name,
 			ThrowingEx.Supplier<RoundtripState> roundtripInit,
 			SerializedFunction<RoundtripState, EqualityState> equalityFunc,
-			SerializedFunction<EqualityState, FormatterFunc> formatterFunc) {
+			SerializedFunction<EqualityState, ? extends FormatterFunc> formatterFunc) {
 		return new FormatterStepSerializationRoundtrip<>(name, roundtripInit, equalityFunc, formatterFunc);
 	}
 
@@ -128,7 +128,7 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 			String name,
 			RoundtripState roundTrip,
 			SerializedFunction<RoundtripState, EqualityState> equalityFunc,
-			SerializedFunction<EqualityState, FormatterFunc> formatterFunc) {
+			SerializedFunction<EqualityState, ? extends FormatterFunc> formatterFunc) {
 		return createLazy(name, () -> roundTrip, equalityFunc, formatterFunc);
 	}
 
