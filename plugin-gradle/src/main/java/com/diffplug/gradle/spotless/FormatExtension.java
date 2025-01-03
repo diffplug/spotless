@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -457,12 +457,11 @@ public class FormatExtension {
 	 */
 	public void custom(String name, Closure<String> formatter) {
 		requireNonNull(formatter, "formatter");
-		Closure<String> dehydrated = formatter.dehydrate();
-		custom(name, new ClosureFormatterFunc(dehydrated));
+		custom(name, new ClosureFormatterFunc(formatter));
 	}
 
 	static class ClosureFormatterFunc implements FormatterFunc, Serializable {
-		private final Closure<String> closure;
+		private Closure<String> closure;
 
 		ClosureFormatterFunc(Closure<String> closure) {
 			this.closure = closure;
@@ -471,6 +470,14 @@ public class FormatExtension {
 		@Override
 		public String apply(String unixNewlines) {
 			return closure.call(unixNewlines);
+		}
+
+		private void writeObject(java.io.ObjectOutputStream stream) throws java.io.IOException {
+			stream.writeObject(closure.dehydrate());
+		}
+
+		private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
+			this.closure = (Closure<String>) stream.readObject();
 		}
 	}
 
