@@ -105,12 +105,12 @@ public class GoogleJavaFormatStep implements Serializable {
 
 		GoogleJavaFormatStep step = new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc);
 		if (removeImports) {
-			return FormatterStep.create(NAME,
+			return FormatterStep.create(name,
 					step,
 					GoogleJavaFormatStep::equalityState,
 					State::createRemoveUnusedImportsOnly);
 		} else {
-			return FormatterStep.create(NAME,
+			return FormatterStep.create(name,
 					step,
 					GoogleJavaFormatStep::equalityState,
 					State::createFormat);
