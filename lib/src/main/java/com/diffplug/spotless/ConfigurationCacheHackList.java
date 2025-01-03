@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Gradle requires three things:
  * - Gradle defines cache equality based on your serialized representation
@@ -51,7 +53,7 @@ import java.util.Objects;
 public class ConfigurationCacheHackList implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private boolean optimizeForEquality;
-	public ArrayList<Object> backingList = new ArrayList<>();
+	private ArrayList<Object> backingList = new ArrayList<>();
 
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 		out.writeBoolean(optimizeForEquality);
@@ -63,6 +65,7 @@ public class ConfigurationCacheHackList implements java.io.Serializable {
 		}
 	}
 
+	@SuppressFBWarnings("MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT")
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
 		optimizeForEquality = in.readBoolean();
 		backingList = new ArrayList<>();
