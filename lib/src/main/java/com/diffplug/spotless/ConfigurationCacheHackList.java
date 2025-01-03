@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -48,8 +50,27 @@ import java.util.Objects;
  */
 public class ConfigurationCacheHackList implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-	private final boolean optimizeForEquality;
-	private final ArrayList<Object> backingList = new ArrayList<>();
+	private boolean optimizeForEquality;
+	public ArrayList<Object> backingList = new ArrayList<>();
+
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		out.writeBoolean(optimizeForEquality);
+		out.writeInt(backingList.size());
+		for (Object obj : backingList) {
+			// if write out the list on its own, we'll get java's non-deterministic object-graph serialization
+			// by writing each object to raw bytes independently, we avoid this
+			out.writeObject(LazyForwardingEquality.toBytes((Serializable) obj));
+		}
+	}
+
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		optimizeForEquality = in.readBoolean();
+		backingList = new ArrayList<>();
+		int size = in.readInt();
+		for (int i = 0; i < size; i++) {
+			backingList.add(LazyForwardingEquality.fromBytes((byte[]) in.readObject()));
+		}
+	}
 
 	public static ConfigurationCacheHackList forEquality() {
 		return new ConfigurationCacheHackList(true);
