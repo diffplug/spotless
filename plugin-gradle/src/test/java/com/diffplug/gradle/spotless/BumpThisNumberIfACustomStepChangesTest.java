@@ -44,7 +44,7 @@ abstract class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationH
 		if (useConfigCache) {
 			setFile("gradle.properties").toLines("org.gradle.unsafe.configuration-cache=true",
 					"org.gradle.configuration-cache=true");
-			return super.gradleRunner().withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version);
+			return super.gradleRunner().withGradleVersion(GradleVersionSupport.CUSTOM_STEPS.version);
 		} else {
 			return super.gradleRunner();
 		}
