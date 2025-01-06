@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -193,6 +193,7 @@ public final class GitAttributesLineEndings {
 			/////////////////////////////////
 			// USER AND SYSTEM-WIDE VALUES //
 			/////////////////////////////////
+			FS.DETECTED.setGitSystemConfig(new File("no-global-git-config-for-spotless"));
 			systemConfig = SystemReader.getInstance().openSystemConfig(null, FS.DETECTED);
 			Errors.log().run(systemConfig::load);
 			userConfig = SystemReader.getInstance().openUserConfig(systemConfig, FS.DETECTED);
