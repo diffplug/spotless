@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import com.diffplug.spotless.yaml.SerializeToByteArrayHack;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -51,27 +53,43 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * to make Spotless work with all of Gradle's cache systems at once.
  */
 public class ConfigurationCacheHackList implements java.io.Serializable {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6914178791997323870L;
+
 	private boolean optimizeForEquality;
 	private ArrayList<Object> backingList = new ArrayList<>();
 
+	private boolean shouldWeSerializeToByteArrayFirst() {
+		return backingList.stream().anyMatch(step -> step instanceof SerializeToByteArrayHack);
+	}
+
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		boolean serializeToByteArrayFirst = shouldWeSerializeToByteArrayFirst();
+		out.writeBoolean(serializeToByteArrayFirst);
 		out.writeBoolean(optimizeForEquality);
 		out.writeInt(backingList.size());
 		for (Object obj : backingList) {
 			// if write out the list on its own, we'll get java's non-deterministic object-graph serialization
 			// by writing each object to raw bytes independently, we avoid this
-			out.writeObject(LazyForwardingEquality.toBytes((Serializable) obj));
+			if (serializeToByteArrayFirst) {
+				out.writeObject(LazyForwardingEquality.toBytes((Serializable) obj));
+			} else {
+				out.writeObject(obj);
+			}
 		}
 	}
 
 	@SuppressFBWarnings("MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT")
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		boolean serializeToByteArrayFirst = in.readBoolean();
 		optimizeForEquality = in.readBoolean();
 		backingList = new ArrayList<>();
 		int size = in.readInt();
 		for (int i = 0; i < size; i++) {
-			backingList.add(LazyForwardingEquality.fromBytes((byte[]) in.readObject()));
+			if (serializeToByteArrayFirst) {
+				backingList.add(LazyForwardingEquality.fromBytes((byte[]) in.readObject()));
+			} else {
+				backingList.add(in.readObject());
+			}
 		}
 	}
 
