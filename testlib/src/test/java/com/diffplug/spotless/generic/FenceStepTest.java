@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.StepHarnessWithFile;
 
 class FenceStepTest extends ResourceHarness {
 	@Test
@@ -85,7 +86,7 @@ class FenceStepTest extends ResourceHarness {
 		FormatterStep fence = FenceStep.named("fence").openClose("spotless:off", "spotless:on")
 				.preserveWithin(Arrays.asList(ReplaceStep.create("replace", "spotless:on", "REMOVED")));
 		// this fails because uppercase turns spotless:off into SPOTLESS:OFF, etc
-		StepHarness.forStep(fence).expectLintsOf(StringPrinter.buildStringFromLines("A B C",
+		StepHarnessWithFile.forStep(this, fence).expectLintsOfFileAndContent("README.md", StringPrinter.buildStringFromLines("A B C",
 				"spotless:off",
 				"D E F",
 				"spotless:on",
