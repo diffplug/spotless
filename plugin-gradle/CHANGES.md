@@ -10,6 +10,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `ktfmt` version to latest `0.52` -> `0.53`. ([#2320](https://github.com/diffplug/spotless/pull/2320))
 * Bump default `ktlint` version to latest `1.4.0` -> `1.5.0`. ([#2354](https://github.com/diffplug/spotless/pull/2354))
 * Bump minimum `eclipse-cdt` version to `11.0` (removed support for `10.7`). ([#2373](https://github.com/diffplug/spotless/pull/2373))
+* Bump default `eclipse` version to latest `4.32` -> `4.34`. ([#2381](https://github.com/diffplug/spotless/pull/2381))
 ### Fixed
 * `toggleOffOn` now works with the configuration cache. ([#2378](https://github.com/diffplug/spotless/pull/2378) fixes [#2317](https://github.com/diffplug/spotless/issues/2317))
 * Using `custom` with a Groovy closure now works with and without configuration cache. ([#2376](https://github.com/diffplug/spotless/pull/2376))
