@@ -21,6 +21,21 @@ import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FormatterStep;
 
+/**
+ * This step is a flag which marks that `ConfigurationCacheHackList` should
+ * serialize each item individually into `byte[]` array, rather than using normal
+ * serialization.
+ *
+ * The reason to use this is if you are using `toggleOffOn` *and* two kinds of
+ * google-java-format (e.g. one for format and the other for imports), then
+ * problems with Java's handling of object graphs will cause your up-to-date checks
+ * to always fail. `CombinedJavaFormatStepTest` recreates this situation. By adding
+ * this step, it will trigger this workaround which fixes the up-to-dateness bug.
+ *
+ * But, turning it on will break all `custom` steps that use Groovy closures. So
+ * by default you get regular serialization. If you're using `toggleOffOn` and having
+ * problems with up-to-dateness, then adding this step can be a workaround.
+ */
 public class SerializeToByteArrayHack implements FormatterStep {
 	private static final long serialVersionUID = 8071047581828362545L;
 
