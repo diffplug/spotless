@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [3.0.0] - 2025-01-06
 ## Headline changes
 - All steps now support roundtrip serialization (end of [#987](https://github.com/diffplug/spotless/issues/987)).
 - Spotless now supports [linting](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#lints) in addition to formatting.
