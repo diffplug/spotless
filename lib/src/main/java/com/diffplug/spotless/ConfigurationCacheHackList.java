@@ -16,7 +16,6 @@
 package com.diffplug.spotless;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -61,7 +60,7 @@ public class ConfigurationCacheHackList implements java.io.Serializable {
 		for (Object obj : backingList) {
 			// if write out the list on its own, we'll get java's non-deterministic object-graph serialization
 			// by writing each object to raw bytes independently, we avoid this
-			out.writeObject(LazyForwardingEquality.toBytes((Serializable) obj));
+			out.writeObject(obj);
 		}
 	}
 
@@ -71,7 +70,7 @@ public class ConfigurationCacheHackList implements java.io.Serializable {
 		backingList = new ArrayList<>();
 		int size = in.readInt();
 		for (int i = 0; i < size; i++) {
-			backingList.add(LazyForwardingEquality.fromBytes((byte[]) in.readObject()));
+			backingList.add(in.readObject());
 		}
 	}
 
