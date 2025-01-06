@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [7.0.0] - 2025-01-06
 ## Headline changes
 - The long `7.0.0.BETAX` period is finally over, Spotless for Gradle 7.0 is here!
 - Full, no asterisk support for configuration cache (end of [#987](https://github.com/diffplug/spotless/issues/987))
