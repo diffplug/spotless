@@ -14,6 +14,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `greclipse` version to latest `4.32` -> `4.34`. ([#2381](https://github.com/diffplug/spotless/pull/2381))
 ### Fixed
 * `toggleOffOn` now works with the configuration cache. ([#2378](https://github.com/diffplug/spotless/pull/2378) fixes [#2317](https://github.com/diffplug/spotless/issues/2317))
+* Using `custom` with a Groovy closure now works with and without configuration cache. ([#2376](https://github.com/diffplug/spotless/pull/2376))
+  * Minimum required Gradle version for this to work has bumped from `8.0` to `8.4`.
+  * The global git system config is now ignored for line-ending purposes.
+  * Added `SerializeToByteArrayHack` as a flag for a limitation at the intersection of `toggleOffOn` and `custom`. 
 * You can now use `removeUnusedImports` and `googleJavaFormat` at the same time again. (fixes [#2159](https://github.com/diffplug/spotless/issues/2159))
 * The default list of type annotations used by `formatAnnotations` now includes Jakarta Validation's `Valid` and constraints validations (fixes [#2334](https://github.com/diffplug/spotless/issues/2334))
 * `indentWith[Spaces|Tabs]` has been deprecated in favor of `leadingTabsToSpaces` and `leadingSpacesToTabs`. ([#2350](https://github.com/diffplug/spotless/pull/2350) fixes [#794](https://github.com/diffplug/spotless/issues/794))
