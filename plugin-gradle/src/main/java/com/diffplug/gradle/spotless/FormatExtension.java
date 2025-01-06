@@ -16,8 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
-import static com.diffplug.gradle.spotless.SpotlessPluginRedirect.badSemver;
-import static com.diffplug.gradle.spotless.SpotlessPluginRedirect.badSemverOfGradle;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -46,7 +44,6 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskProvider;
-import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -487,12 +484,6 @@ public class FormatExtension {
 	 */
 	public void custom(String name, FormatterFunc formatter) {
 		requireNonNull(formatter, "formatter");
-		if (badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_minVersionForCustom)) {
-			throw new GradleException("The 'custom' method is only available if you are using Gradle "
-					+ SpotlessPlugin.VER_GRADLE_minVersionForCustom
-					+ " or newer, this is "
-					+ GradleVersion.current().getVersion());
-		}
 		addStep(FormatterStep.createLazy(name, () -> globalState, SerializedFunction.alwaysReturns(formatter)));
 	}
 
