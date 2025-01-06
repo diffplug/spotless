@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ interface NativeCmdIntegrationTest {
 	class NativeCmdWithConfigCacheTest extends GradleIntegrationHarness implements NativeCmdIntegrationTest {
 		@Override
 		public GradleRunner gradleRunner() throws IOException {
-			setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
-			setFile("gradle.properties").toContent("org.gradle.configuration-cache=true");
+			setFile("gradle.properties").toLines("org.gradle.unsafe.configuration-cache=true",
+					"org.gradle.configuration-cache=true");
 			return super.gradleRunner().withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version);
 		}
 	}
