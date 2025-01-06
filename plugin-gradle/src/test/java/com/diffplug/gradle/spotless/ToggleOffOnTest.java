@@ -44,7 +44,7 @@ abstract class ToggleOffOnTest extends GradleIntegrationHarness {
 		if (useConfigCache) {
 			setFile("gradle.properties").toLines("org.gradle.unsafe.configuration-cache=true",
 					"org.gradle.configuration-cache=true");
-			return super.gradleRunner().withGradleVersion(GradleVersionSupport.CONFIGURATION_CACHE.version);
+			return super.gradleRunner().withGradleVersion(GradleVersionSupport.STABLE_CONFIGURATION_CACHE.version);
 		} else {
 			return super.gradleRunner();
 		}
