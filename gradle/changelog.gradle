@@ -24,14 +24,6 @@ spotlessChangelog {
 	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
 	tagMessage "{{changes}}"
 	runAfterPush "gh release create ${kind}/{{version}} --title '${releaseTitle} v{{version}}' --notes-from-tag"
-
-	if (kind == 'gradle') {
-		forceNextVersion '7.0.0'
-	} else if (kind == 'maven') {
-		forceNextVersion '2.44.0'
-	} else {
-		forceNextVersion '3.0.0'
-	}
 }
 
 if (project == rootProject) {
