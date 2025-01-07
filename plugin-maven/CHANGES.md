@@ -3,12 +3,14 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Deployment was missing part of the CDT formatter, now fixed. ([#2384](https://github.com/diffplug/spotless/issues/2384))
 
 ## [2.44.0] - 2025-01-06
 ## Headline changes
-- The long `2.44.0.BETAX` period is finally over (sorry, there was [a problem in Gradle land](https://github.com/diffplug/spotless/issues/987)).
-- Spotless now supports [linting](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#lints) in addition to formatting.
-  - help wanted: [maven api to suppress lints](https://github.com/diffplug/spotless/issues/2309)
+* The long `2.44.0.BETAX` period is finally over (sorry, there was [a problem in Gradle land](https://github.com/diffplug/spotless/issues/987)).
+* Spotless now supports [linting](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#lints) in addition to formatting.
+  * help wanted: [maven api to suppress lints](https://github.com/diffplug/spotless/issues/2309)
 ### Changed
 * Bump default `ktlint` version to latest `1.3.0` -> `1.4.0`. ([#2314](https://github.com/diffplug/spotless/pull/2314))
 * Bump default `jackson` version to latest `2.18.0` -> `2.18.1`. ([#2319](https://github.com/diffplug/spotless/pull/2319))

@@ -10,11 +10,13 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Deployment was missing part of the CDT formatter, now fixed. ([#2384](https://github.com/diffplug/spotless/issues/2384))
 
 ## [3.0.0] - 2025-01-06
 ## Headline changes
-- All steps now support roundtrip serialization (end of [#987](https://github.com/diffplug/spotless/issues/987)).
-- Spotless now supports [linting](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#lints) in addition to formatting.
+* All steps now support roundtrip serialization (end of [#987](https://github.com/diffplug/spotless/issues/987)).
+* Spotless now supports [linting](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#lints) in addition to formatting.
 ### Changed
 * Allow setting Eclipse config from a string, not only from files ([#2337](https://github.com/diffplug/spotless/pull/2337))
 * Bump default `ktlint` version to latest `1.3.0` -> `1.4.0`. ([#2314](https://github.com/diffplug/spotless/pull/2314))
