@@ -17,6 +17,7 @@ package com.diffplug.spotless.npm;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +36,9 @@ public class NpmPathResolver implements Serializable {
 		this.explicitNpmExecutable = explicitNpmExecutable;
 		this.explicitNodeExecutable = explicitNodeExecutable;
 		this.explicitNpmrcFile = explicitNpmrcFile;
-		this.additionalNpmrcLocations = List.copyOf(additionalNpmrcLocations);
+		// We must not use an immutable list (e.g. List.copyOf) here, because immutable lists cannot be restored
+		// from Gradle’s serialisation. See https://github.com/diffplug/spotless/issues/2372
+		this.additionalNpmrcLocations = new ArrayList<>(additionalNpmrcLocations);
 	}
 
 	/**
