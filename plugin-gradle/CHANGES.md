@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [7.0.2] - 2025-01-14
 ### Fixed
 * Node.JS-based tasks now work with the configuration cache ([#2372](https://github.com/diffplug/spotless/issues/2372))
 * Eclipse-based tasks can now handle parallel configuration ([#2389](https://github.com/diffplug/spotless/issues/2389))
