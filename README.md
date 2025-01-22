@@ -131,7 +131,7 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`generic.TrimTrailingWhitespaceStep`](lib/src/main/java/com/diffplug/spotless/generic/TrimTrailingWhitespaceStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`antlr4.Antlr4FormatterStep`](lib/src/main/java/com/diffplug/spotless/antlr4/Antlr4FormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`biome.BiomeStep`](lib/src/main/java/com/diffplug/spotless/biome/BiomeStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
-| [`cpp.ClangFormatStep`](lib/src/main/java/com/diffplug/spotless/cpp/ClangFormatStep.java) | :+1:       | :+1:       | :white_large_square:       | :white_large_square:  |
+| [`cpp.ClangFormatStep`](lib/src/main/java/com/diffplug/spotless/cpp/ClangFormatStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`cpp.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/cpp/EclipseFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`go.GofmtFormatStep`](lib/src/main/java/com/diffplug/spotless/go/GofmtFormatStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`gherkin.GherkinUtilsStep`](lib/src/main/java/com/diffplug/spotless/gherkin/GherkinUtilsStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
@@ -156,7 +156,7 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`npm.PrettierFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/PrettierFormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`npm.TsFmtFormatterStep`](lib/src/main/java/com/diffplug/spotless/npm/TsFmtFormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`pom.SortPomStep`](lib/src/main/java/com/diffplug/spotless/pom/SortPomStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
-| [`protobuf.BufStep`](lib/src/main/java/com/diffplug/spotless/protobuf/BufStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
+| [`protobuf.BufStep`](lib/src/main/java/com/diffplug/spotless/protobuf/BufStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`python.BlackStep`](lib/src/main/java/com/diffplug/spotless/python/BlackStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`rdf.RdfFormatterStep`](lib/src/main/java/com/diffplug/spotless/rdf/RdfFormatterStep.java) | :white_large_square:        | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`scala.ScalaFmtStep`](lib/src/main/java/com/diffplug/spotless/scala/ScalaFmtStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
