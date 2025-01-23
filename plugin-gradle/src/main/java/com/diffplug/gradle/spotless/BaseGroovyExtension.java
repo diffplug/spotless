@@ -80,6 +80,13 @@ public abstract class BaseGroovyExtension extends FormatExtension {
 			return this;
 		}
 
+		public GrEclipseConfig configXml(String... configs) {
+			requireElementsNonNull(configs);
+			builder.setXmlPreferences(List.of(configs));
+			extension.replaceStep(builder.build());
+			return this;
+		}
+
 		public GrEclipseConfig withP2Mirrors(Map<String, String> mirrors) {
 			builder.setP2Mirrors(mirrors);
 			extension.replaceStep(builder.build());
