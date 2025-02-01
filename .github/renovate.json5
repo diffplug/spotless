@@ -1,14 +1,14 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": [
-		"config:recommended"
+		"config:recommended",
 	],
 	"packageRules": [
 		{
 			"groupName": "Ktlint",
 			"enabled": false,
 			"matchPackageNames": [
-				"/com.pinterest.ktlint:*/"
+				"/com.pinterest.ktlint:*/",
 			]
 		}
 	]
