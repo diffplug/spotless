@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.apache.maven.project.MavenProject;
 
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.spotless.maven.FormatterFactory;
+import com.diffplug.spotless.maven.cpp.Clang;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 
 /**
@@ -48,5 +49,9 @@ public class Protobuf extends FormatterFactory {
 
 	public void addBuf(Buf buf) {
 		addStepFactory(buf);
+	}
+
+	public void addClang(Clang clang) {
+		addStepFactory(clang);
 	}
 }

@@ -3,6 +3,7 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+* Support for `clang-format` ([#2406](https://github.com/diffplug/spotless/pull/2406))
 
 ## [2.44.2] - 2025-01-14
 * Eclipse-based tasks can now handle parallel configuration ([#2389](https://github.com/diffplug/spotless/issues/2389))
