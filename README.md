@@ -3,6 +3,7 @@
 [![Gradle Plugin](https://img.shields.io/gradle-plugin-portal/v/com.diffplug.spotless?color=blue&label=gradle%20plugin)](plugin-gradle)
 [![Maven Plugin](https://img.shields.io/maven-central/v/com.diffplug.spotless/spotless-maven-plugin?color=blue&label=maven%20plugin)](plugin-maven)
 [![SBT Plugin](https://img.shields.io/badge/sbt%20plugin-0.1.3-blue)](https://github.com/moznion/sbt-spotless)
+[![CLI](https://img.shields.io/badge/cli-0.0.1-blue)](cli)
 
 Spotless can format &lt;antlr | c | c# | c++ | css | flow | graphql | groovy | html | java | javascript | json | jsx | kotlin | less | license headers | markdown | objective-c | protobuf | python | scala | scss | shell | sql | typeScript | vue | yaml | anything> using &lt;gradle | maven | sbt | anything>.
 
@@ -41,6 +42,13 @@ user@machine repo % mvn spotless:check
 ```
 
 ## [❇️ Spotless for SBT (external for now)](https://github.com/moznion/sbt-spotless)
+
+## [❇️ Spotless Command Line Interface (CLI)](cli)
+
+```console
+user@machine repo % spotless --target '**/src/**/*.java' license-header --header='/* Myself $YEAR */' google-java-format
+```
+
 ## [Other build systems](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system)
 
 ## How it works (for potential contributors)
