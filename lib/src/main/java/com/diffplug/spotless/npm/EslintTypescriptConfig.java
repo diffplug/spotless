@@ -16,20 +16,20 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.diffplug.spotless.FileSignature;
-
 public class EslintTypescriptConfig extends EslintConfig {
-	private static final long serialVersionUID = 2L;
+
+	private static final long serialVersionUID = 7047648793633604218L;
 
 	@SuppressWarnings("unused")
-	private final FileSignature.Promised typescriptConfigPathSignature;
+	private final RoundtrippableFile typescriptConfigPath;
 
 	public EslintTypescriptConfig(@Nullable File eslintConfigPath, @Nullable String eslintConfigJs, @Nullable File typescriptConfigPath) {
 		super(eslintConfigPath, eslintConfigJs);
-		this.typescriptConfigPathSignature = typescriptConfigPath != null ? FileSignature.promise(typescriptConfigPath) : null;
+		this.typescriptConfigPath = typescriptConfigPath != null ? new RoundtrippableFile(typescriptConfigPath) : null;
 	}
 
 	@Override
@@ -39,6 +39,23 @@ public class EslintTypescriptConfig extends EslintConfig {
 
 	@Nullable
 	public File getTypescriptConfigPath() {
-		return typescriptConfigPathSignature == null ? null : this.typescriptConfigPathSignature.get().getOnlyFile();
+		return typescriptConfigPath == null ? null : this.typescriptConfigPath.file();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof EslintTypescriptConfig))
+			return false;
+		if (!super.equals(o))
+			return false;
+		EslintTypescriptConfig that = (EslintTypescriptConfig) o;
+		return Objects.equals(typescriptConfigPath, that.typescriptConfigPath);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), typescriptConfigPath);
 	}
 }

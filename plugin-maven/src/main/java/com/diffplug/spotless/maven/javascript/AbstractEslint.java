@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public abstract class AbstractEslint extends AbstractNpmFormatterStepFactory {
 		File baseDir = baseDir(stepConfig);
 		File cacheDir = cacheDir(stepConfig);
 		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
-		return EslintFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, cacheDir, npmPathResolver, eslintConfig(stepConfig));
+		return EslintFormatterStep.create(devDependencies, baseDir, buildDir, cacheDir, npmPathResolver, eslintConfig(stepConfig));
 	}
 
 	private static IllegalArgumentException onlyOneConfig() {
