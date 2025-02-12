@@ -43,7 +43,7 @@ user@machine repo % mvn spotless:check
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
-  - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
+  - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Sql](#sql) ([dbeaver](#dbeaver))
@@ -56,7 +56,7 @@ user@machine repo % mvn spotless:check
   - [Gherkin](#gherkin)
   - [Go](#go)
   - [RDF](#RDF)
-  - [Protobuf](#protobuf) ([buf](#buf))
+  - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang))
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -556,6 +556,18 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
   <version>11.0</version> <!-- optional version of Eclipse Formatter, others at https://download.eclipse.org/tools/cdt/releases/ -->
   <file>${project.basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
+```
+
+### clang-format
+
+[homepage](https://clang.llvm.org/docs/ClangFormat.html). [changelog](https://releases.llvm.org/download.html). `clang-format` is a formatter for c, c++, c#, objective-c, protobuf, javascript, and java. You can use clang-format in any language-specific format, but usually you will be creating a generic format.
+
+```xml
+<clangFormat>
+  <version>14.0.0-1ubuntu1.1</version> <!-- optional version of clang-format -->
+  <pathToExe>/path/to/buf</pathToExe>  <!-- optional: if clang-format isn't in your path -->
+  <style>LLVM</style>  <!-- optional: can be LLVM, Google, Chromium, Mozilla, WebKit -->
+</clangFormat>
 ```
 
 ## Python
@@ -1218,17 +1230,17 @@ RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version t
 [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/protobuf/Protobuf.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/protobuf).
 ```xml
 <configuration>
-  <includes>  <!-- optiona: default is **/*.proto -->
-    <include>proto/*.proto<include>
-  <includes>
+  <includes>  <!-- optional: default is **/*.proto -->
+    <include>proto/*.proto</include>
+  </includes>
 
-  <excludes>  <!-- optiona: if you want to ignore auto generated protos -->
-    <include>target/**/<include>
-  <excludes>
+  <excludes>  <!-- optional: if you want to ignore auto generated protos -->
+    <exclude>target/**/<exclude>
+  </excludes>
   
   <protobuf>
     <buf />  <!-- has its own section below -->
-  </css>
+  </protobuf>
 </configuration>
 ```
 
