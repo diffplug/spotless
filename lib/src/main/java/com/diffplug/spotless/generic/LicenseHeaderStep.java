@@ -190,7 +190,7 @@ public final class LicenseHeaderStep {
 	}
 
 	private static final String DEFAULT_NAME_PREFIX = LicenseHeaderStep.class.getName();
-	private static final String DEFAULT_YEAR_DELIMITER = "-";
+	public static final String DEFAULT_YEAR_DELIMITER = "-";
 	private static final List<String> YEAR_TOKENS = Arrays.asList("$YEAR", "$today.year");
 
 	private static final SerializableFileFilter UNSUPPORTED_JVM_FILES_FILTER = SerializableFileFilter.skipFilesNamed(
