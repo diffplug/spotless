@@ -107,17 +107,22 @@ model {
 				artifactId project.ext.artifactId
 				version project.version
 
+				def projectExtArtifactId = project.ext.artifactId
+				def projectDescription = project.description
+				def projectOrg = project.org
+				def rootProjectName = rootProject.name
+
 				pom.withXml {
 					// add MavenCentral requirements to the POM
 					asNode().children().last() + {
 						resolveStrategy = Closure.DELEGATE_FIRST
-						name project.ext.artifactId
-						description project.description
-						url "https://github.com/${project.org}/${rootProject.name}"
+						name projectExtArtifactId
+						description projectDescription
+						url "https://github.com/${projectOrg}/${rootProjectName}"
 						scm {
-							url "https://github.com/${project.org}/${rootProject.name}"
-							connection "scm:git:https://github.com/${project.org}/${rootProject.name}.git"
-							developerConnection "scm:git:ssh:git@github.com/${project.org}/${rootProject.name}.git"
+							url "https://github.com/${projectOrg}/${rootProjectName}"
+							connection "scm:git:https://github.com/${projectOrg}/${rootProjectName}.git"
+							developerConnection "scm:git:ssh:git@github.com/${projectOrg}/${rootProjectName}.git"
 						}
 						licenses {
 							if (isExt) {
@@ -188,13 +193,12 @@ if (System.env['JITPACK'] == 'true' || version.endsWith('-SNAPSHOT')) {
 		dependsOn changelogTasks.named('changelogCheck')
 	}
 	// ensures that changelog bump and push only happens if the publish was successful
-	def thisProj = project
 	changelogTasks.named('changelogBump').configure {
-		dependsOn ":${thisProj.path}:publishPluginMavenPublicationToSonatypeRepository"
+		dependsOn project.path + ":publishPluginMavenPublicationToSonatypeRepository"
 		dependsOn ":closeAndReleaseSonatypeStagingRepository"
 		// if we have a Gradle plugin, we need to push it up to the plugin portal too
-		if (thisProj.tasks.names.contains('publishPlugins')) {
-			dependsOn thisProj.tasks.named('publishPlugins')
+		if (project.tasks.names.contains('publishPlugins')) {
+			dependsOn project.tasks.named('publishPlugins')
 		}
 	}
 }
