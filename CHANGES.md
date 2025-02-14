@@ -11,7 +11,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 * Support for`clang-format` on maven-plugin ([#2406](https://github.com/diffplug/spotless/pull/2406))
-* Adopt new version of `maven-plugin-development` from GradleX ([#2395](https://github.com/diffplug/spotless/pull/2395))
 
 ## [3.0.2] - 2025-01-14
 ### Fixed
