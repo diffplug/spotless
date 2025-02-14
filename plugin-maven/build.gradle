@@ -1,9 +1,9 @@
-import de.benediktritter.maven.plugin.development.task.GenerateHelpMojoSourcesTask
-import de.benediktritter.maven.plugin.development.task.GenerateMavenPluginDescriptorTask
+import org.gradlex.maven.plugin.development.task.GenerateHelpMojoSourcesTask
+import org.gradlex.maven.plugin.development.task.GenerateMavenPluginDescriptorTask
 
 plugins {
-	// https://www.benediktritter.de/maven-plugin-development/#release-history
-	id 'de.benediktritter.maven-plugin-development' version '0.4.3'
+	// https://github.com/gradlex-org/maven-plugin-development
+	id 'org.gradlex.maven-plugin-development' version '1.0.3'
 }
 
 apply from: rootProject.file('gradle/changelog.gradle')
