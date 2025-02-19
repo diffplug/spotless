@@ -26,6 +26,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * All steps now support roundtrip serialization (end of [#987](https://github.com/diffplug/spotless/issues/987)).
 * Spotless now supports [linting](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#lints) in addition to formatting.
 ### Changed
+* Allow setting Eclipse XML config from a string, not only from files ([#2361](https://github.com/diffplug/spotless/pull/2361))
 * Allow setting Eclipse config from a string, not only from files ([#2337](https://github.com/diffplug/spotless/pull/2337))
 * Bump default `ktlint` version to latest `1.3.0` -> `1.4.0`. ([#2314](https://github.com/diffplug/spotless/pull/2314))
 * Add _Sort Members_ feature based on [Eclipse JDT](plugin-gradle/README.md#eclipse-jdt) implementation. ([#2312](https://github.com/diffplug/spotless/pull/2312))
