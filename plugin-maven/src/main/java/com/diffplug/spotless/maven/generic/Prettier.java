@@ -47,6 +47,9 @@ public class Prettier extends AbstractNpmFormatterStepFactory {
 	@Parameter
 	private String configFile;
 
+	@Parameter
+	private Boolean editorconfig;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 
@@ -101,7 +104,7 @@ public class Prettier extends AbstractNpmFormatterStepFactory {
 		File baseDir = baseDir(stepConfig);
 		File buildDir = buildDir(stepConfig);
 		File cacheDir = cacheDir(stepConfig);
-		PrettierConfig prettierConfig = new PrettierConfig(configFileHandler, configInline);
+		PrettierConfig prettierConfig = new PrettierConfig(configFileHandler, configInline, editorconfig);
 		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
 		return PrettierFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, cacheDir, npmPathResolver, prettierConfig);
 	}
