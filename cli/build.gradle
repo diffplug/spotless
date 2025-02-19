@@ -1,0 +1,193 @@
+plugins {
+	id 'org.graalvm.buildtools.native'
+	id 'com.gradleup.shadow'
+}
+apply from: rootProject.file('gradle/changelog.gradle')
+ext.artifactId = project.artifactIdGradle
+version = spotlessChangelog.versionNext
+apply plugin: 'java-library'
+apply plugin: 'application'
+apply from: rootProject.file('gradle/java-setup.gradle')
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
+
+dependencies {
+	// todo, unify with plugin-gradle/build.gradle -- BEGIN
+	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
+		api projects.lib
+		api projects.libExtra
+	} else {
+		api "com.diffplug.spotless:spotless-lib:${rootProject.spotlessChangelog.versionLast}"
+		api "com.diffplug.spotless:spotless-lib-extra:${rootProject.spotlessChangelog.versionLast}"
+	}
+	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+
+	testImplementation projects.testlib
+	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
+	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
+	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	testImplementation 'org.owasp.encoder:encoder:1.3.1'
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+	// todo, unify with plugin-gradle/build.gradle -- END
+
+	implementation "info.picocli:picocli:${VER_PICOCLI}"
+	annotationProcessor "info.picocli:picocli-codegen:${VER_PICOCLI}"
+}
+
+dependencies {
+	[
+		'com.google.googlejavaformat:google-java-format:1.24.0'
+	].each {
+		implementation it
+	}
+}
+
+apply from: rootProject.file('gradle/special-tests.gradle')
+tasks.withType(Test).configureEach {
+	testLogging.showStandardStreams = true
+}
+
+compileJava {
+	// options for picocli codegen
+	// https://github.com/remkop/picocli/tree/main/picocli-codegen#222-other-options
+	options.compilerArgs += [
+		"-Aproject=${project.group}/${project.name}",
+		"-Aother.resource.bundles=application",
+		// patterns require double-escaping (one escape is removed by groovy, the other one is needed in the resulting json file)
+		"-Aother.resource.patterns=.*\\\\.properties,.*\\\\.json,.*\\\\.js"
+	]
+}
+
+tasks.withType(org.graalvm.buildtools.gradle.tasks.GenerateResourcesConfigFile).configureEach {
+	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
+}
+tasks.withType(org.graalvm.buildtools.gradle.tasks.BuildNativeImageTask).configureEach {
+	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
+}
+
+tasks.withType(ProcessResources).configureEach(new ApplicationPropertiesProcessResourcesAction(project.version))
+
+class ApplicationPropertiesProcessResourcesAction implements Action<ProcessResources> {
+
+	private final String cliVersion
+
+	ApplicationPropertiesProcessResourcesAction(String cliVersion) {
+		this.cliVersion = cliVersion
+	}
+
+	@Override
+	void execute(ProcessResources processResources) {
+		def localCliVersion = cliVersion // prevent issues with decorated closure
+		processResources.filesMatching("application.properties") {
+			filter(
+					org.apache.tools.ant.filters.ReplaceTokens,
+					tokens: [
+						'cli.version': localCliVersion
+					]
+					)
+		}
+	}
+}
+
+application {
+	mainClass = 'com.diffplug.spotless.cli.SpotlessCLI'
+	applicationName = 'spotless'
+	archivesBaseName = 'spotless-cli'
+}
+
+
+def nativeCompileMetaDir = project.layout.buildDirectory.dir('nativeCompile/src/main/resources/native-image/' + project.group + '/' + project.name)
+
+// use tasks 'nativeCompile' and 'nativeRun' to compile and run the native image
+graalvmNative {
+	agent {
+		enabled = !project.hasProperty('skipGraalAgent') // we would love to make this dynamic, but it's not possible
+		defaultMode = "standard"
+		metadataCopy {
+			inputTaskNames.add('test')
+			inputTaskNames.add('testNpm')
+			mergeWithExisting = false
+			outputDirectories.add(nativeCompileMetaDir.get().asFile.path)
+		}
+		tasksToInstrumentPredicate = new java.util.function.Predicate<Task>() {
+					@Override
+					boolean test(Task task) {
+						//						if (project.hasProperty('agent')) {
+						println ("Instrumenting task: " + task.name + " " + task.name == 'test' + "proj: " + task.project.hasProperty('agent'))
+						return task.name == 'test' || task.name == 'testNpm'
+						//						}
+						//						return false
+					}
+				}
+	}
+	binaries {
+		main {
+			imageName = 'spotless'
+			mainClass = 'com.diffplug.spotless.cli.SpotlessCLI'
+			sharedLibrary = false
+			useFatJar = true // use shadowJar as input to have same classpath
+
+			// optimizations, see https://www.graalvm.org/latest/reference-manual/native-image/optimizations-and-performance/
+			//buildArgs.add('-O3') // on production builds
+
+			// the following options are required for GJF
+			// see: <https://github.com/google/google-java-format/issues/894#issuecomment-1430408909>
+			buildArgs.add('-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED')
+			buildArgs.add('-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED')
+			buildArgs.add('-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED')
+			buildArgs.add('-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED')
+			buildArgs.add('-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED')
+
+			buildArgs.add('--initialize-at-build-time=com.sun.tools.javac.file.Locations')
+
+			buildArgs.add('-H:IncludeResourceBundles=com.sun.tools.javac.resources.compiler')
+			buildArgs.add('-H:IncludeResourceBundles=com.sun.tools.javac.resources.javac')
+		}
+	}
+}
+
+
+tasks.named('metadataCopy') {
+	dependsOn('test', 'testNpm')
+}
+
+tasks.named('nativeCompile') {
+	dependsOn('shadowJar')
+	classpathJar = tasks.shadowJar.archiveFile.get().asFile
+}
+
+
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+	dependsOn('metadataCopy') // produces graalvm agent info
+	from(nativeCompileMetaDir.get().asFile.path) {
+		into('META-INF/native-image/' + project.group + '/' + project.name)
+	}
+}
+
+gradle.taskGraph.whenReady { TaskExecutionGraph graph ->
+	//	println "Graph: " + graph.allTasks*.name
+	if (graph.hasTask(':cli:nativeCompile') || graph.hasTask(':cli:metadataCopy') || graph.hasTask(':cli:shadowJar')) {
+		// enable graalvm agent using property here instead of command line `-Pagent=standard`
+		// this collects information about reflective access and resources used by the application (e.g. GJF)
+		project.ext.agent = 'standard'
+	}
+}
+
+tasks.withType(Test).configureEach {
+	if (it.name == 'test' || it.name == 'testNpm') {
+		it.outputs.dir(nativeCompileMetaDir)
+		if (project.hasProperty('agent')) {
+			it.inputs.property('agent', project.property('agent')) // make sure to re-run tests if agent changes
+		}
+	}
+	if (it.name == 'testCliProcess' || it.name == 'testCliProcessNpm') {
+		it.dependsOn('shadowJar')
+		it.systemProperty 'spotless.cli.shadowJar', tasks.shadowJar.archiveFile.get().asFile
+	}
+	if (it.name == 'testCliNative' || it.name == 'testCliNativeNpm') {
+		it.dependsOn('nativeCompile')
+		it.systemProperty 'spotless.cli.nativeImage', tasks.nativeCompile.outputFile.get().asFile
+	}
+}

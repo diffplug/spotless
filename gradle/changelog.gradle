@@ -6,6 +6,9 @@ if (project.name == 'plugin-gradle') {
 } else if (project.name == 'plugin-maven') {
 	kind = 'maven'
 	releaseTitle = 'Maven Plugin'
+} else if (project.name == 'cli') {
+	kind = 'cli'
+	releaseTitle = 'Spotless CLI'
 } else {
 	assert project == rootProject
 	kind = 'lib'
