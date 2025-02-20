@@ -12,7 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Support for`clang-format` on maven-plugin ([#2406](https://github.com/diffplug/spotless/pull/2406))
-* Allow overriding classLoader for all `JarState`s to enable spotless-cli ([#xxx](https://github.com/diffplug/spotless/pull/XXX))
+* Allow overriding classLoader for all `JarState`s to enable spotless-cli ([#2427](https://github.com/diffplug/spotless/pull/2427))
 
 ## [3.0.2] - 2025-01-14
 ### Fixed
