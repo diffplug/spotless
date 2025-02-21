@@ -90,7 +90,7 @@ public class PrettierFormatterStep {
 				logger.info("creating formatter function (starting server)");
 				ServerProcessInfo prettierRestServer = toRuntime().npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
-				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
+				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions(), prettierConfig.getEditorconfig());
 				return Closeable.ofDangerous(() -> endServer(restService, prettierRestServer), new PrettierFilePathPassingFormatterFunc(prettierConfigOptions, restService));
 			} catch (IOException e) {
 				throw ThrowingEx.asRuntime(e);
