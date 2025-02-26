@@ -159,6 +159,25 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	void prettier_editorconfig() throws Exception {
+		String suffix = "ts";
+		writePomWithPrettierSteps("**/*." + suffix,
+			"<prettier>",
+			"  <prettierVersion>1.16.4</prettierVersion>",
+			"  <configFile>.prettierrc.yml</configFile>",
+			"  <editorconfig>true</editorconfig>",
+			"</prettier>");
+
+		String kind = "typescript";
+		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc_noop.yml");
+		setFile(".editorconfig").toResource("npm/prettier/config/.editorconfig_300");
+		String path = "src/main/" + kind + "/test." + suffix;
+		setFile(path).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
+	}
+
+	@Test
 	void custom_plugin() throws Exception {
 		writePomWithFormatSteps(
 				"<includes><include>php-example.php</include></includes>",
