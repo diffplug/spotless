@@ -27,7 +27,6 @@ import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
-import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
@@ -59,7 +58,6 @@ class EslintFormatterStepTest {
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
 					devDependenciesForRuleset.get(ruleSetName),
-					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
 					null,
@@ -101,7 +99,6 @@ class EslintFormatterStepTest {
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
 					devDependenciesForRuleset.get(ruleSetName),
-					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
 					null,
@@ -158,7 +155,6 @@ class EslintFormatterStepTest {
 
 			final FormatterStep formatterStep = EslintFormatterStep.create(
 					EslintStyleGuide.TS_XO_TYPESCRIPT.mergedWith(EslintFormatterStep.defaultDevDependenciesForTypescript()),
-					TestProvisioner.mavenCentral(),
 					projectDir(),
 					buildDir(),
 					null,
