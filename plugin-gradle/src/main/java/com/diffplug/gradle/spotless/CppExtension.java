@@ -69,6 +69,13 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 			return this;
 		}
 
+		public EclipseConfig configXml(String... configs) {
+			requireElementsNonNull(configs);
+			builder.setXmlPreferences(List.of(configs));
+			replaceStep(builder.build());
+			return this;
+		}
+
 		public EclipseConfig withP2Mirrors(Map<String, String> mirrors) {
 			builder.setP2Mirrors(mirrors);
 			replaceStep(builder.build());
