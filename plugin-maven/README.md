@@ -265,6 +265,13 @@ any other maven phase (i.e. compile) then it can be configured as below;
   <version>4.26</version>
   <!-- Optional: Specify a file which contains all formatting options. -->
   <file>${project.basedir}/eclipse-formatter.xml</file>
+  <!-- If the access to the p2 repositories is restricted, mirrors can be pecified using a URI prefix map as follows:-->
+  <p2Mirrors>
+    <p2Mirror>
+      <prefix>https://download.eclipse.org/eclipse/updates/4.26/</prefix>
+      <url>https://some.internal.mirror/4-26-updates-p2/</url>
+    </p2Mirror>
+  </p2Mirrors>
 </eclipse>
 ```
 
