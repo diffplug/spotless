@@ -21,7 +21,7 @@ dependencies {
 	// the osgi dep is included in solstice, but it has some CVE's against it.
 	// 3.18.500 is the oldest, most-compatible version with no CVE's
 	// https://central.sonatype.com/artifact/org.eclipse.platform/org.eclipse.osgi/versions
-	implementation "org.eclipse.platform:org.eclipse.osgi:3.18.500"
+	implementation "org.eclipse.platform:org.eclipse.osgi:3.23.0"
 
 	// testing
 	testImplementation projects.testlib
