@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,8 +53,12 @@ class FormatterPropertiesTest extends ResourceHarness {
 		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> !it.endsWith(".xml")).collect(Collectors.toList());
 	}
 
-	private List<String> invalidPropertiesResources() {
-		return List.of(INVALID_SETTINGS_RESOURCES).stream().filter(it -> !it.endsWith(".xml")).collect(Collectors.toList());
+	private List<String> validXmlResources() {
+		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> it.endsWith(".xml")).collect(Collectors.toList());
+	}
+
+	private List<String> invalidXmlResources() {
+		return List.of(INVALID_SETTINGS_RESOURCES).stream().filter(it -> it.endsWith(".xml")).collect(Collectors.toList());
 	}
 
 	private static final String[] VALID_VALUES = {
@@ -80,6 +85,18 @@ class FormatterPropertiesTest extends ResourceHarness {
 			File settingsFile = createTestFile(settingsResource);
 			String content = Files.readString(settingsFile.toPath());
 			FormatterProperties preferences = FormatterProperties.fromPropertiesContent(List.of(content));
+			assertFor(preferences)
+					.containsSpecificValuesOf(settingsFile)
+					.containsCommonValueOf(settingsFile);
+		}
+	}
+
+	@Test
+	void differentPropertyFileTypes_content_xml() throws IOException {
+		for (String settingsResource : validXmlResources()) {
+			File settingsFile = createTestFile(settingsResource);
+			String content = Files.readString(settingsFile.toPath());
+			FormatterProperties preferences = FormatterProperties.fromXmlContent(List.of(content));
 			assertFor(preferences)
 					.containsSpecificValuesOf(settingsFile)
 					.containsCommonValueOf(settingsFile);
@@ -117,6 +134,22 @@ class FormatterPropertiesTest extends ResourceHarness {
 	}
 
 	@Test
+	void multiplePropertyFiles_content_xml() throws IOException {
+		LinkedList<File> settingsFiles = new LinkedList<>();
+		LinkedList<String> content = new LinkedList<>();
+		for (String settingsResource : validXmlResources()) {
+			File settingsFile = createTestFile(settingsResource);
+			content.add(Files.readString(settingsFile.toPath()));
+			settingsFiles.add(settingsFile);
+		}
+		FormatterProperties preferences = FormatterProperties.fromXmlContent(content);
+		/* Settings are loaded / overridden in the sequence they are configured. */
+		assertFor(preferences)
+				.containsSpecificValuesOf(settingsFiles)
+				.containsCommonValueOf(settingsFiles.getLast());
+	}
+
+	@Test
 	void invalidPropertyFiles() throws IOException {
 		for (String settingsResource : INVALID_SETTINGS_RESOURCES) {
 			File settingsFile = createTestFile(settingsResource);
@@ -136,22 +169,10 @@ class FormatterPropertiesTest extends ResourceHarness {
 	}
 
 	@Test
-	void invalidPropertyFiles_content_properties() throws IOException {
-		for (String settingsResource : invalidPropertiesResources()) {
-			File settingsFile = createTestFile(settingsResource);
-			String content = Files.readString(settingsFile.toPath());
-			boolean exceptionCaught = false;
-			try {
-				FormatterProperties.fromPropertiesContent(List.of(content));
-			} catch (IllegalArgumentException ex) {
-				exceptionCaught = true;
-				assertThat(ex.getMessage())
-						.as("IllegalArgumentException does not contain absolute path of file '%s'", settingsFile.getName())
-						.contains(settingsFile.getAbsolutePath());
-			}
-			assertThat(exceptionCaught)
-					.as("No IllegalArgumentException thrown when parsing '%s'", settingsFile.getName())
-					.isTrue();
+	void invalidPropertyFiles_content_xml() throws IOException {
+		for (String settingsResource : invalidXmlResources()) {
+			IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> FormatterProperties.fromXmlContent(List.of(ResourceHarness.getTestResource(settingsResource))));
+			assertThat(actual.getMessage()).startsWith("Failed to add preferences from XML:");
 		}
 	}
 
