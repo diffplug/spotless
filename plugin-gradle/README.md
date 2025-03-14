@@ -435,6 +435,20 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 - `com.diffplug.gradle.spotless.KotlinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.2/com/diffplug/gradle/spotless/KotlinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinExtension.java)
 - `com.diffplug.gradle.spotless.KotlinGradleExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.2/com/diffplug/gradle/spotless/KotlinGradleExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinGradleExtension.java)
 
+> [!WARNING]
+> The target is usually inferred automatically from the java source sets. However, Spotless cannot automatically detect [android](https://github.com/diffplug/spotless/issues/111) or [java-gradle-plugin](https://github.com/diffplug/spotless/issues/437) sources, but you can fix this easily:
+> 
+> ```gradle
+> spotless {
+>  kotlin {
+>    target 'src/*/kotlin/**/*.kt'
+>    target 'src/*/java/**/*.kt'
+>  }
+>  kotlinGradle {
+>    target '**/*.kts'
+>  }
+> ```
+
 ```gradle
 spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
            // configure<com.diffplug.gradle.spotless.SpotlessExtension> {
