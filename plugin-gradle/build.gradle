@@ -33,6 +33,9 @@ apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	testLogging.showStandardStreams = true
 }
+tasks.validatePlugins {
+	enableStricterValidation = true
+}
 
 //////////////////////////
 // GRADLE PLUGIN PORTAL //

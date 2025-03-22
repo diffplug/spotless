@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,14 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.work.DisableCachingByDefault;
 import org.jetbrains.annotations.NotNull;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
+@DisableCachingByDefault(because = "not worth caching")
 public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	@Internal
 	public abstract Property<String> getEncoding();
