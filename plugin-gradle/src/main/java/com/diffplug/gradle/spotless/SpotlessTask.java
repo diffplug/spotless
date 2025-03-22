@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.work.DisableCachingByDefault;
 import org.gradle.work.Incremental;
 
 import com.diffplug.spotless.ConfigurationCacheHackList;
@@ -43,6 +44,7 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.extra.GitRatchet;
 
+@DisableCachingByDefault(because = "abstract definition")
 public abstract class SpotlessTask extends DefaultTask {
 	@Internal
 	abstract Property<SpotlessTaskService> getTaskService();
