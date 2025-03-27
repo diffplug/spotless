@@ -107,17 +107,22 @@ model {
 				artifactId project.ext.artifactId
 				version project.version
 
+				def projectExtArtifactId = project.ext.artifactId
+				def projectDescription = project.description
+				def projectOrg = project.org
+				def rootProjectName = rootProject.name
+
 				pom.withXml {
 					// add MavenCentral requirements to the POM
 					asNode().children().last() + {
 						resolveStrategy = Closure.DELEGATE_FIRST
-						name project.ext.artifactId
-						description project.description
-						url "https://github.com/${project.org}/${rootProject.name}"
+						name projectExtArtifactId
+						description projectDescription
+						url "https://github.com/${projectOrg}/${rootProjectName}"
 						scm {
-							url "https://github.com/${project.org}/${rootProject.name}"
-							connection "scm:git:https://github.com/${project.org}/${rootProject.name}.git"
-							developerConnection "scm:git:ssh:git@github.com/${project.org}/${rootProject.name}.git"
+							url "https://github.com/${projectOrg}/${rootProjectName}"
+							connection "scm:git:https://github.com/${projectOrg}/${rootProjectName}.git"
+							developerConnection "scm:git:ssh:git@github.com/${projectOrg}/${rootProjectName}.git"
 						}
 						licenses {
 							if (isExt) {

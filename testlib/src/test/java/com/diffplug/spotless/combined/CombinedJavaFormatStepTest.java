@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import com.diffplug.spotless.generic.TrimTrailingWhitespaceStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import com.diffplug.spotless.yaml.SerializeToByteArrayHack;
 
 public class CombinedJavaFormatStepTest extends ResourceHarness {
 
@@ -45,6 +46,7 @@ public class CombinedJavaFormatStepTest extends ResourceHarness {
 		FenceStep toggleOffOnPair = FenceStep.named(FenceStep.defaultToggleName()).openClose("formatting:off", "formatting:on");
 		try (StepHarness formatter = StepHarness.forSteps(
 				toggleOffOnPair.preserveWithin(List.of(
+						new SerializeToByteArrayHack(),
 						gjf,
 						indentWithSpaces,
 						importOrder,

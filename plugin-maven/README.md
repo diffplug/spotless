@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![MavenCentral](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.44.0.BETA4-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.44.0.BETA4/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.44.3-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.44.3/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -43,7 +43,7 @@ user@machine repo % mvn spotless:check
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
-  - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt))
+  - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [Sql](#sql) ([dbeaver](#dbeaver))
@@ -56,7 +56,7 @@ user@machine repo % mvn spotless:check
   - [Gherkin](#gherkin)
   - [Go](#go)
   - [RDF](#RDF)
-  - [Protobuf](#protobuf) ([buf](#buf))
+  - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang))
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
@@ -265,6 +265,13 @@ any other maven phase (i.e. compile) then it can be configured as below;
   <version>4.26</version>
   <!-- Optional: Specify a file which contains all formatting options. -->
   <file>${project.basedir}/eclipse-formatter.xml</file>
+  <!-- If the access to the p2 repositories is restricted, mirrors can be pecified using a URI prefix map as follows:-->
+  <p2Mirrors>
+    <p2Mirror>
+      <prefix>https://download.eclipse.org/eclipse/updates/4.26/</prefix>
+      <url>https://some.internal.mirror/4-26-updates-p2/</url>
+    </p2Mirror>
+  </p2Mirrors>
 </eclipse>
 ```
 
@@ -556,6 +563,18 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
   <version>11.0</version> <!-- optional version of Eclipse Formatter, others at https://download.eclipse.org/tools/cdt/releases/ -->
   <file>${project.basedir}/eclipse-cdt.xml</file> <!-- optional -->
 </eclipseCdt>
+```
+
+### clang-format
+
+[homepage](https://clang.llvm.org/docs/ClangFormat.html). [changelog](https://releases.llvm.org/download.html). `clang-format` is a formatter for c, c++, c#, objective-c, protobuf, javascript, and java. You can use clang-format in any language-specific format, but usually you will be creating a generic format.
+
+```xml
+<clangFormat>
+  <version>14.0.0-1ubuntu1.1</version> <!-- optional version of clang-format -->
+  <pathToExe>/path/to/buf</pathToExe>  <!-- optional: if clang-format isn't in your path -->
+  <style>LLVM</style>  <!-- optional: can be LLVM, Google, Chromium, Mozilla, WebKit -->
+</clangFormat>
 ```
 
 ## Python
@@ -1218,17 +1237,17 @@ RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version t
 [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/protobuf/Protobuf.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/protobuf).
 ```xml
 <configuration>
-  <includes>  <!-- optiona: default is **/*.proto -->
-    <include>proto/*.proto<include>
-  <includes>
+  <includes>  <!-- optional: default is **/*.proto -->
+    <include>proto/*.proto</include>
+  </includes>
 
-  <excludes>  <!-- optiona: if you want to ignore auto generated protos -->
-    <include>target/**/<include>
-  <excludes>
+  <excludes>  <!-- optional: if you want to ignore auto generated protos -->
+    <exclude>target/**/<exclude>
+  </excludes>
   
   <protobuf>
     <buf />  <!-- has its own section below -->
-  </css>
+  </protobuf>
 </configuration>
 ```
 

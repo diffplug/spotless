@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,12 +105,12 @@ public class GoogleJavaFormatStep implements Serializable {
 
 		GoogleJavaFormatStep step = new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc);
 		if (removeImports) {
-			return FormatterStep.create(NAME,
+			return FormatterStep.create(name,
 					step,
 					GoogleJavaFormatStep::equalityState,
 					State::createRemoveUnusedImportsOnly);
 		} else {
-			return FormatterStep.create(NAME,
+			return FormatterStep.create(name,
 					step,
 					GoogleJavaFormatStep::equalityState,
 					State::createFormat);

@@ -4,12 +4,37 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Changed
+* Use palantir-java-format 2.57.0 on Java 21. ([#2447](https://github.com/diffplug/spotless/pull/2447))
+* Re-try `npm install` with `--prefer-online` after `ERESOLVE` error. ([#2448](https://github.com/diffplug/spotless/pull/2448))
+
+## [7.0.2] - 2025-01-14
+### Fixed
+* Node.JS-based tasks now work with the configuration cache ([#2372](https://github.com/diffplug/spotless/issues/2372))
+* Eclipse-based tasks can now handle parallel configuration ([#2389](https://github.com/diffplug/spotless/issues/2389))
+
+## [7.0.1] - 2025-01-07
+### Fixed
+* Deployment was missing part of the CDT formatter, now fixed. ([#2384](https://github.com/diffplug/spotless/issues/2384))
+
+## [7.0.0] - 2025-01-06
+## Headline changes
+* The long `7.0.0.BETAX` period is finally over, Spotless for Gradle 7.0 is here!
+* Full, no asterisk support for configuration cache (end of [#987](https://github.com/diffplug/spotless/issues/987))
+* Spotless now supports [linting](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#lints) in addition to formatting.
+### Changed
 * Allow setting Eclipse config from a string, not only from files ([#2337](https://github.com/diffplug/spotless/pull/2337))
 * Bump default `ktlint` version to latest `1.3.0` -> `1.4.0`. ([#2314](https://github.com/diffplug/spotless/pull/2314))
 * Bump default `jackson` version to latest `2.18.0` -> `2.18.1`. ([#2319](https://github.com/diffplug/spotless/pull/2319))
 * Bump default `ktfmt` version to latest `0.52` -> `0.53`. ([#2320](https://github.com/diffplug/spotless/pull/2320))
 * Bump default `ktlint` version to latest `1.4.0` -> `1.5.0`. ([#2354](https://github.com/diffplug/spotless/pull/2354))
+* Bump minimum `eclipse-cdt` version to `11.0` (removed support for `10.7`). ([#2373](https://github.com/diffplug/spotless/pull/2373))
+* Bump default `eclipse` version to latest `4.32` -> `4.34`. ([#2381](https://github.com/diffplug/spotless/pull/2381))
 ### Fixed
+* `toggleOffOn` now works with the configuration cache. ([#2378](https://github.com/diffplug/spotless/pull/2378) fixes [#2317](https://github.com/diffplug/spotless/issues/2317))
+* Using `custom` with a Groovy closure now works with and without configuration cache. ([#2376](https://github.com/diffplug/spotless/pull/2376))
+  * Minimum required Gradle version for this to work has bumped from `8.0` to `8.4`.
+  * The global git system config is now ignored for line-ending purposes.
+  * Added `SerializeToByteArrayHack` as a flag for a limitation at the intersection of `toggleOffOn` and `custom`. 
 * You can now use `removeUnusedImports` and `googleJavaFormat` at the same time again. (fixes [#2159](https://github.com/diffplug/spotless/issues/2159))
 * The default list of type annotations used by `formatAnnotations` now includes Jakarta Validation's `Valid` and constraints validations (fixes [#2334](https://github.com/diffplug/spotless/issues/2334))
 * `indentWith[Spaces|Tabs]` has been deprecated in favor of `leadingTabsToSpaces` and `leadingSpacesToTabs`. ([#2350](https://github.com/diffplug/spotless/pull/2350) fixes [#794](https://github.com/diffplug/spotless/issues/794))
