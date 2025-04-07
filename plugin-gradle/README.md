@@ -207,13 +207,14 @@ spotless {
 
 <a name="applying-to-android-java-source"></a>
 
-The target is usually inferred automatically from the java source sets. However, Spotless cannot automatically detect [android](https://github.com/diffplug/spotless/issues/111) or [java-gradle-plugin](https://github.com/diffplug/spotless/issues/437) sources, but you can fix this easily:
-
-```gradle
-spotless {
-  java {
-    target 'src/*/java/**/*.java'
-```
+> [!WARNING]
+> The target is usually inferred automatically from the java source sets. However, Spotless cannot automatically detect [android](https://github.com/diffplug/spotless/issues/111) or [java-gradle-plugin](https://github.com/diffplug/spotless/issues/437) sources, but you can fix this easily:
+>
+> ```gradle
+> spotless {
+>   java {
+>     target 'src/*/java/**/*.java'
+> ```
 
 ### removeUnusedImports
 
@@ -435,6 +436,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 - `com.diffplug.gradle.spotless.KotlinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.2/com/diffplug/gradle/spotless/KotlinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinExtension.java)
 - `com.diffplug.gradle.spotless.KotlinGradleExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/7.0.2/com/diffplug/gradle/spotless/KotlinGradleExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/KotlinGradleExtension.java)
 
+
 ```gradle
 spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
            // configure<com.diffplug.gradle.spotless.SpotlessExtension> {
@@ -452,6 +454,15 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
   }
 }
 ```
+
+> [!WARNING]
+> The target is usually inferred automatically from the java source sets. However, Spotless cannot automatically detect [android](https://github.com/diffplug/spotless/issues/111) or [java-gradle-plugin](https://github.com/diffplug/spotless/issues/437) sources, but you can fix this easily:
+> 
+> ```gradle
+> spotless {
+>   kotlin {
+>     target 'src/*/kotlin/**/*.kt', 'src/*/java/**/*.kt'
+> ```
 
 ### ktfmt
 
