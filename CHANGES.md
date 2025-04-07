@@ -13,7 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Use palantir-java-format 2.57.0 on Java 21. ([#2447](https://github.com/diffplug/spotless/pull/2447))
 * Re-try `npm install` with `--prefer-online` after `ERESOLVE` error. ([#2448](https://github.com/diffplug/spotless/pull/2448))
-* **BREAKING** Assert that each npm-based step uses its own `node_modules` directory, even when configured exactly the same, to prevent race conditions when running in parallel. For this, the API of npm-based formatter steps has been changed. ([#TODO](https://github.com/diffplug/spotless/pull/TODO))
+* **BREAKING** Assert that each npm-based step uses its own `node_modules` directory, even when configured exactly the same, to prevent race conditions when running in parallel. For this, the API of npm-based formatter steps has been changed. ([#2462](https://github.com/diffplug/spotless/pull/2462))
 
 ## [3.1.0] - 2025-02-20
 ### Added
