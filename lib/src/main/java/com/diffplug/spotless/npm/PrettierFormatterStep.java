@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,12 +51,13 @@ public class PrettierFormatterStep {
 		return Collections.singletonMap("prettier", version);
 	}
 
-	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {
+	public static FormatterStep create(String formatName, Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {
 		requireNonNull(devDependencies);
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
-		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, prettierConfig),
+		final String prefixedName = String.format("%s-%s", formatName, NAME);
+		return FormatterStep.createLazy(prefixedName,
+				() -> new State(prefixedName, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, prettierConfig),
 				State::createFormatterFunc);
 	}
 

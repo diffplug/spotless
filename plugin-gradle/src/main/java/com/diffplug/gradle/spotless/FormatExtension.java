@@ -798,7 +798,7 @@ public class FormatExtension {
 		@Override
 		protected FormatterStep createStep() {
 			final Project project = getProject();
-			return PrettierFormatterStep.create(devDependencies, provisioner(), project.getProjectDir(),
+			return PrettierFormatterStep.create(formatName(), devDependencies, provisioner(), project.getProjectDir(),
 					project.getLayout().getBuildDirectory().getAsFile().get(), npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(),
 							Arrays.asList(project.getProjectDir(), project.getRootDir())),

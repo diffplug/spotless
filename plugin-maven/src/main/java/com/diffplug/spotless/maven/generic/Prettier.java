@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ public class Prettier extends AbstractNpmFormatterStepFactory {
 		File cacheDir = cacheDir(stepConfig);
 		PrettierConfig prettierConfig = new PrettierConfig(configFileHandler, configInline);
 		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
-		return PrettierFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, cacheDir, npmPathResolver, prettierConfig);
+		return PrettierFormatterStep.create(stepConfig.getName(), devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, cacheDir, npmPathResolver, prettierConfig);
 	}
 
 	private static IllegalArgumentException onlyOneConfig() {

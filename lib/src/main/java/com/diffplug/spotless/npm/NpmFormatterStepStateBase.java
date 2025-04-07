@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 		Runtime(NpmFormatterStepStateBase parent) {
 			this.parent = parent;
-			this.nodeServerLayout = new NodeServerLayout(parent.locations.buildDir(), parent.npmConfig.getPackageJsonContent());
+			this.nodeServerLayout = new NodeServerLayout(new File(parent.locations.buildDir(), parent.stepName), parent.npmConfig.getPackageJsonContent());
 			this.nodeServeApp = new NodeServeApp(nodeServerLayout, parent.npmConfig, parent.locations);
 		}
 

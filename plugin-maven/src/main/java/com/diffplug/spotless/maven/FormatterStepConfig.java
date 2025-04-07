@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,14 +28,16 @@ public class FormatterStepConfig {
 	private final Provisioner provisioner;
 	private final FileLocator fileLocator;
 	private final Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory;
+	private final String name;
 
-	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Optional<String> ratchetFrom, Provisioner provisioner, FileLocator fileLocator, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory) {
+	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Optional<String> ratchetFrom, Provisioner provisioner, FileLocator fileLocator, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory, String name) {
 		this.encoding = encoding;
 		this.licenseHeaderDelimiter = licenseHeaderDelimiter;
 		this.ratchetFrom = ratchetFrom;
 		this.provisioner = provisioner;
 		this.fileLocator = fileLocator;
 		this.spotlessSetLicenseHeaderYearsFromGitHistory = spotlessSetLicenseHeaderYearsFromGitHistory;
+		this.name = name;
 	}
 
 	public Charset getEncoding() {
@@ -60,5 +62,9 @@ public class FormatterStepConfig {
 
 	public Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory() {
 		return spotlessSetLicenseHeaderYearsFromGitHistory;
+	}
+
+	public String getName() {
+		return name;
 	}
 }

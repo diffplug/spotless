@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 package com.diffplug.spotless.maven;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import com.diffplug.spotless.Formatter;
 
@@ -40,12 +43,16 @@ class FormattersHolder implements AutoCloseable {
 	static FormattersHolder create(Map<FormatterFactory, Supplier<Iterable<File>>> formatterFactoryToFiles, FormatterConfig config) {
 		Map<FormatterFactory, Formatter> openFormatters = new LinkedHashMap<>();
 		try {
-			for (Entry<FormatterFactory, Supplier<Iterable<File>>> entry : formatterFactoryToFiles.entrySet()) {
+			List<Entry<FormatterFactory, Supplier<Iterable<File>>>> formatterEntries = new ArrayList<>(formatterFactoryToFiles.entrySet());
+			for (int formatterIndex = 0; formatterIndex < formatterEntries.size(); formatterIndex++) {
+				Entry<FormatterFactory, Supplier<Iterable<File>>> entry = formatterEntries.get(formatterIndex);
 				FormatterFactory formatterFactory = entry.getKey();
 				Supplier<Iterable<File>> files = entry.getValue();
-				Formatter formatter = formatterFactory.newFormatter(files, config);
+				Formatter formatter = formatterFactory.newFormatter(files, config, formatterIndex);
 				openFormatters.put(formatterFactory, formatter);
 			}
+
+			System.out.println("Created formatters: " + openFormatters.keySet().stream().map(f -> f.includes()).collect(Collectors.toList()));
 		} catch (RuntimeException openError) {
 			try {
 				close(openFormatters.values());

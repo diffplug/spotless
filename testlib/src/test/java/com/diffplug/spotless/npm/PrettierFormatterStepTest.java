@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 			final String cleanFile = filedir + fileType + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					"PRETTIER_TEST",
 					dependencies,
 					TestProvisioner.mavenCentral(),
 					projectDir(),
@@ -90,6 +91,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 			final String cleanFile = filedir + "json.clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					"PRETTIER_TEST",
 					ImmutableMap.of("prettier", prettierVersion),
 					TestProvisioner.mavenCentral(),
 					projectDir(),
@@ -112,6 +114,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 			final String cleanFile = filedir + "clean.json";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					"PRETTIER_TEST",
 					ImmutableMap.of("prettier", prettierVersion),
 					TestProvisioner.mavenCentral(),
 					projectDir(),
@@ -128,6 +131,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 		@Test
 		void verifyPrettierErrorMessageIsRelayed() throws Exception {
 			FormatterStep formatterStep = PrettierFormatterStep.create(
+					"PRETTIER_TEST",
 					PrettierFormatterStep.defaultDevDependenciesWithPrettier("2.8.8"),
 					TestProvisioner.mavenCentral(),
 					projectDir(),
@@ -137,7 +141,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
 				stepHarness.expectLintsOfResource("npm/prettier/filetypes/scss/scss.dirty")
-						.toBe("LINE_UNDEFINED prettier-format(com.diffplug.spotless.npm.SimpleRestClient$SimpleRestResponseException) Unexpected response status code at /prettier/format [HTTP 500] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\") (...)");
+						.toBe("LINE_UNDEFINED PRETTIER_TEST-prettier-format(com.diffplug.spotless.npm.SimpleRestClient$SimpleRestResponseException) Unexpected response status code at /prettier/format [HTTP 500] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\") (...)");
 			}
 		}
 	}
@@ -154,6 +158,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 			final String cleanFile = FILEDIR + "typescript." + cleanFileNameSuffix + ".clean";
 
 			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					"PRETTIER_TEST",
 					ImmutableMap.of("prettier", prettierVersion),
 					TestProvisioner.mavenCentral(),
 					projectDir(),
@@ -210,6 +215,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 			@Override
 			protected FormatterStep create() {
 				return PrettierFormatterStep.create(
+						"PRETTIER_TEST",
 						ImmutableMap.of("prettier", prettierVersion),
 						TestProvisioner.mavenCentral(),
 						projectDir(),
