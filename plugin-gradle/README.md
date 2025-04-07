@@ -460,9 +460,8 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
 > 
 > ```gradle
 > spotless {
->  kotlin {
->    target 'src/*/kotlin/**/*.kt', 'src/*/java/**/*.kt'
-> ...
+>   kotlin {
+>     target 'src/*/kotlin/**/*.kt', 'src/*/java/**/*.kt'
 > ```
 
 ### ktfmt
