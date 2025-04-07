@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.44.4] - 2025-04-07
 ### Changed
 * Use palantir-java-format 2.57.0 on Java 21. ([#2447](https://github.com/diffplug/spotless/pull/2447))
 * Re-try `npm install` with `--prefer-online` after `ERESOLVE` error. ([#2448](https://github.com/diffplug/spotless/pull/2448))
