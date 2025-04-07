@@ -207,13 +207,14 @@ spotless {
 
 <a name="applying-to-android-java-source"></a>
 
-The target is usually inferred automatically from the java source sets. However, Spotless cannot automatically detect [android](https://github.com/diffplug/spotless/issues/111) or [java-gradle-plugin](https://github.com/diffplug/spotless/issues/437) sources, but you can fix this easily:
-
-```gradle
-spotless {
-  java {
-    target 'src/*/java/**/*.java'
-```
+> [!WARNING]
+> The target is usually inferred automatically from the java source sets. However, Spotless cannot automatically detect [android](https://github.com/diffplug/spotless/issues/111) or [java-gradle-plugin](https://github.com/diffplug/spotless/issues/437) sources, but you can fix this easily:
+>
+> ```gradle
+> spotless {
+>   java {
+>     target 'src/*/java/**/*.java'
+> ```
 
 ### removeUnusedImports
 
