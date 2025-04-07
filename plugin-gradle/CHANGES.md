@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Use palantir-java-format 2.57.0 on Java 21. ([#2447](https://github.com/diffplug/spotless/pull/2447))
 * Re-try `npm install` with `--prefer-online` after `ERESOLVE` error. ([#2448](https://github.com/diffplug/spotless/pull/2448))
+* Apply Gradle's strict plugin types validation to the Spotless plugin. ([#2454](https://github.com/diffplug/spotless/pull/2454))
 
 ## [7.0.2] - 2025-01-14
 ### Fixed
