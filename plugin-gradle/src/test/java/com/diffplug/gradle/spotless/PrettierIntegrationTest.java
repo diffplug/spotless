@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -59,7 +51,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		switch (prettierVersion) {
 		case PRETTIER_VERSION_2:
 			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
@@ -89,7 +81,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessCheckFailsGracefully = gradleRunner().withArguments("--stacktrace", "spotlessCheck").buildAndFail();
-		assertThat(spotlessCheckFailsGracefully.getOutput()).contains("> The following files had format violations:");
+		Assertions.assertThat(spotlessCheckFailsGracefully.getOutput()).contains("> The following files had format violations:");
 
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		gradleRunner().withArguments("--stacktrace", "spotlessCheck").build();
@@ -112,7 +104,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		switch (prettierVersion) {
 		case PRETTIER_VERSION_2:
 			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
@@ -139,7 +131,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("dirty.json").toResource("npm/prettier/filename/dirty.json");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("dirty.json").sameAsResource("npm/prettier/filename/clean.json");
 	}
 
@@ -177,7 +169,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
 	}
 
@@ -210,7 +202,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
 	}
 
@@ -234,8 +226,8 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
-		assertThat(spotlessApply.getOutput()).contains("Could not infer a parser");
-		assertThat(spotlessApply.getOutput()).contains("prettier-plugin-java");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("Could not infer a parser");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("prettier-plugin-java");
 	}
 
 	@ParameterizedTest(name = "{index}: usePhpCommunityPlugin with prettier {0}")
@@ -272,7 +264,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("php-example.php").toResource("npm/prettier/plugins/php.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
 	}
 
@@ -332,9 +324,9 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("php-example.php").toResource("npm/prettier/plugins/php.dirty");
 		setFile("JavaTest.java").toResource("npm/prettier/plugins/java-test.dirty");
 		final BuildResult spotlessApply = gradleRunner().forwardOutput().withArguments("--stacktrace", "--info", "spotlessApply").build();
-		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		final BuildResult spotlessApply2 = gradleRunner().forwardOutput().withArguments("--stacktrace", "--info", "spotlessApply").build();
-		assertThat(spotlessApply2.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply2.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
 		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
 	}
@@ -363,7 +355,7 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
-		assertThat(spotlessApply.getOutput()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
+		Assertions.assertThat(spotlessApply.getOutput()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
 	}
 
 	@ParameterizedTest(name = "{index}: verifyCleanAndSpotlessWorks with prettier {0}")
@@ -385,9 +377,9 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "clean", "spotlessApply").build();
-		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		final BuildResult spotlessApply2 = gradleRunner().withArguments("--stacktrace", "clean", "spotlessApply").build();
-		assertThat(spotlessApply2.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply2.getOutput()).contains("BUILD SUCCESSFUL");
 	}
 
 	@ParameterizedTest(name = "{index}: verifyCleanAndSpotlessWithNpmInstallCacheWorks with prettier {0}")
@@ -409,9 +401,9 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "clean", "spotlessApply").build();
-		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		final BuildResult spotlessApply2 = gradleRunner().withArguments("--stacktrace", "clean", "spotlessApply").build();
-		assertThat(spotlessApply2.getOutput()).contains("BUILD SUCCESSFUL");
+		Assertions.assertThat(spotlessApply2.getOutput()).contains("BUILD SUCCESSFUL");
 	}
 
 	@ParameterizedTest(name = "{index}: autodetectNpmrcFileConfig with prettier {0}")
@@ -438,51 +430,6 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 				"}");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
-		assertThat(spotlessApply.getOutput()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
-	}
-
-	@Test
-	void multiplePrettierSetupsDoNotIntersectOnNpmDir() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"    id 'com.diffplug.spotless'",
-				"}",
-				"repositories { mavenCentral() }",
-				"def prettierConfig = [:]",
-				"prettierConfig['printWidth'] = 120",
-				"spotless {",
-				"    format 'mytypescript', {",
-				"        target 'test.ts'",
-				"        prettier().config(prettierConfig)",
-				"    }",
-				"    format 'json', {",
-				"        target 'test.json'",
-				"        prettier().config(prettierConfig)",
-				"    }",
-				"    javascript {",
-				"        target 'test.js'",
-				"        prettier().config(prettierConfig)",
-				"    }",
-				"}");
-
-		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
-		setFile("test.json").toResource("npm/prettier/filetypes/json/json.dirty");
-		setFile("test.js").toResource("npm/prettier/filetypes/javascript-es5/javascript-es5.dirty");
-
-		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
-		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-
-		File buildFolder = new File(rootFolder(), "build");
-		assertThat(buildFolder).isNotEmptyDirectory();
-
-		// verify it contains 3 folders containing "spotless-prettier" in it (recursively) - one for each format
-		try (Stream<Path> pathStream = Files.walk(buildFolder.toPath())) {
-			List<Path> nodeModulesDirs = pathStream
-					.sorted()
-					.filter(Files::isDirectory)
-					.filter(path -> path.getFileName().toString().contains("spotless-prettier"))
-					.collect(Collectors.toList());
-			assertThat(nodeModulesDirs).hasSize(3);
-		}
+		Assertions.assertThat(spotlessApply.getOutput()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
 	}
 }

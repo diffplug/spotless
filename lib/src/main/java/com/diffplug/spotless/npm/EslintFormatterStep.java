@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,14 +68,13 @@ public class EslintFormatterStep {
 		return Collections.singletonMap("eslint", version);
 	}
 
-	public static FormatterStep create(String formatName, Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) {
+	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) {
 		requireNonNull(devDependencies);
 		requireNonNull(provisioner);
 		requireNonNull(projectDir);
 		requireNonNull(buildDir);
-		final String prefixedName = String.format("%s-%s", formatName, NAME);
-		return FormatterStep.createLazy(prefixedName,
-				() -> new State(prefixedName, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, eslintConfig),
+		return FormatterStep.createLazy(NAME,
+				() -> new State(NAME, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, eslintConfig),
 				State::createFormatterFunc);
 	}
 

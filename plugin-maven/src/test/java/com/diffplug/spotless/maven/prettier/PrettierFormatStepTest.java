@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,7 @@ package com.diffplug.spotless.maven.prettier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -162,34 +156,6 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 		assertFile("php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
 		assertFile("JavaTest.java").sameAsResource("npm/prettier/plugins/java-test.clean");
 
-	}
-
-	/**
-	 * This test is to ensure that we can have multiple equivalent prettier instances in one spotless config.
-	 */
-	@Test
-	void multiple_equivalent_prettier_configs_do_not_intersect() throws Exception {
-		writePom(
-				formats(
-						groupWithSteps("myjson", including("test.json"),
-								"<prettier>",
-								"</prettier>"),
-						groupWithSteps("myts", including("test.ts"),
-								"<prettier>",
-								"</prettier>")));
-
-		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
-		setFile("test.json").toResource("npm/prettier/filetypes/json/json.dirty");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-
-		// check that each prettier instance has its own node_modules directory
-		File targetDir = new File(rootFolder(), "target");
-		try (Stream<Path> files = Files.walk(targetDir.toPath())) {
-			List<Path> prettierFolders = files.filter(Files::isDirectory)
-					.filter(path -> path.getFileName().toString().contains("spotless-prettier"))
-					.collect(Collectors.toList());
-			assertThat(prettierFolders).hasSize(2); // one for each prettier instance
-		}
 	}
 
 	@Test

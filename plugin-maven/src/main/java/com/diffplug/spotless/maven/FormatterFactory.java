@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,12 +83,12 @@ public abstract class FormatterFactory {
 		return excludes == null ? emptySet() : Sets.newHashSet(excludes);
 	}
 
-	public final Formatter newFormatter(Supplier<Iterable<File>> filesToFormat, FormatterConfig config, int formatterIndex) {
+	public final Formatter newFormatter(Supplier<Iterable<File>> filesToFormat, FormatterConfig config) {
 		Charset formatterEncoding = encoding(config);
 		LineEnding formatterLineEndings = lineEndings(config);
 		LineEnding.Policy formatterLineEndingPolicy = formatterLineEndings.createPolicy(config.getFileLocator().getBaseDir(), filesToFormat);
 
-		FormatterStepConfig stepConfig = stepConfig(formatterEncoding, config, formatterIndex);
+		FormatterStepConfig stepConfig = stepConfig(formatterEncoding, config);
 		List<FormatterStepFactory> factories = gatherStepFactories(config.getGlobalStepFactories(), stepFactories);
 
 		List<FormatterStep> formatterSteps = factories.stream()
@@ -174,8 +174,8 @@ public abstract class FormatterFactory {
 		}
 	}
 
-	private FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config, int formatterIndex) {
-		return new FormatterStepConfig(encoding, licenseHeaderDelimiter(), ratchetFrom(config), config.getProvisioner(), config.getFileLocator(), config.getSpotlessSetLicenseHeaderYearsFromGitHistory(), String.format("%s-%d", "formatter", formatterIndex));
+	private FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config) {
+		return new FormatterStepConfig(encoding, licenseHeaderDelimiter(), ratchetFrom(config), config.getProvisioner(), config.getFileLocator(), config.getSpotlessSetLicenseHeaderYearsFromGitHistory());
 	}
 
 	private static List<FormatterStepFactory> gatherStepFactories(List<FormatterStepFactory> allGlobal, List<FormatterStepFactory> allConfigured) {
