@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -112,12 +113,13 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			assertNodeServerDirReady();
 			LongRunningProcess server = null;
 			try {
-				// The npm process will output the randomly selected port of the http server process to 'server.port' file
+				final UUID nodeServerInstanceId = UUID.randomUUID();
+				// The npm process will output the randomly selected port of the http server process to 'server-<id>.port' file
 				// so in order to be safe, remove such a file if it exists before starting.
-				final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
+				final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), String.format("server-%s.port", nodeServerInstanceId));
 				NpmResourceHelper.deleteFileIfExists(serverPortFile);
 				// start the http server in node
-				server = nodeServeApp.startNpmServeProcess();
+				server = nodeServeApp.startNpmServeProcess(nodeServerInstanceId);
 
 				// await the readiness of the http server - wait for at most 60 seconds
 				try {
