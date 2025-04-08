@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
 import com.diffplug.spotless.ThrowingEx;
 
@@ -129,10 +130,12 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 					try {
 						if (server.isAlive()) {
 							server.destroyForcibly();
-							server.waitFor();
+							ProcessRunner.Result result = server.result();
+							logger.info("Launching npm server process failed. Process result:\n{}", result);
 						}
 					} catch (Throwable t) {
-						// ignore
+						ProcessRunner.Result result = server != null ? ThrowingEx.get(server::result) : null;
+						logger.debug("Unable to forcibly end the server process. Process result:\n{}", result, t);
 					}
 					throw timeoutException;
 				}
