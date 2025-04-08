@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,14 +87,17 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		}
 
 		protected void assertNodeServerDirReady() throws IOException {
-			if (needsPrepareNodeServerLayout()) {
-				// reinstall if missing
-				prepareNodeServerLayout();
-			}
-			if (needsPrepareNodeServer()) {
-				// run npm install if node_modules is missing
-				prepareNodeServer();
-			}
+			ExclusiveFolderAccess.forFolder(nodeServerLayout.nodeModulesDir())
+					.runExclusively(() -> {
+						if (needsPrepareNodeServerLayout()) {
+							// reinstall if missing
+							prepareNodeServerLayout();
+						}
+						if (needsPrepareNodeServer()) {
+							// run npm install if node_modules is missing
+							prepareNodeServer();
+						}
+					});
 		}
 
 		protected boolean needsPrepareNodeServer() {
