@@ -52,7 +52,6 @@ public class PrettierFormatterStep {
 	}
 
 	public static FormatterStep create(String formatName, Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {
-		requireNonNull(formatName);
 		requireNonNull(devDependencies);
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
