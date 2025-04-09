@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.npm;
+
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
@@ -32,9 +34,9 @@ public class NodeServeApp extends NodeApp {
 		super(nodeServerLayout, npmConfig, formatterStepLocations);
 	}
 
-	ProcessRunner.LongRunningProcess startNpmServeProcess() {
+	ProcessRunner.LongRunningProcess startNpmServeProcess(UUID nodeServerInstanceId) {
 		return timedLogger.withInfo("Starting npm based server in {} with {}.", this.nodeServerLayout.nodeModulesDir(), this.npmProcessFactory.describe())
-				.call(() -> npmProcessFactory.createNpmServeProcess(nodeServerLayout, formatterStepLocations).start());
+				.call(() -> npmProcessFactory.createNpmServeProcess(nodeServerLayout, formatterStepLocations, nodeServerInstanceId).start());
 	}
 
 }

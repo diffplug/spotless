@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import com.diffplug.spotless.ProcessRunner;
@@ -37,8 +38,8 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 	}
 
 	@Override
-	public NpmLongRunningProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations) {
-		return new NpmServe(nodeServerLayout.nodeModulesDir(), formatterStepLocations);
+	public NpmLongRunningProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations, UUID nodeServerInstanceId) {
+		return new NpmServe(nodeServerLayout.nodeModulesDir(), formatterStepLocations, nodeServerInstanceId);
 	}
 
 	private static abstract class AbstractStandardNpmProcess {
@@ -119,8 +120,11 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 
 	private static class NpmServe extends AbstractStandardNpmProcess implements NpmLongRunningProcess {
 
-		public NpmServe(File workingDir, NpmFormatterStepLocations formatterStepLocations) {
+		private final UUID nodeServerInstanceId;
+
+		public NpmServe(File workingDir, NpmFormatterStepLocations formatterStepLocations, UUID nodeServerInstanceId) {
 			super(workingDir, formatterStepLocations);
+			this.nodeServerInstanceId = nodeServerInstanceId;
 		}
 
 		@Override
@@ -128,7 +132,9 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 			return List.of(
 					npmExecutable(),
 					"start",
-					"--scripts-prepend-node-path=true");
+					"--scripts-prepend-node-path=true",
+					"--",
+					"--node-server-instance-id=" + nodeServerInstanceId);
 		}
 
 		@Override
