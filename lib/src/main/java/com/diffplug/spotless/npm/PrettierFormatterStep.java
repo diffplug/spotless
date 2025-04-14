@@ -88,7 +88,7 @@ public class PrettierFormatterStep {
 		public FormatterFunc createFormatterFunc() {
 			try {
 				logger.info("creating formatter function (starting server)");
-				ServerProcessInfo prettierRestServer = toRuntime().npmRunServer();
+				NpmServerProcessInfo prettierRestServer = toRuntime().npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
 				return Closeable.ofDangerous(() -> endServer(restService, prettierRestServer), new PrettierFilePathPassingFormatterFunc(prettierConfigOptions, restService));
@@ -97,7 +97,7 @@ public class PrettierFormatterStep {
 			}
 		}
 
-		private void endServer(PrettierRestService restService, ServerProcessInfo restServer) throws Exception {
+		private void endServer(PrettierRestService restService, NpmServerProcessInfo restServer) throws Exception {
 			logger.info("Closing formatting function (ending server).");
 			try {
 				restService.shutdown();
