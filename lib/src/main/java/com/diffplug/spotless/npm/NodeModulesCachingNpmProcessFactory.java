@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.diffplug.spotless.npm;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
@@ -65,8 +66,8 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 	}
 
 	@Override
-	public NpmLongRunningProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations) {
-		return StandardNpmProcessFactory.INSTANCE.createNpmServeProcess(nodeServerLayout, formatterStepLocations);
+	public NpmLongRunningProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations, UUID nodeServerInstanceId) {
+		return StandardNpmProcessFactory.INSTANCE.createNpmServeProcess(nodeServerLayout, formatterStepLocations, nodeServerInstanceId);
 	}
 
 	private class CachingNmpInstall implements NpmProcess {
