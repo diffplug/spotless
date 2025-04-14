@@ -56,6 +56,7 @@ public abstract class EquoBasedStepBuilder {
 	private String formatterVersion;
 	private Iterable<File> settingsFiles = new ArrayList<>();
 	private List<String> settingProperties = new ArrayList<>();
+	private List<String> settingXml = new ArrayList<>();
 	private Map<String, String> p2Mirrors = Map.of();
 	private File cacheDirectory;
 
@@ -84,6 +85,10 @@ public abstract class EquoBasedStepBuilder {
 
 	public void setPropertyPreferences(List<String> propertyPreferences) {
 		this.settingProperties = propertyPreferences;
+	}
+
+	public void setXmlPreferences(List<String> settingXml) {
+		this.settingXml = settingXml;
 	}
 
 	public void setP2Mirrors(Map<String, String> p2Mirrors) {
@@ -119,7 +124,7 @@ public abstract class EquoBasedStepBuilder {
 
 	/** Returns the FormatterStep (whose state will be calculated lazily). */
 	public FormatterStep build() {
-		var roundtrippableState = new EquoStep(formatterVersion, settingProperties, FileSignature.promise(settingsFiles), JarState.promise(() -> {
+		var roundtrippableState = new EquoStep(formatterVersion, settingProperties, settingXml, FileSignature.promise(settingsFiles), JarState.promise(() -> {
 			P2QueryResult query;
 			try {
 				if (null != cacheDirectory) {
@@ -174,23 +179,26 @@ public abstract class EquoBasedStepBuilder {
 		private final JarState.Promised jarPromise;
 		private final ImmutableMap<String, String> stepProperties;
 		private List<String> settingProperties;
+		private List<String> settingXml;
 
 		EquoStep(
 				String semanticVersion,
 				List<String> settingProperties,
+				List<String> settingXml,
 				FileSignature.Promised settingsPromise,
 				JarState.Promised jarPromise,
 				ImmutableMap<String, String> stepProperties) {
 
 			this.semanticVersion = semanticVersion;
 			this.settingProperties = Optional.ofNullable(settingProperties).orElse(new ArrayList<>());
+			this.settingXml = Optional.ofNullable(settingXml).orElse(new ArrayList<>());
 			this.settingsPromise = settingsPromise;
 			this.jarPromise = jarPromise;
 			this.stepProperties = stepProperties;
 		}
 
 		private State state() {
-			return new State(semanticVersion, jarPromise.get(), settingProperties, settingsPromise.get(), stepProperties);
+			return new State(semanticVersion, jarPromise.get(), settingProperties, settingXml, settingsPromise.get(), stepProperties);
 		}
 	}
 
@@ -205,11 +213,13 @@ public abstract class EquoBasedStepBuilder {
 		final FileSignature settingsFiles;
 		final ImmutableMap<String, String> stepProperties;
 		private List<String> settingProperties;
+		private List<String> settingXml;
 
-		public State(String semanticVersion, JarState jarState, List<String> settingProperties, FileSignature settingsFiles, ImmutableMap<String, String> stepProperties) {
+		public State(String semanticVersion, JarState jarState, List<String> settingProperties, List<String> settingXml, FileSignature settingsFiles, ImmutableMap<String, String> stepProperties) {
 			this.semanticVersion = semanticVersion;
 			this.jarState = jarState;
 			this.settingProperties = Optional.ofNullable(settingProperties).orElse(new ArrayList<>());
+			this.settingXml = Optional.ofNullable(settingXml).orElse(new ArrayList<>());
 			this.settingsFiles = settingsFiles;
 			this.stepProperties = stepProperties;
 		}
@@ -225,7 +235,8 @@ public abstract class EquoBasedStepBuilder {
 		public Properties getPreferences() {
 			FormatterProperties fromFiles = FormatterProperties.from(settingsFiles.files());
 			FormatterProperties fromPropertiesContent = FormatterProperties.fromPropertiesContent(settingProperties);
-			return FormatterProperties.merge(fromFiles.getProperties(), fromPropertiesContent.getProperties()).getProperties();
+			FormatterProperties fromXmlContent = FormatterProperties.fromXmlContent(settingXml);
+			return FormatterProperties.merge(fromFiles.getProperties(), fromPropertiesContent.getProperties(), fromXmlContent.getProperties()).getProperties();
 		}
 
 		public ImmutableMap<String, String> getStepProperties() {
