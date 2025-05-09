@@ -68,10 +68,6 @@ public class Java extends FormatterFactory {
 		addStepFactory(importOrder);
 	}
 
-	public void addIdea(Idea idea) {
-		addStepFactory(idea);
-	}
-
 	public void addPalantirJavaFormat(PalantirJavaFormat palantirJavaFormat) {
 		addStepFactory(palantirJavaFormat);
 	}
