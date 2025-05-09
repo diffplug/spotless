@@ -40,12 +40,14 @@ public abstract class SpotlessExtension {
 	protected static final String TASK_GROUP = LifecycleBasePlugin.VERIFICATION_GROUP;
 	protected static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
 	protected static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
+	protected static final String DIFF_DESCRIPTION = "Shows the diff between the current source and the formatted source.";
 
 	static final String EXTENSION = "spotless";
 	static final String EXTENSION_PREDECLARE = "spotlessPredeclare";
 	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
 	static final String DIAGNOSE = "Diagnose";
+	static final String DIFF = "Diff";
 
 	protected SpotlessExtension(Project project) {
 		this.project = requireNonNull(project);
