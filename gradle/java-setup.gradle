@@ -23,6 +23,8 @@ spotbugs {
 		// https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
 		'FindReturnRef',
 	]
+	// TODO: https://github.com/spotbugs/spotbugs-gradle-plugin/issues/1360
+	toolVersion = '4.9.3'
 }
 tasks.named('spotbugsTest') {
 	enabled = false
