@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * Bump default `eclipse` version to latest `4.34` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
 * Bump default `greclipse` version to latest `4.32` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
+### Added
 * Implement conversion of diff content to ReviewDog format ([#2478](https://github.com/diffplug/spotless/pull/2478))
 
 ## [7.0.3] - 2025-04-07
