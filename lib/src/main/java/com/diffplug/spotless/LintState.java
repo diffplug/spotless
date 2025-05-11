@@ -34,6 +34,10 @@ public class LintState {
 		this.lintsPerStep = lintsPerStep;
 	}
 
+	@Nullable public List<List<Lint>> getLintsPerStep() {
+		return lintsPerStep;
+	}
+
 	public DirtyState getDirtyState() {
 		return dirtyState;
 	}
