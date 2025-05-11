@@ -23,7 +23,7 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
 public class SpotlessExtensionImpl extends SpotlessExtension {
-	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask, rootDiffTask;
+	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
 
 	public SpotlessExtensionImpl(Project project) {
 		super(project);
@@ -37,11 +37,6 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		});
 		rootDiagnoseTask = project.getTasks().register(EXTENSION + DIAGNOSE, task -> {
 			task.setGroup(TASK_GROUP); // no description on purpose
-		});
-
-		rootDiffTask = project.getTasks().register(EXTENSION + DIFF, task -> {
-			task.setGroup(TASK_GROUP);
-			task.setDescription(DIFF_DESCRIPTION);
 		});
 
 		project.afterEvaluate(unused -> {
@@ -106,12 +101,5 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});
 		rootDiagnoseTask.configure(task -> task.dependsOn(diagnoseTask));
-
-		// TODO : This is initial version of the diff task, we should probably update the code
-		TaskProvider<SpotlessDiffTask> diffTask = tasks.register(taskName + DIFF, SpotlessDiffTask.class, task -> {
-			task.setGroup(TASK_GROUP);
-			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
-		});
-		rootCheckTask.configure(task -> task.dependsOn(diffTask));
 	}
 }
