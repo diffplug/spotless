@@ -21,12 +21,14 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
@@ -40,51 +42,70 @@ import com.diffplug.spotless.ThrowingEx;
 
 public final class IdeaStep {
 
+	public static final String NAME = "IDEA";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(IdeaStep.class);
 
 	private IdeaStep() {}
 
-	public static FormatterStep create() {
-		return create(true);
+	public static IdeaStepBuilder create() {
+		return new IdeaStepBuilder();
 	}
 
-	public static FormatterStep create(boolean withDefaults) {
-		return create(withDefaults, null);
-	}
-
-	public static FormatterStep create(boolean withDefaults,
-			@Nullable String binaryPath) {
-		return create(withDefaults, binaryPath, null);
-	}
-
-	public static FormatterStep create(boolean withDefaults,
-			@Nullable String binaryPath, @Nullable String codeStyleSettingsPath) {
-		return FormatterStep.createLazy("IDEA",
-				() -> createState(withDefaults, binaryPath, codeStyleSettingsPath),
+	private static FormatterStep create(@Nonnull IdeaStepBuilder builder) {
+		Objects.requireNonNull(builder);
+		return FormatterStep.createLazy(NAME,
+				() -> createState(builder),
 				state -> state);
 	}
 
-	private static State createState(boolean withDefaults,
-			@Nullable String binaryPath, @Nullable String codeStyleSettingsPath) {
-		return new State(withDefaults, binaryPath, codeStyleSettingsPath);
+	private static State createState(@Nonnull IdeaStepBuilder builder) {
+		return new State(Objects.requireNonNull(builder));
+	}
+
+	public static final class IdeaStepBuilder {
+		private static final String DEFAULT_IDEA = "idea";
+
+		private boolean useDefaults = true;
+		@Nonnull
+		private String binaryPath = DEFAULT_IDEA;
+		@Nullable
+		private String codeStyleSettingsPath;
+
+		public IdeaStepBuilder setUseDefaults(boolean useDefaults) {
+			this.useDefaults = useDefaults;
+			return this;
+		}
+
+		public IdeaStepBuilder setBinaryPath(@Nonnull String binaryPath) {
+			this.binaryPath = Objects.requireNonNull(binaryPath);
+			return this;
+		}
+
+		public IdeaStepBuilder setCodeStyleSettingsPath(@Nullable String codeStyleSettingsPath) {
+			this.codeStyleSettingsPath = codeStyleSettingsPath;
+			return this;
+		}
+
+		public FormatterStep build() {
+			return create(this);
+		}
 	}
 
 	private static class State
 			implements FormatterFunc.NeedsFile, Serializable {
 
 		private static final long serialVersionUID = -1825662355363926318L;
-		private static final String DEFAULT_IDEA = "idea";
 
 		private String binaryPath;
 		@Nullable
 		private String codeStyleSettingsPath;
 		private boolean withDefaults;
 
-		private State(boolean withDefaults, @Nullable String binaryPath,
-				@Nullable String codeStyleSettingsPath) {
-			this.withDefaults = withDefaults;
-			this.codeStyleSettingsPath = codeStyleSettingsPath;
-			this.binaryPath = Objects.requireNonNullElse(binaryPath, DEFAULT_IDEA);
+		private State(@Nonnull IdeaStepBuilder builder) {
+			this.withDefaults = builder.useDefaults;
+			this.codeStyleSettingsPath = builder.codeStyleSettingsPath;
+			this.binaryPath = builder.binaryPath;
 			resolveFullBinaryPathAndCheckVersion();
 		}
 
@@ -113,10 +134,38 @@ public final class IdeaStep {
 			if (binaryPath == null) {
 				throw new IllegalStateException("binaryPath is not set");
 			}
-			if (new File(binaryPath).exists()) {
-				return binaryPath;
+			return macOsFix(binaryPath);
+		}
+
+		@CheckForNull
+		private static String macOsFix(String binaryPath) {
+			if (!isMacOs()) {
+				if (new File(binaryPath).exists()) {
+					return binaryPath;
+				}
+				return null; // search in PATH
 			}
-			return null; // search in PATH
+			// on macOS, the binary is located in the .app bundle which might be invisible to the user
+			// we try need to append the path to the binary
+			File binary = new File(binaryPath);
+			if (!binary.exists()) {
+				// maybe it is bundle path without .app? (might be hidden by os)
+				binary = new File(binaryPath + ".app");
+				if (!binary.exists()) {
+					return binaryPath; // fallback: do nothing
+				}
+			}
+			if (binaryPath.endsWith(".app") || binary.isDirectory()) {
+				binary = new File(binary, "Contents/MacOS/idea");
+			}
+			if (binary.isFile() && binary.canExecute()) {
+				return binary.getPath();
+			}
+			return binaryPath; // fallback: do nothing
+		}
+
+		private static boolean isMacOs() {
+			return System.getProperty("os.name").toLowerCase().contains("mac");
 		}
 
 		@Override

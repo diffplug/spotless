@@ -966,35 +966,35 @@ public class FormatExtension {
 	}
 
 	public class IdeaConfig {
-		private String binaryPath;
-		private String configPath;
-		private boolean withDefaults = false;
+		private final IdeaStep.IdeaStepBuilder builder;
 
 		IdeaConfig() {
+			this.builder = IdeaStep.create();
 			addStep(createStep());
 		}
 
 		private FormatterStep createStep() {
-			return IdeaStep.create(withDefaults, binaryPath, configPath);
+			return builder.build();
 		}
 
 		public IdeaConfig binaryPath(String binaryPath) {
 			requireNonNull(binaryPath);
-			this.binaryPath = binaryPath;
+			builder.setBinaryPath(binaryPath);
 			replaceStep(createStep());
 			return this;
 		}
 
+		// TODO (simschla, 11.05.2025): rename
 		public IdeaConfig configPath(String configPath) {
 			requireNonNull(configPath);
-			this.configPath = configPath;
+			builder.setCodeStyleSettingsPath(configPath);
 			replaceStep(createStep());
 			return this;
 		}
 
 		public IdeaConfig withDefaults(Boolean withDefaults) {
 			requireNonNull(withDefaults);
-			this.withDefaults = withDefaults;
+			builder.setUseDefaults(withDefaults);
 			replaceStep(createStep());
 			return this;
 		}
