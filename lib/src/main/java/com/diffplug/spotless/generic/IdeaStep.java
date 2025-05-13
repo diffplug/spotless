@@ -260,6 +260,7 @@ public final class IdeaStep {
 				builder.add("-s");
 				builder.add(codeStyleSettingsPath);
 			}
+			builder.add("-charset").add("UTF-8");
 			builder.add(ThrowingEx.get(file::getCanonicalPath));
 			return builder.build().collect(Collectors.toList());
 		}
