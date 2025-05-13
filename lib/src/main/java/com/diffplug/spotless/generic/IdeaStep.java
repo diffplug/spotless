@@ -161,17 +161,22 @@ public final class IdeaStep {
 
 		@CheckForNull
 		private static String pathToExe(String binaryPath) {
-			return macOsFix(binaryPath);
+			String testEnvBinaryPath = TestEnvVars.read().get(String.format("%s.%s", IdeaStep.class.getName(), "binaryPath"));
+			if (testEnvBinaryPath != null) {
+				return testEnvBinaryPath;
+			}
+			if (isMacOs()) {
+				return macOsFix(binaryPath);
+			}
+			if (new File(binaryPath).exists()) {
+				return binaryPath;
+			}
+			return null; // search in PATH
 		}
 
 		@CheckForNull
 		private static String macOsFix(String binaryPath) {
-			if (!isMacOs()) {
-				if (new File(binaryPath).exists()) {
-					return binaryPath;
-				}
-				return null; // search in PATH
-			}
+
 			// on macOS, the binary is located in the .app bundle which might be invisible to the user
 			// we try need to append the path to the binary
 			File binary = new File(binaryPath);
