@@ -16,13 +16,19 @@
 package com.diffplug.spotless.generic;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
+import java.util.TreeMap;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,12 +50,16 @@ public final class IdeaStep {
 
 	public static final String NAME = "IDEA";
 
+	public static final String IDEA_EXECUTABLE_DEFAULT = "idea";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(IdeaStep.class);
+	public static final String IDEA_CONFIG_PATH_PROPERTY = "idea.config.path";
+	public static final String IDEA_SYSTEM_PATH_PROPERTY = "idea.system.path";
 
 	private IdeaStep() {}
 
-	public static IdeaStepBuilder create() {
-		return new IdeaStepBuilder();
+	public static IdeaStepBuilder create(@Nonnull File buildDir) {
+		return new IdeaStepBuilder(Objects.requireNonNull(buildDir));
 	}
 
 	private static FormatterStep create(@Nonnull IdeaStepBuilder builder) {
@@ -64,13 +74,20 @@ public final class IdeaStep {
 	}
 
 	public static final class IdeaStepBuilder {
-		private static final String DEFAULT_IDEA = "idea";
 
 		private boolean useDefaults = true;
 		@Nonnull
-		private String binaryPath = DEFAULT_IDEA;
+		private String binaryPath = IDEA_EXECUTABLE_DEFAULT;
 		@Nullable
 		private String codeStyleSettingsPath;
+		private final Map<String, String> ideaProperties = new HashMap<>();
+
+		@Nonnull
+		private final File buildDir;
+
+		private IdeaStepBuilder(@Nonnull File buildDir) {
+			this.buildDir = Objects.requireNonNull(buildDir);
+		}
 
 		public IdeaStepBuilder setUseDefaults(boolean useDefaults) {
 			this.useDefaults = useDefaults;
@@ -87,6 +104,14 @@ public final class IdeaStep {
 			return this;
 		}
 
+		public IdeaStepBuilder setIdeaProperties(@Nonnull Map<String, String> ideaProperties) {
+			if (ideaProperties.containsKey(IDEA_CONFIG_PATH_PROPERTY) || ideaProperties.containsKey(IDEA_SYSTEM_PATH_PROPERTY)) {
+				throw new IllegalArgumentException("Cannot override IDEA config or system path");
+			}
+			this.ideaProperties.putAll(ideaProperties);
+			return this;
+		}
+
 		public FormatterStep build() {
 			return create(this);
 		}
@@ -97,22 +122,27 @@ public final class IdeaStep {
 
 		private static final long serialVersionUID = -1825662355363926318L;
 
-		private String binaryPath;
+		private final String buildDir;
+		private final String uniquePath;
+		private final String binaryPath;
 		@Nullable
-		private String codeStyleSettingsPath;
-		private boolean withDefaults;
+		private final String codeStyleSettingsPath; // TODO make sure to save content in state
+		private final boolean withDefaults;
+		private final TreeMap<String, String> ideaProperties;
 
 		private State(@Nonnull IdeaStepBuilder builder) {
+			this.buildDir = ThrowingEx.get(builder.buildDir::getCanonicalPath);
+			this.uniquePath = UUID.randomUUID().toString();
 			this.withDefaults = builder.useDefaults;
 			this.codeStyleSettingsPath = builder.codeStyleSettingsPath;
-			this.binaryPath = builder.binaryPath;
-			resolveFullBinaryPathAndCheckVersion();
+			this.ideaProperties = new TreeMap<>(builder.ideaProperties);
+			this.binaryPath = resolveFullBinaryPathAndCheckVersion(builder.binaryPath);
 		}
 
-		private void resolveFullBinaryPathAndCheckVersion() {
+		private static String resolveFullBinaryPathAndCheckVersion(String binaryPath) {
 			var exe = ForeignExe
-					.nameAndVersion(this.binaryPath, "IntelliJ IDEA")
-					.pathToExe(pathToExe())
+					.nameAndVersion(binaryPath, "IntelliJ IDEA")
+					.pathToExe(pathToExe(binaryPath))
 					.versionRegex(Pattern.compile("(IntelliJ IDEA) .*"))
 					.fixCantFind(
 							"IDEA executable cannot be found on your machine, "
@@ -120,7 +150,7 @@ public final class IdeaStep {
 					.fixWrongVersion("Provided binary is not IDEA, "
 							+ "please check it and fix the problem; or report the problem");
 			try {
-				this.binaryPath = exe.confirmVersionAndGetAbsolutePath();
+				return exe.confirmVersionAndGetAbsolutePath();
 			} catch (IOException e) {
 				throw new IllegalArgumentException("binary cannot be found", e);
 			} catch (InterruptedException e) {
@@ -130,10 +160,7 @@ public final class IdeaStep {
 		}
 
 		@CheckForNull
-		private String pathToExe() {
-			if (binaryPath == null) {
-				throw new IllegalStateException("binaryPath is not set");
-			}
+		private static String pathToExe(String binaryPath) {
 			return macOsFix(binaryPath);
 		}
 
@@ -177,7 +204,8 @@ public final class IdeaStep {
 				List<String> params = getParams(tempFile);
 
 				try (ProcessRunner runner = new ProcessRunner()) {
-					var result = runner.exec(params);
+					Map<String, String> env = createEnv();
+					var result = runner.exec(null, env, null, params);
 					LOGGER.debug("command finished with stdout: {}",
 							result.assertExitZero(StandardCharsets.UTF_8));
 
@@ -186,6 +214,38 @@ public final class IdeaStep {
 			} finally {
 				Files.delete(tempFile.toPath());
 			}
+		}
+
+		private Map<String, String> createEnv() {
+			File ideaProps = createIdeaPropertiesFile();
+			Map<String, String> env = Map.ofEntries(
+					Map.entry("IDEA_PROPERTIES", ThrowingEx.get(ideaProps::getCanonicalPath)));
+			return env;
+		}
+
+		private File createIdeaPropertiesFile() {
+			Path ideaProps = new File(buildDir).toPath().resolve(uniquePath).resolve("idea.properties");
+
+			if (Files.exists(ideaProps)) {
+				return ideaProps.toFile(); // only create if it does not exist
+			}
+
+			ThrowingEx.run(() -> Files.createDirectories(ideaProps.getParent()));
+
+			Path configPath = ideaProps.getParent().resolve("config");
+			Path systemPath = ideaProps.getParent().resolve("system");
+
+			Properties properties = new Properties();
+			properties.putAll(ideaProperties);
+			properties.put(IDEA_CONFIG_PATH_PROPERTY, ThrowingEx.get(configPath.toFile()::getCanonicalPath));
+			properties.put(IDEA_SYSTEM_PATH_PROPERTY, ThrowingEx.get(systemPath.toFile()::getCanonicalPath));
+
+			try (FileOutputStream out = new FileOutputStream(ideaProps.toFile())) {
+				properties.store(out, "Generated by spotless");
+			} catch (IOException e) {
+				throw new IllegalStateException("Failed to create IDEA properties file", e);
+			}
+			return ideaProps.toFile();
 		}
 
 		private List<String> getParams(File file) {

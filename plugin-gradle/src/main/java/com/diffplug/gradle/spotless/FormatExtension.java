@@ -969,7 +969,7 @@ public class FormatExtension {
 		private final IdeaStep.IdeaStepBuilder builder;
 
 		IdeaConfig() {
-			this.builder = IdeaStep.create();
+			this.builder = IdeaStep.create(getProject().getLayout().getBuildDirectory().getAsFile().get());
 			addStep(createStep());
 		}
 
