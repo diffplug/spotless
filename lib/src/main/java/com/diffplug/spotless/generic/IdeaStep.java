@@ -65,8 +65,7 @@ public final class IdeaStep {
 	private static FormatterStep create(@Nonnull IdeaStepBuilder builder) {
 		Objects.requireNonNull(builder);
 		return FormatterStep.createLazy(NAME,
-				() -> createState(builder),
-				state -> state);
+				() -> createState(builder), State::toFunc);
 	}
 
 	private static State createState(@Nonnull IdeaStepBuilder builder) {
@@ -117,22 +116,19 @@ public final class IdeaStep {
 		}
 	}
 
-	private static class State
-			implements FormatterFunc.NeedsFile, Serializable {
+	private static class State implements Serializable {
 
-		private static final long serialVersionUID = -1825662355363926318L;
+		private static final long serialVersionUID = -1426311255869303398L;
 
-		private final String buildDir;
-		private final String uniquePath;
+		private final File uniqueBuildFolder;
 		private final String binaryPath;
 		@Nullable
-		private final String codeStyleSettingsPath; // TODO make sure to save content in state
+		private final String codeStyleSettingsPath;
 		private final boolean withDefaults;
 		private final TreeMap<String, String> ideaProperties;
 
 		private State(@Nonnull IdeaStepBuilder builder) {
-			this.buildDir = ThrowingEx.get(builder.buildDir::getCanonicalPath);
-			this.uniquePath = UUID.randomUUID().toString();
+			this.uniqueBuildFolder = new File(builder.buildDir, UUID.randomUUID().toString());
 			this.withDefaults = builder.useDefaults;
 			this.codeStyleSettingsPath = builder.codeStyleSettingsPath;
 			this.ideaProperties = new TreeMap<>(builder.ideaProperties);
@@ -174,7 +170,6 @@ public final class IdeaStep {
 			return null; // search in PATH
 		}
 
-		@CheckForNull
 		private static String macOsFix(String binaryPath) {
 
 			// on macOS, the binary is located in the .app bundle which might be invisible to the user
@@ -200,22 +195,18 @@ public final class IdeaStep {
 			return System.getProperty("os.name").toLowerCase().contains("mac");
 		}
 
-		@Override
-		public String applyWithFile(String unix, File file) throws Exception {
+		private String format(IdeaStepFormatterCleanupResources ideaStepFormatterCleanupResources, String unix, File file) throws Exception {
 			// since we cannot directly work with the file, we need to write the unix string to a temporary file
 			File tempFile = File.createTempFile("spotless", file.getName());
 			try {
 				Files.write(tempFile.toPath(), unix.getBytes(StandardCharsets.UTF_8));
 				List<String> params = getParams(tempFile);
 
-				try (ProcessRunner runner = new ProcessRunner()) {
-					Map<String, String> env = createEnv();
-					var result = runner.exec(null, env, null, params);
-					LOGGER.debug("command finished with stdout: {}",
-							result.assertExitZero(StandardCharsets.UTF_8));
-
-					return Files.readString(tempFile.toPath(), StandardCharsets.UTF_8);
-				}
+				Map<String, String> env = createEnv();
+				var result = ideaStepFormatterCleanupResources.runner.exec(null, env, null, params);
+				LOGGER.debug("command finished with stdout: {}",
+						result.assertExitZero(StandardCharsets.UTF_8));
+				return Files.readString(tempFile.toPath(), StandardCharsets.UTF_8);
 			} finally {
 				Files.delete(tempFile.toPath());
 			}
@@ -229,7 +220,7 @@ public final class IdeaStep {
 		}
 
 		private File createIdeaPropertiesFile() {
-			Path ideaProps = new File(buildDir).toPath().resolve(uniquePath).resolve("idea.properties");
+			Path ideaProps = this.uniqueBuildFolder.toPath().resolve("idea.properties");
 
 			if (Files.exists(ideaProps)) {
 				return ideaProps.toFile(); // only create if it does not exist
@@ -269,5 +260,43 @@ public final class IdeaStep {
 			builder.add(ThrowingEx.get(file::getCanonicalPath));
 			return builder.build().collect(Collectors.toList());
 		}
+
+		private FormatterFunc.Closeable toFunc() {
+			IdeaStepFormatterCleanupResources ideaStepFormatterCleanupResources = new IdeaStepFormatterCleanupResources(uniqueBuildFolder, new ProcessRunner());
+			return FormatterFunc.Closeable.of(ideaStepFormatterCleanupResources, this::format);
+		}
+	}
+
+	private static class IdeaStepFormatterCleanupResources implements AutoCloseable {
+		@Nonnull
+		private final File uniqueBuildFolder;
+		@Nonnull
+		private final ProcessRunner runner;
+
+		public IdeaStepFormatterCleanupResources(@Nonnull File uniqueBuildFolder, @Nonnull ProcessRunner runner) {
+			this.uniqueBuildFolder = uniqueBuildFolder;
+			this.runner = runner;
+		}
+
+		@Override
+		public void close() throws Exception {
+			// close the runner
+			runner.close();
+			// delete the unique build folder
+			if (uniqueBuildFolder.exists()) {
+				// delete the unique build folder recursively
+				try (Stream<Path> paths = Files.walk(uniqueBuildFolder.toPath())) {
+					paths.sorted((o1, o2) -> o2.compareTo(o1)) // delete files first
+							.forEach(path -> {
+								try {
+									Files.delete(path);
+								} catch (IOException e) {
+									LOGGER.warn("Failed to delete file: {}", path, e);
+								}
+							});
+				}
+			}
+		}
+
 	}
 }
