@@ -27,8 +27,8 @@ import java.util.regex.Pattern;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
@@ -49,10 +49,10 @@ public final class ReviewDogGenerator {
 	public ReviewDogGenerator(File projectDir, List<FormatterStep> steps) {
 		this.projectDir = projectDir;
 		this.formatter = Formatter.builder()
-			.encoding(StandardCharsets.UTF_8)
-			.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-			.steps(steps)
-			.build();
+				.encoding(StandardCharsets.UTF_8)
+				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
+				.steps(steps)
+				.build();
 	}
 
 	/**
@@ -72,7 +72,7 @@ public final class ReviewDogGenerator {
 				String relativePath = getRelativePath(file);
 
 				Map.Entry<Integer, String> diffResult = DiffMessageFormatter.diff(
-					projectDir.toPath(), formatter, file);
+						projectDir.toPath(), formatter, file);
 
 				List<DiffHunk> hunks = parseDiffHunks(diffResult.getValue());
 				List<ReviewDogIssue> issues = processLints(lintState, hunks);
@@ -151,7 +151,6 @@ public final class ReviewDogGenerator {
 		return hunks;
 	}
 
-
 	/**
 	 * Processes lint information and associates them with appropriate diff hunks.
 	 *
@@ -174,10 +173,10 @@ public final class ReviewDogGenerator {
 				}
 
 				ReviewDogIssue issue = new ReviewDogIssue(
-					lint.getLineStart(),
-					1,
-					lint.getShortCode() + ": " + lint.getDetail(),
-					suggestion);
+						lint.getLineStart(),
+						1,
+						lint.getShortCode() + ": " + lint.getDetail(),
+						suggestion);
 
 				issues.add(issue);
 			}
@@ -189,10 +188,10 @@ public final class ReviewDogGenerator {
 			String suggestion = extractSuggestionFromHunk(firstHunk);
 
 			issues.add(new ReviewDogIssue(
-				firstHunk.originalStart,
-				1,
-				"General formatting issue: file needs to be reformatted.",
-				suggestion));
+					firstHunk.originalStart,
+					1,
+					"General formatting issue: file needs to be reformatted.",
+					suggestion));
 		}
 
 		return issues;
@@ -208,7 +207,7 @@ public final class ReviewDogGenerator {
 	private DiffHunk findRelevantHunk(List<DiffHunk> hunks, int lineNumber) {
 		for (DiffHunk hunk : hunks) {
 			if (lineNumber >= hunk.originalStart &&
-				lineNumber < hunk.originalStart + hunk.originalLength) {
+					lineNumber < hunk.originalStart + hunk.originalLength) {
 				return hunk;
 			}
 		}
@@ -273,7 +272,7 @@ public final class ReviewDogGenerator {
 		StringBuilder builder = new StringBuilder();
 
 		builder.append(String.format("%s:%d:%d: %s\n",
-			filePath, issue.lineNumber, issue.column, issue.message));
+				filePath, issue.lineNumber, issue.column, issue.message));
 
 		if (issue.suggestion != null && !issue.suggestion.isEmpty()) {
 			builder.append("```suggestion\n");
