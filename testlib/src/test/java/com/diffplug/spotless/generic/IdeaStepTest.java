@@ -32,7 +32,7 @@ class IdeaStepTest extends ResourceHarness {
 
 	@Test
 	void name() throws Exception {
-		FormatterStep step = IdeaStep.create(buildDir()).setUseDefaults(true).build();
+		FormatterStep step = IdeaStep.newBuilder(buildDir()).setUseDefaults(true).build();
 
 		String name = step.getName();
 
@@ -44,7 +44,7 @@ class IdeaStepTest extends ResourceHarness {
 		File cleanFile = newFile("clean.java");
 		String cleanJava = ResourceHarness.getTestResource("java/idea/full.clean.java");
 		Files.write(cleanJava, cleanFile, StandardCharsets.UTF_8);
-		FormatterStep step = IdeaStep.create(buildDir()).setUseDefaults(true).build();
+		FormatterStep step = IdeaStep.newBuilder(buildDir()).setUseDefaults(true).build();
 
 		var result = step.format(cleanJava, cleanFile);
 
@@ -57,7 +57,7 @@ class IdeaStepTest extends ResourceHarness {
 		File dirtyFile = newFile("dirty.java");
 		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
 		Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
-		FormatterStep step = IdeaStep.create(buildDir()).setUseDefaults(true).build();
+		FormatterStep step = IdeaStep.newBuilder(buildDir()).setUseDefaults(true).build();
 
 		var result = step.format(dirtyJava, dirtyFile);
 
@@ -70,7 +70,7 @@ class IdeaStepTest extends ResourceHarness {
 		File dirtyFile = newFile("dirty.java");
 		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
 		Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
-		FormatterStep step = IdeaStep.create(buildDir()).build();
+		FormatterStep step = IdeaStep.newBuilder(buildDir()).build();
 
 		var result = step.format(dirtyJava, dirtyFile);
 
@@ -83,7 +83,7 @@ class IdeaStepTest extends ResourceHarness {
 		File dirtyFile = newFile("dirty.java");
 		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
 		Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
-		FormatterStep step = IdeaStep.create(buildDir()).setUseDefaults(false).build();
+		FormatterStep step = IdeaStep.newBuilder(buildDir()).setUseDefaults(false).build();
 
 		var result = step.format(dirtyJava, dirtyFile);
 
@@ -96,7 +96,7 @@ class IdeaStepTest extends ResourceHarness {
 		File cleanFile = newFile("clean.java");
 		String cleanJava = ResourceHarness.getTestResource("java/idea/full.clean.java");
 		Files.write(cleanJava, cleanFile, StandardCharsets.UTF_8);
-		FormatterStep step = IdeaStep.create(buildDir()).setUseDefaults(true).build();
+		FormatterStep step = IdeaStep.newBuilder(buildDir()).setUseDefaults(true).build();
 
 		var result = step.format(cleanJava, cleanFile);
 

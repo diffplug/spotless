@@ -35,7 +35,7 @@ public class Idea implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		return IdeaStep.create(config.getFileLocator().getBuildDir())
+		return IdeaStep.newBuilder(config.getFileLocator().getBuildDir())
 				.setUseDefaults(withDefaults)
 				.setCodeStyleSettingsPath(configPath)
 				.setBinaryPath(binaryPath)
