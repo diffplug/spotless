@@ -65,10 +65,18 @@ class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 				null,
 				null);
 
-		testSpotlessCheck(UNFORMATTED_FILE, "verify", true);
+		testSpotlessCheck(UNFORMATTED_FILE, "verify", "check");
 	}
 
 	private void testSpotlessCheck(String fileName, String command, boolean expectError) throws Exception {
+		testSpotlessCheck(fileName, command, expectError, "");
+	}
+
+	private void testSpotlessCheck(String fileName, String command, String expectedFailingExecutionId) throws Exception {
+		testSpotlessCheck(fileName, command, true, "@" + expectedFailingExecutionId);
+	}
+
+	private void testSpotlessCheck(String fileName, String command, boolean expectError, String expectedExecutionId) throws Exception {
 		setFile("license.txt").toResource("license/TestLicense");
 		setFile("src/main/java/com.github.youribonnaffe.gradle.format/Java8Test.java").toResource(fileName);
 
@@ -76,7 +84,9 @@ class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 
 		if (expectError) {
 			ProcessRunner.Result result = mavenRunner.runHasError();
-			assertThat(result.stdOutUtf8()).contains("The following files had format violations");
+			String stdOutUtf8 = result.stdOutUtf8();
+			assertThat(stdOutUtf8).contains("The following files had format violations");
+			assertThat(stdOutUtf8).contains("Run 'mvn spotless:apply" + expectedExecutionId + "' to fix these violations.");
 		} else {
 			mavenRunner.runNoError();
 		}

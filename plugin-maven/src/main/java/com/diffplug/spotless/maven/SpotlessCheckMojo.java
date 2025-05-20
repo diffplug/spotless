@@ -63,6 +63,12 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 	@Parameter(defaultValue = "WARNING")
 	private MessageSeverity m2eIncrementalBuildMessageSeverity;
 
+	/**
+	 * The execution ID from Maven's configuration.
+	 */
+	@Parameter(defaultValue = "${mojoExecution.executionId}")
+	private String executionId;
+
 	@Override
 	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		ImpactedFilesTracker counter = new ImpactedFilesTracker();
@@ -104,8 +110,14 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 		}
 
 		if (!problemFiles.isEmpty()) {
+			final String runToFixMessage;
+			if (executionId != null && !executionId.isEmpty() && !executionId.equals("default-cli")) {
+				runToFixMessage = "Run 'mvn spotless:apply@" + executionId + "' to fix these violations.";
+			} else {
+				runToFixMessage = "Run 'mvn spotless:apply' to fix these violations.";
+			}
 			throw new MojoExecutionException(DiffMessageFormatter.builder()
-					.runToFix("Run 'mvn spotless:apply' to fix these violations.")
+					.runToFix(runToFixMessage)
 					.formatter(baseDir.toPath(), formatter)
 					.problemFiles(problemFiles)
 					.getMessage());
