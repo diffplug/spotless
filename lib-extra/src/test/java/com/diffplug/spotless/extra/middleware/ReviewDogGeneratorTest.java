@@ -66,7 +66,7 @@ public class ReviewDogGeneratorTest {
 		List<FormatterStep> steps = new ArrayList<>();
 		List<List<Lint>> lintsPerStep = new ArrayList<>();
 
-		String result = ReviewDogGenerator.rdjsonlLints("test.txt", "content", steps, lintsPerStep);
+		String result = ReviewDogGenerator.rdjsonlLints("test.txt", steps, lintsPerStep);
 		assertEquals("", result);
 	}
 
@@ -81,12 +81,13 @@ public class ReviewDogGeneratorTest {
 		Lint lint = Lint.atLine(1, "TEST001", "Test lint message");
 		List<List<Lint>> lintsPerStep = Collections.singletonList(Collections.singletonList(lint));
 
-		String result = ReviewDogGenerator.rdjsonlLints("src/main.java", "content", steps, lintsPerStep);
+		String result = ReviewDogGenerator.rdjsonlLints("src/main.java", steps, lintsPerStep);
 
 		assertNotNull(result);
 		assertTrue(result.contains("\"path\":\"src/main.java\""));
 		assertTrue(result.contains("\"line\":1"));
-		assertTrue(result.contains("TEST001: Test lint message"));
+		assertTrue(result.contains("\"message\":\"Test lint message\""));
+		assertTrue(result.contains("\"code\":\"testStep\""));
 	}
 
 	@Test
@@ -120,13 +121,13 @@ public class ReviewDogGeneratorTest {
 				Collections.singletonList(lint1),
 				Collections.singletonList(lint2));
 
-		String result = ReviewDogGenerator.rdjsonlLints("src/main.java", "content", steps, lintsPerStep);
+		String result = ReviewDogGenerator.rdjsonlLints("src/main.java", steps, lintsPerStep);
 
 		assertNotNull(result);
-		assertTrue(result.contains("RULE1"));
-		assertTrue(result.contains("RULE2"));
-		assertTrue(result.contains("First issue"));
-		assertTrue(result.contains("Second issue"));
+		assertTrue(result.contains("\"code\":\"step1\""));
+		assertTrue(result.contains("\"code\":\"step2\""));
+		assertTrue(result.contains("\"message\":\"First issue\""));
+		assertTrue(result.contains("\"message\":\"Second issue\""));
 
 		String[] lines = result.split("\n");
 		assertEquals(2, lines.length);

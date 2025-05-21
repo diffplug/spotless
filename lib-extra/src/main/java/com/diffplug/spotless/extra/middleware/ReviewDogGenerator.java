@@ -26,6 +26,8 @@ import com.diffplug.spotless.Lint;
  */
 public final class ReviewDogGenerator {
 
+	private static final String SOURCE = "spotless";
+
 	private ReviewDogGenerator() {
 		// Prevent instantiation
 	}
@@ -34,8 +36,8 @@ public final class ReviewDogGenerator {
 	 * Generates a ReviewDog compatible JSON line (rdjsonl) for a diff between
 	 * the actual content and the formatted content of a file.
 	 *
-	 * @param path The file path
-	 * @param actualContent The content as it currently exists in the file
+	 * @param path             The file path
+	 * @param actualContent    The content as it currently exists in the file
 	 * @param formattedContent The content after formatting is applied
 	 * @return A string in rdjsonl format representing the diff
 	 */
@@ -56,14 +58,12 @@ public final class ReviewDogGenerator {
 	 * Generates ReviewDog compatible JSON lines (rdjsonl) for lint issues
 	 * identified by formatting steps.
 	 *
-	 * @param path The file path
-	 * @param formattedContent The content after formatting is applied
-	 * @param steps The list of formatter steps applied
-	 * @param lintsPerStep The list of lints produced by each step
+	 * @param path             The file path
+	 * @param steps            The list of formatter steps applied
+	 * @param lintsPerStep     The list of lints produced by each step
 	 * @return A string in rdjsonl format representing the lints
 	 */
-	public static String rdjsonlLints(String path, String formattedContent,
-			List<FormatterStep> steps, List<List<Lint>> lintsPerStep) {
+	public static String rdjsonlLints(String path, List<FormatterStep> steps, List<List<Lint>> lintsPerStep) {
 		if (lintsPerStep == null || lintsPerStep.isEmpty()) {
 			return "";
 		}
@@ -111,13 +111,23 @@ public final class ReviewDogGenerator {
 	/**
 	 * Formats a single lint issue as a JSON line.
 	 */
-	private static String formatLintAsJson(String path, Lint lint, String stepName) {
+	private static String formatLintAsJson(String path, Lint lint, String ruleCode) {
 		return String.format(
-				"{\"message\":{\"path\":\"%s\",\"line\":%d,\"column\":1,\"message\":\"%s: %s\"}}",
+				"{"
+						+ "\"source\":\"%s\","
+						+ "\"code\":\"%s\","
+						+ "\"level\":\"warning\","
+						+ "\"message\":\"%s\","
+						+ "\"path\":\"%s\","
+						+ "\"line\":%d,"
+						+ "\"column\":%d"
+						+ "}",
+				escapeJson(SOURCE),
+				escapeJson(ruleCode),
+				escapeJson(lint.getDetail()),
 				escapeJson(path),
 				lint.getLineStart(),
-				escapeJson(lint.getShortCode()),
-				escapeJson(lint.getDetail()));
+				1);
 	}
 
 	/**
