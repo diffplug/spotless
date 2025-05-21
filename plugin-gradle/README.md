@@ -88,6 +88,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Multiple (or custom) language-specific blocks](#multiple-or-custom-language-specific-blocks)
   - [Inception (languages within languages within...)](#inception-languages-within-languages-within)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
+  - [Reviewdog integration for CI](#reviewdog-integration-for-ci)
   - [Dependency resolution modes](#dependency-resolution-modes)
   - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
@@ -1767,6 +1768,42 @@ spotless {
     ignoreErrorForStep('my-glitchy-step')   // ignore errors on all files thrown by a specific step
     ignoreErrorForPath('path/to/file.java') // ignore errors by all steps on this specific file
 ```
+
+<a name="reviewdog"></a>
+
+## Reviewdog integration for CI
+
+Spotless can generate reports compatible with [Reviewdog](https://github.com/reviewdog/reviewdog), a tool that automates code review tasks by posting formatting issues as comments on pull requests.
+
+### Enabling Reviewdog integration
+
+To enable Reviewdog output:
+
+```gradle 
+spotless {
+  reviewdogOutput file("${buildDir}/spotless-reviewdog.json")
+}
+```
+
+### Automatic report generation on check failure
+
+To generate reports when `spotlessCheck` fails:
+
+```gradle
+tasks.named('spotlessCheck').configure {
+  ignoreFailures = true
+  finalizedBy tasks.register('generateReviewdogReport') {
+    doLast {
+      if (spotlessCheck.outcome.failure) {
+        logger.lifecycle("Spotless check failed - Reviewdog report generated")
+      }
+    }
+  }
+}
+```
+
+For Reviewdog setup instructions, visit: https://github.com/reviewdog/reviewdog#installation
+
 
 <a name="dependency-resolution-modes"></a>
 ## Dependency resolution modes
