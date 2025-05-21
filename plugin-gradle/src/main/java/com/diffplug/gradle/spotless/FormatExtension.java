@@ -1061,7 +1061,9 @@ public class FormatExtension {
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
 		if (toggleFence != null) {
-			steps = List.of(toggleFence.preserveWithin(this.steps));
+			// need a mutable List, 'steps' is mutated by 'steps.replaceAll()' below
+			steps = new ArrayList<>();
+			steps.add(toggleFence.preserveWithin(this.steps));
 		} else {
 			steps = this.steps;
 		}
