@@ -17,7 +17,6 @@ package com.diffplug.spotless.extra.middleware;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.diffplug.selfie.Selfie;
 
@@ -37,17 +36,13 @@ public class ReviewDogGeneratorTest {
 	@Test
 	public void diffSingleLine() {
 		String result = ReviewDogGenerator.rdjsonlDiff("test.txt", "dirty", "clean");
-		assertNotNull(result);
-		assertTrue(result.contains("\"path\":\"test.txt\""));
-		assertTrue(result.contains("\"diff\":"));
-		assertTrue(result.contains("-dirty"));
-		assertTrue(result.contains("+clean"));
+		Selfie.expectSelfie(result).toBe("{\"message\":{\"path\":\"test.txt\",\"message\":\"File requires formatting\",\"diff\":\"--- a/test.txt\\n+++ b/test.txt\\n@@ -1,1 +1,1 @@\\n-dirty\\n+clean\\n\"}}");
 	}
 
 	@Test
 	public void diffNoChange() {
 		String result = ReviewDogGenerator.rdjsonlDiff("test.txt", "same", "same");
-		assertEquals("", result);
+		Selfie.expectSelfie(result).toBe("");
 	}
 
 	@Test
@@ -56,11 +51,7 @@ public class ReviewDogGeneratorTest {
 		String formatted = "Line 1\nLine 2\nClean line\nLine 4";
 
 		String result = ReviewDogGenerator.rdjsonlDiff("src/main.java", actual, formatted);
-
-		assertNotNull(result);
-		assertTrue(result.contains("\"path\":\"src/main.java\""));
-		assertTrue(result.contains("-Dirty line"));
-		assertTrue(result.contains("+Clean line"));
+		Selfie.expectSelfie(result).toBe("{\"message\":{\"path\":\"src/main.java\",\"message\":\"File requires formatting\",\"diff\":\"--- a/src/main.java\\n+++ b/src/main.java\\n@@ -1,4 +1,4 @@\\n-Line 1\\n-Line 2\\n-Dirty line\\n-Line 4\\n+Line 1\\n+Line 2\\n+Clean line\\n+Line 4\\n\"}}");
 	}
 
 	@Test
@@ -69,7 +60,7 @@ public class ReviewDogGeneratorTest {
 		List<List<Lint>> lintsPerStep = new ArrayList<>();
 
 		String result = ReviewDogGenerator.rdjsonlLints("test.txt", steps, lintsPerStep);
-		assertEquals("", result);
+		Selfie.expectSelfie(result).toBe("");
 	}
 
 	@Test
@@ -84,8 +75,6 @@ public class ReviewDogGeneratorTest {
 		List<List<Lint>> lintsPerStep = Collections.singletonList(Collections.singletonList(lint));
 
 		String result = ReviewDogGenerator.rdjsonlLints("src/main.java", steps, lintsPerStep);
-
-		assertNotNull(result);
 		Selfie.expectSelfie(result).toBe("{\"source\":\"spotless\",\"code\":\"testStep\",\"level\":\"warning\",\"message\":\"Test lint message\",\"path\":\"src/main.java\",\"line\":1,\"column\":1}");
 	}
 
