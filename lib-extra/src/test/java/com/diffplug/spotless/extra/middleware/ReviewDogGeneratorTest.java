@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.diffplug.selfie.Selfie;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,10 +86,7 @@ public class ReviewDogGeneratorTest {
 		String result = ReviewDogGenerator.rdjsonlLints("src/main.java", steps, lintsPerStep);
 
 		assertNotNull(result);
-		assertTrue(result.contains("\"path\":\"src/main.java\""));
-		assertTrue(result.contains("\"line\":1"));
-		assertTrue(result.contains("\"message\":\"Test lint message\""));
-		assertTrue(result.contains("\"code\":\"testStep\""));
+		Selfie.expectSelfie(result).toBe("{\"source\":\"spotless\",\"code\":\"testStep\",\"level\":\"warning\",\"message\":\"Test lint message\",\"path\":\"src/main.java\",\"line\":1,\"column\":1}");
 	}
 
 	@Test
@@ -122,14 +121,7 @@ public class ReviewDogGeneratorTest {
 				Collections.singletonList(lint2));
 
 		String result = ReviewDogGenerator.rdjsonlLints("src/main.java", steps, lintsPerStep);
-
-		assertNotNull(result);
-		assertTrue(result.contains("\"code\":\"step1\""));
-		assertTrue(result.contains("\"code\":\"step2\""));
-		assertTrue(result.contains("\"message\":\"First issue\""));
-		assertTrue(result.contains("\"message\":\"Second issue\""));
-
-		String[] lines = result.split("\n");
-		assertEquals(2, lines.length);
+		Selfie.expectSelfie(result).toBe("{\"source\":\"spotless\",\"code\":\"step1\",\"level\":\"warning\",\"message\":\"First issue\",\"path\":\"src/main.java\",\"line\":1,\"column\":1}",
+"{\"source\":\"spotless\",\"code\":\"step2\",\"level\":\"warning\",\"message\":\"Second issue\",\"path\":\"src/main.java\",\"line\":5,\"column\":1}");
 	}
 }
