@@ -15,11 +15,6 @@
  */
 package com.diffplug.spotless.extra.middleware;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import com.diffplug.selfie.Selfie;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +23,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.selfie.Selfie;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Lint;
 
@@ -111,6 +107,6 @@ public class ReviewDogGeneratorTest {
 
 		String result = ReviewDogGenerator.rdjsonlLints("src/main.java", steps, lintsPerStep);
 		Selfie.expectSelfie(result).toBe("{\"source\":\"spotless\",\"code\":\"step1\",\"level\":\"warning\",\"message\":\"First issue\",\"path\":\"src/main.java\",\"line\":1,\"column\":1}",
-"{\"source\":\"spotless\",\"code\":\"step2\",\"level\":\"warning\",\"message\":\"Second issue\",\"path\":\"src/main.java\",\"line\":5,\"column\":1}");
+				"{\"source\":\"spotless\",\"code\":\"step2\",\"level\":\"warning\",\"message\":\"Second issue\",\"path\":\"src/main.java\",\"line\":5,\"column\":1}");
 	}
 }
