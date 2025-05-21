@@ -80,4 +80,56 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/java/test.java").sameAsResource("java/removeunusedimports/Jdk17TextBlockFormatted.test");
 	}
+
+	/**
+	 * Triggers the special case in {@link FormatExtension#setupTask(SpotlessTask)} with {@code toggleFence} and
+	 * {@code targetExcludeContentPattern} both being not {@code null}.
+	 */
+	@Test
+	void fenceWithTargetExcludeNoMatch() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"  id 'com.diffplug.spotless'",
+				"  id 'java'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"  java {" +
+				"    licenseHeader('// my-copyright')",
+				"    toggleOffOn()",
+				"    targetExcludeIfContentContains('excludeMe')",
+				"  }",
+				"}");
+
+		setFile("src/main/java/test.java").toResource("java/targetExclude/TargetExcludeNoMatchUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/java/test.java").sameAsResource("java/targetExclude/TargetExcludeNoMatchFormatted.test");
+	}
+
+	/**
+	 * Triggers the special case in {@link FormatExtension#setupTask(SpotlessTask)} with {@code toggleFence} and
+	 * {@code targetExcludeContentPattern} both being not {@code null}.
+	 */
+	@Test
+	void fenceWithTargetExcludeMatch() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"  id 'com.diffplug.spotless'",
+				"  id 'java'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"  java {" +
+				"    licenseHeader('// my-copyright')",
+				"    toggleOffOn()",
+				"    targetExcludeIfContentContains('excludeMe')",
+				"  }",
+				"}");
+
+		setFile("src/main/java/test.java").toResource("java/targetExclude/TargetExcludeMatch.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/java/test.java").sameAsResource("java/targetExclude/TargetExcludeMatch.test");
+	}
 }
