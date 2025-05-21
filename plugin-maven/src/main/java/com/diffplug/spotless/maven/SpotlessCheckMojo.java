@@ -111,7 +111,9 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
 		if (!problemFiles.isEmpty()) {
 			final String runToFixMessage;
-			if (executionId != null && !executionId.isEmpty() && !executionId.equals("default-cli")) {
+			if (executionId != null && !executionId.isEmpty()
+				&& !executionId.equals("default")
+				&& !executionId.startsWith("default-")) {
 				runToFixMessage = "Run 'mvn spotless:apply@" + executionId + "' to fix these violations.";
 			} else {
 				runToFixMessage = "Run 'mvn spotless:apply' to fix these violations.";

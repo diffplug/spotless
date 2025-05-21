@@ -68,6 +68,31 @@ class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 		testSpotlessCheck(UNFORMATTED_FILE, "verify", "check");
 	}
 
+	@Test
+	void testSpotlessCheckWithSimplifiedConfiguration() throws Exception {
+		// Use configuration with default execution ID
+		writePom(
+				new String[]{
+						"<execution>",
+						"  <!-- No ID specified = default ID -->",
+						"  <phase>verify</phase>",
+						"  <goals>",
+						"    <goal>check</goal>",
+						"  </goals>",
+						"</execution>"},
+				new String[]{
+						"<java>",
+						"  <licenseHeader>",
+						"    <file>${basedir}/license.txt</file>",
+						"  </licenseHeader>",
+						"</java>"},
+				null,
+				null);
+
+		// Without explicit execution ID, we should get a simple message without @id
+		testSpotlessCheck(UNFORMATTED_FILE, "verify", true, "");
+	}
+
 	private void testSpotlessCheck(String fileName, String command, boolean expectError) throws Exception {
 		testSpotlessCheck(fileName, command, expectError, "");
 	}
