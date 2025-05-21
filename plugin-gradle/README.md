@@ -1773,6 +1773,7 @@ spotless {
 
 ## Reviewdog integration for CI
 
+**CURRENTLY IN BETA** – bug reports are welcome! This is a challenging feature to test comprehensively, so we anticipate needing a few releases to get everything right.
 Spotless can generate reports compatible with [Reviewdog](https://github.com/reviewdog/reviewdog), a tool that automates code review tasks by posting formatting issues as comments on pull requests.
 
 ### Enabling Reviewdog integration
@@ -1792,14 +1793,18 @@ To generate reports when `spotlessCheck` fails:
 ```gradle
 tasks.named('spotlessCheck').configure {
   ignoreFailures = true
-  finalizedBy tasks.register('generateReviewdogReport') {
-    doLast {
-      if (spotlessCheck.outcome.failure) {
-        logger.lifecycle("Spotless check failed - Reviewdog report generated")
+  doLast {
+    if (state.failure != null) {
+      logger.lifecycle("Spotless check failed – generating Reviewdog report")
+
+      if (project.hasProperty('reviewdogOutput')) {
+        // Insert logic here to generate reviewdogOutput
+        // Example: file(project.reviewdogOutput).text = spotlessCheckOutput
       }
     }
   }
 }
+
 ```
 
 For Reviewdog setup instructions, visit: https://github.com/reviewdog/reviewdog#installation
