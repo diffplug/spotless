@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,9 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 			// if the user runs both, make sure that apply happens first,
 			task.mustRunAfter(applyTask);
+
+			// if the user enables the review dog, spotlessCheck will return the review dog format output
+			task.getReviewDog().set(this.reviewDog);
 		});
 		rootCheckTask.configure(task -> task.dependsOn(checkTask));
 
