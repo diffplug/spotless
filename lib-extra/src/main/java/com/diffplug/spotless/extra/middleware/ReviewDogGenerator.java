@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,307 +15,125 @@
  */
 package com.diffplug.spotless.extra.middleware;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Lint;
-import com.diffplug.spotless.LintState;
-import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
 /**
- * ReviewDogGenerator generates ReviewDog formatted output for linting issues
- * based on Spotless formatting results.
+ * Utility class for generating ReviewDog compatible output in the rdjsonl format.
+ * This class provides methods to create diff and lint reports that can be used by ReviewDog.
  */
 public final class ReviewDogGenerator {
-	private final Formatter formatter;
-	private final File projectDir;
 
-	/**
-	 * Constructor for ReviewDogGenerator.
-	 *
-	 * @param projectDir the root directory of the project
-	 * @param steps      the list of FormatterStep to apply
-	 */
-	public ReviewDogGenerator(File projectDir, List<FormatterStep> steps) {
-		this.projectDir = projectDir;
-		this.formatter = Formatter.builder()
-				.encoding(StandardCharsets.UTF_8)
-				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.steps(steps)
-				.build();
+	private ReviewDogGenerator() {
+		// Prevent instantiation
 	}
 
 	/**
-	 * Generates ReviewDog formatted output for the given list of files.
+	 * Generates a ReviewDog compatible JSON line (rdjsonl) for a diff between
+	 * the actual content and the formatted content of a file.
 	 *
-	 * @param files the list of files to check
-	 * @return a String containing ReviewDog formatted lint messages with code suggestions
-	 * @throws IOException if file reading fails
+	 * @param path The file path
+	 * @param actualContent The content as it currently exists in the file
+	 * @param formattedContent The content after formatting is applied
+	 * @return A string in rdjsonl format representing the diff
 	 */
-	public String generateReviewDogFormat(List<File> files) throws IOException {
-		StringBuilder reviewDogOutput = new StringBuilder();
-
-		for (File file : files) {
-			LintState lintState = LintState.of(formatter, file);
-
-			if (!lintState.getDirtyState().isClean()) {
-				String relativePath = getRelativePath(file);
-
-				Map.Entry<Integer, String> diffResult = DiffMessageFormatter.diff(
-						projectDir.toPath(), formatter, file);
-
-				List<DiffHunk> hunks = parseDiffHunks(diffResult.getValue());
-				List<ReviewDogIssue> issues = processLints(lintState, hunks);
-
-				for (ReviewDogIssue issue : issues) {
-					reviewDogOutput.append(formatReviewDogLine(relativePath, issue));
-				}
-			}
+	public static String rdjsonlDiff(String path, String actualContent, String formattedContent) {
+		if (actualContent.equals(formattedContent)) {
+			return "";
 		}
 
-		return reviewDogOutput.toString();
+		String diff = createUnifiedDiff(path, actualContent, formattedContent);
+
+		return String.format(
+				"{\"message\":{\"path\":\"%s\",\"message\":\"File requires formatting\",\"diff\":\"%s\"}}",
+				escapeJson(path),
+				escapeJson(diff));
 	}
 
 	/**
-	 * Converts an absolute file path to a relative path based on the project directory.
+	 * Generates ReviewDog compatible JSON lines (rdjsonl) for lint issues
+	 * identified by formatting steps.
 	 *
-	 * @param file the file to convert
-	 * @return relative path string
+	 * @param path The file path
+	 * @param formattedContent The content after formatting is applied
+	 * @param steps The list of formatter steps applied
+	 * @param lintsPerStep The list of lints produced by each step
+	 * @return A string in rdjsonl format representing the lints
 	 */
-	private String getRelativePath(File file) {
-		return projectDir.toURI().relativize(file.toURI()).getPath();
-	}
-
-	/**
-	 * Parses git-style diff content into structured diff hunks.
-	 *
-	 * @param diffContent the git-style diff content
-	 * @return list of parsed DiffHunk objects
-	 */
-	private List<DiffHunk> parseDiffHunks(String diffContent) {
-		List<DiffHunk> hunks = new ArrayList<>();
-		if (diffContent == null || diffContent.isEmpty()) {
-			return hunks;
+	public static String rdjsonlLints(String path, String formattedContent,
+			List<FormatterStep> steps, List<List<Lint>> lintsPerStep) {
+		if (lintsPerStep == null || lintsPerStep.isEmpty()) {
+			return "";
 		}
 
-		Pattern hunkHeaderPattern = Pattern.compile("@@ -(\\d+),(\\d+) \\+(\\d+),(\\d+) @@");
-		String[] lines = diffContent.split("\n");
-
-		DiffHunk currentHunk = null;
-		StringBuilder hunkContent = new StringBuilder();
-
-		for (String line : lines) {
-			// Skip file header lines (--- and +++)
-			if (line.startsWith("---") || line.startsWith("+++")) {
-				continue;
-			}
-
-			if (line.startsWith("@@")) {
-				if (currentHunk != null) {
-					currentHunk.content = hunkContent.toString().trim();
-					hunks.add(currentHunk);
-					hunkContent = new StringBuilder();
-				}
-
-				Matcher matcher = hunkHeaderPattern.matcher(line);
-				if (matcher.find()) {
-					int originalStart = Integer.parseInt(matcher.group(1));
-					int originalLength = Integer.parseInt(matcher.group(2));
-					int newStart = Integer.parseInt(matcher.group(3));
-					int newLength = Integer.parseInt(matcher.group(4));
-
-					currentHunk = new DiffHunk(originalStart, originalLength, newStart, newLength);
-					currentHunk.header = line;
-				}
-				hunkContent.append(line).append("\n");
-			} else if (currentHunk != null) {
-				hunkContent.append(line).append("\n");
-			}
-		}
-
-		if (currentHunk != null) {
-			currentHunk.content = hunkContent.toString().trim();
-			hunks.add(currentHunk);
-		}
-
-		return hunks;
-	}
-
-	/**
-	 * Processes lint information and associates them with appropriate diff hunks.
-	 *
-	 * @param lintState the LintState containing all lint information
-	 * @param hunks list of diff hunks
-	 * @return list of ReviewDogIssue
-	 */
-	private List<ReviewDogIssue> processLints(LintState lintState, List<DiffHunk> hunks) {
-		List<ReviewDogIssue> issues = new ArrayList<>();
-
-		List<List<Lint>> lintsPerStep = lintState.getLintsPerStep();
-
-		for (List<Lint> stepLints : Objects.requireNonNull(lintsPerStep)) {
-			for (Lint lint : stepLints) {
-				DiffHunk relevantHunk = findRelevantHunk(hunks, lint.getLineStart());
-
-				String suggestion = "";
-				if (relevantHunk != null) {
-					suggestion = extractSuggestionFromHunk(relevantHunk);
-				}
-
-				ReviewDogIssue issue = new ReviewDogIssue(
-						lint.getLineStart(),
-						1,
-						lint.getShortCode() + ": " + lint.getDetail(),
-						suggestion);
-
-				issues.add(issue);
-			}
-		}
-
-		// If no specific lints were found but file is dirty, add a general formatting issue
-		if (issues.isEmpty() && !hunks.isEmpty()) {
-			DiffHunk firstHunk = hunks.get(0);
-			String suggestion = extractSuggestionFromHunk(firstHunk);
-
-			issues.add(new ReviewDogIssue(
-					firstHunk.originalStart,
-					1,
-					"General formatting issue: file needs to be reformatted.",
-					suggestion));
-		}
-
-		return issues;
-	}
-
-	/**
-	 * Finds the hunk that is relevant for a specific line number.
-	 *
-	 * @param hunks list of diff hunks
-	 * @param lineNumber the line number to find (1-based)
-	 * @return the relevant hunk or null if not found
-	 */
-	private DiffHunk findRelevantHunk(List<DiffHunk> hunks, int lineNumber) {
-		for (DiffHunk hunk : hunks) {
-			if (lineNumber >= hunk.originalStart &&
-					lineNumber < hunk.originalStart + hunk.originalLength) {
-				return hunk;
-			}
-		}
-
-		// If no exact match is found, find the closest hunk before the line number
-		DiffHunk closestHunk = null;
-		int closestDistance = Integer.MAX_VALUE;
-
-		for (DiffHunk hunk : hunks) {
-			if (hunk.originalStart <= lineNumber) {
-				int distance = lineNumber - hunk.originalStart;
-				if (distance < closestDistance) {
-					closestDistance = distance;
-					closestHunk = hunk;
-				}
-			}
-		}
-		return closestHunk;
-	}
-
-	/**
-	 * Extracts suggestion content from a diff hunk.
-	 *
-	 * @param hunk the diff hunk
-	 * @return the suggestion content
-	 */
-	private String extractSuggestionFromHunk(DiffHunk hunk) {
-		StringBuilder suggestion = new StringBuilder();
-
-		String[] lines = hunk.content.split("\n");
-		boolean headerProcessed = false;
-
-		for (String line : lines) {
-			if (!headerProcessed && line.startsWith("@@")) {
-				headerProcessed = true;
-				continue;
-			}
-
-			if (headerProcessed) {
-				if (line.startsWith("+") && !line.startsWith("+++")) {
-					suggestion.append(line.substring(1));
-					suggestion.append("\n");
-				} else if (!line.startsWith("-") && !line.startsWith("---")) {
-					suggestion.append(line);
-					suggestion.append("\n");
-				}
-			}
-		}
-
-		return suggestion.toString().trim();
-	}
-
-	/**
-	 * Formats a single ReviewDog issue line according to ReviewDog's expected format
-	 * with suggestion support.
-	 *
-	 * @param filePath the relative file path
-	 * @param issue    the ReviewDogIssue object
-	 * @return formatted string line with suggestion
-	 */
-	private String formatReviewDogLine(String filePath, ReviewDogIssue issue) {
 		StringBuilder builder = new StringBuilder();
 
-		builder.append(String.format("%s:%d:%d: %s\n",
-				filePath, issue.lineNumber, issue.column, issue.message));
+		for (int i = 0; i < lintsPerStep.size(); i++) {
+			List<Lint> lints = lintsPerStep.get(i);
+			if (lints == null || lints.isEmpty()) {
+				continue;
+			}
 
-		if (issue.suggestion != null && !issue.suggestion.isEmpty()) {
-			builder.append("```suggestion\n");
-			builder.append(issue.suggestion);
-			builder.append("\n```\n");
+			String stepName = (i < steps.size()) ? steps.get(i).getName() : "unknown";
+			for (Lint lint : lints) {
+				builder.append(formatLintAsJson(path, lint, stepName)).append('\n');
+			}
 		}
 
-		return builder.toString();
+		return builder.toString().trim();
 	}
 
 	/**
-	 * Inner class representing a diff hunk.
+	 * Creates a unified diff between two text contents.
 	 */
-	private static class DiffHunk {
-		final int originalStart;
-		final int originalLength;
-		final int newStart;
-		final int newLength;
-		String header;
-		String content;
+	private static String createUnifiedDiff(String path, String actualContent, String formattedContent) {
+		String[] actualLines = actualContent.split("\\r?\\n", -1);
+		String[] formattedLines = formattedContent.split("\\r?\\n", -1);
 
-		DiffHunk(int originalStart, int originalLength, int newStart, int newLength) {
-			this.originalStart = originalStart;
-			this.originalLength = originalLength;
-			this.newStart = newStart;
-			this.newLength = newLength;
+		StringBuilder diff = new StringBuilder();
+		diff.append("--- a/").append(path).append('\n');
+		diff.append("+++ b/").append(path).append('\n');
+		diff.append("@@ -1,").append(actualLines.length).append(" +1,").append(formattedLines.length).append(" @@\n");
+
+		for (String line : actualLines) {
+			diff.append('-').append(line).append('\n');
 		}
+
+		for (String line : formattedLines) {
+			diff.append('+').append(line).append('\n');
+		}
+
+		return diff.toString();
 	}
 
 	/**
-	 * Inner class representing a ReviewDog issue.
+	 * Formats a single lint issue as a JSON line.
 	 */
-	private static class ReviewDogIssue {
-		final int lineNumber;
-		final int column;
-		final String message;
-		final String suggestion;
+	private static String formatLintAsJson(String path, Lint lint, String stepName) {
+		return String.format(
+				"{\"message\":{\"path\":\"%s\",\"line\":%d,\"column\":1,\"message\":\"%s: %s\"}}",
+				escapeJson(path),
+				lint.getLineStart(),
+				escapeJson(lint.getShortCode()),
+				escapeJson(lint.getDetail()));
+	}
 
-		ReviewDogIssue(int lineNumber, int column, String message, String suggestion) {
-			this.lineNumber = lineNumber;
-			this.column = column;
-			this.message = message;
-			this.suggestion = suggestion;
+	/**
+	 * Escapes special characters in a string for JSON compatibility.
+	 */
+	private static String escapeJson(String str) {
+		if (str == null) {
+			return "";
 		}
+		return str
+				.replace("\\", "\\\\")
+				.replace("\"", "\\\"")
+				.replace("\n", "\\n")
+				.replace("\r", "\\r")
+				.replace("\t", "\\t")
+				.replace("\b", "\\b")
+				.replace("\f", "\\f");
 	}
 }
