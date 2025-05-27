@@ -37,6 +37,7 @@ import org.gradle.work.DisableCachingByDefault;
 import org.jetbrains.annotations.NotNull;
 
 import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 import com.diffplug.spotless.extra.middleware.ReviewDogGenerator;
@@ -55,6 +56,10 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	@Input
 	@Optional
 	public abstract Property<File> getReviewDogOutputDir();
+
+	@Input
+	@Optional
+	public abstract Property<List<FormatterStep>> getSteps();
 
 	public void performActionTest() throws IOException {
 		performAction(true);
@@ -114,8 +119,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		if (getReviewDog().get()) {
 			for (File file : lintsFiles.getFiles()) {
 				String path = file.getPath();
-				// TODO : send or save the output of ReviewDogGenerator.rdjsonlLints
-				ReviewDogGenerator.rdjsonlLints(path, null, null);
+				ReviewDogGenerator.rdjsonlLintsFromSteps(path, getSteps().get(), null);
 			}
 		}
 

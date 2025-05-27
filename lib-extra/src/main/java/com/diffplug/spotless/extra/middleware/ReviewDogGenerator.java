@@ -15,7 +15,9 @@
  */
 package com.diffplug.spotless.extra.middleware;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Lint;
@@ -63,7 +65,21 @@ public final class ReviewDogGenerator {
 	 * @param lintsPerStep     The list of lints produced by each step
 	 * @return A string in rdjsonl format representing the lints
 	 */
-	public static String rdjsonlLints(String path, List<FormatterStep> steps, List<List<Lint>> lintsPerStep) {
+	public static String rdjsonlLintsFromSteps(String path, List<FormatterStep> steps, List<List<Lint>> lintsPerStep) {
+		if (steps == null || steps.isEmpty()) {
+			return rdjsonlLintsFromStrings(path, Collections.emptyList(), lintsPerStep);
+		}
+		List<String> stepNames = steps.stream()
+				.map(FormatterStep::getName)
+				.collect(Collectors.toList());
+
+		if (lintsPerStep == null || lintsPerStep.isEmpty()) {
+			return rdjsonlLintsFromStrings(path, stepNames, Collections.emptyList());
+		}
+		return rdjsonlLintsFromStrings(path, stepNames, lintsPerStep);
+	}
+
+	private static String rdjsonlLintsFromStrings(String path, List<String> stepNames, List<List<Lint>> lintsPerStep) {
 		if (lintsPerStep == null || lintsPerStep.isEmpty()) {
 			return "";
 		}
@@ -76,7 +92,7 @@ public final class ReviewDogGenerator {
 				continue;
 			}
 
-			String stepName = (i < steps.size()) ? steps.get(i).getName() : "unknown";
+			String stepName = (i < stepNames.size()) ? stepNames.get(i) : "unknown";
 			for (Lint lint : lints) {
 				builder.append(formatLintAsJson(path, lint, stepName)).append('\n');
 			}

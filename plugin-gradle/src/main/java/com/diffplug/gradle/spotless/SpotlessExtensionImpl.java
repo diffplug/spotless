@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.ArrayList;
+
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
@@ -95,6 +97,8 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			// if the user enables the review dog, spotlessCheck will return the review dog format output
 			task.getReviewDog().set(this.reviewDog);
 			task.getReviewDogOutputDir().set(this.reviewDogOutputDir);
+
+			task.getSteps().set(new ArrayList<>(source.getStepsInternalRoundtrip().getSteps()));
 		});
 		rootCheckTask.configure(task -> task.dependsOn(checkTask));
 

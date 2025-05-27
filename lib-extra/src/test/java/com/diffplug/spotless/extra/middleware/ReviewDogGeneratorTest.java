@@ -55,7 +55,7 @@ public class ReviewDogGeneratorTest {
 		List<FormatterStep> steps = new ArrayList<>();
 		List<List<Lint>> lintsPerStep = new ArrayList<>();
 
-		String result = ReviewDogGenerator.rdjsonlLints("test.txt", steps, lintsPerStep);
+		String result = ReviewDogGenerator.rdjsonlLintsFromSteps("test.txt", steps, lintsPerStep);
 		Selfie.expectSelfie(result).toBe("");
 	}
 
@@ -70,7 +70,7 @@ public class ReviewDogGeneratorTest {
 		Lint lint = Lint.atLine(1, "TEST001", "Test lint message");
 		List<List<Lint>> lintsPerStep = Collections.singletonList(Collections.singletonList(lint));
 
-		String result = ReviewDogGenerator.rdjsonlLints("src/main.java", steps, lintsPerStep);
+		String result = ReviewDogGenerator.rdjsonlLintsFromSteps("src/main.java", steps, lintsPerStep);
 		Selfie.expectSelfie(result).toBe("{\"source\":\"spotless\",\"code\":\"testStep\",\"level\":\"warning\",\"message\":\"Test lint message\",\"path\":\"src/main.java\",\"line\":1,\"column\":1}");
 	}
 
@@ -105,7 +105,7 @@ public class ReviewDogGeneratorTest {
 				Collections.singletonList(lint1),
 				Collections.singletonList(lint2));
 
-		String result = ReviewDogGenerator.rdjsonlLints("src/main.java", steps, lintsPerStep);
+		String result = ReviewDogGenerator.rdjsonlLintsFromSteps("src/main.java", steps, lintsPerStep);
 		Selfie.expectSelfie(result).toBe("{\"source\":\"spotless\",\"code\":\"step1\",\"level\":\"warning\",\"message\":\"First issue\",\"path\":\"src/main.java\",\"line\":1,\"column\":1}",
 				"{\"source\":\"spotless\",\"code\":\"step2\",\"level\":\"warning\",\"message\":\"Second issue\",\"path\":\"src/main.java\",\"line\":5,\"column\":1}");
 	}
