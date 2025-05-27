@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [7.0.4] - 2025-05-27
 ### Fixed
 * Fix `UnsupportedOperationException` in the Gradle plugin when using `targetExcludeContent[Pattern]` ([#2487](https://github.com/diffplug/spotless/pull/2487))
 ### Changed
