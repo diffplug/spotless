@@ -94,6 +94,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 			// if the user enables the review dog, spotlessCheck will return the review dog format output
 			task.getReviewDog().set(this.reviewDog);
+			task.getReviewDogOutputDir().set(this.reviewDogOutputDir);
 		});
 		rootCheckTask.configure(task -> task.dependsOn(checkTask));
 

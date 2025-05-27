@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -283,6 +284,27 @@ public abstract class SpotlessExtension {
 	 */
 	public void setReviewDog(boolean reviewDog) {
 		this.reviewDog = reviewDog;
+	}
+
+	@Nullable
+	File reviewDogOutputDir;
+
+	/**
+	 * Returns the directory where ReviewDog output will be written.
+	 * If not set, defaults to {@code build/reviewdog} in the root project directory.
+	 */
+	public @Nullable File getReviewDogOutputDir() {
+		return reviewDogOutputDir;
+	}
+
+	/**
+	 * Sets the directory where ReviewDog output will be written.
+	 * If not set, defaults to {@code build/reviewdog} in the root project directory.
+	 * <p>
+	 * If the directory does not exist, it will be created.
+	 */
+	public void setReviewDogOutputDir(File reviewDogOutputDir) {
+		this.reviewDogOutputDir = reviewDogOutputDir;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -31,6 +31,7 @@ import org.gradle.api.file.FileVisitor;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.DisableCachingByDefault;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +51,10 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 
 	@Input
 	public abstract Property<Boolean> getReviewDog();
+
+	@Input
+	@Optional
+	public abstract Property<File> getReviewDogOutputDir();
 
 	public void performActionTest() throws IOException {
 		performAction(true);
@@ -81,8 +86,18 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 					File cleanFile = new File(getSpotlessCleanDirectory().get().getName(), getProjectDir().get().getAsFile().toPath().relativize(file.toPath()).toString());
 					String formattedContent = new String(Files.readAllBytes(cleanFile.toPath()), getEncoding().get());
 
-					// TODO : send or save the output of ReviewDogGenerator.rdjsonlDiff
-					ReviewDogGenerator.rdjsonlDiff(file.getPath(), originalContent, formattedContent);
+					File outputDir = getReviewDogOutputDir().isPresent() ? getReviewDogOutputDir().get() : new File(getProject().getRootDir(), "build/reviewdog");
+
+					if (!outputDir.exists()) {
+						outputDir.mkdirs();
+					}
+
+					String relativePath = getProjectDir().get().getAsFile().toPath().relativize(file.toPath()).toString();
+					File outputFile = new File(outputDir, relativePath + ".rdjsonl");
+					outputFile.getParentFile().mkdirs();
+
+					String rdjsonl = ReviewDogGenerator.rdjsonlDiff(file.getPath(), originalContent, formattedContent);
+					Files.write(outputFile.toPath(), rdjsonl.getBytes(getEncoding().get()));
 				}
 			}
 
