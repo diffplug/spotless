@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ public class ScalafmtFormatterFunc implements FormatterFunc.NeedsFile {
 		String scalafmtLibraryVersion = Versions.version();
 		if (!config.version().equals(scalafmtLibraryVersion)) {
 			throw new IllegalArgumentException(
-				"Spotless is using " + scalafmtLibraryVersion + " but the config file declares " + config.version() +
-					". Both must match. Update the version declared in the plugin's settings and/or the config file.");
+					"Spotless is using " + scalafmtLibraryVersion + " but the config file declares " + config.version() +
+							". Both must match. Update the version declared in the plugin's settings and/or the config file.");
 		}
 	}
 
