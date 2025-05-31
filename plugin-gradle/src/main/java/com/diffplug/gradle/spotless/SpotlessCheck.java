@@ -31,13 +31,16 @@ import org.gradle.api.file.FileVisitor;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.DisableCachingByDefault;
 import org.jetbrains.annotations.NotNull;
 
 import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
+import com.diffplug.spotless.extra.middleware.ReviewDogGenerator;
 
 @DisableCachingByDefault(because = "not worth caching")
 public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
@@ -46,6 +49,17 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 
 	@Input
 	public abstract Property<String> getRunToFixMessage();
+
+	@Input
+	public abstract Property<Boolean> getReviewDog();
+
+	@Input
+	@Optional
+	public abstract Property<File> getReviewDogOutputDir();
+
+	@Input
+	@Optional
+	public abstract Property<List<FormatterStep>> getSteps();
 
 	public void performActionTest() throws IOException {
 		performAction(true);
@@ -61,29 +75,59 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		ConfigurableFileTree lintsFiles = getConfigCacheWorkaround().fileTree().from(getSpotlessLintsDirectory().get());
 		if (cleanFiles.isEmpty() && lintsFiles.isEmpty()) {
 			getState().setDidWork(sourceDidWork());
-		} else if (!isTest && applyHasRun()) {
+			return;
+		}
+		if (!isTest && applyHasRun()) {
 			// if our matching apply has already run, then we don't need to do anything
 			getState().setDidWork(false);
-		} else {
-			List<File> unformattedFiles = getUncleanFiles(cleanFiles);
-			if (!unformattedFiles.isEmpty()) {
-				// if any files are unformatted, we show those
-				throw new GradleException(DiffMessageFormatter.builder()
-						.runToFix(getRunToFixMessage().get())
-						.formatterFolder(
-								getProjectDir().get().getAsFile().toPath(),
-								getSpotlessCleanDirectory().get().toPath(),
-								getEncoding().get())
-						.problemFiles(unformattedFiles)
-						.getMessage());
-			} else {
-				// We only show lints if there are no unformatted files.
-				// This is because lint line numbers are relative to the
-				// formatted content, and formatting often fixes lints.
-				boolean detailed = false;
-				throw new GradleException(super.allLintsErrorMsgDetailed(lintsFiles, detailed));
+			return;
+		}
+
+		List<File> unformattedFiles = getUncleanFiles(cleanFiles);
+		if (!unformattedFiles.isEmpty()) {
+			if (getReviewDog().get()) {
+				for (File file : unformattedFiles) {
+					String originalContent = new String(Files.readAllBytes(file.toPath()), getEncoding().get());
+					File cleanFile = new File(getSpotlessCleanDirectory().get().getName(), getProjectDir().get().getAsFile().toPath().relativize(file.toPath()).toString());
+					String formattedContent = new String(Files.readAllBytes(cleanFile.toPath()), getEncoding().get());
+
+					File outputDir = getReviewDogOutputDir().isPresent() ? getReviewDogOutputDir().get() : new File(getProject().getRootDir(), "build/reviewdog");
+
+					if (!outputDir.exists()) {
+						outputDir.mkdirs();
+					}
+
+					String relativePath = getProjectDir().get().getAsFile().toPath().relativize(file.toPath()).toString();
+					File outputFile = new File(outputDir, relativePath + ".rdjsonl");
+					outputFile.getParentFile().mkdirs();
+
+					String rdjsonl = ReviewDogGenerator.rdjsonlDiff(file.getPath(), originalContent, formattedContent);
+					Files.write(outputFile.toPath(), rdjsonl.getBytes(getEncoding().get()));
+				}
+			}
+
+			throw new GradleException(DiffMessageFormatter.builder()
+					.runToFix(getRunToFixMessage().get())
+					.formatterFolder(
+							getProjectDir().get().getAsFile().toPath(),
+							getSpotlessCleanDirectory().get().toPath(),
+							getEncoding().get())
+					.problemFiles(unformattedFiles)
+					.getMessage());
+		}
+
+		if (getReviewDog().get()) {
+			for (File file : lintsFiles.getFiles()) {
+				String path = file.getPath();
+				ReviewDogGenerator.rdjsonlLintsFromSteps(path, getSteps().get(), null);
 			}
 		}
+
+		// We only show lints if there are no unformatted files.
+		// This is because lint line numbers are relative to the
+		// formatted content, and formatting often fixes lints.
+		boolean detailed = false;
+		throw new GradleException(super.allLintsErrorMsgDetailed(lintsFiles, detailed));
 	}
 
 	private @NotNull List<File> getUncleanFiles(ConfigurableFileTree cleanFiles) {
