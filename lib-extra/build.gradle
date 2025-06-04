@@ -102,4 +102,6 @@ p2deps {
 spotbugs {
 	// LOW|MEDIUM|DEFAULT|HIGH (low = sensitive to even minor mistakes).
 	reportLevel = com.github.spotbugs.snom.Confidence.valueOf('LOW')
+	// TODO: https://github.com/spotbugs/spotbugs-gradle-plugin/issues/1360
+	toolVersion = '4.9.3'
 }
