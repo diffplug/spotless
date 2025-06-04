@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ class IdeHook {
 		}
 		if (spotlessTask.getTarget().contains(file)) {
 			GitRatchetGradle ratchet = spotlessTask.getRatchet();
-			try (Formatter formatter = spotlessTask.buildFormatter()) {
+			try (Formatter formatter = spotlessTask.getFormatterSpec().buildFormatter()) {
 				if (ratchet != null) {
 					if (ratchet.isClean(spotlessTask.getProjectDir().get().getAsFile(), spotlessTask.getRootTreeSha(), file)) {
 						dumpIsClean();

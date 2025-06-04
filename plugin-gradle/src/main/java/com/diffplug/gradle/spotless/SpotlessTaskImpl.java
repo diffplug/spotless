@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 
 		SpotlessTaskService taskService = getTaskService().get();
 		taskService.registerSourceAlreadyRan(this);
-		if (target == null) {
+		if (getTargetInternal().getFrom().isEmpty()) {
 			throw new GradleException("You must specify 'Iterable<File> target'");
 		}
 
@@ -96,9 +96,9 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			Files.createDirectories(lintsDirectory.toPath());
 		}
 
-		try (Formatter formatter = buildFormatter()) {
+		try (Formatter formatter = getFormatterSpec().buildFormatter()) {
 			GitRatchetGradle ratchet = getRatchet();
-			for (FileChange fileChange : inputs.getFileChanges(target)) {
+			for (FileChange fileChange : inputs.getFileChanges(getTarget())) {
 				File input = fileChange.getFile();
 				File projectDir = getProjectDir().get().getAsFile();
 				String relativePath = FormatExtension.relativize(projectDir, input);

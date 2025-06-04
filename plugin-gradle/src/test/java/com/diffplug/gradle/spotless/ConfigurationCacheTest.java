@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,10 +84,12 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 		gradleRunner().withArguments("spotlessApply", "--stacktrace").build();
 		gradleRunner().withArguments("spotlessApply").build();
 		gradleRunner().withArguments("spotlessApply").build();
+		gradleRunner().withArguments("spotlessDiagnose").build();
 
 		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		gradleRunner().withArguments("spotlessCheck").buildAndFail();
 		gradleRunner().withArguments("spotlessApply").build();
+		gradleRunner().withArguments("spotlessDiagnose").build();
 		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,9 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		// create the diagnose task
 		TaskProvider<SpotlessDiagnoseTask> diagnoseTask = tasks.register(taskName + DIAGNOSE, SpotlessDiagnoseTask.class, task -> {
-			task.source = spotlessTask.get();
+			SpotlessTaskImpl source = spotlessTask.get();
+			task.init(source);
+
 			task.setGroup(TASK_GROUP);
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});

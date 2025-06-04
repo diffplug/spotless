@@ -16,7 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +23,7 @@ import java.util.Objects;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Property;
@@ -31,14 +31,15 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.work.DisableCachingByDefault;
 import org.gradle.work.Incremental;
 
 import com.diffplug.spotless.ConfigurationCacheHackList;
-import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.LintSuppression;
@@ -49,27 +50,29 @@ public abstract class SpotlessTask extends DefaultTask {
 	@Internal
 	abstract Property<SpotlessTaskService> getTaskService();
 
-	// set by SpotlessExtension, but possibly overridden by FormatExtension
-	protected String encoding = "UTF-8";
+	private final FormatterSpec formatterSpec = new FormatterSpec(getProject().getObjects());
 
-	@Input
+	@Nested
+	protected FormatterSpec getFormatterSpec() {
+		return formatterSpec;
+	}
+
+	@Internal
 	public String getEncoding() {
-		return encoding;
+		return getFormatterSpec().getEncoding().get();
 	}
 
 	public void setEncoding(String encoding) {
-		this.encoding = Objects.requireNonNull(encoding);
+		getFormatterSpec().getEncoding().set(Objects.requireNonNull(encoding));
 	}
 
-	protected Provider<LineEnding.Policy> lineEndingsPolicy = null;
-
-	@Input
+	@Internal
 	public Provider<LineEnding.Policy> getLineEndingsPolicy() {
-		return lineEndingsPolicy;
+		return getFormatterSpec().getLineEndingsPolicy();
 	}
 
 	public void setLineEndingsPolicy(Provider<LineEnding.Policy> lineEndingsPolicy) {
-		this.lineEndingsPolicy = lineEndingsPolicy;
+		getFormatterSpec().getLineEndingsPolicy().set(lineEndingsPolicy);
 	}
 
 	/**
@@ -135,21 +138,19 @@ public abstract class SpotlessTask extends DefaultTask {
 		return lintSuppressions;
 	}
 
-	protected FileCollection target;
+	@Internal
+	protected abstract ConfigurableFileCollection getTargetInternal();
 
 	@PathSensitive(PathSensitivity.RELATIVE)
 	@Incremental
 	@InputFiles
+	@SkipWhenEmpty
 	public FileCollection getTarget() {
-		return target;
+		return getTargetInternal();
 	}
 
 	public void setTarget(Iterable<File> target) {
-		if (target instanceof FileCollection) {
-			this.target = (FileCollection) target;
-		} else {
-			this.target = getProject().files(target);
-		}
+		getTargetInternal().setFrom(target);
 	}
 
 	protected File cleanDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(),
@@ -168,13 +169,7 @@ public abstract class SpotlessTask extends DefaultTask {
 		return lintsDirectory;
 	}
 
-	private final ConfigurationCacheHackList stepsInternalRoundtrip = ConfigurationCacheHackList.forRoundtrip();
 	private final ConfigurationCacheHackList stepsInternalEquality = ConfigurationCacheHackList.forEquality();
-
-	@Internal
-	public ConfigurationCacheHackList getStepsInternalRoundtrip() {
-		return stepsInternalRoundtrip;
-	}
 
 	@Input
 	public ConfigurationCacheHackList getStepsInternalEquality() {
@@ -183,9 +178,9 @@ public abstract class SpotlessTask extends DefaultTask {
 
 	public void setSteps(List<FormatterStep> steps) {
 		PluginGradlePreconditions.requireElementsNonNull(steps);
-		this.stepsInternalRoundtrip.clear();
+		this.formatterSpec.getStepsInternalRoundtrip().clear();
 		this.stepsInternalEquality.clear();
-		this.stepsInternalRoundtrip.addAll(steps);
+		this.formatterSpec.getStepsInternalRoundtrip().addAll(steps);
 		this.stepsInternalEquality.addAll(steps);
 	}
 
@@ -197,13 +192,5 @@ public abstract class SpotlessTask extends DefaultTask {
 		} else {
 			return name;
 		}
-	}
-
-	Formatter buildFormatter() {
-		return Formatter.builder()
-				.lineEndingsPolicy(getLineEndingsPolicy().get())
-				.encoding(Charset.forName(encoding))
-				.steps(stepsInternalRoundtrip.getSteps())
-				.build();
 	}
 }

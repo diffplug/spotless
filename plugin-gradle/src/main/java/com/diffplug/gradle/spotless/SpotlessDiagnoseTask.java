@@ -22,8 +22,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import org.gradle.api.DefaultTask;
-import org.gradle.api.tasks.Internal;
+import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.file.ProjectLayout;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.UntrackedTask;
 
@@ -33,23 +42,39 @@ import com.diffplug.spotless.PaddedCell;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @UntrackedTask(because = "undeclared inputs/outputs")
-public class SpotlessDiagnoseTask extends DefaultTask {
-	SpotlessTask source;
+public abstract class SpotlessDiagnoseTask extends DefaultTask {
 
-	@Internal
-	public SpotlessTask getSource() {
-		return source;
+	@Inject
+	protected abstract ProjectLayout getProjectLayout();
+
+	@Inject
+	protected abstract FileSystemOperations getFileSystemOperations();
+
+	@Input
+	protected abstract Property<String> getFormatName();
+
+	@Input
+	protected abstract Property<FormatterSpec> getFormatter();
+
+	@InputFiles
+	@PathSensitive(PathSensitivity.RELATIVE)
+	protected abstract ConfigurableFileCollection getTarget();
+
+	void init(SpotlessTask source) {
+		getFormatName().convention(source.formatName());
+		getFormatter().convention(source.getFormatterSpec());
+		getTarget().setFrom(source.getTarget());
 	}
 
 	@TaskAction
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	public void performAction() throws IOException {
-		Path srcRoot = getProject().getProjectDir().toPath();
-		Path diagnoseRoot = getProject().getLayout().getBuildDirectory().getAsFile().get()
-				.toPath().resolve("spotless-diagnose-" + source.formatName());
-		getProject().delete(diagnoseRoot.toFile());
-		try (Formatter formatter = source.buildFormatter()) {
-			for (File file : source.target) {
+		Path srcRoot = getProjectLayout().getProjectDirectory().getAsFile().toPath();
+		Path diagnoseRoot = getProjectLayout().getBuildDirectory().getAsFile().get()
+				.toPath().resolve("spotless-diagnose-" + getFormatName().get());
+		getFileSystemOperations().delete(spec -> spec.delete(diagnoseRoot));
+		try (Formatter formatter = getFormatter().get().buildFormatter()) {
+			for (File file : getTarget()) {
 				getLogger().debug("Running padded cell check on " + file);
 				PaddedCell padded = PaddedCell.check(formatter, file);
 				if (!padded.misbehaved()) {
