@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Changed
+* scalafmt: enforce version consistency between the version configured in Spotless and the version declared in Scalafmt config file ([#2460](https://github.com/diffplug/spotless/issues/2460))
+
 ## [7.0.4] - 2025-05-27
 ### Fixed
 * Fix `UnsupportedOperationException` in the Gradle plugin when using `targetExcludeContent[Pattern]` ([#2487](https://github.com/diffplug/spotless/pull/2487))
