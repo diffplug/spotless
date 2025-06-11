@@ -11,12 +11,39 @@ on:
     types: [submitted]
 
 jobs:
+  check-team-membership:
+    runs-on: ubuntu-latest
+    outputs:
+      is-team-member: ${{ steps.check-membership.outputs.is-member }}
+    steps:
+      - name: Check team membership
+        id: check-membership
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const { data } = await github.rest.teams.getMembershipForUserInOrg({
+                org: 'diffplug',
+                team_slug: 'spotless',
+                username: github.event.sender.login
+              });
+              console.log(`User ${github.event.sender.login} membership status: ${data.state}`);
+              return data.state === 'active';
+            } catch (error) {
+              console.log(`User ${github.event.sender.login} is not a member of the Spotless team`);
+              return false;
+            }
+
   claude:
+    needs: check-team-membership
     if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      needs.check-team-membership.outputs.is-team-member == 'true' &&
+      (
+        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+        (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+        (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+        (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: read
