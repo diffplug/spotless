@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+* Respect system gitconfig when performing git operations ([#2404](https://github.com/diffplug/spotless/issues/2404))
 
 ## [7.0.4] - 2025-05-27
 ### Fixed
