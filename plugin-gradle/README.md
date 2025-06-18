@@ -188,6 +188,7 @@ spotless {
     importOrderFile('eclipse-import-order.txt') // import order file as exported from eclipse
 
     removeUnusedImports()
+    removeWildcardImports()
 
     // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
     cleanthat()          // has its own section below
@@ -225,6 +226,16 @@ spotless {
   // optional: you may switch for `google-java-format` as underlying engine to `cleanthat-javaparser-unnecessaryimport`
   // which enables processing any language level source file with a JDK8+ Runtime
   removeUnusedImports('cleanthat-javaparser-unnecessaryimport')
+```
+
+### removeWildcardImports
+
+```
+spotless {
+  java {
+  removeWildcardImports()
+  }
+}
 ```
 
 ### google-java-format

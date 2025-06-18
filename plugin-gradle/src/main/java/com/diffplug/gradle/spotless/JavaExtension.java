@@ -40,6 +40,7 @@ import com.diffplug.spotless.java.FormatAnnotationsStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
+import com.diffplug.spotless.java.RemoveWildcardImportsStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
@@ -149,6 +150,10 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public void removeUnusedImports(String formatter) {
 		addStep(RemoveUnusedImportsStep.create(formatter, provisioner()));
+	}
+
+	public void removeWildcardImports() {
+		addStep(RemoveWildcardImportsStep.create());
 	}
 
 	/** Uses the <a href="https://github.com/google/google-java-format">google-java-format</a> jar to format source code. */
