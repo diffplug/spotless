@@ -233,7 +233,7 @@ spotless {
 ```
 spotless {
   java {
-  removeWildcardImports()
+    removeWildcardImports()
   }
 }
 ```
