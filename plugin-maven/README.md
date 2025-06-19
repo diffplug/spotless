@@ -210,6 +210,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
+    <removeWildcardImports /> <!-- drop any import ending with '*' -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
@@ -226,6 +227,12 @@ any other maven phase (i.e. compile) then it can be configured as below;
 <removeUnusedImports>
   <engine>google-java-format</engine>    <!-- optional. Defaults to `google-java-format`. Can be switched to `cleanthat-javaparser-unnecessaryimport` (e.g. to process JDK17 source files with a JDK8+ Runtime) -->
 </removeUnusedImports>
+```
+
+### removeWildcardImports
+
+```xml
+<removeWildcardImports/>
 ```
 
 ### google-java-format
