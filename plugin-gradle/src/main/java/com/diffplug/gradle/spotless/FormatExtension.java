@@ -984,8 +984,7 @@ public class FormatExtension {
 			return this;
 		}
 
-		// TODO (simschla, 11.05.2025): rename
-		public IdeaConfig configPath(String configPath) {
+		public IdeaConfig codeStyleSettingsPath(String configPath) {
 			requireNonNull(configPath);
 			builder.setCodeStyleSettingsPath(configPath);
 			replaceStep(createStep());
