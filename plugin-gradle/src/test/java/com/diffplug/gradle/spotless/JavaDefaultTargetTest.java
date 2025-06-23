@@ -84,17 +84,17 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 	@Test
 	void removeWildCardImports() throws IOException {
 		setFile("build.gradle").toLines(
-			"plugins {",
-			"    id 'com.diffplug.spotless'",
-			"}",
-			"repositories { mavenCentral() }",
-			"",
-			"spotless {",
-			"    java {",
-			"        target file('test.java')",
-			"        removeWildcardImports()",
-			"    }",
-			"}");
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"    java {",
+				"        target file('test.java')",
+				"        removeWildcardImports()",
+				"    }",
+				"}");
 
 		setFile("test.java").toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
 		gradleRunner().withArguments("spotlessApply").build();
