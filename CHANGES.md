@@ -10,7 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-* Added support for removing wildcard imports via `removeWildcardImports` step. ([#649](https://github.com/diffplug/spotless/issues/649))
+### Added
+* Added support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
 
 ## [3.1.2] - 2025-05-27
 ### Fixed

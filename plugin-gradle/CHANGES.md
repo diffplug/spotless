@@ -3,7 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
-* Added `removeWildcardImports()` step for Java, removing wildcard import statements. ([#649](https://github.com/diffplug/spotless/issues/649))
+### Added
+* Added support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
 
 ## [7.0.4] - 2025-05-27
 ### Fixed

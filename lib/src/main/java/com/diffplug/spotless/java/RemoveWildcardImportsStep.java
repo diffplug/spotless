@@ -8,7 +8,7 @@ public final class RemoveWildcardImportsStep {
 	private RemoveWildcardImportsStep() {}
 
 	public static FormatterStep create() {
-		// matches lines like 'import foo.*;' or 'import static foo.*;'
+		// Matches lines like 'import foo.*;' or 'import static foo.*;'.
 		return ReplaceRegexStep.create(
 			"removeWildcardImports",
 			"(?m)^import\\s+(?:static\\s+)?[^;\\n]*\\*;\\R?",
