@@ -38,38 +38,24 @@ public class SQLTokenizedFormatter {
 
 	private static final String[] JOIN_BEGIN = {"LEFT", "RIGHT", "INNER", "OUTER", "JOIN"};
 	private static final SQLDialect sqlDialect = SQLDialect.INSTANCE;
-	private DBeaverSQLFormatterConfiguration formatterCfg;
-	private List<Boolean> functionBracket = new ArrayList<>();
-	private List<String> statementDelimiters = new ArrayList<>(2);
+	private final DBeaverSQLFormatterConfiguration formatterCfg;
+	private final List<Boolean> functionBracket = new ArrayList<>();
+	private final List<String> statementDelimiters = new ArrayList<>(2);
 
 	public SQLTokenizedFormatter(DBeaverSQLFormatterConfiguration formatterCfg) {
 		this.formatterCfg = formatterCfg;
 	}
 
 	public String format(final String argSql) {
-
 		statementDelimiters.add(formatterCfg.getStatementDelimiter());
-		SQLTokensParser fParser = new SQLTokensParser();
-
 		functionBracket.clear();
-
-		boolean isSqlEndsWithNewLine = false;
-		if (argSql.endsWith("\n")) {
-			isSqlEndsWithNewLine = true;
-		}
-
-		List<FormatterToken> list = fParser.parse(argSql);
-		list = format(list);
-
 		StringBuilder after = new StringBuilder(argSql.length() + 20);
-		for (FormatterToken token : list) {
+		for (FormatterToken token : format(new SQLTokensParser().parse(argSql))) {
 			after.append(token.getString());
 		}
-
-		if (isSqlEndsWithNewLine) {
+		if (argSql.endsWith("\n")) {
 			after.append(getDefaultLineSeparator());
 		}
-
 		return after.toString();
 	}
 
@@ -351,7 +337,7 @@ public class SQLTokenizedFormatter {
 		// And we must be in the beginning of sequence
 
 		// check current token
-		if (!contains(JOIN_BEGIN, argList.get(index).getString())) {
+		if (!contains(argList.get(index).getString())) {
 			return false;
 		}
 		// check previous token
@@ -360,7 +346,7 @@ public class SQLTokenizedFormatter {
 			if (token.getType() == TokenType.SPACE) {
 				continue;
 			}
-			if (contains(JOIN_BEGIN, token.getString())) {
+			if (contains(token.getString())) {
 				// It is not the begin of sequence
 				return false;
 			} else {
@@ -376,7 +362,7 @@ public class SQLTokenizedFormatter {
 			if (token.getString().equals("JOIN")) {
 				return true;
 			}
-			if (!contains(JOIN_BEGIN, token.getString())) {
+			if (!contains(token.getString())) {
 				// It is not the begin of sequence
 				return false;
 			}
@@ -403,7 +389,7 @@ public class SQLTokenizedFormatter {
 				final FormatterToken token = argList.get(argIndex);
 				final FormatterToken prevToken = argList.get(argIndex - 1);
 				if (token.getType() == TokenType.COMMENT &&
-						isCommentLine(sqlDialect, token.getString()) &&
+						isCommentLine(token.getString()) &&
 						prevToken.getType() != TokenType.END) {
 					s.setCharAt(0, ' ');
 					s.setLength(1);
@@ -444,8 +430,8 @@ public class SQLTokenizedFormatter {
 		}
 	}
 
-	private static boolean isCommentLine(SQLDialect dialect, String line) {
-		for (String slc : dialect.getSingleLineComments()) {
+	private static boolean isCommentLine(String line) {
+		for (String slc : SQLTokenizedFormatter.sqlDialect.getSingleLineComments()) {
 			if (line.startsWith(slc)) {
 				return true;
 			}
@@ -453,10 +439,10 @@ public class SQLTokenizedFormatter {
 		return false;
 	}
 
-	private static <OBJECT_TYPE> boolean contains(OBJECT_TYPE[] array, OBJECT_TYPE value) {
-		if (array == null || array.length == 0)
+	private static <OBJECT_TYPE> boolean contains(OBJECT_TYPE value) {
+		if (SQLTokenizedFormatter.JOIN_BEGIN == null)
 			return false;
-		for (OBJECT_TYPE anArray : array) {
+		for (OBJECT_TYPE anArray : (OBJECT_TYPE[]) SQLTokenizedFormatter.JOIN_BEGIN) {
 			if (Objects.equals(value, anArray))
 				return true;
 		}

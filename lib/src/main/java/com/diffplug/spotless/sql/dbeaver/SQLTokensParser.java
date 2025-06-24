@@ -292,7 +292,7 @@ class SQLTokensParser {
 	}
 
 	private static boolean contains(char[] array, char value) {
-		if (array == null || array.length == 0)
+		if (array == null)
 			return false;
 		for (char aChar : array) {
 			if (aChar == value)
