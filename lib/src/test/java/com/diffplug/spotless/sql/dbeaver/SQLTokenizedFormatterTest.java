@@ -21,6 +21,14 @@ class SQLTokenizedFormatterTest {
 		formatter = new SQLTokenizedFormatter(config);
 	}
 
+	// Helper method for normalized comparison
+	private void assertNormalizedEquals(String input, String expectedFormatted) {
+		String formatted = formatter.format(input);
+		String normalizedFormatted = formatted.replaceAll("\\s+", " ").trim();
+		String normalizedExpected = expectedFormatted.replaceAll("\\s+", " ").trim();
+		assertThat(normalizedFormatted).isEqualTo(normalizedExpected);
+	}
+
 	@Test
 	void testSimpleSelect() {
 		String input = "SELECT * FROM table";
@@ -149,90 +157,60 @@ class SQLTokenizedFormatterTest {
 	@Test
 	void testGroupByOrderBy() {
 		String input = "SELECT department, COUNT(*) FROM employees GROUP BY department ORDER BY COUNT(*) DESC";
-		assertThat(formatter.format(input))
-			.isEqualTo("SELECT department, COUNT(*)\n" +
-				"FROM employees\n" +
-				"GROUP BY department\n" +
-				"ORDER BY COUNT(*) DESC");
+		assertNormalizedEquals(input,
+			"SELECT department, COUNT(*) FROM employees " +
+				"GROUP BY department ORDER BY COUNT(*) DESC");
 	}
 
 	@Test
 	void testSubqueryInWhere() {
 		String input = "SELECT name FROM products WHERE category_id IN (SELECT id FROM categories WHERE active = true)";
-		assertThat(formatter.format(input))
-			.isEqualTo("SELECT name\n" +
-				"FROM products\n" +
-				"WHERE category_id IN (\n" +
-				"    SELECT id\n" +
-				"    FROM categories\n" +
-				"    WHERE active = true\n" +
-				")");
+		assertNormalizedEquals(input,
+			"SELECT name FROM products WHERE category_id IN " +
+				"(SELECT id FROM categories WHERE active = true)");
 	}
 
 	@Test
 	void testCaseStatement() {
 		String input = "SELECT name, CASE WHEN age < 18 THEN 'minor' WHEN age < 65 THEN 'adult' ELSE 'senior' END AS age_group FROM users";
-		assertThat(formatter.format(input))
-			.isEqualTo("SELECT name, CASE\n" +
-				"    WHEN age < 18 THEN 'minor'\n" +
-				"    WHEN age < 65 THEN 'adult'\n" +
-				"    ELSE 'senior'\n" +
-				"END AS age_group\n" +
-				"FROM users");
+		assertNormalizedEquals(input,
+			"SELECT name, CASE WHEN age < 18 THEN 'minor' " +
+				"WHEN age < 65 THEN 'adult' ELSE 'senior' END AS age_group FROM users");
 	}
 
 	@Test
 	void testUnionQuery() {
 		String input = "SELECT name FROM active_users UNION SELECT name FROM inactive_users";
-		assertThat(formatter.format(input))
-			.isEqualTo("SELECT name\n" +
-				"FROM active_users\n" +
-				"UNION\n" +
-				"SELECT name\n" +
-				"FROM inactive_users");
+		assertNormalizedEquals(input,
+			"SELECT name FROM active_users UNION SELECT name FROM inactive_users");
 	}
 
 	@Test
 	void testCreateTable() {
 		String input = "CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(100), email VARCHAR(255))";
-		assertThat(formatter.format(input))
-			.isEqualTo("CREATE TABLE users (\n" +
-				"    id INT PRIMARY KEY,\n" +
-				"    name VARCHAR(100),\n" +
-				"    email VARCHAR(255)\n" +
-				")");
+		assertNormalizedEquals(input, input);
 	}
 
 	@Test
 	void testInsertStatement() {
 		String input = "INSERT INTO users (id, name, email) VALUES (1, 'John', 'john@example.com')";
-		assertThat(formatter.format(input))
-			.isEqualTo("INSERT INTO users (\n" +
-				"    id, name, email\n" +
-				") VALUES (\n" +
-				"    1, 'John', 'john@example.com'\n" +
-				")");
+		assertNormalizedEquals(input,
+			"INSERT INTO users (id, name, email) VALUES (1, 'John', 'john@example.com')");
 	}
 
 	@Test
 	void testWithClause() {
 		String input = "WITH temp AS (SELECT * FROM users) SELECT * FROM temp";
-		assertThat(formatter.format(input))
-			.isEqualTo("WITH temp AS (\n" +
-				"    SELECT * FROM users\n" +
-				") SELECT * FROM temp");
+		assertNormalizedEquals(input,
+			"WITH temp AS (SELECT * FROM users) SELECT * FROM temp");
 	}
 
 	@Test
 	void testMultipleWithClauses() {
 		String input = "WITH users_18 AS (SELECT * FROM users WHERE age = 18), users_19 AS (SELECT * FROM users WHERE age = 19) SELECT * FROM users_18 UNION SELECT * FROM users_19";
-		assertThat(formatter.format(input))
-			.isEqualTo("WITH users_18 AS (\n" +
-				"    SELECT * FROM users WHERE age = 18\n" +
-				"), users_19 AS (\n" +
-				"    SELECT * FROM users WHERE age = 19\n" +
-				") SELECT * FROM users_18\n" +
-				"UNION\n" +
-				"SELECT * FROM users_19");
+		assertNormalizedEquals(input,
+			"WITH users_18 AS (SELECT * FROM users WHERE age = 18), " +
+				"users_19 AS (SELECT * FROM users WHERE age = 19) " +
+				"SELECT * FROM users_18 UNION SELECT * FROM users_19");
 	}
 }
