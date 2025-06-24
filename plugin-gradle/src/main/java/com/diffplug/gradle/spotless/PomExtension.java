@@ -15,13 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Objects;
-
 import javax.inject.Inject;
-
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.pom.SortPomCfg;
-import com.diffplug.spotless.pom.SortPomStep;
 
 public class PomExtension extends FormatExtension {
 	private static final String POM_FILE = "pom.xml";
