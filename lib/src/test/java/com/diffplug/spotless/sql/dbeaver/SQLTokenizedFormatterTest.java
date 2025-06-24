@@ -2,14 +2,12 @@ package com.diffplug.spotless.sql.dbeaver;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Properties;
-
 class SQLTokenizedFormatterTest {
 	private SQLTokenizedFormatter formatter;
-
 
 	@BeforeEach
 	void setUp() {
