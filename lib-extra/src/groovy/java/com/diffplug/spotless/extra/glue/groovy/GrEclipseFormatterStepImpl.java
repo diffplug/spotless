@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.extra.glue.groovy;
+
+import static java.lang.System.lineSeparator;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -143,7 +145,7 @@ public class GrEclipseFormatterStepImpl {
 			}
 			for (Throwable error : errors) {
 				error.printStackTrace();
-				string.append(System.lineSeparator());
+				string.append(lineSeparator());
 				string.append(error.getMessage());
 			}
 

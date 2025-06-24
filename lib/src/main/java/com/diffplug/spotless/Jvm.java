@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless;
+
+import static java.lang.System.lineSeparator;
 
 import java.io.File;
 import java.util.Arrays;
@@ -255,7 +257,7 @@ public final class Jvm {
 		public String toString() {
 			return String.format("%s alternatives:%n", fmtName) +
 					jvm2fmtMaxVersion.entrySet().stream().map(
-							e -> String.format("- Version %s requires JVM %d+", e.getValue(), e.getKey())).collect(Collectors.joining(System.lineSeparator()));
+							e -> String.format("- Version %s requires JVM %d+", e.getValue(), e.getKey())).collect(Collectors.joining(lineSeparator()));
 		}
 
 		@SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")

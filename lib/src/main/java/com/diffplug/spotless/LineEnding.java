@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless;
+
+import static java.lang.System.lineSeparator;
 
 import java.io.File;
 import java.io.FileReader;
@@ -151,7 +153,7 @@ public enum LineEnding {
 	private static final Policy UNIX_POLICY = new ConstantLineEndingPolicy(UNIX.str());
     private static final Policy MAC_CLASSIC_POLICY = new ConstantLineEndingPolicy(MAC_CLASSIC.str());
     private static final Policy PRESERVE_POLICY = new PreserveLineEndingPolicy();
-	private static final String _platformNative = System.getProperty("line.separator");
+	private static final String _platformNative = lineSeparator();
 	private static final Policy _platformNativePolicy = new ConstantLineEndingPolicy(_platformNative);
 	private static final boolean nativeIsWin = _platformNative.equals(WINDOWS.str());
 

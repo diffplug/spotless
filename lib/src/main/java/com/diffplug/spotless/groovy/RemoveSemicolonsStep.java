@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.groovy;
+
+import static java.lang.System.lineSeparator;
 
 import java.io.BufferedReader;
 import java.io.Serializable;
@@ -51,7 +53,7 @@ public final class RemoveSemicolonsStep implements Serializable {
 					String line;
 					while ((line = reader.readLine()) != null) {
 						result.append(removeSemicolon(line));
-						result.append(System.lineSeparator());
+						result.append(lineSeparator());
 					}
 					return result.toString();
 				}

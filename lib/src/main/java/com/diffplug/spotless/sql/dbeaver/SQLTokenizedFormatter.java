@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.sql.dbeaver;
+
+import static java.lang.System.lineSeparator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +69,7 @@ public class SQLTokenizedFormatter {
 		}
 
 		if (isSqlEndsWithNewLine) {
-			after.append(getDefaultLineSeparator());
+			after.append(lineSeparator());
 		}
 
 		return after.toString();
@@ -388,15 +390,11 @@ public class SQLTokenizedFormatter {
 		return sqlDialect.getKeywordType(name) == DBPKeywordType.FUNCTION;
 	}
 
-	private static String getDefaultLineSeparator() {
-		return System.getProperty("line.separator", "\n");
-	}
-
 	private int insertReturnAndIndent(final List<FormatterToken> argList, final int argIndex, final int argIndent) {
 		if (functionBracket.contains(Boolean.TRUE))
 			return 0;
 		try {
-			final String defaultLineSeparator = getDefaultLineSeparator();
+			final String defaultLineSeparator = lineSeparator();
 			StringBuilder s = new StringBuilder(defaultLineSeparator);
 			for (int index = 0; index < argIndent; index++) {
 				s.append(formatterCfg.getIndentString());
