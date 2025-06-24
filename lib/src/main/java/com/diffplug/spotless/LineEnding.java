@@ -25,8 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import static java.lang.System.lineSeparator;
-
 /**
  * Represents the line endings which should be written by the tool.
  */
@@ -153,7 +151,7 @@ public enum LineEnding {
 	private static final Policy UNIX_POLICY = new ConstantLineEndingPolicy(UNIX.str());
     private static final Policy MAC_CLASSIC_POLICY = new ConstantLineEndingPolicy(MAC_CLASSIC.str());
     private static final Policy PRESERVE_POLICY = new PreserveLineEndingPolicy();
-	private static final String _platformNative = lineSeparator();
+	private static final String _platformNative = System.getProperty("line.separator");
 	private static final Policy _platformNativePolicy = new ConstantLineEndingPolicy(_platformNative);
 	private static final boolean nativeIsWin = _platformNative.equals(WINDOWS.str());
 

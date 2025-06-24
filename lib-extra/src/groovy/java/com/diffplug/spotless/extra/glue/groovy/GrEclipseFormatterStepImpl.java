@@ -48,8 +48,6 @@ import dev.equo.solstice.ShimIdeBootstrapServices;
 import dev.equo.solstice.Solstice;
 import dev.equo.solstice.p2.CacheLocations;
 
-import static java.lang.System.lineSeparator;
-
 /** Spotless-Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStepImpl {
 	static {
@@ -145,7 +143,7 @@ public class GrEclipseFormatterStepImpl {
 			}
 			for (Throwable error : errors) {
 				error.printStackTrace();
-				string.append(lineSeparator());
+				string.append(System.lineSeparator());
 				string.append(error.getMessage());
 			}
 
