@@ -17,6 +17,8 @@ package com.diffplug.spotless.pom;
 
 import java.io.Serializable;
 
+import static java.lang.System.lineSeparator;
+
 // Class and members must be public, otherwise we get failed to access class com.diffplug.spotless.pom.SortPomInternalState from class com.diffplug.spotless.pom.SortPomFormatterFunc (com.diffplug.spotless.pom.SortPomInternalState is in unnamed module of loader org.codehaus.plexus.classworlds.realm.ClassRealm @682bd3c4; com.diffplug.spotless.pom.SortPomFormatterFunc is in unnamed module of loader com.diffplug.spotless.pom.DelegatingClassLoader @573284a5)
 public class SortPomCfg implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -25,7 +27,7 @@ public class SortPomCfg implements Serializable {
 
 	public String encoding = "UTF-8";
 
-	public String lineSeparator = System.getProperty("line.separator");
+	public String lineSeparator = lineSeparator();
 
 	public boolean expandEmptyElements;
 

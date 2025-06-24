@@ -22,6 +22,8 @@ import java.io.StringReader;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
+import static java.lang.System.lineSeparator;
+
 /**
  * Removes all semicolons from the end of lines.
  *
@@ -51,7 +53,7 @@ public final class RemoveSemicolonsStep implements Serializable {
 					String line;
 					while ((line = reader.readLine()) != null) {
 						result.append(removeSemicolon(line));
-						result.append(System.lineSeparator());
+						result.append(lineSeparator());
 					}
 					return result.toString();
 				}

@@ -31,6 +31,9 @@ import javax.annotation.Nullable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import static java.lang.System.lineSeparator;
+import static java.util.stream.Collectors.joining;
+
 /** Java virtual machine helper */
 public final class Jvm {
 	private static final int VERSION;
@@ -255,7 +258,7 @@ public final class Jvm {
 		public String toString() {
 			return String.format("%s alternatives:%n", fmtName) +
 					jvm2fmtMaxVersion.entrySet().stream().map(
-							e -> String.format("- Version %s requires JVM %d+", e.getValue(), e.getKey())).collect(Collectors.joining(System.lineSeparator()));
+							e -> String.format("- Version %s requires JVM %d+", e.getValue(), e.getKey())).collect(joining(lineSeparator()));
 		}
 
 		@SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")
