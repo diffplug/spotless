@@ -22,6 +22,8 @@ import java.util.Objects;
 
 import com.diffplug.spotless.annotations.Internal;
 
+import static java.lang.System.lineSeparator;
+
 /**
  * **Warning:** Use this class at your own risk. It is an implementation detail and is not
  * guaranteed to exist in future versions.
@@ -67,7 +69,7 @@ public class SQLTokenizedFormatter {
 		}
 
 		if (isSqlEndsWithNewLine) {
-			after.append(getDefaultLineSeparator());
+			after.append(lineSeparator());
 		}
 
 		return after.toString();
@@ -388,19 +390,12 @@ public class SQLTokenizedFormatter {
 		return sqlDialect.getKeywordType(name) == DBPKeywordType.FUNCTION;
 	}
 
-	private static String getDefaultLineSeparator() {
-		return System.getProperty("line.separator", "\n");
-	}
-
 	private int insertReturnAndIndent(final List<FormatterToken> argList, final int argIndex, final int argIndent) {
 		if (functionBracket.contains(Boolean.TRUE))
 			return 0;
 		try {
-			final String defaultLineSeparator = getDefaultLineSeparator();
-			StringBuilder s = new StringBuilder(defaultLineSeparator);
-			for (int index = 0; index < argIndent; index++) {
-				s.append(formatterCfg.getIndentString());
-			}
+			StringBuilder s = new StringBuilder(lineSeparator());
+			s.append(String.valueOf(formatterCfg.getIndentString()).repeat(Math.max(0, argIndent)));
 			if (argIndex > 0) {
 				final FormatterToken token = argList.get(argIndex);
 				final FormatterToken prevToken = argList.get(argIndex - 1);
@@ -409,10 +404,7 @@ public class SQLTokenizedFormatter {
 						prevToken.getType() != TokenType.END) {
 					s.setCharAt(0, ' ');
 					s.setLength(1);
-
-					final String comment = token.getString();
-					final String withoutTrailingWhitespace = comment.replaceFirst("\\s*$", "");
-					token.setString(withoutTrailingWhitespace);
+					token.setString(token.getString().replaceFirst("\\s*$", ""));
 				}
 			}
 
