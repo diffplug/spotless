@@ -1,6 +1,6 @@
 package com.diffplug.spotless.pom;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,35 +10,35 @@ class SortPomCfgTest {
 	void testDefaultValues() {
 		SortPomCfg cfg = new SortPomCfg();
 
-		// Test default values
-		assertEquals("4.0.0", cfg.version);
-		assertEquals("UTF-8", cfg.encoding);
-		assertEquals(System.getProperty("line.separator"), cfg.lineSeparator);
-		assertFalse(cfg.expandEmptyElements);
-		assertFalse(cfg.spaceBeforeCloseEmptyElement);
-		assertTrue(cfg.keepBlankLines);
-		assertTrue(cfg.endWithNewline);
-		assertEquals(2, cfg.nrOfIndentSpace);
-		assertFalse(cfg.indentBlankLines);
-		assertFalse(cfg.indentSchemaLocation);
-		assertNull(cfg.indentAttribute);
-		assertEquals("recommended_2008_06", cfg.predefinedSortOrder);
-		assertFalse(cfg.quiet);
-		assertNull(cfg.sortOrderFile);
-		assertNull(cfg.sortDependencies);
-		assertNull(cfg.sortDependencyManagement);
-		assertNull(cfg.sortDependencyExclusions);
-		assertNull(cfg.sortPlugins);
-		assertFalse(cfg.sortProperties);
-		assertFalse(cfg.sortModules);
-		assertFalse(cfg.sortExecutions);
+		// Test default values using AssertJ
+		assertThat(cfg.version).isEqualTo("4.0.0");
+		assertThat(cfg.encoding).isEqualTo("UTF-8");
+		assertThat(cfg.lineSeparator).isEqualTo(System.getProperty("line.separator"));
+		assertThat(cfg.expandEmptyElements).isFalse();
+		assertThat(cfg.spaceBeforeCloseEmptyElement).isFalse();
+		assertThat(cfg.keepBlankLines).isTrue();
+		assertThat(cfg.endWithNewline).isTrue();
+		assertThat(cfg.nrOfIndentSpace).isEqualTo(2);
+		assertThat(cfg.indentBlankLines).isFalse();
+		assertThat(cfg.indentSchemaLocation).isFalse();
+		assertThat(cfg.indentAttribute).isNull();
+		assertThat(cfg.predefinedSortOrder).isEqualTo("recommended_2008_06");
+		assertThat(cfg.quiet).isFalse();
+		assertThat(cfg.sortOrderFile).isNull();
+		assertThat(cfg.sortDependencies).isNull();
+		assertThat(cfg.sortDependencyManagement).isNull();
+		assertThat(cfg.sortDependencyExclusions).isNull();
+		assertThat(cfg.sortPlugins).isNull();
+		assertThat(cfg.sortProperties).isFalse();
+		assertThat(cfg.sortModules).isFalse();
+		assertThat(cfg.sortExecutions).isFalse();
 	}
 
 	@Test
 	void testFieldSetters() {
 		SortPomCfg cfg = new SortPomCfg();
 
-		// Test setting all fields
+		// Set all fields
 		cfg.version = "4.1.0";
 		cfg.encoding = "ISO-8859-1";
 		cfg.lineSeparator = "\n";
@@ -61,35 +61,35 @@ class SortPomCfgTest {
 		cfg.sortModules = true;
 		cfg.sortExecutions = true;
 
-		// Verify all set values
-		assertEquals("4.1.0", cfg.version);
-		assertEquals("ISO-8859-1", cfg.encoding);
-		assertEquals("\n", cfg.lineSeparator);
-		assertTrue(cfg.expandEmptyElements);
-		assertTrue(cfg.spaceBeforeCloseEmptyElement);
-		assertFalse(cfg.keepBlankLines);
-		assertFalse(cfg.endWithNewline);
-		assertEquals(4, cfg.nrOfIndentSpace);
-		assertTrue(cfg.indentBlankLines);
-		assertTrue(cfg.indentSchemaLocation);
-		assertEquals("attribute", cfg.indentAttribute);
-		assertEquals("custom", cfg.predefinedSortOrder);
-		assertTrue(cfg.quiet);
-		assertEquals("sortOrder.xml", cfg.sortOrderFile);
-		assertEquals("groupId,artifactId", cfg.sortDependencies);
-		assertEquals("scope,groupId", cfg.sortDependencyManagement);
-		assertEquals("artifactId", cfg.sortDependencyExclusions);
-		assertEquals("groupId", cfg.sortPlugins);
-		assertTrue(cfg.sortProperties);
-		assertTrue(cfg.sortModules);
-		assertTrue(cfg.sortExecutions);
+		// Verify all set values with AssertJ
+		assertThat(cfg.version).isEqualTo("4.1.0");
+		assertThat(cfg.encoding).isEqualTo("ISO-8859-1");
+		assertThat(cfg.lineSeparator).isEqualTo("\n");
+		assertThat(cfg.expandEmptyElements).isTrue();
+		assertThat(cfg.spaceBeforeCloseEmptyElement).isTrue();
+		assertThat(cfg.keepBlankLines).isFalse();
+		assertThat(cfg.endWithNewline).isFalse();
+		assertThat(cfg.nrOfIndentSpace).isEqualTo(4);
+		assertThat(cfg.indentBlankLines).isTrue();
+		assertThat(cfg.indentSchemaLocation).isTrue();
+		assertThat(cfg.indentAttribute).isEqualTo("attribute");
+		assertThat(cfg.predefinedSortOrder).isEqualTo("custom");
+		assertThat(cfg.quiet).isTrue();
+		assertThat(cfg.sortOrderFile).isEqualTo("sortOrder.xml");
+		assertThat(cfg.sortDependencies).isEqualTo("groupId,artifactId");
+		assertThat(cfg.sortDependencyManagement).isEqualTo("scope,groupId");
+		assertThat(cfg.sortDependencyExclusions).isEqualTo("artifactId");
+		assertThat(cfg.sortPlugins).isEqualTo("groupId");
+		assertThat(cfg.sortProperties).isTrue();
+		assertThat(cfg.sortModules).isTrue();
+		assertThat(cfg.sortExecutions).isTrue();
 	}
 
 	@Test
 	void testNullHandling() {
 		SortPomCfg cfg = new SortPomCfg();
 
-		// Test setting nullable fields to null
+		// Set nullable fields to null
 		cfg.version = null;
 		cfg.encoding = null;
 		cfg.lineSeparator = null;
@@ -101,23 +101,24 @@ class SortPomCfgTest {
 		cfg.sortDependencyExclusions = null;
 		cfg.sortPlugins = null;
 
-		assertNull(cfg.version);
-		assertNull(cfg.encoding);
-		assertNull(cfg.lineSeparator);
-		assertNull(cfg.indentAttribute);
-		assertNull(cfg.predefinedSortOrder);
-		assertNull(cfg.sortOrderFile);
-		assertNull(cfg.sortDependencies);
-		assertNull(cfg.sortDependencyManagement);
-		assertNull(cfg.sortDependencyExclusions);
-		assertNull(cfg.sortPlugins);
+		// Verify null values with AssertJ
+		assertThat(cfg.version).isNull();
+		assertThat(cfg.encoding).isNull();
+		assertThat(cfg.lineSeparator).isNull();
+		assertThat(cfg.indentAttribute).isNull();
+		assertThat(cfg.predefinedSortOrder).isNull();
+		assertThat(cfg.sortOrderFile).isNull();
+		assertThat(cfg.sortDependencies).isNull();
+		assertThat(cfg.sortDependencyManagement).isNull();
+		assertThat(cfg.sortDependencyExclusions).isNull();
+		assertThat(cfg.sortPlugins).isNull();
 	}
 
 	@Test
 	void testBooleanFieldsEdgeCases() {
 		SortPomCfg cfg = new SortPomCfg();
 
-		// Verify all boolean fields can be toggled
+		// Toggle all boolean fields
 		cfg.expandEmptyElements = !cfg.expandEmptyElements;
 		cfg.spaceBeforeCloseEmptyElement = !cfg.spaceBeforeCloseEmptyElement;
 		cfg.keepBlankLines = !cfg.keepBlankLines;
@@ -129,16 +130,17 @@ class SortPomCfgTest {
 		cfg.sortModules = !cfg.sortModules;
 		cfg.sortExecutions = !cfg.sortExecutions;
 
-		assertTrue(cfg.expandEmptyElements);
-		assertTrue(cfg.spaceBeforeCloseEmptyElement);
-		assertFalse(cfg.keepBlankLines);
-		assertFalse(cfg.endWithNewline);
-		assertTrue(cfg.indentBlankLines);
-		assertTrue(cfg.indentSchemaLocation);
-		assertTrue(cfg.quiet);
-		assertTrue(cfg.sortProperties);
-		assertTrue(cfg.sortModules);
-		assertTrue(cfg.sortExecutions);
+		// Verify all boolean fields are toggled
+		assertThat(cfg.expandEmptyElements).isTrue();
+		assertThat(cfg.spaceBeforeCloseEmptyElement).isTrue();
+		assertThat(cfg.keepBlankLines).isFalse();
+		assertThat(cfg.endWithNewline).isFalse();
+		assertThat(cfg.indentBlankLines).isTrue();
+		assertThat(cfg.indentSchemaLocation).isTrue();
+		assertThat(cfg.quiet).isTrue();
+		assertThat(cfg.sortProperties).isTrue();
+		assertThat(cfg.sortModules).isTrue();
+		assertThat(cfg.sortExecutions).isTrue();
 	}
 
 	@Test
@@ -147,14 +149,14 @@ class SortPomCfgTest {
 
 		// Test minimum value
 		cfg.nrOfIndentSpace = 0;
-		assertEquals(0, cfg.nrOfIndentSpace);
+		assertThat(cfg.nrOfIndentSpace).isZero();
 
-		// Test negative value (though probably not valid in practice)
+		// Test negative value
 		cfg.nrOfIndentSpace = -1;
-		assertEquals(-1, cfg.nrOfIndentSpace);
+		assertThat(cfg.nrOfIndentSpace).isNegative();
 
 		// Test large value
 		cfg.nrOfIndentSpace = Integer.MAX_VALUE;
-		assertEquals(Integer.MAX_VALUE, cfg.nrOfIndentSpace);
+		assertThat(cfg.nrOfIndentSpace).isEqualTo(Integer.MAX_VALUE);
 	}
 }
