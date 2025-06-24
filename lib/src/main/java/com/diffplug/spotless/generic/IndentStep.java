@@ -102,14 +102,10 @@ public final class IndentStep implements Serializable {
 				if (numSpaces > 0) {
 					switch (state.type) {
 					case SPACE:
-						for (int i = 0; i < numSpaces; ++i) {
-							builder.append(' ');
-						}
+						builder.append(" ".repeat(numSpaces));
 						break;
 					case TAB:
-						for (int i = 0; i < numSpaces / state.numSpacesPerTab; ++i) {
-							builder.append('\t');
-						}
+						builder.append("\t".repeat(Math.max(0, numSpaces / state.numSpacesPerTab)));
 						if (mightBeMultiLineComment && (numSpaces % state.numSpacesPerTab == 1)) {
 							builder.append(' ');
 						}

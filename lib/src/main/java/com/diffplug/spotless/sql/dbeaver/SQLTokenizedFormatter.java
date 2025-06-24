@@ -398,9 +398,7 @@ public class SQLTokenizedFormatter {
 		try {
 			final String defaultLineSeparator = getDefaultLineSeparator();
 			StringBuilder s = new StringBuilder(defaultLineSeparator);
-			for (int index = 0; index < argIndent; index++) {
-				s.append(formatterCfg.getIndentString());
-			}
+			s.append(String.valueOf(formatterCfg.getIndentString()).repeat(Math.max(0, argIndent)));
 			if (argIndex > 0) {
 				final FormatterToken token = argList.get(argIndex);
 				final FormatterToken prevToken = argList.get(argIndex - 1);

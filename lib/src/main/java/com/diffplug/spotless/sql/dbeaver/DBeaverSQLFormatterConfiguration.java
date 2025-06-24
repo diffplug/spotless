@@ -67,9 +67,7 @@ public class DBeaverSQLFormatterConfiguration {
 	private String getIndentString(String indentType, int indentSize) {
 		char indentChar = indentType.equals("space") ? ' ' : '\t';
 		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = 0; i < indentSize; i++) {
-			stringBuilder.append(indentChar);
-		}
+		stringBuilder.append(String.valueOf(indentChar).repeat(Math.max(0, indentSize)));
 		return stringBuilder.toString();
 	}
 
