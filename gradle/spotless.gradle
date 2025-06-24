@@ -31,3 +31,9 @@ spotless {
 		greclipse().configFile rootProject.files('gradle/spotless.eclipseformat.xml', 'gradle/spotless.groovyformat.prefs')
 	}
 }
+if (System.env['CI'] == null) {
+	tasks.named('spotlessCheck') {
+		dependsOn 'spotlessApply'
+		mustRunAfter 'spotlessApply'
+	}
+}
