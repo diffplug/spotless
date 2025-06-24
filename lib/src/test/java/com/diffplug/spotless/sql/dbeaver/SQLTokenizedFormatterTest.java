@@ -5,14 +5,21 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 class SQLTokenizedFormatterTest {
 	private SQLTokenizedFormatter formatter;
 
+
 	@BeforeEach
 	void setUp() {
-		DBeaverSQLFormatterConfiguration config = new DBeaverSQLFormatterConfiguration();
-		config.setStatementDelimiter(";");
-		config.setKeywordCase(DBeaverSQLFormatterConfiguration.KeywordCase.UPPER);
+		Properties properties = new Properties();
+		properties.setProperty("sql.formatter.keyword.case", "UPPER");
+		properties.setProperty("sql.formatter.statement.delimiter", ";");
+		properties.setProperty("sql.formatter.indent.type", "space");
+		properties.setProperty("sql.formatter.indent.size", "4");
+
+		DBeaverSQLFormatterConfiguration config = new DBeaverSQLFormatterConfiguration(properties);
 		formatter = new SQLTokenizedFormatter(config);
 	}
 
