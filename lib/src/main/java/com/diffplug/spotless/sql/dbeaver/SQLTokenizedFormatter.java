@@ -80,11 +80,10 @@ public class SQLTokenizedFormatter {
 			}
 		}
 
-		final KeywordCase keywordCase = formatterCfg.getKeywordCase();
 		for (FormatterToken anArgList : argList) {
 			token = anArgList;
 			if (token.getType() == TokenType.KEYWORD) {
-				token.setString(keywordCase.transform(token.getString()));
+				token.setString(formatterCfg.getKeywordCase().transform(token.getString()));
 			}
 		}
 
