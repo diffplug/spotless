@@ -1,0 +1,6 @@
+public enum TestEnum {
+    public static VALUE1,
+    public static VALUE2;
+
+    public static void method() {}
+}

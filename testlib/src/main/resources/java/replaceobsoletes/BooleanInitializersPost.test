@@ -1,0 +1,5 @@
+public class Test {
+    public boolean flag1;
+    public boolean flag2 = true;
+    public boolean flag3;
+}

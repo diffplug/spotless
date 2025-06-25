@@ -1,0 +1,4 @@
+public class Test {
+    public String lineSeparator = System.lineSeparator();
+    public String lineSeparator2 = System.lineSeparator();
+}

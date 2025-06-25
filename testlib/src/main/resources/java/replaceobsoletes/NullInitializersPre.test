@@ -1,0 +1,8 @@
+public class Test {
+    public String str1 = null;
+    public String str2 = "value";
+    public Object obj1 = null;
+    public Foo Foo1 = null;
+    public Foo Foo2 = "null";
+    public Object obj2 = new Object();
+}

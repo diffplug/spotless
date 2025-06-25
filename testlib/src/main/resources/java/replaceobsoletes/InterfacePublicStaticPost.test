@@ -1,0 +1,5 @@
+interface TestInterface {
+    final int CONSTANT = 1;
+    void method();
+    class InnerClass {}
+}

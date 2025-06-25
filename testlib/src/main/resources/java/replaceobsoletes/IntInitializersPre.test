@@ -1,0 +1,14 @@
+public class Test {
+public int int1 = 0;
+public int int2 = 1;
+public long long1 = 0L;
+public long long2 = 1L;
+public float float1 = 0.0f;
+public float float2 = 1.0f;
+public double double1 = 0.0;
+public double double2 = 1.0;
+public short short1 = 0;
+public short short2 = 1;
+public byte byte1 = 0;
+public byte byte2 = 1;
+}

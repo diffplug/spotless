@@ -1,0 +1,4 @@
+public class Test {
+    public String lineSeparator = System.getProperty("line.separator");
+    public String lineSeparator2 = System.getProperty("line.separator", "\n");
+}

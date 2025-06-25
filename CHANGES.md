@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Add support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
+* Add support for removing generic obsoletes imports via `replaceObsoletes` step. ([#2530](https://github.com/diffplug/spotless/pull/2530))
 
 ## [3.1.2] - 2025-05-27
 ### Fixed

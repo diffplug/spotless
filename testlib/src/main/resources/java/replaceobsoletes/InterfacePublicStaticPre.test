@@ -1,0 +1,5 @@
+interface TestInterface {
+    public static final int CONSTANT = 1;
+    public abstract void method();
+    public static class InnerClass {}
+}
