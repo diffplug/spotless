@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.npm;
+
+import java.util.UUID;
 
 public interface NpmProcessFactory {
 
@@ -33,7 +35,7 @@ public interface NpmProcessFactory {
 
 	NpmProcess createNpmInstallProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations, OnlinePreferrence onlinePreferrence);
 
-	NpmLongRunningProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations);
+	NpmLongRunningProcess createNpmServeProcess(NodeServerLayout nodeServerLayout, NpmFormatterStepLocations formatterStepLocations, UUID nodeServerInstanceId);
 
 	default String describe() {
 		return getClass().getSimpleName();

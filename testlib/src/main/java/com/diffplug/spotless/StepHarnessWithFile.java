@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,16 @@ public class StepHarnessWithFile extends StepHarnessBase {
 	public StringSelfie expectLintsOfResource(String filename, String resource) {
 		try {
 			File file = harness.setFile(filename).toResource(resource);
+			LintState state = LintState.of(formatter(), file);
+			return StepHarness.expectLintsOf(state, formatter());
+		} catch (IOException e) {
+			throw new AssertionError(e);
+		}
+	}
+
+	public StringSelfie expectLintsOfFileAndContent(String filename, String content) {
+		try {
+			File file = harness.setFile(filename).toContent(content);
 			LintState state = LintState.of(formatter(), file);
 			return StepHarness.expectLintsOf(state, formatter());
 		} catch (IOException e) {

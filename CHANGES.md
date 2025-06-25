@@ -12,6 +12,40 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020))
+* Add support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
+
+## [3.1.2] - 2025-05-27
+### Fixed
+* Fix `UnsupportedOperationException` in the Gradle plugin when using `targetExcludeContent[Pattern]` ([#2487](https://github.com/diffplug/spotless/pull/2487))
+* pgp key had expired, this and future releases will be signed by new key ([details](https://github.com/diffplug/spotless/discussions/2464))
+### Changed
+* Bump default `eclipse` version to latest `4.34` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
+* Bump default `greclipse` version to latest `4.32` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
+
+## [3.1.1] - 2025-04-07
+### Changed
+* Use palantir-java-format 2.57.0 on Java 21. ([#2447](https://github.com/diffplug/spotless/pull/2447))
+* Re-try `npm install` with `--prefer-online` after `ERESOLVE` error. ([#2448](https://github.com/diffplug/spotless/pull/2448))
+* Allow multiple npm-based formatters having the same module dependencies, to share a `node_modules` dir without race conditions. [#2462](https://github.com/diffplug/spotless/pull/2462))
+
+## [3.1.0] - 2025-02-20
+### Added
+* Support for`clang-format` on maven-plugin ([#2406](https://github.com/diffplug/spotless/pull/2406))
+* Allow overriding classLoader for all `JarState`s to enable spotless-cli ([#2427](https://github.com/diffplug/spotless/pull/2427))
+
+## [3.0.2] - 2025-01-14
+### Fixed
+* Node.JS-based tasks now work with the configuration cache ([#2372](https://github.com/diffplug/spotless/issues/2372))
+* Eclipse-based tasks can now handle parallel configuration ([#2389](https://github.com/diffplug/spotless/issues/2389))
+
+## [3.0.1] - 2025-01-07
+### Fixed
+* Deployment was missing part of the CDT formatter, now fixed. ([#2384](https://github.com/diffplug/spotless/issues/2384))
+
+## [3.0.0] - 2025-01-06
+## Headline changes
+* All steps now support roundtrip serialization (end of [#987](https://github.com/diffplug/spotless/issues/987)).
+* Spotless now supports [linting](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#lints) in addition to formatting.
 ### Changed
 * Allow setting Eclipse config from a string, not only from files ([#2337](https://github.com/diffplug/spotless/pull/2337))
 * Bump default `ktlint` version to latest `1.3.0` -> `1.4.0`. ([#2314](https://github.com/diffplug/spotless/pull/2314))
@@ -19,9 +53,13 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `jackson` version to latest `2.18.0` -> `2.18.1`. ([#2319](https://github.com/diffplug/spotless/pull/2319))
 * Bump default `ktfmt` version to latest `0.52` -> `0.53`. ([#2320](https://github.com/diffplug/spotless/pull/2320))
 * Bump default `ktlint` version to latest `1.4.0` -> `1.5.0`. ([#2354](https://github.com/diffplug/spotless/pull/2354))
+* Bump minimum `eclipse-cdt` version to `11.0` (removed support for `10.7`). ([#2373](https://github.com/diffplug/spotless/pull/2373))
+* Bump default `eclipse` version to latest `4.32` -> `4.34`. ([#2381](https://github.com/diffplug/spotless/pull/2381))
+
 ### Fixed
 * You can now use `removeUnusedImports` and `googleJavaFormat` at the same time again. (fixes [#2159](https://github.com/diffplug/spotless/issues/2159))
 * The default list of type annotations used by `formatAnnotations` now includes Jakarta Validation's `Valid` and constraints validations (fixes [#2334](https://github.com/diffplug/spotless/issues/2334))
+
 
 ## [3.0.0.BETA4] - 2024-10-24
 ### Added
@@ -34,6 +72,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * **BREAKING** Moved `PaddedCell.DirtyState` to its own top-level class with new methods. ([#2148](https://github.com/diffplug/spotless/pull/2148))
   * **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use `DirtyState`.
+* `FenceStep` now uses `ConfigurationCacheHack`. ([#2378](https://github.com/diffplug/spotless/pull/2378) fixes [#2317](https://github.com/diffplug/spotless/issues/2317))  
 ### Fixed
 * `ktlint` steps now read from the `string` instead of the `file` so they don't clobber earlier steps. (fixes [#1599](https://github.com/diffplug/spotless/issues/1599))
 

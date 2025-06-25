@@ -5,11 +5,43 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020))
+* Add support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
+
+## [2.44.5] - 2025-05-27
+### Changed
+* Bump default `eclipse` version to latest `4.34` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
+* Bump default `greclipse` version to latest `4.32` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
+* pgp key had expired, this and future releases will be signed by new key ([details](https://github.com/diffplug/spotless/discussions/2464))
+
+## [2.44.4] - 2025-04-07
+### Changed
+* Use palantir-java-format 2.57.0 on Java 21. ([#2447](https://github.com/diffplug/spotless/pull/2447))
+* Re-try `npm install` with `--prefer-online` after `ERESOLVE` error. ([#2448](https://github.com/diffplug/spotless/pull/2448))
+* Allow multiple npm-based formatters having the same module dependencies, to share a `node_modules` dir without race conditions. [#2462](https://github.com/diffplug/spotless/pull/2462))
+
+## [2.44.3] - 2025-02-20
+* Support for `clang-format` ([#2406](https://github.com/diffplug/spotless/pull/2406))
+* Adopt new version of `maven-plugin-development` from GradleX ([#2395](https://github.com/diffplug/spotless/pull/2395))
+
+## [2.44.2] - 2025-01-14
+* Eclipse-based tasks can now handle parallel configuration ([#2389](https://github.com/diffplug/spotless/issues/2389))
+
+## [2.44.1] - 2025-01-07
+### Fixed
+* Deployment was missing part of the CDT formatter, now fixed. ([#2384](https://github.com/diffplug/spotless/issues/2384))
+
+## [2.44.0] - 2025-01-06
+## Headline changes
+* The long `2.44.0.BETAX` period is finally over (sorry, there was [a problem in Gradle land](https://github.com/diffplug/spotless/issues/987)).
+* Spotless now supports [linting](https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#lints) in addition to formatting.
+  * help wanted: [maven api to suppress lints](https://github.com/diffplug/spotless/issues/2309)
 ### Changed
 * Bump default `ktlint` version to latest `1.3.0` -> `1.4.0`. ([#2314](https://github.com/diffplug/spotless/pull/2314))
 * Bump default `jackson` version to latest `2.18.0` -> `2.18.1`. ([#2319](https://github.com/diffplug/spotless/pull/2319))
 * Bump default `ktfmt` version to latest `0.52` -> `0.53`. ([#2320](https://github.com/diffplug/spotless/pull/2320))
 * Bump default `ktlint` version to latest `1.4.0` -> `1.5.0`. ([#2354](https://github.com/diffplug/spotless/pull/2354))
+* Bump minimum `eclipse-cdt` version to `11.0` (removed support for `10.7`). ([#2373](https://github.com/diffplug/spotless/pull/2373))
+* Bump default `eclipse` version to latest `4.32` -> `4.34`. ([#2381](https://github.com/diffplug/spotless/pull/2381))
 ### Fixed
 * You can now use `removeUnusedImports` and `googleJavaFormat` at the same time again. (fixes [#2159](https://github.com/diffplug/spotless/issues/2159))
 * The default list of type annotations used by `formatAnnotations` now includes Jakarta Validation's `Valid` and constraints validations (fixes [#2334](https://github.com/diffplug/spotless/issues/2334))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import com.diffplug.spotless.java.IdeaStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import com.diffplug.spotless.java.RemoveWildcardImportsStep;
 
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
 	static final String NAME = "java";
@@ -150,6 +151,10 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public void removeUnusedImports(String formatter) {
 		addStep(RemoveUnusedImportsStep.create(formatter, provisioner()));
+	}
+
+	public void removeWildcardImports() {
+		addStep(RemoveWildcardImportsStep.create());
 	}
 
 	/** Uses the <a href="https://github.com/google/google-java-format">google-java-format</a> jar to format source code. */

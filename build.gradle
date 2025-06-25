@@ -22,7 +22,7 @@ spotless {
 	}
 	format 'dotfiles', {
 		target '.gitignore', '.gitattributes', '.editorconfig'
-		indentWithSpaces(2)
+		leadingTabsToSpaces(2)
 		trimTrailingWhitespace()
 		endWithNewline()
 	}
