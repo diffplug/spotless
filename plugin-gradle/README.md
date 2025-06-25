@@ -1593,7 +1593,6 @@ and a plethora of [plugins](https://plugins.jetbrains.com/).
 
 Spotless provides access to IntelliJ IDEA's command line formatter. 
 
-
 ```gradle
 spotless {
   format 'myFormatter', {
@@ -1601,8 +1600,8 @@ spotless {
     target 'src/main/**/*.java','jbang/*.java'
 
     idea()
-      .codeStyleSettingsPath('/path/to/config') // if you have custom formatting rules, see below for how to get them
-      .withDefaults(true) // Use the default code style settings when the code style is not defined for a file type (default: true)
+      .codeStyleSettingsPath('/path/to/config') // if you have custom formatting rules, see below for how to extract/reference them
+      .withDefaults(false) // Disable using default code style settings when no custom code style is defined for a file type (default: true)
 
     // if idea is not on your path, you must specify the path to the executable
     idea().binaryPath('/path/to/idea')
@@ -1611,7 +1610,7 @@ spotless {
 ```
 
 ### How to generate code style settings files
-TODO
+See [here](../INTELLIJ_IDEA_SCREENSHOTS.md) for an explanation on how to extract or reference existing code style files. 
 
 ### Limitations
 - Currently, only IntelliJ IDEA is supported - none of the other jetbrains IDE. Consider opening a PR if you want to change this.
