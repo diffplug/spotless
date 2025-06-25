@@ -28,16 +28,16 @@ public class Idea implements FormatterStepFactory {
 	private String binaryPath;
 
 	@Parameter
-	private String configPath;
+	private String codeStyleSettingsPath;
 
 	@Parameter
-	private Boolean withDefaults = false;
+	private Boolean withDefaults = true;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		return IdeaStep.newBuilder(config.getFileLocator().getBuildDir())
 				.setUseDefaults(withDefaults)
-				.setCodeStyleSettingsPath(configPath)
+				.setCodeStyleSettingsPath(codeStyleSettingsPath)
 				.setBinaryPath(binaryPath)
 				.build();
 	}

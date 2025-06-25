@@ -64,6 +64,9 @@ class TestEnvVars {
 		if (System.getProperty("testenv.properties.path") != null) {
 			builder.add(Path.of(System.getProperty("testenv.properties.path")));
 		}
+		if (System.getProperty("spotlessProjectDir") != null) {
+			builder.add(Path.of(System.getProperty("spotlessProjectDir"), "testenv.properties"));
+		}
 		builder.add(
 				Path.of(System.getProperty("user.dir"), "testenv.properties"));
 		builder.add(
