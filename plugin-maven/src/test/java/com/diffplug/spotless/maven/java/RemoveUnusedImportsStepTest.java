@@ -22,7 +22,7 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 class RemoveUnusedImportsStepTest extends MavenIntegrationHarness {
 
 	@Test
-	void testRemoveUnusedInports() throws Exception {
+	void testRemoveUnusedImports() throws Exception {
 		writePomWithJavaSteps("<removeUnusedImports/>");
 
 		String path = "src/main/java/test.java";
