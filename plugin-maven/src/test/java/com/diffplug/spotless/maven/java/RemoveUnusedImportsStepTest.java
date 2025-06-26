@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,22 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 class RemoveUnusedImportsStepTest extends MavenIntegrationHarness {
 
 	@Test
-	void testRemoveUnusedInports() throws Exception {
+	void testRemoveUnusedImports() throws Exception {
 		writePomWithJavaSteps("<removeUnusedImports/>");
 
 		String path = "src/main/java/test.java";
 		setFile(path).toResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("java/removeunusedimports/JavaCodeWithPackageFormatted.test");
+	}
+
+	@Test
+	void testIssue2532() throws Exception {
+		writePomWithJavaSteps("<removeUnusedImports/>");
+
+		String path = "src/main/java/test.java";
+		setFile(path).toResource("java/removeunusedimports/Issue2532Pre.test");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).sameAsResource("java/removeunusedimports/Issue2532Post.test");
 	}
 }
