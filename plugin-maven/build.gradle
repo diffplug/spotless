@@ -55,6 +55,7 @@ dependencies {
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	systemProperty 'spotlessMavenPluginVersion', project.version
+	systemProperty 'spotlessProjectDir', "${project.rootProject.projectDir}".toString()
 	dependsOn 'publishToMavenLocal'
 	dependsOn ':lib:publishToMavenLocal'
 	dependsOn ':lib-extra:publishToMavenLocal'
