@@ -84,8 +84,7 @@ public final class IdeaStep {
 		private boolean useDefaults = true;
 		@Nonnull
 		private String binaryPath = IDEA_EXECUTABLE_DEFAULT;
-		@Nullable
-		private String codeStyleSettingsPath;
+		@Nullable private String codeStyleSettingsPath;
 		private final Map<String, String> ideaProperties = new HashMap<>();
 
 		@Nonnull
@@ -140,8 +139,7 @@ public final class IdeaStep {
 
 		private final File uniqueBuildFolder;
 		private final String binaryPath;
-		@Nullable
-		private final String codeStyleSettingsPath;
+		@Nullable private final String codeStyleSettingsPath;
 		private final boolean withDefaults;
 		private final TreeMap<String, String> ideaProperties;
 
@@ -190,7 +188,6 @@ public final class IdeaStep {
 		}
 
 		private static String macOsFix(String binaryPath) {
-
 			// on macOS, the binary is located in the .app bundle which might be invisible to the user
 			// we try need to append the path to the binary
 			File binary = new File(binaryPath);

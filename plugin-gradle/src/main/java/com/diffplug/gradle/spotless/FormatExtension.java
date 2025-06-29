@@ -218,8 +218,7 @@ public class FormatExtension {
 	protected FileCollection target, targetExclude;
 
 	/** The value from which files will be excluded if their content contain it. */
-	@Nullable
-	protected String targetExcludeContentPattern = null;
+	@Nullable protected String targetExcludeContentPattern = null;
 
 	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
 		String formatterStepName = formatterStep.getName();
@@ -687,17 +686,13 @@ public class FormatExtension {
 
 		public static final String SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME = "spotless-npm-install-cache";
 
-		@Nullable
-		protected Object npmFile;
+		@Nullable protected Object npmFile;
 
-		@Nullable
-		protected Object nodeFile;
+		@Nullable protected Object nodeFile;
 
-		@Nullable
-		protected Object npmInstallCache;
+		@Nullable protected Object npmInstallCache;
 
-		@Nullable
-		protected Object npmrcFile;
+		@Nullable protected Object npmrcFile;
 
 		protected Project project;
 
@@ -771,11 +766,9 @@ public class FormatExtension {
 
 	public class PrettierConfig extends NpmStepConfig<PrettierConfig> {
 
-		@Nullable
-		Object prettierConfigFile;
+		@Nullable Object prettierConfigFile;
 
-		@Nullable
-		Map<String, Object> prettierConfig;
+		@Nullable Map<String, Object> prettierConfig;
 
 		final Map<String, String> devDependencies;
 
@@ -815,8 +808,7 @@ public class FormatExtension {
 	 * <code>format{ ... }</code>.
 	 */
 	public class BiomeGeneric extends BiomeStepConfig<BiomeGeneric> {
-		@Nullable
-		String language;
+		@Nullable String language;
 
 		/**
 		 * Creates a new Biome config that downloads the Biome executable for the given
