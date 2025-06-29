@@ -21,6 +21,10 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
+import java.util.Map;
+
+import static com.diffplug.spotless.json.JacksonJsonStep.defaultVersion;
+
 class JacksonJsonStepTest {
 	@Test
 	void canSetCustomIndentationLevel() {
@@ -29,6 +33,18 @@ class JacksonJsonStepTest {
 
 		String before = "json/singletonArrayBefore.json";
 		String after = "json/singletonArrayAfter_Jackson.json";
+		stepHarness.testResource(before, after);
+	}
+
+	@Test
+	void canSetJsonParserFeature() {
+		JacksonJsonConfig jacksonJsonConfig = new JacksonJsonConfig();
+		jacksonJsonConfig.appendJsonParserFeatureToToggle(Map.of("ALLOW_COMMENTS", true));
+		FormatterStep step = JacksonJsonStep.create(jacksonJsonConfig, defaultVersion(), TestProvisioner.mavenCentral());
+		StepHarness stepHarness = StepHarness.forStepNoRoundtrip(step);
+
+		String before = "json/objectContainingComments.json";
+		String after = "json/objectContainingCommentsAfter.json";
 		stepHarness.testResource(before, after);
 	}
 }
