@@ -19,6 +19,8 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import com.vladsch.flexmark.util.data.MutableDataSet;
+
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.markdown.FlexmarkStep;
 
@@ -26,7 +28,7 @@ public class FlexmarkExtension extends FormatExtension {
 	static final String NAME = "flexmark";
 
 	@Inject
-	public FlexmarkExtension(SpotlessExtension spotless) {
+	public FlexmarkExtension(final SpotlessExtension spotless) {
 		super(spotless);
 	}
 
@@ -34,14 +36,21 @@ public class FlexmarkExtension extends FormatExtension {
 		return flexmark(FlexmarkStep.defaultVersion());
 	}
 
-	public FlexmarkFormatterConfig flexmark(String version) {
+	public FlexmarkFormatterConfig flexmark(final String version) {
 		return new FlexmarkFormatterConfig(version);
 	}
 
+	public FlexmarkFormatterConfig flexmark(
+		final String version,
+		final MutableDataSet options
+	) {
+		return new FlexmarkFormatterConfig(version, options);
+	}
+
 	@Override
-	protected void setupTask(SpotlessTask task) {
+	protected void setupTask(final SpotlessTask task) {
 		// defaults to all markdown files
-		if (target == null) {
+		if (this.target == null) {
 			throw noDefaultTargetException();
 		}
 		super.setupTask(task);
@@ -50,14 +59,29 @@ public class FlexmarkExtension extends FormatExtension {
 	public class FlexmarkFormatterConfig {
 
 		private final String version;
+		private final MutableDataSet options;
 
-		FlexmarkFormatterConfig(String version) {
+		FlexmarkFormatterConfig(final String version) {
 			this.version = Objects.requireNonNull(version);
+			this.options = new MutableDataSet();
+			addStep(createStep());
+		}
+
+		FlexmarkFormatterConfig(
+			final String version,
+			final MutableDataSet options
+		) {
+			this.version = Objects.requireNonNull(version);
+			this.options = options;
 			addStep(createStep());
 		}
 
 		private FormatterStep createStep() {
-			return FlexmarkStep.create(this.version, provisioner());
+			return FlexmarkStep.create(
+				this.version,
+				provisioner(),
+				this.options
+			);
 		}
 	}
 
