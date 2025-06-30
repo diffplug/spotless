@@ -38,7 +38,7 @@ user@machine repo % mvn spotless:check
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
   - [Binding to maven phase](#binding-to-maven-phase)
-- **Languages** // TODO add idea
+- **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))

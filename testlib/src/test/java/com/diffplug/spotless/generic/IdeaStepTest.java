@@ -79,7 +79,7 @@ class IdeaStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void formattingsWithOutDefaultDoesNothing() throws Exception {
+	void formattingsWithoutDefaultDoesNothing() throws Exception {
 		File dirtyFile = newFile("dirty.java");
 		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
 		Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
