@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -70,7 +71,7 @@ class TestEnvVars {
 		builder.add(
 				Path.of(System.getProperty("user.dir"), "testenv.properties"));
 		builder.add(
-				Path.of(System.getProperty("user.dir")).getParent().resolve("testenv.properties"));
+				Objects.requireNonNull(Path.of(System.getProperty("user.dir")).getParent()).resolve("testenv.properties"));
 		return builder.build();
 	}
 

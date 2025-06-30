@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -208,7 +209,7 @@ public final class IdeaStep {
 		}
 
 		private static boolean isMacOs() {
-			return System.getProperty("os.name").toLowerCase().contains("mac");
+			return System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac");
 		}
 
 		private String format(IdeaStepFormatterCleanupResources ideaStepFormatterCleanupResources, String unix, File file) throws Exception {
@@ -244,10 +245,14 @@ public final class IdeaStep {
 				return ideaProps.toFile(); // only create if it does not exist
 			}
 
-			ThrowingEx.run(() -> Files.createDirectories(ideaProps.getParent()));
+			Path parent = ideaProps.getParent();
+			if (parent == null) {
+				throw new IllegalStateException(String.format("Parent directory for IDEA properties file %s cannot be null", ideaProps));
+			}
+			ThrowingEx.run(() -> Files.createDirectories(parent));
 
-			Path configPath = ideaProps.getParent().resolve("config");
-			Path systemPath = ideaProps.getParent().resolve("system");
+			Path configPath = parent.resolve("config");
+			Path systemPath = parent.resolve("system");
 
 			Properties properties = new Properties();
 			properties.putAll(ideaProperties);
