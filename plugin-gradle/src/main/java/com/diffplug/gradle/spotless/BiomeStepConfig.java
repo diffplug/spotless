@@ -23,10 +23,10 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import com.diffplug.spotless.biome.BiomeSettings;
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.biome.BiomeStep;
 
 public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
@@ -47,12 +47,6 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	 */
 	@Nullable
 	private Object downloadDir;
-
-	/**
-	 * The flavor of Biome to use. Will be removed when we stop support the
-	 * deprecated Rome project.
-	 */
-	private final BiomeFlavor flavor;
 
 	/**
 	 * Optional path to the Biome executable. Either a <code>version</code> or a
@@ -93,11 +87,9 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	@Nullable
 	private String version;
 
-	protected BiomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, BiomeFlavor flavor,
-			String version) {
+	protected BiomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, String version) {
 		this.project = requireNonNull(project);
 		this.replaceStep = requireNonNull(replaceStep);
-		this.flavor = flavor;
 		this.version = version;
 	}
 
@@ -224,10 +216,10 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	private BiomeStep newBuilder() {
 		if (pathToExe != null) {
 			var resolvedPathToExe = resolvePathToExe();
-			return BiomeStep.withExePath(flavor, resolvedPathToExe);
+			return BiomeStep.withExePath(resolvedPathToExe);
 		} else {
 			var downloadDir = resolveDownloadDir();
-			return BiomeStep.withExeDownload(flavor, version, downloadDir);
+			return BiomeStep.withExeDownload(version, downloadDir);
 		}
 	}
 
@@ -260,7 +252,7 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 		if (downloadDir != null) {
 			return project.file(downloadDir).toString();
 		} else {
-			return findDataDir().toPath().resolve(flavor.shortName()).toString();
+			return findDataDir().toPath().resolve(BiomeSettings.shortName()).toString();
 		}
 	}
 }

@@ -71,17 +71,13 @@ final class BiomeExecutableDownloader {
 
 	private final Path downloadDir;
 
-	private final BiomeFlavor flavor;
-
 	/**
 	 * Creates a new downloader for the Biome executable. The executable files are
 	 * stored in the given download directory.
 	 *
-	 * @param flavor Flavor of Biome to use.
 	 * @param downloadDir Directory where to store the downloaded executable.
 	 */
-	public BiomeExecutableDownloader(BiomeFlavor flavor, Path downloadDir) {
-		this.flavor = flavor;
+	public BiomeExecutableDownloader(Path downloadDir) {
 		this.downloadDir = downloadDir;
 	}
 
@@ -240,7 +236,7 @@ final class BiomeExecutableDownloader {
 	 * Finds the code name for the given operating system used by the Biome
 	 * executable download URL.
 	 *
-	 * @param os Desired operating system.
+	 * @param architecture Desired operating system architecture.
 	 * @return Code name for the Biome download URL.
 	 * @throws IOException When the given OS is not supported by Biome.
 	 */

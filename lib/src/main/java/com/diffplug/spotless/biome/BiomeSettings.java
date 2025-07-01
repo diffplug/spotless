@@ -16,52 +16,38 @@
 package com.diffplug.spotless.biome;
 
 /**
- * The flavor of Biome to use. Exists for compatibility reason, may be removed
- * shortly.
- * <p>
- * Will be removed once the old Rome project is not supported anymore.
+ * Settings and constants for Biome to use.
  */
-public enum BiomeFlavor {
-	/** The new forked Biome project. */
-	BIOME("biome", "1.2.0", "biome.json", "biome-%s-%s-%s",
-			"https://github.com/biomejs/biome/releases/download/cli%%2Fv%s/biome-%s");
+public final class BiomeSettings {
+	private final static String configName= "biome.json";
+	private final static String defaultVersion = "1.2.0";
+	private final static String downloadFilePattern = "biome-%s-%s-%s";
+	private final static String shortName = "biome";
+	private final static String urlPattern = "https://github.com/biomejs/biome/releases/download/cli%%2Fv%s/biome-%s";
 
-	private final String configName;
-	private final String defaultVersion;
-	private final String downloadFilePattern;
-	private final String shortName;
-	private final String urlPattern;
-
-	BiomeFlavor(String shortName, String defaultVersion, String configName, String downloadFilePattern,
-			String urlPattern) {
-		this.shortName = shortName;
-		this.defaultVersion = defaultVersion;
-		this.configName = configName;
-		this.downloadFilePattern = downloadFilePattern;
-		this.urlPattern = urlPattern;
-	}
+	private BiomeSettings() {}
 
 	/**
 	 * @return The name of the default config file.
 	 */
-	public String configName() {
+	public static String configName() {
 		return configName;
 	}
 
 	/**
 	 * @return Default version to use when no version was set explicitly.
 	 */
-	public String defaultVersion() {
+	public static String defaultVersion() {
 		return defaultVersion;
 	}
 
 	/**
 	 * @return The pattern for {@link String#format(String, Object...)
 	 *         String.format()} for the file name of a Biome executable for a
-	 *         certain version and architecure. The first parameter is the platform,
+	 *         certain version and architecture. The first parameter is the platform,
 	 *         the second is the OS, the third is the architecture.
 	 */
-	public String getDownloadFilePattern() {
+	public static String getDownloadFilePattern() {
 		return downloadFilePattern;
 	}
 
@@ -71,15 +57,14 @@ public enum BiomeFlavor {
 	 *         The first parameter is the version, the second parameter is the OS /
 	 *         platform.
 	 */
-	public String getUrlPattern() {
+	public static String getUrlPattern() {
 		return urlPattern;
 	}
 
 	/**
-	 * @return The short name of this flavor, i.e. <code>rome</code> or
-	 *         <code>biome</code>.
+	 * @return The short name of this flavor, e.g. <code>biome</code>.
 	 */
-	public String shortName() {
+	public static String shortName() {
 		return shortName;
 	}
 }

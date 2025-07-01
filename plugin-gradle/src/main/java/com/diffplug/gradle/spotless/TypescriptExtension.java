@@ -30,7 +30,6 @@ import org.gradle.api.Project;
 
 import com.diffplug.gradle.spotless.JavascriptExtension.EslintBaseConfig;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.EslintTypescriptConfig;
@@ -254,7 +253,7 @@ public class TypescriptExtension extends FormatExtension {
 		 * @param version Biome version to use.
 		 */
 		public BiomeTs(String version) {
-			super(getProject(), TypescriptExtension.this::replaceStep, BiomeFlavor.BIOME, version);
+			super(getProject(), TypescriptExtension.this::replaceStep, version);
 		}
 
 		@Override

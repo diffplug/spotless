@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.maven.typescript;
 
-import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.maven.generic.AbstractBiome;
 
 /**
@@ -23,7 +22,7 @@ import com.diffplug.spotless.maven.generic.AbstractBiome;
  */
 public class BiomeTs extends AbstractBiome {
 	public BiomeTs() {
-		super(BiomeFlavor.BIOME);
+		super();
 	}
 
 	@Override

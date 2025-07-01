@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.maven.css;
 
-import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.maven.generic.AbstractBiome;
 
 /**
@@ -23,7 +22,7 @@ import com.diffplug.spotless.maven.generic.AbstractBiome;
  */
 public class BiomeCss extends AbstractBiome {
 	public BiomeCss() {
-		super(BiomeFlavor.BIOME);
+		super();
 	}
 
 	@Override

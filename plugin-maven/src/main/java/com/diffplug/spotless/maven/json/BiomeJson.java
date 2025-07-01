@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.maven.json;
 
-import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.maven.generic.AbstractBiome;
 
 /**
@@ -23,7 +22,7 @@ import com.diffplug.spotless.maven.generic.AbstractBiome;
  */
 public class BiomeJson extends AbstractBiome {
 	public BiomeJson() {
-		super(BiomeFlavor.BIOME);
+		super();
 	}
 
 	@Override

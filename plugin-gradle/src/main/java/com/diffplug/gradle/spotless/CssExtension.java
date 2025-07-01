@@ -17,8 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import javax.inject.Inject;
 
-import com.diffplug.spotless.biome.BiomeFlavor;
-
 /** Gradle step for formatting CSS files. */
 public class CssExtension extends FormatExtension {
 	private static final String CSS_FILE_EXTENSION = "**/*.css";
@@ -73,7 +71,7 @@ public class CssExtension extends FormatExtension {
 		 * @param version Biome version to use.
 		 */
 		public BiomeCss(String version) {
-			super(getProject(), CssExtension.this::replaceStep, BiomeFlavor.BIOME, version);
+			super(getProject(), CssExtension.this::replaceStep, version);
 		}
 
 		@Override
