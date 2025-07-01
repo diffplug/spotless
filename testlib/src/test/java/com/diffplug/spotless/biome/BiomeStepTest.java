@@ -194,6 +194,32 @@ class BiomeStepTest extends ResourceHarness {
 		}
 	}
 
+	/**
+	 * Tests for the different biome versions.
+	 */
+	@Nested
+	class BiomeVersion {
+		/**
+		 * Basic test that biome 1.x works.
+		 */
+		@Test
+		void test1x() {
+			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
+			stepHarness.testResource("biome/js/fileBefore.cjs", "biome/js/fileAfter.cjs");
+		}
+
+		/**
+		 * Basic test that biome 2.x works.
+		 */
+		@Test
+		void test2x() {
+			var step = BiomeStep.withExeDownload("2.0.6", downloadDir).create();
+			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
+			stepHarness.testResource("biome/js/fileBefore.cjs", "biome/js/fileAfter.cjs");
+		}
+	}
+
 	@Nested
 	class ConfigFile {
 		/**

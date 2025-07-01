@@ -424,4 +424,29 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("package.json").sameAsResource("biome/json/packageAfter.json");
 	}
+
+	/**
+	 * Tests that the Gradle plugin works with version 2.x of biome.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void version2x() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    format 'mybiome', {",
+				"        target '**/*.js'",
+				"        biome('2.0.6')",
+				"    }",
+				"}");
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
+	}
 }

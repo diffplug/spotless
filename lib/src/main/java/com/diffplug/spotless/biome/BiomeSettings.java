@@ -19,11 +19,12 @@ package com.diffplug.spotless.biome;
  * Settings and constants for Biome to use.
  */
 public final class BiomeSettings {
-	private final static String configName= "biome.json";
-	private final static String defaultVersion = "1.2.0";
-	private final static String downloadFilePattern = "biome-%s-%s-%s";
-	private final static String shortName = "biome";
-	private final static String urlPattern = "https://github.com/biomejs/biome/releases/download/cli%%2Fv%s/biome-%s";
+	private final static String CONFIG_NAME = "biome.json";
+	private final static String DEFAULT_VERSION = "1.2.0";
+	private final static String DOWNLOAD_FILE_PATTERN = "biome-%s-%s-%s";
+	private final static String SHORT_NAME = "biome";
+	private final static String URL_PATTERN_1X = "https://github.com/biomejs/biome/releases/download/cli%%2Fv%s/biome-%s";
+	private final static String URL_PATTERN_2X = "https://github.com/biomejs/biome/releases/download/%%40biomejs%%2Fbiome%%40%s/biome-%s";
 
 	private BiomeSettings() {}
 
@@ -31,14 +32,14 @@ public final class BiomeSettings {
 	 * @return The name of the default config file.
 	 */
 	public static String configName() {
-		return configName;
+		return CONFIG_NAME;
 	}
 
 	/**
 	 * @return Default version to use when no version was set explicitly.
 	 */
 	public static String defaultVersion() {
-		return defaultVersion;
+		return DEFAULT_VERSION;
 	}
 
 	/**
@@ -48,23 +49,27 @@ public final class BiomeSettings {
 	 *         the second is the OS, the third is the architecture.
 	 */
 	public static String getDownloadFilePattern() {
-		return downloadFilePattern;
+		return DOWNLOAD_FILE_PATTERN;
 	}
 
 	/**
+	 * @param version The biome version for which to get the URL pattern, e.g. 1.2.0 or 2.0.6.
 	 * @return The pattern for {@link String#format(String, Object...)
 	 *         String.format()} for the URL where the executables can be downloaded.
 	 *         The first parameter is the version, the second parameter is the OS /
 	 *         platform.
 	 */
-	public static String getUrlPattern() {
-		return urlPattern;
+	public static String getUrlPattern(String version) {
+		if (version != null && version.startsWith("1.")) {
+			return URL_PATTERN_1X;
+		}
+		return URL_PATTERN_2X;
 	}
 
 	/**
 	 * @return The short name of this flavor, e.g. <code>biome</code>.
 	 */
 	public static String shortName() {
-		return shortName;
+		return SHORT_NAME;
 	}
 }

@@ -248,4 +248,17 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("package.json").sameAsResource("biome/json/packageAfter.json");
 	}
+
+	/**
+	 * Tests that the Maven plugin works with version 2.x of biome.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void version2X() throws Exception {
+		writePomWithBiomeSteps("**/*.js", "<biome><version>2.0.6</version></biome>");
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
+	}
 }

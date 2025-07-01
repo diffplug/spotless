@@ -278,7 +278,7 @@ final class BiomeExecutableDownloader {
 		var architectureCodeName = getArchitectureCodeName(platform.getArchitecture());
 		var extension = getDownloadUrlExtension(platform.getOs());
 		var platformString = String.format(PLATFORM_PATTERN, osCodeName, architectureCodeName, extension);
-		return String.format(flavor.getUrlPattern(), version, platformString);
+		return String.format(BiomeSettings.getUrlPattern(version), version, platformString);
 	}
 
 	/**
@@ -313,7 +313,7 @@ final class BiomeExecutableDownloader {
 	private Path getExecutablePath(String version, Platform platform) {
 		var os = platform.getOs().name().toLowerCase(Locale.ROOT);
 		var arch = platform.getArchitecture().name().toLowerCase(Locale.ROOT);
-		var fileName = String.format(flavor.getDownloadFilePattern(), os, arch, version);
+		var fileName = String.format(BiomeSettings.getDownloadFilePattern(), os, arch, version);
 		return downloadDir.resolve(fileName);
 	}
 
