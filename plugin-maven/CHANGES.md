@@ -6,6 +6,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Add support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
 
+### Fixed
+* Fix biome formatter for new major release 2.x of biome ([#2537](https://github.com/diffplug/spotless/pull/2537))
+
 ## [2.44.5] - 2025-05-27
 ### Changed
 * Bump default `eclipse` version to latest `4.34` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
