@@ -55,7 +55,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Requirements](#requirements)
   - [Linting](#linting)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -65,7 +65,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [FreshMark](#freshmark) aka markdown
   - [Flexmark](#flexmark) aka markdown
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
-  - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier))
+  - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier), [IntelliJ IDEA](#intellij-idea))
   - [Maven POM](#maven-pom) ([sortPom](#sortpom))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Biome](#biome))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Biome](#biome))
@@ -78,6 +78,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
     - [clang-format](#clang-format)
     - [eclipse web tools platform](#eclipse-web-tools-platform)
     - [Biome](#biome) ([binary detection](#biome-binary), [config file](#biome-configuration-file), [input language](#biome-input-language))
+    - [IntelliJ IDEA](#intellij-idea)
 - **Language independent**
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
@@ -198,6 +199,7 @@ spotless {
     eclipse()            // has its own section below
     prettier()           // has its own section below
     clangFormat()        // has its own section below
+    idea()               // has its own section below
 
     formatAnnotations()  // fixes formatting of type annotations, see below
 
@@ -754,6 +756,7 @@ spotless {
 
     dbeaver()  // has its own section below
     prettier() // has its own section below
+    idea()     // has its own section below
   }
 }
 ```
@@ -1581,9 +1584,41 @@ The following languages are currently recognized:
 * `ts?` -- TypeScript, with or without JSX, depending on the file extension
 * `json` -- JSON
 
+## IntelliJ IDEA
+
+[homepage](https://www.jetbrains.com/idea/). [changelog](https://www.jetbrains.com/idea/whatsnew/). 
+
+`IntelliJ IDEA` is a powerful IDE for java, kotlin and many more languages. There are [specific variants](https://www.jetbrains.com/products/) for almost any modern language
+and a plethora of [plugins](https://plugins.jetbrains.com/).
+
+Spotless provides access to IntelliJ IDEA's command line formatter. 
+
+```gradle
+spotless {
+  format 'myFormatter', {
+    // you have to set the target manually
+    target 'src/main/**/*.java','jbang/*.java'
+
+    idea()
+      .codeStyleSettingsPath('/path/to/config') // if you have custom formatting rules, see below for how to extract/reference them
+      .withDefaults(false) // Disable using default code style settings when no custom code style is defined for a file type (default: true)
+
+    // if idea is not on your path, you must specify the path to the executable
+    idea().binaryPath('/path/to/idea')
+  }
+}
+```
+
+### How to generate code style settings files
+See [here](../INTELLIJ_IDEA_SCREENSHOTS.md) for an explanation on how to extract or reference existing code style files. 
+
+### Limitations
+- Currently, only IntelliJ IDEA is supported - none of the other jetbrains IDE. Consider opening a PR if you want to change this.
+- Launching IntelliJ IDEA from the command line is pretty expensive and as of now, we do this for each file. If you want to change this, consider opening a PR.
+
 ## Generic steps
 
-[Prettier](#prettier), [eclipse wtp](#eclipse-web-tools-platform), and [license header](#license-header) are available in every format, and they each have their own section. As mentioned in the [quickstart](#quickstart), there are a variety of simple generic steps which are also available in every format, here are examples of these:
+[Prettier](#prettier), [eclipse wtp](#eclipse-web-tools-platform), [IntelliJ IDEA](#intellij-idea) and [license header](#license-header) are available in every format, and they each have their own section. As mentioned in the [quickstart](#quickstart), there are a variety of simple generic steps which are also available in every format, here are examples of these:
 
 ```gradle
 spotless {
