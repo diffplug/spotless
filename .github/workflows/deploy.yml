@@ -1,5 +1,5 @@
-# NEXUS_USER
-# NEXUS_PASS64 (base64 NOTE: `base64` and `openssl base64` failed, had to use Java
+# CENTRAL_PORTAL_USER
+# CENTRAL_PORTAL_PASS64 (base64 NOTE: `base64` and `openssl base64` failed, had to use Java
 #   byte[] data = "{{password}}".getBytes(StandardCharsets.UTF_8);
 #   String encoded = new String(Base64.getEncoder().encode(data), StandardCharsets.UTF_8);
 #   System.out.println(encoded);
@@ -32,8 +32,8 @@ jobs:
       contents: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.NEXUS_USER }}
-      ORG_GRADLE_PROJECT_nexus_pass64: ${{ secrets.NEXUS_PASS64 }}
+      ORG_GRADLE_PROJECT_central_portal_user: ${{ secrets.CENTRAL_PORTAL_USER }}
+      ORG_GRADLE_PROJECT_central_portal_pass64: ${{ secrets.CENTRAL_PORTAL_PASS64 }}
       ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
       ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.GPG_KEY64 }}
     steps:
