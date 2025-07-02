@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,17 +71,13 @@ final class BiomeExecutableDownloader {
 
 	private final Path downloadDir;
 
-	private final BiomeFlavor flavor;
-
 	/**
 	 * Creates a new downloader for the Biome executable. The executable files are
 	 * stored in the given download directory.
 	 *
-	 * @param flavor Flavor of Biome to use.
 	 * @param downloadDir Directory where to store the downloaded executable.
 	 */
-	public BiomeExecutableDownloader(BiomeFlavor flavor, Path downloadDir) {
-		this.flavor = flavor;
+	public BiomeExecutableDownloader(Path downloadDir) {
 		this.downloadDir = downloadDir;
 	}
 
@@ -240,7 +236,7 @@ final class BiomeExecutableDownloader {
 	 * Finds the code name for the given operating system used by the Biome
 	 * executable download URL.
 	 *
-	 * @param os Desired operating system.
+	 * @param architecture Desired operating system architecture.
 	 * @return Code name for the Biome download URL.
 	 * @throws IOException When the given OS is not supported by Biome.
 	 */
@@ -282,7 +278,7 @@ final class BiomeExecutableDownloader {
 		var architectureCodeName = getArchitectureCodeName(platform.getArchitecture());
 		var extension = getDownloadUrlExtension(platform.getOs());
 		var platformString = String.format(PLATFORM_PATTERN, osCodeName, architectureCodeName, extension);
-		return String.format(flavor.getUrlPattern(), version, platformString);
+		return String.format(BiomeSettings.getUrlPattern(version), version, platformString);
 	}
 
 	/**
@@ -317,7 +313,7 @@ final class BiomeExecutableDownloader {
 	private Path getExecutablePath(String version, Platform platform) {
 		var os = platform.getOs().name().toLowerCase(Locale.ROOT);
 		var arch = platform.getArchitecture().name().toLowerCase(Locale.ROOT);
-		var fileName = String.format(flavor.getDownloadFilePattern(), os, arch, version);
+		var fileName = String.format(BiomeSettings.getDownloadFilePattern(), os, arch, version);
 		return downloadDir.resolve(fileName);
 	}
 

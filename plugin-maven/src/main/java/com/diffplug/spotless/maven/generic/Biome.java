@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@ package com.diffplug.spotless.maven.generic;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.diffplug.spotless.biome.BiomeFlavor;
-
 /**
  * Generic Biome formatter step that detects the language of the input file from
  * the file name. It should be specified as a formatter step for a generic
@@ -26,7 +24,7 @@ import com.diffplug.spotless.biome.BiomeFlavor;
  */
 public class Biome extends AbstractBiome {
 	public Biome() {
-		super(BiomeFlavor.BIOME);
+		super();
 	}
 
 	/**

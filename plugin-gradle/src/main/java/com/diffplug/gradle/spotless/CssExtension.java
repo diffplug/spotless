@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 package com.diffplug.gradle.spotless;
 
 import javax.inject.Inject;
-
-import com.diffplug.spotless.biome.BiomeFlavor;
 
 /** Gradle step for formatting CSS files. */
 public class CssExtension extends FormatExtension {
@@ -73,7 +71,7 @@ public class CssExtension extends FormatExtension {
 		 * @param version Biome version to use.
 		 */
 		public BiomeCss(String version) {
-			super(getProject(), CssExtension.this::replaceStep, BiomeFlavor.BIOME, version);
+			super(getProject(), CssExtension.this::replaceStep, version);
 		}
 
 		@Override

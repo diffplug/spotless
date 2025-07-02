@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -247,5 +247,18 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 		setFile("package.json").toResource("biome/json/packageBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("package.json").sameAsResource("biome/json/packageAfter.json");
+	}
+
+	/**
+	 * Tests that the Maven plugin works with version 2.x of biome.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void version2X() throws Exception {
+		writePomWithBiomeSteps("**/*.js", "<biome><version>2.0.6</version></biome>");
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
 	}
 }

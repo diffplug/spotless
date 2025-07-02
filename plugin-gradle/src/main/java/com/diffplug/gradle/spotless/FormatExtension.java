@@ -59,7 +59,6 @@ import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
-import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
@@ -818,13 +817,13 @@ public class FormatExtension {
 		 *                <code>null</code>.
 		 */
 		public BiomeGeneric(String version) {
-			super(getProject(), FormatExtension.this::replaceStep, BiomeFlavor.BIOME, version);
+			super(getProject(), FormatExtension.this::replaceStep, version);
 		}
 
 		/**
 		 * Sets the language (syntax) of the input files to format. When
 		 * <code>null</code> or the empty string, the language is detected automatically
-		 * from the file name. Currently the following languages are supported by Biome:
+		 * from the file name. Currently, the following languages are supported by Biome:
 		 * <ul>
 		 * <li>js (JavaScript)</li>
 		 * <li>jsx (JavaScript + JSX)</li>

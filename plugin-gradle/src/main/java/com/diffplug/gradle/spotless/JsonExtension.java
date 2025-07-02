@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.json.JacksonJsonConfig;
 import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.json.JsonPatchStep;
@@ -192,7 +191,7 @@ public class JsonExtension extends FormatExtension {
 		 * @param version Biome version to use.
 		 */
 		public BiomeJson(String version) {
-			super(getProject(), JsonExtension.this::replaceStep, BiomeFlavor.BIOME, version);
+			super(getProject(), JsonExtension.this::replaceStep, version);
 		}
 
 		@Override
