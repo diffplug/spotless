@@ -32,6 +32,9 @@ import java.util.stream.Stream;
 import com.diffplug.spotless.ThrowingEx;
 
 final class NpmResourceHelper {
+
+	public static final String MD5_STRING_DELIMITER = "@@@";
+
 	private NpmResourceHelper() {
 		// no instance required
 	}
@@ -143,11 +146,11 @@ final class NpmResourceHelper {
 
 	static String md5(String fileContent, String... additionalFileContents) {
 		Objects.requireNonNull(fileContent, "fileContent must not be null");
-		Stream<String> additionalFilecontentStream = Stream.concat(
+		Stream<String> additionalFileContentStream = Stream.concat(
 				Stream.of(fileContent),
 				Stream.of(additionalFileContents));
 		MessageDigest md = ThrowingEx.get(() -> MessageDigest.getInstance("MD5"));
-		String stringToHash = additionalFilecontentStream.collect(Collectors.joining("@@@"));
+		String stringToHash = additionalFileContentStream.collect(Collectors.joining(MD5_STRING_DELIMITER));
 		md.update(stringToHash.getBytes(StandardCharsets.UTF_8));
 
 		byte[] digest = md.digest();
