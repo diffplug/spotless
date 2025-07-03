@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,6 @@ import com.diffplug.spotless.ResourceHarness;
 public class GradleIntegrationHarness extends ResourceHarness {
 	public enum GradleVersionSupport {
 		JRE_11("5.0"), MINIMUM(SpotlessPlugin.VER_GRADLE_min), CUSTOM_STEPS(SpotlessPlugin.VER_GRADLE_minVersionForCustom),
-		// technically, this API exists in 6.5, but the flags for it change in 6.6, so we build to that
-		CONFIGURATION_CACHE("6.6"),
 		// https://docs.gradle.org/7.5/userguide/configuration_cache.html#config_cache:stable
 		STABLE_CONFIGURATION_CACHE("7.5");
 

@@ -6,6 +6,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020), [#2535](https://github.com/diffplug/spotless/pull/2535))
 * Add support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
+### Changed
+* Bump the min Gradle requirement from `6.1.1` to `7.1`. ([#2540](https://github.com/diffplug/spotless/pull/2540))
 
 ## [7.0.4] - 2025-05-27
 ### Fixed
