@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Add support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
+* feat: Disable `expandEmptyElements`, to avoid empty body warnings. ([#2520](https://github.com/diffplug/spotless/pull/2520))
 
 ## [3.1.2] - 2025-05-27
 ### Fixed
