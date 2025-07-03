@@ -1,3 +1,5 @@
+import org.gradle.util.GradleVersion
+
 plugins {
 	id 'java-library'
 	id 'io.github.davidburstrom.version-compatibility'
@@ -147,8 +149,10 @@ tasks.withType(Test).configureEach {
 		jvmArgs "--add-opens=java.base/java.lang=ALL-UNNAMED"
 	}
 
-	// https://github.com/gradle/gradle/issues/33619
-	failOnNoDiscoveredTests = false
+	if (GradleVersion.current() >= GradleVersion.version('9.0')) {
+		// https://github.com/gradle/gradle/issues/33619
+		failOnNoDiscoveredTests = false
+	}
 }
 
 jar {
