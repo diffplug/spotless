@@ -82,7 +82,7 @@ public class TestProvisioner {
 				return config.resolve();
 			} catch (ResolveException e) {
 				/* Provide Maven coordinates in exception message instead of static string 'detachedConfiguration' */
-				throw Errors.asRuntime(e);
+				throw new RuntimeException("Error resolving configuration: " + config.getDescription(), e);
 			} finally {
 				// delete the temp dir
 				try {
