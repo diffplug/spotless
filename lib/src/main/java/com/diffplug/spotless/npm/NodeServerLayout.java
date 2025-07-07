@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,16 +37,16 @@ class NodeServerLayout {
 	private final File serveJsFile;
 	private final File npmrcFile;
 
-	NodeServerLayout(File buildDir, String packageJsonContent) {
-		this.nodeModulesDir = new File(buildDir, nodeModulesDirName(packageJsonContent));
+	NodeServerLayout(File buildDir, String packageJsonContent, String serveJsContent) {
+		this.nodeModulesDir = new File(buildDir, nodeModulesDirName(packageJsonContent, serveJsContent));
 		this.packageJsonFile = new File(nodeModulesDir, "package.json");
 		this.packageLockJsonFile = new File(nodeModulesDir, "package-lock.json");
 		this.serveJsFile = new File(nodeModulesDir, "serve.js");
 		this.npmrcFile = new File(nodeModulesDir, ".npmrc");
 	}
 
-	private static String nodeModulesDirName(String packageJsonContent) {
-		String md5Hash = NpmResourceHelper.md5(packageJsonContent);
+	private static String nodeModulesDirName(String packageJsonContent, String serveJsContent) {
+		String md5Hash = NpmResourceHelper.md5(packageJsonContent, serveJsContent);
 		Matcher matcher = PACKAGE_JSON_NAME_PATTERN.matcher(packageJsonContent);
 		if (!matcher.find()) {
 			throw new IllegalArgumentException("package.json must contain a name property");

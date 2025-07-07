@@ -64,6 +64,7 @@ import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.FenceStep;
+import com.diffplug.spotless.generic.IdeaStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
@@ -949,6 +950,44 @@ public class FormatExtension {
 
 	public EclipseWtpConfig eclipseWtp(EclipseWtpFormatterStep type, String version) {
 		return new EclipseWtpConfig(type, version);
+	}
+
+	public IdeaConfig idea() {
+		return new IdeaConfig();
+	}
+
+	public class IdeaConfig {
+		private final IdeaStep.IdeaStepBuilder builder;
+
+		IdeaConfig() {
+			this.builder = IdeaStep.newBuilder(getProject().getLayout().getBuildDirectory().getAsFile().get());
+			addStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return builder.build();
+		}
+
+		public IdeaConfig binaryPath(String binaryPath) {
+			requireNonNull(binaryPath);
+			builder.setBinaryPath(binaryPath);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public IdeaConfig codeStyleSettingsPath(String configPath) {
+			requireNonNull(configPath);
+			builder.setCodeStyleSettingsPath(configPath);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public IdeaConfig withDefaults(Boolean withDefaults) {
+			requireNonNull(withDefaults);
+			builder.setUseDefaults(withDefaults);
+			replaceStep(createStep());
+			return this;
+		}
 	}
 
 	/**
