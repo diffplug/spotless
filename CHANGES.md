@@ -13,7 +13,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020), [#2535](https://github.com/diffplug/spotless/pull/2535))
 * Add support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
-* Use `palantir-java-format` as default formatter in `RemoveUnusedImportsStep`. ([#2541](https://github.com/diffplug/spotless/pull/2541))
 * scalafmt: enforce version consistency between the version configured in Spotless and the version declared in Scalafmt config file ([#2460](https://github.com/diffplug/spotless/issues/2460))
 ### Fixed
 * `SortPom` disable expandEmptyElements, to avoid empty body warnings. ([#2520](https://github.com/diffplug/spotless/pull/2520))
@@ -418,8 +417,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [2.26.0] - 2022-06-05
 ### Added
 * Support for `editorConfigOverride` in `ktlint`. ([#1218](https://github.com/diffplug/spotless/pull/1218) fixes [#1193](https://github.com/diffplug/spotless/issues/1193))
-### Fixed
-* `google-java-format` and `RemoveUnusedImportsStep` works on JDK16+ without jvm args workaround. ([#1224](https://github.com/diffplug/spotless/pull/1224) fixes [#834](https://github.com/diffplug/spotless/issues/834))
 
 ## [2.25.3] - 2022-05-10
 ### Fixed
