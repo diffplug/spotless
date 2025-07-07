@@ -71,7 +71,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 		Runtime(NpmFormatterStepStateBase parent) {
 			this.parent = parent;
-			this.nodeServerLayout = new NodeServerLayout(parent.locations.buildDir(), parent.npmConfig.getPackageJsonContent());
+			this.nodeServerLayout = new NodeServerLayout(parent.locations.buildDir(), parent.npmConfig.getPackageJsonContent(), parent.npmConfig.getServeScriptContent());
 			this.nodeServeApp = new NodeServeApp(nodeServerLayout, parent.npmConfig, parent.locations);
 		}
 

@@ -39,14 +39,14 @@ user@machine repo % mvn spotless:check
   - [Requirements](#requirements)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
-  - [Sql](#sql) ([dbeaver](#dbeaver))
+  - [Sql](#sql) ([dbeaver](#dbeaver), [prettier](#prettier), [IntelliJ IDEA](#intellij-idea))
   - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
   - [Markdown](#markdown) ([flexmark](#flexmark))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Biome](#biome))
@@ -61,6 +61,7 @@ user@machine repo % mvn spotless:check
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
     - [Biome](#biome) ([binary detection](#biome-binary), [config file](#biome-configuration-file), [input language](#biome-input-language))
+    - [IntelliJ IDEA](#intellij-idea)
 - **Language independent**
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
@@ -194,6 +195,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <googleJavaFormat /> <!-- has its own section below -->
     <eclipse />          <!-- has its own section below -->
     <prettier />         <!-- has its own section below -->
+    <idea />             <!-- has its own section below -->
 
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
@@ -665,6 +667,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
     <dbeaver />  <!-- has its own section below -->
     <prettier /> <!-- has its own section below -->
+    <idea />     <!-- has its own section below -->
   </sql>
 </configuration>
 ```
@@ -1666,9 +1669,47 @@ The following languages are currently recognized:
 * `ts?` -- TypeScript, with or without JSX, depending on the file extension
 * `json` -- JSON
 
+## IntelliJ IDEA
+
+[homepage](https://www.jetbrains.com/idea/). [changelog](https://www.jetbrains.com/idea/whatsnew/).
+
+`IntelliJ IDEA` is a powerful IDE for java, kotlin and many more languages. There are [specific variants](https://www.jetbrains.com/products/) for almost any modern language
+and a plethora of [plugins](https://plugins.jetbrains.com/).
+
+Spotless provides access to IntelliJ IDEA's command line formatter.
+
+```xml
+<configuration>
+  <formats>
+    <format>
+      <includes>
+        <include>src/main/**/*.java</include>
+        <include>jbang/*.java</include>
+      </includes>
+
+      <idea>
+        <!-- if you have custom formatting rules, see below for how to extract/reference them -->
+        <codeStyleSettingsPath>/path/to/config</codeStyleSettingsPath>
+        <!-- disable using default code style settings when no custom code style is defined for a file type (default: true) -->
+        <withDefaults>false</withDefaults>
+        <!-- if idea is not on your path, you must specify the path to the executable -->
+        <binaryPath>/path/to/idea</binaryPath>
+      </idea>
+    </format>
+  </formats>
+</configuration>
+```
+
+### How to generate code style settings files
+See [here](../INTELLIJ_IDEA_SCREENSHOTS.md) for an explanation on how to extract or reference existing code style files.
+
+### Limitations
+- Currently, only IntelliJ IDEA is supported - none of the other jetbrains IDE. Consider opening a PR if you want to change this.
+- Launching IntelliJ IDEA from the command line is pretty expensive and as of now, we do this for each file. If you want to change this, consider opening a PR.
+
 ## Generic steps
 
-[Prettier](#prettier), [eclipse wtp](#eclipse-web-tools-platform), and [license header](#license-header) are available in every format, and they each have their own section. As mentioned in the [quickstart](#quickstart), there are a variety of simple generic steps which are also available in every format, here are examples of these:
+[Prettier](#prettier), [eclipse wtp](#eclipse-web-tools-platform), [IntelliJ IDEA](#intellij-idea) and [license header](#license-header) are available in every format, and they each have their own section. As mentioned in the [quickstart](#quickstart), there are a variety of simple generic steps which are also available in every format, here are examples of these:
 
 ```xml
 <trimTrailingWhitespace /> <!-- trim trailing whitespaces -->

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.maven.java;
+package com.diffplug.spotless.npm;
+
+import static com.diffplug.selfie.Selfie.expectSelfie;
 
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.maven.MavenIntegrationHarness;
-
-class RemoveUnusedImportsStepTest extends MavenIntegrationHarness {
+class NpmResourceHelperTest {
 
 	@Test
-	void testRemoveUnusedInports() throws Exception {
-		writePomWithJavaSteps("<removeUnusedImports/>");
+	void itCalculatesMd5ForSingleString() {
+		String input = "Hello, World!";
 
-		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/removeunusedimports/JavaCodeWithPackageFormatted.test");
+		expectSelfie(NpmResourceHelper.md5(input)).toBe("65a8e27d8879283831b664bd8b7f0ad4");
+	}
+
+	@Test
+	void itCalculatesMd5ForMultipleStrings() {
+		String input1 = "Hello, World!";
+		String input2 = "Hello, Spencer!";
+
+		expectSelfie(NpmResourceHelper.md5(input1, input2)).toBe("371ba0fbf3d73b33e71b4af8dc6afe00");
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import org.scalafmt.Scalafmt;
+import org.scalafmt.Versions;
 import org.scalafmt.config.ScalafmtConfig;
 import org.scalafmt.config.ScalafmtConfig$;
 
@@ -44,6 +45,16 @@ public class ScalafmtFormatterFunc implements FormatterFunc.NeedsFile {
 			File file = configSignature.getOnlyFile();
 			String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 			config = Scalafmt.parseHoconConfig(configStr).get();
+		}
+
+		// This check is to raise awareness to the user that the version of the config file is currently not used.
+		// Context: https://github.com/diffplug/spotless/issues/2460
+		// This check should be removed when Spotless dynamically loads the proper version of the Scalafmt library.
+		String scalafmtLibraryVersion = Versions.version();
+		if (!config.version().equals(scalafmtLibraryVersion)) {
+			throw new IllegalArgumentException(
+					"Spotless is using " + scalafmtLibraryVersion + " but the config file declares " + config.version() +
+							". Both must match. Update the version declared in the plugin's settings and/or the config file.");
 		}
 	}
 
