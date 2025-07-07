@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -265,6 +266,45 @@ public abstract class SpotlessExtension {
 	 */
 	public void setEnforceCheck(boolean enforceCheck) {
 		this.enforceCheck = enforceCheck;
+	}
+
+	boolean reviewDog = false;
+
+	/**
+	 * Returns {@code true} if ReviewDog output should be generated; {@code false} otherwise.
+	 */
+	public boolean isReviewDog() {
+		return reviewDog;
+	}
+
+	/**
+	 * Configures Spotless to generate ReviewDog output if {@code true}.
+	 * <p>
+	 * {@code false} by default.
+	 */
+	public void setReviewDog(boolean reviewDog) {
+		this.reviewDog = reviewDog;
+	}
+
+	@Nullable
+	File reviewDogOutputDir;
+
+	/**
+	 * Returns the directory where ReviewDog output will be written.
+	 * If not set, defaults to {@code build/reviewdog} in the root project directory.
+	 */
+	public @Nullable File getReviewDogOutputDir() {
+		return reviewDogOutputDir;
+	}
+
+	/**
+	 * Sets the directory where ReviewDog output will be written.
+	 * If not set, defaults to {@code build/reviewdog} in the root project directory.
+	 * <p>
+	 * If the directory does not exist, it will be created.
+	 */
+	public void setReviewDogOutputDir(File reviewDogOutputDir) {
+		this.reviewDogOutputDir = reviewDogOutputDir;
 	}
 
 	@SuppressWarnings("unchecked")
