@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import org.gradle.api.Project;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.biome.BiomeFlavor;
+import com.diffplug.spotless.biome.BiomeSettings;
 import com.diffplug.spotless.biome.BiomeStep;
 
 public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
@@ -36,8 +36,7 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	 * configuration is used. If this is a relative path, it is resolved against the
 	 * project's base directory.
 	 */
-	@Nullable
-	private Object configPath;
+	@Nullable private Object configPath;
 
 	/**
 	 * Optional directory where the downloaded Biome executable is placed. If this
@@ -45,14 +44,7 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	 * Defaults to
 	 * <code>~/.m2/repository/com/diffplug/spotless/spotless-data/biome</code>.
 	 */
-	@Nullable
-	private Object downloadDir;
-
-	/**
-	 * The flavor of Biome to use. Will be removed when we stop support the
-	 * deprecated Rome project.
-	 */
-	private final BiomeFlavor flavor;
+	@Nullable private Object downloadDir;
 
 	/**
 	 * Optional path to the Biome executable. Either a <code>version</code> or a
@@ -69,8 +61,7 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	 * <code>./executable-name</code> if you want to use an executable in the
 	 * project's base directory.
 	 */
-	@Nullable
-	private Object pathToExe;
+	@Nullable private Object pathToExe;
 
 	/**
 	 * A reference to the Gradle project for which spotless is executed.
@@ -90,14 +81,11 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	 * version explicitly. This parameter is ignored when you specify a
 	 * <code>pathToExe</code> explicitly.
 	 */
-	@Nullable
-	private String version;
+	@Nullable private String version;
 
-	protected BiomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, BiomeFlavor flavor,
-			String version) {
+	protected BiomeStepConfig(Project project, Consumer<FormatterStep> replaceStep, String version) {
 		this.project = requireNonNull(project);
 		this.replaceStep = requireNonNull(replaceStep);
-		this.flavor = flavor;
 		this.version = version;
 	}
 
@@ -224,10 +212,10 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	private BiomeStep newBuilder() {
 		if (pathToExe != null) {
 			var resolvedPathToExe = resolvePathToExe();
-			return BiomeStep.withExePath(flavor, resolvedPathToExe);
+			return BiomeStep.withExePath(resolvedPathToExe);
 		} else {
 			var downloadDir = resolveDownloadDir();
-			return BiomeStep.withExeDownload(flavor, version, downloadDir);
+			return BiomeStep.withExeDownload(version, downloadDir);
 		}
 	}
 
@@ -260,7 +248,7 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 		if (downloadDir != null) {
 			return project.file(downloadDir).toString();
 		} else {
-			return findDataDir().toPath().resolve(flavor.shortName()).toString();
+			return findDataDir().toPath().resolve(BiomeSettings.shortName()).toString();
 		}
 	}
 }
