@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.diffplug.spotless.TestProvisioner;
 class RemoveUnusedImportsStep_withGoogleJavaFormatTest {
 	@Test
 	void behavior() throws Exception {
-		FormatterStep step = RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.GJF, TestProvisioner.mavenCentral());
+		FormatterStep step = RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.DEFAULT_FORMATTER, TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/removeunusedimports/JavaCodeUnformatted.test", "java/removeunusedimports/JavaCodeFormatted.test")
 				.testResource("java/removeunusedimports/JavaCodeWithLicenseUnformatted.test", "java/removeunusedimports/JavaCodeWithLicenseFormatted.test")
@@ -48,7 +48,7 @@ class RemoveUnusedImportsStep_withGoogleJavaFormatTest {
 
 			@Override
 			protected FormatterStep create() {
-				return RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.GJF, TestProvisioner.mavenCentral());
+				return RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.DEFAULT_FORMATTER, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}
