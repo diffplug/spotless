@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 package com.diffplug.spotless.glue.pjf;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
+
+import javax.annotation.Nullable;
 
 import com.palantir.javaformat.java.Formatter;
 import com.palantir.javaformat.java.ImportOrderer;
@@ -24,8 +28,10 @@ import com.palantir.javaformat.java.JavaFormatterOptions;
 import com.palantir.javaformat.java.RemoveUnusedImports;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Lint;
 
-public class PalantirJavaFormatFormatterFunc implements FormatterFunc {
+public class PalantirJavaFormatFormatterFormatSourceAndFixImportsAndDeclarationsFunc implements FormatterFunc, FormatterStep {
 
 	private final Formatter formatter;
 
@@ -37,7 +43,7 @@ public class PalantirJavaFormatFormatterFunc implements FormatterFunc {
 	 * @param formatJavadoc Whether to format Java docs. Requires at least Palantir 2.36.0 or later, otherwise the
 	 * constructor will throw.
 	 */
-	public PalantirJavaFormatFormatterFunc(String style, boolean formatJavadoc) {
+	public PalantirJavaFormatFormatterFormatSourceAndFixImportsAndDeclarationsFunc(String style, boolean formatJavadoc) {
 		this.formatterStyle = JavaFormatterOptions.Style.valueOf(style);
 		JavaFormatterOptions.Builder builder = JavaFormatterOptions.builder();
 		builder.style(formatterStyle);
@@ -49,10 +55,17 @@ public class PalantirJavaFormatFormatterFunc implements FormatterFunc {
 
 	@Override
 	public String apply(String input) throws Exception {
-		String source = input;
-		source = ImportOrderer.reorderImports(source, formatterStyle);
-		source = RemoveUnusedImports.removeUnusedImports(source);
-		return formatter.formatSource(source);
+		return formatter.formatSourceAndFixImportsAndDeclarations(input);
+	}
+
+	@Override
+	public String apply(String unix, File file) throws Exception {
+		return FormatterFunc.super.apply(unix, file);
+	}
+
+	@Override
+	public List<Lint> lint(String content, File file) throws Exception {
+		return FormatterFunc.super.lint(content, file);
 	}
 
 	@Override
@@ -69,5 +82,20 @@ public class PalantirJavaFormatFormatterFunc implements FormatterFunc {
 		} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
 			throw new IllegalStateException("Cannot enable formatJavadoc option, make sure you are using Palantir with version 2.36.0 or later", e);
 		}
+	}
+
+	@Override
+	public String getName() {
+		return toString();
+	}
+
+	@Nullable @Override
+	public String format(String rawUnix, File file) throws Exception {
+		return apply(rawUnix);
+	}
+
+	@Override
+	public void close() throws Exception {
+
 	}
 }

@@ -16,6 +16,7 @@
 package com.diffplug.spotless.java;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.glue.pjf.PalantirJavaFormatFormatterFormatSourceAndFixImportsAndDeclarationsFunc;
 import com.diffplug.spotless.glue.pjf.PalantirJavaFormatFormatterFunc;
 
 /** Uses google-java-format or cleanthat.UnnecessaryImport, but only to remove unused imports. */
@@ -23,6 +24,6 @@ public interface RemoveUnusedDeclarationsStep {
 	String NAME = "removeUnusedImports";
 
 	static FormatterStep create() {
-		return new PalantirJavaFormatFormatterFunc("PALANTIR", true);
+		return new PalantirJavaFormatFormatterFormatSourceAndFixImportsAndDeclarationsFunc("PALANTIR", true);
 	}
 }
