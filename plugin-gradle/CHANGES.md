@@ -5,7 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 
 ## Changed
-* Bump the min Gradle requirement from `6.1.1` to `7.1`. ([#2540](https://github.com/diffplug/spotless/pull/2540))
+* Bump the min Gradle and Java requirements to `7.3` and `17`. ([#2540](https://github.com/diffplug/spotless/pull/2540))
 * Bump default `gson` version to latest `2.11.0` -> `2.13.1`. ([#2414](https://github.com/diffplug/spotless/pull/2414))
 * Bump default `jackson` version to latest `2.18.1` -> `2.19.1`. ([#2352](https://github.com/diffplug/spotless/pull/2352))
 * Bump default `gherkin-utils` version to latest `9.0.0` -> `9.2.0`. ([#2408](https://github.com/diffplug/spotless/pull/2408))

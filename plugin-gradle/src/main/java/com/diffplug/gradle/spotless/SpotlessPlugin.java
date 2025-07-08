@@ -27,9 +27,9 @@ import com.diffplug.spotless.SpotlessCache;
 
 public class SpotlessPlugin implements Plugin<Project> {
 	static final String SPOTLESS_MODERN = "spotlessModern";
-	static final String VER_GRADLE_min = "7.1";
+	static final String VER_GRADLE_min = "7.3";
 	static final String VER_GRADLE_minVersionForCustom = "8.4";
-	private static final int MINIMUM_JRE = 11;
+	private static final int MINIMUM_JRE = 17;
 
 	@Override
 	public void apply(Project project) {
