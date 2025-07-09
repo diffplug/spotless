@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Allow specifying path to Biome JSON config file directly in `biome` step. Requires biome 2.x.
 
 ## [2.45.0] - 2025-07-07
 ### Added

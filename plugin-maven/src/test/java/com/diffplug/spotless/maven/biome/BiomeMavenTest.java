@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.owasp.encoder.Encode.forXml;
 
+import java.io.File;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
@@ -133,6 +135,23 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 		var path = newFile("configs").getAbsolutePath();
 		writePomWithBiomeSteps("**/*.js",
 				"<biome><version>1.2.0</version><configPath>" + forXml(path) + "</configPath></biome>");
+		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
+		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("biome_test.js").sameAsResource("biome/js/longLineAfter120.js");
+	}
+
+	/**
+	 * Tests that a path to a Biome config JSON file can be specified (requires biome 2.x).
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void configPathFile() throws Exception {
+		var path = newFile("configs").getAbsolutePath();
+		var file = new File(path, "biome.json").getAbsolutePath();
+		writePomWithBiomeSteps("**/*.js",
+				"<biome><version>2.1.1</version><configPath>" + forXml(file) + "</configPath></biome>");
 		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
 		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
