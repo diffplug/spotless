@@ -188,7 +188,6 @@ public final class GitAttributesLineEndings {
 		/** git worktree root, might not exist if we're not in a git repo. */
 		final @Nullable File workTree;
 
-		@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 		RuntimeInit(File projectDir) {
 			/////////////////////////////////
 			// USER AND SYSTEM-WIDE VALUES //
