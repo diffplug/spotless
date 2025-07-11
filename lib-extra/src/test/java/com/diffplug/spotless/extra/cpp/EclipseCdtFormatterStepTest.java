@@ -15,11 +15,8 @@
  */
 package com.diffplug.spotless.extra.cpp;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_17;
-
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -33,7 +30,6 @@ class EclipseCdtFormatterStepTest extends EquoResourceHarness {
 
 	@ParameterizedTest
 	@MethodSource
-	@EnabledForJreRange(min = JAVA_17)
 	void formatWithVersion(String version) throws Exception {
 		harnessFor(version).test("main.c",
 				"#include <a.h>;\nint main(int argc,   \nchar *argv[]) {}",

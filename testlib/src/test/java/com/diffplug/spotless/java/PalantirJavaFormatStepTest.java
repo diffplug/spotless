@@ -15,10 +15,7 @@
  */
 package com.diffplug.spotless.java;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_13;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
@@ -29,7 +26,6 @@ import com.diffplug.spotless.TestProvisioner;
 class PalantirJavaFormatStepTest extends ResourceHarness {
 
 	@Test
-	@EnabledForJreRange(min = JAVA_13)
 	void jvm13Features() throws Exception {
 		try (StepHarness step = StepHarness.forStep(PalantirJavaFormatStep.create(TestProvisioner.mavenCentral()))) {
 			step.testResource("java/palantirjavaformat/TextBlock.dirty", "java/palantirjavaformat/TextBlock.clean");
