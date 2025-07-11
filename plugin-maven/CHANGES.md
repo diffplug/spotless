@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## Changed
+* Bump default `gson` version to latest `2.11.0` -> `2.13.1`. ([#2414](https://github.com/diffplug/spotless/pull/2414))
+
 ## [2.45.0] - 2025-07-07
 ### Added
 * Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020), [#2535](https://github.com/diffplug/spotless/pull/2535))
