@@ -1432,14 +1432,14 @@ spotless {
     target 'src/*/webapp/**/*.js'
 
     // Download Biome from the network if not already downloaded, see below for more info
-    biome('1.2.0')
+    biome('2.1.0')
 
     // (optional) Path to the directory with the biome.json conig file
-    biome('1.2.0').configPath("path/config/dir")
+    biome('2.1.0').configPath("path/config/dir")
 
     // (optional) Biome will auto detect the language based on the file extension.
     // See below for possible values.
-    biome('1.2.0').language("js")
+    biome('2.1.0').language("js")
   }
 }
 ```
@@ -1451,15 +1451,15 @@ more formats:
 spotless {
   format 'biome-js', {
     target '**/*.js'
-    biome('1.2.0')
+    biome('2.1.0')
   }
   format 'biome-ts', {
     target '**/*.ts'
-    biome('1.2.0')
+    biome('2.1.0')
   }
   format 'biome-json', {
     target '**/*.json'
-    biome('1.2.0')
+    biome('2.1.0')
   }
 }
 ```
@@ -1476,6 +1476,7 @@ Note: Due to a limitation of biome, if the name of a file matches a pattern in
 the `ignore` option of the specified `biome.json` configuration file, it will not be
 formatted, even if included in the biome configuration section of the Gradle settings
 file.
+
 You could specify a different `biome.json` configuration file without an `ignore`
 pattern to circumvent this.
 
@@ -1553,7 +1554,29 @@ spotless {
     target '**/*.js','**/*.ts','**/*.json'
     // Must point to the directory with the "biome.json" config file -->
     // Relative paths are resolved against the project's base directory -->
-    biome('1.2.0').configPath('./config')
+    biome('2.1.0').configPath('./config')
+  }
+}
+```
+
+__If spotless does not format any files__, this might be because you excluded those files in you biome.json
+configuration file. If you are using biome 2.x, you can create a custom config file for spotless and inherit from
+your main config file like this:
+
+```jsonc
+// biome-spotless.json
+{
+  "extends": "./biome.json",
+  "include": ["**"]
+}
+```
+
+Then simply specify the path to this file in your spotless configuration:
+
+```gradle
+spotless {
+  format 'biome', {
+    biome('2.1.0').configPath('./config/biome-spotless.json')
   }
 }
 ```

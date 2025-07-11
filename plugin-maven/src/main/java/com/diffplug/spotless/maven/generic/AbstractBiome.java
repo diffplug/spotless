@@ -37,10 +37,9 @@ public abstract class AbstractBiome implements FormatterStepFactory {
 	protected AbstractBiome() {}
 
 	/**
-	 * Optional path to the directory with configuration file for Biome. The file
-	 * must be named {@code biome.json}. When none is given, the default
-	 * configuration is used. If this is a relative path, it is resolved against the
-	 * project's base directory.
+	 * Optional path to the configuration file for Biome. Must be either a directory that contains a file named
+	 * {@code biome.json}, or a file that contains the Biome config as JSON. When none is given, the default
+	 * configuration is used. If this is a relative path, it is resolved against the project's base directory.
 	 */
 	@Parameter
 	private String configPath;
