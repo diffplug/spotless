@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## Changed
 * Bump default `gson` version to latest `2.11.0` -> `2.13.1`. ([#2414](https://github.com/diffplug/spotless/pull/2414))
+* Bump default `jackson` version to latest `2.18.1` -> `2.19.1`. ([#2352](https://github.com/diffplug/spotless/pull/2352))
 
 ## [3.2.0] - 2025-07-07
 ### Added
