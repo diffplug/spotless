@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import com.diffplug.spotless.Provisioner;
 public class JacksonJsonStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.core:jackson-databind:";
-	private static final String DEFAULT_VERSION = "2.18.1";
+	private static final String DEFAULT_VERSION = "2.19.1";
 	public static final String NAME = "jacksonJson";
 
 	private final JarState.Promised jarState;
