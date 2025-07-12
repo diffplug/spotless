@@ -1,3 +1,18 @@
+/*
+ * Copyright 2025 DiffPlug
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.diffplug.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,13 +40,13 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 
 	@Test
 	public void should_not_create_pre_hook_file_when_git_is_not_installed() throws Exception {
-	    // given
+		// given
 		final var gradle = new GitPrePushHookInstallerGradle(logger, rootFolder());
 
-	    // when
+		// when
 		gradle.install();
 
-	    // then
+		// then
 		assertThat(logs).hasSize(2);
 		assertThat(logs).element(0).isEqualTo("Installing git pre-push hook");
 		assertThat(logs).element(1).isEqualTo("Git not found in root directory");
@@ -134,15 +149,15 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 
 	private String gradleHookContent(String resourcePath) {
 		return getTestResource(resourcePath)
-			.replace("${executor}", setFile("gradlew").toContent("").getAbsolutePath())
-			.replace("${checkCommand}", "spotlessCheck")
-			.replace("${applyCommand}", "spotlessApply");
+				.replace("${executor}", setFile("gradlew").toContent("").getAbsolutePath())
+				.replace("${checkCommand}", "spotlessCheck")
+				.replace("${applyCommand}", "spotlessApply");
 	}
 
 	private String mavenHookContent(String resourcePath) {
 		return getTestResource(resourcePath)
-			.replace("${executor}", "mvn")
-			.replace("${checkCommand}", "spotless:check")
-			.replace("${applyCommand}", "spotless:apply");
+				.replace("${executor}", "mvn")
+				.replace("${checkCommand}", "spotless:check")
+				.replace("${applyCommand}", "spotless:apply");
 	}
 }
