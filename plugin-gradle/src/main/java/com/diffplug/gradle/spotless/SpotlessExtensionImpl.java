@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
 public class SpotlessExtensionImpl extends SpotlessExtension {
-	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask;
+	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask, rootInstallPreHook;
 
 	public SpotlessExtensionImpl(Project project) {
 		super(project);
@@ -37,6 +37,10 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		});
 		rootDiagnoseTask = project.getTasks().register(EXTENSION + DIAGNOSE, task -> {
 			task.setGroup(TASK_GROUP); // no description on purpose
+		});
+		rootInstallPreHook = project.getTasks().register(EXTENSION + INSTALL_GIT_PRE_PUSH_HOOK, SpotlessInstallPrePushHookTask.class, task -> {
+			task.setGroup(BUILD_SETUP_TASK_GROUP);
+			task.setDescription(INSTALL_GIT_PRE_PUSH_HOOK_DESCRIPTION);
 		});
 
 		project.afterEvaluate(unused -> {
