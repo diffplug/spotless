@@ -91,6 +91,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	static final String GOAL_CHECK = "check";
 	static final String GOAL_APPLY = "apply";
+	static final String GOAL_PRE_PUSH_HOOK = "install-git-pre-push-hook";
 
 	@Component
 	private RepositorySystem repositorySystem;
