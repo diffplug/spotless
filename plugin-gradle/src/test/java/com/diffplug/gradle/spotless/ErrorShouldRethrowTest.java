@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.junit.jupiter.api.condition.JRE.JAVA_23;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +24,7 @@ import java.util.List;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.selfie.Selfie;
 import com.diffplug.selfie.StringSelfie;
@@ -57,6 +60,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(max = JAVA_23) // `[Incubating] Problems report is available at` presents in the output from Java 24 or above.
 	void anyExceptionShouldFail() throws Exception {
 		writeBuild(
 				"    } // format",
@@ -105,6 +109,7 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(max = JAVA_23) // `[Incubating] Problems report is available at` presents in the output from Java 24 or above.
 	void failsIfNeitherStepNorFileExempted() throws Exception {
 		writeBuild(
 				"        ignoreErrorForStep 'nope'",
