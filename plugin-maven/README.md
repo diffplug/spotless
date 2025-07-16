@@ -1530,9 +1530,9 @@ Note regarding CSS: Biome supports formatting CSS as of 1.8.0 (experimental, opt
 
       <biome>
         <!-- Download Biome from the network if not already downloaded, see below for more info  -->
-        <version>1.2.0</version>
+        <version>2.1.1</version>
 
-        <!-- (optional) Path to the directory with the biome.json conig file -->
+        <!-- (optional) Path to the directory with the biome.json config file -->
         <configPath>${project.basedir}/path/to/config/dir</configPath>
 
         <!-- (optional) Biome will auto-detect the language based on the file extension. -->
@@ -1583,7 +1583,7 @@ To download the Biome binary from the network, just specify a version:
 
 ```xml
 <biome>
-  <version>1.2.0</version>
+  <version>2.1.0</version>
 </biome>
 ```
 
@@ -1594,7 +1594,7 @@ Biome binaries (defaults to `~/.m2/repository/com/diffplug/spotless/spotless-dat
 
 ```xml
 <biome>
-  <version>1.2.0</version>
+  <version>2.1.0</version>
   <!-- Relative paths are resolved against the project's base directory -->
   <downloadDir>${user.home}/biome</downloadDir>
 </biome>
@@ -1631,7 +1631,28 @@ Biome is used. To use a custom configuration:
 <biome>
   <!-- Must point to the directory with the "biome.json" config file -->
   <!-- Relative paths are resolved against the project's base directory -->
+  <!-- Starting with biome 2.x, you can also pass the path to a JSON config file directly. -->
   <configPath>${project.basedir}</configPath>
+</biome>
+```
+
+__If spotless does not format any files__, this might be because you excluded those files in you biome.json
+configuration file. If you are using biome 2.x, you can create a custom config file for spotless and inherit from
+your main config file like this:
+
+```jsonc
+// biome-spotless.json
+{
+  "extends": "./biome.json",
+  "include": ["**"]
+}
+```
+
+Then simply specify the path to this file in your spotless configuration:
+
+```xml
+<biome>
+  <configPath>${project.basedir}/biome-spotless.json</configPath>
 </biome>
 ```
 

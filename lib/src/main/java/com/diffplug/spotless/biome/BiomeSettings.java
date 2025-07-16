@@ -15,10 +15,15 @@
  */
 package com.diffplug.spotless.biome;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Settings and constants for Biome to use.
  */
 public final class BiomeSettings {
+	private static final Logger logger = LoggerFactory.getLogger(BiomeSettings.class);
+
 	private final static String CONFIG_NAME = "biome.json";
 	private final static String DEFAULT_VERSION = "1.2.0";
 	private final static String DOWNLOAD_FILE_PATTERN = "biome-%s-%s-%s";
@@ -71,5 +76,38 @@ public final class BiomeSettings {
 	 */
 	public static String shortName() {
 		return SHORT_NAME;
+	}
+
+	/**
+	 * Checks if the version of Biome is equal to or higher than the given major, minor, and patch version.
+	 * @param version The version string to check, e.g. "1.2.3".
+	 * @param major The major version to compare against.
+	 * @param minor The minor version to compare against.
+	 * @param patch The patch version to compare against.
+	 * @return true if the version is higher than or equal to the given major, minor, and patch version,
+	 */
+	public static boolean versionHigherThanOrEqualTo(String version, int major, int minor, int patch) {
+		try {
+			final var versionParts = version.split("\\.");
+			if (versionParts.length < 3) {
+				return false;
+			}
+			final var actualMajor = Integer.parseInt(versionParts[0]);
+			final var actualMinor = Integer.parseInt(versionParts[1]);
+			final var actualPatch = Integer.parseInt(versionParts[2]);
+			if (actualMajor > major) {
+				return true;
+			}
+			if (actualMajor == major && actualMinor > minor) {
+				return true;
+			}
+			if (actualMajor == major && actualMinor == minor && actualPatch > patch) {
+				return true;
+			}
+			return actualMajor == major && actualMinor == minor && actualPatch == patch;
+		} catch (final Exception e) {
+			logger.warn("Failed to parse biome version string '{}'. Expected format is 'major.minor.patch'.", version, e);
+			return false;
+		}
 	}
 }
