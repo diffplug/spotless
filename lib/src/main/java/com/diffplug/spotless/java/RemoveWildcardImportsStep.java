@@ -20,13 +20,17 @@ import com.diffplug.spotless.generic.ReplaceRegexStep;
 
 /** Removes any wildcard import statements. */
 public final class RemoveWildcardImportsStep {
+
+	/**
+	 * Matches lines like 'import foo.*;' or 'import static foo.*;'.
+	 */
+	private static final String REGEX = "(?m)^import\\s+(?:static\\s+)?[^;\\n]*\\*;\\R?";
+	private static final String NAME = "removeWildcardImports";
+	private static final String ERROR = "Do not use wildcard imports. 'spotlessApply' cannot resolve this issue.";
+
 	private RemoveWildcardImportsStep() {}
 
 	public static FormatterStep create() {
-		// Matches lines like 'import foo.*;' or 'import static foo.*;'.
-		return ReplaceRegexStep.create(
-				"removeWildcardImports",
-				"(?m)^import\\s+(?:static\\s+)?[^;\\n]*\\*;\\R?",
-				"");
+		return ReplaceRegexStep.lint(NAME, REGEX, ERROR);
 	}
 }

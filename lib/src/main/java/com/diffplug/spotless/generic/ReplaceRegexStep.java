@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.generic;
+
+import static com.diffplug.spotless.Lint.atUndefinedLine;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -35,6 +37,15 @@ public final class ReplaceRegexStep {
 				State::toFormatter);
 	}
 
+	public static FormatterStep lint(String name, String regex, String error) {
+		Objects.requireNonNull(name, "name");
+		Objects.requireNonNull(regex, "regex");
+		Objects.requireNonNull(error, "error");
+		return FormatterStep.createLazy(name,
+				() -> new State(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), error),
+				State::toLinter);
+	}
+
 	private static final class State implements Serializable {
 		private static final long serialVersionUID = 1L;
 
@@ -48,6 +59,15 @@ public final class ReplaceRegexStep {
 
 		FormatterFunc toFormatter() {
 			return raw -> regex.matcher(raw).replaceAll(replacement);
+		}
+
+		FormatterFunc toLinter() {
+			return raw -> {
+				if (regex.matcher(raw).find()) {
+					throw atUndefinedLine("", replacement).shortcut();
+				}
+				return raw;
+			};
 		}
 	}
 }

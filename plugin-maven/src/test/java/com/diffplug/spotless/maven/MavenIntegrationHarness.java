@@ -46,6 +46,8 @@ import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationHarness extends ResourceHarness {
+
+	protected static final String PATH = "src/main/java/test.java";
 	/**
 	 * To run tests in the IDE, run {@code gradlew :plugin-maven:changelogPrint}, then
 	 * put the last version it prints into {@code SPOTLESS_MAVEN_VERSION_IDE}.  From now

@@ -15,19 +15,40 @@
  */
 package com.diffplug.spotless.maven.java;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class RemoveWildcardImportsStepTest extends MavenIntegrationHarness {
 
+	private static final String ERROR = "Do not use wildcard imports. 'spotlessApply' cannot resolve this issue.";
+
+	@BeforeEach
+	void init() throws Exception {
+		writePomWithJavaSteps("<removeWildcardImports/>");
+	}
+
 	@Test
 	void testRemoveWildcardImports() throws Exception {
-		writePomWithJavaSteps("<removeWildcardImports/>");
+		setFile(PATH).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
+		assertFile(PATH).sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test");
+		assertThat(mavenRunner().withArguments("spotless:apply").runHasError().stdOutUtf8()).contains(ERROR);
+	}
 
-		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
+	@Test
+	void testRemoveStaticWildcardImports() throws Exception {
+		setFile(PATH).toResource("java/removewildcardimports/JavaCodeStaticWildcardsUnformatted.test");
+		assertFile(PATH).sameAsResource("java/removewildcardimports/JavaCodeStaticWildcardsFormatted.test");
+		assertThat(mavenRunner().withArguments("spotless:apply").runHasError().stdOutUtf8()).contains(ERROR);
+	}
+
+	@Test
+	void testRemoveWildcardImportsNoError() throws Exception {
+		setFile(PATH).toResource("java/removewildcardimports/JavaCodeNoWildcardsUnformatted.test");
+		assertFile(PATH).sameAsResource("java/removewildcardimports/JavaCodeNoWildcardsUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test");
 	}
 }
