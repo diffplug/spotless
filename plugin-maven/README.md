@@ -37,6 +37,7 @@ user@machine repo % mvn spotless:check
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Git hook](#git-hook)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
@@ -145,7 +146,10 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 
 Spotless requires Maven to be running on JRE 11+. To use JRE 8, go back to [`2.30.0` or older](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2300---2023-01-13).
 
-<a name="applying-to-java-source"></a>
+
+### Git hook
+
+TODO
 
 ### Binding to maven phase
 
@@ -175,6 +179,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
   </execution>
 </executions>
 ```
+
+<a name="applying-to-java-source"></a>
 
 ## Java
 

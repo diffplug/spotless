@@ -53,6 +53,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Git hook](#git-hook)
   - [Linting](#linting)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
@@ -140,6 +141,10 @@ Spotless requires JRE 11+ and Gradle 6.1.1 or newer.
 
 - If you're stuck on JRE 8, use [`id 'com.diffplug.spotless' version '6.13.0'` or older](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#6130---2023-01-14).
 - If you're stuck on an older version of Gradle, [`id 'com.diffplug.gradle.spotless' version '4.5.1'` supports all the way back to Gradle 2.x](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#451---2020-07-04).
+
+### Git hook
+
+TODO
 
 ### Linting
 
