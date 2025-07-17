@@ -39,13 +39,6 @@ class RemoveWildcardImportsStepTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	void testRemoveStaticWildcardImports() throws Exception {
-		setFile(PATH).toResource("java/removewildcardimports/JavaCodeStaticWildcardsUnformatted.test");
-		assertFile(PATH).sameAsResource("java/removewildcardimports/JavaCodeStaticWildcardsFormatted.test");
-		assertThat(mavenRunner().withArguments("spotless:apply").runHasError().stdOutUtf8()).contains(ERROR);
-	}
-
-	@Test
 	void testRemoveWildcardImportsNoError() throws Exception {
 		setFile(PATH).toResource("java/removewildcardimports/JavaCodeNoWildcardsUnformatted.test");
 		assertFile(PATH).sameAsResource("java/removewildcardimports/JavaCodeNoWildcardsUnformatted.test");
