@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.generic;
 
+import static com.diffplug.spotless.Lint.atLine;
 import static com.diffplug.spotless.Lint.atUndefinedLine;
 
 import java.io.Serializable;
@@ -64,7 +65,7 @@ public final class ReplaceRegexStep {
 		FormatterFunc toLinter() {
 			return raw -> {
 				if (regex.matcher(raw).find()) {
-					throw atUndefinedLine("", replacement).shortcut();
+					throw atLine(11111,"", replacement).shortcut();
 				}
 				return raw;
 			};
