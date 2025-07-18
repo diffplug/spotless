@@ -100,14 +100,42 @@ public abstract class GitPrePushHookInstaller {
 		}
 
 		if (isGitHookInstalled(gitHookFile)) {
-			logger.warn("Skipping, git pre-push hook already installed %s", gitHookFile.getAbsolutePath());
-			return;
+			logger.info("Git pre-push hook already installed, reinstalling it");
+			uninstall(gitHookFile);
 		}
 
 		hookContent += preHookContent();
-		writeFile(gitHookFile, hookContent);
+		writeFile(gitHookFile, hookContent, true);
 
 		logger.info("Git pre-push hook installed successfully to the file %s", gitHookFile.getAbsolutePath());
+	}
+
+	/**
+	 * Uninstalls the Spotless Git pre-push hook from the specified hook file by removing
+	 * the custom hook content between the defined hook markers.
+	 *
+	 * <p>This method:
+	 * <ul>
+	 *   <li>Reads the entire content of the pre-push hook file</li>
+	 *   <li>Identifies the Spotless hook section using predefined markers</li>
+	 *   <li>Removes the Spotless hook content while preserving other hook content</li>
+	 *   <li>Writes the modified content back to the hook file</li>
+	 * </ul>
+	 *
+	 * @param gitHookFile The Git pre-push hook file from which to remove the Spotless hook
+	 * @throws Exception if any error occurs during the uninstallation process,
+	 *                  such as file reading or writing errors
+	 */
+	private void uninstall(File gitHookFile) throws Exception {
+		final var hook = Files.readString(gitHookFile.toPath(), UTF_8);
+		final var hookStart = hook.indexOf(HOOK_HEADLINE);
+		final var hookEnd = hook.indexOf(HOOK_FOOTER) + HOOK_FOOTER.length();
+
+		final var hookScript = hook.substring(hookStart, hookEnd);
+
+		final var uninstalledHook = hook.replace(hookScript, "");
+
+		writeFile(gitHookFile, uninstalledHook, false);
 	}
 
 	/**
@@ -116,6 +144,29 @@ public abstract class GitPrePushHookInstaller {
 	 * @return A string representing the content to include in the pre-push script.
 	 */
 	protected abstract String preHookContent();
+
+	/**
+	 * Generates a pre-push template script that defines the commands to check and apply changes
+	 * using an executor and Spotless.
+	 *
+	 * @param executor      The tool to execute the check and apply commands.
+	 * @param commandCheck  The command to check for issues.
+	 * @param commandApply  The command to apply corrections.
+	 * @return A string template representing the Spotless Git pre-push hook content.
+	 */
+	protected String preHookTemplate(String executor, String commandCheck, String commandApply) {
+		var spotlessHook = "\n";
+		spotlessHook += "\n" + HOOK_HEADLINE;
+		spotlessHook += "\nSPOTLESS_EXECUTOR=" + executor;
+		spotlessHook += "\nif ! $SPOTLESS_EXECUTOR " + commandCheck + " ; then";
+		spotlessHook += "\n    echo 1>&2 \"spotless found problems, running " + commandApply + "; commit the result and re-push\"";
+		spotlessHook += "\n    $SPOTLESS_EXECUTOR " + commandApply;
+		spotlessHook += "\n    exit 1";
+		spotlessHook += "\nfi";
+		spotlessHook += "\n" + HOOK_FOOTER;
+		spotlessHook += "\n";
+		return spotlessHook;
+	}
 
 	/**
 	 * Checks if Git is installed by validating the existence of `.git/config` in the repository root.
@@ -145,38 +196,17 @@ public abstract class GitPrePushHookInstaller {
 	 * @param content The content to write into the file.
 	 * @throws IOException if an error occurs while writing to the file.
 	 */
-	private void writeFile(File file, String content) throws IOException {
-		try (final var writer = new FileWriter(file, UTF_8, true)) {
+	private void writeFile(File file, String content, boolean append) throws IOException {
+		try (final var writer = new FileWriter(file, UTF_8, append)) {
 			writer.write(content);
 		}
 	}
 
-	/**
-	 * Generates a pre-push template script that defines the commands to check and apply changes
-	 * using an executor and Spotless.
-	 *
-	 * @param executor      The tool to execute the check and apply commands.
-	 * @param commandCheck  The command to check for issues.
-	 * @param commandApply  The command to apply corrections.
-	 * @return A string template representing the Spotless Git pre-push hook content.
-	 */
-	protected String preHookTemplate(String executor, String commandCheck, String commandApply) {
-		var spotlessHook = "\n";
-		spotlessHook += "\n" + HOOK_HEADLINE;
-		spotlessHook += "\nSPOTLESS_EXECUTOR=" + executor;
-		spotlessHook += "\nif ! $SPOTLESS_EXECUTOR " + commandCheck + " ; then";
-		spotlessHook += "\n    echo 1>&2 \"spotless found problems, running " + commandApply + "; commit the result and re-push\"";
-		spotlessHook += "\n    $SPOTLESS_EXECUTOR " + commandApply;
-		spotlessHook += "\n    exit 1";
-		spotlessHook += "\nfi";
-		spotlessHook += "\n" + HOOK_FOOTER;
-		spotlessHook += "\n\n";
-		return spotlessHook;
-	}
-
 	public interface GitPreHookLogger {
 		void info(String format, Object... arguments);
+
 		void warn(String format, Object... arguments);
+
 		void error(String format, Object... arguments);
 	}
 }

@@ -37,7 +37,7 @@ user@machine repo % mvn spotless:check
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
-  - [Git hook](#git-hook)
+  - [Git pre-push hook](#git-pre-push-hook)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
@@ -147,9 +147,34 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 Spotless requires Maven to be running on JRE 11+. To use JRE 8, go back to [`2.30.0` or older](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2300---2023-01-13).
 
 
-### Git hook
+### Git pre-push hook
 
-TODO
+You can install a Git pre-push hook that ensures code is properly formatted before being pushed to a remote repository.
+This helps catch formatting issues early — before CI fails — and is especially useful for teams not using IDE integrations or pre-commit tools.
+
+#### What the hook does
+
+When installed, the Git `pre-push` hook will:
+
+1. Run `spotless:check`
+2. If formatting issues are found:
+  - It automatically runs `spotless:apply` to fix them
+  - Aborts the push with a message
+  - You can then commit the changes and push again
+
+This ensures your code is always clean before it leaves your machine.
+
+#### Installation
+
+Run the following task once in your project:
+```console
+mvn spotless:install-git-pre-push-hook
+```
+
+This installs a `.git/hooks/pre-push` script that runs `spotless:check`, and runs `spotless:apply` if needed.
+
+> [!WARNING]
+> The hook will not install automatically — you must run the install command manually.
 
 ### Binding to maven phase
 

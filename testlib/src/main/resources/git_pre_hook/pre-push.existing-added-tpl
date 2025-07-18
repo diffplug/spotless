@@ -59,4 +59,3 @@ if ! $SPOTLESS_EXECUTOR ${checkCommand} ; then
     exit 1
 fi
 ##### SPOTLESS HOOK END #####
-

@@ -41,8 +41,8 @@ class SpotlessInstallPrePushHookMojoTest extends MavenIntegrationHarness {
 		assertThat(output).contains("Git pre-push hook not found, creating it");
 		assertThat(output).contains("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push"));
 
-		final var content = getTestResource("git_pre_hook/pre-push.created")
-				.replace("${executor}", "mvn")
+		final var content = getTestResource("git_pre_hook/pre-push.created-tpl")
+				.replace("${executor}", newFile("mvnw").getAbsolutePath())
 				.replace("${checkCommand}", "spotless:check")
 				.replace("${applyCommand}", "spotless:apply");
 		assertFile(".git/hooks/pre-push").hasContent(content);
@@ -67,8 +67,8 @@ class SpotlessInstallPrePushHookMojoTest extends MavenIntegrationHarness {
 		assertThat(output).contains("Installing git pre-push hook");
 		assertThat(output).contains("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push"));
 
-		final var content = getTestResource("git_pre_hook/pre-push.existing-added")
-				.replace("${executor}", "mvn")
+		final var content = getTestResource("git_pre_hook/pre-push.existing-added-tpl")
+				.replace("${executor}", newFile("mvnw").getAbsolutePath())
 				.replace("${checkCommand}", "spotless:check")
 				.replace("${applyCommand}", "spotless:apply");
 		assertFile(".git/hooks/pre-push").hasContent(content);

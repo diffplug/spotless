@@ -33,7 +33,6 @@ public class GitPrePushHookInstallerGradle extends GitPrePushHookInstaller {
 		this.gradlew = root.toPath().resolve("gradlew").toFile();
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */

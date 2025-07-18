@@ -44,7 +44,7 @@ class SpotlessInstallPrePushHookTaskTest extends GradleIntegrationHarness {
 		assertThat(output).contains("Git pre-push hook not found, creating it");
 		assertThat(output).contains("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push"));
 
-		final var content = getTestResource("git_pre_hook/pre-push.created")
+		final var content = getTestResource("git_pre_hook/pre-push.created-tpl")
 				.replace("${executor}", "gradle")
 				.replace("${checkCommand}", "spotlessCheck")
 				.replace("${applyCommand}", "spotlessApply");
@@ -73,7 +73,7 @@ class SpotlessInstallPrePushHookTaskTest extends GradleIntegrationHarness {
 		assertThat(output).contains("Installing git pre-push hook");
 		assertThat(output).contains("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push"));
 
-		final var content = getTestResource("git_pre_hook/pre-push.existing-added")
+		final var content = getTestResource("git_pre_hook/pre-push.existing-added-tpl")
 				.replace("${executor}", "gradle")
 				.replace("${checkCommand}", "spotlessCheck")
 				.replace("${applyCommand}", "spotlessApply");
