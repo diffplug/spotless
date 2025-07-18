@@ -24,7 +24,7 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class RemoveWildcardImportsStepTest extends MavenIntegrationHarness {
 
-	private static final String ERROR = "Do not use wildcard imports. 'spotlessApply' cannot resolve this issue.";
+	private static final String ERROR = "Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this";
 
 	@BeforeEach
 	void init() throws Exception {
