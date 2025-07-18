@@ -26,7 +26,7 @@ public final class RemoveWildcardImportsStep {
 	 */
 	private static final String REGEX = "(?m)^import\\s+(?:static\\s+)?[^;\\n]*\\*;\\R?";
 	private static final String NAME = "removeWildcardImports";
-	private static final String ERROR = "Do not use wildcard imports. 'spotlessApply' cannot resolve this issue.";
+	private static final String ERROR = "Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this";
 
 	private RemoveWildcardImportsStep() {}
 
