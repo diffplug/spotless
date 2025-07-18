@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.gradle.spotless;
+
+import java.util.ArrayList;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -91,6 +93,12 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 			// if the user runs both, make sure that apply happens first,
 			task.mustRunAfter(applyTask);
+
+			// if the user enables the review dog, spotlessCheck will return the review dog format output
+			task.getReviewDog().set(this.reviewDog);
+			task.getReviewDogOutputDir().set(this.reviewDogOutputDir);
+
+			task.getSteps().set(new ArrayList<>(source.getStepsInternalRoundtrip().getSteps()));
 		});
 		rootCheckTask.configure(task -> task.dependsOn(checkTask));
 
