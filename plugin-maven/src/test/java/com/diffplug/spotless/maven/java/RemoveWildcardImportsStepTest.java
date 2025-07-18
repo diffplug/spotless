@@ -45,7 +45,7 @@ class RemoveWildcardImportsStepTest extends MavenIntegrationHarness {
 		AbstractStringAssert<?> abstractStringAssert = assertThat(mavenRunner().withArguments("spotless:apply").runHasError().stdOutUtf8());
 		abstractStringAssert
 			.contains(ERROR)
-//			.contains("11111")
+			.contains("11111")
 		;
 
 		FormatterStep step = KtLintStep.create("0.49.0", TestProvisioner.mavenCentral());
