@@ -23,25 +23,27 @@ import java.io.File;
  */
 public class GitPrePushHookInstallerMaven extends GitPrePushHookInstaller {
 
+	private final File mvnw;
+
 	public GitPrePushHookInstallerMaven(GitPreHookLogger logger, File root) {
 		super(logger, root);
+		this.mvnw = root.toPath().resolve("mvnw").toFile();
 	}
 
 	/**
-	 * Confirms that Maven is installed and available for use.
-	 *
-	 * <p>This method assumes that if this code is running, then Maven is already properly installed and configured,
-	 * so it always returns {@code true}.
-	 *
-	 * @return {@code true}, indicating that Maven is available.
+	 * {@inheritDoc}
 	 */
 	@Override
-	protected boolean isExecutorInstalled() {
-		return true;
+	protected String preHookContent() {
+		return preHookTemplate(executor(), "spotless:check", "spotless:apply");
 	}
 
-	@Override
-	protected String preHookContent() {
-		return preHookTemplate("mvn", "spotless:check", "spotless:apply");
+	private String executor() {
+		if (mvnw.exists()) {
+			return mvnw.getAbsolutePath();
+		}
+
+		logger.info("Maven wrapper is not installed, using global maven");
+		return "mvn";
 	}
 }

@@ -33,6 +33,11 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 		}
 
 		@Override
+		public void warn(String format, Object... arguments) {
+			logs.add(String.format(format, arguments));
+		}
+
+		@Override
 		public void error(String format, Object... arguments) {
 			logs.add(String.format(format, arguments));
 		}
@@ -54,7 +59,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 	}
 
 	@Test
-	public void should_not_create_pre_hook_file_when_gradlew_is_not_installed() throws Exception {
+	public void should_use_global_gradle_when_gradlew_is_not_installed() throws Exception {
 		// given
 		final var gradle = new GitPrePushHookInstallerGradle(logger, rootFolder());
 		setFile(".git/config").toContent("");
@@ -63,10 +68,14 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 		gradle.install();
 
 		// then
-		assertThat(logs).hasSize(2);
+		assertThat(logs).hasSize(4);
 		assertThat(logs).element(0).isEqualTo("Installing git pre-push hook");
-		assertThat(logs).element(1).isEqualTo("Failed to find gradlew in root directory");
-		assertThat(newFile(".git/hooks/pre-push")).doesNotExist();
+		assertThat(logs).element(1).isEqualTo("Git pre-push hook not found, creating it");
+		assertThat(logs).element(2).isEqualTo("Gradle wrapper is not installed, using global gradle");
+		assertThat(logs).element(3).isEqualTo("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push").getAbsolutePath());
+
+		final var content = gradleHookContent("git_pre_hook/pre-push.created", false);
+		assertFile(".git/hooks/pre-push").hasContent(content);
 	}
 
 	@Test
@@ -92,7 +101,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 	public void should_create_pre_hook_file_when_hook_file_does_not_exists() throws Exception {
 		// given
 		final var gradle = new GitPrePushHookInstallerGradle(logger, rootFolder());
-		final var gradlew = setFile("gradlew").toContent("");
+		setFile("gradlew").toContent("");
 		setFile(".git/config").toContent("");
 
 		// when
@@ -104,7 +113,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 		assertThat(logs).element(1).isEqualTo("Git pre-push hook not found, creating it");
 		assertThat(logs).element(2).isEqualTo("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push").getAbsolutePath());
 
-		final var content = gradleHookContent("git_pre_hook/pre-push.created");
+		final var content = gradleHookContent("git_pre_hook/pre-push.created", true);
 		assertFile(".git/hooks/pre-push").hasContent(content);
 	}
 
@@ -112,7 +121,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 	public void should_append_to_existing_pre_hook_file_when_hook_file_exists() throws Exception {
 		// given
 		final var gradle = new GitPrePushHookInstallerGradle(logger, rootFolder());
-		final var gradlew = setFile("gradlew").toContent("");
+		setFile("gradlew").toContent("");
 		setFile(".git/config").toContent("");
 		setFile(".git/hooks/pre-push").toResource("git_pre_hook/pre-push.existing");
 
@@ -124,7 +133,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 		assertThat(logs).element(0).isEqualTo("Installing git pre-push hook");
 		assertThat(logs).element(1).isEqualTo("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push").getAbsolutePath());
 
-		final var content = gradleHookContent("git_pre_hook/pre-push.existing-added");
+		final var content = gradleHookContent("git_pre_hook/pre-push.existing-added", true);
 		assertFile(".git/hooks/pre-push").hasContent(content);
 	}
 
@@ -132,6 +141,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 	public void should_create_pre_hook_file_for_maven_when_hook_file_does_not_exists() throws Exception {
 		// given
 		final var gradle = new GitPrePushHookInstallerMaven(logger, rootFolder());
+		setFile("mvnw").toContent("");
 		setFile(".git/config").toContent("");
 
 		// when
@@ -143,20 +153,40 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 		assertThat(logs).element(1).isEqualTo("Git pre-push hook not found, creating it");
 		assertThat(logs).element(2).isEqualTo("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push").getAbsolutePath());
 
-		final var content = mavenHookContent("git_pre_hook/pre-push.created");
+		final var content = mavenHookContent("git_pre_hook/pre-push.created", true);
 		assertFile(".git/hooks/pre-push").hasContent(content);
 	}
 
-	private String gradleHookContent(String resourcePath) {
+	@Test
+	public void should_use_global_maven_when_maven_wrapper_is_not_installed() throws Exception {
+		// given
+		final var gradle = new GitPrePushHookInstallerMaven(logger, rootFolder());
+		setFile(".git/config").toContent("");
+
+		// when
+		gradle.install();
+
+		// then
+		assertThat(logs).hasSize(4);
+		assertThat(logs).element(0).isEqualTo("Installing git pre-push hook");
+		assertThat(logs).element(1).isEqualTo("Git pre-push hook not found, creating it");
+		assertThat(logs).element(2).isEqualTo("Maven wrapper is not installed, using global maven");
+		assertThat(logs).element(3).isEqualTo("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push").getAbsolutePath());
+
+		final var content = mavenHookContent("git_pre_hook/pre-push.created", false);
+		assertFile(".git/hooks/pre-push").hasContent(content);
+	}
+
+	private String gradleHookContent(String resourcePath, boolean isWrapper) {
 		return getTestResource(resourcePath)
-				.replace("${executor}", setFile("gradlew").toContent("").getAbsolutePath())
+				.replace("${executor}", isWrapper ? newFile("gradlew").getAbsolutePath() : "gradle")
 				.replace("${checkCommand}", "spotlessCheck")
 				.replace("${applyCommand}", "spotlessApply");
 	}
 
-	private String mavenHookContent(String resourcePath) {
+	private String mavenHookContent(String resourcePath, boolean isWrapper) {
 		return getTestResource(resourcePath)
-				.replace("${executor}", "mvn")
+				.replace("${executor}", isWrapper ? newFile("mvnw").getAbsolutePath() : "mvn")
 				.replace("${checkCommand}", "spotless:check")
 				.replace("${applyCommand}", "spotless:apply");
 	}

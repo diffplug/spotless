@@ -63,6 +63,11 @@ public class SpotlessInstallPrePushHookMojo extends AbstractMojo {
 			}
 
 			@Override
+			public void warn(String format, Object... arguments) {
+				getLog().warn(String.format(format, arguments));
+			}
+
+			@Override
 			public void error(String format, Object... arguments) {
 				getLog().error(String.format(format, arguments));
 			}

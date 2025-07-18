@@ -33,25 +33,21 @@ public class GitPrePushHookInstallerGradle extends GitPrePushHookInstaller {
 		this.gradlew = root.toPath().resolve("gradlew").toFile();
 	}
 
+
 	/**
-	 * Checks if the Gradle wrapper (`gradlew`) is present in the root directory.
-	 * This ensures that the executor used for formatting (`spotlessCheck` and `spotlessApply`) is available.
-	 *
-	 * @return {@code true} if the Gradle wrapper is found, {@code false} otherwise.
-	 *         An error is logged if the wrapper is not found.
+	 * {@inheritDoc}
 	 */
 	@Override
-	protected boolean isExecutorInstalled() {
-		if (gradlew.exists()) {
-			return true;
-		}
-
-		logger.error("Failed to find gradlew in root directory");
-		return false;
+	protected String preHookContent() {
+		return preHookTemplate(executor(), "spotlessCheck", "spotlessApply");
 	}
 
-	@Override
-	protected String preHookContent() {
-		return preHookTemplate(gradlew.getAbsolutePath(), "spotlessCheck", "spotlessApply");
+	private String executor() {
+		if (gradlew.exists()) {
+			return gradlew.getAbsolutePath();
+		}
+
+		logger.info("Gradle wrapper is not installed, using global gradle");
+		return "gradle";
 	}
 }

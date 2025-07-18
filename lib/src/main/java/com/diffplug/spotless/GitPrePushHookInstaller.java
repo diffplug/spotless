@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -29,6 +30,9 @@ import java.nio.file.Files;
  * Subclasses should define specific behavior for hook installation by implementing the required abstract methods.
  */
 public abstract class GitPrePushHookInstaller {
+
+	private static final String HOOK_HEADLINE = "##### SPOTLESS HOOK START #####";
+	private static final String HOOK_FOOTER = "##### SPOTLESS HOOK END #####";
 
 	/**
 	 * Logger for recording informational and error messages during the installation process.
@@ -47,8 +51,8 @@ public abstract class GitPrePushHookInstaller {
 	 * @param root   The root directory of the Git repository.
 	 */
 	public GitPrePushHookInstaller(GitPreHookLogger logger, File root) {
-		this.logger = logger;
-		this.root = root;
+		this.logger = requireNonNull(logger, "logger can not be null");
+		this.root = requireNonNull(root, "root file can not be null");
 	}
 
 	/**
@@ -70,10 +74,6 @@ public abstract class GitPrePushHookInstaller {
 
 		if (!isGitInstalled()) {
 			logger.error("Git not found in root directory");
-			return;
-		}
-
-		if (!isExecutorInstalled()) {
 			return;
 		}
 
@@ -100,7 +100,7 @@ public abstract class GitPrePushHookInstaller {
 		}
 
 		if (isGitHookInstalled(gitHookFile)) {
-			logger.info("Skipping, git pre-push hook already installed %s", gitHookFile.getAbsolutePath());
+			logger.warn("Skipping, git pre-push hook already installed %s", gitHookFile.getAbsolutePath());
 			return;
 		}
 
@@ -109,13 +109,6 @@ public abstract class GitPrePushHookInstaller {
 
 		logger.info("Git pre-push hook installed successfully to the file %s", gitHookFile.getAbsolutePath());
 	}
-
-	/**
-	 * Checks if the required executor for performing the desired pre-push actions is installed.
-	 *
-	 * @return {@code true} if the executor is installed, {@code false} otherwise.
-	 */
-	protected abstract boolean isExecutorInstalled();
 
 	/**
 	 * Provides the content of the hook that should be inserted into the pre-push script.
@@ -142,7 +135,7 @@ public abstract class GitPrePushHookInstaller {
 	 */
 	private boolean isGitHookInstalled(File gitHookFile) throws Exception {
 		final var hook = Files.readString(gitHookFile.toPath(), UTF_8);
-		return hook.contains("##### SPOTLESS HOOK START #####");
+		return hook.contains(HOOK_HEADLINE);
 	}
 
 	/**
@@ -169,21 +162,21 @@ public abstract class GitPrePushHookInstaller {
 	 */
 	protected String preHookTemplate(String executor, String commandCheck, String commandApply) {
 		var spotlessHook = "\n";
-		spotlessHook += "\n##### SPOTLESS HOOK START #####";
+		spotlessHook += "\n" + HOOK_HEADLINE;
 		spotlessHook += "\nSPOTLESS_EXECUTOR=" + executor;
 		spotlessHook += "\nif ! $SPOTLESS_EXECUTOR " + commandCheck + " ; then";
 		spotlessHook += "\n    echo 1>&2 \"spotless found problems, running " + commandApply + "; commit the result and re-push\"";
 		spotlessHook += "\n    $SPOTLESS_EXECUTOR " + commandApply;
 		spotlessHook += "\n    exit 1";
 		spotlessHook += "\nfi";
-		spotlessHook += "\n##### SPOTLESS HOOK END #####";
+		spotlessHook += "\n" + HOOK_FOOTER;
 		spotlessHook += "\n\n";
 		return spotlessHook;
 	}
 
 	public interface GitPreHookLogger {
 		void info(String format, Object... arguments);
-
+		void warn(String format, Object... arguments);
 		void error(String format, Object... arguments);
 	}
 }

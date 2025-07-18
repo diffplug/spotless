@@ -50,6 +50,11 @@ public class SpotlessInstallPrePushHookTask extends DefaultTask {
 			}
 
 			@Override
+			public void warn(String format, Object... arguments) {
+				getLogger().warn(String.format(format, arguments));
+			}
+
+			@Override
 			public void error(String format, Object... arguments) {
 				getLogger().error(String.format(format, arguments));
 			}
