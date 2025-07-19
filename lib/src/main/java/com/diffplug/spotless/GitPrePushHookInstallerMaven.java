@@ -35,10 +35,10 @@ public class GitPrePushHookInstallerMaven extends GitPrePushHookInstaller {
 	 */
 	@Override
 	protected String preHookContent() {
-		return preHookTemplate(executor(), "spotless:check", "spotless:apply");
+		return preHookTemplate(executorPath(), "spotless:check", "spotless:apply");
 	}
 
-	private String executor() {
+	private String executorPath() {
 		if (mvnw.exists()) {
 			return mvnw.getAbsolutePath();
 		}

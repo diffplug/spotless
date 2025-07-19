@@ -82,7 +82,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 	public void should_reinstall_pre_hook_file_when_hook_already_installed() throws Exception {
 		// given
 		final var gradle = new GitPrePushHookInstallerGradle(logger, rootFolder());
-		final var installedGlobally = gradleHookContent("git_pre_hook/pre-push.existing-added-tpl", ExecutorType.GLOBAL);
+		final var installedGlobally = gradleHookContent("git_pre_hook/pre-push.existing-installed-end-tpl", ExecutorType.GLOBAL);
 		final var hookFile = setFile(".git/hooks/pre-push").toContent(installedGlobally);
 
 		setFile("gradlew").toContent("");
@@ -97,7 +97,50 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 		assertThat(logs).element(1).isEqualTo("Git pre-push hook already installed, reinstalling it");
 		assertThat(logs).element(2).isEqualTo("Git pre-push hook installed successfully to the file " + hookFile.getAbsolutePath());
 
-		final var content = gradleHookContent("git_pre_hook/pre-push.reinstalled-tpl", ExecutorType.WRAPPER);
+		final var content = gradleHookContent("git_pre_hook/pre-push.existing-installed-end-tpl", ExecutorType.WRAPPER);
+		assertFile(".git/hooks/pre-push").hasContent(content);
+	}
+
+	@Test
+	public void should_reinstall_pre_hook_file_when_hook_already_installed_in_the_middle_of_file() throws Exception {
+		// given
+		final var gradle = new GitPrePushHookInstallerGradle(logger, rootFolder());
+		final var installedGlobally = gradleHookContent("git_pre_hook/pre-push.existing-installed-middle-tpl", ExecutorType.GLOBAL);
+		final var hookFile = setFile(".git/hooks/pre-push").toContent(installedGlobally);
+
+		setFile("gradlew").toContent("");
+		setFile(".git/config").toContent("");
+
+		// when
+		gradle.install();
+
+		// then
+		assertThat(logs).hasSize(3);
+		assertThat(logs).element(0).isEqualTo("Installing git pre-push hook");
+		assertThat(logs).element(1).isEqualTo("Git pre-push hook already installed, reinstalling it");
+		assertThat(logs).element(2).isEqualTo("Git pre-push hook installed successfully to the file " + hookFile.getAbsolutePath());
+
+		final var content = gradleHookContent("git_pre_hook/pre-push.existing-reinstalled-middle-tpl", ExecutorType.WRAPPER);
+		assertFile(".git/hooks/pre-push").hasContent(content);
+	}
+
+	@Test
+	public void should_reinstall_a_few_times_pre_hook_file_when_hook_already_installed_in_the_middle_of_file() throws Exception {
+		// given
+		final var gradle = new GitPrePushHookInstallerGradle(logger, rootFolder());
+		final var installedGlobally = gradleHookContent("git_pre_hook/pre-push.existing-installed-middle-tpl", ExecutorType.GLOBAL);
+		setFile(".git/hooks/pre-push").toContent(installedGlobally);
+
+		setFile("gradlew").toContent("");
+		setFile(".git/config").toContent("");
+
+		// when
+		gradle.install();
+		gradle.install();
+		gradle.install();
+
+		// then
+		final var content = gradleHookContent("git_pre_hook/pre-push.existing-reinstalled-middle-tpl", ExecutorType.WRAPPER);
 		assertFile(".git/hooks/pre-push").hasContent(content);
 	}
 
@@ -137,7 +180,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 		assertThat(logs).element(0).isEqualTo("Installing git pre-push hook");
 		assertThat(logs).element(1).isEqualTo("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push").getAbsolutePath());
 
-		final var content = gradleHookContent("git_pre_hook/pre-push.existing-added-tpl", ExecutorType.WRAPPER);
+		final var content = gradleHookContent("git_pre_hook/pre-push.existing-installed-end-tpl", ExecutorType.WRAPPER);
 		assertFile(".git/hooks/pre-push").hasContent(content);
 	}
 

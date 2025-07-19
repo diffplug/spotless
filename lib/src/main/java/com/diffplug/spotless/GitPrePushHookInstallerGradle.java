@@ -38,10 +38,10 @@ public class GitPrePushHookInstallerGradle extends GitPrePushHookInstaller {
 	 */
 	@Override
 	protected String preHookContent() {
-		return preHookTemplate(executor(), "spotlessCheck", "spotlessApply");
+		return preHookTemplate(executorPath(), "spotlessCheck", "spotlessApply");
 	}
 
-	private String executor() {
+	private String executorPath() {
 		if (gradlew.exists()) {
 			return gradlew.getAbsolutePath();
 		}

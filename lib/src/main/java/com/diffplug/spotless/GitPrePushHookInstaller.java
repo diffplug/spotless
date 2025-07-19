@@ -31,7 +31,7 @@ import java.nio.file.Files;
  */
 public abstract class GitPrePushHookInstaller {
 
-	private static final String HOOK_HEADLINE = "##### SPOTLESS HOOK START #####";
+	private static final String HOOK_HEADER = "##### SPOTLESS HOOK START #####";
 	private static final String HOOK_FOOTER = "##### SPOTLESS HOOK END #####";
 
 	/**
@@ -128,10 +128,48 @@ public abstract class GitPrePushHookInstaller {
 	 */
 	private void uninstall(File gitHookFile) throws Exception {
 		final var hook = Files.readString(gitHookFile.toPath(), UTF_8);
-		final var hookStart = hook.indexOf(HOOK_HEADLINE);
-		final var hookEnd = hook.indexOf(HOOK_FOOTER) + HOOK_FOOTER.length();
+		final int hookStart = hook.indexOf(HOOK_HEADER);
+		final int hookEnd = hook.indexOf(HOOK_FOOTER) + HOOK_FOOTER.length(); // hookEnd exclusive, so must be last symbol \n
 
-		final var hookScript = hook.substring(hookStart, hookEnd);
+		/* Detailed explanation:
+		 * 1. hook.indexOf(HOOK_FOOTER) - finds the starting position of footer "##### SPOTLESS HOOK END #####"
+		 * 2. + HOOK_FOOTER.length() is needed because String.substring(startIndex, endIndex) treats endIndex as exclusive
+		 *
+		 * For example, if file content is:
+		 * #!/bin/sh
+		 * ##### SPOTLESS HOOK START #####
+		 * ... hook code ...
+		 * ##### SPOTLESS HOOK END #####
+		 * other content
+		 *
+		 * When we later use this in: hook.substring(hookStart, hookEnd)
+		 * - Since substring's endIndex is exclusive (it stops BEFORE that index)
+		 * - We need hookEnd to point to the position AFTER the last '#'
+		 * - This ensures the entire footer "##### SPOTLESS HOOK END #####" is included in the substring
+		 *
+		 * This exclusive behavior is why in the subsequent code:
+		 * if (hook.charAt(hookEnd) == '\n') {
+		 *     hookScript += "\n";
+		 * }
+		 *
+		 * We can directly use hookEnd to check the next character after the footer
+		 * - Since hookEnd is already pointing to the position AFTER the footer
+		 * - No need for hookEnd + 1 in charAt()
+		 * - This makes the code more consistent with the substring's exclusive nature
+		 */
+
+		var hookScript = hook.substring(hookStart, hookEnd);
+		if (hookStart >= 1 && hook.charAt(hookStart - 1) == '\n') {
+			hookScript = "\n" + hookScript;
+		}
+
+		if (hookStart >= 2 && hook.charAt(hookStart - 2) == '\n') {
+			hookScript = "\n" + hookScript;
+		}
+
+		if (hook.charAt(hookEnd) == '\n') {
+			hookScript += "\n";
+		}
 
 		final var uninstalledHook = hook.replace(hookScript, "");
 
@@ -155,8 +193,10 @@ public abstract class GitPrePushHookInstaller {
 	 * @return A string template representing the Spotless Git pre-push hook content.
 	 */
 	protected String preHookTemplate(String executor, String commandCheck, String commandApply) {
-		var spotlessHook = "\n";
-		spotlessHook += "\n" + HOOK_HEADLINE;
+		var spotlessHook = "";
+
+		spotlessHook += "\n";
+		spotlessHook += "\n" + HOOK_HEADER;
 		spotlessHook += "\nSPOTLESS_EXECUTOR=" + executor;
 		spotlessHook += "\nif ! $SPOTLESS_EXECUTOR " + commandCheck + " ; then";
 		spotlessHook += "\n    echo 1>&2 \"spotless found problems, running " + commandApply + "; commit the result and re-push\"";
@@ -165,6 +205,7 @@ public abstract class GitPrePushHookInstaller {
 		spotlessHook += "\nfi";
 		spotlessHook += "\n" + HOOK_FOOTER;
 		spotlessHook += "\n";
+
 		return spotlessHook;
 	}
 
@@ -186,7 +227,7 @@ public abstract class GitPrePushHookInstaller {
 	 */
 	private boolean isGitHookInstalled(File gitHookFile) throws Exception {
 		final var hook = Files.readString(gitHookFile.toPath(), UTF_8);
-		return hook.contains(HOOK_HEADLINE);
+		return hook.contains(HOOK_HEADER) && hook.contains(HOOK_FOOTER);
 	}
 
 	/**
