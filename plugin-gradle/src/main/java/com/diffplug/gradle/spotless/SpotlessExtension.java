@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,17 @@ public abstract class SpotlessExtension {
 	private final RegisterDependenciesTask registerDependenciesTask;
 
 	protected static final String TASK_GROUP = LifecycleBasePlugin.VERIFICATION_GROUP;
+	protected static final String BUILD_SETUP_TASK_GROUP = "build setup";
 	protected static final String CHECK_DESCRIPTION = "Checks that sourcecode satisfies formatting steps.";
 	protected static final String APPLY_DESCRIPTION = "Applies code formatting steps to sourcecode in-place.";
+	protected static final String INSTALL_GIT_PRE_PUSH_HOOK_DESCRIPTION = "Installs Spotless Git pre-push hook.";
 
 	static final String EXTENSION = "spotless";
 	static final String EXTENSION_PREDECLARE = "spotlessPredeclare";
 	static final String CHECK = "Check";
 	static final String APPLY = "Apply";
 	static final String DIAGNOSE = "Diagnose";
+	static final String INSTALL_GIT_PRE_PUSH_HOOK = "InstallGitPrePushHook";
 
 	protected SpotlessExtension(Project project) {
 		this.project = requireNonNull(project);

@@ -53,6 +53,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Git hook (optional)](#git-hook)
   - [Linting](#linting)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
@@ -140,6 +141,20 @@ Spotless requires JRE 11+ and Gradle 6.1.1 or newer.
 
 - If you're stuck on JRE 8, use [`id 'com.diffplug.spotless' version '6.13.0'` or older](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#6130---2023-01-14).
 - If you're stuck on an older version of Gradle, [`id 'com.diffplug.gradle.spotless' version '4.5.1'` supports all the way back to Gradle 2.x](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#451---2020-07-04).
+
+### Git hook
+
+If you want, you can run `./gradlew spotlessInstallGitPrePushHook` and it will install a hook such that
+
+1. When you push, it runs `spotlessCheck`
+2. If formatting issues are found:
+   - It automatically runs `spotlessApply` to fix them
+   - Aborts the push with a message
+   - You can then commit the changes and push again
+
+This ensures your code is always clean before it leaves your machine.
+
+If you prefer instead to have a "pre-commit" hook so that every single commit is clean, see [#623](https://github.com/diffplug/spotless/issues/623) for a workaround or to contribute a permanent fix.
 
 ### Linting
 
