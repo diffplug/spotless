@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ public class TestProvisioner {
 				return config.resolve();
 			} catch (ResolveException e) {
 				/* Provide Maven coordinates in exception message instead of static string 'detachedConfiguration' */
-				throw new ResolveException(config.getDescription(), e);
+				throw new RuntimeException("Error resolving configuration: " + config.getDescription(), e);
 			} finally {
 				// delete the temp dir
 				try {

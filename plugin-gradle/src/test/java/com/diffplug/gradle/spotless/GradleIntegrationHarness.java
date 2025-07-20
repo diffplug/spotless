@@ -43,11 +43,14 @@ import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
 	public enum GradleVersionSupport {
-		JRE_11("5.0"), MINIMUM(SpotlessPlugin.VER_GRADLE_min), CUSTOM_STEPS(SpotlessPlugin.VER_GRADLE_minVersionForCustom),
-		// technically, this API exists in 6.5, but the flags for it change in 6.6, so we build to that
-		CONFIGURATION_CACHE("6.6"),
+		MINIMUM(SpotlessPlugin.VER_GRADLE_min),
+
 		// https://docs.gradle.org/7.5/userguide/configuration_cache.html#config_cache:stable
-		STABLE_CONFIGURATION_CACHE("7.5");
+		STABLE_CONFIGURATION_CACHE("7.5"),
+
+		CUSTOM_STEPS(SpotlessPlugin.VER_GRADLE_minVersionForCustom),
+
+		;
 
 		final String version;
 
@@ -76,18 +79,6 @@ public class GradleIntegrationHarness extends ResourceHarness {
 				break;
 			case 18:
 				minVersionForRunningJRE = "7.5";
-				break;
-			case 17:
-				minVersionForRunningJRE = "7.3";
-				break;
-			case 16:
-				minVersionForRunningJRE = "7.0";
-				break;
-			case 15:
-				minVersionForRunningJRE = "6.7";
-				break;
-			case 14:
-				minVersionForRunningJRE = "6.3";
 				break;
 			default:
 				minVersionForRunningJRE = null;
