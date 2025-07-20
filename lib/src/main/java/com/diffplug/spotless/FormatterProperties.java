@@ -185,12 +185,17 @@ public final class FormatterProperties {
 			}
 
 			private Properties executeWithSupplier(Supplier<InputStream> isSupplier) throws IOException, IllegalArgumentException {
-				Node rootNode = getRootNode(isSupplier.get());
-				String nodeName = rootNode.getNodeName();
-				if (null == nodeName) {
-					throw new IllegalArgumentException("XML document does not contain a root node.");
+				Node rootNode;
+				try (InputStream input = isSupplier.get()) {
+					rootNode = getRootNode(input);
+					String nodeName = rootNode.getNodeName();
+					if (null == nodeName) {
+						throw new IllegalArgumentException("XML document does not contain a root node.");
+					}
 				}
-				return XmlParser.parse(isSupplier.get(), rootNode);
+				try (InputStream input = isSupplier.get()) {
+					return XmlParser.parse(input, rootNode);
+				}
 			}
 
 			private Node getRootNode(final InputStream is) throws IOException, IllegalArgumentException {
