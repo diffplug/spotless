@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changed
+* **BREAKING** Bump the required Gradle to `7.3` and required Java to `17`. ([#2375](https://github.com/diffplug/spotless/issues/2375), [#2540](https://github.com/diffplug/spotless/pull/2540))
 
 ## [7.2.0] - 2025-07-20
 ### Added
@@ -10,7 +12,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `spotlessInstallGitPrePushHook` task, which installs a Git `pre-push` hook to run `spotlessCheck` and `spotlessApply`. ([#2553](https://github.com/diffplug/spotless/pull/2553))
 * Allow setting Eclipse XML config from a string, not only from files ([#2361](https://github.com/diffplug/spotless/pull/2361))
 ## Changed
-* Bump the min Gradle and Java requirements to `7.3` and `17`. ([#2540](https://github.com/diffplug/spotless/pull/2540))
 * Bump default `gson` version to latest `2.11.0` -> `2.13.1`. ([#2414](https://github.com/diffplug/spotless/pull/2414))
 * Bump default `jackson` version to latest `2.18.1` -> `2.19.2`. ([#2558](https://github.com/diffplug/spotless/pull/2558))
 * Bump default `gherkin-utils` version to latest `9.0.0` -> `9.2.0`. ([#2408](https://github.com/diffplug/spotless/pull/2408))
