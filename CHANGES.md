@@ -12,8 +12,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 * Allow specifying path to Biome JSON config file directly in `biome` step. Requires biome 2.x. ([#2548](https://github.com/diffplug/spotless/pull/2548))
-- `GitPrePushHookInstaller`, a reusable library component for installing a Git `pre-push` hook that runs formatter checks.
-
+* `GitPrePushHookInstaller`, a reusable library component for installing a Git `pre-push` hook that runs formatter checks.
+* Allow setting Eclipse XML config from a string, not only from files ([#2361](https://github.com/diffplug/spotless/pull/2361))
 ## Changed
 * Bump default `gson` version to latest `2.11.0` -> `2.13.1`. ([#2414](https://github.com/diffplug/spotless/pull/2414))
 * Bump default `jackson` version to latest `2.18.1` -> `2.19.2`. ([#2558](https://github.com/diffplug/spotless/pull/2558))
@@ -42,7 +42,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [3.1.1] - 2025-04-07
 ### Changed
-* Allow setting Eclipse XML config from a string, not only from files ([#2361](https://github.com/diffplug/spotless/pull/2361))
 * Use palantir-java-format 2.57.0 on Java 21. ([#2447](https://github.com/diffplug/spotless/pull/2447))
 * Re-try `npm install` with `--prefer-online` after `ERESOLVE` error. ([#2448](https://github.com/diffplug/spotless/pull/2448))
 * Allow multiple npm-based formatters having the same module dependencies, to share a `node_modules` dir without race conditions. [#2462](https://github.com/diffplug/spotless/pull/2462))
