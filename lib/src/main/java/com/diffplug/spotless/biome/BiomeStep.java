@@ -191,18 +191,21 @@ public class BiomeStep {
 	/**
 	 * Checks the Biome config path. When the config path does not exist or when it
 	 * does not contain a file named {@code biome.json}, an error is thrown.
+	 * @param configPath The path to validate.
+	 * @param version The version of Biome.
 	 */
-	private static void validateBiomeConfigPath(String configPath) {
+	private static void validateBiomeConfigPath(String configPath, String version) {
 		if (configPath == null) {
 			return;
 		}
+		var atLeastV2 = BiomeSettings.versionHigherThanOrEqualTo(version, 2, 0, 0);
 		var path = Paths.get(configPath);
-		var config = path.resolve(BiomeSettings.configName());
+		var configFile = Files.isRegularFile(path) && atLeastV2 ? path : path.resolve(BiomeSettings.configName());
 		if (!Files.exists(path)) {
 			throw new IllegalArgumentException("Biome config directory does not exist: " + path);
 		}
-		if (!Files.exists(config)) {
-			throw new IllegalArgumentException("Biome config does not exist: " + config);
+		if (!Files.exists(configFile)) {
+			throw new IllegalArgumentException("Biome config does not exist: " + configFile);
 		}
 	}
 
@@ -240,11 +243,10 @@ public class BiomeStep {
 	}
 
 	/**
-	 * Sets the path to the directory with the {@code biome.json} config file. When
-	 * no config path is set, the default configuration is used.
+	 * Sets the path to the Biome configuration. Must be either a directory with a file named {@code biome.json}, or
+	 * a file with the Biome config as JSON. When no config path is set, the default configuration is used.
 	 *
-	 * @param configPath Config path to use. Must point to a directory which contains
-	 *                   a file named {@code biome.json}.
+	 * @param configPath Config path to use.
 	 * @return This builder instance for chaining method calls.
 	 */
 	public BiomeStep withConfigPath(String configPath) {
@@ -296,7 +298,7 @@ public class BiomeStep {
 	private State createState() throws IOException, InterruptedException {
 		var resolvedPathToExe = resolveExe();
 		validateBiomeExecutable(resolvedPathToExe);
-		validateBiomeConfigPath(configPath);
+		validateBiomeConfigPath(configPath, version);
 		logger.debug("Using Biome executable located at  '{}'", resolvedPathToExe);
 		var exeSignature = FileSignature.signAsList(Collections.singleton(new File(resolvedPathToExe)));
 		makeExecutable(resolvedPathToExe);

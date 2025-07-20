@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+
 import org.junit.jupiter.api.Test;
 import org.owasp.encoder.Encode;
 
@@ -220,6 +222,34 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"    format 'mybiome', {",
 				"        target '**/*.js'",
 				"        biome('1.2.0').configPath('" + Encode.forJava(path) + "')",
+				"    }",
+				"}");
+		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
+		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("biome_test.js").sameAsResource("biome/js/longLineAfter120.js");
+	}
+
+	/**
+	 * Tests that a path to a Biome config JSON file can be specified (requires biome 2.x).
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void configPathFile() throws Exception {
+		var path = newFile("configs").getAbsolutePath();
+		var file = new File(path, "biome.json").getAbsolutePath();
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    format 'mybiome', {",
+				"        target '**/*.js'",
+				"        biome('2.1.0').configPath('" + Encode.forJava(file) + "')",
 				"    }",
 				"}");
 		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");

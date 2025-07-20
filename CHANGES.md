@@ -11,10 +11,16 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [3.3.0] - 2025-07-20
+### Added
+* Allow specifying path to Biome JSON config file directly in `biome` step. Requires biome 2.x. ([#2548](https://github.com/diffplug/spotless/pull/2548))
+* `GitPrePushHookInstaller`, a reusable library component for installing a Git `pre-push` hook that runs formatter checks. ([#2553](https://github.com/diffplug/spotless/pull/2553))
+* Allow setting Eclipse XML config from a string, not only from files ([#2361](https://github.com/diffplug/spotless/pull/2361))
 ## Changed
 * Bump default `gson` version to latest `2.11.0` -> `2.13.1`. ([#2414](https://github.com/diffplug/spotless/pull/2414))
-* Bump default `jackson` version to latest `2.18.1` -> `2.19.1`. ([#2352](https://github.com/diffplug/spotless/pull/2352))
+* Bump default `jackson` version to latest `2.18.1` -> `2.19.2`. ([#2558](https://github.com/diffplug/spotless/pull/2558))
 * Bump default `gherkin-utils` version to latest `9.0.0` -> `9.2.0`. ([#2408](https://github.com/diffplug/spotless/pull/2408))
+* Bump default `cleanthat` version to latest `2.22` -> `2.23`. ([#2556](https://github.com/diffplug/spotless/pull/2556))
 
 ## [3.2.0] - 2025-07-07
 ### Added

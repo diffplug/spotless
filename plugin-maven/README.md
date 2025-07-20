@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![MavenCentral](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.45.0-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.45.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.46.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.46.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -37,6 +37,7 @@ user@machine repo % mvn spotless:check
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Git hook (optional)](#git-hook)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
@@ -145,7 +146,20 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 
 Spotless requires Maven to be running on JRE 11+. To use JRE 8, go back to [`2.30.0` or older](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2300---2023-01-13).
 
-<a name="applying-to-java-source"></a>
+
+### Git hook
+
+If you want, you can run `mvn spotless:install-git-pre-push-hook` and it will install a hook such that
+
+1. When you push, it runs `spotless:check`
+2. If formatting issues are found:
+   - It automatically runs `spotless:apply` to fix them
+   - Aborts the push with a message
+   - You can then commit the changes and push again
+
+This ensures your code is always clean before it leaves your machine.
+
+If you prefer instead to have a "pre-commit" hook so that every single commit is clean, see [#623](https://github.com/diffplug/spotless/issues/623) for a workaround or to contribute a permanent fix.
 
 ### Binding to maven phase
 
@@ -175,6 +189,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
   </execution>
 </executions>
 ```
+
+<a name="applying-to-java-source"></a>
 
 ## Java
 
@@ -1530,9 +1546,9 @@ Note regarding CSS: Biome supports formatting CSS as of 1.8.0 (experimental, opt
 
       <biome>
         <!-- Download Biome from the network if not already downloaded, see below for more info  -->
-        <version>1.2.0</version>
+        <version>2.1.1</version>
 
-        <!-- (optional) Path to the directory with the biome.json conig file -->
+        <!-- (optional) Path to the directory with the biome.json config file -->
         <configPath>${project.basedir}/path/to/config/dir</configPath>
 
         <!-- (optional) Biome will auto-detect the language based on the file extension. -->
@@ -1583,7 +1599,7 @@ To download the Biome binary from the network, just specify a version:
 
 ```xml
 <biome>
-  <version>1.2.0</version>
+  <version>2.1.0</version>
 </biome>
 ```
 
@@ -1594,7 +1610,7 @@ Biome binaries (defaults to `~/.m2/repository/com/diffplug/spotless/spotless-dat
 
 ```xml
 <biome>
-  <version>1.2.0</version>
+  <version>2.1.0</version>
   <!-- Relative paths are resolved against the project's base directory -->
   <downloadDir>${user.home}/biome</downloadDir>
 </biome>
@@ -1631,7 +1647,28 @@ Biome is used. To use a custom configuration:
 <biome>
   <!-- Must point to the directory with the "biome.json" config file -->
   <!-- Relative paths are resolved against the project's base directory -->
+  <!-- Starting with biome 2.x, you can also pass the path to a JSON config file directly. -->
   <configPath>${project.basedir}</configPath>
+</biome>
+```
+
+__If spotless does not format any files__, this might be because you excluded those files in you biome.json
+configuration file. If you are using biome 2.x, you can create a custom config file for spotless and inherit from
+your main config file like this:
+
+```jsonc
+// biome-spotless.json
+{
+  "extends": "./biome.json",
+  "include": ["**"]
+}
+```
+
+Then simply specify the path to this file in your spotless configuration:
+
+```xml
+<biome>
+  <configPath>${project.basedir}/biome-spotless.json</configPath>
 </biome>
 ```
 
