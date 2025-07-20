@@ -175,6 +175,8 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 
 ## Acknowledgements
 
+- Thanks to [over 200 contributors with merged PRs](https://github.com/diffplug/spotless/graphs/contributors), and also to everyone who helped with code review, file reproducible bugs, etc. A few contributions stand out as especially significant to the history of the project, though regrettably there are certain to be some important omissions!
+- Thanks to [Zongle Wang](https://github.com/Goooler) for an [enormous mound of contributions](https://github.com/diffplug/spotless/issues?q=is%3Apr%20is%3Aclosed%20author%3AGoooler), but especially for [his near-rewrite](https://github.com/diffplug/spotless/issues/1274#issuecomment-2146972303) so that Spotless could support Gradle's configuration cache natively.
 - Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing and maintaining the Maven plugin](https://github.com/diffplug/spotless/pull/188), as well as fixing [remote-build cache support for Gradle](https://github.com/diffplug/spotless/pull/571).
 - Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13), [C++ support via CDT](https://github.com/diffplug/spotless/issues/232), [XML support via WTP](https://github.com/diffplug/spotless/pull/241) and a huge body of work with other eclipse-based formatters.
 - Thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
