@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [2.46.0] - 2025-07-20
 ### Added
 * Allow specifying path to Biome JSON config file directly in `biome` step. Requires biome 2.x. ([#2548](https://github.com/diffplug/spotless/pull/2548))
 * `spotless:install-git-pre-push-hook` goal, which installs a Git `pre-push` hook to run `spotless:check` and `spotless:apply`. ([#2553](https://github.com/diffplug/spotless/pull/2553))
