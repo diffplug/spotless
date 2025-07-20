@@ -317,6 +317,13 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		public EclipseConfig configXml(String... configs) {
+			requireElementsNonNull(configs);
+			builder.setXmlPreferences(List.of(configs));
+			replaceStep(builder.build());
+			return this;
+		}
+
 		public EclipseConfig sortMembersDoNotSortFields(boolean doNotSortFields) {
 			builder.sortMembersDoNotSortFields(doNotSortFields);
 			replaceStep(builder.build());
