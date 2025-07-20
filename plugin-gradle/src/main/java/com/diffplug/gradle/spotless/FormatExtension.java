@@ -59,12 +59,12 @@ import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
-import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.FenceStep;
+import com.diffplug.spotless.generic.IdeaStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
@@ -217,8 +217,7 @@ public class FormatExtension {
 	protected FileCollection target, targetExclude;
 
 	/** The value from which files will be excluded if their content contain it. */
-	@Nullable
-	protected String targetExcludeContentPattern = null;
+	@Nullable protected String targetExcludeContentPattern = null;
 
 	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
 		String formatterStepName = formatterStep.getName();
@@ -686,17 +685,13 @@ public class FormatExtension {
 
 		public static final String SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME = "spotless-npm-install-cache";
 
-		@Nullable
-		protected Object npmFile;
+		@Nullable protected Object npmFile;
 
-		@Nullable
-		protected Object nodeFile;
+		@Nullable protected Object nodeFile;
 
-		@Nullable
-		protected Object npmInstallCache;
+		@Nullable protected Object npmInstallCache;
 
-		@Nullable
-		protected Object npmrcFile;
+		@Nullable protected Object npmrcFile;
 
 		protected Project project;
 
@@ -770,11 +765,9 @@ public class FormatExtension {
 
 	public class PrettierConfig extends NpmStepConfig<PrettierConfig> {
 
-		@Nullable
-		Object prettierConfigFile;
+		@Nullable Object prettierConfigFile;
 
-		@Nullable
-		Map<String, Object> prettierConfig;
+		@Nullable Map<String, Object> prettierConfig;
 
 		final Map<String, String> devDependencies;
 
@@ -814,8 +807,7 @@ public class FormatExtension {
 	 * <code>format{ ... }</code>.
 	 */
 	public class BiomeGeneric extends BiomeStepConfig<BiomeGeneric> {
-		@Nullable
-		String language;
+		@Nullable String language;
 
 		/**
 		 * Creates a new Biome config that downloads the Biome executable for the given
@@ -825,13 +817,13 @@ public class FormatExtension {
 		 *                <code>null</code>.
 		 */
 		public BiomeGeneric(String version) {
-			super(getProject(), FormatExtension.this::replaceStep, BiomeFlavor.BIOME, version);
+			super(getProject(), FormatExtension.this::replaceStep, version);
 		}
 
 		/**
 		 * Sets the language (syntax) of the input files to format. When
 		 * <code>null</code> or the empty string, the language is detected automatically
-		 * from the file name. Currently the following languages are supported by Biome:
+		 * from the file name. Currently, the following languages are supported by Biome:
 		 * <ul>
 		 * <li>js (JavaScript)</li>
 		 * <li>jsx (JavaScript + JSX)</li>
@@ -960,6 +952,44 @@ public class FormatExtension {
 		return new EclipseWtpConfig(type, version);
 	}
 
+	public IdeaConfig idea() {
+		return new IdeaConfig();
+	}
+
+	public class IdeaConfig {
+		private final IdeaStep.IdeaStepBuilder builder;
+
+		IdeaConfig() {
+			this.builder = IdeaStep.newBuilder(getProject().getLayout().getBuildDirectory().getAsFile().get());
+			addStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return builder.build();
+		}
+
+		public IdeaConfig binaryPath(String binaryPath) {
+			requireNonNull(binaryPath);
+			builder.setBinaryPath(binaryPath);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public IdeaConfig codeStyleSettingsPath(String configPath) {
+			requireNonNull(configPath);
+			builder.setCodeStyleSettingsPath(configPath);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public IdeaConfig withDefaults(Boolean withDefaults) {
+			requireNonNull(withDefaults);
+			builder.setUseDefaults(withDefaults);
+			replaceStep(createStep());
+			return this;
+		}
+	}
+
 	/**
 	 * <pre>
 	 * spotless {
@@ -1061,7 +1091,9 @@ public class FormatExtension {
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
 		if (toggleFence != null) {
-			steps = List.of(toggleFence.preserveWithin(this.steps));
+			// need a mutable List, 'steps' is mutated by 'steps.replaceAll()' below
+			steps = new ArrayList<>();
+			steps.add(toggleFence.preserveWithin(this.steps));
 		} else {
 			steps = this.steps;
 		}

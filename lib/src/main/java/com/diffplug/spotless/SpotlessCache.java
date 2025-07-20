@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,6 @@ import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Spotless' global cache. {@link SpotlessCache#clear()} should be called
@@ -64,12 +62,10 @@ public final class SpotlessCache {
 
 	final Map<SerializedKey, URLClassLoader> cache = new HashMap<>();
 
-	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
 	synchronized ClassLoader classloader(JarState state) {
 		return classloader(state, state);
 	}
 
-	@SuppressFBWarnings("DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED")
 	synchronized ClassLoader classloader(Serializable key, JarState state) {
 		SerializedKey serializedKey = new SerializedKey(key);
 		return cache

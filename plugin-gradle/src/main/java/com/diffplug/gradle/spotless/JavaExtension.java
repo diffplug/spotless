@@ -41,6 +41,7 @@ import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import com.diffplug.spotless.java.RemoveWildcardImportsStep;
 
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
 	static final String NAME = "java";
@@ -149,6 +150,10 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public void removeUnusedImports(String formatter) {
 		addStep(RemoveUnusedImportsStep.create(formatter, provisioner()));
+	}
+
+	public void removeWildcardImports() {
+		addStep(RemoveWildcardImportsStep.create());
 	}
 
 	/** Uses the <a href="https://github.com/google/google-java-format">google-java-format</a> jar to format source code. */
@@ -446,7 +451,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		}
 
 		// An id of a mutator (see IMutator.getIds()) or
-		// tThe fully qualified name of a class implementing eu.solven.cleanthat.engine.java.refactorer.meta.IMutator
+		// The fully qualified name of a class implementing eu.solven.cleanthat.engine.java.refactorer.meta.IMutator
 		public CleanthatJavaConfig addMutator(String mutator) {
 			this.mutators.add(mutator);
 			replaceStep(createStep());

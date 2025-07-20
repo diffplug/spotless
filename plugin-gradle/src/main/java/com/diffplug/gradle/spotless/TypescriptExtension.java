@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.gradle.api.Project;
 
 import com.diffplug.gradle.spotless.JavascriptExtension.EslintBaseConfig;
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.npm.EslintConfig;
 import com.diffplug.spotless.npm.EslintFormatterStep;
 import com.diffplug.spotless.npm.EslintTypescriptConfig;
@@ -73,11 +72,9 @@ public class TypescriptExtension extends FormatExtension {
 
 		private Map<String, Object> config = Collections.emptyMap();
 
-		@Nullable
-		TsConfigFileType configFileType = null;
+		@Nullable TsConfigFileType configFileType = null;
 
-		@Nullable
-		Object configFilePath = null;
+		@Nullable Object configFilePath = null;
 
 		private final Map<String, String> devDependencies;
 
@@ -198,8 +195,7 @@ public class TypescriptExtension extends FormatExtension {
 
 	public class TypescriptEslintConfig extends EslintBaseConfig<TypescriptEslintConfig> {
 
-		@Nullable
-		Object typescriptConfigFilePath = null;
+		@Nullable Object typescriptConfigFilePath = null;
 
 		public TypescriptEslintConfig(Map<String, String> devDependencies) {
 			super(getProject(), TypescriptExtension.this::replaceStep, devDependencies);
@@ -254,7 +250,7 @@ public class TypescriptExtension extends FormatExtension {
 		 * @param version Biome version to use.
 		 */
 		public BiomeTs(String version) {
-			super(getProject(), TypescriptExtension.this::replaceStep, BiomeFlavor.BIOME, version);
+			super(getProject(), TypescriptExtension.this::replaceStep, version);
 		}
 
 		@Override

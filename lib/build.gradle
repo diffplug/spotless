@@ -76,11 +76,12 @@ dependencies {
 	testCommonImplementation "org.junit.jupiter:junit-jupiter:$VER_JUNIT"
 	testCommonImplementation "org.assertj:assertj-core:$VER_ASSERTJ"
 	testCommonImplementation "com.diffplug.durian:durian-testlib:$VER_DURIAN"
+	testCommonImplementation projects.testlib
 	testCommonRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
 	// GLUE CODE (alphabetic order please)
 	// cleanthat
-	String VER_CLEANTHAT='2.22'
+	String VER_CLEANTHAT='2.23'
 	cleanthatCompileOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	compatCleanthat2Dot1CompileAndTestOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	// diktat old supported version 1.x
@@ -90,14 +91,14 @@ dependencies {
 	// flexmark
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.8'
 	// gherkin
-	gherkinCompileOnly 'io.cucumber:gherkin-utils:9.0.0'
+	gherkinCompileOnly 'io.cucumber:gherkin-utils:9.2.0'
 	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.17'
 	// googleJavaFormat
 	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.24.0'
 	// gson
-	gsonCompileOnly 'com.google.code.gson:gson:2.11.0'
+	gsonCompileOnly 'com.google.code.gson:gson:2.13.1'
 	// jackson
-	String VER_JACKSON='2.18.1'
+	String VER_JACKSON='2.19.2'
 	jacksonCompileOnly "com.fasterxml.jackson.core:jackson-databind:$VER_JACKSON"
 	jacksonCompileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$VER_JACKSON"
 	// ktfmt
@@ -138,6 +139,7 @@ dependencies {
 spotbugs {
 	// LOW|MEDIUM|DEFAULT|HIGH (low = sensitive to even minor mistakes).
 	reportLevel = com.github.spotbugs.snom.Confidence.valueOf('LOW')
+	excludeFilter = file("spotbugs-exclude.xml")
 }
 
 apply from: rootProject.file('gradle/special-tests.gradle')

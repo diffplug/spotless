@@ -10,10 +10,42 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+* Allow specifying path to Biome JSON config file directly in `biome` step. Requires biome 2.x. ([#2548](https://github.com/diffplug/spotless/pull/2548))
+- `GitPrePushHookInstaller`, a reusable library component for installing a Git `pre-push` hook that runs formatter checks.
+
+## Changed
+* Bump default `gson` version to latest `2.11.0` -> `2.13.1`. ([#2414](https://github.com/diffplug/spotless/pull/2414))
+* Bump default `jackson` version to latest `2.18.1` -> `2.19.2`. ([#2558](https://github.com/diffplug/spotless/pull/2558))
+* Bump default `gherkin-utils` version to latest `9.0.0` -> `9.2.0`. ([#2408](https://github.com/diffplug/spotless/pull/2408))
+* Bump default `cleanthat` version to latest `2.22` -> `2.23`. ([#2556](https://github.com/diffplug/spotless/pull/2556))
+
+## [3.2.0] - 2025-07-07
+### Added
+* Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020), [#2535](https://github.com/diffplug/spotless/pull/2535))
+* Add support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
+* scalafmt: enforce version consistency between the version configured in Spotless and the version declared in Scalafmt config file ([#2460](https://github.com/diffplug/spotless/issues/2460))
+### Fixed
+* `SortPom` disable expandEmptyElements, to avoid empty body warnings. ([#2520](https://github.com/diffplug/spotless/pull/2520))
+* Fix biome formatter for new major release 2.x of biome ([#2537](https://github.com/diffplug/spotless/pull/2537))
+* Make sure npm-based formatters use the correct `node_modules` directory when running in parallel. ([#2542](https://github.com/diffplug/spotless/pull/2542))
+### Changed
+* Bump internal dependencies for npm-based formatters ([#2542](https://github.com/diffplug/spotless/pull/2542))
+
+## [3.1.2] - 2025-05-27
+### Fixed
+* Fix `UnsupportedOperationException` in the Gradle plugin when using `targetExcludeContent[Pattern]` ([#2487](https://github.com/diffplug/spotless/pull/2487))
+* pgp key had expired, this and future releases will be signed by new key ([details](https://github.com/diffplug/spotless/discussions/2464))
+### Changed
+* Bump default `eclipse` version to latest `4.34` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
+* Bump default `greclipse` version to latest `4.32` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
+
+## [3.1.1] - 2025-04-07
 ### Changed
 * Allow setting Eclipse XML config from a string, not only from files ([#2361](https://github.com/diffplug/spotless/pull/2361))
 * Use palantir-java-format 2.57.0 on Java 21. ([#2447](https://github.com/diffplug/spotless/pull/2447))
 * Re-try `npm install` with `--prefer-online` after `ERESOLVE` error. ([#2448](https://github.com/diffplug/spotless/pull/2448))
+* Allow multiple npm-based formatters having the same module dependencies, to share a `node_modules` dir without race conditions. [#2462](https://github.com/diffplug/spotless/pull/2462))
 
 ## [3.1.0] - 2025-02-20
 ### Added
@@ -397,8 +429,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [2.26.0] - 2022-06-05
 ### Added
 * Support for `editorConfigOverride` in `ktlint`. ([#1218](https://github.com/diffplug/spotless/pull/1218) fixes [#1193](https://github.com/diffplug/spotless/issues/1193))
-### Fixed
-* `google-java-format` and `RemoveUnusedImportsStep` works on JDK16+ without jvm args workaround. ([#1224](https://github.com/diffplug/spotless/pull/1224) fixes [#834](https://github.com/diffplug/spotless/issues/834))
 
 ## [2.25.3] - 2022-05-10
 ### Fixed

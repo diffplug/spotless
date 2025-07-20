@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![MavenCentral](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-2.44.3-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.44.3/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-2.45.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/2.45.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -37,16 +37,17 @@ user@machine repo % mvn spotless:check
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Git hook (optional)](#git-hook)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
-  - [Sql](#sql) ([dbeaver](#dbeaver))
+  - [Sql](#sql) ([dbeaver](#dbeaver), [prettier](#prettier), [IntelliJ IDEA](#intellij-idea))
   - [Maven Pom](#maven-pom) ([sortPom](#sortpom))
   - [Markdown](#markdown) ([flexmark](#flexmark))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Biome](#biome))
@@ -61,6 +62,7 @@ user@machine repo % mvn spotless:check
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
     - [Biome](#biome) ([binary detection](#biome-binary), [config file](#biome-configuration-file), [input language](#biome-input-language))
+    - [IntelliJ IDEA](#intellij-idea)
 - **Language independent**
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
@@ -144,7 +146,20 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 
 Spotless requires Maven to be running on JRE 11+. To use JRE 8, go back to [`2.30.0` or older](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2300---2023-01-13).
 
-<a name="applying-to-java-source"></a>
+
+### Git hook
+
+If you want, you can run `mvn spotless:install-git-pre-push-hook` and it will install a hook such that
+
+1. When you push, it runs `spotless:check`
+2. If formatting issues are found:
+   - It automatically runs `spotless:apply` to fix them
+   - Aborts the push with a message
+   - You can then commit the changes and push again
+
+This ensures your code is always clean before it leaves your machine.
+
+If you prefer instead to have a "pre-commit" hook so that every single commit is clean, see [#623](https://github.com/diffplug/spotless/issues/623) for a workaround or to contribute a permanent fix.
 
 ### Binding to maven phase
 
@@ -175,6 +190,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
 </executions>
 ```
 
+<a name="applying-to-java-source"></a>
+
 ## Java
 
 [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/Java.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java).
@@ -194,6 +211,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <googleJavaFormat /> <!-- has its own section below -->
     <eclipse />          <!-- has its own section below -->
     <prettier />         <!-- has its own section below -->
+    <idea />             <!-- has its own section below -->
 
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
@@ -210,6 +228,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
+    <removeWildcardImports /> <!-- drop any import ending with '*' -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
@@ -226,6 +245,12 @@ any other maven phase (i.e. compile) then it can be configured as below;
 <removeUnusedImports>
   <engine>google-java-format</engine>    <!-- optional. Defaults to `google-java-format`. Can be switched to `cleanthat-javaparser-unnecessaryimport` (e.g. to process JDK17 source files with a JDK8+ Runtime) -->
 </removeUnusedImports>
+```
+
+### removeWildcardImports
+
+```xml
+<removeWildcardImports/>
 ```
 
 ### google-java-format
@@ -658,6 +683,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
     <dbeaver />  <!-- has its own section below -->
     <prettier /> <!-- has its own section below -->
+    <idea />     <!-- has its own section below -->
   </sql>
 </configuration>
 ```
@@ -1520,9 +1546,9 @@ Note regarding CSS: Biome supports formatting CSS as of 1.8.0 (experimental, opt
 
       <biome>
         <!-- Download Biome from the network if not already downloaded, see below for more info  -->
-        <version>1.2.0</version>
+        <version>2.1.1</version>
 
-        <!-- (optional) Path to the directory with the biome.json conig file -->
+        <!-- (optional) Path to the directory with the biome.json config file -->
         <configPath>${project.basedir}/path/to/config/dir</configPath>
 
         <!-- (optional) Biome will auto-detect the language based on the file extension. -->
@@ -1573,7 +1599,7 @@ To download the Biome binary from the network, just specify a version:
 
 ```xml
 <biome>
-  <version>1.2.0</version>
+  <version>2.1.0</version>
 </biome>
 ```
 
@@ -1584,7 +1610,7 @@ Biome binaries (defaults to `~/.m2/repository/com/diffplug/spotless/spotless-dat
 
 ```xml
 <biome>
-  <version>1.2.0</version>
+  <version>2.1.0</version>
   <!-- Relative paths are resolved against the project's base directory -->
   <downloadDir>${user.home}/biome</downloadDir>
 </biome>
@@ -1621,7 +1647,28 @@ Biome is used. To use a custom configuration:
 <biome>
   <!-- Must point to the directory with the "biome.json" config file -->
   <!-- Relative paths are resolved against the project's base directory -->
+  <!-- Starting with biome 2.x, you can also pass the path to a JSON config file directly. -->
   <configPath>${project.basedir}</configPath>
+</biome>
+```
+
+__If spotless does not format any files__, this might be because you excluded those files in you biome.json
+configuration file. If you are using biome 2.x, you can create a custom config file for spotless and inherit from
+your main config file like this:
+
+```jsonc
+// biome-spotless.json
+{
+  "extends": "./biome.json",
+  "include": ["**"]
+}
+```
+
+Then simply specify the path to this file in your spotless configuration:
+
+```xml
+<biome>
+  <configPath>${project.basedir}/biome-spotless.json</configPath>
 </biome>
 ```
 
@@ -1659,9 +1706,47 @@ The following languages are currently recognized:
 * `ts?` -- TypeScript, with or without JSX, depending on the file extension
 * `json` -- JSON
 
+## IntelliJ IDEA
+
+[homepage](https://www.jetbrains.com/idea/). [changelog](https://www.jetbrains.com/idea/whatsnew/).
+
+`IntelliJ IDEA` is a powerful IDE for java, kotlin and many more languages. There are [specific variants](https://www.jetbrains.com/products/) for almost any modern language
+and a plethora of [plugins](https://plugins.jetbrains.com/).
+
+Spotless provides access to IntelliJ IDEA's command line formatter.
+
+```xml
+<configuration>
+  <formats>
+    <format>
+      <includes>
+        <include>src/main/**/*.java</include>
+        <include>jbang/*.java</include>
+      </includes>
+
+      <idea>
+        <!-- if you have custom formatting rules, see below for how to extract/reference them -->
+        <codeStyleSettingsPath>/path/to/config</codeStyleSettingsPath>
+        <!-- disable using default code style settings when no custom code style is defined for a file type (default: true) -->
+        <withDefaults>false</withDefaults>
+        <!-- if idea is not on your path, you must specify the path to the executable -->
+        <binaryPath>/path/to/idea</binaryPath>
+      </idea>
+    </format>
+  </formats>
+</configuration>
+```
+
+### How to generate code style settings files
+See [here](../INTELLIJ_IDEA_SCREENSHOTS.md) for an explanation on how to extract or reference existing code style files.
+
+### Limitations
+- Currently, only IntelliJ IDEA is supported - none of the other jetbrains IDE. Consider opening a PR if you want to change this.
+- Launching IntelliJ IDEA from the command line is pretty expensive and as of now, we do this for each file. If you want to change this, consider opening a PR.
+
 ## Generic steps
 
-[Prettier](#prettier), [eclipse wtp](#eclipse-web-tools-platform), and [license header](#license-header) are available in every format, and they each have their own section. As mentioned in the [quickstart](#quickstart), there are a variety of simple generic steps which are also available in every format, here are examples of these:
+[Prettier](#prettier), [eclipse wtp](#eclipse-web-tools-platform), [IntelliJ IDEA](#intellij-idea) and [license header](#license-header) are available in every format, and they each have their own section. As mentioned in the [quickstart](#quickstart), there are a variety of simple generic steps which are also available in every format, here are examples of these:
 
 ```xml
 <trimTrailingWhitespace /> <!-- trim trailing whitespaces -->

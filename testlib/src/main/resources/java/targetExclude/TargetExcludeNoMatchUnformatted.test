@@ -1,0 +1,3 @@
+import foo.Bar;
+
+class Bar {}

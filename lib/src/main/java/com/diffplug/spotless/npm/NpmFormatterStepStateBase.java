@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -32,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
 import com.diffplug.spotless.ThrowingEx;
 
@@ -69,7 +71,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 		Runtime(NpmFormatterStepStateBase parent) {
 			this.parent = parent;
-			this.nodeServerLayout = new NodeServerLayout(parent.locations.buildDir(), parent.npmConfig.getPackageJsonContent());
+			this.nodeServerLayout = new NodeServerLayout(parent.locations.buildDir(), parent.npmConfig.getPackageJsonContent(), parent.npmConfig.getServeScriptContent());
 			this.nodeServeApp = new NodeServeApp(nodeServerLayout, parent.npmConfig, parent.locations);
 		}
 
@@ -87,14 +89,17 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		}
 
 		protected void assertNodeServerDirReady() throws IOException {
-			if (needsPrepareNodeServerLayout()) {
-				// reinstall if missing
-				prepareNodeServerLayout();
-			}
-			if (needsPrepareNodeServer()) {
-				// run npm install if node_modules is missing
-				prepareNodeServer();
-			}
+			ExclusiveFolderAccess.forFolder(nodeServerLayout.nodeModulesDir())
+					.runExclusively(() -> {
+						if (needsPrepareNodeServerLayout()) {
+							// reinstall if missing
+							prepareNodeServerLayout();
+						}
+						if (needsPrepareNodeServer()) {
+							// run npm install if node_modules is missing
+							prepareNodeServer();
+						}
+					});
 		}
 
 		protected boolean needsPrepareNodeServer() {
@@ -109,12 +114,13 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			assertNodeServerDirReady();
 			LongRunningProcess server = null;
 			try {
-				// The npm process will output the randomly selected port of the http server process to 'server.port' file
+				final UUID nodeServerInstanceId = UUID.randomUUID();
+				// The npm process will output the randomly selected port of the http server process to 'server-<id>.port' file
 				// so in order to be safe, remove such a file if it exists before starting.
-				final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server.port");
+				final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), String.format("server-%s.port", nodeServerInstanceId));
 				NpmResourceHelper.deleteFileIfExists(serverPortFile);
 				// start the http server in node
-				server = nodeServeApp.startNpmServeProcess();
+				server = nodeServeApp.startNpmServeProcess(nodeServerInstanceId);
 
 				// await the readiness of the http server - wait for at most 60 seconds
 				try {
@@ -124,10 +130,12 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 					try {
 						if (server.isAlive()) {
 							server.destroyForcibly();
-							server.waitFor();
+							ProcessRunner.Result result = server.result();
+							logger.info("Launching npm server process failed. Process result:\n{}", result);
 						}
 					} catch (Throwable t) {
-						// ignore
+						ProcessRunner.Result result = ThrowingEx.get(server::result);
+						logger.debug("Unable to forcibly end the server process. Process result:\n{}", result, t);
 					}
 					throw timeoutException;
 				}

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+
+##### SPOTLESS HOOK START #####
+SPOTLESS_EXECUTOR=${executor}
+if ! $SPOTLESS_EXECUTOR ${checkCommand} ; then
+    echo 1>&2 "spotless found problems, running ${applyCommand}; commit the result and re-push"
+    $SPOTLESS_EXECUTOR ${applyCommand}
+    exit 1
+fi
+##### SPOTLESS HOOK END #####

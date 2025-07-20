@@ -24,8 +24,6 @@ import java.util.Objects;
 
 import com.diffplug.spotless.yaml.SerializeToByteArrayHack;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Gradle requires three things:
  * - Gradle defines cache equality based on your serialized representation
@@ -78,7 +76,6 @@ public class ConfigurationCacheHackList implements java.io.Serializable {
 		}
 	}
 
-	@SuppressFBWarnings("MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT")
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
 		boolean serializeToByteArrayFirst = in.readBoolean();
 		optimizeForEquality = in.readBoolean();

@@ -20,8 +20,8 @@ if (project.parent == null) {
 	nexusPublishing {
 		repositories {
 			sonatype {
-				nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-				snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+				nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+				snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
 				username = System.env['ORG_GRADLE_PROJECT_nexus_user']
 				password = decode64('ORG_GRADLE_PROJECT_nexus_pass64')
 			}
@@ -181,7 +181,7 @@ if (System.env['JITPACK'] == 'true' || version.endsWith('-SNAPSHOT')) {
 } else {
 	signing {
 		String gpg_key = decode64('ORG_GRADLE_PROJECT_gpg_key64')
-		useInMemoryPgpKeys(gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])
+		useInMemoryPgpKeys('0x4272C851', gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])
 		sign(publishing.publications)
 	}
 

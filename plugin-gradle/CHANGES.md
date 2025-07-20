@@ -3,9 +3,45 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Allow specifying path to Biome JSON config file directly in `biome` step. Requires biome 2.x. ([#2548](https://github.com/diffplug/spotless/pull/2548))
+- `spotlessInstallGitPrePushHook` task, which installs a Git `pre-push` hook to run `spotlessCheck` and `spotlessApply`.  
+  Uses shared implementation from `GitPrePushHookInstaller`.  
+  [#2553](https://github.com/diffplug/spotless/pull/2553)
+
+## Changed
+* Bump default `gson` version to latest `2.11.0` -> `2.13.1`. ([#2414](https://github.com/diffplug/spotless/pull/2414))
+* Bump default `jackson` version to latest `2.18.1` -> `2.19.2`. ([#2558](https://github.com/diffplug/spotless/pull/2558))
+* Bump default `gherkin-utils` version to latest `9.0.0` -> `9.2.0`. ([#2408](https://github.com/diffplug/spotless/pull/2408))
+* Bump default `cleanthat` version to latest `2.22` -> `2.23`. ([#2556](https://github.com/diffplug/spotless/pull/2556))
+
+## [7.1.0] - 2025-07-07
+### Added
+* Support for `idea` ([#2020](https://github.com/diffplug/spotless/pull/2020), [#2535](https://github.com/diffplug/spotless/pull/2535))
+* Add support for removing wildcard imports via `removeWildcardImports` step. ([#2517](https://github.com/diffplug/spotless/pull/2517))
+### Fixed
+* Fix biome formatter for new major release 2.x of biome ([#2537](https://github.com/diffplug/spotless/pull/2537))
+* Make sure npm-based formatters use the correct `node_modules` directory when running in parallel. ([#2542](https://github.com/diffplug/spotless/pull/2542))
+### Changed
+* Bump internal dependencies for npm-based formatters ([#2542](https://github.com/diffplug/spotless/pull/2542))
+
+### Changed
+* scalafmt: enforce version consistency between the version configured in Spotless and the version declared in Scalafmt config file ([#2460](https://github.com/diffplug/spotless/issues/2460))
+
+## [7.0.4] - 2025-05-27
+### Fixed
+* Fix `UnsupportedOperationException` in the Gradle plugin when using `targetExcludeContent[Pattern]` ([#2487](https://github.com/diffplug/spotless/pull/2487))
+### Changed
+* Bump default `eclipse` version to latest `4.34` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
+* Bump default `greclipse` version to latest `4.32` -> `4.35`. ([#2458](https://github.com/diffplug/spotless/pull/2458))
+* pgp key had expired, this and future releases will be signed by new key ([details](https://github.com/diffplug/spotless/discussions/2464))
+
+## [7.0.3] - 2025-04-07
 ### Changed
 * Use palantir-java-format 2.57.0 on Java 21. ([#2447](https://github.com/diffplug/spotless/pull/2447))
 * Re-try `npm install` with `--prefer-online` after `ERESOLVE` error. ([#2448](https://github.com/diffplug/spotless/pull/2448))
+* Apply Gradle's strict plugin types validation to the Spotless plugin. ([#2454](https://github.com/diffplug/spotless/pull/2454))
+* Allow multiple npm-based formatters having the same module dependencies, to share a `node_modules` dir without race conditions. [#2462](https://github.com/diffplug/spotless/pull/2462))
 
 ## [7.0.2] - 2025-01-14
 ### Fixed
