@@ -37,6 +37,7 @@ user@machine repo % mvn spotless:check
 
 - [**Quickstart**](#quickstart)
   - [Requirements](#requirements)
+  - [Git hook (optional)](#git-hook)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
   - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
@@ -145,7 +146,20 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 
 Spotless requires Maven to be running on JRE 11+. To use JRE 8, go back to [`2.30.0` or older](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2300---2023-01-13).
 
-<a name="applying-to-java-source"></a>
+
+### Git hook
+
+If you want, you can run `mvn spotless:install-git-pre-push-hook` and it will install a hook such that
+
+1. When you push, it runs `spotless:check`
+2. If formatting issues are found:
+   - It automatically runs `spotless:apply` to fix them
+   - Aborts the push with a message
+   - You can then commit the changes and push again
+
+This ensures your code is always clean before it leaves your machine.
+
+If you prefer instead to have a "pre-commit" hook so that every single commit is clean, see [#623](https://github.com/diffplug/spotless/issues/623) for a workaround or to contribute a permanent fix.
 
 ### Binding to maven phase
 
@@ -175,6 +189,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
   </execution>
 </executions>
 ```
+
+<a name="applying-to-java-source"></a>
 
 ## Java
 
