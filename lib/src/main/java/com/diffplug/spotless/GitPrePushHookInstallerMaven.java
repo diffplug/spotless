@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static com.diffplug.spotless.GitPrePushHookInstaller.Executor.MAVEN;
+
 import java.io.File;
 
 /**
@@ -23,11 +25,8 @@ import java.io.File;
  */
 public class GitPrePushHookInstallerMaven extends GitPrePushHookInstaller {
 
-	private final File mvnw;
-
 	public GitPrePushHookInstallerMaven(GitPreHookLogger logger, File root) {
 		super(logger, root);
-		this.mvnw = root.toPath().resolve("mvnw").toFile();
 	}
 
 	/**
@@ -35,15 +34,6 @@ public class GitPrePushHookInstallerMaven extends GitPrePushHookInstaller {
 	 */
 	@Override
 	protected String preHookContent() {
-		return preHookTemplate(executorPath(), "spotless:check", "spotless:apply");
-	}
-
-	private String executorPath() {
-		if (mvnw.exists()) {
-			return mvnw.getAbsolutePath();
-		}
-
-		logger.info("Maven wrapper is not installed, using global maven");
-		return "mvn";
+		return preHookTemplate(MAVEN, "spotless:check", "spotless:apply");
 	}
 }

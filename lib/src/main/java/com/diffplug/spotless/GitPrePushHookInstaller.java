@@ -192,12 +192,12 @@ public abstract class GitPrePushHookInstaller {
 	 * @param commandApply  The command to apply corrections.
 	 * @return A string template representing the Spotless Git pre-push hook content.
 	 */
-	protected String preHookTemplate(String executor, String commandCheck, String commandApply) {
+	protected String preHookTemplate(Executor executor, String commandCheck, String commandApply) {
 		var spotlessHook = "";
 
 		spotlessHook += "\n";
 		spotlessHook += "\n" + HOOK_HEADER;
-		spotlessHook += "\nSPOTLESS_EXECUTOR=" + executor;
+		spotlessHook += "\nSPOTLESS_EXECUTOR=" + executorPath(executor);
 		spotlessHook += "\nif ! $SPOTLESS_EXECUTOR " + commandCheck + " ; then";
 		spotlessHook += "\n    echo 1>&2 \"spotless found problems, running " + commandApply + "; commit the result and re-push\"";
 		spotlessHook += "\n    $SPOTLESS_EXECUTOR " + commandApply;
@@ -207,6 +207,58 @@ public abstract class GitPrePushHookInstaller {
 		spotlessHook += "\n";
 
 		return spotlessHook;
+	}
+
+	/**
+	 * Determines the path to the build tool executor (Maven or Gradle).
+	 * This method first checks for the existence of a wrapper script in the project root.
+	 * If the wrapper exists, returns a relative path to it, otherwise returns the global command.
+	 *
+	 * @param executor The build tool executor (GRADLE or MAVEN)
+	 * @return The path to the executor - either the wrapper script path (e.g., "./gradlew")
+	 *         or the global command (e.g., "gradle")
+	 */
+	private String executorPath(Executor executor) {
+		final var wrapper = executorWrapperFile(executor);
+		if (wrapper.exists()) {
+			return "./" + wrapper.getName();
+		}
+
+		logger.info("Local %s wrapper (%s) not found, falling back to global command '%s'",
+			executor.name().toLowerCase(), executor.wrapper, executor.global);
+
+		return executor.global;
+	}
+
+	/**
+	 * Resolves the wrapper script file for the specified build tool executor.
+	 * On Windows systems, checks for both .bat and .cmd extensions.
+	 * On non-Windows systems, uses the wrapper name without extension.
+	 *
+	 * @param executor The build tool executor (GRADLE or MAVEN)
+	 * @return The File object representing the wrapper script
+	 */
+	private File executorWrapperFile(Executor executor) {
+		if (isWindows()) {
+			final var bat = root.toPath().resolve(executor.wrapper + ".bat").toFile();
+			if (bat.exists()) {
+				return bat;
+			}
+
+			return root.toPath().resolve(executor.wrapper + ".cmd").toFile();
+		}
+
+		return root.toPath().resolve(executor.wrapper).toFile();
+	}
+
+	/**
+	 * Checks if the current operating system is Windows.
+	 * This is determined by checking if the "os.name" system property contains "win".
+	 *
+	 * @return true if the current OS is Windows, false otherwise
+	 */
+	private boolean isWindows() {
+		return System.getProperty("os.name").toLowerCase().startsWith("win");
 	}
 
 	/**
@@ -240,6 +292,19 @@ public abstract class GitPrePushHookInstaller {
 	private void writeFile(File file, String content, boolean append) throws IOException {
 		try (final var writer = new FileWriter(file, UTF_8, append)) {
 			writer.write(content);
+		}
+	}
+
+	public enum Executor {
+		GRADLE("gradlew", "gradle"),
+		MAVEN("mvnw", "mvn"), ;
+
+		public final String wrapper;
+		public final String global;
+
+		Executor(String wrapper, String global) {
+			this.wrapper = wrapper;
+			this.global = global;
 		}
 	}
 

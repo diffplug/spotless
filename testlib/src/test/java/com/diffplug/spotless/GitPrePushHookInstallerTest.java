@@ -15,16 +15,22 @@
  */
 package com.diffplug.spotless;
 
+import static com.diffplug.spotless.GitPrePushHookInstaller.Executor.GRADLE;
+import static com.diffplug.spotless.GitPrePushHookInstaller.Executor.MAVEN;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.GitPrePushHookInstaller.GitPreHookLogger;
 
 class GitPrePushHookInstallerTest extends ResourceHarness {
+	private final static String OS = System.getProperty("os.name");
+
 	private final List<String> logs = new ArrayList<>();
 	private final GitPreHookLogger logger = new GitPreHookLogger() {
 		@Override
@@ -42,6 +48,16 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 			logs.add(String.format(format, arguments));
 		}
 	};
+
+	@BeforeEach
+	public void beforeEach() {
+		System.setProperty("os.name", "linux");
+	}
+
+	@AfterEach
+	public void afterEach() {
+		System.setProperty("os.name", OS);
+	}
 
 	@Test
 	public void should_not_create_pre_hook_file_when_git_is_not_installed() throws Exception {
@@ -71,7 +87,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 		assertThat(logs).hasSize(4);
 		assertThat(logs).element(0).isEqualTo("Installing git pre-push hook");
 		assertThat(logs).element(1).isEqualTo("Git pre-push hook not found, creating it");
-		assertThat(logs).element(2).isEqualTo("Gradle wrapper is not installed, using global gradle");
+		assertThat(logs).element(2).isEqualTo("Local gradle wrapper (gradlew) not found, falling back to global command 'gradle'");
 		assertThat(logs).element(3).isEqualTo("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push").getAbsolutePath());
 
 		final var content = gradleHookContent("git_pre_hook/pre-push.created-tpl", ExecutorType.GLOBAL);
@@ -217,23 +233,117 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 		assertThat(logs).hasSize(4);
 		assertThat(logs).element(0).isEqualTo("Installing git pre-push hook");
 		assertThat(logs).element(1).isEqualTo("Git pre-push hook not found, creating it");
-		assertThat(logs).element(2).isEqualTo("Maven wrapper is not installed, using global maven");
+		assertThat(logs).element(2).isEqualTo("Local maven wrapper (mvnw) not found, falling back to global command 'mvn'");
 		assertThat(logs).element(3).isEqualTo("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push").getAbsolutePath());
 
 		final var content = mavenHookContent("git_pre_hook/pre-push.created-tpl", ExecutorType.GLOBAL);
 		assertFile(".git/hooks/pre-push").hasContent(content);
 	}
 
+	@Test
+	public void should_use_maven_bat_wrapper_when_exists_for_windows() {
+		// given
+		System.setProperty("os.name", "Windows 10");
+		setFile("mvnw.bat").toContent("");
+		setFile("mvnw.cmd").toContent("");
+
+		final var gradle = new GitPrePushHookInstallerMaven(logger, rootFolder());
+
+		// when
+		final var hook = gradle.preHookTemplate(MAVEN, "spotless:check", "spotless:apply");
+
+		// then
+		assertThat(hook).contains("SPOTLESS_EXECUTOR=./mvnw.bat");
+	}
+
+	@Test
+	public void should_use_maven_cmd_wrapper_when_exists_for_windows() {
+		// given
+		System.setProperty("os.name", "Windows 10");
+		setFile("mvnw.cmd").toContent("");
+
+		final var gradle = new GitPrePushHookInstallerMaven(logger, rootFolder());
+
+		// when
+		final var hook = gradle.preHookTemplate(MAVEN, "spotless:check", "spotless:apply");
+
+		// then
+		assertThat(hook).contains("SPOTLESS_EXECUTOR=./mvnw.cmd");
+	}
+
+	@Test
+	public void should_use_maven_global_when_bat_and_cmd_files_not_exists_for_windows() {
+		// given
+		System.setProperty("os.name", "Windows 10");
+		setFile("mvnw").toContent("");
+
+		final var gradle = new GitPrePushHookInstallerMaven(logger, rootFolder());
+
+		// when
+		final var hook = gradle.preHookTemplate(MAVEN, "spotless:check", "spotless:apply");
+
+		// then
+		assertThat(hook).contains("SPOTLESS_EXECUTOR=mvn");
+	}
+
+	@Test
+	public void should_use_gradle_bat_wrapper_when_exists_for_windows() {
+		// given
+		System.setProperty("os.name", "Windows 10");
+		setFile("gradlew.bat").toContent("");
+		setFile("gradlew.cmd").toContent("");
+		setFile("gradlew").toContent("");
+
+		final var gradle = new GitPrePushHookInstallerMaven(logger, rootFolder());
+
+		// when
+		final var hook = gradle.preHookTemplate(GRADLE, "spotlessCheck", "spotlessApply");
+
+		// then
+		assertThat(hook).contains("SPOTLESS_EXECUTOR=./gradlew.bat");
+	}
+
+	@Test
+	public void should_use_gradle_cmd_wrapper_when_exists_for_windows() {
+		// given
+		System.setProperty("os.name", "Windows 10");
+		setFile("gradlew.cmd").toContent("");
+		setFile("gradlew").toContent("");
+
+		final var gradle = new GitPrePushHookInstallerMaven(logger, rootFolder());
+
+		// when
+		final var hook = gradle.preHookTemplate(GRADLE, "spotlessCheck", "spotlessApply");
+
+		// then
+		assertThat(hook).contains("SPOTLESS_EXECUTOR=./gradlew.cmd");
+	}
+
+	@Test
+	public void should_use_gradle_global_when_bat_and_cmd_files_not_exists_for_windows() {
+		// given
+		System.setProperty("os.name", "Windows 10");
+		setFile("gradlew").toContent("");
+
+		final var gradle = new GitPrePushHookInstallerMaven(logger, rootFolder());
+
+		// when
+		final var hook = gradle.preHookTemplate(GRADLE, "spotlessCheck", "spotlessApply");
+
+		// then
+		assertThat(hook).contains("SPOTLESS_EXECUTOR=gradle");
+	}
+
 	private String gradleHookContent(String resourcePath, ExecutorType executorType) {
 		return getTestResource(resourcePath)
-				.replace("${executor}", executorType == ExecutorType.WRAPPER ? newFile("gradlew").getAbsolutePath() : "gradle")
+				.replace("${executor}", executorType == ExecutorType.WRAPPER ? "./" + newFile("gradlew").getName() : "gradle")
 				.replace("${checkCommand}", "spotlessCheck")
 				.replace("${applyCommand}", "spotlessApply");
 	}
 
 	private String mavenHookContent(String resourcePath, ExecutorType executorType) {
 		return getTestResource(resourcePath)
-				.replace("${executor}", executorType == ExecutorType.WRAPPER ? newFile("mvnw").getAbsolutePath() : "mvn")
+				.replace("${executor}", executorType == ExecutorType.WRAPPER ? "./" + newFile("mvnw").getName() : "mvn")
 				.replace("${checkCommand}", "spotless:check")
 				.replace("${applyCommand}", "spotless:apply");
 	}
