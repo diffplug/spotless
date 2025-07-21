@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static com.diffplug.spotless.GitPrePushHookInstaller.Executor.GRADLE;
+
 import java.io.File;
 
 /**
@@ -23,14 +25,8 @@ import java.io.File;
  */
 public class GitPrePushHookInstallerGradle extends GitPrePushHookInstaller {
 
-	/**
-	 * The Gradle wrapper file (`gradlew`) located in the root directory of the project.
-	 */
-	private final File gradlew;
-
 	public GitPrePushHookInstallerGradle(GitPreHookLogger logger, File root) {
 		super(logger, root);
-		this.gradlew = root.toPath().resolve("gradlew").toFile();
 	}
 
 	/**
@@ -38,15 +34,6 @@ public class GitPrePushHookInstallerGradle extends GitPrePushHookInstaller {
 	 */
 	@Override
 	protected String preHookContent() {
-		return preHookTemplate(executorPath(), "spotlessCheck", "spotlessApply");
-	}
-
-	private String executorPath() {
-		if (gradlew.exists()) {
-			return gradlew.getAbsolutePath();
-		}
-
-		logger.info("Gradle wrapper is not installed, using global gradle");
-		return "gradle";
+		return preHookTemplate(GRADLE, "spotlessCheck", "spotlessApply");
 	}
 }
