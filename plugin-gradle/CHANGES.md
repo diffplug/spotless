@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [7.2.1] - 2025-07-21
 ### Fixed
 * `spotlessInstallGitPrePushHook` didn't work on windows, now fixed. ([#2562](https://github.com/diffplug/spotless/pull/2562))
 
