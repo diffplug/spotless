@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+* `GitPrePushHookInstaller` didn't work on windows, now fixed. ([#2562](https://github.com/diffplug/spotless/pull/2562))
 
 ## [3.3.0] - 2025-07-20
 ### Added
