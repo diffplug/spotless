@@ -192,8 +192,10 @@ public final class GitAttributesLineEndings {
 			/////////////////////////////////
 			// USER AND SYSTEM-WIDE VALUES //
 			/////////////////////////////////
-			FS.DETECTED.setGitSystemConfig(new File("no-global-git-config-for-spotless")); // this fixes a problem
-			// that was only occurring on Java 11. If we remove support for Java 11, we could probably remove it.
+			FS.DETECTED.setGitSystemConfig(new File("no-global-git-config-for-spotless"));
+			// ^^^ fixes a problem that was only occurring on Java 11. If we remove support for Java 11, we could probably remove it.
+			// EDIT: Wrong, when Java 17 became the baseline it only happens on Java 17. https://github.com/diffplug/spotless/issues/2375#issuecomment-2573885902
+
 			systemConfig = SystemReader.getInstance().openSystemConfig(null, FS.DETECTED);
 			Errors.log().run(systemConfig::load);
 			userConfig = SystemReader.getInstance().openUserConfig(systemConfig, FS.DETECTED);
