@@ -7,6 +7,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * **BREAKING** Bump the required Java to `17`. ([#2375](https://github.com/diffplug/spotless/issues/2375), [#2540](https://github.com/diffplug/spotless/pull/2540))
 * Bump default `google-java-format` version to latest `1.24.0` -> `1.28.0`. ([#2345](https://github.com/diffplug/spotless/pull/2345))
 
+## [2.46.1] - 2025-07-21
+### Fixed
+* `spotless:install-git-pre-push-hook` didn't work on windows, now fixed. ([#2562](https://github.com/diffplug/spotless/pull/2562))
+
 ## [2.46.0] - 2025-07-20
 ### Added
 * Allow specifying path to Biome JSON config file directly in `biome` step. Requires biome 2.x. ([#2548](https://github.com/diffplug/spotless/pull/2548))

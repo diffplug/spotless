@@ -56,6 +56,11 @@ public class MavenRunner {
 		return this;
 	}
 
+	public MavenRunner withEnvironment(String key, String value) {
+		environment.put(key, value);
+		return this;
+	}
+
 	public MavenRunner withRunner(ProcessRunner runner) {
 		this.runner = runner;
 		return this;
