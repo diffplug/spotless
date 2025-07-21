@@ -17,7 +17,9 @@ package com.diffplug.spotless.maven;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,11 +43,8 @@ class SpotlessInstallPrePushHookMojoTest extends MavenIntegrationHarness {
 		assertThat(output).contains("Git pre-push hook not found, creating it");
 		assertThat(output).contains("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push"));
 
-		final var content = getTestResource("git_pre_hook/pre-push.created-tpl")
-				.replace("${executor}", newFile("mvnw").getAbsolutePath())
-				.replace("${checkCommand}", "spotless:check")
-				.replace("${applyCommand}", "spotless:apply");
-		assertFile(".git/hooks/pre-push").hasContent(content);
+		final var hookContent = getHookContent("git_pre_hook/pre-push.created-tpl");
+		assertFile(".git/hooks/pre-push").hasContent(hookContent);
 	}
 
 	@Test
@@ -67,11 +66,8 @@ class SpotlessInstallPrePushHookMojoTest extends MavenIntegrationHarness {
 		assertThat(output).contains("Installing git pre-push hook");
 		assertThat(output).contains("Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push"));
 
-		final var content = getTestResource("git_pre_hook/pre-push.existing-installed-end-tpl")
-				.replace("${executor}", newFile("mvnw").getAbsolutePath())
-				.replace("${checkCommand}", "spotless:check")
-				.replace("${applyCommand}", "spotless:apply");
-		assertFile(".git/hooks/pre-push").hasContent(content);
+		final var hookContent = getHookContent("git_pre_hook/pre-push.existing-installed-end-tpl");
+		assertFile(".git/hooks/pre-push").hasContent(hookContent);
 	}
 
 	private void writePomWithJavaLicenseHeaderStep() throws IOException {
@@ -79,5 +75,27 @@ class SpotlessInstallPrePushHookMojoTest extends MavenIntegrationHarness {
 				"<licenseHeader>",
 				"  <file>${basedir}/license.txt</file>",
 				"</licenseHeader>");
+	}
+
+	private String getHookContent(String resourceFile) {
+		final var executorFile = executorWrapperFile();
+		final var executorPath = executorFile.exists() ? executorFile.getName() : "mvn";
+		return getTestResource(resourceFile)
+				.replace("${executor}", "./" + executorPath)
+				.replace("${checkCommand}", "spotless:check")
+				.replace("${applyCommand}", "spotless:apply");
+	}
+
+	private File executorWrapperFile() {
+		if (System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("win")) {
+			final var bat = newFile("mvnw.bat");
+			if (bat.exists()) {
+				return bat;
+			}
+
+			return newFile("mvnw.cmd");
+		}
+
+		return newFile("mvnw");
 	}
 }
