@@ -137,10 +137,11 @@ All the generic steps live in [`FormatExtension`](https://javadoc.io/doc/com.dif
 
 ### Requirements
 
-Spotless requires JRE 11+ and Gradle 6.1.1 or newer.
+Spotless requires JRE 17+ and Gradle 7.3 or newer.
 
+- If you're stuck on JRE 11, use [`id 'com.diffplug.spotless' version '7.2.1'` or older](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#721---2025-07-21).
 - If you're stuck on JRE 8, use [`id 'com.diffplug.spotless' version '6.13.0'` or older](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#6130---2023-01-14).
-- If you're stuck on an older version of Gradle, [`id 'com.diffplug.gradle.spotless' version '4.5.1'` supports all the way back to Gradle 2.x](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#451---2020-07-04).
+- If you're stuck on a very old version of Gradle, [`id 'com.diffplug.gradle.spotless' version '4.5.1'` supports all the way back to Gradle 2.x](https://github.com/diffplug/spotless/blob/main/plugin-gradle/CHANGES.md#451---2020-07-04).
 
 ### Git hook
 

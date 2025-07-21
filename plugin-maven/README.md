@@ -144,8 +144,10 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 
 ### Requirements
 
-Spotless requires Maven to be running on JRE 11+. To use JRE 8, go back to [`2.30.0` or older](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2300---2023-01-13).
+Spotless requires Maven to be running on JRE 17+. 
 
+- If you're stuck on JRE 11, use [`2.46.1`](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2461---2025-07-21).
+- If you're stuck on JRE 8, go back to [`2.30.0` or older](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2300---2023-01-13).
 
 ### Git hook
 
