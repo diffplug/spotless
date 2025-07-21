@@ -77,12 +77,10 @@ tasks.withType(Test).configureEach {
 
 apply plugin: 'dev.equo.p2deps'
 p2deps {
-	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
-		into 'cdtCompileOnly', {
-			p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-			p2repo 'https://download.eclipse.org/tools/cdt/releases/11.0/'
-			install 'org.eclipse.cdt.core'
-		}
+	into 'cdtCompileOnly', {
+		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
+		p2repo 'https://download.eclipse.org/tools/cdt/releases/11.0/'
+		install 'org.eclipse.cdt.core'
 	}
 	into 'groovyCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
