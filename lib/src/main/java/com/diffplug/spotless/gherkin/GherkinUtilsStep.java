@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import com.diffplug.spotless.Provisioner;
 public class GherkinUtilsStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "io.cucumber:gherkin-utils:";
-	private static final String DEFAULT_VERSION = "9.0.0";
+	private static final String DEFAULT_VERSION = "9.2.0";
 	public static final String NAME = "gherkinUtils";
 
 	private final JarState.Promised jarState;

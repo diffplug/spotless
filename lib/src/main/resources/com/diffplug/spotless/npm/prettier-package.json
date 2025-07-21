@@ -1,6 +1,6 @@
 {
 	"name": "spotless-prettier",
-	"version": "2.0.0",
+	"version": "4.0.0",
 	"description": "Spotless formatter step for running prettier as a rest service.",
 	"repository": "https://github.com/diffplug/spotless",
 	"license": "Apache-2.0",
@@ -9,11 +9,11 @@
 	},
 	"devDependencies": {
 ${devDependencies},
-		"express": "4.18.2",
-		"@moebius/http-graceful-shutdown": "1.1.0"
+		"express": "5.1.0",
+		"http-graceful-shutdown": "3.1.14"
 	},
 	"dependencies": {},
 	"engines": {
-		"node": ">=6"
+		"node": ">= 18"
 	}
 }

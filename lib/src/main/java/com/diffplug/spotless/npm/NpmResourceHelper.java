@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,14 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.diffplug.spotless.ThrowingEx;
 
 final class NpmResourceHelper {
+
+	public static final String MD5_STRING_DELIMITER = "@@@";
+
 	private NpmResourceHelper() {
 		// no instance required
 	}
@@ -140,9 +144,15 @@ final class NpmResourceHelper {
 		return md5(readUtf8StringFromFile(file));
 	}
 
-	static String md5(String fileContent) {
+	static String md5(String fileContent, String... additionalFileContents) {
+		Objects.requireNonNull(fileContent, "fileContent must not be null");
+		Stream<String> additionalFileContentStream = Stream.concat(
+				Stream.of(fileContent),
+				Stream.of(additionalFileContents));
 		MessageDigest md = ThrowingEx.get(() -> MessageDigest.getInstance("MD5"));
-		md.update(fileContent.getBytes(StandardCharsets.UTF_8));
+		String stringToHash = additionalFileContentStream.collect(Collectors.joining(MD5_STRING_DELIMITER));
+		md.update(stringToHash.getBytes(StandardCharsets.UTF_8));
+
 		byte[] digest = md.digest();
 		// convert byte array digest to hex string
 		StringBuilder sb = new StringBuilder();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package com.diffplug.gradle.spotless;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
 
 import org.junit.jupiter.api.Test;
 import org.owasp.encoder.Encode;
@@ -231,6 +233,34 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 	}
 
 	/**
+	 * Tests that a path to a Biome config JSON file can be specified (requires biome 2.x).
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void configPathFile() throws Exception {
+		var path = newFile("configs").getAbsolutePath();
+		var file = new File(path, "biome.json").getAbsolutePath();
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    format 'mybiome', {",
+				"        target '**/*.js'",
+				"        biome('2.1.0').configPath('" + Encode.forJava(file) + "')",
+				"    }",
+				"}");
+		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
+		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("biome_test.js").sameAsResource("biome/js/longLineAfter120.js");
+	}
+
+	/**
 	 * Tests that a path to the directory with the biome.json config file can be
 	 * specified. Uses a config file with a line width of 120.
 	 *
@@ -423,5 +453,30 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("package.json").sameAsResource("biome/json/packageAfter.json");
+	}
+
+	/**
+	 * Tests that the Gradle plugin works with version 2.x of biome.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void version2x() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    format 'mybiome', {",
+				"        target '**/*.js'",
+				"        biome('2.0.6')",
+				"    }",
+				"}");
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
 	}
 }

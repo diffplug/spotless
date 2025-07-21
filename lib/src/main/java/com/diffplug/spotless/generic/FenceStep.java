@@ -31,8 +31,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Lint;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 public class FenceStep {
 	/** Declares the name of the step. */
 	public static FenceStep named(String name) {
@@ -135,7 +133,6 @@ public class FenceStep {
 		}
 	}
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private static class BaseFormatter implements FormatterFunc.NeedsFile, FormatterFunc.Closeable {
 		final Kind kind;
 		final Pattern regex;

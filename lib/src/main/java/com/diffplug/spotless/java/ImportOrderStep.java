@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,6 @@ import javax.annotation.Nullable;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializedFunction;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public final class ImportOrderStep implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -94,7 +92,6 @@ public final class ImportOrderStep implements Serializable {
 				State::toFormatter);
 	}
 
-	@SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE") // workaround https://github.com/spotbugs/spotbugs/issues/756
 	private static List<String> getImportOrder(File importsFile) {
 		try (Stream<String> lines = Files.lines(importsFile.toPath())) {
 			return lines.filter(line -> !line.startsWith("#"))
