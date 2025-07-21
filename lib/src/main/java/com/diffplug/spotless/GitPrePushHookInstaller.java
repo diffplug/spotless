@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Locale;
 
 /**
  * Abstract class responsible for installing a Git pre-push hook in a repository.
@@ -225,7 +226,7 @@ public abstract class GitPrePushHookInstaller {
 		}
 
 		logger.info("Local %s wrapper (%s) not found, falling back to global command '%s'",
-			executor.name().toLowerCase(), executor.wrapper, executor.global);
+				executor.name().toLowerCase(Locale.ROOT), executor.wrapper, executor.global);
 
 		return executor.global;
 	}
@@ -258,7 +259,7 @@ public abstract class GitPrePushHookInstaller {
 	 * @return true if the current OS is Windows, false otherwise
 	 */
 	private boolean isWindows() {
-		return System.getProperty("os.name").toLowerCase().startsWith("win");
+		return System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("win");
 	}
 
 	/**
@@ -296,8 +297,7 @@ public abstract class GitPrePushHookInstaller {
 	}
 
 	public enum Executor {
-		GRADLE("gradlew", "gradle"),
-		MAVEN("mvnw", "mvn"), ;
+		GRADLE("gradlew", "gradle"), MAVEN("mvnw", "mvn"),;
 
 		public final String wrapper;
 		public final String global;
