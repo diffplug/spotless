@@ -17,13 +17,6 @@ package com.diffplug.spotless.maven.java;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.diffplug.spotless.FormatterStep;
-
-import com.diffplug.spotless.StepHarnessWithFile;
-import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.kotlin.KtLintStep;
-
-import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +24,9 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class RemoveWildcardImportsStepTest extends MavenIntegrationHarness {
 
-	private static final String ERROR = "Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this";
+	private static final String ERROR =
+		"L1: (import java.util.*;\n" +
+			") Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this";
 
 	@BeforeEach
 	void init() throws Exception {
@@ -42,16 +37,8 @@ class RemoveWildcardImportsStepTest extends MavenIntegrationHarness {
 	void testRemoveWildcardImports() throws Exception {
 		setFile(PATH).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
 		assertFile(PATH).sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test");
-		AbstractStringAssert<?> abstractStringAssert = assertThat(mavenRunner().withArguments("spotless:apply").runHasError().stdOutUtf8());
-		abstractStringAssert
-			.contains(ERROR)
-			.contains("11111")
-		;
-
-		FormatterStep step = KtLintStep.create("0.49.0", TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-			.testResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test", "java/removewildcardimports/JavaCodeWildcardsFormatted.test")
-			.expectLintsOfResource("kotlin/ktlint/unsolvable.dirty").toBe("L1 ktlint(standard:no-wildcard-imports) Wildcard import");
+		assertThat(mavenRunner().withArguments("spotless:apply").runHasError().stdOutUtf8())
+			.contains(ERROR);
 	}
 
 	@Test

@@ -91,7 +91,7 @@ public final class Lint implements Serializable {
 		private final List<Lint> lints;
 
 		ShortcutException(Collection<Lint> lints) {
-			super(lints.iterator().next().detail);
+			super(lints.iterator().next().toString());
 			this.lints = List.copyOf(lints);
 		}
 

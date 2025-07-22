@@ -64,8 +64,10 @@ public final class ReplaceRegexStep {
 
 		FormatterFunc toLinter() {
 			return raw -> {
-				if (regex.matcher(raw).find()) {
-					throw atLine(11111,"", replacement).shortcut();
+				var matcher = regex.matcher(raw);
+				if (matcher.find()) {
+					int line = 1 + (int) raw.codePoints().limit(matcher.start()).filter(c -> c == '\n').count();
+					throw atLine(line, matcher.group(0), replacement).shortcut();
 				}
 				return raw;
 			};

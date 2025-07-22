@@ -97,7 +97,7 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 				"}");
 
 		setFile("test.java").toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
-		gradleRunner().withArguments("spotlessApply").build();
+		gradleRunner().withArguments("spotlessApply").buildAndFail();
 		assertFile("test.java").sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test");
 	}
 
