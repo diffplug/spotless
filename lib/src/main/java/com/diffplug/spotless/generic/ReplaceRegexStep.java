@@ -17,12 +17,16 @@ package com.diffplug.spotless.generic;
 
 import static com.diffplug.spotless.Lint.atLine;
 
+import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Lint;
 
 public final class ReplaceRegexStep {
 	// prevent direct instantiation
@@ -62,13 +66,22 @@ public final class ReplaceRegexStep {
 		}
 
 		FormatterFunc toLinter() {
-			return raw -> {
-				var matcher = regex.matcher(raw);
-				if (matcher.find()) {
-					int line = 1 + (int) raw.codePoints().limit(matcher.start()).filter(c -> c == '\n').count();
-					throw atLine(line, matcher.group(0), replacement).shortcut();
+			return new FormatterFunc() {
+				@Override
+				public String apply(String raw) {
+					return raw;
 				}
-				return raw;
+
+				@Override
+				public List<Lint> lint(String raw, File file) {
+					List<Lint> lints = new ArrayList<>();
+					var matcher = regex.matcher(raw);
+					while (matcher.find()) {
+						int line = 1 + (int) raw.codePoints().limit(matcher.start()).filter(c -> c == '\n').count();
+						lints.add(atLine(line, matcher.group(0), replacement));
+					}
+					return lints;
+				}
 			};
 		}
 	}
