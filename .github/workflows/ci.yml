@@ -5,7 +5,7 @@
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, release]
   workflow_dispatch:
 
 concurrency:
@@ -23,11 +23,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install JDK 11
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: 11
+          java-version: 21
       - name: gradle caching
         uses: gradle/actions/setup-gradle@v4
       - name: spotlessCheck
@@ -41,33 +40,25 @@ jobs:
       matrix:
         kind: [maven, gradle]
         # Test on the latest Java version once Gradle & Maven support it.
-        jre: [11, 17, 21, 24]
-        os: [ubuntu-latest]
+        jre: [17, 21, 24]
+        os: [ubuntu-latest, windows-latest]
         include:
-          # test windows at the diagonals of the above matrix
-          - kind: maven
-            jre: 11
-            os: windows-latest
-          - kind: gradle
-            jre: 17
-            os: windows-latest
           # npm on linux only (crazy slow on windows)
           - kind: npm
-            jre: 11
+            jre: 17
             os: ubuntu-latest
           - kind: shfmt
-            jre: 11
+            jre: 17
             os: ubuntu-latest
             shfmt-version: v3.8.0
           - kind: idea
-            jre: 11
+            jre: 17
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install JDK ${{ matrix.distribution }} ${{ matrix.java_version }}
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: ${{ matrix.jre }}

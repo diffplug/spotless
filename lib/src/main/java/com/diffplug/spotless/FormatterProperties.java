@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import static com.diffplug.spotless.MoreIterables.toNullHostileList;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -90,6 +92,25 @@ public final class FormatterProperties {
 		return properties;
 	}
 
+	public static FormatterProperties fromXmlContent(final Iterable<String> content) throws IllegalArgumentException {
+		final List<String> nonNullElements = toNullHostileList(content);
+		final FormatterProperties properties = new FormatterProperties();
+		nonNullElements.forEach(contentElement -> {
+			try {
+				final Properties newSettings = FileParser.XML.executeXmlContent(contentElement);
+				properties.properties.putAll(newSettings);
+			} catch (IOException | IllegalArgumentException exception) {
+				String message = String.format("Failed to add preferences from XML:%n%s%n", contentElement);
+				final String detailedMessage = exception.getMessage();
+				if (null != detailedMessage) {
+					message += String.format(" %s", detailedMessage);
+				}
+				throw new IllegalArgumentException(message, exception);
+			}
+		});
+		return properties;
+	}
+
 	public static FormatterProperties merge(Properties... properties) {
 		FormatterProperties merged = new FormatterProperties();
 		List.of(properties).stream().forEach((source) -> merged.properties.putAll(source));
@@ -139,20 +160,45 @@ public final class FormatterProperties {
 				}
 				return properties;
 			}
+
+			@Override
+			protected Properties executeXmlContent(String content) throws IOException, IllegalArgumentException {
+				throw new RuntimeException("Not implemented");
+			}
 		},
 
 		XML("xml") {
 			@Override
 			protected Properties execute(final File file) throws IOException, IllegalArgumentException {
-				Node rootNode = getRootNode(file);
-				String nodeName = rootNode.getNodeName();
-				if (null == nodeName) {
-					throw new IllegalArgumentException("XML document does not contain a root node.");
-				}
-				return XmlParser.parse(file, rootNode);
+				return executeWithSupplier(() -> {
+					try {
+						return new FileInputStream(file);
+					} catch (FileNotFoundException e) {
+						throw new RuntimeException("File not found: " + file, e);
+					}
+				});
 			}
 
-			private Node getRootNode(final File file) throws IOException, IllegalArgumentException {
+			@Override
+			protected Properties executeXmlContent(String content) throws IOException, IllegalArgumentException {
+				return executeWithSupplier(() -> new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+			}
+
+			private Properties executeWithSupplier(Supplier<InputStream> isSupplier) throws IOException, IllegalArgumentException {
+				Node rootNode;
+				try (InputStream input = isSupplier.get()) {
+					rootNode = getRootNode(input);
+					String nodeName = rootNode.getNodeName();
+					if (null == nodeName) {
+						throw new IllegalArgumentException("XML document does not contain a root node.");
+					}
+				}
+				try (InputStream input = isSupplier.get()) {
+					return XmlParser.parse(input, rootNode);
+				}
+			}
+
+			private Node getRootNode(final InputStream is) throws IOException, IllegalArgumentException {
 				try {
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 					/*
@@ -166,7 +212,7 @@ public final class FormatterProperties {
 					 */
 					dbf.setFeature(LOAD_EXTERNAL_DTD_PROP, false);
 					DocumentBuilder db = dbf.newDocumentBuilder();
-					return db.parse(file).getDocumentElement();
+					return db.parse(is).getDocumentElement();
 				} catch (SAXException | ParserConfigurationException e) {
 					throw new IllegalArgumentException("File has no valid XML syntax.", e);
 				}
@@ -185,6 +231,8 @@ public final class FormatterProperties {
 		}
 
 		protected abstract Properties execute(File file) throws IOException, IllegalArgumentException;
+
+		protected abstract Properties executeXmlContent(String content) throws IOException, IllegalArgumentException;
 
 		public static Properties parse(final File file) throws IOException, IllegalArgumentException {
 			String fileNameExtension = getFileNameExtension(file);
@@ -211,19 +259,17 @@ public final class FormatterProperties {
 	private enum XmlParser {
 		PROPERTIES("properties") {
 			@Override
-			protected Properties execute(final File xmlFile, final Node rootNode)
+			protected Properties execute(final InputStream xmlFile, final Node rootNode)
 					throws IOException, IllegalArgumentException {
 				final Properties properties = new Properties();
-				try (InputStream xmlInput = new FileInputStream(xmlFile)) {
-					properties.loadFromXML(xmlInput);
-				}
+				properties.loadFromXML(xmlFile);
 				return properties;
 			}
 		},
 
 		PROFILES("profiles") {
 			@Override
-			protected Properties execute(File file, Node rootNode) throws IOException, IllegalArgumentException {
+			protected Properties execute(InputStream file, Node rootNode) throws IOException, IllegalArgumentException {
 				final Properties properties = new Properties();
 				Node firstProfile = getSingleProfile(rootNode);
 				for (Object settingObj : getChildren(firstProfile, "setting")) {
@@ -285,14 +331,14 @@ public final class FormatterProperties {
 			return this.rootNodeName;
 		}
 
-		protected abstract Properties execute(File file, Node rootNode) throws IOException, IllegalArgumentException;
+		protected abstract Properties execute(InputStream is, Node rootNode) throws IOException, IllegalArgumentException;
 
-		public static Properties parse(final File file, final Node rootNode)
+		public static Properties parse(final InputStream is, final Node rootNode)
 				throws IOException, IllegalArgumentException {
 			String rootNodeName = rootNode.getNodeName();
 			for (XmlParser parser : XmlParser.values()) {
 				if (parser.rootNodeName.equals(rootNodeName)) {
-					return parser.execute(file, rootNode);
+					return parser.execute(is, rootNode);
 				}
 			}
 			String msg = String.format("The XML root node '%1$s' is not part of the supported root nodes [%2$s].",
