@@ -3,4 +3,13 @@
 	"extends": [
 		"config:recommended",
 	],
+	"packageRules": [
+		{
+			"groupName": "Ktlint",
+			"enabled": false,
+			"matchPackageNames": [
+				"/com.pinterest.ktlint:*/",
+			]
+		}
+	]
 }
