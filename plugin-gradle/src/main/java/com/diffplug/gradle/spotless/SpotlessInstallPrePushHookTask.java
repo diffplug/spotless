@@ -40,6 +40,12 @@ public abstract class SpotlessInstallPrePushHookTask extends DefaultTask {
 	abstract Property<File> getRootDir();
 
 	/**
+	 * Determines whether this task is being executed from the root project.
+	 */
+	@Internal
+	abstract Property<Boolean> getIsRootExecution();
+
+	/**
 	 * Executes the task to install the Git pre-push hook.
 	 *
 	 * <p>This method creates an instance of {@link GitPrePushHookInstallerGradle},
@@ -50,6 +56,12 @@ public abstract class SpotlessInstallPrePushHookTask extends DefaultTask {
 	 */
 	@TaskAction
 	public void performAction() throws Exception {
+		// if is not root project, skip it
+		if (!getIsRootExecution().get()) {
+			getLogger().debug("Skipping Spotless pre-push hook installation because it is not being executed from the root project.");
+			return;
+		}
+
 		final var logger = new GitPreHookLogger() {
 			@Override
 			public void info(String format, Object... arguments) {

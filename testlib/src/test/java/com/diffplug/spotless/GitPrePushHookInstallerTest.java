@@ -54,6 +54,11 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 	@BeforeEach
 	public void beforeEach() {
 		System.setProperty("os.name", "linux");
+
+		final var hookFile = newFile(".git/hooks/pre-push");
+		if (hookFile.exists()) {
+			hookFile.delete();
+		}
 	}
 
 	@AfterEach

@@ -82,6 +82,9 @@ public abstract class GitPrePushHookInstaller {
 			return;
 		}
 
+		// Since hook installation is a manual task triggered by the user,
+		// using synchronized locking is acceptable. It ensures thread safety
+		// without affecting overall performance, and provides a simple and reliable solution.
 		synchronized (LOCK) {
 			if (installing) {
 				logger.warn("Parallel Spotless Git pre-push hook installation detected, skipping installation");

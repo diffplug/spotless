@@ -42,6 +42,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.setGroup(BUILD_SETUP_TASK_GROUP);
 			task.setDescription(INSTALL_GIT_PRE_PUSH_HOOK_DESCRIPTION);
 			task.getRootDir().set(project.getRootDir());
+			task.getIsRootExecution().set(project.equals(project.getRootProject()));
 		});
 
 		project.afterEvaluate(unused -> {

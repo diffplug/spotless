@@ -3,6 +3,7 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+* Improved support for multi-module projects: Git pre-push hook is now always installed in the root `.git/hooks` directory by resolving the top-level project base directory.
 ### Changes
 * **BREAKING** Bump the required Java to `17`. ([#2375](https://github.com/diffplug/spotless/issues/2375), [#2540](https://github.com/diffplug/spotless/pull/2540))
 * Bump JGit from `6.10.1` to `7.3.0` ([#2257](https://github.com/diffplug/spotless/pull/2257))
