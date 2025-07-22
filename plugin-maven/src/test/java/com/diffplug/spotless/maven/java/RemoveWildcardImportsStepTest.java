@@ -24,8 +24,7 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class RemoveWildcardImportsStepTest extends MavenIntegrationHarness {
 
-	private static final String ERROR =
-		"L1: (import java.util.*;\n" +
+	private static final String ERROR = "L1: (import java.util.*;\n" +
 			") Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this";
 
 	@BeforeEach
@@ -38,7 +37,7 @@ class RemoveWildcardImportsStepTest extends MavenIntegrationHarness {
 		setFile(PATH).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
 		assertFile(PATH).sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test");
 		assertThat(mavenRunner().withArguments("spotless:apply").runHasError().stdOutUtf8())
-			.contains(ERROR);
+				.contains(ERROR);
 	}
 
 	@Test
