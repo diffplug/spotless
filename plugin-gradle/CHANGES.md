@@ -9,6 +9,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * Adds support for worktrees (fixes [#1765](https://github.com/diffplug/spotless/issues/1765))
 * Bump default `google-java-format` version to latest `1.24.0` -> `1.28.0`. ([#2345](https://github.com/diffplug/spotless/pull/2345))
 * Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
+### Fixed
+* Respect system gitconfig when performing git operations ([#2404](https://github.com/diffplug/spotless/issues/2404))
 
 ## [7.2.1] - 2025-07-21
 ### Fixed
@@ -34,8 +36,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Make sure npm-based formatters use the correct `node_modules` directory when running in parallel. ([#2542](https://github.com/diffplug/spotless/pull/2542))
 ### Changed
 * Bump internal dependencies for npm-based formatters ([#2542](https://github.com/diffplug/spotless/pull/2542))
-
-### Changed
 * scalafmt: enforce version consistency between the version configured in Spotless and the version declared in Scalafmt config file ([#2460](https://github.com/diffplug/spotless/issues/2460))
 
 ## [7.0.4] - 2025-05-27
