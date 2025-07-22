@@ -16,7 +16,6 @@
 package com.diffplug.spotless.generic;
 
 import static com.diffplug.spotless.Lint.atLine;
-import static com.diffplug.spotless.Lint.atUndefinedLine;
 
 import java.io.Serializable;
 import java.util.Objects;
