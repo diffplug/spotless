@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Locale;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Abstract class responsible for installing a Git pre-push hook in a repository.
  * This class ensures that specific checks and logic are run before a push operation in Git.
@@ -34,6 +36,10 @@ public abstract class GitPrePushHookInstaller {
 
 	private static final String HOOK_HEADER = "##### SPOTLESS HOOK START #####";
 	private static final String HOOK_FOOTER = "##### SPOTLESS HOOK END #####";
+
+	private static final Object LOCK = new Object();
+
+	private static volatile boolean installing = false;
 
 	/**
 	 * Logger for recording informational and error messages during the installation process.
@@ -57,6 +63,41 @@ public abstract class GitPrePushHookInstaller {
 	}
 
 	/**
+	 * Installs the Git pre-push hook while ensuring thread safety and preventing parallel installations.
+	 *
+	 * The method:
+	 * 1. Uses a thread-safe mechanism to prevent concurrent installations
+	 * 2. If a parallel installation is detected, logs a warning and skips the installation
+	 * 3. Uses a synchronized block with a static lock object to ensure thread safety
+	 *
+	 * The installation process sets a flag during installation and resets it afterwards,
+	 * using the {@link #doInstall()} method to perform the actual installation.
+	 *
+	 * @throws Exception if any error occurs during installation
+	 */
+	@SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", justification = "This is a safe usage of a static lock object")
+	public void install() throws Exception {
+		if (installing) {
+			logger.warn("Parallel Spotless Git pre-push hook installation detected, skipping installation");
+			return;
+		}
+
+		synchronized (LOCK) {
+			if (installing) {
+				logger.warn("Parallel Spotless Git pre-push hook installation detected, skipping installation");
+				return;
+			}
+
+			try {
+				installing = true;
+				doInstall();
+			} finally {
+				installing = false;
+			}
+		}
+	}
+
+	/**
 	 * Installs the Git pre-push hook into the repository.
 	 *
 	 * <p>This method checks for the following:
@@ -70,7 +111,7 @@ public abstract class GitPrePushHookInstaller {
 	 *
 	 * @throws Exception if any error occurs during installation.
 	 */
-	public void install() throws Exception {
+	private void doInstall() throws Exception {
 		logger.info("Installing git pre-push hook");
 
 		if (!isGitInstalled()) {
