@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,7 +178,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"    kotlin {",
 				"        ktlint(\"1.0.1\")",
 				"        .customRuleSets(listOf(",
-				"            \"io.nlopez.compose.rules:ktlint:0.4.16\"",
+				"            \"io.nlopez.compose.rules:ktlint:0.4.25\"",
 				"        ))",
 				"        .editorConfigOverride(mapOf(",
 				"            \"ktlint_function_naming_ignore_when_annotated_with\" to \"Composable\"",
