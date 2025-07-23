@@ -42,6 +42,12 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.Resources;
 
 public class ResourceHarness {
+
+	/**
+	 * default test testPath.
+	 */
+	protected String testPath = "src/main/java/test.java";
+
 	/**
 	 * On OS X, the temp folder is a symlink,
 	 * and some of gradle's stuff breaks symlinks.

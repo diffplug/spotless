@@ -231,9 +231,9 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	private void checkKtlintOfficialStyle() throws IOException {
-		String path = "src/main/kotlin/Main.kt";
-		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
+		testPath = "src/main/kotlin/Main.kt";
+		setFile(testPath).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile(path).sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.ktlintOfficial.clean");
+		assertFile(testPath).sameAsResource("kotlin/ktlint/experimentalEditorConfigOverride.ktlintOfficial.clean");
 	}
 }

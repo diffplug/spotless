@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,9 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	private void runTsfmt(String kind) throws IOException, InterruptedException {
-		String path = prepareRunTsfmt(kind);
+		prepareRunTsfmt(kind);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("npm/tsfmt/" + kind + "/" + kind + ".clean");
+		assertFile(testPath).sameAsResource("npm/tsfmt/" + kind + "/" + kind + ".clean");
 	}
 
 	private String prepareRunTsfmt(String kind) throws IOException {
@@ -113,10 +113,10 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 
 	@Test
 	void testTypescript_2_Configs() throws Exception {
-		String path = "src/main/typescript/test.ts";
+		testPath = "src/main/typescript/test.ts";
 
 		writePomWithTypescriptSteps(
-				path,
+				testPath,
 				"<tsfmt>",
 				"  <vscodeFile>${basedir}/tslint.json</vscodeFile>",
 				"  <tsfmtFile>${basedir}/tslint.json</tsfmtFile>",
@@ -124,7 +124,7 @@ class TypescriptFormatStepTest extends MavenIntegrationHarness {
 		setFile("vscode.json").toResource("npm/tsfmt/vscode/vscode.json");
 		setFile("tsfmt.json").toResource("npm/tsfmt/tsfmt/tsfmt.json");
 
-		setFile(path).toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
+		setFile(testPath).toResource("npm/tsfmt/tsfmt/tsfmt.dirty");
 		ProcessRunner.Result result = mavenRunner().withArguments("spotless:apply").runHasError();
 		assertThat(result.stdOutUtf8()).contains("must specify exactly one configFile or config");
 	}

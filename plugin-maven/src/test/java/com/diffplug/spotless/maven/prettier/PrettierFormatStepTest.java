@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,21 +30,19 @@ import com.diffplug.spotless.tag.NpmTest;
 class PrettierFormatStepTest extends MavenIntegrationHarness {
 
 	private void run(String kind, String suffix) throws IOException, InterruptedException {
-		String path = prepareRun(kind, suffix);
+		prepareRun(kind, suffix);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
+		assertFile(testPath).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
 	}
 
-	private String prepareRun(String kind, String suffix) throws IOException {
-		String configPath = ".prettierrc.yml";
-		setFile(configPath).toResource("npm/prettier/filetypes/" + kind + "/" + ".prettierrc.yml");
-		String path = "src/main/" + kind + "/test." + suffix;
-		setFile(path).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
-		return path;
+	private void prepareRun(String kind, String suffix) throws IOException {
+		setFile(".prettierrc.yml").toResource("npm/prettier/filetypes/" + kind + "/" + ".prettierrc.yml");
+		testPath = "src/main/" + kind + "/test." + suffix;
+		setFile(testPath).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
 	}
 
-	private ProcessRunner.Result runExpectingError(String kind, String suffix) throws IOException, InterruptedException {
-		String path = prepareRun(kind, suffix);
+	private ProcessRunner.Result runExpectingError(String suffix) throws IOException, InterruptedException {
+		prepareRun("typescript", suffix);
 		return mavenRunner().withArguments("spotless:apply").runHasError();
 	}
 
@@ -258,7 +256,7 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 				"  <prettierVersion>1.16.4</prettierVersion>",
 				"  <configFile>.prettierrc.yml</configFile>",
 				"</prettier>");
-		ProcessRunner.Result result = runExpectingError("typescript", suffix);
+		ProcessRunner.Result result = runExpectingError(suffix);
 		assertThat(result.stdOutUtf8()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
 	}
 
@@ -276,7 +274,7 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 				"  <configFile>.prettierrc.yml</configFile>",
 				"  <npmrc>${basedir}/.custom_npmrc</npmrc>",
 				"</prettier>");
-		ProcessRunner.Result result = runExpectingError("typescript", suffix);
+		ProcessRunner.Result result = runExpectingError(suffix);
 		assertThat(result.stdOutUtf8()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
 	}
 }

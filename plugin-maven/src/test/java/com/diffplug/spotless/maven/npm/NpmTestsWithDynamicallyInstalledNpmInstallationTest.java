@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,11 @@ public class NpmTestsWithDynamicallyInstalledNpmInstallationTest extends MavenIn
 		String suffix = "ts";
 		String configPath = ".prettierrc.yml";
 		setFile(configPath).toResource("npm/prettier/filetypes/" + kind + "/" + ".prettierrc.yml");
-		String path = "src/main/" + kind + "/test." + suffix;
-		setFile(path).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
+		testPath = "src/main/" + kind + "/test." + suffix;
+		setFile(testPath).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
 
 		mavenRunner().withArguments(installNpmMavenGoal(), "spotless:apply").runNoError();
-		assertFile(path).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
+		assertFile(testPath).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
 	}
 
 }

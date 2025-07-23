@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -246,8 +246,8 @@ class UpToDateCheckingTest extends MavenIntegrationHarness {
 	private List<File> writeFiles(String resource, String suffix, int count) throws IOException {
 		List<File> result = new ArrayList<>(count);
 		for (int i = 0; i < count; i++) {
-			String path = "src/main/java/test_" + suffix + "_" + i + ".java";
-			File file = setFile(path).toResource(resource);
+			testPath = "src/main/java/test_" + suffix + "_" + i + ".java";
+			File file = setFile(testPath).toResource(resource);
 			result.add(file);
 		}
 		return result;

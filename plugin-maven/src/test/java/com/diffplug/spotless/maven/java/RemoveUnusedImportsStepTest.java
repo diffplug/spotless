@@ -25,9 +25,9 @@ class RemoveUnusedImportsStepTest extends MavenIntegrationHarness {
 	void testRemoveUnusedInports() throws Exception {
 		writePomWithJavaSteps("<removeUnusedImports/>");
 
-		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test");
+		testPath = "src/main/java/test.java";
+		setFile(testPath).toResource("java/removeunusedimports/JavaCodeWithPackageUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/removeunusedimports/JavaCodeWithPackageFormatted.test");
+		assertFile(testPath).sameAsResource("java/removeunusedimports/JavaCodeWithPackageFormatted.test");
 	}
 }

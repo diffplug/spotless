@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,10 @@ class GrEclipseTest extends MavenIntegrationHarness {
 	void testEclipse() throws Exception {
 		writePomWithGrEclipse();
 
-		String path = "src/main/groovy/test.groovy";
-		setFile(path).toResource("groovy/greclipse/format/unformatted.test");
+		testPath = "src/main/groovy/test.groovy";
+		setFile(testPath).toResource("groovy/greclipse/format/unformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("groovy/greclipse/format/formatted.test");
+		assertFile(testPath).sameAsResource("groovy/greclipse/format/formatted.test");
 	}
 
 	@Test

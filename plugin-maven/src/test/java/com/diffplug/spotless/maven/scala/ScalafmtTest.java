@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +40,9 @@ class ScalafmtTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest(String s) throws Exception {
-		String path = "src/main/scala/test.scala";
-		setFile(path).toResource("scala/scalafmt/basic.dirty");
+		testPath = "src/main/scala/test.scala";
+		setFile(testPath).toResource("scala/scalafmt/basic.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource(s);
+		assertFile(testPath).sameAsResource(s);
 	}
 }

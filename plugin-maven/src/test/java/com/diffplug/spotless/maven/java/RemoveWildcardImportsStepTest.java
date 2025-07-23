@@ -25,9 +25,8 @@ class RemoveWildcardImportsStepTest extends MavenIntegrationHarness {
 	void testRemoveWildcardImports() throws Exception {
 		writePomWithJavaSteps("<removeWildcardImports/>");
 
-		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
+		setFile(testPath).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test");
+		assertFile(testPath).sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test");
 	}
 }

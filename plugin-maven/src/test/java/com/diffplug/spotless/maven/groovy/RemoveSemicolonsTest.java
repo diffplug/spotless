@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,16 +37,16 @@ class RemoveSemicolonsTest extends MavenIntegrationHarness {
 	void testRemoveSemicolons() throws Exception {
 		writePomWithGroovySteps("<removeSemicolons/>");
 
-		String path = "src/main/groovy/test.groovy";
-		setFile(path).toResource("groovy/removeSemicolons/GroovyCodeWithSemicolons.test");
+		testPath = "src/main/groovy/test.groovy";
+		setFile(testPath).toResource("groovy/removeSemicolons/GroovyCodeWithSemicolons.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("groovy/removeSemicolons/GroovyCodeWithSemicolonsFormatted.test");
+		assertFile(testPath).sameAsResource("groovy/removeSemicolons/GroovyCodeWithSemicolonsFormatted.test");
 	}
 
 	private void runTest(String sourceContent, String targetContent) throws Exception {
-		String path = "src/main/groovy/test.groovy";
-		setFile(path).toContent(sourceContent);
+		testPath = "src/main/groovy/test.groovy";
+		setFile(testPath).toContent(sourceContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).hasContent(targetContent);
+		assertFile(testPath).hasContent(targetContent);
 	}
 }

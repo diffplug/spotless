@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,9 @@ class Antlr4FormatterTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest() throws Exception {
-		String path = "src/main/antlr4/Hello.g4";
-		setFile(path).toResource("antlr4/Hello.unformatted.g4");
+		testPath = "src/main/antlr4/Hello.g4";
+		setFile(testPath).toResource("antlr4/Hello.unformatted.g4");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("antlr4/Hello.formatted.g4");
+		assertFile(testPath).sameAsResource("antlr4/Hello.formatted.g4");
 	}
 }

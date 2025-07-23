@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,8 @@ class IndentTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest(String source, String target) throws Exception {
-		String path = "src/main/java/test.java";
-		setFile(path).toResource(source);
+		setFile(testPath).toResource(source);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource(target);
+		assertFile(testPath).sameAsResource(target);
 	}
 }

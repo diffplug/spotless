@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ class DiktatTest extends MavenIntegrationHarness {
 
 		writePomWithKotlinSteps("<diktat/>");
 
-		String path = "src/main/kotlin/Main.kt";
-		setFile(path).toResource("kotlin/diktat/main.dirty");
+		testPath = "src/main/kotlin/Main.kt";
+		setFile(testPath).toResource("kotlin/diktat/main.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("kotlin/diktat/main.clean");
+		assertFile(testPath).sameAsResource("kotlin/diktat/main.clean");
 
 	}
 
@@ -43,10 +43,10 @@ class DiktatTest extends MavenIntegrationHarness {
 				"  <version>1.2.1</version>",
 				"</diktat>");
 
-		String path = "src/main/kotlin/Main.kt";
-		setFile(path).toResource("kotlin/diktat/main.dirty");
+		testPath = "src/main/kotlin/Main.kt";
+		setFile(testPath).toResource("kotlin/diktat/main.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("kotlin/diktat/main.clean");
+		assertFile(testPath).sameAsResource("kotlin/diktat/main.clean");
 	}
 
 	@Test
@@ -60,10 +60,10 @@ class DiktatTest extends MavenIntegrationHarness {
 				"  <configFile>" + conf.getAbsolutePath() + "</configFile>",
 				"</diktat>");
 
-		String path = "src/main/kotlin/Main.kt";
-		setFile(path).toResource("kotlin/diktat/main.dirty");
+		testPath = "src/main/kotlin/Main.kt";
+		setFile(testPath).toResource("kotlin/diktat/main.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("kotlin/diktat/main.clean");
+		assertFile(testPath).sameAsResource("kotlin/diktat/main.clean");
 	}
 
 }

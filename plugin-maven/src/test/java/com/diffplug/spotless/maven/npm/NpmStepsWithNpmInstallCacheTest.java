@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				"  <prettierVersion>1.16.4</prettierVersion>",
 				"  <configFile>.prettierrc.yml</configFile>",
 				"</prettier>");
-		Result result = run("typescript", suffix);
+		Result result = run(suffix);
 		Assertions.assertThat(result.stdOutUtf8()).doesNotContain("Caching node_modules for").doesNotContain("Using cached node_modules for");
 	}
 
@@ -61,7 +61,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				"  <configFile>.prettierrc.yml</configFile>",
 				"  <npmInstallCache>true</npmInstallCache>",
 				"</prettier>");
-		Result result = run("typescript", suffix);
+		Result result = run(suffix);
 		Assertions.assertThat(result.stdOutUtf8())
 				.contains("Caching node_modules for")
 				.contains(SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME)
@@ -78,7 +78,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				"  <configFile>.prettierrc.yml</configFile>",
 				"  <npmInstallCache>true</npmInstallCache>",
 				"</prettier>");
-		Result result1 = run("typescript", suffix);
+		Result result1 = run(suffix);
 		Assertions.assertThat(result1.stdOutUtf8())
 				.contains("Caching node_modules for")
 				.contains(SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME)
@@ -87,7 +87,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 		// recursively delete target folder to simulate a fresh run (except the default cache folder)
 		recursiveDelete(Paths.get(rootFolder().getAbsolutePath(), "target"), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
 
-		Result result2 = run("typescript", suffix);
+		Result result2 = run(suffix);
 		Assertions.assertThat(result2.stdOutUtf8())
 				.doesNotContain("Caching node_modules for")
 				.contains(SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME)
@@ -104,7 +104,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				"  <configFile>.prettierrc.yml</configFile>",
 				"  <npmInstallCache>" + cacheDir.getAbsolutePath() + "</npmInstallCache>",
 				"</prettier>");
-		Result result = run("typescript", suffix);
+		Result result = run(suffix);
 		Assertions.assertThat(result.stdOutUtf8())
 				.contains("Caching node_modules for")
 				.contains(Path.of(cacheDir.getAbsolutePath()).toAbsolutePath().toString())
@@ -122,7 +122,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				"  <configFile>.prettierrc.yml</configFile>",
 				"  <npmInstallCache>" + cacheDir.getAbsolutePath() + "</npmInstallCache>",
 				"</prettier>");
-		Result result1 = run("typescript", suffix);
+		Result result1 = run(suffix);
 		Assertions.assertThat(result1.stdOutUtf8())
 				.contains("Caching node_modules for")
 				.contains(Path.of(cacheDir.getAbsolutePath()).toAbsolutePath().toString())
@@ -131,7 +131,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 		// recursively delete target folder to simulate a fresh run
 		recursiveDelete(Paths.get(rootFolder().getAbsolutePath(), "target"), null);
 
-		Result result2 = run("typescript", suffix);
+		Result result2 = run(suffix);
 		Assertions.assertThat(result2.stdOutUtf8())
 				.doesNotContain("Caching node_modules for")
 				.contains(Path.of(cacheDir.getAbsolutePath()).toAbsolutePath().toString())
@@ -142,19 +142,18 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 		Files.walkFileTree(path, new RecursiveDelete(exclusion));
 	}
 
-	private Result run(String kind, String suffix) throws IOException, InterruptedException {
-		String path = prepareRun(kind, suffix);
+	private Result run(String suffix) throws IOException, InterruptedException {
+		prepareRun("typescript", suffix);
 		Result result = mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
+		assertFile(testPath).sameAsResource("npm/prettier/filetypes/" + "typescript" + "/" + "typescript" + ".clean");
 		return result;
 	}
 
-	private String prepareRun(String kind, String suffix) throws IOException {
+	private void prepareRun(String kind, String suffix) throws IOException {
 		String configPath = ".prettierrc.yml";
 		setFile(configPath).toResource("npm/prettier/filetypes/" + kind + "/" + ".prettierrc.yml");
-		String path = "src/main/" + kind + "/test." + suffix;
-		setFile(path).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
-		return path;
+		testPath = "src/main/" + kind + "/test." + suffix;
+		setFile(testPath).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
 	}
 
 	private static class RecursiveDelete extends SimpleFileVisitor<Path> {
