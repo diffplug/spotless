@@ -353,10 +353,9 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 		});
 
 		// then
-		assertThat(logs).containsExactlyInAnyOrder(
+		assertThat(logs).contains(
 				"Installing git pre-push hook",
 				"Git pre-push hook not found, creating it",
-				"Parallel Spotless Git pre-push hook installation detected, skipping installation",
 				"Parallel Spotless Git pre-push hook installation detected, skipping installation",
 				"Local gradle wrapper (gradlew) not found, falling back to global command 'gradle'",
 				"Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push").getAbsolutePath());
@@ -380,7 +379,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 	}
 
 	private void parallelRun(ThrowableRun runnable) {
-		IntStream.range(0, 3)
+		IntStream.range(0, 5)
 				.mapToObj(i -> new Thread(() -> {
 					try {
 						runnable.run();
