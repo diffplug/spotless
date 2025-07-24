@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,9 +80,8 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest(String targetResource, String sourceResource) throws Exception {
-		String path = "src/main/java/test.java";
-		setFile(path).toResource(sourceResource);
+		setFile(TEST_PATH).toResource(sourceResource);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource(targetResource);
+		assertFile(TEST_PATH).sameAsResource(targetResource);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,8 @@ class EclipseFormatStepTest extends MavenIntegrationHarness {
 				"</eclipse>");
 		setFile("formatter.xml").toResource("java/eclipse/formatter.xml");
 
-		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/eclipse/JavaCodeUnformatted.test");
+		setFile(TEST_PATH).toResource("java/eclipse/JavaCodeUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/eclipse/JavaCodeFormatted.test");
+		assertFile(TEST_PATH).sameAsResource("java/eclipse/JavaCodeFormatted.test");
 	}
 }

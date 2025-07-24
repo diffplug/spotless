@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class ConfigAvoidanceTest extends GradleIntegrationHarness {
 				"tasks.named('check').configure {",
 				"   dependsOn(canary)",
 				"}");
-		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		setFile(TEST_PATH).toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
 		String help = gradleRunner().withArguments("help").build().getOutput();
 		Assertions.assertThat(help).doesNotContain("Canary was configured");

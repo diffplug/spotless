@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,10 +101,8 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest(String dirtyPath, String cleanPath) throws Exception {
-		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/cleanthat/" + dirtyPath);
-		// .withRemoteDebug(21654)
+		setFile(TEST_PATH).toResource("java/cleanthat/" + dirtyPath);
 		Assertions.assertThat(mavenRunner().withArguments("spotless:apply").runNoError().stdOutUtf8()).doesNotContain("[ERROR]");
-		assertFile(path).sameAsResource("java/cleanthat/" + cleanPath);
+		assertFile(TEST_PATH).sameAsResource("java/cleanthat/" + cleanPath);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ class EndWithNewlineTest extends MavenIntegrationHarness {
 	private void runTest() throws Exception {
 		String noTrailingNewline = "public class Java {}";
 		String hasTrailingNewline = noTrailingNewline + "\n";
-		setFile("src/main/java/test.java").toContent(noTrailingNewline);
+		setFile(TEST_PATH).toContent(noTrailingNewline);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile("src/main/java/test.java").hasContent(hasTrailingNewline);
+		assertFile(TEST_PATH).hasContent(hasTrailingNewline);
 	}
 }

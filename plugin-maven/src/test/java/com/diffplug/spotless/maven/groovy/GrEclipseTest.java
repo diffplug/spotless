@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,8 @@ class GrEclipseTest extends MavenIntegrationHarness {
 	void doesNotFormatJavaFiles() throws Exception {
 		writePomWithGrEclipse();
 
-		String javaPath = "src/main/java/test.java";
 		String testJavaPath = "src/test/java/test.java";
-		setFile(javaPath).toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		setFile(TEST_PATH).toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		setFile(testJavaPath).toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
 		String groovyPath = "src/main/groovy/test.groovy";
@@ -49,7 +48,7 @@ class GrEclipseTest extends MavenIntegrationHarness {
 
 		mavenRunner().withArguments("spotless:apply").runNoError();
 
-		assertFile(javaPath).sameAsResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		assertFile(TEST_PATH).sameAsResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		assertFile(testJavaPath).sameAsResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
 		assertFile(groovyPath).sameAsResource("groovy/greclipse/format/formatted.test");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,13 +53,13 @@ class GroovyExtensionTest extends GradleIntegrationHarness {
 
 		String withoutHeader = getTestResource("groovy/licenseheader/JavaCodeWithoutHeader.test");
 
-		setFile("src/main/java/test.java").toContent(withoutHeader);
+		setFile(TEST_PATH).toContent(withoutHeader);
 		setFile("src/main/groovy/test.java").toContent(withoutHeader);
 		setFile("src/main/groovy/test.groovy").toContent(withoutHeader);
 
 		gradleRunner().withArguments("spotlessApply").build();
 
-		assertFile("src/main/java/test.java").hasContent(withoutHeader);
+		assertFile(TEST_PATH).hasContent(withoutHeader);
 		assertFile("src/main/groovy/test.groovy").hasContent(HEADER + "\n" + withoutHeader);
 		if (excludeJava) {
 			assertFile("src/main/groovy/test.java").hasContent(withoutHeader);

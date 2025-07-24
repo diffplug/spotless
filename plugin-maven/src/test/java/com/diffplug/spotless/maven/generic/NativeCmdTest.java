@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,8 @@ public class NativeCmdTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest(String sourceContent, String targetContent) throws Exception {
-		String path = "src/main/java/test.java";
-		setFile(path).toContent(sourceContent);
+		setFile(TEST_PATH).toContent(sourceContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).hasContent(targetContent);
+		assertFile(TEST_PATH).hasContent(targetContent);
 	}
 }

@@ -35,13 +35,13 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 				"        googleJavaFormat()",
 				"    }",
 				"}");
-		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		setFile(TEST_PATH).toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		setFile("src/main/groovy/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		setFile("src/main/groovy/test.groovy").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
 		gradleRunner().withArguments("spotlessApply").build();
 
-		assertFile("src/main/java/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+		assertFile(TEST_PATH).sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 		assertFile("src/main/groovy/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 		assertFile("src/main/groovy/test.groovy").sameAsResource("java/googlejavaformat/JavaCodeUnformatted.test");
 	}
@@ -76,9 +76,9 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 				"  java {  removeUnusedImports('cleanthat-javaparser-unnecessaryimport')  }",
 				"}");
 
-		setFile("src/main/java/test.java").toResource("java/removeunusedimports/Jdk17TextBlockUnformatted.test");
+		setFile(TEST_PATH).toResource("java/removeunusedimports/Jdk17TextBlockUnformatted.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/java/test.java").sameAsResource("java/removeunusedimports/Jdk17TextBlockFormatted.test");
+		assertFile(TEST_PATH).sameAsResource("java/removeunusedimports/Jdk17TextBlockFormatted.test");
 	}
 
 	@Test
@@ -122,9 +122,9 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 				"  }",
 				"}");
 
-		setFile("src/main/java/test.java").toResource("java/targetExclude/TargetExcludeNoMatchUnformatted.test");
+		setFile(TEST_PATH).toResource("java/targetExclude/TargetExcludeNoMatchUnformatted.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/java/test.java").sameAsResource("java/targetExclude/TargetExcludeNoMatchFormatted.test");
+		assertFile(TEST_PATH).sameAsResource("java/targetExclude/TargetExcludeNoMatchFormatted.test");
 	}
 
 	/**
@@ -148,8 +148,8 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 				"  }",
 				"}");
 
-		setFile("src/main/java/test.java").toResource("java/targetExclude/TargetExcludeMatch.test");
+		setFile(TEST_PATH).toResource("java/targetExclude/TargetExcludeMatch.test");
 		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("src/main/java/test.java").sameAsResource("java/targetExclude/TargetExcludeMatch.test");
+		assertFile(TEST_PATH).sameAsResource("java/targetExclude/TargetExcludeMatch.test");
 	}
 }

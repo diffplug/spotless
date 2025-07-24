@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,10 +142,9 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 	}
 
 	private void runTest() throws Exception {
-		String path = "src/main/java/test.java";
-		setFile(path).toResource("license/MissingLicense.test");
+		setFile(TEST_PATH).toResource("license/MissingLicense.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("license/HasLicense.test");
+		assertFile(TEST_PATH).sameAsResource("license/HasLicense.test");
 	}
 
 	private void testUnsupportedFile(String file) throws Exception {

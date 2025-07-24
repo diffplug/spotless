@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,9 @@ class MavenProvisionerTest extends MavenIntegrationHarness {
 	}
 
 	private void assertResolveDependenciesWorks() throws Exception {
-		String path = "src/main/java/test.java";
 		String unformattedContent = "package  a;";
-		setFile(path).toContent(unformattedContent);
+		setFile(TEST_PATH).toContent(unformattedContent);
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).hasContent(unformattedContent.replace("  ", " "));
+		assertFile(TEST_PATH).hasContent(unformattedContent.replace("  ", " "));
 	}
 }
