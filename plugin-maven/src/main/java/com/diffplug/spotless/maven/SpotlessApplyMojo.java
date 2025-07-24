@@ -18,6 +18,8 @@ package com.diffplug.spotless.maven;
 import java.io.File;
 import java.io.IOException;
 
+import com.diffplug.common.base.Strings;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -25,6 +27,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
+
+import static com.diffplug.common.base.Strings.isNullOrEmpty;
 
 /**
  * Performs formatting of all source files according to configured formatters.
@@ -86,6 +90,6 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 	}
 
 	private boolean isIdeHook() {
-		return !(spotlessIdeHook == null || spotlessIdeHook.isEmpty());
+		return !isNullOrEmpty(spotlessIdeHook);
 	}
 }
