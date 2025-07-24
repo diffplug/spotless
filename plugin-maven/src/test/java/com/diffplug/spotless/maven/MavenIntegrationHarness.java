@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,13 +87,13 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		if (Jvm.version() >= 16) {
 			// for GJF https://github.com/diffplug/spotless/issues/834
 			setFile(".mvn/jvm.config").toContent(
-					"--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED" +
-							" --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED" +
-							" --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED" +
-							" --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED" +
-							" --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" +
-							// this last line is for Detekt
-							" --add-opens java.base/java.lang=ALL-UNNAMED");
+				"--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED" +
+					" --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED" +
+					" --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED" +
+					" --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED" +
+					" --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" +
+					// this last line is for Detekt
+					" --add-opens java.base/java.lang=ALL-UNNAMED");
 		}
 		// copy the mvnw resources
 		copy("mvnw").setExecutable(true);
@@ -213,9 +213,15 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected MavenRunner mavenRunner() throws IOException {
-		return MavenRunner.create()
-				.withProjectDir(rootFolder())
-				.withRunner(runner);
+		MavenRunner mavenRunner = MavenRunner.create()
+			.withProjectDir(rootFolder())
+			.withRunner(runner);
+		System.getProperties().forEach((key, value) -> {
+			if (key instanceof String && ((String) key).startsWith("spotless") && value instanceof String) {
+				mavenRunner.withSystemProperty((String) key, (String) value);
+			}
+		});
+		return mavenRunner;
 	}
 
 	private static ProcessRunner runner;
@@ -337,8 +343,8 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	protected static String[] formats(String[]... formats) {
 		String[] formatsArray = Arrays.stream(formats)
-				.flatMap(Arrays::stream)
-				.toArray(String[]::new);
+			.flatMap(Arrays::stream)
+			.toArray(String[]::new);
 		return formats(formatsArray);
 	}
 }
