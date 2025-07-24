@@ -15,7 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
+
 import org.gradle.api.DefaultTask;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.DisableCachingByDefault;
 
@@ -30,7 +34,16 @@ import com.diffplug.spotless.GitPrePushHookInstallerGradle;
  * <p>The task leverages {@link GitPrePushHookInstallerGradle} to implement the installation process.
  */
 @DisableCachingByDefault(because = "not worth caching")
-public class SpotlessInstallPrePushHookTask extends DefaultTask {
+public abstract class SpotlessInstallPrePushHookTask extends DefaultTask {
+
+	@Internal
+	abstract Property<File> getRootDir();
+
+	/**
+	 * Determines whether this task is being executed from the root project.
+	 */
+	@Internal
+	abstract Property<Boolean> getIsRootExecution();
 
 	/**
 	 * Executes the task to install the Git pre-push hook.
@@ -43,6 +56,12 @@ public class SpotlessInstallPrePushHookTask extends DefaultTask {
 	 */
 	@TaskAction
 	public void performAction() throws Exception {
+		// if is not root project, skip it
+		if (!getIsRootExecution().get()) {
+			getLogger().debug("Skipping Spotless pre-push hook installation because it is not being executed from the root project.");
+			return;
+		}
+
 		final var logger = new GitPreHookLogger() {
 			@Override
 			public void info(String format, Object... arguments) {
@@ -60,7 +79,7 @@ public class SpotlessInstallPrePushHookTask extends DefaultTask {
 			}
 		};
 
-		final var installer = new GitPrePushHookInstallerGradle(logger, getProject().getRootDir());
+		final var installer = new GitPrePushHookInstallerGradle(logger, getRootDir().get());
 		installer.install();
 	}
 }
