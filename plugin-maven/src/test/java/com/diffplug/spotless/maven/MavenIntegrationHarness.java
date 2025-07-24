@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,6 @@ import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.ResourceHarness;
 
 public class MavenIntegrationHarness extends ResourceHarness {
-
-	protected static final String PATH = "src/main/java/test.java";
 	/**
 	 * To run tests in the IDE, run {@code gradlew :plugin-maven:changelogPrint}, then
 	 * put the last version it prints into {@code SPOTLESS_MAVEN_VERSION_IDE}.  From now
@@ -215,15 +213,9 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	}
 
 	protected MavenRunner mavenRunner() throws IOException {
-		MavenRunner mavenRunner = MavenRunner.create()
+		return MavenRunner.create()
 				.withProjectDir(rootFolder())
 				.withRunner(runner);
-		System.getProperties().forEach((key, value) -> {
-			if (key instanceof String && ((String) key).startsWith("spotless") && value instanceof String) {
-				mavenRunner.withSystemProperty((String) key, (String) value);
-			}
-		});
-		return mavenRunner;
 	}
 
 	private static ProcessRunner runner;
