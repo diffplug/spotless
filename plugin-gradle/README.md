@@ -92,6 +92,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [Dependency resolution modes](#dependency-resolution-modes)
   - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
+  - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
 
 ***Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.***
@@ -1896,6 +1897,16 @@ If you use this feature, you will get an error if you use a formatter in a subpr
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
 
 <a name="examples"></a>
+
+## Can I apply Spotless to specific files?
+
+You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
+
+```
+cmd> gradle spotlessApply -PspotlessFiles=my/file/pattern.java,more/generic/.*-pattern.java
+```
+
+The patterns are matched using `String#matches(String)` against the absolute file path.
 
 ## Example configurations (from real-world projects)
 
