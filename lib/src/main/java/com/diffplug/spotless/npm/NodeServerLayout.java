@@ -96,7 +96,7 @@ class NodeServerLayout {
 		// check if it is NOT empty
 		return ThrowingEx.get(() -> {
 			try (Stream<Path> entries = Files.list(nodeModulesInstallDirPath)) {
-				return entries.findFirst().isPresent();
+				return entries.findAny().isPresent();
 			}
 		});
 	}

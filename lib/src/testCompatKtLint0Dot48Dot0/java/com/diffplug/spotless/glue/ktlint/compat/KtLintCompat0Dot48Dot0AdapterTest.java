@@ -62,7 +62,7 @@ public class KtLintCompat0Dot48Dot0AdapterTest {
 		try (InputStream is = KtLintCompat0Dot48Dot0AdapterTest.class.getResourceAsStream("/" + name)) {
 			Files.copy(is, path.resolve(name));
 		}
-		return new String(Files.readAllBytes(path.resolve(name)), StandardCharsets.UTF_8);
+		return Files.readString(path.resolve(name));
 	}
 
 }

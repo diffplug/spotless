@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.GitPrePushHookInstaller.GitPreHookLogger;
 
 class GitPrePushHookInstallerTest extends ResourceHarness {
-	private final static String OS = System.getProperty("os.name");
+	private static final String OS = System.getProperty("os.name");
 
 	private final List<String> logs = new ArrayList<>();
 	private final GitPreHookLogger logger = new GitPreHookLogger() {

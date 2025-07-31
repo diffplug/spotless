@@ -44,7 +44,7 @@ public class GrEclipse implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		EquoBasedStepBuilder grEclipseConfig = GrEclipseFormatterStep.createBuilder(stepConfig.getProvisioner());
 		grEclipseConfig.setVersion(version == null ? GrEclipseFormatterStep.defaultVersion() : version);
-		if (null != file) {
+		if (file != null) {
 			File settingsFile = stepConfig.getFileLocator().locateFile(file);
 			grEclipseConfig.setPreferences(Arrays.asList(settingsFile));
 		}

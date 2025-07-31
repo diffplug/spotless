@@ -110,7 +110,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		}
 	}
 
-	static abstract class ClientTask extends DefaultTask {
+	abstract static class ClientTask extends DefaultTask {
 		@Internal
 		abstract Property<File> getSpotlessCleanDirectory();
 

@@ -40,7 +40,7 @@ public class EclipseWtp implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		EclipseBasedStepBuilder eclipseConfig = type.createBuilder(stepConfig.getProvisioner());
 		eclipseConfig.setVersion(version == null ? EclipseWtpFormatterStep.defaultVersion() : version);
-		if (null != files) {
+		if (files != null) {
 			eclipseConfig.setPreferences(
 					stream(files).map(file -> stepConfig.getFileLocator().locateFile(file)).collect(toList()));
 		}

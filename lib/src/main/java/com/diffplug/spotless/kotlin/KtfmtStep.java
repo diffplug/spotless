@@ -24,7 +24,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.annotation.Nullable;
 
@@ -79,9 +78,9 @@ public class KtfmtStep implements Serializable {
 		;
 		// @formatter:on
 
-		final private String format;
-		final private String since;
-		final private @Nullable String until;
+		private final String format;
+		private final String since;
+		private final @Nullable String until;
 
 		Style(String format, String since) {
 			this.format = format;
@@ -346,35 +345,35 @@ public class KtfmtStep implements Serializable {
 			if (options != null) {
 				if (BadSemver.version(version) < BadSemver.version(0, 17)) {
 					formattingOptions = formattingOptions.getClass().getConstructor(int.class, int.class, int.class).newInstance(
-							/* maxWidth = */ Optional.ofNullable(options.maxWidth).orElse((Integer) formattingOptionsClass.getMethod("getMaxWidth").invoke(formattingOptions)),
-							/* blockIndent = */ Optional.ofNullable(options.blockIndent).orElse((Integer) formattingOptionsClass.getMethod("getBlockIndent").invoke(formattingOptions)),
-							/* continuationIndent = */ Optional.ofNullable(options.continuationIndent).orElse((Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)));
+							/* maxWidth = */ Objects.requireNonNullElse(options.maxWidth, (Integer) formattingOptionsClass.getMethod("getMaxWidth").invoke(formattingOptions)),
+							/* blockIndent = */ Objects.requireNonNullElse(options.blockIndent, (Integer) formattingOptionsClass.getMethod("getBlockIndent").invoke(formattingOptions)),
+							/* continuationIndent = */ Objects.requireNonNullElse(options.continuationIndent, (Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)));
 				} else if (BadSemver.version(version) < BadSemver.version(0, 19)) {
 					formattingOptions = formattingOptions.getClass().getConstructor(int.class, int.class, int.class, boolean.class, boolean.class).newInstance(
-							/* maxWidth = */ Optional.ofNullable(options.maxWidth).orElse((Integer) formattingOptionsClass.getMethod("getMaxWidth").invoke(formattingOptions)),
-							/* blockIndent = */ Optional.ofNullable(options.blockIndent).orElse((Integer) formattingOptionsClass.getMethod("getBlockIndent").invoke(formattingOptions)),
-							/* continuationIndent = */ Optional.ofNullable(options.continuationIndent).orElse((Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)),
-							/* removeUnusedImports = */ Optional.ofNullable(options.removeUnusedImports).orElse((Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
+							/* maxWidth = */ Objects.requireNonNullElse(options.maxWidth, (Integer) formattingOptionsClass.getMethod("getMaxWidth").invoke(formattingOptions)),
+							/* blockIndent = */ Objects.requireNonNullElse(options.blockIndent, (Integer) formattingOptionsClass.getMethod("getBlockIndent").invoke(formattingOptions)),
+							/* continuationIndent = */ Objects.requireNonNullElse(options.continuationIndent, (Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)),
+							/* removeUnusedImports = */ Objects.requireNonNullElse(options.removeUnusedImports, (Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
 							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions));
 				} else if (BadSemver.version(version) < BadSemver.version(0, 47)) {
 					Class<?> styleClass = classLoader.loadClass(formattingOptionsClass.getName() + "$Style");
 					formattingOptions = formattingOptions.getClass().getConstructor(styleClass, int.class, int.class, int.class, boolean.class, boolean.class).newInstance(
 							/* style = */ formattingOptionsClass.getMethod("getStyle").invoke(formattingOptions),
-							/* maxWidth = */ Optional.ofNullable(options.maxWidth).orElse((Integer) formattingOptionsClass.getMethod("getMaxWidth").invoke(formattingOptions)),
-							/* blockIndent = */ Optional.ofNullable(options.blockIndent).orElse((Integer) formattingOptionsClass.getMethod("getBlockIndent").invoke(formattingOptions)),
-							/* continuationIndent = */ Optional.ofNullable(options.continuationIndent).orElse((Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)),
-							/* removeUnusedImports = */ Optional.ofNullable(options.removeUnusedImports).orElse((Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
+							/* maxWidth = */ Objects.requireNonNullElse(options.maxWidth, (Integer) formattingOptionsClass.getMethod("getMaxWidth").invoke(formattingOptions)),
+							/* blockIndent = */ Objects.requireNonNullElse(options.blockIndent, (Integer) formattingOptionsClass.getMethod("getBlockIndent").invoke(formattingOptions)),
+							/* continuationIndent = */ Objects.requireNonNullElse(options.continuationIndent, (Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)),
+							/* removeUnusedImports = */ Objects.requireNonNullElse(options.removeUnusedImports, (Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
 							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions));
 				} else {
 					Class<?> styleClass = classLoader.loadClass(formattingOptionsClass.getName() + "$Style");
 					formattingOptions = formattingOptions.getClass().getConstructor(styleClass, int.class, int.class, int.class, boolean.class, boolean.class, boolean.class).newInstance(
 							/* style = */ formattingOptionsClass.getMethod("getStyle").invoke(formattingOptions),
-							/* maxWidth = */ Optional.ofNullable(options.maxWidth).orElse((Integer) formattingOptionsClass.getMethod("getMaxWidth").invoke(formattingOptions)),
-							/* blockIndent = */ Optional.ofNullable(options.blockIndent).orElse((Integer) formattingOptionsClass.getMethod("getBlockIndent").invoke(formattingOptions)),
-							/* continuationIndent = */ Optional.ofNullable(options.continuationIndent).orElse((Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)),
-							/* removeUnusedImports = */ Optional.ofNullable(options.removeUnusedImports).orElse((Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
+							/* maxWidth = */ Objects.requireNonNullElse(options.maxWidth, (Integer) formattingOptionsClass.getMethod("getMaxWidth").invoke(formattingOptions)),
+							/* blockIndent = */ Objects.requireNonNullElse(options.blockIndent, (Integer) formattingOptionsClass.getMethod("getBlockIndent").invoke(formattingOptions)),
+							/* continuationIndent = */ Objects.requireNonNullElse(options.continuationIndent, (Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)),
+							/* removeUnusedImports = */ Objects.requireNonNullElse(options.removeUnusedImports, (Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
 							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions),
-							/* manageTrailingCommas */ Optional.ofNullable(options.manageTrailingCommas).orElse((Boolean) formattingOptionsClass.getMethod("getManageTrailingCommas").invoke(formattingOptions)));
+							/* manageTrailingCommas */ Objects.requireNonNullElse(options.manageTrailingCommas, (Boolean) formattingOptionsClass.getMethod("getManageTrailingCommas").invoke(formattingOptions)));
 				}
 			}
 

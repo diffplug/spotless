@@ -42,7 +42,7 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 		return new NpmServe(nodeServerLayout.nodeModulesDir(), formatterStepLocations, nodeServerInstanceId);
 	}
 
-	private static abstract class AbstractStandardNpmProcess {
+	private abstract static class AbstractStandardNpmProcess {
 		protected final ProcessRunner processRunner = ProcessRunner.usingRingBuffersOfCapacity(100 * 1024); // 100kB
 
 		protected final File workingDir;

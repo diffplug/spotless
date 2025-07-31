@@ -58,7 +58,7 @@ public class JavascriptExtension extends FormatExtension {
 		return eslint;
 	}
 
-	public static abstract class EslintBaseConfig<T extends EslintBaseConfig<?>>
+	public abstract static class EslintBaseConfig<T extends EslintBaseConfig<?>>
 			extends NpmStepConfig<EslintBaseConfig<T>> {
 		Map<String, String> devDependencies = new LinkedHashMap<>();
 
@@ -100,6 +100,7 @@ public class JavascriptExtension extends FormatExtension {
 			super(getProject(), JavascriptExtension.this::replaceStep, devDependencies);
 		}
 
+		@Override
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
@@ -140,11 +141,13 @@ public class JavascriptExtension extends FormatExtension {
 	 * offline, you can specify the path to the Biome executable via
 	 * {@code biome().pathToExe(...)}.
 	 */
+	@Override
 	public BiomeJs biome() {
 		return biome(null);
 	}
 
 	/** Downloads the given Biome version from the network. */
+	@Override
 	public BiomeJs biome(String version) {
 		var biomeConfig = new BiomeJs(version);
 		addStep(biomeConfig.createStep());

@@ -133,7 +133,7 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 	private String taskRanAgainst(String task, String... ranAgainst) throws IOException {
 		pauseForFilesystem();
 		String console = StringPrinter.buildString(Errors.rethrow().wrap(printer -> {
-			boolean expectFailure = task.equals("spotlessCheck") && !isClean();
+			boolean expectFailure = "spotlessCheck".equals(task) && !isClean();
 			if (expectFailure) {
 				gradleRunner().withArguments(task).forwardStdOutput(printer.toWriter()).forwardStdError(printer.toWriter()).buildAndFail();
 			} else {

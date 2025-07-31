@@ -128,7 +128,7 @@ public abstract class GitPrePushHookInstaller {
 	 *                  such as file reading or writing errors
 	 */
 	private void uninstall(File gitHookFile) throws Exception {
-		final var hook = Files.readString(gitHookFile.toPath(), UTF_8);
+		final var hook = Files.readString(gitHookFile.toPath());
 		final int hookStart = hook.indexOf(HOOK_HEADER);
 		final int hookEnd = hook.indexOf(HOOK_FOOTER) + HOOK_FOOTER.length(); // hookEnd exclusive, so must be last symbol \n
 
@@ -279,7 +279,7 @@ public abstract class GitPrePushHookInstaller {
 	 * @throws Exception if an error occurs when reading the file.
 	 */
 	private boolean isGitHookInstalled(File gitHookFile) throws Exception {
-		final var hook = Files.readString(gitHookFile.toPath(), UTF_8);
+		final var hook = Files.readString(gitHookFile.toPath());
 		return hook.contains(HOOK_HEADER) && hook.contains(HOOK_FOOTER);
 	}
 

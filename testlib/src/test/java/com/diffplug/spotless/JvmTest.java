@@ -43,8 +43,8 @@ class JvmTest {
 	@Test
 	void supportAdd() {
 		Integer differentVersions[] = {0, 1, 2};
-		Arrays.asList(differentVersions).stream().forEach(v -> testSupport.add(v + Jvm.version(), v.toString()));
-		Arrays.asList(differentVersions).stream().forEach(v -> assertThat(testSupport.toString()).contains(String.format("Version %d", v)));
+		Arrays.asList(differentVersions).forEach(v -> testSupport.add(v + Jvm.version(), v.toString()));
+		Arrays.asList(differentVersions).forEach(v -> assertThat(testSupport.toString()).contains(String.format("Version %d", v)));
 		assertThat(testSupport.toString()).contains(String.format("%s alternatives", TEST_NAME));
 	}
 
@@ -142,7 +142,7 @@ class JvmTest {
 			}).getMessage();
 			assertThat(proposal.replace("\r", "")).isEqualTo("My Test Formatter " + fmtVersion + " is currently being used, but outdated.\n" +
 					"My Test Formatter 2 is the recommended version, which may have fixed this problem.\n" +
-					"My Test Formatter 2 requires JVM " + (requiredJvm) + "+.");
+					"My Test Formatter 2 requires JVM " + requiredJvm + "+.");
 		}
 	}
 

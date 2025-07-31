@@ -20,12 +20,7 @@ import static java.util.stream.Collectors.toMap;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -127,7 +122,7 @@ public abstract class EquoBasedStepBuilder {
 		var roundtrippableState = new EquoStep(formatterVersion, settingProperties, settingXml, FileSignature.promise(settingsFiles), JarState.promise(() -> {
 			P2QueryResult query;
 			try {
-				if (null != cacheDirectory) {
+				if (cacheDirectory != null) {
 					CacheLocations.override_p2data = cacheDirectory.toPath().resolve("dev/equo/p2-data").toFile();
 				}
 				query = createModelWithMirrors().query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
@@ -190,8 +185,8 @@ public abstract class EquoBasedStepBuilder {
 				ImmutableMap<String, String> stepProperties) {
 
 			this.semanticVersion = semanticVersion;
-			this.settingProperties = Optional.ofNullable(settingProperties).orElse(new ArrayList<>());
-			this.settingXml = Optional.ofNullable(settingXml).orElse(new ArrayList<>());
+			this.settingProperties = Objects.requireNonNullElse(settingProperties, new ArrayList<>());
+			this.settingXml = Objects.requireNonNullElse(settingXml, new ArrayList<>());
 			this.settingsPromise = settingsPromise;
 			this.jarPromise = jarPromise;
 			this.stepProperties = stepProperties;
@@ -218,8 +213,8 @@ public abstract class EquoBasedStepBuilder {
 		public State(String semanticVersion, JarState jarState, List<String> settingProperties, List<String> settingXml, FileSignature settingsFiles, ImmutableMap<String, String> stepProperties) {
 			this.semanticVersion = semanticVersion;
 			this.jarState = jarState;
-			this.settingProperties = Optional.ofNullable(settingProperties).orElse(new ArrayList<>());
-			this.settingXml = Optional.ofNullable(settingXml).orElse(new ArrayList<>());
+			this.settingProperties = Objects.requireNonNullElse(settingProperties, new ArrayList<>());
+			this.settingXml = Objects.requireNonNullElse(settingXml, new ArrayList<>());
 			this.settingsFiles = settingsFiles;
 			this.stepProperties = stepProperties;
 		}

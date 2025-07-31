@@ -368,8 +368,8 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 	}
 
 	private int preserveRelativeOrder(BodyDeclaration bodyDeclaration1, BodyDeclaration bodyDeclaration2) {
-		int value1 = ((Integer) bodyDeclaration1.getProperty(CompilationUnitSorter.RELATIVE_ORDER));
-		int value2 = ((Integer) bodyDeclaration2.getProperty(CompilationUnitSorter.RELATIVE_ORDER));
+		int value1 = (Integer) bodyDeclaration1.getProperty(CompilationUnitSorter.RELATIVE_ORDER);
+		int value2 = (Integer) bodyDeclaration2.getProperty(CompilationUnitSorter.RELATIVE_ORDER);
 		return value1 - value2;
 	}
 

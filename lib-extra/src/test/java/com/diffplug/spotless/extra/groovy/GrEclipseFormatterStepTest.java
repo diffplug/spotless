@@ -24,8 +24,8 @@ import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 public class GrEclipseFormatterStepTest extends EquoResourceHarness {
-	private final static String INPUT = "class F{ def m(){} }";
-	private final static String EXPECTED = "class F{\n\tdef m(){}\n}";
+	private static final String INPUT = "class F{ def m(){} }";
+	private static final String EXPECTED = "class F{\n\tdef m(){}\n}";
 
 	public GrEclipseFormatterStepTest() {
 		super(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()));

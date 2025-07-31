@@ -102,7 +102,7 @@ public final class FormatterProperties {
 			} catch (IOException | IllegalArgumentException exception) {
 				String message = String.format("Failed to add preferences from XML:%n%s%n", contentElement);
 				final String detailedMessage = exception.getMessage();
-				if (null != detailedMessage) {
+				if (detailedMessage != null) {
 					message += String.format(" %s", detailedMessage);
 				}
 				throw new IllegalArgumentException(message, exception);
@@ -113,7 +113,7 @@ public final class FormatterProperties {
 
 	public static FormatterProperties merge(Properties... properties) {
 		FormatterProperties merged = new FormatterProperties();
-		List.of(properties).stream().forEach((source) -> merged.properties.putAll(source));
+		List.of(properties).forEach(source -> merged.properties.putAll(source));
 		return merged;
 	}
 
@@ -138,7 +138,7 @@ public final class FormatterProperties {
 		} catch (IOException | IllegalArgumentException exception) {
 			String message = String.format("Failed to add properties from '%s' to formatter settings.", settingsFile);
 			String detailedMessage = exception.getMessage();
-			if (null != detailedMessage) {
+			if (detailedMessage != null) {
 				message += String.format(" %s", detailedMessage);
 			}
 			throw new IllegalArgumentException(message, exception);
@@ -189,7 +189,7 @@ public final class FormatterProperties {
 				try (InputStream input = isSupplier.get()) {
 					rootNode = getRootNode(input);
 					String nodeName = rootNode.getNodeName();
-					if (null == nodeName) {
+					if (nodeName == null) {
 						throw new IllegalArgumentException("XML document does not contain a root node.");
 					}
 				}
@@ -277,7 +277,7 @@ public final class FormatterProperties {
 					NamedNodeMap attributes = setting.getAttributes();
 					Node id = attributes.getNamedItem("id");
 					Node value = attributes.getNamedItem("value");
-					if (null == id) {
+					if (id == null) {
 						throw new IllegalArgumentException("Node 'setting' does not possess an 'id' attribute.");
 					}
 					String idString = id.getNodeValue();
@@ -285,7 +285,7 @@ public final class FormatterProperties {
 					 * A missing value is interpreted as an empty string,
 					 * similar to the Properties behavior
 					 */
-					String valString = (null == value) ? "" : value.getNodeValue();
+					String valString = value == null ? "" : value.getNodeValue();
 					properties.setProperty(idString, valString);
 				}
 				return properties;
@@ -317,7 +317,7 @@ public final class FormatterProperties {
 
 		private static String getProfileName(Node profile) {
 			Node nameAttribute = profile.getAttributes().getNamedItem("name");
-			return (null == nameAttribute) ? "" : nameAttribute.getNodeValue();
+			return nameAttribute == null ? "" : nameAttribute.getNodeValue();
 		}
 
 		private final String rootNodeName;

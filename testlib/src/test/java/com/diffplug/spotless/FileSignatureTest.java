@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
 class FileSignatureTest extends ResourceHarness {
-	private final static String[] inputPaths = {"A", "C", "C", "A", "B"};
-	private final static String[] expectedPathList = inputPaths;
-	private final static String[] expectedPathSet = {"A", "B", "C"};
+	private static final String[] inputPaths = {"A", "C", "C", "A", "B"};
+	private static final String[] expectedPathList = inputPaths;
+	private static final String[] expectedPathSet = {"A", "B", "C"};
 
 	@Test
 	void testFromList() throws IOException {

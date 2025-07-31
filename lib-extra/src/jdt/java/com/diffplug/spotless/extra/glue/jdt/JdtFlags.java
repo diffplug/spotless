@@ -48,7 +48,7 @@ class JdtFlags {
 	}
 
 	private static boolean isPackageVisible(BodyDeclaration bodyDeclaration) {
-		return (!isPrivate(bodyDeclaration) && !isProtected(bodyDeclaration) && !isPublic(bodyDeclaration));
+		return !isPrivate(bodyDeclaration) && !isProtected(bodyDeclaration) && !isPublic(bodyDeclaration);
 	}
 
 	private static boolean isPrivate(BodyDeclaration bodyDeclaration) {

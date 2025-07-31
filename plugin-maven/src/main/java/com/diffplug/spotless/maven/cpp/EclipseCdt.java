@@ -44,7 +44,7 @@ public class EclipseCdt implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		EquoBasedStepBuilder eclipseConfig = EclipseCdtFormatterStep.createBuilder(stepConfig.getProvisioner());
 		eclipseConfig.setVersion(version == null ? EclipseCdtFormatterStep.defaultVersion() : version);
-		if (null != file) {
+		if (file != null) {
 			File settingsFile = stepConfig.getFileLocator().locateFile(file);
 			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
 		}

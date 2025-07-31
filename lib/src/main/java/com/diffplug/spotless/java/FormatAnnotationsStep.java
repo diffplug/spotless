@@ -432,7 +432,6 @@ public final class FormatAnnotationsStep implements Serializable {
 
 		// group 1 is the basename of the annotation.
 		private static final String annoNoArgRegex = "@(?:[A-Za-z_][A-Za-z0-9_.]*\\.)?([A-Za-z_][A-Za-z0-9_]*)";
-		private static final Pattern annoNoArgPattern = Pattern.compile(annoNoArgRegex);
 		// 3 non-empty cases:  ()  (".*")  (.*)
 		private static final String annoArgRegex = "(?:\\(\\)|\\(\"[^\"]*\"\\)|\\([^\")][^)]*\\))?";
 		// group 1 is the basename of the annotation.

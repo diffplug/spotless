@@ -102,7 +102,7 @@ public class DiktatStep implements Serializable {
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			final File configFile = (config != null) ? config.getOnlyFile() : null;
+			final File configFile = config != null ? config.getOnlyFile() : null;
 			Class<?> formatterFunc = jar.getClassLoader().loadClass("com.diffplug.spotless.glue.diktat.DiktatFormatterFunc");
 			Constructor<?> constructor = formatterFunc.getConstructor(
 					String.class,

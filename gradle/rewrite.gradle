@@ -1,0 +1,49 @@
+apply plugin: 'org.openrewrite.rewrite'
+
+rewrite {
+	activeRecipe(
+			"org.openrewrite.gradle.GradleBestPractices",
+			"org.openrewrite.java.RemoveUnusedImports",
+			"org.openrewrite.java.format.RemoveTrailingWhitespace",
+			"org.openrewrite.java.recipes.JavaRecipeBestPractices",
+			"org.openrewrite.java.recipes.RecipeTestingBestPractices",
+			"org.openrewrite.staticanalysis.EmptyBlock",
+			"org.openrewrite.staticanalysis.EqualsAvoidsNull",
+			"org.openrewrite.staticanalysis.JavaApiBestPractices",
+			"org.openrewrite.staticanalysis.LowercasePackage",
+			"org.openrewrite.staticanalysis.MissingOverrideAnnotation",
+			"org.openrewrite.staticanalysis.ModifierOrder",
+			"org.openrewrite.staticanalysis.NoFinalizer",
+			"org.openrewrite.staticanalysis.RemoveCallsToSystemGc",
+			"org.openrewrite.staticanalysis.RemoveUnneededAssertion",
+			"org.openrewrite.staticanalysis.RemoveUnusedLocalVariables",
+			"org.openrewrite.staticanalysis.RemoveUnusedPrivateFields",
+			"org.openrewrite.staticanalysis.RemoveUnusedPrivateMethods",
+			"org.openrewrite.staticanalysis.StringLiteralEquality",
+			"org.openrewrite.staticanalysis.UnnecessaryParentheses",
+			"org.openrewrite.text.EndOfLineAtEndOfFile",
+			"tech.picnic.errorprone.refasterrules.BugCheckerRulesRecipes",
+			"tech.picnic.errorprone.refasterrules.CollectionRulesRecipes",
+			"tech.picnic.errorprone.refasterrules.FileRulesRecipes",
+			"tech.picnic.errorprone.refasterrules.NullRulesRecipes",
+			"tech.picnic.errorprone.refasterrules.StreamRulesRecipes",
+			"tech.picnic.errorprone.refasterrules.StringRulesRecipes",
+			"tech.picnic.errorprone.refasterrules.SuggestedFixRulesRecipes",
+			//"org.openrewrite.java.migrate.UpgradeToJava17",
+			//"org.openrewrite.staticanalysis.CodeCleanup",
+			//"org.openrewrite.staticanalysis.UnnecessaryThrows",
+			)
+	// bugs
+	exclusions.add("**AJacksonFormatterFunc.java")
+	exclusions.add("**NpmPathResolver.java")
+	exclusions.add("**NpmTestsWithoutNpmInstallationTest_gradle_node_plugin_example_*.gradle")
+	exclusions.add("**gradle/changelog.gradle")
+	exclusions.add("**gradle/java-publish.gradle")
+	exclusions.add("**lib-extra/build.gradle")
+	exclusions.add("**lib/build.gradle")
+	exclusions.add("**package-info.java")
+	exclusions.add("**plugin-maven/build.gradle")
+	exclusions.add("**settings.gradle")
+	exportDatatables = true
+	failOnDryRunResults = true
+}
