@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @
 
 SpringBootApplication
-public 
+public
 
 
 class     Application{

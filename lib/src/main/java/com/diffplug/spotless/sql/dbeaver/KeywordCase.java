@@ -22,16 +22,19 @@ import java.util.Locale;
  */
 enum KeywordCase {
 	UPPER {
+		@Override
 		public String transform(String value) {
 			return value.toUpperCase(Locale.ENGLISH);
 		}
 	},
 	LOWER {
+		@Override
 		public String transform(String value) {
 			return value.toLowerCase(Locale.ENGLISH);
 		}
 	},
 	ORIGINAL {
+		@Override
 		public String transform(String value) {
 			return value;
 		}

@@ -47,9 +47,9 @@ class IdeHook {
 		}
 	}
 
-	final static String PROPERTY = "spotlessIdeHook";
-	final static String USE_STD_IN = "spotlessIdeHookUseStdIn";
-	final static String USE_STD_OUT = "spotlessIdeHookUseStdOut";
+	static final String PROPERTY = "spotlessIdeHook";
+	static final String USE_STD_IN = "spotlessIdeHookUseStdIn";
+	static final String USE_STD_OUT = "spotlessIdeHookUseStdOut";
 
 	private static void dumpIsClean() {
 		System.err.println("IS CLEAN");

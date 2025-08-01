@@ -112,6 +112,7 @@ public class TypescriptExtension extends FormatExtension {
 			return this;
 		}
 
+		@Override
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
@@ -207,6 +208,7 @@ public class TypescriptExtension extends FormatExtension {
 			return this;
 		}
 
+		@Override
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
@@ -228,11 +230,13 @@ public class TypescriptExtension extends FormatExtension {
 	 * offline, you can specify the path to the Biome executable via
 	 * {@code biome().pathToExe(...)}.
 	 */
+	@Override
 	public BiomeTs biome() {
 		return biome(null);
 	}
 
 	/** Downloads the given Biome version from the network. */
+	@Override
 	public BiomeTs biome(String version) {
 		var biomeConfig = new BiomeTs(version);
 		addStep(biomeConfig.createStep());

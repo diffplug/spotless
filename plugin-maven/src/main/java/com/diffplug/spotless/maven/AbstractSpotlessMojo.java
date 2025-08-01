@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.maven;
 
+import static com.diffplug.common.base.Strings.isNullOrEmpty;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
@@ -290,7 +291,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			} else {
 				files = collectFilesFromFormatterFactory(formatterFactory);
 			}
-			if (filePatterns == null || filePatterns.isEmpty()) {
+			if (isNullOrEmpty(filePatterns)) {
 				return files;
 			}
 			final String[] includePatterns = this.filePatterns.split(",");
@@ -396,8 +397,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterStepFactory> getFormatterStepFactories() {
-		return Stream.of(licenseHeader)
-				.filter(Objects::nonNull)
+		return Stream.ofNullable(licenseHeader)
 				.collect(toList());
 	}
 

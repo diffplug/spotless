@@ -41,7 +41,7 @@ import org.eclipse.aether.resolution.DependencyResult;
 
 public class ArtifactResolver {
 
-	private final static Exclusion EXCLUDE_ALL_TRANSITIVES = new Exclusion("*", "*", "*", "*");
+	private static final Exclusion EXCLUDE_ALL_TRANSITIVES = new Exclusion("*", "*", "*", "*");
 
 	private final RepositorySystem repositorySystem;
 	private final RepositorySystemSession session;
