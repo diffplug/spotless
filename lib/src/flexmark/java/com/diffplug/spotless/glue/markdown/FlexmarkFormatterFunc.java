@@ -40,7 +40,7 @@ public class FlexmarkFormatterFunc implements FormatterFunc {
 	private final Parser parser;
 	private final Formatter formatter;
 
-	public FlexmarkFormatterFunc() {
+	public FlexmarkFormatterFunc(final MutableDataHolder customFormatterOptions) {
 		// flexmark-java has a separate parser and renderer (formatter)
 		// this is build from the example in https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter
 
@@ -52,7 +52,7 @@ public class FlexmarkFormatterFunc implements FormatterFunc {
 		final MutableDataHolder formatterOptions = createFormatterOptions(parserOptions, emulationProfile);
 
 		parser = Parser.builder(parserOptions).build();
-		formatter = Formatter.builder(formatterOptions).build();
+		formatter = Formatter.builder(MutableDataSet.merge(formatterOptions, customFormatterOptions)).build();
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class FlexmarkFormatterFunc implements FormatterFunc {
 	}
 
 	@Override
-	public String apply(String input) throws Exception {
+	public String apply(String input) {
 		final Document parsedMarkdown = parser.parse(input);
 		return formatter.render(parsedMarkdown);
 	}
