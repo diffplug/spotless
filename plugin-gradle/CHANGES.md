@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
 ### Fixed
 * Respect system gitconfig when performing git operations ([#2404](https://github.com/diffplug/spotless/issues/2404))
+* Make Git pre-push hook install task (`spotlessInstallGitPrePushHook`) compatible with the Gradle configuration cache. ([#2585](https://github.com/diffplug/spotless/issues/2585))
 
 ## [7.2.1] - 2025-07-21
 ### Fixed
