@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.DisableCachingByDefault;
@@ -31,6 +33,8 @@ import com.diffplug.spotless.GitPrePushHookInstallerGradle;
  */
 @DisableCachingByDefault(because = "not worth caching")
 public class SpotlessInstallPrePushHookTask extends DefaultTask {
+
+	File rootDir;
 
 	/**
 	 * Executes the task to install the Git pre-push hook.
@@ -60,7 +64,7 @@ public class SpotlessInstallPrePushHookTask extends DefaultTask {
 			}
 		};
 
-		final var installer = new GitPrePushHookInstallerGradle(logger, getProject().getRootDir());
+		final var installer = new GitPrePushHookInstallerGradle(logger, rootDir);
 		installer.install();
 	}
 }
