@@ -307,7 +307,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	private static String getSystemProperty(String name) {
 		if (SPOTLESS_MAVEN_VERSION_IDE != null) {
-			if (name.equals("spotlessMavenPluginVersion")) {
+			if ("spotlessMavenPluginVersion".equals(name)) {
 				return SPOTLESS_MAVEN_VERSION_IDE;
 			} else {
 				throw Unhandled.stringException(name);

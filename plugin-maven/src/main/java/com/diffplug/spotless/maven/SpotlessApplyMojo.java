@@ -26,6 +26,8 @@ import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
+import static com.diffplug.common.base.Strings.isNullOrEmpty;
+
 /**
  * Performs formatting of all source files according to configured formatters.
  */
@@ -86,6 +88,6 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 	}
 
 	private boolean isIdeHook() {
-		return !(spotlessIdeHook == null || spotlessIdeHook.isEmpty());
+		return !isNullOrEmpty(spotlessIdeHook);
 	}
 }

@@ -43,9 +43,7 @@ class FileFinder {
 		return fileCandidateFinders
 				.stream()
 				.map(Supplier::get)
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.findFirst();
+				.filter(Optional::isPresent).findFirst().map(Optional::get);
 	}
 
 	static class Builder {

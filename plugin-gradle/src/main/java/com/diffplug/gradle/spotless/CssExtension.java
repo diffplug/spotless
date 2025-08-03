@@ -43,6 +43,7 @@ public class CssExtension extends FormatExtension {
 	 * offline, you can specify the path to the Biome executable via
 	 * {@code biome().pathToExe(...)}.
 	 */
+	@Override
 	public BiomeCss biome() {
 		return biome(null);
 	}
@@ -54,6 +55,7 @@ public class CssExtension extends FormatExtension {
 	 * {@code biome().pathToExe(...)}.
 	 * @param version Biome version to use.
 	 */
+	@Override
 	public BiomeCss biome(String version) {
 		var biomeConfig = new BiomeCss(version);
 		addStep(biomeConfig.createStep());

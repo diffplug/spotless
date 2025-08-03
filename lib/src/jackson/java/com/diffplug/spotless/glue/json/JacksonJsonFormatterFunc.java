@@ -53,6 +53,7 @@ public class JacksonJsonFormatterFunc extends AJacksonFormatterFunc {
 	 * @return a {@link JsonFactory}. May be overridden to handle alternative formats.
 	 * @see <a href="https://github.com/FasterXML/jackson-dataformats-text">jackson-dataformats-text</a>
 	 */
+	@Override
 	protected JsonFactory makeJsonFactory() {
 		JsonFactory jsonFactory = new JsonFactoryBuilder().build();
 

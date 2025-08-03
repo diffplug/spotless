@@ -43,7 +43,7 @@ public class ScalafmtFormatterFunc implements FormatterFunc.NeedsFile {
 			config = (ScalafmtConfig) method.invoke(ScalafmtConfig$.MODULE$);
 		} else {
 			File file = configSignature.getOnlyFile();
-			String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			String configStr = Files.readString(file.toPath());
 			config = Scalafmt.parseHoconConfig(configStr).get();
 		}
 

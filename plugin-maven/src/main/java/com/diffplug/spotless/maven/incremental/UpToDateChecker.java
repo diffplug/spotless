@@ -29,6 +29,7 @@ public interface UpToDateChecker extends AutoCloseable {
 
 	void setUpToDate(Path file);
 
+	@Override
 	void close();
 
 	static UpToDateChecker noop(MavenProject project, Path indexFile, Log log) {

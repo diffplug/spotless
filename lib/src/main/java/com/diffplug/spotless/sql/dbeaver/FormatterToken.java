@@ -63,6 +63,7 @@ class FormatterToken {
 		return fPos;
 	}
 
+	@Override
 	public String toString() {
 		final StringBuilder buf = new StringBuilder();
 		buf.append(getClass().getName());

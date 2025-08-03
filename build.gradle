@@ -1,29 +1,23 @@
 apply plugin: 'dev.equo.ide'
+
+apply from: rootProject.file('gradle/changelog.gradle')
+apply from: rootProject.file('gradle/java-publish.gradle')
+apply from: rootProject.file('gradle/spotless-freshmark.gradle')
+
+allprojects {
+	apply from: rootProject.file('gradle/spotless.gradle')
+	apply from: rootProject.file('gradle/rewrite.gradle')
+}
+
 equoIde {
 	branding().title('Spotless').icon(file('_images/spotless_logo.png'))
 	welcome().openUrl('https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md')
 	gradleBuildship().autoImport('.')
 }
 
-repositories {
-	mavenCentral()
-}
-
-apply from: rootProject.file('gradle/java-publish.gradle')
-apply from: rootProject.file('gradle/changelog.gradle')
-allprojects {
-	apply from: rootProject.file('gradle/spotless.gradle')
-}
-apply from: rootProject.file('gradle/spotless-freshmark.gradle')
-
-spotless {
-	groovyGradle {
-		target '*.gradle', 'gradle/*.gradle'
-	}
-	format 'dotfiles', {
-		target '.gitignore', '.gitattributes', '.editorconfig'
-		leadingTabsToSpaces(2)
-		trimTrailingWhitespace()
-		endWithNewline()
-	}
+dependencies {
+	rewrite("org.openrewrite.recipe:rewrite-migrate-java:3.14.1")
+	rewrite("org.openrewrite.recipe:rewrite-rewrite:0.10.1")
+	rewrite("org.openrewrite.recipe:rewrite-static-analysis:2.14.0")
+	rewrite("org.openrewrite.recipe:rewrite-third-party:0.24.1")
 }

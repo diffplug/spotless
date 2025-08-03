@@ -124,8 +124,8 @@ public class SQLTokenizedFormatter {
 			String token2String = t2.getString().toUpperCase(Locale.ENGLISH);
 			// Concatenate tokens
 			if (t0.getType() == TokenType.KEYWORD && t1.getType() == TokenType.SPACE && t2.getType() == TokenType.KEYWORD) {
-				if (((tokenString.equals("ORDER") || tokenString.equals("GROUP") || tokenString.equals("CONNECT")) && token2String.equals("BY")) ||
-						((tokenString.equals("START")) && token2String.equals("WITH"))) {
+				if ((("ORDER".equals(tokenString) || "GROUP".equals(tokenString) || "CONNECT".equals(tokenString)) && "BY".equals(token2String)) ||
+						(("START".equals(tokenString)) && "WITH".equals(token2String))) {
 					t0.setString(t0.getString() + " " + t2.getString());
 					argList.remove(index + 1);
 					argList.remove(index + 1);
@@ -133,14 +133,14 @@ public class SQLTokenizedFormatter {
 			}
 
 			// Oracle style joins
-			if (tokenString.equals("(") && t1.getString().equals("+") && token2String.equals(")")) {  //$NON-NLS-2$ //$NON-NLS-3$
+			if ("(".equals(tokenString) && "+".equals(t1.getString()) && ")".equals(token2String)) {  //$NON-NLS-2$ //$NON-NLS-3$
 				t0.setString("(+)");
 				argList.remove(index + 1);
 				argList.remove(index + 1);
 			}
 
 			// JDBI bind list
-			if (tokenString.equals("<") && t1.getType() == TokenType.NAME && token2String.equals(">")) {
+			if ("<".equals(tokenString) && t1.getType() == TokenType.NAME && ">".equals(token2String)) {
 				t0.setString(t0.getString() + t1.getString() + t2.getString());
 				argList.remove(index + 1);
 				argList.remove(index + 1);
@@ -155,16 +155,16 @@ public class SQLTokenizedFormatter {
 			token = argList.get(index);
 			String tokenString = token.getString().toUpperCase(Locale.ENGLISH);
 			if (token.getType() == TokenType.SYMBOL) {
-				if (tokenString.equals("(")) {
+				if ("(".equals(tokenString)) {
 					functionBracket.add(isFunction(prev.getString()) ? Boolean.TRUE : Boolean.FALSE);
 					bracketIndent.add(indent);
 					indent++;
 					index += insertReturnAndIndent(argList, index + 1, indent);
-				} else if (tokenString.equals(")") && !bracketIndent.isEmpty() && !functionBracket.isEmpty()) {
+				} else if (")".equals(tokenString) && !bracketIndent.isEmpty() && !functionBracket.isEmpty()) {
 					indent = bracketIndent.remove(bracketIndent.size() - 1);
 					index += insertReturnAndIndent(argList, index, indent);
 					functionBracket.remove(functionBracket.size() - 1);
-				} else if (tokenString.equals(",")) {
+				} else if (",".equals(tokenString)) {
 					index += insertReturnAndIndent(argList, index + 1, indent);
 				} else if (statementDelimiters.contains(tokenString)) {
 					indent = 0;
@@ -292,10 +292,10 @@ public class SQLTokenizedFormatter {
 			FormatterToken t3 = argList.get(index - 3);
 			FormatterToken t4 = argList.get(index - 4);
 
-			if (t4.getString().equals("(")
+			if ("(".equals(t4.getString())
 					&& t3.getString().trim().isEmpty()
 					&& t1.getString().trim().isEmpty()
-					&& t0.getString().equalsIgnoreCase(")")) {
+					&& ")".equalsIgnoreCase(t0.getString())) {
 				t4.setString(t4.getString() + t2.getString() + t0.getString());
 				argList.remove(index);
 				argList.remove(index - 1);
@@ -311,11 +311,11 @@ public class SQLTokenizedFormatter {
 			if (prev.getType() != TokenType.SPACE &&
 					token.getType() != TokenType.SPACE &&
 					!token.getString().startsWith("(")) {
-				if (token.getString().equals(",") || statementDelimiters.contains(token.getString())) {
+				if (",".equals(token.getString()) || statementDelimiters.contains(token.getString())) {
 					continue;
 				}
 				if (isFunction(prev.getString())
-						&& token.getString().equals("(")) {
+						&& "(".equals(token.getString())) {
 					continue;
 				}
 				if (token.getType() == TokenType.VALUE && prev.getType() == TokenType.NAME) {
@@ -373,7 +373,7 @@ public class SQLTokenizedFormatter {
 			if (token.getType() == TokenType.SPACE) {
 				continue;
 			}
-			if (token.getString().equals("JOIN")) {
+			if ("JOIN".equals(token.getString())) {
 				return true;
 			}
 			if (!contains(JOIN_BEGIN, token.getString())) {

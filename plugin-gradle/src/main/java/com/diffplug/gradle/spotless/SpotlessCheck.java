@@ -143,7 +143,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 
 	private String getTaskPathPrefix() {
 		String path = getProjectPath().get();
-		return path.equals(":") ? ":" : path + ":";
+		return ":".equals(path) ? ":" : path + ":";
 	}
 
 	private static String calculateGradleCommand() {

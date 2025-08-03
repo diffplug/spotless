@@ -41,7 +41,7 @@ public class SortPomFormatterFunc implements FormatterFunc {
 	@Override
 	public String apply(String input) throws Exception {
 		// SortPom expects a file to sort, so we write the input into a temporary file
-		File pom = File.createTempFile("pom", ".xml");
+		File pom = Files.createTempFile("pom", ".xml").toFile();
 		pom.deleteOnExit();
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(pom, Charset.forName(cfg.encoding)))) {
 			writer.write(input);
