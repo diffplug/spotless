@@ -15,13 +15,12 @@
  */
 package com.diffplug.spotless.maven;
 
-import java.io.File;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 
 import com.diffplug.spotless.GitPrePushHookInstaller.GitPreHookLogger;
 import com.diffplug.spotless.GitPrePushHookInstallerMaven;
@@ -37,12 +36,8 @@ import com.diffplug.spotless.GitPrePushHookInstallerMaven;
 @Mojo(name = AbstractSpotlessMojo.GOAL_PRE_PUSH_HOOK, threadSafe = true)
 public class SpotlessInstallPrePushHookMojo extends AbstractMojo {
 
-	/**
-	 * The base directory of the Maven project where the Git pre-push hook will be installed.
-	 * This parameter is automatically set to the root directory of the current project.
-	 */
-	@Parameter(defaultValue = "${project.basedir}", readonly = true, required = true)
-	private File baseDir;
+	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	private MavenProject project;
 
 	/**
 	 * Executes the Mojo, installing the Git pre-push hook for the Spotless plugin.
@@ -56,6 +51,12 @@ public class SpotlessInstallPrePushHookMojo extends AbstractMojo {
 	 */
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		// if is not root project, skip it
+		if (!project.isExecutionRoot()) {
+			getLog().debug("Skipping Spotless pre-push hook installation for non-root project: " + project.getName());
+			return;
+		}
+
 		final var logger = new GitPreHookLogger() {
 			@Override
 			public void info(String format, Object... arguments) {
@@ -74,7 +75,7 @@ public class SpotlessInstallPrePushHookMojo extends AbstractMojo {
 		};
 
 		try {
-			final var installer = new GitPrePushHookInstallerMaven(logger, baseDir);
+			final var installer = new GitPrePushHookInstallerMaven(logger, project.getBasedir());
 			installer.install();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Unable to install pre-push hook", e);
