@@ -1,0 +1,18 @@
+apply plugin: 'org.openrewrite.rewrite'
+
+rewrite {
+	//activeRecipe("org.openrewrite.java.RemoveUnusedImports")
+	// bugs
+	exclusions.add("**AJacksonFormatterFunc.java")
+	exclusions.add("**NpmPathResolver.java")
+	exclusions.add("**NpmTestsWithoutNpmInstallationTest_gradle_node_plugin_example_*.gradle")
+	exclusions.add("**gradle/changelog.gradle")
+	exclusions.add("**gradle/java-publish.gradle")
+	exclusions.add("**lib-extra/build.gradle")
+	exclusions.add("**lib/build.gradle")
+	exclusions.add("**package-info.java")
+	exclusions.add("**plugin-maven/build.gradle")
+	exclusions.add("**settings.gradle")
+	exportDatatables = true
+	failOnDryRunResults = true
+}
