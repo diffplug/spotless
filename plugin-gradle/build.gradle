@@ -20,6 +20,8 @@ dependencies {
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
 	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+	implementation 'com.vladsch.flexmark:flexmark-all:0.64.8'
+	implementation 'com.vladsch.flexmark:flexmark-util-data:0.64.8'
 
 	testImplementation projects.testlib
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
