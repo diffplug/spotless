@@ -9,6 +9,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * Adds support for worktrees (fixes [#1765](https://github.com/diffplug/spotless/issues/1765))
 * Bump default `google-java-format` version to latest `1.24.0` -> `1.28.0`. ([#2345](https://github.com/diffplug/spotless/pull/2345))
 * Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
+* Running `spotlessCheck` with violations unilaterally produces the error message `Run './gradlew spotlessApply' to fix these violations`. ([#2592](https://github.com/diffplug/spotless/issues/2592))
 ### Fixed
 * Respect system gitconfig when performing git operations ([#2404](https://github.com/diffplug/spotless/issues/2404))
 
