@@ -138,7 +138,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		getProjectPath().set(getProject().getPath());
 		getEncoding().set(impl.getEncoding());
 		getRunToFixMessage().convention(
-				"Run '" + calculateGradleCommand() + " :spotlessApply' to fix all violations.");
+				"Run '" + calculateGradleCommand() + " spotlessApply' to fix all violations.");
 	}
 
 	private static String calculateGradleCommand() {
