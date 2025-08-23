@@ -13,6 +13,7 @@ apply from: rootProject.file('gradle/java-publish.gradle')
 apply from: rootProject.file('gradle/changelog.gradle')
 allprojects {
 	apply from: rootProject.file('gradle/spotless.gradle')
+	apply from: rootProject.file('gradle/rewrite.gradle')
 }
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
@@ -26,4 +27,8 @@ spotless {
 		trimTrailingWhitespace()
 		endWithNewline()
 	}
+}
+
+dependencies {
+	rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:latest.release"))
 }

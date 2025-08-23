@@ -33,8 +33,27 @@ jobs:
         run: ./gradlew spotlessCheck
       - name: assemble testClasses
         run: ./gradlew assemble testClasses
+  rewriteDryRun:
+    name: rewriteDryRun
+    runs-on: ubuntu-latest
+    env:
+      buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
+      buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: 21
+      - name: gradle caching
+        uses: gradle/actions/setup-gradle@v4
+      - name: rewriteDryRun
+        run: ./gradlew rewriteDryRun --build-cache --info
   build:
-    needs: sanityCheck
+    needs: [sanityCheck, rewriteDryRun]
     strategy:
       fail-fast: false
       matrix:
@@ -66,10 +85,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: build (maven-only)
         if: matrix.kind == 'maven'
-        run: ./gradlew :plugin-maven:build -x spotlessCheck
+        run: ./gradlew :plugin-maven:build -x spotlessCheck -x rewriteDryRun
       - name: build (everything-but-maven)
         if: matrix.kind == 'gradle'
-        run: ./gradlew build -x spotlessCheck -PSPOTLESS_EXCLUDE_MAVEN=true
+        run: ./gradlew build -x spotlessCheck -x rewriteDryRun -PSPOTLESS_EXCLUDE_MAVEN=true
       - name: test npm
         if: matrix.kind == 'npm'
         run: ./gradlew testNpm
