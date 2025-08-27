@@ -32,9 +32,12 @@ public class PrettierConfig implements Serializable {
 
 	private final TreeMap<String, Object> options;
 
-	public PrettierConfig(@Nullable File prettierConfigPath, @Nullable Map<String, Object> options) {
+	private final Boolean editorconfig;
+
+	public PrettierConfig(@Nullable File prettierConfigPath, @Nullable Map<String, Object> options, @Nullable Boolean editorconfig) {
 		this.prettierConfigPathSignature = prettierConfigPath == null ? null : FileSignature.promise(prettierConfigPath);
 		this.options = options == null ? new TreeMap<>() : new TreeMap<>(options);
+		this.editorconfig = editorconfig;
 	}
 
 	@Nullable
@@ -44,5 +47,10 @@ public class PrettierConfig implements Serializable {
 
 	public Map<String, Object> getOptions() {
 		return new TreeMap<>(this.options);
+	}
+
+	@Nullable
+	public Boolean getEditorconfig() {
+		return editorconfig;
 	}
 }
