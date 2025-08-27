@@ -35,7 +35,7 @@ class SpotlessInstallPrePushHookTaskTest extends GradleIntegrationHarness {
 
 		// when
 		var output = gradleRunner()
-				.withArguments("spotlessInstallGitPrePushHook")
+				.withArguments("spotlessInstallGitPrePushHook", "--system-prop=org.gradle.configuration-cache=true")
 				.build()
 				.getOutput();
 
@@ -65,7 +65,7 @@ class SpotlessInstallPrePushHookTaskTest extends GradleIntegrationHarness {
 
 		// when
 		final var output = gradleRunner()
-				.withArguments("spotlessInstallGitPrePushHook")
+				.withArguments("spotlessInstallGitPrePushHook", "--system-prop=org.gradle.configuration-cache=true")
 				.build()
 				.getOutput();
 
