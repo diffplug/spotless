@@ -35,19 +35,19 @@ public final class KtfmtFormattingOptions {
 	private Boolean removeUnusedImports;
 
 	@Nullable
-	private Boolean manageTrailingCommas;
+	private KtfmtTrailingCommaManagementStrategy trailingCommaManagementStrategy;
 
 	public KtfmtFormattingOptions(
-			@Nullable Integer maxWidth,
-			@Nullable Integer blockIndent,
-			@Nullable Integer continuationIndent,
-			@Nullable Boolean removeUnusedImports,
-			@Nullable Boolean manageTrailingCommas) {
+		@Nullable Integer maxWidth,
+		@Nullable Integer blockIndent,
+		@Nullable Integer continuationIndent,
+		@Nullable Boolean removeUnusedImports,
+		@Nullable KtfmtTrailingCommaManagementStrategy trailingCommaManagementStrategy) {
 		this.maxWidth = maxWidth;
 		this.blockIndent = blockIndent;
 		this.continuationIndent = continuationIndent;
 		this.removeUnusedImports = removeUnusedImports;
-		this.manageTrailingCommas = manageTrailingCommas;
+		this.trailingCommaManagementStrategy = trailingCommaManagementStrategy;
 	}
 
 	@Nonnull
@@ -71,8 +71,8 @@ public final class KtfmtFormattingOptions {
 	}
 
 	@Nonnull
-	public Optional<Boolean> getManageTrailingCommas() {
-		return Optional.ofNullable(manageTrailingCommas);
+	public Optional<KtfmtTrailingCommaManagementStrategy> getTrailingCommaManagementStrategy() {
+		return Optional.ofNullable(trailingCommaManagementStrategy);
 	}
 
 	public void setMaxWidth(int maxWidth) {
@@ -100,7 +100,7 @@ public final class KtfmtFormattingOptions {
 		this.removeUnusedImports = removeUnusedImports;
 	}
 
-	public void setManageTrailingCommas(boolean manageTrailingCommas) {
-		this.manageTrailingCommas = manageTrailingCommas;
+	public void setTrailingCommaManagementStrategy(@Nullable KtfmtTrailingCommaManagementStrategy trailingCommaManagementStrategy) {
+		this.trailingCommaManagementStrategy = trailingCommaManagementStrategy;
 	}
 }

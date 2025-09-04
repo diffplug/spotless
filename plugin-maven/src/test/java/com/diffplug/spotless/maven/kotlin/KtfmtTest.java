@@ -37,6 +37,7 @@ class KtfmtTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	// TODO
 	void testContinuation() throws Exception {
 		writePomWithKotlinSteps("<ktfmt/>");
 
@@ -73,6 +74,7 @@ class KtfmtTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	// TODO
 	void testKtfmtWithManageTrailingCommasOption() throws Exception {
 		writePomWithKotlinSteps("<ktfmt><version>0.49</version><style>DROPBOX</style><manageTrailingCommas>true</manageTrailingCommas></ktfmt>");
 

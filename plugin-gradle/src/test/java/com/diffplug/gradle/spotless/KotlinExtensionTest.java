@@ -47,6 +47,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	@Test
 	void integrationKtfmtDropboxStyleWithPublicApi() throws IOException {
 		setFile("build.gradle.kts").toLines(
+				"import  com.diffplug.spotless.kotlin.KtfmtStep.TrailingCommaManagementStrategy",
 				"plugins {",
 				"    id(\"org.jetbrains.kotlin.jvm\") version \"1.6.21\"",
 				"    id(\"com.diffplug.spotless\")",
@@ -59,7 +60,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 				"            it.setBlockIndent(4)",
 				"            it.setContinuationIndent(4)",
 				"            it.setRemoveUnusedImports(false)",
-				"            it.setManageTrailingCommas(false)",
+				"            it.setTrailingCommaManagementStrategy(TrailingCommaManagementStrategy.NONE)",
 				"        }",
 				"    }",
 				"}");

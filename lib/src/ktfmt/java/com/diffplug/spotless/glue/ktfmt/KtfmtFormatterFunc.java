@@ -55,29 +55,23 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 	}
 
 	private FormattingOptions createFormattingOptions() throws Exception {
-		FormattingOptions formattingOptions;
-		switch (style) {
-		case META:
-			formattingOptions = Formatter.META_FORMAT;
-			break;
-		case GOOGLE:
-			formattingOptions = Formatter.GOOGLE_FORMAT;
-			break;
-		case KOTLIN_LANG:
-			formattingOptions = Formatter.KOTLINLANG_FORMAT;
-			break;
-		default:
-			throw new IllegalStateException("Unknown formatting option " + style);
-		}
+		FormattingOptions formattingOptions = switch (style) {
+			case META -> Formatter.META_FORMAT;
+			case GOOGLE -> Formatter.GOOGLE_FORMAT;
+			case KOTLIN_LANG -> Formatter.KOTLINLANG_FORMAT;
+			default -> throw new IllegalStateException("Unknown formatting option " + style);
+		};
 
 		if (ktfmtFormattingOptions != null) {
 			formattingOptions = formattingOptions.copy(
-					ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
-					ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
-					ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
-					ktfmtFormattingOptions.getManageTrailingCommas().orElse(formattingOptions.getManageTrailingCommas()),
-					ktfmtFormattingOptions.getRemoveUnusedImports().orElse(formattingOptions.getRemoveUnusedImports()),
-					formattingOptions.getDebuggingPrintOpsAfterFormatting());
+				ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
+				ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
+				ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
+				ktfmtFormattingOptions.getTrailingCommaManagementStrategy()
+					.map(KtfmtTrailingCommaManagementStrategy::toFormatterTrailingCommaManagementStrategy)
+					.orElse(formattingOptions.getTrailingCommaManagementStrategy()),
+				ktfmtFormattingOptions.getRemoveUnusedImports().orElse(formattingOptions.getRemoveUnusedImports()),
+				formattingOptions.getDebuggingPrintOpsAfterFormatting());
 		}
 
 		return formattingOptions;
