@@ -75,7 +75,7 @@ jobs:
         run: ./gradlew testNpm
       - name: Setup go
         if: matrix.kind == 'shfmt'
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: 'stable'
       - name: Install shfmt
