@@ -15,6 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -97,8 +100,17 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 				"}");
 
 		setFile("test.java").toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
-		gradleRunner().withArguments("spotlessApply").build();
-		assertFile("test.java").sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test");
+		gradleRunner().withArguments("spotlessApply").buildAndFail();
+		assertThat(assertThrows(AssertionError.class, () -> assertFile("test.java").sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test")).getMessage())
+				.contains("Extra content at line 1:")
+				.contains("Extra content at line 3:")
+				.contains("import io.quarkus.maven.dependency.*;")
+				.contains("import static io.quarkus.vertx.web.Route.HttpMethod.*;")
+				.contains("import static org.springframework.web.reactive.function.BodyInserters.*;")
+				.contains("java.util.*")
+				.contains("java.util.Collections.*")
+				.doesNotContain("import mylib.Helper;")
+				.doesNotContain("public class Test {}");
 	}
 
 	/**

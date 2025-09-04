@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless.maven.java;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
@@ -28,6 +31,25 @@ class RemoveWildcardImportsStepTest extends MavenIntegrationHarness {
 		String path = "src/main/java/test.java";
 		setFile(path).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(path).sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test");
+		assertThat(assertThrows(AssertionError.class, () -> assertFile(path).sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test")).getMessage())
+				.contains("Extra content at line 1:")
+				.contains("Extra content at line 3:")
+				.contains("import io.quarkus.maven.dependency.*;")
+				.contains("import static io.quarkus.vertx.web.Route.HttpMethod.*;")
+				.contains("import static org.springframework.web.reactive.function.BodyInserters.*;")
+				.contains("java.util.*")
+				.contains("java.util.Collections.*")
+				.doesNotContain("import mylib.Helper;")
+				.doesNotContain("public class Test {}");
+	}
+
+	@Test
+	void testRemoveWildcardImportsWithNoResult() throws Exception {
+		writePomWithJavaSteps("<removeWildcardImports/>");
+
+		String path = "src/main/java/test.java";
+		setFile(path).toResource("java/removewildcardimports/JavaCodeNoWildcardsUnformatted.test");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(path).sameAsResource("java/removewildcardimports/JavaCodeNoWildcardsFormatted.test");
 	}
 }
