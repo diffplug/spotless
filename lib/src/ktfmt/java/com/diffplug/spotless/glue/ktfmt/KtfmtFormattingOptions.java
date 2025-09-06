@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,27 +22,22 @@ import javax.annotation.Nullable;
 
 public final class KtfmtFormattingOptions {
 
-	@Nullable
-	private Integer maxWidth;
+	@Nullable private Integer maxWidth;
 
-	@Nullable
-	private Integer blockIndent;
+	@Nullable private Integer blockIndent;
 
-	@Nullable
-	private Integer continuationIndent;
+	@Nullable private Integer continuationIndent;
 
-	@Nullable
-	private Boolean removeUnusedImports;
+	@Nullable private Boolean removeUnusedImports;
 
-	@Nullable
-	private KtfmtTrailingCommaManagementStrategy trailingCommaManagementStrategy;
+	@Nullable private KtfmtTrailingCommaManagementStrategy trailingCommaManagementStrategy;
 
 	public KtfmtFormattingOptions(
-		@Nullable Integer maxWidth,
-		@Nullable Integer blockIndent,
-		@Nullable Integer continuationIndent,
-		@Nullable Boolean removeUnusedImports,
-		@Nullable KtfmtTrailingCommaManagementStrategy trailingCommaManagementStrategy) {
+			@Nullable Integer maxWidth,
+			@Nullable Integer blockIndent,
+			@Nullable Integer continuationIndent,
+			@Nullable Boolean removeUnusedImports,
+			@Nullable KtfmtTrailingCommaManagementStrategy trailingCommaManagementStrategy) {
 		this.maxWidth = maxWidth;
 		this.blockIndent = blockIndent;
 		this.continuationIndent = continuationIndent;

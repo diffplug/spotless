@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 	@Nonnull
 	private final KtfmtStyle style;
 
-	@Nullable
-	private final KtfmtFormattingOptions ktfmtFormattingOptions;
+	@Nullable private final KtfmtFormattingOptions ktfmtFormattingOptions;
 
 	public KtfmtFormatterFunc() {
 		this(KtfmtStyle.META, null);
