@@ -37,7 +37,6 @@ class KtfmtTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	// TODO
 	void testContinuation() throws Exception {
 		writePomWithKotlinSteps("<ktfmt/>");
 
