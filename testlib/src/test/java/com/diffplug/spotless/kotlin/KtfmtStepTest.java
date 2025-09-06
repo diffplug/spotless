@@ -70,7 +70,16 @@ class KtfmtStepTest extends ResourceHarness {
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/trailing-commas.dirty", "kotlin/ktfmt/trailing-commas.clean");
 	}
 
-	// TODO: test trailing comma only add
+	@Test
+	void behaviorWithTrailingCommaManagementStrategyOnlyAdd() {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		options.setTrailingCommaManagementStrategy(KtfmtStep.TrailingCommaManagementStrategy.ONLY_ADD);
+		FormatterStep step = KtfmtStep.create("0.58", TestProvisioner.mavenCentral(), KtfmtStep.Style.KOTLINLANG, options);
+		StepHarness.forStep(step).testResource(
+			"kotlin/ktfmt/trailing-commas-only-add.dirty",
+			"kotlin/ktfmt/trailing-commas-only-add.clean"
+		);
+	}
 
 	// TODO: test before 0.57
 
