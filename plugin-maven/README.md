@@ -473,7 +473,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
   <blockIndent>4</blockIndent> <!-- optional -->
   <continuationIndent>8</continuationIndent> <!-- optional -->
   <removeUnusedImports>false</removeUnusedImports> <!-- optional -->
-  <manageTrailingCommas>true</manageTrailingCommas> <!-- optional -->
+  <trailingCommaManagementStrategy>COMPLETE</trailingCommaManagementStrategy> <!-- optional -->
 </ktfmt>
 ```
 

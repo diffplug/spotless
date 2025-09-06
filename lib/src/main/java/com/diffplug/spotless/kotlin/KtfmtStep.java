@@ -171,11 +171,12 @@ public class KtfmtStep implements Serializable {
 			@Nullable Integer blockIndent,
 			@Nullable Integer continuationIndent,
 			@Nullable Boolean removeUnusedImports,
-			@Nullable Boolean manageTrailingCommas) {
+			@Nullable TrailingCommaManagementStrategy trailingCommaManagementStrategy) {
 			this.maxWidth = maxWidth;
 			this.blockIndent = blockIndent;
 			this.continuationIndent = continuationIndent;
 			this.removeUnusedImports = removeUnusedImports;
+			this.trailingCommaManagementStrategy = trailingCommaManagementStrategy;
 		}
 
 		public void setMaxWidth(int maxWidth) {
@@ -280,9 +281,12 @@ public class KtfmtStep implements Serializable {
 			final Constructor<?> optionsConstructor = ktfmtFormattingOptionsClass.getConstructor(
 				Integer.class, Integer.class, Integer.class, Boolean.class, ktfmtTrailingCommaManagmentStrategyClass);
 
-			// TODO: use Enum.valueOf like for ktfmt style for trailing comma management strategy value
+			final Object ktfmtTrailingCommaManagementStrategy =
+				options.trailingCommaManagementStrategy == null
+					? null
+					: Enum.valueOf((Class<? extends Enum>) ktfmtTrailingCommaManagmentStrategyClass, options.trailingCommaManagementStrategy.name());
 			final Object ktfmtFormattingOptions = optionsConstructor.newInstance(
-				options.maxWidth, options.blockIndent, options.continuationIndent, options.removeUnusedImports, options.trailingCommaManagementStrategy);
+				options.maxWidth, options.blockIndent, options.continuationIndent, options.removeUnusedImports, ktfmtTrailingCommaManagementStrategy);
 			if (style == null) {
 				final Constructor<?> constructor = formatterFuncClass.getConstructor(ktfmtFormattingOptionsClass);
 				return (FormatterFunc) constructor.newInstance(ktfmtFormattingOptions);
@@ -332,14 +336,14 @@ public class KtfmtStep implements Serializable {
 		 */
 		private String getKtfmtStyleOption(Style style) {
 			switch (style) {
-			case META:
-				return "META";
-			case GOOGLE:
-				return "GOOGLE";
-			case KOTLINLANG:
-				return "KOTLIN_LANG";
-			default:
-				throw new IllegalStateException("Unsupported style: " + style);
+				case META:
+					return "META";
+				case GOOGLE:
+					return "GOOGLE";
+				case KOTLINLANG:
+					return "KOTLIN_LANG";
+				default:
+					throw new IllegalStateException("Unsupported style: " + style);
 			}
 		}
 	}

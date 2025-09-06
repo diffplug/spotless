@@ -74,9 +74,8 @@ class KtfmtTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	// TODO
 	void testKtfmtWithManageTrailingCommasOption() throws Exception {
-		writePomWithKotlinSteps("<ktfmt><version>0.49</version><style>DROPBOX</style><manageTrailingCommas>true</manageTrailingCommas></ktfmt>");
+		writePomWithKotlinSteps("<ktfmt><version>0.49</version><style>DROPBOX</style><trailingCommaManagementStrategy>COMPLETE</trailingCommaManagementStrategy></ktfmt>");
 
 		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/trailing-commas.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();
