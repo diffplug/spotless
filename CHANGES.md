@@ -17,6 +17,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `google-java-format` version to latest `1.24.0` -> `1.28.0`. ([#2345](https://github.com/diffplug/spotless/pull/2345))
 * Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
 * Bump default `jackson` version to latest `2.19.2` -> `2.20.0`. ([#2606](https://github.com/diffplug/spotless/pull/2606))
+* Promote `RemoveWildCardImports` to linter ([#2611](https://github.com/diffplug/spotless/pull/2611))
 
 ## [3.3.1] - 2025-07-21
 ### Fixed

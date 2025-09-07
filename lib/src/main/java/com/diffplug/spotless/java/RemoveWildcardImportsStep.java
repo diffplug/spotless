@@ -16,17 +16,21 @@
 package com.diffplug.spotless.java;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.generic.ReplaceRegexStep;
+import com.diffplug.spotless.generic.LintRegexStep;
 
 /** Removes any wildcard import statements. */
 public final class RemoveWildcardImportsStep {
+
+	/**
+	 * Matches lines like 'import foo.*;' or 'import static foo.*;'.
+	 */
+	private static final String REGEX = "(?m)^import\\s+(?:static\\s+)?[^;\\n]*\\*;\\R?";
+	private static final String NAME = "removeWildcardImports";
+	private static final String ERROR = "Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this";
+
 	private RemoveWildcardImportsStep() {}
 
 	public static FormatterStep create() {
-		// Matches lines like 'import foo.*;' or 'import static foo.*;'.
-		return ReplaceRegexStep.create(
-				"removeWildcardImports",
-				"(?m)^import\\s+(?:static\\s+)?[^;\\n]*\\*;\\R?",
-				"");
+		return LintRegexStep.lint(NAME, REGEX, ERROR);
 	}
 }
