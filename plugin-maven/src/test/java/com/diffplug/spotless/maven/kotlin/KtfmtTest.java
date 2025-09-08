@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ class KtfmtTest extends MavenIntegrationHarness {
 
 	@Test
 	void testKtfmtWithManageTrailingCommasOption() throws Exception {
-		writePomWithKotlinSteps("<ktfmt><version>0.49</version><style>DROPBOX</style><manageTrailingCommas>true</manageTrailingCommas></ktfmt>");
+		writePomWithKotlinSteps("<ktfmt><version>0.49</version><style>DROPBOX</style><trailingCommaManagementStrategy>COMPLETE</trailingCommaManagementStrategy></ktfmt>");
 
 		setFile("src/main/kotlin/main.kt").toResource("kotlin/ktfmt/trailing-commas.dirty");
 		mavenRunner().withArguments("spotless:apply").runNoError();

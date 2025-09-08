@@ -65,10 +65,23 @@ class KtfmtStepTest extends ResourceHarness {
 	@Test
 	void behaviorWithTrailingCommas() throws Exception {
 		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
-		options.setManageTrailingCommas(true);
+		options.setTrailingCommaManagementStrategy(KtfmtStep.TrailingCommaManagementStrategy.COMPLETE);
 		FormatterStep step = KtfmtStep.create("0.49", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/trailing-commas.dirty", "kotlin/ktfmt/trailing-commas.clean");
 	}
+
+	@Test
+	void behaviorWithTrailingCommaManagementStrategyOnlyAdd() {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		options.setTrailingCommaManagementStrategy(KtfmtStep.TrailingCommaManagementStrategy.ONLY_ADD);
+		FormatterStep step = KtfmtStep.create("0.58", TestProvisioner.mavenCentral(), KtfmtStep.Style.KOTLINLANG, options);
+		StepHarness.forStep(step).testResource(
+			"kotlin/ktfmt/trailing-commas-only-add.dirty",
+			"kotlin/ktfmt/trailing-commas-only-add.clean"
+		);
+	}
+
+	// TODO: test before 0.57
 
 	@Test
 	void equality() throws Exception {
