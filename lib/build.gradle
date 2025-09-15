@@ -98,7 +98,7 @@ dependencies {
 	// googleJavaFormat
 	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.28.0'
 	// gson
-	gsonCompileOnly 'com.google.code.gson:gson:2.13.1'
+	gsonCompileOnly 'com.google.code.gson:gson:2.13.2'
 	// jackson
 	String VER_JACKSON='2.20.0'
 	jacksonCompileOnly "com.fasterxml.jackson.core:jackson-databind:$VER_JACKSON"
