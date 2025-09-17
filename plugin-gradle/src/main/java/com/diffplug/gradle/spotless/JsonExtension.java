@@ -168,6 +168,11 @@ public class JsonExtension extends FormatExtension {
 			return this;
 		}
 
+		public JacksonJsonGradleConfig setSpaceBeforeSeparator(boolean value) {
+			jacksonConfig.setSpaceBeforeSeparator(value);
+			return this;
+		}
+
 		@Override
 		public JacksonJsonGradleConfig self() {
 			return this;
