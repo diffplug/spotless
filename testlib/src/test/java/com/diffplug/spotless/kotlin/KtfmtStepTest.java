@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.kotlin;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.*;
@@ -80,7 +82,16 @@ class KtfmtStepTest extends ResourceHarness {
 				"kotlin/ktfmt/trailing-commas-only-add.clean");
 	}
 
-	// TODO: test before 0.57
+	@Test
+	void trailingCommaManagementStrategyOnlyAddUnsupportedBefore_0_57() {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		options.setTrailingCommaManagementStrategy(KtfmtStep.TrailingCommaManagementStrategy.ONLY_ADD);
+		var step = KtfmtStep.create("0.56", TestProvisioner.mavenCentral(), KtfmtStep.Style.KOTLINLANG, options);
+
+		assertThatThrownBy(() -> StepHarness.forStep(step))
+			.isInstanceOf(IllegalStateException.class)
+			.hasMessageContaining("ONLY_ADD");
+	}
 
 	@Test
 	void equality() throws Exception {
