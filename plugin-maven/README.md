@@ -1944,6 +1944,64 @@ By default, `spotless:check` is bound to the `verify` phase.  You might want to 
 - set `-Dspotless.check.skip=true` at the command line
 - set `spotless.check.skip` to `true` in the `<properties>` section of the `pom.xml`
 
+### Suppressing lint errors
+
+Sometimes Spotless will encounter lint errors that can't be auto-fixed. For example, if you run `mvn spotless:check`, you might see:
+
+```
+[ERROR] Unable to format file src/main/java/com/example/App.java
+[ERROR] Step 'removeWildcardImports' found problem in 'App.java':
+[ERROR]   Do not use wildcard imports
+```
+
+To suppress these lints, you can use the `<lintSuppressions>` configuration:
+
+```xml
+<plugin>
+  <groupId>com.diffplug.spotless</groupId>
+  <artifactId>spotless-maven-plugin</artifactId>
+  <version>${spotless.version}</version>
+  <configuration>
+    <java>
+      <removeWildcardImports/>
+    </java>
+    <lintSuppressions>
+      <lintSuppression>
+        <path>src/main/java/com/example/App.java</path>
+        <step>removeWildcardImports</step>
+        <shortCode>*</shortCode>
+      </lintSuppression>
+    </lintSuppressions>
+  </configuration>
+</plugin>
+```
+
+Each `<lintSuppression>` can match by:
+- `<path>` - file path (supports wildcards like `*`)
+- `<step>` - step name (supports wildcards like `*`)
+- `<shortCode>` - specific error code (supports wildcards like `*`)
+
+You can suppress multiple patterns:
+
+```xml
+<lintSuppressions>
+  <!-- Suppress all wildcard import errors in legacy code -->
+  <lintSuppression>
+    <path>src/main/java/com/example/legacy/*</path>
+    <step>removeWildcardImports</step>
+    <shortCode>*</shortCode>
+  </lintSuppression>
+  <!-- Suppress all errors from a specific step -->
+  <lintSuppression>
+    <path>*</path>
+    <step>removeWildcardImports</step>
+    <shortCode>*</shortCode>
+  </lintSuppression>
+</lintSuppressions>
+```
+
+Spotless is primarily a formatter, _not_ a linter. In our opinion, a linter is just a broken formatter. But formatters do break sometimes, and representing these failures as lints that can be suppressed is more useful than just giving up.
+
 <a name="preview"></a>
 
 ## How do I preview what `mvn spotless:apply` will do?
