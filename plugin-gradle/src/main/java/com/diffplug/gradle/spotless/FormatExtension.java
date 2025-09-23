@@ -769,8 +769,7 @@ public class FormatExtension {
 
 		@Nullable Map<String, Object> prettierConfig;
 
-		@Nullable
-		Boolean editorconfig;
+		@Nullable Boolean editorconfig;
 
 		final Map<String, String> devDependencies;
 

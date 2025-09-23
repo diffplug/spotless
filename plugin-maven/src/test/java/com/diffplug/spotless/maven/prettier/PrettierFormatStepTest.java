@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,11 +162,11 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 	void prettier_editorconfig() throws Exception {
 		String suffix = "ts";
 		writePomWithPrettierSteps("**/*." + suffix,
-			"<prettier>",
-			"  <prettierVersion>1.16.4</prettierVersion>",
-			"  <configFile>.prettierrc.yml</configFile>",
-			"  <editorconfig>true</editorconfig>",
-			"</prettier>");
+				"<prettier>",
+				"  <prettierVersion>1.16.4</prettierVersion>",
+				"  <configFile>.prettierrc.yml</configFile>",
+				"  <editorconfig>true</editorconfig>",
+				"</prettier>");
 
 		String kind = "typescript";
 		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc_noop.yml");

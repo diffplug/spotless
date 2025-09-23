@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ public class PrettierConfig implements Serializable {
 		this.editorconfig = editorconfig;
 	}
 
-	@Nullable
-	public File getPrettierConfigPath() {
+	@Nullable public File getPrettierConfigPath() {
 		return prettierConfigPathSignature == null ? null : prettierConfigPathSignature.get().getOnlyFile();
 	}
 
@@ -49,8 +48,7 @@ public class PrettierConfig implements Serializable {
 		return new TreeMap<>(this.options);
 	}
 
-	@Nullable
-	public Boolean getEditorconfig() {
+	@Nullable public Boolean getEditorconfig() {
 		return editorconfig;
 	}
 }
