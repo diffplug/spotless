@@ -21,6 +21,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `gson` version to latest `2.13.1` -> `2.13.2`. ([#2615](https://github.com/diffplug/spotless/pull/2615))
 * **BREAKING** Bump default `ktfmt` version to latest `0.53` -> `0.58` ([#2613](https://github.com/diffplug/spotless/pull/2613))
   * use `TrailingCommaManagementStrategy` enum instead of `manageTrailingCommas` boolean configuration option
+### Added
+* Add a `lint` mode to `ReplaceRegexStep` ([#2571](https://github.com/diffplug/spotless/pull/2571))
 
 ## [3.3.1] - 2025-07-21
 ### Fixed
