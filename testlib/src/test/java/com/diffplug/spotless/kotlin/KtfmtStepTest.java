@@ -89,8 +89,8 @@ class KtfmtStepTest extends ResourceHarness {
 		var step = KtfmtStep.create("0.56", TestProvisioner.mavenCentral(), KtfmtStep.Style.KOTLINLANG, options);
 
 		assertThatThrownBy(() -> StepHarness.forStep(step))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessageContaining("ONLY_ADD");
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessageContaining("ONLY_ADD");
 	}
 
 	@Test
