@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.JsonFactoryBuilder;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.core.util.Separators;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.json.JacksonJsonConfig;
@@ -88,23 +87,23 @@ public class JacksonJsonFormatterFunc extends AJacksonFormatterFunc {
 
 		public SpotlessJsonPrettyPrinter(boolean spaceBeforeSeparator) {
 			this.spaceBeforeSeparator = spaceBeforeSeparator;
+
+			if (_objectFieldValueSeparatorWithSpaces == null || _objectFieldValueSeparatorWithSpaces.isEmpty()) {
+				return;
+			}
+
+			// Keep the behavior consistent even if Jackson changes default behavior
+			boolean startsWithSpace = Character.isWhitespace(_objectFieldValueSeparatorWithSpaces.charAt(0));
+			if (spaceBeforeSeparator && !startsWithSpace) {
+				_objectFieldValueSeparatorWithSpaces = String.format(" %s", _objectFieldValueSeparatorWithSpaces);
+			} else if (!spaceBeforeSeparator && startsWithSpace) {
+				_objectFieldValueSeparatorWithSpaces = _objectFieldValueSeparatorWithSpaces.substring(1);
+			}
 		}
 
 		@Override
 		public DefaultPrettyPrinter createInstance() {
 			return new SpotlessJsonPrettyPrinter(spaceBeforeSeparator);
-		}
-
-		@Override
-		public DefaultPrettyPrinter withSeparators(Separators separators) {
-			this._separators = separators;
-			if (spaceBeforeSeparator) {
-				// This is Jackson default behavior
-				this._objectFieldValueSeparatorWithSpaces = " " + separators.getObjectFieldValueSeparator() + " ";
-			} else {
-				this._objectFieldValueSeparatorWithSpaces = separators.getObjectFieldValueSeparator() + " ";
-			}
-			return this;
 		}
 	}
 }

@@ -15,6 +15,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * **BREAKING** use `TrailingCommaManagementStrategy` enum instead of `manageTrailingCommas` boolean configuration option
 * Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
 * Bump default `palantir-java-format` version to latest `2.57.0` -> `2.71.0`.
+### Fixed
+* Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))
 
 ## [2.46.1] - 2025-07-21
 ### Fixed
