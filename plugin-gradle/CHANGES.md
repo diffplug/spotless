@@ -11,6 +11,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
 * Bump default `jackson` version to latest `2.19.2` -> `2.20.0`. ([#2606](https://github.com/diffplug/spotless/pull/2606))
 * Running `spotlessCheck` with violations unilaterally produces the error message `Run './gradlew spotlessApply' to fix these violations`. ([#2592](https://github.com/diffplug/spotless/issues/2592))
+* **BREAKING** Bump default `ktfmt` version to latest `0.53` -> `0.58` ([#2613](https://github.com/diffplug/spotless/pull/2613))
+  * use `TrailingCommaManagementStrategy` enum instead of `manageTrailingCommas` boolean configuration option
+
 ### Fixed
 * Respect system gitconfig when performing git operations ([#2404](https://github.com/diffplug/spotless/issues/2404))
 
