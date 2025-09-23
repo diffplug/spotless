@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,6 @@ class EclipseCdtFormatterStepTest extends EquoResourceHarness {
 	}
 
 	private static Stream<String> formatWithVersion() {
-		return Stream.of("10.6", "10.7", EclipseCdtFormatterStep.defaultVersion());
+		return Stream.of("11.0", "11.6", EclipseCdtFormatterStep.defaultVersion());
 	}
 }

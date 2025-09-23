@@ -61,7 +61,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 			source = createFormatTask(name, step);
 			check = createCheckTask(name, source);
 			apply = createApplyTask(name, source);
-			outputFile = new File(source.getOutputDirectory() + "/src", file.getName());
+			outputFile = new File(source.getCleanDirectory() + "/src", file.getName());
 		}
 
 		private SpotlessTaskImpl createFormatTask(String name, FormatterStep step) {

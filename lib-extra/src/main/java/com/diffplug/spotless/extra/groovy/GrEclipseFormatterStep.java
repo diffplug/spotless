@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Properties;
 
+import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
@@ -32,14 +33,14 @@ public final class GrEclipseFormatterStep {
 	private GrEclipseFormatterStep() {}
 
 	private static final String NAME = "eclipse groovy formatter";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "4.26").add(17, "4.32");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "4.26").add(17, "4.35");
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
 	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), GrEclipseFormatterStep::apply) {
+		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), GrEclipseFormatterStep::apply, ImmutableMap.builder()) {
 			@Override
 			protected P2Model model(String version) {
 				if (!version.startsWith("4.")) {
@@ -68,6 +69,8 @@ public final class GrEclipseFormatterStep {
 				model.addFilterAndValidate("no-debug", filter -> {
 					filter.exclude("org.eclipse.jdt.debug");
 				});
+				// work around https://github.com/groovy/groovy-eclipse/issues/1617
+				model.useMavenCentral = false;
 				return model;
 			}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,62 +16,58 @@
 package com.diffplug.spotless.maven;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import com.diffplug.spotless.Formatter;
 
 class FormattersHolder implements AutoCloseable {
+	final Map<FormatterFactory, Formatter> openFormatters;
+	final Map<FormatterFactory, Supplier<Iterable<File>>> factoryToFiles;
 
-	private final Map<Formatter, Supplier<Iterable<File>>> formatterToFiles;
+	FormattersHolder(Map<FormatterFactory, Formatter> openFormatters, Map<FormatterFactory, Supplier<Iterable<File>>> factoryToFiles) {
+		this.openFormatters = openFormatters;
+		this.factoryToFiles = factoryToFiles;
+	}
 
-	FormattersHolder(Map<Formatter, Supplier<Iterable<File>>> formatterToFiles) {
-		this.formatterToFiles = formatterToFiles;
+	public String nameFor(FormatterFactory factory) {
+		return factory.getClass().getSimpleName();
 	}
 
 	static FormattersHolder create(Map<FormatterFactory, Supplier<Iterable<File>>> formatterFactoryToFiles, FormatterConfig config) {
-		Map<Formatter, Supplier<Iterable<File>>> formatterToFiles = new LinkedHashMap<>();
+		Map<FormatterFactory, Formatter> openFormatters = new LinkedHashMap<>();
 		try {
 			for (Entry<FormatterFactory, Supplier<Iterable<File>>> entry : formatterFactoryToFiles.entrySet()) {
 				FormatterFactory formatterFactory = entry.getKey();
 				Supplier<Iterable<File>> files = entry.getValue();
-
 				Formatter formatter = formatterFactory.newFormatter(files, config);
-				formatterToFiles.put(formatter, files);
+				openFormatters.put(formatterFactory, formatter);
 			}
 		} catch (RuntimeException openError) {
 			try {
-				close(formatterToFiles.keySet());
+				close(openFormatters.values());
 			} catch (Exception closeError) {
 				openError.addSuppressed(closeError);
 			}
 			throw openError;
 		}
 
-		return new FormattersHolder(formatterToFiles);
-	}
-
-	Iterable<Formatter> getFormatters() {
-		return formatterToFiles.keySet();
-	}
-
-	Map<Formatter, Supplier<Iterable<File>>> getFormattersWithFiles() {
-		return formatterToFiles;
+		return new FormattersHolder(openFormatters, formatterFactoryToFiles);
 	}
 
 	@Override
 	public void close() {
 		try {
-			close(formatterToFiles.keySet());
+			close(openFormatters.values());
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to close formatters", e);
 		}
 	}
 
-	private static void close(Set<Formatter> formatters) throws Exception {
+	private static void close(Collection<Formatter> formatters) throws Exception {
 		Exception error = null;
 		for (Formatter formatter : formatters) {
 			try {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,15 @@ import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.eclipse.aether.RepositorySystemSession;
 
 import com.diffplug.common.collect.Sets;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.maven.generic.EclipseWtp;
 import com.diffplug.spotless.maven.generic.EndWithNewline;
+import com.diffplug.spotless.maven.generic.Idea;
 import com.diffplug.spotless.maven.generic.Indent;
 import com.diffplug.spotless.maven.generic.Jsr223;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
@@ -100,14 +101,10 @@ public abstract class FormatterFactory {
 			formatterSteps = List.of(toggle.createFence().preserveWithin(formatterStepsBeforeToggle));
 		}
 
-		String formatterName = this.getClass().getSimpleName();
 		return Formatter.builder()
-				.name(formatterName)
 				.encoding(formatterEncoding)
 				.lineEndingsPolicy(formatterLineEndingPolicy)
-				.exceptionPolicy(new FormatExceptionPolicyStrict())
 				.steps(formatterSteps)
-				.rootDir(config.getFileLocator().getBaseDir().toPath())
 				.build();
 	}
 
@@ -149,6 +146,10 @@ public abstract class FormatterFactory {
 
 	public final void addPrettier(Prettier prettier) {
 		addStepFactory(prettier);
+	}
+
+	public final void addIdea(Idea idea) {
+		addStepFactory(idea);
 	}
 
 	public final void addToggleOffOn(ToggleOffOn toggle) {
@@ -196,5 +197,10 @@ public abstract class FormatterFactory {
 	private static boolean formatterStepOverriden(FormatterStepFactory global, List<FormatterStepFactory> allConfigured) {
 		return allConfigured.stream()
 				.anyMatch(configured -> configured.getClass() == global.getClass());
+	}
+
+	public FormatterFactory init(RepositorySystemSession repositorySystemSession) {
+		stepFactories.forEach(factory -> factory.init(repositorySystemSession));
+		return this;
 	}
 }

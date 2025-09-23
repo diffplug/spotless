@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,9 +94,9 @@ class JvmTest {
 		assertNull(testSupport.getRecommendedFormatterVersion(), "No formatter version is supported");
 
 		for (String fmtVersion : Arrays.asList("1.2", "1.2.3", "1.2-SNAPSHOT", "1.2.3-SNAPSHOT")) {
-			String proposal = assertThrows(Exception.class, () -> {
+			String proposal = assertThrows(Lint.ShortcutException.class, () -> {
 				testSupport.assertFormatterSupported(fmtVersion);
-			}).getMessage();
+			}).getLints().get(0).getDetail();
 			assertThat(proposal).contains(String.format("on JVM %d", Jvm.version()));
 			assertThat(proposal).contains(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion));
 			assertThat(proposal).contains(String.format("try %s alternatives", TEST_NAME));
@@ -112,9 +112,9 @@ class JvmTest {
 		}
 
 		for (String fmtVersion : Arrays.asList("1.2.4", "2", "1.2.5-SNAPSHOT")) {
-			String proposal = assertThrows(Exception.class, () -> {
+			String proposal = assertThrows(Lint.ShortcutException.class, () -> {
 				testSupport.assertFormatterSupported(fmtVersion);
-			}).getMessage();
+			}).getLints().get(0).getDetail();
 			assertThat(proposal).contains(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion + 1));
 
 			proposal = assertThrows(Exception.class, () -> {

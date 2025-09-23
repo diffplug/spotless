@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class PalantirJavaFormatStep implements Serializable {
 	private static final String DEFAULT_STYLE = "PALANTIR";
 	private static final String NAME = "palantir-java-format";
 	public static final String MAVEN_COORDINATE = "com.palantir.javaformat:palantir-java-format:";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.1.0").add(11, "2.28.0").add(21, "2.39.0");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.1.0").add(11, "2.28.0").add(21, "2.57.0");
 
 	/** The jar that contains the formatter. */
 	private final JarState.Promised jarState;

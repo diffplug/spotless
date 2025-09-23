@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class GsonStep implements Serializable {
 	private static final String MAVEN_COORDINATES = "com.google.code.gson:gson";
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Gson; maybe you set an incompatible version?";
 	public static final String NAME = "gson";
-	public static final String DEFAULT_VERSION = "2.11.0";
+	public static final String DEFAULT_VERSION = "2.13.2";
 
 	private final JarState.Promised jarState;
 	private final GsonConfig gsonConfig;

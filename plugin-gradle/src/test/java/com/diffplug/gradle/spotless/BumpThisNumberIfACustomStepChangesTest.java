@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,39 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
-class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHarness {
+abstract class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHarness {
+	private boolean useConfigCache;
+
+	BumpThisNumberIfACustomStepChangesTest(boolean useConfigCache) {
+		this.useConfigCache = useConfigCache;
+	}
+
+	static class WithConfigCache extends BumpThisNumberIfACustomStepChangesTest {
+		WithConfigCache() {
+			super(true);
+		}
+	}
+
+	static class WithoutConfigCache extends BumpThisNumberIfACustomStepChangesTest {
+		WithoutConfigCache() {
+			super(false);
+		}
+	}
+
+	@Override
+	public GradleRunner gradleRunner() throws IOException {
+		if (useConfigCache) {
+			setFile("gradle.properties").toLines("org.gradle.unsafe.configuration-cache=true",
+					"org.gradle.configuration-cache=true");
+			return super.gradleRunner().withGradleVersion(GradleVersionSupport.CUSTOM_STEPS.version);
+		} else {
+			return super.gradleRunner();
+		}
+	}
+
 	private void writeBuildFile(String toInsert) throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -39,7 +69,7 @@ class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHarness {
 	}
 
 	@Override
-	protected void applyIsUpToDate(boolean upToDate) throws IOException {
+	public void applyIsUpToDate(boolean upToDate) throws IOException {
 		super.applyIsUpToDate(upToDate);
 		assertFile("README.md").hasContent("abc");
 	}
@@ -50,7 +80,12 @@ class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHarness {
 		writeContentWithBadFormatting();
 		applyIsUpToDate(false);
 		checkIsUpToDate(false);
-		checkIsUpToDate(false);
+		if (useConfigCache) {
+			// if the config cache is in-effect, then it's okay for custom rules to become "up-to-date"
+			checkIsUpToDate(true);
+		} else {
+			checkIsUpToDate(false);
+		}
 	}
 
 	@Test

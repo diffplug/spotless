@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.work.DisableCachingByDefault;
 
+@DisableCachingByDefault(because = "not worth caching")
 public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
 	@TaskAction
 	public void performAction() {
 		getTaskService().get().registerApplyAlreadyRan(this);
-		ConfigurableFileTree files = getConfigCacheWorkaround().fileTree().from(getSpotlessOutDirectory().get());
-		if (files.isEmpty()) {
+		ConfigurableFileTree cleanFiles = getConfigCacheWorkaround().fileTree().from(getSpotlessCleanDirectory().get());
+		ConfigurableFileTree lintsFiles = getConfigCacheWorkaround().fileTree().from(getSpotlessLintsDirectory().get());
+		if (cleanFiles.isEmpty() && lintsFiles.isEmpty()) {
 			getState().setDidWork(sourceDidWork());
 		} else {
-			files.visit(new FileVisitor() {
+			cleanFiles.visit(new FileVisitor() {
 				@Override
 				public void visitDir(FileVisitDetails fileVisitDetails) {
 
@@ -51,6 +55,10 @@ public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
 					}
 				}
 			});
+			if (!lintsFiles.isEmpty()) {
+				boolean detailed = false;
+				throw new GradleException(super.allLintsErrorMsgDetailed(lintsFiles, detailed));
+			}
 		}
 	}
 }

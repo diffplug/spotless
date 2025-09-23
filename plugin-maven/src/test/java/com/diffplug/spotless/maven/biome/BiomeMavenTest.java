@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,46 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.owasp.encoder.Encode.forXml;
 
+import java.io.File;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
+/**
+ * Tests for the Biome formatter used via the Maven spotless plugin.
+ */
 class BiomeMavenTest extends MavenIntegrationHarness {
+	/**
+	 * Tests that biome can be used as a CSS formatting step, using biome 1.8.3
+	 * which requires opt-in.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void asCssStepExperimental() throws Exception {
+		writePomWithCssSteps("**/*.css", "<biome><version>1.8.3</version><configPath>configs</configPath></biome>");
+		setFile("biome_test.css").toResource("biome/css/fileBefore.css");
+		setFile("configs/biome.json").toResource("biome/config/css-enabled.json");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("biome_test.css").sameAsResource("biome/css/fileAfter.css");
+	}
+
+	/**
+	 * Tests that biome can be used as a CSS formatting step, with biome 1.9.0
+	 * which does not require opt-in.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void asCssStepStable() throws Exception {
+		writePomWithCssSteps("**/*.js", "<biome><version>1.9.0</version></biome>");
+		setFile("biome_test.css").toResource("biome/css/fileBefore.css");
+		var res = mavenRunner().withArguments("spotless:apply").runNoError();
+		System.out.println(res.stdOutUtf8());
+		assertFile("biome_test.css").sameAsResource("biome/css/fileAfter.css");
+	}
+
 	/**
 	 * Tests that Biome can be used as a generic formatting step.
 	 *
@@ -100,6 +135,23 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 		var path = newFile("configs").getAbsolutePath();
 		writePomWithBiomeSteps("**/*.js",
 				"<biome><version>1.2.0</version><configPath>" + forXml(path) + "</configPath></biome>");
+		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
+		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("biome_test.js").sameAsResource("biome/js/longLineAfter120.js");
+	}
+
+	/**
+	 * Tests that a path to a Biome config JSON file can be specified (requires biome 2.x).
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void configPathFile() throws Exception {
+		var path = newFile("configs").getAbsolutePath();
+		var file = new File(path, "biome.json").getAbsolutePath();
+		writePomWithBiomeSteps("**/*.js",
+				"<biome><version>2.1.1</version><configPath>" + forXml(file) + "</configPath></biome>");
 		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
 		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -214,5 +266,18 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 		setFile("package.json").toResource("biome/json/packageBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("package.json").sameAsResource("biome/json/packageAfter.json");
+	}
+
+	/**
+	 * Tests that the Maven plugin works with version 2.x of biome.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void version2X() throws Exception {
+		writePomWithBiomeSteps("**/*.js", "<biome><version>2.0.6</version></biome>");
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
 	}
 }

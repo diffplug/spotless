@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,8 @@ package com.diffplug.gradle.spotless;
 import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
-import org.gradle.api.internal.plugins.DslObject;
 import org.gradle.api.plugins.GroovyBasePlugin;
 import org.gradle.api.tasks.GroovySourceDirectorySet;
-import org.gradle.api.tasks.GroovySourceSet;
-import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 
@@ -66,12 +63,7 @@ public class GroovyExtension extends BaseGroovyExtension implements HasBuiltinDe
 			target = getSources(getProject(),
 					message,
 					sourceSet -> {
-						if (GradleVersion.current().compareTo(GradleVersion.version(SpotlessPlugin.VER_GRADLE_javaPluginExtension)) >= 0) {
-							return sourceSet.getExtensions().getByType(GroovySourceDirectorySet.class);
-						} else {
-							final GroovySourceSet groovySourceSet = new DslObject(sourceSet).getConvention().getPlugin(GroovySourceSet.class);
-							return groovySourceSet.getGroovy();
-						}
+						return sourceSet.getExtensions().getByType(GroovySourceDirectorySet.class);
 					},
 					file -> {
 						final String name = file.getName();

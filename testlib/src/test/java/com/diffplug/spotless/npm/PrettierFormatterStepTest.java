@@ -136,8 +136,8 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 					npmPathResolver(),
 					new PrettierConfig(null, ImmutableMap.of("parser", "postcss")));
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
-				stepHarness.testResourceExceptionMsg("npm/prettier/filetypes/scss/scss.dirty").isEqualTo(
-						"Unexpected response status code at /prettier/format [HTTP 500] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\")");
+				stepHarness.expectLintsOfResource("npm/prettier/filetypes/scss/scss.dirty")
+						.toBe("LINE_UNDEFINED prettier-format(com.diffplug.spotless.npm.SimpleRestClient$SimpleRestResponseException) Unexpected response status code at /prettier/format [HTTP 500] -- (Error while formatting: Error: Couldn't resolve parser \"postcss\") (...)");
 			}
 		}
 	}

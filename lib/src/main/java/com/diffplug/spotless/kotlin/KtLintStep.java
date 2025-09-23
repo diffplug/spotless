@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,14 +36,13 @@ import com.diffplug.spotless.Provisioner;
 /** Wraps up <a href="https://github.com/pinterest/ktlint">ktlint</a> as a FormatterStep. */
 public class KtLintStep implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = "1.3.0";
+	private static final String DEFAULT_VERSION = "1.7.1";
 	private static final String NAME = "ktlint";
 	private static final String MAVEN_COORDINATE_0_DOT = "com.pinterest:ktlint:";
 	private static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";
 
 	private final JarState.Promised jarState;
-	@Nullable
-	private final FileSignature.Promised config;
+	@Nullable private final FileSignature.Promised config;
 	private final Map<String, Object> editorConfigOverride;
 	private final String version;
 
@@ -95,8 +94,7 @@ public class KtLintStep implements Serializable {
 		private final JarState jarState;
 		private final TreeMap<String, Object> editorConfigOverride;
 		private final String version;
-		@Nullable
-		private final FileSignature editorConfigPath;
+		@Nullable private final FileSignature editorConfigPath;
 
 		State(String version,
 				JarState jarState,

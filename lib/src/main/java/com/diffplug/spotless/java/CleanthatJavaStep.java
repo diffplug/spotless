@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public final class CleanthatJavaStep implements Serializable {
 	/**
 	 * CleanThat changelog is available at <a href="https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD">here</a>.
 	 */
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.20");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.23");
 
 	private final JarState.Promised jarState;
 	private final String version;
@@ -74,7 +74,7 @@ public final class CleanthatJavaStep implements Serializable {
 
 	/** Creates a step that applies default CleanThat mutators. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(MAVEN_COORDINATE, version, defaultSourceJdk(), defaultMutators(), defaultExcludedMutators(), defaultIncludeDraft(), provisioner);
+		return createWithStepName(NAME, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultMutators(), defaultExcludedMutators(), defaultIncludeDraft(), provisioner);
 	}
 
 	public static String defaultSourceJdk() {
@@ -101,7 +101,8 @@ public final class CleanthatJavaStep implements Serializable {
 	}
 
 	/** Creates a step that applies selected CleanThat mutators. */
-	public static FormatterStep create(String groupArtifact,
+	static FormatterStep createWithStepName(String stepName,
+			String groupArtifact,
 			String version,
 			String sourceJdkVersion,
 			List<String> included,
@@ -114,10 +115,21 @@ public final class CleanthatJavaStep implements Serializable {
 		}
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
-		return FormatterStep.create(NAME,
+		return FormatterStep.create(stepName,
 				new CleanthatJavaStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, sourceJdkVersion, included, excluded, includeDraft),
 				CleanthatJavaStep::equalityState,
 				State::createFormat);
+	}
+
+	/** Creates a step that applies selected CleanThat mutators. */
+	public static FormatterStep create(String groupArtifact,
+			String version,
+			String sourceJdkVersion,
+			List<String> included,
+			List<String> excluded,
+			boolean includeDraft,
+			Provisioner provisioner) {
+		return createWithStepName(NAME, groupArtifact, version, sourceJdkVersion, included, excluded, includeDraft, provisioner);
 	}
 
 	/** Get default formatter version */

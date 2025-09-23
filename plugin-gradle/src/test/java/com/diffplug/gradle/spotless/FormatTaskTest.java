@@ -48,7 +48,7 @@ class FormatTaskTest extends ResourceHarness {
 	@Test
 	void testLineEndings() throws Exception {
 		File testFile = setFile("testFile").toContent("\r\n");
-		File outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
+		File outputFile = new File(spotlessTask.getCleanDirectory(), "testFile");
 
 		spotlessTask.setTarget(Collections.singleton(testFile));
 		Tasks.execute(spotlessTask);
@@ -59,7 +59,7 @@ class FormatTaskTest extends ResourceHarness {
 	@Test
 	void testStep() throws Exception {
 		File testFile = setFile("testFile").toContent("apple");
-		File outputFile = new File(spotlessTask.getOutputDirectory(), "testFile");
+		File outputFile = new File(spotlessTask.getCleanDirectory(), "testFile");
 		spotlessTask.setTarget(Collections.singleton(testFile));
 
 		spotlessTask.setSteps(List.of(ReplaceStep.create("double-p", "pp", "p")));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,9 @@
  */
 package com.diffplug.spotless.java;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_13;
 import static org.junit.jupiter.api.condition.JRE.JAVA_15;
-import static org.junit.jupiter.api.condition.JRE.JAVA_16;
 import static org.junit.jupiter.api.condition.JRE.JAVA_20;
+import static org.junit.jupiter.api.condition.JRE.JAVA_21;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -33,7 +32,6 @@ import com.diffplug.spotless.TestProvisioner;
 class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
-	@EnabledForJreRange(min = JAVA_13)
 	void jvm13Features() throws Exception {
 		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(TestProvisioner.mavenCentral()))) {
 			step.testResource("java/googlejavaformat/TextBlock.dirty", "java/googlejavaformat/TextBlock.clean");
@@ -62,20 +60,21 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(min = JAVA_21, max = JAVA_21)
 	void versionBelowMinimumRequiredVersionIsNotAllowed() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.2", "AOSP", TestProvisioner.mavenCentral());
 		StepHarness.forStepNoRoundtrip(step)
-				.testResourceExceptionMsg("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
-				.contains("you are using 1.2");
+				.expectLintsOfResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
+				.toBe("LINE_UNDEFINED google-java-format(jvm-version) You are running Spotless on JVM 21. This requires google-java-format of at least 1.17.0 (you are using 1.2). (...)");
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_16)
+	@EnabledForJreRange(min = JAVA_21, max = JAVA_21)
 	void versionBelowOneDotTenIsNotAllowed() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create("1.9", "AOSP", TestProvisioner.mavenCentral());
 		StepHarness.forStepNoRoundtrip(step)
-				.testResourceExceptionMsg("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
-				.contains("you are using 1.9");
+				.expectLintsOfResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
+				.toBe("LINE_UNDEFINED google-java-format(jvm-version) You are running Spotless on JVM 21. This requires google-java-format of at least 1.17.0 (you are using 1.9). (...)");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -59,6 +58,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.maven.antlr4.Antlr4;
 import com.diffplug.spotless.maven.cpp.Cpp;
+import com.diffplug.spotless.maven.css.Css;
 import com.diffplug.spotless.maven.generic.Format;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
 import com.diffplug.spotless.maven.gherkin.Gherkin;
@@ -72,7 +72,9 @@ import com.diffplug.spotless.maven.json.Json;
 import com.diffplug.spotless.maven.kotlin.Kotlin;
 import com.diffplug.spotless.maven.markdown.Markdown;
 import com.diffplug.spotless.maven.pom.Pom;
+import com.diffplug.spotless.maven.protobuf.Protobuf;
 import com.diffplug.spotless.maven.python.Python;
+import com.diffplug.spotless.maven.rdf.Rdf;
 import com.diffplug.spotless.maven.scala.Scala;
 import com.diffplug.spotless.maven.shell.Shell;
 import com.diffplug.spotless.maven.sql.Sql;
@@ -89,6 +91,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	static final String GOAL_CHECK = "check";
 	static final String GOAL_APPLY = "apply";
+	static final String GOAL_PRE_PUSH_HOOK = "install-git-pre-push-hook";
 
 	@Component
 	private RepositorySystem repositorySystem;
@@ -121,7 +124,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private List<RemoteRepository> repositories;
 
 	@Parameter(defaultValue = "${project.basedir}", required = true, readonly = true)
-	private File baseDir;
+	protected File baseDir;
 
 	@Parameter(defaultValue = "${project.build.directory}", required = true, readonly = true)
 	private File buildDir;
@@ -140,6 +143,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private List<Format> formats = Collections.emptyList();
+
+	@Parameter
+	private Css css;
 
 	@Parameter
 	private Groovy groovy;
@@ -192,6 +198,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private Go go;
 
+	@Parameter
+	private Rdf rdf;
+
+	@Parameter
+	private Protobuf protobuf;
+
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
 
@@ -208,7 +220,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(defaultValue = "false")
 	protected boolean m2eEnableForIncrementalBuild;
 
-	protected abstract void process(Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
+	protected abstract void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
 
 	private static final int MINIMUM_JRE = 11;
 
@@ -237,11 +249,11 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		}
 
 		try (FormattersHolder formattersHolder = FormattersHolder.create(formatterFactoryToFiles, config);
-				UpToDateChecker upToDateChecker = createUpToDateChecker(formattersHolder.getFormatters())) {
-			for (Entry<Formatter, Supplier<Iterable<File>>> entry : formattersHolder.getFormattersWithFiles().entrySet()) {
-				Formatter formatter = entry.getKey();
-				Iterable<File> files = entry.getValue().get();
-				process(files, formatter, upToDateChecker);
+				UpToDateChecker upToDateChecker = createUpToDateChecker(formattersHolder.openFormatters.values())) {
+			for (FormatterFactory factory : formattersHolder.openFormatters.keySet()) {
+				Formatter formatter = formattersHolder.openFormatters.get(factory);
+				Iterable<File> files = formattersHolder.factoryToFiles.get(factory).get();
+				process(formattersHolder.nameFor(factory), files, formatter, upToDateChecker);
 			}
 		} catch (PluginException e) {
 			throw e.asMojoExecutionException();
@@ -377,8 +389,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, css, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go, rdf, protobuf))
 				.filter(Objects::nonNull)
+				.map(factory -> factory.init(repositorySystemSession))
 				.collect(toList());
 	}
 

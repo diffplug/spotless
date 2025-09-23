@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,14 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.work.DisableCachingByDefault;
+import org.jetbrains.annotations.NotNull;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 
+@DisableCachingByDefault(because = "not worth caching")
 public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	@Internal
 	public abstract Property<String> getEncoding();
@@ -54,63 +57,76 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	}
 
 	private void performAction(boolean isTest) throws IOException {
-		ConfigurableFileTree files = getConfigCacheWorkaround().fileTree().from(getSpotlessOutDirectory().get());
-		if (files.isEmpty()) {
+		ConfigurableFileTree cleanFiles = getConfigCacheWorkaround().fileTree().from(getSpotlessCleanDirectory().get());
+		ConfigurableFileTree lintsFiles = getConfigCacheWorkaround().fileTree().from(getSpotlessLintsDirectory().get());
+		if (cleanFiles.isEmpty() && lintsFiles.isEmpty()) {
 			getState().setDidWork(sourceDidWork());
 		} else if (!isTest && applyHasRun()) {
 			// if our matching apply has already run, then we don't need to do anything
 			getState().setDidWork(false);
 		} else {
-			List<File> problemFiles = new ArrayList<>();
-			files.visit(new FileVisitor() {
-				@Override
-				public void visitDir(FileVisitDetails fileVisitDetails) {
-
-				}
-
-				@Override
-				public void visitFile(FileVisitDetails fileVisitDetails) {
-					String path = fileVisitDetails.getPath();
-					File originalSource = new File(getProjectDir().get().getAsFile(), path);
-					try {
-						// read the file on disk
-						byte[] userFile = Files.readAllBytes(originalSource.toPath());
-						// and the formatted version from spotlessOutDirectory
-						byte[] formatted;
-						{
-							ByteArrayOutputStream clean = new ByteArrayOutputStream();
-							fileVisitDetails.copyTo(clean);
-							formatted = clean.toByteArray();
-						}
-						// If these two are equal, it means that SpotlessTask left a file
-						// in its output directory which ought to have been removed. As
-						// best I can tell, this is a filesytem race which is very hard
-						// to trigger.  GitRatchetGradleTest can *sometimes* reproduce it
-						// but it's very erratic, and that test writes both to Gradle cache
-						// and git cache very quickly.  Either of Gradle or jgit might be
-						// caching something wrong because of the fast repeated writes.
-						if (!Arrays.equals(userFile, formatted)) {
-							// If the on-disk content is equal to the formatted content,
-							// just don't add it as a problem file. Easy!
-							problemFiles.add(originalSource);
-						}
-					} catch (IOException e) {
-						throw ThrowingEx.asRuntime(e);
-					}
-				}
-			});
-			if (!problemFiles.isEmpty()) {
-				Collections.sort(problemFiles);
+			List<File> unformattedFiles = getUncleanFiles(cleanFiles);
+			if (!unformattedFiles.isEmpty()) {
+				// if any files are unformatted, we show those
 				throw new GradleException(DiffMessageFormatter.builder()
 						.runToFix(getRunToFixMessage().get())
 						.formatterFolder(
 								getProjectDir().get().getAsFile().toPath(),
-								getSpotlessOutDirectory().get().toPath(),
+								getSpotlessCleanDirectory().get().toPath(),
 								getEncoding().get())
-						.problemFiles(problemFiles)
+						.problemFiles(unformattedFiles)
 						.getMessage());
+			} else {
+				// We only show lints if there are no unformatted files.
+				// This is because lint line numbers are relative to the
+				// formatted content, and formatting often fixes lints.
+				boolean detailed = false;
+				throw new GradleException(super.allLintsErrorMsgDetailed(lintsFiles, detailed));
 			}
 		}
+	}
+
+	private @NotNull List<File> getUncleanFiles(ConfigurableFileTree cleanFiles) {
+		List<File> uncleanFiles = new ArrayList<>();
+		cleanFiles.visit(new FileVisitor() {
+			@Override
+			public void visitDir(FileVisitDetails fileVisitDetails) {
+
+			}
+
+			@Override
+			public void visitFile(FileVisitDetails fileVisitDetails) {
+				String path = fileVisitDetails.getPath();
+				File originalSource = new File(getProjectDir().get().getAsFile(), path);
+				try {
+					// read the file on disk
+					byte[] userFile = Files.readAllBytes(originalSource.toPath());
+					// and the formatted version from spotlessOutDirectory
+					byte[] formatted;
+					{
+						ByteArrayOutputStream clean = new ByteArrayOutputStream();
+						fileVisitDetails.copyTo(clean);
+						formatted = clean.toByteArray();
+					}
+					// If these two are equal, it means that SpotlessTask left a file
+					// in its output directory which ought to have been removed. As
+					// best I can tell, this is a filesytem race which is very hard
+					// to trigger.  GitRatchetGradleTest can *sometimes* reproduce it
+					// but it's very erratic, and that test writes both to Gradle cache
+					// and git cache very quickly.  Either of Gradle or jgit might be
+					// caching something wrong because of the fast repeated writes.
+					if (!Arrays.equals(userFile, formatted)) {
+						// If the on-disk content is equal to the formatted content,
+						// just don't add it as a problem file. Easy!
+						uncleanFiles.add(originalSource);
+					}
+				} catch (IOException e) {
+					throw ThrowingEx.asRuntime(e);
+				}
+			}
+		});
+		Collections.sort(uncleanFiles);
+		return uncleanFiles;
 	}
 
 	@Internal
@@ -122,12 +138,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		getProjectPath().set(getProject().getPath());
 		getEncoding().set(impl.getEncoding());
 		getRunToFixMessage().convention(
-				"Run '" + calculateGradleCommand() + " " + getTaskPathPrefix() + "spotlessApply' to fix these violations.");
-	}
-
-	private String getTaskPathPrefix() {
-		String path = getProjectPath().get();
-		return path.equals(":") ? ":" : path + ":";
+				"Run '" + calculateGradleCommand() + " spotlessApply' to fix all violations.");
 	}
 
 	private static String calculateGradleCommand() {

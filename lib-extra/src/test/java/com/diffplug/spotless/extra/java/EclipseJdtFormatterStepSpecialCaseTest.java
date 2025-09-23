@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,86 @@ import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 
-public class EclipseJdtFormatterStepSpecialCaseTest {
+class EclipseJdtFormatterStepSpecialCaseTest {
 	/** https://github.com/diffplug/spotless/issues/1638 */
 	@Test
-	public void issue_1638() {
+	void issue_1638() {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File file = new File(classLoader.getResource("eclipse_formatter_issue_1638.xml").getFile());
 		EquoBasedStepBuilder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
 		builder.setPreferences(List.of(file));
 		StepHarness.forStep(builder.build())
 				.testResource("java/eclipse/AbstractType.test", "java/eclipse/AbstractType.clean");
+	}
+
+	@Test
+	void sort_members_global_by_visibility() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		builder.sortMembersDoNotSortFields(false);
+		builder.sortMembersVisibilityOrderEnabled(true);
+		builder.sortMembersVisibilityOrder("B,R,D,V");
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembersByVisibility.clean");
+	}
+
+	@Test
+	void sort_members_global_enabled() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		builder.sortMembersDoNotSortFields(false);
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembers.clean");
+	}
+
+	@Test
+	void sort_members_global_no_fields() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		builder.sortMembersDoNotSortFields(true);
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.test", "java/eclipse/SortExample.sortMembersNoFields.clean");
+	}
+
+	@Test
+	void sort_members_local_by_visibility() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		builder.sortMembersDoNotSortFields(false);
+		builder.sortMembersVisibilityOrderEnabled(true);
+		builder.sortMembersVisibilityOrder("B,R,D,V");
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.localSortByVisibility.test", "java/eclipse/SortExample.localSortByVisibility.clean");
+	}
+
+	@Test
+	void sort_members_local_enabled_false() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		builder.sortMembersDoNotSortFields(false);
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.localEnabledFalse.test", "java/eclipse/SortExample.localEnabledFalse.clean");
+	}
+
+	@Test
+	void sort_members_local_no_fields() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		builder.sortMembersDoNotSortFields(false);
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.localDoNotSortFields.test", "java/eclipse/SortExample.localDoNotSortFields.clean");
+	}
+
+	@Test
+	void sort_members_local_enabled_true() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.localEnabledTrue.test", "java/eclipse/SortExample.localEnabledTrue.clean");
 	}
 }

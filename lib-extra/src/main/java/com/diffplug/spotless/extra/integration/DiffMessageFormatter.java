@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,15 +58,17 @@ public final class DiffMessageFormatter {
 	}
 
 	private static class CleanProviderFormatter implements CleanProvider {
+		private final Path rootDir;
 		private final Formatter formatter;
 
-		CleanProviderFormatter(Formatter formatter) {
+		CleanProviderFormatter(Path rootDir, Formatter formatter) {
+			this.rootDir = Objects.requireNonNull(rootDir);
 			this.formatter = Objects.requireNonNull(formatter);
 		}
 
 		@Override
 		public Path getRootDir() {
-			return formatter.getRootDir();
+			return rootDir;
 		}
 
 		@Override
@@ -123,8 +125,8 @@ public final class DiffMessageFormatter {
 			return this;
 		}
 
-		public Builder formatter(Formatter formatter) {
-			this.formatter = new CleanProviderFormatter(formatter);
+		public Builder formatter(Path rootDir, Formatter formatter) {
+			this.formatter = new CleanProviderFormatter(rootDir, formatter);
 			return this;
 		}
 
@@ -244,8 +246,8 @@ public final class DiffMessageFormatter {
 	 * look like if formatted using the given formatter. Does not end with any newline
 	 * sequence (\n, \r, \r\n). The key of the map entry is the 0-based line where the first difference occurred.
 	 */
-	public static Map.Entry<Integer, String> diff(Formatter formatter, File file) throws IOException {
-		return diff(new CleanProviderFormatter(formatter), file);
+	public static Map.Entry<Integer, String> diff(Path rootDir, Formatter formatter, File file) throws IOException {
+		return diff(new CleanProviderFormatter(rootDir, formatter), file);
 	}
 
 	private static Map.Entry<Integer, String> diff(CleanProvider formatter, File file) throws IOException {

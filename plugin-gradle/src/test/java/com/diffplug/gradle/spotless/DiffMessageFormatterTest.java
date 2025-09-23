@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,8 +117,8 @@ class DiffMessageFormatterTest extends ResourceHarness {
 	}
 
 	static final String EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION = FileSignature.machineIsWin()
-			? "Run 'gradlew.bat :spotlessApply' to fix these violations."
-			: "Run './gradlew :spotlessApply' to fix these violations.";
+			? "Run 'gradlew.bat spotlessApply' to fix all violations."
+			: "Run './gradlew spotlessApply' to fix all violations.";
 
 	@Test
 	void lineEndingProblem() throws Exception {

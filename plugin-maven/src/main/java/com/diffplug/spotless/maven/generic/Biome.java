@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@ package com.diffplug.spotless.maven.generic;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.diffplug.spotless.biome.BiomeFlavor;
-
 /**
  * Generic Biome formatter step that detects the language of the input file from
  * the file name. It should be specified as a formatter step for a generic
@@ -26,14 +24,13 @@ import com.diffplug.spotless.biome.BiomeFlavor;
  */
 public class Biome extends AbstractBiome {
 	public Biome() {
-		super(BiomeFlavor.BIOME);
+		super();
 	}
 
 	/**
 	 * Gets the language (syntax) of the input files to format. When
 	 * <code>null</code> or the empty string, the language is detected automatically
-	 * from the file name. Currently the following languages are supported by Biome:
-	 * <ul>
+	 * from the file name. Currently, the following languages are supported by Biome:
 	 * <ul>
 	 * <li>js (JavaScript)</li>
 	 * <li>jsx (JavaScript + JSX)</li>
@@ -43,8 +40,9 @@ public class Biome extends AbstractBiome {
 	 * <li>tsx (TypeScript + JSX)</li>
 	 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
 	 * extension)</li>
+	 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 	 * <li>json (JSON)</li>
-	 * </ul>
+	 * <li>jsonc (JSON + comments)</li>
 	 * </ul>
 	 *
 	 * @return The language of the input files.

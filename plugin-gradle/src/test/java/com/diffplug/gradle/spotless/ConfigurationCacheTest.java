@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 public class ConfigurationCacheTest extends GradleIntegrationHarness {
 	@Override
-	protected GradleRunner gradleRunner() throws IOException {
+	public GradleRunner gradleRunner() throws IOException {
 		setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
 		setFile("settings.gradle").toContent("enableFeaturePreview(\"STABLE_CONFIGURATION_CACHE\")");
 		return super.gradleRunner().withGradleVersion(GradleVersionSupport.STABLE_CONFIGURATION_CACHE.version);

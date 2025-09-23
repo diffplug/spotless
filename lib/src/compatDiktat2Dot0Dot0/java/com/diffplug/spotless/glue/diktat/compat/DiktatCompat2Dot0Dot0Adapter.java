@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class DiktatCompat2Dot0Dot0Adapter implements DiktatCompatAdapter {
 	public String format(File file, String content, boolean isScript) {
 		errors.clear();
 		String result = processor.fix(content, file.toPath(), formatterCallback);
-		DiktatReporting.reportIfRequired(errors, DiktatError::getLine, DiktatError::getCol, DiktatError::getDetail);
+		DiktatReporting.reportIfRequired(errors, DiktatError::getLine, DiktatError::getRuleId, DiktatError::getDetail);
 		return result;
 	}
 

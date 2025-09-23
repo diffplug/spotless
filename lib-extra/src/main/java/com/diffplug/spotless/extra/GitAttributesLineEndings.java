@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,11 +188,14 @@ public final class GitAttributesLineEndings {
 		/** git worktree root, might not exist if we're not in a git repo. */
 		final @Nullable File workTree;
 
-		@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 		RuntimeInit(File projectDir) {
 			/////////////////////////////////
 			// USER AND SYSTEM-WIDE VALUES //
 			/////////////////////////////////
+			FS.DETECTED.setGitSystemConfig(new File("no-global-git-config-for-spotless"));
+			// ^^^ fixes a problem that was only occurring on Java 11. If we remove support for Java 11, we could probably remove it.
+			// EDIT: Wrong, when Java 17 became the baseline it only happens on Java 17. https://github.com/diffplug/spotless/issues/2375#issuecomment-2573885902
+
 			systemConfig = SystemReader.getInstance().openSystemConfig(null, FS.DETECTED);
 			Errors.log().run(systemConfig::load);
 			userConfig = SystemReader.getInstance().openUserConfig(systemConfig, FS.DETECTED);

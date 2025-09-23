@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.diffplug.spotless.Provisioner;
 /** Uses google-java-format or cleanthat.UnnecessaryImport, but only to remove unused imports. */
 public class RemoveUnusedImportsStep implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final String NAME = "removeUnusedImports";
+	static final String NAME = "removeUnusedImports";
 
 	static final String GJF = "google-java-format";
 	static final String CLEANTHAT = "cleanthat-javaparser-unnecessaryimport";
@@ -51,7 +51,7 @@ public class RemoveUnusedImportsStep implements Serializable {
 		case GJF:
 			return GoogleJavaFormatStep.createRemoveUnusedImportsOnly(provisioner);
 		case CLEANTHAT:
-			return CleanthatJavaStep.create(CleanthatJavaStep.defaultGroupArtifact(), CleanthatJavaStep.defaultVersion(), "99.9", List.of(CLEANTHAT_MUTATOR), List.of(), false, provisioner);
+			return CleanthatJavaStep.createWithStepName(NAME, CleanthatJavaStep.defaultGroupArtifact(), CleanthatJavaStep.defaultVersion(), "99.9", List.of(CLEANTHAT_MUTATOR), List.of(), false, provisioner);
 		default:
 			throw new IllegalArgumentException("Invalid unusedImportRemover: " + unusedImportRemover);
 		}

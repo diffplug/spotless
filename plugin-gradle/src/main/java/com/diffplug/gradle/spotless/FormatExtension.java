@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,22 +47,24 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.diffplug.common.base.Preconditions;
-import com.diffplug.spotless.FormatExceptionPolicyStrict;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.OnMatch;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
-import com.diffplug.spotless.biome.BiomeFlavor;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.FenceStep;
+import com.diffplug.spotless.generic.IdeaStep;
 import com.diffplug.spotless.generic.IndentStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
@@ -77,6 +79,9 @@ import groovy.lang.Closure;
 
 /** Adds a {@code spotless{Name}Check} and {@code spotless{Name}Apply} task. */
 public class FormatExtension {
+
+	private static final Logger logger = LoggerFactory.getLogger(FormatExtension.class);
+
 	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
 
@@ -168,16 +173,36 @@ public class FormatExtension {
 		encoding = requireNonNull(charset);
 	}
 
-	final FormatExceptionPolicyStrict exceptionPolicy = new FormatExceptionPolicyStrict();
+	final List<LintSuppression> lintSuppressions = new ArrayList<>();
 
-	/** Ignores errors in the given step. */
-	public void ignoreErrorForStep(String stepName) {
-		exceptionPolicy.excludeStep(requireNonNull(stepName));
+	/** Suppresses any lints which meet the supplied criteria. */
+	public void suppressLintsFor(Action<LintSuppression> lintSuppression) {
+		LintSuppression suppression = new LintSuppression();
+		lintSuppression.execute(suppression);
+		suppression.ensureDoesNotSuppressAll();
+		lintSuppressions.add(suppression);
 	}
 
-	/** Ignores errors for the given relative path. */
+	/**
+	 * Ignores errors in the given step.
+	 *
+	 * @deprecated Use {@link #suppressLintsFor(Action)} instead.
+	 */
+	@Deprecated
+	public void ignoreErrorForStep(String stepName) {
+		System.err.println("`ignoreErrorForStep('" + stepName + "') is deprecated, use `suppressLintsFor { step = '" + stepName + "' }` instead.");
+		suppressLintsFor(it -> it.setStep(stepName));
+	}
+
+	/**
+	 * Ignores errors for the given relative path.
+	 *
+	 * @deprecated Use {@link #suppressLintsFor(Action)} instead.
+	 */
+	@Deprecated
 	public void ignoreErrorForPath(String relativePath) {
-		exceptionPolicy.excludePath(requireNonNull(relativePath));
+		System.err.println("`ignoreErrorForPath('" + relativePath + "') is deprecated, use `suppressLintsFor { path = '" + relativePath + "' }` instead.");
+		suppressLintsFor(it -> it.setPath(relativePath));
 	}
 
 	/**
@@ -192,8 +217,7 @@ public class FormatExtension {
 	protected FileCollection target, targetExclude;
 
 	/** The value from which files will be excluded if their content contain it. */
-	@Nullable
-	protected String targetExcludeContentPattern = null;
+	@Nullable protected String targetExcludeContentPattern = null;
 
 	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
 		String formatterStepName = formatterStep.getName();
@@ -339,7 +363,8 @@ public class FormatExtension {
 		if (!destPath.startsWith(rootPath)) {
 			return null;
 		} else {
-			return destPath.substring(rootPath.length());
+			String relativized = destPath.substring(rootPath.length());
+			return relativized.startsWith("/") || relativized.startsWith("\\") ? relativized.substring(1) : relativized;
 		}
 	}
 
@@ -431,12 +456,11 @@ public class FormatExtension {
 	 */
 	public void custom(String name, Closure<String> formatter) {
 		requireNonNull(formatter, "formatter");
-		Closure<String> dehydrated = formatter.dehydrate();
-		custom(name, new ClosureFormatterFunc(dehydrated));
+		custom(name, new ClosureFormatterFunc(formatter));
 	}
 
 	static class ClosureFormatterFunc implements FormatterFunc, Serializable {
-		private final Closure<String> closure;
+		private Closure<String> closure;
 
 		ClosureFormatterFunc(Closure<String> closure) {
 			this.closure = closure;
@@ -445,6 +469,14 @@ public class FormatExtension {
 		@Override
 		public String apply(String unixNewlines) {
 			return closure.call(unixNewlines);
+		}
+
+		private void writeObject(java.io.ObjectOutputStream stream) throws java.io.IOException {
+			stream.writeObject(closure.dehydrate());
+		}
+
+		private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
+			this.closure = (Closure<String>) stream.readObject();
 		}
 	}
 
@@ -484,23 +516,51 @@ public class FormatExtension {
 	}
 
 	/** Ensures that the files are indented using spaces. */
+	public void leadingTabsToSpaces(int spacesPerTab) {
+		addStep(IndentStep.Type.SPACE.create(spacesPerTab));
+	}
+
+	@Deprecated
 	public void indentWithSpaces(int numSpacesPerTab) {
-		addStep(IndentStep.Type.SPACE.create(numSpacesPerTab));
+		logDeprecation("indentWithSpaces", "leadingTabsToSpaces");
+		leadingTabsToSpaces(numSpacesPerTab);
 	}
 
 	/** Ensures that the files are indented using spaces. */
-	public void indentWithSpaces() {
+	public void leadingTabsToSpaces() {
 		addStep(IndentStep.Type.SPACE.create());
 	}
 
-	/** Ensures that the files are indented using tabs. */
-	public void indentWithTabs(int tabToSpaces) {
-		addStep(IndentStep.Type.TAB.create(tabToSpaces));
+	@Deprecated
+	public void indentWithSpaces() {
+		logDeprecation("indentWithSpaces", "leadingTabsToSpaces");
+		leadingTabsToSpaces();
 	}
 
 	/** Ensures that the files are indented using tabs. */
-	public void indentWithTabs() {
+	public void leadingSpacesToTabs(int spacesPerTab) {
+		addStep(IndentStep.Type.TAB.create(spacesPerTab));
+	}
+
+	@Deprecated
+	public void indentWithTabs(int tabToSpaces) {
+		logDeprecation("indentWithTabs", "leadingSpacesToTabs");
+		leadingSpacesToTabs(tabToSpaces);
+	}
+
+	/** Ensures that the files are indented using tabs. */
+	public void leadingSpacesToTabs() {
 		addStep(IndentStep.Type.TAB.create());
+	}
+
+	@Deprecated
+	public void indentWithTabs() {
+		logDeprecation("indentWithTabs", "leadingSpacesToTabs");
+		leadingSpacesToTabs();
+	}
+
+	private static void logDeprecation(String methodName, String replacement) {
+		logger.warn("'{}' is deprecated, use '{}' in your gradle build script instead.", methodName, replacement);
 	}
 
 	/** Ensures formatting of files via native binary. */
@@ -625,17 +685,13 @@ public class FormatExtension {
 
 		public static final String SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME = "spotless-npm-install-cache";
 
-		@Nullable
-		protected Object npmFile;
+		@Nullable protected Object npmFile;
 
-		@Nullable
-		protected Object nodeFile;
+		@Nullable protected Object nodeFile;
 
-		@Nullable
-		protected Object npmInstallCache;
+		@Nullable protected Object npmInstallCache;
 
-		@Nullable
-		protected Object npmrcFile;
+		@Nullable protected Object npmrcFile;
 
 		protected Project project;
 
@@ -709,11 +765,9 @@ public class FormatExtension {
 
 	public class PrettierConfig extends NpmStepConfig<PrettierConfig> {
 
-		@Nullable
-		Object prettierConfigFile;
+		@Nullable Object prettierConfigFile;
 
-		@Nullable
-		Map<String, Object> prettierConfig;
+		@Nullable Map<String, Object> prettierConfig;
 
 		final Map<String, String> devDependencies;
 
@@ -753,8 +807,7 @@ public class FormatExtension {
 	 * <code>format{ ... }</code>.
 	 */
 	public class BiomeGeneric extends BiomeStepConfig<BiomeGeneric> {
-		@Nullable
-		String language;
+		@Nullable String language;
 
 		/**
 		 * Creates a new Biome config that downloads the Biome executable for the given
@@ -764,13 +817,13 @@ public class FormatExtension {
 		 *                <code>null</code>.
 		 */
 		public BiomeGeneric(String version) {
-			super(getProject(), FormatExtension.this::replaceStep, BiomeFlavor.BIOME, version);
+			super(getProject(), FormatExtension.this::replaceStep, version);
 		}
 
 		/**
 		 * Sets the language (syntax) of the input files to format. When
 		 * <code>null</code> or the empty string, the language is detected automatically
-		 * from the file name. Currently the following languages are supported by Biome:
+		 * from the file name. Currently, the following languages are supported by Biome:
 		 * <ul>
 		 * <li>js (JavaScript)</li>
 		 * <li>jsx (JavaScript + JSX)</li>
@@ -780,7 +833,9 @@ public class FormatExtension {
 		 * <li>tsx (TypeScript + JSX)</li>
 		 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
 		 * extension)</li>
+		 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 		 * <li>json (JSON)</li>
+		 * <li>jsonc (JSON + comments)</li>
 		 * </ul>
 		 *
 		 * @param language The language of the files to format.
@@ -897,6 +952,44 @@ public class FormatExtension {
 		return new EclipseWtpConfig(type, version);
 	}
 
+	public IdeaConfig idea() {
+		return new IdeaConfig();
+	}
+
+	public class IdeaConfig {
+		private final IdeaStep.IdeaStepBuilder builder;
+
+		IdeaConfig() {
+			this.builder = IdeaStep.newBuilder(getProject().getLayout().getBuildDirectory().getAsFile().get());
+			addStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return builder.build();
+		}
+
+		public IdeaConfig binaryPath(String binaryPath) {
+			requireNonNull(binaryPath);
+			builder.setBinaryPath(binaryPath);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public IdeaConfig codeStyleSettingsPath(String configPath) {
+			requireNonNull(configPath);
+			builder.setCodeStyleSettingsPath(configPath);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public IdeaConfig withDefaults(Boolean withDefaults) {
+			requireNonNull(withDefaults);
+			builder.setUseDefaults(withDefaults);
+			replaceStep(createStep());
+			return this;
+		}
+	}
+
 	/**
 	 * <pre>
 	 * spotless {
@@ -993,12 +1086,14 @@ public class FormatExtension {
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
-		task.setExceptionPolicy(exceptionPolicy);
+		task.setLintSuppressions(lintSuppressions);
 		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
 		if (toggleFence != null) {
-			steps = List.of(toggleFence.preserveWithin(this.steps));
+			// need a mutable List, 'steps' is mutated by 'steps.replaceAll()' below
+			steps = new ArrayList<>();
+			steps.add(toggleFence.preserveWithin(this.steps));
 		} else {
 			steps = this.steps;
 		}

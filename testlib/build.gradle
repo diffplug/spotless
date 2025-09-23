@@ -7,12 +7,14 @@ apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {
 	api projects.lib
-	api files(projects.lib.dependencyProject.sourceSets.sortPom.output.classesDirs)
+	api files(project(projects.lib.path).sourceSets.sortPom.output.classesDirs)
 	api "com.diffplug.durian:durian-core:${VER_DURIAN}"
 	api "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 	api "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	api "org.assertj:assertj-core:${VER_ASSERTJ}"
 	api "org.mockito:mockito-core:$VER_MOCKITO"
+	api "com.diffplug.selfie:selfie-lib:${VER_SELFIE}"
+	api "com.diffplug.selfie:selfie-runner-junit5:${VER_SELFIE}"
 	runtimeOnly "org.junit.platform:junit-platform-launcher"
 
 	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"

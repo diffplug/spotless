@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,15 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-class PrettierMissingParserException extends RuntimeException {
+import com.diffplug.spotless.Lint;
+
+class PrettierMissingParserException extends RuntimeException implements Lint.Has {
 	private static final long serialVersionUID = 1L;
 
 	private static final Map<String, String> EXTENSIONS_TO_PLUGINS;
@@ -85,6 +88,11 @@ class PrettierMissingParserException extends RuntimeException {
 	public PrettierMissingParserException(@Nonnull File file, Exception cause) {
 		super("Prettier could not infer a parser for file '" + file + "'. Maybe you need to include a prettier plugin in devDependencies?\n\n" + recommendPlugin(file), cause);
 		this.file = Objects.requireNonNull(file);
+	}
+
+	@Override
+	public List<Lint> getLints() {
+		return List.of(Lint.atUndefinedLine("no-parser", "Could not infer a parser. Maybe you need to include a prettier plugin in devDependencies? e.g. " + recommendPlugin(file)));
 	}
 
 	private static String recommendPlugin(File file) {

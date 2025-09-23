@@ -7,7 +7,7 @@ version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
-String VER_SOLSTICE = '1.7.6'
+String VER_SOLSTICE = '1.8.1'
 dependencies {
 	api projects.lib
 	// misc useful utilities
@@ -18,6 +18,10 @@ dependencies {
 	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
 	// for eclipse
 	implementation "dev.equo.ide:solstice:${VER_SOLSTICE}"
+	// the osgi dep is included in solstice, but it has some CVE's against it.
+	// 3.18.500 is the oldest, most-compatible version with no CVE's
+	// https://central.sonatype.com/artifact/org.eclipse.platform/org.eclipse.osgi/versions
+	implementation "org.eclipse.platform:org.eclipse.osgi:3.23.200"
 
 	// testing
 	testImplementation projects.testlib
@@ -46,6 +50,9 @@ def NEEDS_P2_DEPS = [
 	'groovy',
 	'jdt'
 ]
+if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+	NEEDS_P2_DEPS.remove('cdt')
+}
 for (needsP2 in NEEDS_P2_DEPS) {
 	sourceSets.register(needsP2) {
 		compileClasspath += sourceSets.main.output
@@ -70,10 +77,9 @@ tasks.withType(Test).configureEach {
 
 apply plugin: 'dev.equo.p2deps'
 p2deps {
-	// (alphabetic order please)
 	into 'cdtCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'
-		p2repo 'https://download.eclipse.org/tools/cdt/releases/10.7/'
+		p2repo 'https://download.eclipse.org/tools/cdt/releases/11.0/'
 		install 'org.eclipse.cdt.core'
 	}
 	into 'groovyCompileOnly', {
@@ -94,5 +100,5 @@ p2deps {
 spotbugs {
 	// LOW|MEDIUM|DEFAULT|HIGH (low = sensitive to even minor mistakes).
 	reportLevel = com.github.spotbugs.snom.Confidence.valueOf('LOW')
+	excludeFilter = file("spotbugs-exclude.xml")
 }
-

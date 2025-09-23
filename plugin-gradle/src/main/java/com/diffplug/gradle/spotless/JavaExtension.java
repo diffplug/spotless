@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.SourceSet;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.CleanthatJavaStep;
@@ -42,6 +41,7 @@ import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import com.diffplug.spotless.java.RemoveWildcardImportsStep;
 
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
 	static final String NAME = "java";
@@ -150,6 +150,10 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public void removeUnusedImports(String formatter) {
 		addStep(RemoveUnusedImportsStep.create(formatter, provisioner()));
+	}
+
+	public void removeWildcardImports() {
+		addStep(RemoveWildcardImportsStep.create());
 	}
 
 	/** Uses the <a href="https://github.com/google/google-java-format">google-java-format</a> jar to format source code. */
@@ -282,7 +286,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public EclipseConfig eclipse() {
-		return new EclipseConfig(EclipseJdtFormatterStep.defaultVersion());
+		return eclipse(EclipseJdtFormatterStep.defaultVersion());
 	}
 
 	public EclipseConfig eclipse(String version) {
@@ -290,7 +294,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public class EclipseConfig {
-		private final EquoBasedStepBuilder builder;
+		private final EclipseJdtFormatterStep.Builder builder;
 
 		EclipseConfig(String version) {
 			builder = EclipseJdtFormatterStep.createBuilder(provisioner());
@@ -298,11 +302,58 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			addStep(builder.build());
 		}
 
-		public void configFile(Object... configFiles) {
+		public EclipseConfig configFile(Object... configFiles) {
 			requireElementsNonNull(configFiles);
 			Project project = getProject();
 			builder.setPreferences(project.files(configFiles).getFiles());
 			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig configProperties(String... configs) {
+			requireElementsNonNull(configs);
+			builder.setPropertyPreferences(List.of(configs));
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig configXml(String... configs) {
+			requireElementsNonNull(configs);
+			builder.setXmlPreferences(List.of(configs));
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersDoNotSortFields(boolean doNotSortFields) {
+			builder.sortMembersDoNotSortFields(doNotSortFields);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersEnabled(boolean enabled) {
+			builder.sortMembersEnabled(enabled);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersOrder(String order) {
+			requireElementsNonNull(order);
+			builder.sortMembersOrder(order);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersVisibilityOrder(String order) {
+			requireElementsNonNull(order);
+			builder.sortMembersVisibilityOrder(order);
+			replaceStep(builder.build());
+			return this;
+		}
+
+		public EclipseConfig sortMembersVisibilityOrderEnabled(boolean enabled) {
+			builder.sortMembersVisibilityOrderEnabled(enabled);
+			replaceStep(builder.build());
+			return this;
 		}
 
 		public EclipseConfig withP2Mirrors(Map<String, String> mirrors) {
@@ -400,7 +451,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		}
 
 		// An id of a mutator (see IMutator.getIds()) or
-		// tThe fully qualified name of a class implementing eu.solven.cleanthat.engine.java.refactorer.meta.IMutator
+		// The fully qualified name of a class implementing eu.solven.cleanthat.engine.java.refactorer.meta.IMutator
 		public CleanthatJavaConfig addMutator(String mutator) {
 			this.mutators.add(mutator);
 			replaceStep(createStep());

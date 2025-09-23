@@ -1,0 +1,7 @@
+.foobar {
+	color: red;
+	font-weight: bold;
+	&.foobar--large {
+		font-size: 20px;
+	}
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 package com.diffplug.spotless.glue.diktat;
 
 import java.io.File;
+import java.util.stream.Collectors;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.glue.diktat.compat.DiktatCompat1Dot2Dot5Adapter;
 import com.diffplug.spotless.glue.diktat.compat.DiktatCompat2Dot0Dot0Adapter;
 import com.diffplug.spotless.glue.diktat.compat.DiktatCompatAdapter;
+import com.diffplug.spotless.glue.diktat.compat.DiktatReporting;
 
 public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 	private final DiktatCompatAdapter adapter;
@@ -40,6 +43,10 @@ public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 
 	@Override
 	public String applyWithFile(String unix, File file) {
-		return adapter.format(file, unix, isScript);
+		try {
+			return adapter.format(file, unix, isScript);
+		} catch (DiktatReporting.LintException e) {
+			throw Lint.shortcut(e.lints.stream().map(lint -> Lint.atLine(lint.line, lint.ruleId, lint.detail)).collect(Collectors.toList()));
+		}
 	}
 }

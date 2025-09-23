@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +18,18 @@ package com.diffplug.spotless.generic;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
-
+import com.diffplug.spotless.ConfigurationCacheHackList;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import com.diffplug.spotless.Lint;
 
 public class FenceStep {
 	/** Declares the name of the step. */
@@ -81,8 +78,7 @@ public class FenceStep {
 
 	/** Returns a step which will apply the given steps but preserve the content selected by the regex / openClose pair. */
 	public FormatterStep preserveWithin(List<FormatterStep> steps) {
-		assertRegexSet();
-		return new PreserveWithin(name, regex, steps);
+		return createStep(Kind.PRESERVE, steps);
 	}
 
 	/**
@@ -90,85 +86,74 @@ public class FenceStep {
 	 * Linting within the substeps is not supported.
 	 */
 	public FormatterStep applyWithin(List<FormatterStep> steps) {
+		return createStep(Kind.APPLY, steps);
+	}
+
+	private FormatterStep createStep(Kind kind, List<FormatterStep> steps) {
 		assertRegexSet();
-		return new ApplyWithin(name, regex, steps);
+		return FormatterStep.createLazy(name, () -> new RoundtripAndEqualityState(kind, regex, steps, false),
+				RoundtripAndEqualityState::toEqualityState,
+				RoundtripAndEqualityState::toFormatterFunc);
 	}
 
-	static class ApplyWithin extends BaseStep {
-		private static final long serialVersionUID = 17061466531957339L;
-
-		ApplyWithin(String name, Pattern regex, List<FormatterStep> steps) {
-			super(name, regex, steps);
-		}
-
-		@Override
-		public String apply(Formatter formatter, String unix, File file) throws Exception {
-			List<String> groups = groupsZeroed();
-			Matcher matcher = regex.matcher(unix);
-			while (matcher.find()) {
-				// apply the formatter to each group
-				groups.add(formatter.compute(matcher.group(1), file));
-			}
-			// and then assemble the result right away
-			return assembleGroups(unix);
-		}
+	private enum Kind {
+		APPLY, PRESERVE
 	}
 
-	static class PreserveWithin extends BaseStep {
-		private static final long serialVersionUID = -8676786492305178343L;
+	private static class RoundtripAndEqualityState implements Serializable {
+		private static final long serialVersionUID = 272603249547598947L;
+		final String regexPattern;
+		final int regexFlags;
+		final Kind kind;
+		final ConfigurationCacheHackList steps;
 
-		PreserveWithin(String name, Pattern regex, List<FormatterStep> steps) {
-			super(name, regex, steps);
+		/** Roundtrip state. */
+		private RoundtripAndEqualityState(Kind kind, Pattern regex, List<FormatterStep> steps, boolean optimizeForEquality) {
+			this.kind = kind;
+			this.regexPattern = regex.pattern();
+			this.regexFlags = regex.flags();
+			this.steps = optimizeForEquality ? ConfigurationCacheHackList.forEquality() : ConfigurationCacheHackList.forRoundtrip();
+			this.steps.addAll(steps);
 		}
 
-		private void storeGroups(String unix) {
-			List<String> groups = groupsZeroed();
-			Matcher matcher = regex.matcher(unix);
-			while (matcher.find()) {
-				// store whatever is within the open/close tags
-				groups.add(matcher.group(1));
-			}
+		private Pattern regex() {
+			return Pattern.compile(regexPattern, regexFlags);
 		}
 
-		@Override
-		public String apply(Formatter formatter, String unix, File file) throws Exception {
-			storeGroups(unix);
-			String formatted = formatter.compute(unix, file);
-			return assembleGroups(formatted);
+		private List<FormatterStep> steps() {
+			return steps.getSteps();
+		}
+
+		public RoundtripAndEqualityState toEqualityState() {
+			return new RoundtripAndEqualityState(kind, regex(), steps(), true);
+		}
+
+		public BaseFormatter toFormatterFunc() {
+			return new BaseFormatter(kind, this);
 		}
 	}
 
-	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-	public static abstract class BaseStep implements Serializable, FormatterStep, FormatterFunc.Closeable.ResourceFuncNeedsFile<Formatter> {
-		final String name;
-		private static final long serialVersionUID = -2301848328356559915L;
+	private static class BaseFormatter implements FormatterFunc.NeedsFile, FormatterFunc.Closeable {
+		final Kind kind;
 		final Pattern regex;
 		final List<FormatterStep> steps;
 
-		transient ArrayList<String> groups = new ArrayList<>();
-		transient StringBuilder builderInternal;
+		final ArrayList<String> groups = new ArrayList<>();
+		final StringBuilder builderInternal = new StringBuilder();
 
-		public BaseStep(String name, Pattern regex, List<FormatterStep> steps) {
-			this.name = name;
-			this.regex = regex;
-			this.steps = steps;
+		public BaseFormatter(Kind kind, RoundtripAndEqualityState state) {
+			this.kind = kind;
+			this.regex = state.regex();
+			this.steps = state.steps();
 		}
 
 		protected ArrayList<String> groupsZeroed() {
-			if (groups == null) {
-				groups = new ArrayList<>();
-			} else {
-				groups.clear();
-			}
+			groups.clear();
 			return groups;
 		}
 
 		private StringBuilder builderZeroed() {
-			if (builderInternal == null) {
-				builderInternal = new StringBuilder();
-			} else {
-				builderInternal.setLength(0);
-			}
+			builderInternal.setLength(0);
 			return builderInternal;
 		}
 
@@ -177,7 +162,6 @@ public class FenceStep {
 					.encoding(StandardCharsets.UTF_8) // can be any UTF, doesn't matter
 					.lineEndingsPolicy(LineEnding.UNIX.createPolicy()) // just internal, won't conflict with user
 					.steps(steps)
-					.rootDir(Path.of("")) // TODO: error messages will be suboptimal for now, but it will get fixed when we ship linting
 					.build();
 		}
 
@@ -200,8 +184,8 @@ public class FenceStep {
 				return builder.toString();
 			} else {
 				// these will be needed to generate Lints later on
-				// int startLine = 1 + (int) builder.toString().codePoints().filter(c -> c == '\n').count();
-				// int endLine = 1 + (int) unix.codePoints().filter(c -> c == '\n').count();
+				int startLine = 1 + (int) builder.toString().codePoints().filter(c -> c == '\n').count();
+				int endLine = 1 + (int) unix.codePoints().filter(c -> c == '\n').count();
 
 				// throw an error with either the full regex, or the nicer open/close pair
 				Matcher openClose = Pattern.compile("\\\\Q([\\s\\S]*?)\\\\E" + "\\Q([\\s\\S]*?)\\E" + "\\\\Q([\\s\\S]*?)\\\\E")
@@ -212,39 +196,38 @@ public class FenceStep {
 				} else {
 					pattern = regex.pattern();
 				}
-				throw new Error("An intermediate step removed a match of " + pattern);
+				throw Lint.atLineRange(startLine, endLine, "fenceRemoved",
+						"An intermediate step removed a match of " + pattern).shortcut();
 			}
 		}
 
-		@Override
-		public String getName() {
-			return name;
-		}
+		private Formatter formatter;
 
-		private transient Formatter formatter;
-
-		@Nullable
 		@Override
-		public String format(String rawUnix, File file) throws Exception {
+		public String applyWithFile(String unix, File file) throws Exception {
 			if (formatter == null) {
 				formatter = buildFormatter();
 			}
-			return this.apply(formatter, rawUnix, file);
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o)
-				return true;
-			if (o == null || getClass() != o.getClass())
-				return false;
-			BaseStep step = (BaseStep) o;
-			return name.equals(step.name) && regex.pattern().equals(step.regex.pattern()) && regex.flags() == step.regex.flags() && steps.equals(step.steps);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(name, regex.pattern(), regex.flags(), steps);
+			List<String> groups = groupsZeroed();
+			Matcher matcher = regex.matcher(unix);
+			switch (kind) {
+			case APPLY:
+				while (matcher.find()) {
+					// apply the formatter to each group
+					groups.add(formatter.compute(matcher.group(1), file));
+				}
+				// and then assemble the result right away
+				return assembleGroups(unix);
+			case PRESERVE:
+				while (matcher.find()) {
+					// store whatever is within the open/close tags
+					groups.add(matcher.group(1));
+				}
+				String formatted = formatter.compute(unix, file);
+				return assembleGroups(formatted);
+			default:
+				throw new Error();
+			}
 		}
 
 		@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,31 +20,26 @@ import java.nio.file.Paths;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.biome.BiomeFlavor;
+import com.diffplug.spotless.biome.BiomeSettings;
 import com.diffplug.spotless.biome.BiomeStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 /**
- * Factory for creating the Biome formatter step that can format format code in
- * various types of language with Biome. Currently Biome supports JavaScript,
+ * Factory for creating the Biome formatter step that can format code in
+ * various types of language with Biome. Currently, Biome supports JavaScript,
  * TypeScript, JSX, TSX, and JSON. See also <a href=
  * "https://github.com/biomejs/biome">https://github.com/biomejs/biome</a>. It
  * delegates to the Biome CLI executable.
  */
 public abstract class AbstractBiome implements FormatterStepFactory {
-	/** Biome flavor to use. */
-	private BiomeFlavor flavor;
 
-	protected AbstractBiome(BiomeFlavor flavor) {
-		this.flavor = flavor;
-	}
+	protected AbstractBiome() {}
 
 	/**
-	 * Optional path to the directory with configuration file for Biome. The file
-	 * must be named {@code biome.json}. When none is given, the default
-	 * configuration is used. If this is a relative path, it is resolved against the
-	 * project's base directory.
+	 * Optional path to the configuration file for Biome. Must be either a directory that contains a file named
+	 * {@code biome.json}, or a file that contains the Biome config as JSON. When none is given, the default
+	 * configuration is used. If this is a relative path, it is resolved against the project's base directory.
 	 */
 	@Parameter
 	private String configPath;
@@ -117,7 +112,9 @@ public abstract class AbstractBiome implements FormatterStepFactory {
 	 * <li>tsx (TypeScript + JSX)</li>
 	 * <li>ts? (TypeScript or TypeScript + JSX, depending on the file
 	 * extension)</li>
+	 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 	 * <li>json (JSON)</li>
+	 * <li>jsonc (JSON + comments)</li>
 	 * </ul>
 	 *
 	 * @return The language of the input files.
@@ -136,10 +133,10 @@ public abstract class AbstractBiome implements FormatterStepFactory {
 	private BiomeStep newBuilder(FormatterStepConfig config) {
 		if (pathToExe != null) {
 			var resolvedExePath = resolveExePath(config);
-			return BiomeStep.withExePath(flavor, resolvedExePath);
+			return BiomeStep.withExePath(resolvedExePath);
 		} else {
 			var downloadDir = resolveDownloadDir(config);
-			return BiomeStep.withExeDownload(flavor, version, downloadDir);
+			return BiomeStep.withExeDownload(version, downloadDir);
 		}
 	}
 
@@ -188,7 +185,7 @@ public abstract class AbstractBiome implements FormatterStepFactory {
 		if (downloadDir != null && !downloadDir.isBlank()) {
 			return fileLocator.getBaseDir().toPath().resolve(downloadDir).toAbsolutePath().toString();
 		} else {
-			return fileLocator.getDataDir().toPath().resolve(flavor.shortName()).toString();
+			return fileLocator.getDataDir().toPath().resolve(BiomeSettings.shortName()).toString();
 		}
 	}
 }

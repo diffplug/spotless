@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,26 +33,26 @@ public class KtLintCompat0Dot49Dot0AdapterTest {
 	@Test
 	public void testDefaults(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot49Dot0Adapter ktLintCompat0Dot49Dot0Adapter = new KtLintCompat0Dot49Dot0Adapter();
-		loadAndWriteText(path, "EmptyClassBody.kt");
+		var content = loadAndWriteText(path, "EmptyClassBody.kt");
 		final Path filePath = Paths.get(path.toString(), "EmptyClassBody.kt");
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 
-		String formatted = ktLintCompat0Dot49Dot0Adapter.format(filePath, null, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot49Dot0Adapter.format(content, filePath, null, editorConfigOverrideMap);
 		assertEquals("class EmptyClassBody\n", formatted);
 	}
 
 	@Test
 	public void testEditorConfigCanDisable(@TempDir Path path) throws IOException {
 		KtLintCompat0Dot49Dot0Adapter ktLintCompat0Dot49Dot0Adapter = new KtLintCompat0Dot49Dot0Adapter();
-		loadAndWriteText(path, "FailsNoSemicolons.kt");
+		var content = loadAndWriteText(path, "FailsNoSemicolons.kt");
 		final Path filePath = Paths.get(path.toString(), "FailsNoSemicolons.kt");
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 		editorConfigOverrideMap.put("indent_style", "tab");
 		editorConfigOverrideMap.put("ktlint_standard_no-semi", "disabled");
 
-		String formatted = ktLintCompat0Dot49Dot0Adapter.format(filePath, null, editorConfigOverrideMap);
+		String formatted = ktLintCompat0Dot49Dot0Adapter.format(content, filePath, null, editorConfigOverrideMap);
 		assertEquals("class FailsNoSemicolons {\n\tval i = 0;\n}\n", formatted);
 	}
 
