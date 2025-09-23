@@ -356,7 +356,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	private static final String ERROR_PREFIX = "[ERROR] ";
 
-	protected static StringSelfie expectSelfieErrorMsg(ProcessRunner.Result result) {
+	protected StringSelfie expectSelfieErrorMsg(ProcessRunner.Result result) {
 		String concatenatedError = result.stdOutUtf8().lines()
 				.map(line -> line.startsWith(ERROR_PREFIX) ? line.substring(ERROR_PREFIX.length()) : null)
 				.filter(line -> line != null)
@@ -367,6 +367,8 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		int help1 = sanitizedVersion.indexOf("-> [Help 1]");
 		String trimTrailingString = sanitizedVersion.substring(0, help1);
 
-		return Selfie.expectSelfie(trimTrailingString);
+		String sanitizeBiomeNative = trimTrailingString.replaceAll("spotless-data/biome/biome-(.+),", "biome-exe");
+		String sanitizeFilePath = sanitizeBiomeNative.replaceAll(rootFolder().getAbsolutePath(), "PROJECT_DIR");
+		return Selfie.expectSelfie(sanitizeFilePath);
 	}
 }

@@ -33,7 +33,7 @@ class LintSuppressionTest extends MavenIntegrationHarness {
 		setFile(path).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
 
 		expectSelfieErrorMsg(mavenRunner().withArguments("spotless:check").runHasError()).toBe("""
-				Failed to execute goal com.diffplug.spotless:spotless-maven-plugin:VERSION:check (default-cli) on project spotless-maven-plugin-tests: Unable to format file /private/var/folders/8p/37qyn_6506sd85y1jbl91dbw0000gn/T/junit-7771631643861333109/src/main/java/TestFile.java
+				Failed to execute goal com.diffplug.spotless:spotless-maven-plugin:VERSION:check (default-cli) on project spotless-maven-plugin-tests: Unable to format file PROJECT_DIR/src/main/java/TestFile.java
 				Step 'removeWildcardImports' found problem in 'TestFile.java':
 				TestFile.java:L1 removeWildcardImports(import java.util.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this
 				TestFile.java:L2 removeWildcardImports(import static java.util.Collections.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this
