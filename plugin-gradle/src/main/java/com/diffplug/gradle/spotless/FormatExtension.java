@@ -490,6 +490,11 @@ public class FormatExtension {
 		addStep(ReplaceRegexStep.create(name, regex, replacement));
 	}
 
+	/** A regex which generates a lint. */
+	public void forbidRegex(String name, String regex, String lintDetail) {
+		addStep(ReplaceRegexStep.lint(name, regex, lintDetail));
+	}
+
 	/** Removes trailing whitespace. */
 	public void trimTrailingWhitespace() {
 		addStep(TrimTrailingWhitespaceStep.create());

@@ -38,6 +38,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.maven.generic.EclipseWtp;
 import com.diffplug.spotless.maven.generic.EndWithNewline;
+import com.diffplug.spotless.maven.generic.ForbidRegex;
 import com.diffplug.spotless.maven.generic.Idea;
 import com.diffplug.spotless.maven.generic.Indent;
 import com.diffplug.spotless.maven.generic.Jsr223;
@@ -138,6 +139,10 @@ public abstract class FormatterFactory {
 
 	public final void addReplaceRegex(ReplaceRegex replaceRegex) {
 		addStepFactory(replaceRegex);
+	}
+
+	public final void addForbidRegex(ForbidRegex forbidRegex) {
+		addStepFactory(forbidRegex);
 	}
 
 	public final void addEclipseWtp(EclipseWtp eclipseWtp) {
