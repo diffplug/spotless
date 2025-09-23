@@ -32,10 +32,15 @@ class LintSuppressionTest extends MavenIntegrationHarness {
 		String path = "src/main/java/TestFile.java";
 		setFile(path).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
 
-		var result = mavenRunner().withArguments("spotless:check").runHasError();
-		assertThat(result.stdOutUtf8()).contains("Unable to format file");
-		assertThat(result.stdOutUtf8()).contains("Step 'removeWildcardImports' found problem");
-		assertThat(result.stdOutUtf8()).contains("Do not use wildcard imports");
+		expectSelfieErrorMsg(mavenRunner().withArguments("spotless:check").runHasError()).toBe("""
+				Failed to execute goal com.diffplug.spotless:spotless-maven-plugin:VERSION:check (default-cli) on project spotless-maven-plugin-tests: Unable to format file /private/var/folders/8p/37qyn_6506sd85y1jbl91dbw0000gn/T/junit-7771631643861333109/src/main/java/TestFile.java
+				Step 'removeWildcardImports' found problem in 'TestFile.java':
+				TestFile.java:L1 removeWildcardImports(import java.util.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this
+				TestFile.java:L2 removeWildcardImports(import static java.util.Collections.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this
+				TestFile.java:L5 removeWildcardImports(import io.quarkus.maven.dependency.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this
+				TestFile.java:L6 removeWildcardImports(import static io.quarkus.vertx.web.Route.HttpMethod.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this
+				TestFile.java:L7 removeWildcardImports(import static org.springframework.web.reactive.function.BodyInserters.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this
+				""");
 	}
 
 	@Test
