@@ -20,6 +20,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `ktfmt` version to latest `0.53` -> `0.58` ([#2613](https://github.com/diffplug/spotless/pull/2613))
   * **BREAKING** use `TrailingCommaManagementStrategy` enum instead of `manageTrailingCommas` boolean configuration option
 * Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
+* Bump default `palantir-java-format` version to latest `2.57.0` -> `2.71.0`.
 * `GitPrePushHookInstaller` uses a lock to run gracefully if it is called many times in parallel. ([#2570](https://github.com/diffplug/spotless/pull/2570))
 
 ## [3.3.1] - 2025-07-21
