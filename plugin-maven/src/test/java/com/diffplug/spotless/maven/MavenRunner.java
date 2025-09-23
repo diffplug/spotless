@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.ProcessRunner;
@@ -41,6 +43,7 @@ public class MavenRunner {
 	private File projectDir;
 	private String[] args;
 	private Map<String, String> environment = new HashMap<>();
+	private Map<String, String> systemProperties = new HashMap<>();
 	private ProcessRunner runner;
 
 	public MavenRunner withProjectDir(File projectDir) {
@@ -50,6 +53,11 @@ public class MavenRunner {
 
 	public MavenRunner withArguments(String... args) {
 		this.args = Objects.requireNonNull(args);
+		return this;
+	}
+
+	public MavenRunner withEnvironment(String key, String value) {
+		environment.put(key, value);
 		return this;
 	}
 
@@ -64,12 +72,31 @@ public class MavenRunner {
 		return this;
 	}
 
+	public MavenRunner withSystemProperty(String key, String value) {
+		systemProperties.put(key, value);
+		return this;
+	}
+
+	private Map<String, String> calculateEnvironment() {
+		Map<String, String> env = new HashMap<>(environment);
+		if (!systemProperties.isEmpty()) {
+			// add system properties as environment variables as MAVEN_OPTS or append if already there
+			String sysProps = systemProperties.entrySet().stream()
+					.map(entry -> String.format("-D%s=%s", entry.getKey(), entry.getValue()))
+					.collect(Collectors.joining(" "));
+			String mavenOpts = Stream.of(env.getOrDefault("MAVEN_OPTS", ""), sysProps)
+					.collect(Collectors.joining(" "));
+			env.put("MAVEN_OPTS", mavenOpts.trim());
+		}
+		return env;
+	}
+
 	private ProcessRunner.Result run() throws IOException, InterruptedException {
 		Objects.requireNonNull(projectDir, "Need to call withProjectDir() first");
 		Objects.requireNonNull(args, "Need to call withArguments() first");
 		// run Maven with the given args in the given directory
 		String argsString = "-e " + String.join(" ", Arrays.asList(args));
-		return runner.shellWinUnix(projectDir, environment, "mvnw " + argsString, "./mvnw " + argsString);
+		return runner.shellWinUnix(projectDir, calculateEnvironment(), "mvnw " + argsString, "./mvnw " + argsString);
 	}
 
 	/** Runs the command and asserts that exit code is 0. */

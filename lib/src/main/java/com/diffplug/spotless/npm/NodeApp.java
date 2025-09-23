@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,18 +98,28 @@ public class NodeApp {
 			if (!offlineInstallFailed(e.getResult())) {
 				throw e; // pass through
 			}
-			// if the npm install fails with message "No matching version found for <package>@<version>", we try again without the offline flag
+			// if the npm install fails in a way that might be caused by missing dependency information, we try again without the offline flag
 			npmProcessFactory.createNpmInstallProcess(nodeServerLayout, formatterStepLocations, PREFER_ONLINE).waitFor();
 		}
 	}
 
-	private boolean offlineInstallFailed(ProcessRunner.Result result) {
+	private static boolean offlineInstallFailed(ProcessRunner.Result result) {
 		if (result == null) {
 			return false; // no result, something else must have happened
 		}
 		if (result.exitCode() == 0) {
 			return false; // all is well
 		}
-		return result.stdOutUtf8().contains("code ETARGET") && result.stdOutUtf8().contains("No matching version found for"); // offline install failed, needs online install
+		var installOutput = result.stdOutUtf8();
+		// offline install failed, needs online install
+		return isNoMatchingVersionFound(installOutput) || isCannotResolveDependencyTree(installOutput);
+	}
+
+	private static boolean isNoMatchingVersionFound(String installOutput) {
+		return installOutput.contains("code ETARGET") && installOutput.contains("No matching version found for");
+	}
+
+	private static boolean isCannotResolveDependencyTree(String installOutput) {
+		return installOutput.contains("code ERESOLVE") && installOutput.contains("unable to resolve dependency tree");
 	}
 }

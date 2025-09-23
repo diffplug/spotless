@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,14 @@
  */
 package com.diffplug.spotless;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+
+import com.diffplug.spotless.yaml.SerializeToByteArrayHack;
 
 /**
  * Gradle requires three things:
@@ -47,9 +51,44 @@ import java.util.Objects;
  * to make Spotless work with all of Gradle's cache systems at once.
  */
 public class ConfigurationCacheHackList implements java.io.Serializable {
-	private static final long serialVersionUID = 1L;
-	private final boolean optimizeForEquality;
-	private final ArrayList<Object> backingList = new ArrayList<>();
+	private static final long serialVersionUID = 6914178791997323870L;
+
+	private boolean optimizeForEquality;
+	private ArrayList<Object> backingList = new ArrayList<>();
+
+	private boolean shouldWeSerializeToByteArrayFirst() {
+		return backingList.stream().anyMatch(step -> step instanceof SerializeToByteArrayHack);
+	}
+
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		boolean serializeToByteArrayFirst = shouldWeSerializeToByteArrayFirst();
+		out.writeBoolean(serializeToByteArrayFirst);
+		out.writeBoolean(optimizeForEquality);
+		out.writeInt(backingList.size());
+		for (Object obj : backingList) {
+			// if write out the list on its own, we'll get java's non-deterministic object-graph serialization
+			// by writing each object to raw bytes independently, we avoid this
+			if (serializeToByteArrayFirst) {
+				out.writeObject(LazyForwardingEquality.toBytes((Serializable) obj));
+			} else {
+				out.writeObject(obj);
+			}
+		}
+	}
+
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		boolean serializeToByteArrayFirst = in.readBoolean();
+		optimizeForEquality = in.readBoolean();
+		backingList = new ArrayList<>();
+		int size = in.readInt();
+		for (int i = 0; i < size; i++) {
+			if (serializeToByteArrayFirst) {
+				backingList.add(LazyForwardingEquality.fromBytes((byte[]) in.readObject()));
+			} else {
+				backingList.add(in.readObject());
+			}
+		}
+	}
 
 	public static ConfigurationCacheHackList forEquality() {
 		return new ConfigurationCacheHackList(true);

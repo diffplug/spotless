@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  */
 package com.diffplug.spotless.java;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_13;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
@@ -29,7 +26,6 @@ import com.diffplug.spotless.TestProvisioner;
 class PalantirJavaFormatStepTest extends ResourceHarness {
 
 	@Test
-	@EnabledForJreRange(min = JAVA_13)
 	void jvm13Features() throws Exception {
 		try (StepHarness step = StepHarness.forStep(PalantirJavaFormatStep.create(TestProvisioner.mavenCentral()))) {
 			step.testResource("java/palantirjavaformat/TextBlock.dirty", "java/palantirjavaformat/TextBlock.clean");
@@ -56,7 +52,7 @@ class PalantirJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	void formatJavadoc() throws Exception {
-		FormatterStep step = PalantirJavaFormatStep.create("2.39.0", "PALANTIR", true, TestProvisioner.mavenCentral());
+		FormatterStep step = PalantirJavaFormatStep.create("2.57.0", "PALANTIR", true, TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/palantirjavaformat/JavaCodeWithJavaDocUnformatted.test", "java/palantirjavaformat/JavaCodeWithJavaDocFormatted.test")
 				.testResource("java/palantirjavaformat/JavaCodeWithPackageUnformatted.test", "java/palantirjavaformat/JavaCodeWithPackageFormatted.test");

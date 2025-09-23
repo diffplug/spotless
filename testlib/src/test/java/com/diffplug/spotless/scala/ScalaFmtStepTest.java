@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,17 +48,18 @@ class ScalaFmtStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void behaviorDefaultConfigVersion_3_0_0() {
+	void behaviorNoConfigFile() {
 		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), null);
 		StepHarness.forStep(step)
 				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost3.0.0.clean");
 	}
 
 	@Test
-	void behaviorCustomConfigVersion_3_0_0() {
+	void behaviorConfigFileVersionDoesnotMatchLibrary() {
 		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
-		StepHarness.forStep(step)
-				.testResource("scala/scalafmt/basic.dirty", "scala/scalafmt/basicPost3.0.0.cleanWithCustomConf");
+		Assertions.assertThatThrownBy(() -> {
+			step.format("", new File(""));
+		}).cause().message().contains("Spotless is using 3.0.0 but the config file declares 3.8.1. Both must match. Update the version declared in the plugin's settings and/or the config file.");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,10 @@ public class Java extends FormatterFactory {
 
 	public void addRemoveUnusedImports(RemoveUnusedImports removeUnusedImports) {
 		addStepFactory(removeUnusedImports);
+	}
+
+	public void addRemoveWildcardImports(RemoveWildcardImports removeWildcardImports) {
+		addStepFactory(removeWildcardImports);
 	}
 
 	public void addFormatAnnotations(FormatAnnotations formatAnnotations) {

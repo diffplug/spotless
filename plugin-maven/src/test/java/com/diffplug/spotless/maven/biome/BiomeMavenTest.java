@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.owasp.encoder.Encode.forXml;
+
+import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
@@ -140,6 +142,23 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	}
 
 	/**
+	 * Tests that a path to a Biome config JSON file can be specified (requires biome 2.x).
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void configPathFile() throws Exception {
+		var path = newFile("configs").getAbsolutePath();
+		var file = new File(path, "biome.json").getAbsolutePath();
+		writePomWithBiomeSteps("**/*.js",
+				"<biome><version>2.1.1</version><configPath>" + forXml(file) + "</configPath></biome>");
+		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
+		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("biome_test.js").sameAsResource("biome/js/longLineAfter120.js");
+	}
+
+	/**
 	 * Tests that a path to the directory with the biome.json config file can be
 	 * specified. Uses a config file with a line width of 120.
 	 *
@@ -247,5 +266,18 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 		setFile("package.json").toResource("biome/json/packageBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("package.json").sameAsResource("biome/json/packageAfter.json");
+	}
+
+	/**
+	 * Tests that the Maven plugin works with version 2.x of biome.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void version2X() throws Exception {
+		writePomWithBiomeSteps("**/*.js", "<biome><version>2.0.6</version></biome>");
+		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
 	}
 }

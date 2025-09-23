@@ -175,6 +175,9 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 
 ## Acknowledgements
 
+- Thanks to [over 200 contributors with merged PRs](https://github.com/diffplug/spotless/graphs/contributors), and also to everyone who helped with code review, file reproducible bugs, etc. A few contributions stand out as especially significant to the history of the project, though regrettably there are certain to be some important omissions!
+- Thanks to [Zongle Wang](https://github.com/Goooler) for an [enormous mound of contributions](https://github.com/diffplug/spotless/issues?q=is%3Apr%20is%3Aclosed%20author%3AGoooler), but especially for [his near-rewrite](https://github.com/diffplug/spotless/issues/1274#issuecomment-2146972303) so that Spotless could support Gradle's configuration cache natively.
+- Thanks to [Simon Gamma](https://github.com/simschla) for [adding support for npm-based formatters](https://github.com/diffplug/spotless/pull/283), [twice](https://github.com/diffplug/spotless/pull/606) including `prettier` and `tsfmt`.
 - Thanks to [Konstantin Lutovich](https://github.com/lutovich) for [implementing and maintaining the Maven plugin](https://github.com/diffplug/spotless/pull/188), as well as fixing [remote-build cache support for Gradle](https://github.com/diffplug/spotless/pull/571).
 - Thanks to [Frank Vennemeyer](https://github.com/fvgh) for [Groovy support via greclipse](https://github.com/diffplug/spotless/issues/13), [C++ support via CDT](https://github.com/diffplug/spotless/issues/232), [XML support via WTP](https://github.com/diffplug/spotless/pull/241) and a huge body of work with other eclipse-based formatters.
 - Thanks to [Jonathan Bluett-Duncan](https://github.com/jbduncan) for
@@ -185,12 +188,12 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 - Thanks to [Daz DeBoer](https://github.com/bigdaz) for the reworking the guts of our Gradle plugin to support [buildcache](https://github.com/diffplug/spotless/pull/576), [InputChanges](https://github.com/diffplug/spotless/pull/607), and [lazy configuration](https://github.com/diffplug/spotless/pull/617).
 - Thanks to [Richard Willis](https://github.com/badsyntax) for creating the [VS Code extension for Spotless Gradle](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle).
 - Thanks to [Ryan Gurney](https://github.com/ragurney) for creating the [IntelliJ plugin for Spotless Gradle](https://plugins.jetbrains.com/plugin/18321-spotless-gradle).
+- Thanks to [Alex Danylenko](https://github.com/lazer-dev) for creating the [git pre-push hook](https://github.com/diffplug/spotless/pull/2553).
 - Thanks to [Markus Heberling](https://github.com/tisoft) for adding [generic native formatters](https://github.com/diffplug/spotless/pull/949), [jsr-223 formatters](https://github.com/diffplug/spotless/pull/945), and [maven pom sorting](https://github.com/diffplug/spotless/pull/946).
 - Thanks to [Matthias Balke](https://github.com/matthiasbalke) for [adding support for Antlr](https://github.com/diffplug/spotless/pull/328).
 - Thanks to [Matthias Andreas Benkard](https://github.com/benkard) for adding support for google-java-format 1.8+ ([#563](https://github.com/diffplug/spotless/pull/563))
 - Thanks to [Thomas Broyer](https://github.com/tbroyer) for adding support for google-java-format's [skip-reflowing-long-strings option](https://github.com/diffplug/spotless/pull/929).
 - Thanks to [Ranadeep Polavarapu](https://github.com/RanadeepPolavarapu) for adding support for ktfmt ([#569](https://github.com/diffplug/spotless/pull/569))
-- Thanks to [Simon Gamma](https://github.com/simschla) for [adding support for npm-based formatters](https://github.com/diffplug/spotless/pull/283), [twice](https://github.com/diffplug/spotless/pull/606) including `prettier` and `tsfmt`.
 - Thanks to [Hakanai](https://github.com/hakanai) for adding [wildcards last support to the import sorter](https://github.com/diffplug/spotless/pull/956).
 - Thanks to [Kevin Brooks](https://github.com/k-brooks) for [updating all eclipse-based formatters to 4.13](https://github.com/diffplug/spotless/pull/482) and [fixing Groovy for multiproject](https://github.com/diffplug/spotless/issues/877).
 - Thanks to [Dylan Baroody](https://github.com/dylanbaroody) for fixing [sql formatting support for JDBI bind list params](https://github.com/diffplug/spotless/pull/955).

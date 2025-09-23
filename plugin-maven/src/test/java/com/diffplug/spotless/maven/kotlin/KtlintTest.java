@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ class KtlintTest extends MavenIntegrationHarness {
 	void testWithCustomRuleSetApply() throws Exception {
 		writePomWithKotlinSteps("<ktlint>\n" +
 				"  <customRuleSets>\n" +
-				"    <value>io.nlopez.compose.rules:ktlint:0.4.16</value>\n" +
+				"    <value>io.nlopez.compose.rules:ktlint:0.4.25</value>\n" +
 				"  </customRuleSets>\n" +
 				"  <editorConfigOverride>\n" +
 				"    <ktlint_function_naming_ignore_when_annotated_with>Composable</ktlint_function_naming_ignore_when_annotated_with>\n" +

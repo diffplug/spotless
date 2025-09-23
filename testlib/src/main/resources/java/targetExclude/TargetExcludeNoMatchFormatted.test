@@ -1,0 +1,4 @@
+// my-copyright
+import foo.Bar;
+
+class Bar {}

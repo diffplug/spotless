@@ -163,7 +163,7 @@ If you get something running, we'd love to host your plugin within this repo as 
 
 To run all tests, simply do
 
-> gradlew test
+> ./gradlew test
 
 Since that takes some time, you might only want to run the tests
 concerning what you are working on:

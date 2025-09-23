@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,9 @@ import com.diffplug.spotless.SpotlessCache;
 
 public class SpotlessPlugin implements Plugin<Project> {
 	static final String SPOTLESS_MODERN = "spotlessModern";
-	static final String VER_GRADLE_min = "6.1.1";
-	static final String VER_GRADLE_javaPluginExtension = "7.1";
-	static final String VER_GRADLE_minVersionForCustom = "8.0";
-	private static final int MINIMUM_JRE = 11;
+	static final String VER_GRADLE_min = "7.3";
+	static final String VER_GRADLE_minVersionForCustom = "8.4";
+	private static final int MINIMUM_JRE = 17;
 
 	@Override
 	public void apply(Project project) {

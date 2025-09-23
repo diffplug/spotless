@@ -1,9 +1,9 @@
-import de.benediktritter.maven.plugin.development.task.GenerateHelpMojoSourcesTask
-import de.benediktritter.maven.plugin.development.task.GenerateMavenPluginDescriptorTask
+import org.gradlex.maven.plugin.development.task.GenerateHelpMojoSourcesTask
+import org.gradlex.maven.plugin.development.task.GenerateMavenPluginDescriptorTask
 
 plugins {
-	// https://www.benediktritter.de/maven-plugin-development/#release-history
-	id 'de.benediktritter.maven-plugin-development' version '0.4.3'
+	// https://github.com/gradlex-org/maven-plugin-development
+	id 'org.gradlex.maven-plugin-development' version '1.0.3'
 }
 
 apply from: rootProject.file('gradle/changelog.gradle')
@@ -19,16 +19,9 @@ mavenPlugin {
 	description = project.description
 }
 
-tasks.withType(GenerateMavenPluginDescriptorTask).configureEach {
-	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
-}
-tasks.withType(GenerateHelpMojoSourcesTask).configureEach {
-	notCompatibleWithConfigurationCache('https://github.com/britter/maven-plugin-development/issues/8')
-}
-
 String VER_MAVEN_API = '3.0'
 String VER_ECLIPSE_AETHER = '1.1.0'
-String VER_PLEXUS_RESOURCES = '1.3.0'
+String VER_PLEXUS_RESOURCES = '1.3.1'
 dependencies {
 	implementation projects.lib
 	implementation projects.libExtra
@@ -62,6 +55,7 @@ dependencies {
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	systemProperty 'spotlessMavenPluginVersion', project.version
+	systemProperty 'spotlessProjectDir', "${project.rootProject.projectDir}".toString()
 	dependsOn 'publishToMavenLocal'
 	dependsOn ':lib:publishToMavenLocal'
 	dependsOn ':lib-extra:publishToMavenLocal'

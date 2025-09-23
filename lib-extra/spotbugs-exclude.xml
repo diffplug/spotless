@@ -1,0 +1,8 @@
+<FindBugsFilter>
+	<Match>
+		<Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"/>
+	</Match>
+	<Match>
+		<Bug pattern="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION"/>
+	</Match>
+</FindBugsFilter>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,6 @@ import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Shelling out to a process is harder than it ought to be in Java.
@@ -195,7 +193,6 @@ public class ProcessRunner implements AutoCloseable {
 		}
 	}
 
-	@SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 	public static class Result {
 		private final List<String> args;
 		private final int exitCode;

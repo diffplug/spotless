@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,12 +105,12 @@ public class GoogleJavaFormatStep implements Serializable {
 
 		GoogleJavaFormatStep step = new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc);
 		if (removeImports) {
-			return FormatterStep.create(NAME,
+			return FormatterStep.create(name,
 					step,
 					GoogleJavaFormatStep::equalityState,
 					State::createRemoveUnusedImportsOnly);
 		} else {
-			return FormatterStep.create(NAME,
+			return FormatterStep.create(name,
 					step,
 					GoogleJavaFormatStep::equalityState,
 					State::createFormat);
@@ -121,7 +121,7 @@ public class GoogleJavaFormatStep implements Serializable {
 			.addMin(11, "1.8") // we only support google-java-format >= 1.8 due to api changes
 			.addMin(16, "1.10.0") // java 16 requires at least 1.10.0 due to jdk api changes in JavaTokenizer
 			.addMin(21, "1.17.0") // java 21 requires at least 1.17.0 due to https://github.com/google/google-java-format/issues/898
-			.add(11, "1.24.0"); // default version
+			.add(17, "1.28.0"); // default version
 
 	public static String defaultGroupArtifact() {
 		return MAVEN_COORDINATE;

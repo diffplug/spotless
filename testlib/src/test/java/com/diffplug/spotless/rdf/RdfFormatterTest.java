@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.rdf;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_17;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -27,7 +25,6 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.params.provider.Arguments;
 import org.opentest4j.AssertionFailedError;
 
@@ -52,7 +49,6 @@ public class RdfFormatterTest extends ResourceHarness {
 	public RdfFormatterTest() {}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_17)
 	void testTurtleFormatter_1_2_12_DefaultStyle() throws IOException, ClassNotFoundException {
 		String inputDir = "/rdf/ttl/input/";
 		String expectedOutputDir = "/rdf/ttl/expected/v1.2.12-default/";
@@ -60,7 +56,6 @@ public class RdfFormatterTest extends ResourceHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_17)
 	void testTurtleFormatter_1_2_12_style01() throws IOException, ClassNotFoundException {
 		String inputDir = "/rdf/ttl/input/";
 		String expectedOutputDir = "/rdf/ttl/expected/v1.2.12-style01/";

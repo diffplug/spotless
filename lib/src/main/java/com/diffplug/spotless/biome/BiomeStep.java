@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,12 +73,6 @@ public class BiomeStep {
 	private String language;
 
 	/**
-	 * Biome flavor to use. Will be removed once we stop supporting the deprecated Rome project.
-	 */
-	@Deprecated
-	private final BiomeFlavor flavor;
-
-	/**
 	 * Path to the Biome executable. Can be <code>null</code>, but either a path to
 	 * the executable of a download directory and version must be given. The path
 	 * must be either an absolute path, or a file name without path separators. If
@@ -103,32 +97,30 @@ public class BiomeStep {
 	 * @return The name of this format step, i.e. <code>biome</code> or <code>rome</code>.
 	 */
 	public String name() {
-		return flavor.shortName();
+		return BiomeSettings.shortName();
 	}
 
 	/**
 	 * Creates a Biome step that format code by downloading to the given Biome
 	 * version. The executable is downloaded from the network.
 	 *
-	 * @param flavor Flavor of Biome to use.
 	 * @param version     Version of the Biome executable to download.
 	 * @param downloadDir Directory where to place the downloaded executable.
 	 * @return A new Biome step that download the executable from the network.
 	 */
-	public static BiomeStep withExeDownload(BiomeFlavor flavor, String version, String downloadDir) {
-		return new BiomeStep(flavor, version, null, downloadDir);
+	public static BiomeStep withExeDownload(String version, String downloadDir) {
+		return new BiomeStep(version, null, downloadDir);
 	}
 
 	/**
 	 * Creates a Biome step that formats code by delegating to the Biome executable
 	 * located at the given path.
 	 *
-	 * @param flavor Flavor of Biome to use.
 	 * @param pathToExe Path to the Biome executable to use.
 	 * @return A new Biome step that format with the given executable.
 	 */
-	public static BiomeStep withExePath(BiomeFlavor flavor, String pathToExe) {
-		return new BiomeStep(flavor, null, pathToExe, null);
+	public static BiomeStep withExePath(String pathToExe) {
+		return new BiomeStep(null, pathToExe, null);
 	}
 
 	/**
@@ -156,8 +148,8 @@ public class BiomeStep {
 	 *
 	 * @return The default version for Biome.
 	 */
-	private static String defaultVersion(BiomeFlavor flavor) {
-		return flavor.defaultVersion();
+	private static String defaultVersion() {
+		return BiomeSettings.defaultVersion();
 	}
 
 	/**
@@ -199,18 +191,21 @@ public class BiomeStep {
 	/**
 	 * Checks the Biome config path. When the config path does not exist or when it
 	 * does not contain a file named {@code biome.json}, an error is thrown.
+	 * @param configPath The path to validate.
+	 * @param version The version of Biome.
 	 */
-	private static void validateBiomeConfigPath(BiomeFlavor flavor, String configPath) {
+	private static void validateBiomeConfigPath(String configPath, String version) {
 		if (configPath == null) {
 			return;
 		}
+		var atLeastV2 = BiomeSettings.versionHigherThanOrEqualTo(version, 2, 0, 0);
 		var path = Paths.get(configPath);
-		var config = path.resolve(flavor.configName());
+		var configFile = Files.isRegularFile(path) && atLeastV2 ? path : path.resolve(BiomeSettings.configName());
 		if (!Files.exists(path)) {
 			throw new IllegalArgumentException("Biome config directory does not exist: " + path);
 		}
-		if (!Files.exists(config)) {
-			throw new IllegalArgumentException("Biome config does not exist: " + config);
+		if (!Files.exists(configFile)) {
+			throw new IllegalArgumentException("Biome config does not exist: " + configFile);
 		}
 	}
 
@@ -227,14 +222,12 @@ public class BiomeStep {
 	/**
 	 * Creates a new Biome step with the configuration from the given builder.
 	 *
-	 * @param flavor Flavor of Biome to use.
 	 * @param version     Version of the Biome executable to download.
 	 * @param pathToExe Path to the Biome executable to use.
 	 * @param downloadDir Directory where to place the downloaded executable.
 	 */
-	private BiomeStep(BiomeFlavor flavor, String version, String pathToExe, String downloadDir) {
-		this.flavor = flavor;
-		this.version = version != null && !version.isBlank() ? version : defaultVersion(flavor);
+	private BiomeStep(String version, String pathToExe, String downloadDir) {
+		this.version = version != null && !version.isBlank() ? version : defaultVersion();
 		this.pathToExe = pathToExe;
 		this.downloadDir = downloadDir;
 	}
@@ -250,11 +243,10 @@ public class BiomeStep {
 	}
 
 	/**
-	 * Sets the path to the directory with the {@code biome.json} config file. When
-	 * no config path is set, the default configuration is used.
+	 * Sets the path to the Biome configuration. Must be either a directory with a file named {@code biome.json}, or
+	 * a file with the Biome config as JSON. When no config path is set, the default configuration is used.
 	 *
-	 * @param configPath Config path to use. Must point to a directory which contains
-	 *                   a file named {@code biome.json}.
+	 * @param configPath Config path to use.
 	 * @return This builder instance for chaining method calls.
 	 */
 	public BiomeStep withConfigPath(String configPath) {
@@ -306,7 +298,7 @@ public class BiomeStep {
 	private State createState() throws IOException, InterruptedException {
 		var resolvedPathToExe = resolveExe();
 		validateBiomeExecutable(resolvedPathToExe);
-		validateBiomeConfigPath(flavor, configPath);
+		validateBiomeConfigPath(configPath, version);
 		logger.debug("Using Biome executable located at  '{}'", resolvedPathToExe);
 		var exeSignature = FileSignature.signAsList(Collections.singleton(new File(resolvedPathToExe)));
 		makeExecutable(resolvedPathToExe);
@@ -337,7 +329,7 @@ public class BiomeStep {
 				return pathToExe;
 			}
 		} else {
-			var downloader = new BiomeExecutableDownloader(flavor, Paths.get(downloadDir));
+			var downloader = new BiomeExecutableDownloader(Paths.get(downloadDir));
 			var downloaded = downloader.ensureDownloaded(version).toString();
 			makeExecutable(downloaded);
 			return downloaded;

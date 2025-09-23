@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Grabs a jar and its dependencies from maven,
  * and makes it easy to access the collection in
@@ -37,6 +42,21 @@ import java.util.stream.Collectors;
  * catch changes in a SNAPSHOT version.
  */
 public final class JarState implements Serializable {
+
+	private static final Logger logger = LoggerFactory.getLogger(JarState.class);
+
+	// Let the classloader be overridden for tools using different approaches to classloading
+	@Nullable
+	private static ClassLoader forcedClassLoader = null;
+
+	/** Overrides the classloader used by all JarStates. */
+	public static void setForcedClassLoader(@Nullable ClassLoader forcedClassLoader) {
+		if (!Objects.equals(JarState.forcedClassLoader, forcedClassLoader)) {
+			logger.info("Overriding the forced classloader for JarState from {} to {}", JarState.forcedClassLoader, forcedClassLoader);
+		}
+		JarState.forcedClassLoader = forcedClassLoader;
+	}
+
 	/** A lazily evaluated JarState, which becomes a set of files when serialized. */
 	public static class Promised implements Serializable {
 		private static final long serialVersionUID = 1L;
@@ -125,26 +145,36 @@ public final class JarState implements Serializable {
 	}
 
 	/**
-	 * Returns a classloader containing the only jars in this JarState.
+	 * Returns either a forcedClassloader ({@code JarState.setForcedClassLoader()}) or a classloader containing the only jars in this JarState.
 	 * Look-up of classes in the {@code org.slf4j} package
 	 * are not taken from the JarState, but instead redirected to the class loader of this class to enable
 	 * passthrough logging.
 	 * <br/>
 	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
+	 *
+	 * @see com.diffplug.spotless.JarState#setForcedClassLoader(ClassLoader)
 	 */
 	public ClassLoader getClassLoader() {
+		if (forcedClassLoader != null) {
+			return forcedClassLoader;
+		}
 		return SpotlessCache.instance().classloader(this);
 	}
 
 	/**
-	 * Returns a classloader containing the only jars in this JarState.
+	 * Returns either a forcedClassloader ({@code JarState.setForcedClassLoader}) or a classloader containing the only jars in this JarState.
 	 * Look-up of classes in the {@code org.slf4j} package
 	 * are not taken from the JarState, but instead redirected to the class loader of this class to enable
 	 * passthrough logging.
 	 * <br/>
-	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}.
+	 * The lifetime of the underlying cacheloader is controlled by {@link SpotlessCache}
+	 *
+	 * @see com.diffplug.spotless.JarState#setForcedClassLoader(ClassLoader)
 	 */
 	public ClassLoader getClassLoader(Serializable key) {
+		if (forcedClassLoader != null) {
+			return forcedClassLoader;
+		}
 		return SpotlessCache.instance().classloader(key, this);
 	}
 }

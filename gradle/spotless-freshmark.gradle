@@ -10,7 +10,7 @@ Action<FreshMarkExtension> freshmarkSetup = {
 		it.put('yes', ':+1:')
 		it.put('no', ':white_large_square:')
 	}
-	it.indentWithSpaces(2)
+	it.leadingTabsToSpaces(2)
 	it.endWithNewline()
 }
 

@@ -33,6 +33,10 @@ apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	testLogging.showStandardStreams = true
 }
+tasks.validatePlugins {
+	// TODO: https://github.com/gradle/gradle/issues/22600
+	enableStricterValidation = true
+}
 
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
@@ -78,7 +82,6 @@ gradlePlugin {
 
 tasks.named("publishPlugins") {
 	enabled = !version.endsWith('-SNAPSHOT')
-	notCompatibleWithConfigurationCache("https://github.com/gradle/gradle/issues/21283")
 }
 
 // have to apply java-publish after setting up the pluginBundle
