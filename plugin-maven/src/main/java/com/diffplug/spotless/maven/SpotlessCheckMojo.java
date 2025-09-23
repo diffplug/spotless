@@ -117,20 +117,21 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", name));
 		}
 
-		if (!lintProblems.isEmpty()) {
-			// If we have lint problems, prioritize showing them with detailed messages
-			Map.Entry<File, LintState> firstLintProblem = lintProblems.get(0);
-			File file = firstLintProblem.getKey();
-			LintState lintState = firstLintProblem.getValue();
-			String stepName = lintState.getLintsByStep(formatter).keySet().iterator().next();
-			throw new MojoExecutionException(String.format("Unable to format file %s%nStep '%s' found problem in '%s':%n%s",
-					file, stepName, file.getName(), lintState.asStringDetailed(file, formatter)));
-		} else if (!problemFiles.isEmpty()) {
+		if (!problemFiles.isEmpty()) {
+			// Prioritize formatting violations first (matching Gradle behavior)
 			throw new MojoExecutionException(DiffMessageFormatter.builder()
 					.runToFix("Run 'mvn spotless:apply' to fix these violations.")
 					.formatter(baseDir.toPath(), formatter)
 					.problemFiles(problemFiles)
 					.getMessage());
+		} else if (!lintProblems.isEmpty()) {
+			// Show lints only if there are no formatting violations
+			Map.Entry<File, LintState> firstLintProblem = lintProblems.get(0);
+			File file = firstLintProblem.getKey();
+			LintState lintState = firstLintProblem.getValue();
+			String stepName = lintState.getLintsByStep(formatter).keySet().iterator().next();
+			throw new MojoExecutionException(String.format("Unable to format file %s%nStep '%s' found problem in '%s':%n%s",
+					file, stepName, file.getName(), lintState.asStringOneLine(file, formatter)));
 		}
 	}
 }

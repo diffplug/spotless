@@ -80,19 +80,24 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 					counter.checkedButAlreadyClean();
 				}
 
-				// In apply mode, lints are usually warnings, but fatal errors should still fail the build
+				// In apply mode, any lints should fail the build (matching Gradle behavior)
 				if (hasUnsuppressedLints) {
-					// Check if any lint represents a fatal error (like parsing failures)
-					boolean hasFatalError = lintState.getLintsByStep(formatter).values().stream()
-							.flatMap(List::stream)
-							.anyMatch(lint -> lint.getShortCode().contains("Exception"));
+					int lintCount = lintState.getLintsByStep(formatter).values().stream()
+						.mapToInt(List::size)
+						.sum();
+					StringBuilder message = new StringBuilder();
+					message.append("There were ").append(lintCount).append(" lint error(s), they must be fixed or suppressed.");
 
-					if (hasFatalError) {
-						String stepName = lintState.getLintsByStep(formatter).keySet().iterator().next();
-						throw new MojoExecutionException(String.format("Unable to format file %s%nStep '%s' found problem in '%s':%n%s", file, stepName, file.getName(), lintState.asStringDetailed(file, formatter)));
-					} else {
-						getLog().warn(String.format("File %s has lint issues that cannot be auto-fixed:%n%s", file, lintState.asStringDetailed(file, formatter)));
+					// Build lint messages in Gradle format (using relative path, not just filename)
+					for (Map.Entry<String, List<com.diffplug.spotless.Lint>> stepEntry : lintState.getLintsByStep(formatter).entrySet()) {
+						String stepName = stepEntry.getKey();
+						for (com.diffplug.spotless.Lint lint : stepEntry.getValue()) {
+							message.append("\n  ").append(relativePath).append(":");
+							lint.addWarningMessageTo(message, stepName, true);
+						}
 					}
+					message.append("\n  Resolve these lints or suppress with `suppressLintsFor`");
+					throw new MojoExecutionException(message.toString());
 				}
 			} catch (IOException | RuntimeException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
