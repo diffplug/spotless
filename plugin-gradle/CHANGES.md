@@ -6,14 +6,15 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * **BREAKING** Bump the required Gradle to `7.3` and required Java to `17`. ([#2375](https://github.com/diffplug/spotless/issues/2375), [#2540](https://github.com/diffplug/spotless/pull/2540))
 * **BREAKING** `spotlessInstallGitPrePushHook` task is now installed only on the root project. ([#2570](https://github.com/diffplug/spotless/pull/2570))
+* Running `spotlessCheck` with violations unilaterally produces the error message `Run './gradlew spotlessApply' to fix these violations`. ([#2592](https://github.com/diffplug/spotless/issues/2592))
 * Bump JGit from `6.10.1` to `7.3.0` ([#2257](https://github.com/diffplug/spotless/pull/2257))
   * Adds support for worktrees (fixes [#1765](https://github.com/diffplug/spotless/issues/1765))
 * Bump default `google-java-format` version to latest `1.24.0` -> `1.28.0`. ([#2345](https://github.com/diffplug/spotless/pull/2345))
-* Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
+* Bump default `gson` version to latest `2.13.1` -> `2.13.2`. ([#2615](https://github.com/diffplug/spotless/pull/2615))
 * Bump default `jackson` version to latest `2.19.2` -> `2.20.0`. ([#2606](https://github.com/diffplug/spotless/pull/2606))
-* Running `spotlessCheck` with violations unilaterally produces the error message `Run './gradlew spotlessApply' to fix these violations`. ([#2592](https://github.com/diffplug/spotless/issues/2592))
-* **BREAKING** Bump default `ktfmt` version to latest `0.53` -> `0.58` ([#2613](https://github.com/diffplug/spotless/pull/2613))
-  * use `TrailingCommaManagementStrategy` enum instead of `manageTrailingCommas` boolean configuration option
+* Bump default `ktfmt` version to latest `0.53` -> `0.58` ([#2613](https://github.com/diffplug/spotless/pull/2613))
+  * **BREAKING** use `TrailingCommaManagementStrategy` enum instead of `manageTrailingCommas` boolean configuration option
+* Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
 
 ### Fixed
 * Respect system gitconfig when performing git operations ([#2404](https://github.com/diffplug/spotless/issues/2404))
