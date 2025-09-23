@@ -18,6 +18,7 @@ package com.diffplug.spotless.maven;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -83,8 +84,8 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 				// In apply mode, any lints should fail the build (matching Gradle behavior)
 				if (hasUnsuppressedLints) {
 					int lintCount = lintState.getLintsByStep(formatter).values().stream()
-						.mapToInt(List::size)
-						.sum();
+							.mapToInt(List::size)
+							.sum();
 					StringBuilder message = new StringBuilder();
 					message.append("There were ").append(lintCount).append(" lint error(s), they must be fixed or suppressed.");
 
