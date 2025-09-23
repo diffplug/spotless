@@ -31,12 +31,14 @@ class ReplaceRegexStepTest {
 
 	@Test
 	void lint() throws Exception {
-		FormatterStep step = ReplaceRegexStep.lint("regex", "bad", "no bad words");
+		FormatterStep step = ReplaceRegexStep.lint("stayPositive", "(bad|awful)", "no negative words");
 		StepHarness.forStep(step)
 				.expectLintsOf(StringPrinter.buildStringFromLines(
 						"bad",
-						"x bad y",
-						"ok"))
-				.toBe("L1 regex(bad) no bad words\nL2 regex(bad) no bad words");
+						"oh boy",
+						"x awful y",
+						"yippeee"))
+				.toBe("L1 stayPositive(bad) no negative words",
+						"L3 stayPositive(awful) no negative words");
 	}
 }

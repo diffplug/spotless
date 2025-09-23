@@ -90,7 +90,7 @@ public final class ReplaceRegexStep {
 					var matcher = regex.matcher(raw);
 					while (matcher.find()) {
 						int line = 1 + (int) raw.codePoints().limit(matcher.start()).filter(c -> c == '\n').count();
-						lints.add(Lint.atLine(line, ruleId, lintDetail));
+						lints.add(Lint.atLine(line, matcher.group(0), lintDetail));
 					}
 					return lints;
 				}
