@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.diffplug.spotless.LintState;
+import com.diffplug.spotless.LintSuppression;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -45,7 +46,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 	private boolean spotlessIdeHookUseStdOut;
 
 	@Override
-	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, FormatterConfig config) throws MojoExecutionException {
+	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, List<LintSuppression> lintSuppressions) throws MojoExecutionException {
 		if (isIdeHook()) {
 			IdeHook.performHook(files, formatter, spotlessIdeHook, spotlessIdeHookUseStdIn, spotlessIdeHookUseStdOut);
 			return;
@@ -68,7 +69,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 					// File is not within baseDir, use absolute path as fallback
 					relativePath = file.getAbsolutePath();
 				}
-				LintState lintState = LintState.of(formatter, file).withRemovedSuppressions(formatter, relativePath, config.getLintSuppressions());
+				LintState lintState = LintState.of(formatter, file).withRemovedSuppressions(formatter, relativePath, lintSuppressions);
 				boolean hasDirtyState = !lintState.getDirtyState().isClean() && !lintState.getDirtyState().didNotConverge();
 				boolean hasUnsuppressedLints = lintState.isHasLints();
 

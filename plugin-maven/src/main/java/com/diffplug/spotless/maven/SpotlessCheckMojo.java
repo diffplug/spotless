@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.diffplug.spotless.LintState;
+import com.diffplug.spotless.LintSuppression;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -66,7 +67,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 	private MessageSeverity m2eIncrementalBuildMessageSeverity;
 
 	@Override
-	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, FormatterConfig config) throws MojoExecutionException {
+	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, List<LintSuppression> lintSuppressions) throws MojoExecutionException {
 		ImpactedFilesTracker counter = new ImpactedFilesTracker();
 
 		List<File> problemFiles = new ArrayList<>();
@@ -86,7 +87,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 					// File is not within baseDir, use absolute path as fallback
 					relativePath = file.getAbsolutePath();
 				}
-				LintState lintState = LintState.of(formatter, file).withRemovedSuppressions(formatter, relativePath, config.getLintSuppressions());
+				LintState lintState = LintState.of(formatter, file).withRemovedSuppressions(formatter, relativePath, lintSuppressions);
 				boolean hasDirtyState = !lintState.getDirtyState().isClean() && !lintState.getDirtyState().didNotConverge();
 				boolean hasUnsuppressedLints = lintState.isHasLints();
 

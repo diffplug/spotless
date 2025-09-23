@@ -228,7 +228,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		return lintSuppressions;
 	}
 
-	protected abstract void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, FormatterConfig config) throws MojoExecutionException;
+	protected abstract void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, List<LintSuppression> lintSuppressions) throws MojoExecutionException;
 
 	private static final int MINIMUM_JRE = 11;
 
@@ -261,7 +261,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			for (FormatterFactory factory : formattersHolder.openFormatters.keySet()) {
 				Formatter formatter = formattersHolder.openFormatters.get(factory);
 				Iterable<File> files = formattersHolder.factoryToFiles.get(factory).get();
-				process(formattersHolder.nameFor(factory), files, formatter, upToDateChecker, config);
+				process(formattersHolder.nameFor(factory), files, formatter, upToDateChecker, getLintSuppressions());
 			}
 		} catch (PluginException e) {
 			throw e.asMojoExecutionException();
