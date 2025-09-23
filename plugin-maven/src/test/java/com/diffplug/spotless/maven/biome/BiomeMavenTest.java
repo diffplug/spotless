@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.owasp.encoder.Encode.forXml;
+import static selfie.MavenSelfie.expectSelfieErrorMsg;
 
 import java.io.File;
 
@@ -247,9 +248,11 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 		var result = mavenRunner().withArguments("spotless:apply").runHasError();
 		assertFile("biome_test.js").sameAsResource("biome/js/fileBefore.js");
-		assertThat(result.stdOutUtf8()).contains("Format with errors is disabled.");
-		assertThat(result.stdOutUtf8()).contains("Unable to format file");
-		assertThat(result.stdOutUtf8()).contains("Step 'biome' found problem in 'biome_test.js'");
+		expectSelfieErrorMsg(result).toBe("""
+				Failed to execute goal com.diffplug.spotless:spotless-maven-plugin:VERSION:apply (default-cli) on project spotless-maven-plugin-tests: There were 1 lint error(s), they must be fixed or suppressed.
+				biome_test.js:LINE_UNDEFINED biome(java.lang.RuntimeException) > arguments: [/Users/ntwigg/.m2/repository/com/diffplug/spotless/spotless-data/biome/biome-mac_os-arm64-1.2.0, format, --stdin-file-path, file.json] (...)
+				Resolve these lints or suppress with `<lintSuppressions>`
+				""");
 	}
 
 	/**

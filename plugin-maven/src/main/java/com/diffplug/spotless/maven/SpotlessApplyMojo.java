@@ -97,7 +97,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 							lint.addWarningMessageTo(message, stepName, true);
 						}
 					}
-					message.append("\n  Resolve these lints or suppress with `suppressLintsFor`");
+					message.append("\n  Resolve these lints or suppress with `<lintSuppressions>`");
 					throw new MojoExecutionException(message.toString());
 				}
 			} catch (IOException | RuntimeException e) {
