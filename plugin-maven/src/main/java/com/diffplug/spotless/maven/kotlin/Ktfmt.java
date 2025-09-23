@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
 import com.diffplug.spotless.kotlin.KtfmtStep.KtfmtFormattingOptions;
 import com.diffplug.spotless.kotlin.KtfmtStep.Style;
+import com.diffplug.spotless.kotlin.KtfmtStep.TrailingCommaManagementStrategy;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
@@ -45,13 +46,13 @@ public class Ktfmt implements FormatterStepFactory {
 	private Boolean removeUnusedImports;
 
 	@Parameter
-	private Boolean manageTrailingCommas;
+	private TrailingCommaManagementStrategy trailingCommaManagementStrategy;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String version = this.version != null ? this.version : KtfmtStep.defaultVersion();
 		Style style = this.style != null ? Style.valueOf(this.style) : null;
-		KtfmtFormattingOptions options = new KtfmtFormattingOptions(maxWidth, blockIndent, continuationIndent, removeUnusedImports, manageTrailingCommas);
+		KtfmtFormattingOptions options = new KtfmtFormattingOptions(maxWidth, blockIndent, continuationIndent, removeUnusedImports, trailingCommaManagementStrategy);
 		return KtfmtStep.create(version, config.getProvisioner(), style, options);
 	}
 }

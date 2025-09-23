@@ -14,9 +14,11 @@ def special = [
 boolean isCiServer = System.getenv().containsKey("CI")
 tasks.withType(Test).configureEach {
 	if (isCiServer) {
-		retry {
-			maxRetries = 2
-			maxFailures = 10
+		develocity {
+			testRetry {
+				maxRetries = 2
+				maxFailures = 10
+			}
 		}
 	}
 	// selfie https://selfie.dev/jvm/get-started#gradle
