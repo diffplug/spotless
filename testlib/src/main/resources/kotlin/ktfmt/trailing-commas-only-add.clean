@@ -1,0 +1,13 @@
+import a.*
+
+fun foo(
+    paramA: String,
+    paramB: Int,
+    anotherParamIsHere: Float,
+    myLongParamNameIsHere: CustomType,
+    lastParam: Boolean,
+) = Unit
+
+fun bar(
+    myLongParamNameIsHereButDoesNotWrap: Int,
+) = Unit

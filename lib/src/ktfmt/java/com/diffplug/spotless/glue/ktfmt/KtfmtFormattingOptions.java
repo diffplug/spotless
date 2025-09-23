@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,32 +22,27 @@ import javax.annotation.Nullable;
 
 public final class KtfmtFormattingOptions {
 
-	@Nullable
-	private Integer maxWidth;
+	@Nullable private Integer maxWidth;
 
-	@Nullable
-	private Integer blockIndent;
+	@Nullable private Integer blockIndent;
 
-	@Nullable
-	private Integer continuationIndent;
+	@Nullable private Integer continuationIndent;
 
-	@Nullable
-	private Boolean removeUnusedImports;
+	@Nullable private Boolean removeUnusedImports;
 
-	@Nullable
-	private Boolean manageTrailingCommas;
+	@Nullable private KtfmtTrailingCommaManagementStrategy trailingCommaManagementStrategy;
 
 	public KtfmtFormattingOptions(
 			@Nullable Integer maxWidth,
 			@Nullable Integer blockIndent,
 			@Nullable Integer continuationIndent,
 			@Nullable Boolean removeUnusedImports,
-			@Nullable Boolean manageTrailingCommas) {
+			@Nullable KtfmtTrailingCommaManagementStrategy trailingCommaManagementStrategy) {
 		this.maxWidth = maxWidth;
 		this.blockIndent = blockIndent;
 		this.continuationIndent = continuationIndent;
 		this.removeUnusedImports = removeUnusedImports;
-		this.manageTrailingCommas = manageTrailingCommas;
+		this.trailingCommaManagementStrategy = trailingCommaManagementStrategy;
 	}
 
 	@Nonnull
@@ -71,8 +66,8 @@ public final class KtfmtFormattingOptions {
 	}
 
 	@Nonnull
-	public Optional<Boolean> getManageTrailingCommas() {
-		return Optional.ofNullable(manageTrailingCommas);
+	public Optional<KtfmtTrailingCommaManagementStrategy> getTrailingCommaManagementStrategy() {
+		return Optional.ofNullable(trailingCommaManagementStrategy);
 	}
 
 	public void setMaxWidth(int maxWidth) {
@@ -100,7 +95,7 @@ public final class KtfmtFormattingOptions {
 		this.removeUnusedImports = removeUnusedImports;
 	}
 
-	public void setManageTrailingCommas(boolean manageTrailingCommas) {
-		this.manageTrailingCommas = manageTrailingCommas;
+	public void setTrailingCommaManagementStrategy(@Nullable KtfmtTrailingCommaManagementStrategy trailingCommaManagementStrategy) {
+		this.trailingCommaManagementStrategy = trailingCommaManagementStrategy;
 	}
 }
