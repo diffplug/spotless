@@ -17,6 +17,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Fixed
 * Respect system gitconfig when performing git operations ([#2404](https://github.com/diffplug/spotless/issues/2404))
+* Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))
 * `spotlessInstallGitPrePushHook` is now compatible with configuration cache. ([#2570](https://github.com/diffplug/spotless/pull/2570))
 
 ## [7.2.1] - 2025-07-21
