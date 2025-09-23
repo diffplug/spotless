@@ -10,6 +10,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * Adds support for worktrees (fixes [#1765](https://github.com/diffplug/spotless/issues/1765))
 * Bump default `google-java-format` version to latest `1.24.0` -> `1.28.0`. ([#2345](https://github.com/diffplug/spotless/pull/2345))
 * Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
+* Bump default `jackson` version to latest `2.19.2` -> `2.20.0`. ([#2606](https://github.com/diffplug/spotless/pull/2606))
+* Running `spotlessCheck` with violations unilaterally produces the error message `Run './gradlew spotlessApply' to fix these violations`. ([#2592](https://github.com/diffplug/spotless/issues/2592))
+* **BREAKING** Bump default `ktfmt` version to latest `0.53` -> `0.58` ([#2613](https://github.com/diffplug/spotless/pull/2613))
+  * use `TrailingCommaManagementStrategy` enum instead of `manageTrailingCommas` boolean configuration option
+
 ### Fixed
 * Respect system gitconfig when performing git operations ([#2404](https://github.com/diffplug/spotless/issues/2404))
 * `spotlessInstallGitPrePushHook` is now compatible with configuration cache. ([#2570](https://github.com/diffplug/spotless/pull/2570))
@@ -28,6 +33,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `jackson` version to latest `2.18.1` -> `2.19.2`. ([#2558](https://github.com/diffplug/spotless/pull/2558))
 * Bump default `gherkin-utils` version to latest `9.0.0` -> `9.2.0`. ([#2408](https://github.com/diffplug/spotless/pull/2408))
 * Bump default `cleanthat` version to latest `2.22` -> `2.23`. ([#2556](https://github.com/diffplug/spotless/pull/2556))
+* Bump default `gson` version to latest `2.13.1` -> `2.13.2`. ([#2615](https://github.com/diffplug/spotless/pull/2615))
 
 ## [7.1.0] - 2025-07-07
 ### Added

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.kotlin;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
@@ -65,9 +67,30 @@ class KtfmtStepTest extends ResourceHarness {
 	@Test
 	void behaviorWithTrailingCommas() throws Exception {
 		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
-		options.setManageTrailingCommas(true);
+		options.setTrailingCommaManagementStrategy(KtfmtStep.TrailingCommaManagementStrategy.COMPLETE);
 		FormatterStep step = KtfmtStep.create("0.49", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
 		StepHarness.forStep(step).testResource("kotlin/ktfmt/trailing-commas.dirty", "kotlin/ktfmt/trailing-commas.clean");
+	}
+
+	@Test
+	void behaviorWithTrailingCommaManagementStrategyOnlyAdd() {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		options.setTrailingCommaManagementStrategy(KtfmtStep.TrailingCommaManagementStrategy.ONLY_ADD);
+		FormatterStep step = KtfmtStep.create("0.58", TestProvisioner.mavenCentral(), KtfmtStep.Style.KOTLINLANG, options);
+		StepHarness.forStep(step).testResource(
+				"kotlin/ktfmt/trailing-commas-only-add.dirty",
+				"kotlin/ktfmt/trailing-commas-only-add.clean");
+	}
+
+	@Test
+	void trailingCommaManagementStrategyOnlyAddUnsupportedBefore_0_57() {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		options.setTrailingCommaManagementStrategy(KtfmtStep.TrailingCommaManagementStrategy.ONLY_ADD);
+		var step = KtfmtStep.create("0.56", TestProvisioner.mavenCentral(), KtfmtStep.Style.KOTLINLANG, options);
+
+		assertThatThrownBy(() -> StepHarness.forStep(step))
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessageContaining("ONLY_ADD");
 	}
 
 	@Test
