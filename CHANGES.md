@@ -20,6 +20,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `gson` version to latest `2.13.1` -> `2.13.2`. ([#2615](https://github.com/diffplug/spotless/pull/2615))
 * **BREAKING** Bump default `ktfmt` version to latest `0.53` -> `0.58` ([#2613](https://github.com/diffplug/spotless/pull/2613))
   * use `TrailingCommaManagementStrategy` enum instead of `manageTrailingCommas` boolean configuration option
+### Fixed
+* Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))
 
 ## [3.3.1] - 2025-07-21
 ### Fixed
@@ -140,7 +142,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `cleanthat` version to latest `2.20` -> `2.21`. ([#2210](https://github.com/diffplug/spotless/pull/2210))
 * Bump default `google-java-format` version to latest `1.22.0` -> `1.23.0`. ([#2212](https://github.com/diffplug/spotless/pull/2212))
 ### Fixed
-* Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))
 * Fix compatibility issue introduced by `ktfmt` `0.51`. ([#2172](https://github.com/diffplug/spotless/issues/2172))
 ### Added
 * Add option `manageTrailingCommas` to `ktfmt`. ([#2177](https://github.com/diffplug/spotless/pull/2177))

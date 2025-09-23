@@ -16,6 +16,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Fixed
 * Respect system gitconfig when performing git operations ([#2404](https://github.com/diffplug/spotless/issues/2404))
+* Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))
 
 ## [7.2.1] - 2025-07-21
 ### Fixed
@@ -131,7 +132,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `cleanthat` version to latest `2.20` -> `2.21`. ([#2210](https://github.com/diffplug/spotless/pull/2210))
 * Bump default `google-java-format` version to latest `1.22.0` -> `1.23.0`. ([#2212](https://github.com/diffplug/spotless/pull/2212))
 ### Fixed
-* Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))
 * Fix compatibility issue introduced by `ktfmt` `0.51`. ([#2172](https://github.com/diffplug/spotless/issues/2172))
 ### Added
 * Add option `manageTrailingCommas` to `ktfmt`. ([#2177](https://github.com/diffplug/spotless/pull/2177))
