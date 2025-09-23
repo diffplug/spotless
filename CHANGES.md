@@ -24,6 +24,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))
 * `GitPrePushHookInstaller` uses a lock to run gracefully if it is called many times in parallel. ([#2570](https://github.com/diffplug/spotless/pull/2570))
+### Added
+* Add a `lint` mode to `ReplaceRegexStep` ([#2571](https://github.com/diffplug/spotless/pull/2571))
 
 ## [3.3.1] - 2025-07-21
 ### Fixed

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ public final class Lint implements Serializable {
 		private final List<Lint> lints;
 
 		ShortcutException(Collection<Lint> lints) {
-			super(lints.iterator().next().detail);
+			super(lints.iterator().next().toString());
 			this.lints = List.copyOf(lints);
 		}
 
