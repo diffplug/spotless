@@ -152,7 +152,13 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		addStep(RemoveUnusedImportsStep.create(formatter, provisioner()));
 	}
 
+	@Deprecated
 	public void removeWildcardImports() {
+		System.err.println("`removeWildcardImports()` replaced by `forbidWildcardImports()`");
+		forbidWildcardImports();
+	}
+
+	public void forbidWildcardImports() {
 		addStep(RemoveWildcardImportsStep.create());
 	}
 
