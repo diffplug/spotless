@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.owasp.encoder.Encode.forXml;
-import static selfie.MavenSelfie.expectSelfieErrorMsg;
 
 import java.io.File;
 

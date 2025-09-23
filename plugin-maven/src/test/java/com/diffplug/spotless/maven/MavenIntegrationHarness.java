@@ -29,7 +29,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +41,8 @@ import com.github.mustachejava.MustacheFactory;
 
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.io.Resources;
+import com.diffplug.selfie.Selfie;
+import com.diffplug.selfie.StringSelfie;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.ResourceHarness;
@@ -346,5 +348,21 @@ public class MavenIntegrationHarness extends ResourceHarness {
 				.flatMap(Arrays::stream)
 				.toArray(String[]::new);
 		return formats(formatsArray);
+	}
+
+	private static final String ERROR_PREFIX = "[ERROR] ";
+
+	protected static StringSelfie expectSelfieErrorMsg(ProcessRunner.Result result) {
+		String concatenatedError = result.stdOutUtf8().lines()
+				.map(line -> line.startsWith(ERROR_PREFIX) ? line.substring(ERROR_PREFIX.length()) : null)
+				.filter(line -> line != null)
+				.collect(Collectors.joining("\n"));
+
+		String sanitizedVersion = concatenatedError.replaceFirst("com\\.diffplug\\.spotless:spotless-maven-plugin:([^:]+):", "com.diffplug.spotless:spotless-maven-plugin:VERSION:");
+
+		int help1 = sanitizedVersion.indexOf("-> [Help 1]");
+		String trimTrailingString = sanitizedVersion.substring(0, help1);
+
+		return Selfie.expectSelfie(trimTrailingString);
 	}
 }

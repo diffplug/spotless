@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import static selfie.MavenSelfie.expectSelfieErrorMsg;
-
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
