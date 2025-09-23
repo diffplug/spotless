@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.diffplug.spotless.LintState;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -64,10 +66,11 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 	private MessageSeverity m2eIncrementalBuildMessageSeverity;
 
 	@Override
-	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
+	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, FormatterConfig config) throws MojoExecutionException {
 		ImpactedFilesTracker counter = new ImpactedFilesTracker();
 
 		List<File> problemFiles = new ArrayList<>();
+		List<Map.Entry<File, LintState>> lintProblems = new ArrayList<>();
 		for (File file : files) {
 			if (upToDateChecker.isUpToDate(file.toPath())) {
 				counter.skippedAsCleanCache();
@@ -78,9 +81,21 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 			}
 			buildContext.removeMessages(file);
 			try {
-				DirtyState dirtyState = DirtyState.of(formatter, file);
-				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
-					problemFiles.add(file);
+				String relativePath = relativize(baseDir, file);
+				if (relativePath == null) {
+					// File is not within baseDir, use absolute path as fallback
+					relativePath = file.getAbsolutePath();
+				}
+				LintState lintState = LintState.of(formatter, file).withRemovedSuppressions(formatter, relativePath, config.getLintSuppressions());
+				boolean hasDirtyState = !lintState.getDirtyState().isClean() && !lintState.getDirtyState().didNotConverge();
+				boolean hasUnsuppressedLints = lintState.isHasLints();
+
+				if (hasDirtyState || hasUnsuppressedLints) {
+					if (hasUnsuppressedLints) {
+						lintProblems.add(Map.entry(file, lintState));
+					} else {
+						problemFiles.add(file);
+					}
 					if (buildContext.isIncremental()) {
 						Map.Entry<Integer, String> diffEntry = DiffMessageFormatter.diff(baseDir.toPath(), formatter, file);
 						buildContext.addMessage(file, diffEntry.getKey() + 1, 0, INCREMENTAL_MESSAGE_PREFIX + diffEntry.getValue(), m2eIncrementalBuildMessageSeverity.getSeverity(), null);
@@ -103,7 +118,15 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", name));
 		}
 
-		if (!problemFiles.isEmpty()) {
+		if (!lintProblems.isEmpty()) {
+			// If we have lint problems, prioritize showing them with detailed messages
+			Map.Entry<File, LintState> firstLintProblem = lintProblems.get(0);
+			File file = firstLintProblem.getKey();
+			LintState lintState = firstLintProblem.getValue();
+			String stepName = lintState.getLintsByStep(formatter).keySet().iterator().next();
+			throw new MojoExecutionException(String.format("Unable to format file %s%nStep '%s' found problem in '%s':%n%s",
+					file, stepName, file.getName(), lintState.asStringDetailed(file, formatter)));
+		} else if (!problemFiles.isEmpty()) {
 			throw new MojoExecutionException(DiffMessageFormatter.builder()
 					.runToFix("Run 'mvn spotless:apply' to fix these violations.")
 					.formatter(baseDir.toPath(), formatter)

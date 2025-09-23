@@ -292,7 +292,7 @@ public final class DiffMessageFormatter {
 	}
 
 	private static int getLineOfFirstDifference(EditList edits) {
-		return edits.stream().mapToInt(Edit::getBeginA).min().getAsInt();
+		return edits.stream().mapToInt(Edit::getBeginA).min().orElse(0);
 	}
 
 	private static final CharMatcher NEWLINE_MATCHER = CharMatcher.is('\n');

@@ -17,6 +17,9 @@ package com.diffplug.spotless.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+
+import com.diffplug.spotless.LintState;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -42,7 +45,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 	private boolean spotlessIdeHookUseStdOut;
 
 	@Override
-	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
+	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, FormatterConfig config) throws MojoExecutionException {
 		if (isIdeHook()) {
 			IdeHook.performHook(files, formatter, spotlessIdeHook, spotlessIdeHookUseStdIn, spotlessIdeHookUseStdOut);
 			return;
@@ -60,14 +63,37 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 			}
 
 			try {
-				DirtyState dirtyState = DirtyState.of(formatter, file);
-				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
+				String relativePath = relativize(baseDir, file);
+				if (relativePath == null) {
+					// File is not within baseDir, use absolute path as fallback
+					relativePath = file.getAbsolutePath();
+				}
+				LintState lintState = LintState.of(formatter, file).withRemovedSuppressions(formatter, relativePath, config.getLintSuppressions());
+				boolean hasDirtyState = !lintState.getDirtyState().isClean() && !lintState.getDirtyState().didNotConverge();
+				boolean hasUnsuppressedLints = lintState.isHasLints();
+
+				if (hasDirtyState) {
 					getLog().info(String.format("clean file: %s", file));
-					dirtyState.writeCanonicalTo(file);
+					lintState.getDirtyState().writeCanonicalTo(file);
 					buildContext.refresh(file);
 					counter.cleaned();
 				} else {
 					counter.checkedButAlreadyClean();
+				}
+
+				// In apply mode, lints are usually warnings, but fatal errors should still fail the build
+				if (hasUnsuppressedLints) {
+					// Check if any lint represents a fatal error (like parsing failures)
+					boolean hasFatalError = lintState.getLintsByStep(formatter).values().stream()
+							.flatMap(List::stream)
+							.anyMatch(lint -> lint.getShortCode().contains("Exception"));
+
+					if (hasFatalError) {
+						String stepName = lintState.getLintsByStep(formatter).keySet().iterator().next();
+						throw new MojoExecutionException(String.format("Unable to format file %s%nStep '%s' found problem in '%s':%n%s", file, stepName, file.getName(), lintState.asStringDetailed(file, formatter)));
+					} else {
+						getLog().warn(String.format("File %s has lint issues that cannot be auto-fixed:%n%s", file, lintState.asStringDetailed(file, formatter)));
+					}
 				}
 			} catch (IOException | RuntimeException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);

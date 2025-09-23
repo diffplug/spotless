@@ -54,6 +54,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.maven.antlr4.Antlr4;
@@ -213,6 +214,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private UpToDateChecking upToDateChecking = UpToDateChecking.enabled();
 
+	@Parameter
+	private List<LintSuppression> lintSuppressions = new ArrayList<>();
+
 	/**
 	 * If set to {@code true} will also run on incremental builds (i.e. within Eclipse with m2e).
 	 * Otherwise this goal is skipped in incremental builds and only runs on full builds.
@@ -220,7 +224,11 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(defaultValue = "false")
 	protected boolean m2eEnableForIncrementalBuild;
 
-	protected abstract void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
+	protected List<LintSuppression> getLintSuppressions() {
+		return lintSuppressions;
+	}
+
+	protected abstract void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, FormatterConfig config) throws MojoExecutionException;
 
 	private static final int MINIMUM_JRE = 11;
 
@@ -253,7 +261,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			for (FormatterFactory factory : formattersHolder.openFormatters.keySet()) {
 				Formatter formatter = formattersHolder.openFormatters.get(factory);
 				Iterable<File> files = formattersHolder.factoryToFiles.get(factory).get();
-				process(formattersHolder.nameFor(factory), files, formatter, upToDateChecker);
+				process(formattersHolder.nameFor(factory), files, formatter, upToDateChecker, config);
 			}
 		} catch (PluginException e) {
 			throw e.asMojoExecutionException();
@@ -378,7 +386,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		FileLocator fileLocator = getFileLocator();
 		final Optional<String> optionalRatchetFrom = Optional.ofNullable(this.ratchetFrom)
 				.filter(ratchet -> !RATCHETFROM_NONE.equals(ratchet));
-		return new FormatterConfig(baseDir, encoding, lineEndings, optionalRatchetFrom, provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory));
+		return new FormatterConfig(baseDir, encoding, lineEndings, optionalRatchetFrom, provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory), lintSuppressions);
 	}
 
 	private FileLocator getFileLocator() {
@@ -415,5 +423,20 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			checker = UpToDateChecker.noop(project, indexFile, getLog());
 		}
 		return UpToDateChecker.wrapWithBuildContext(checker, buildContext);
+	}
+
+	/**
+	 * Returns the relative path between root and dest, or null if dest is not a
+	 * child of root.
+	 */
+	static String relativize(File root, File dest) {
+		String rootPath = root.getAbsolutePath();
+		String destPath = dest.getAbsolutePath();
+		if (!destPath.startsWith(rootPath)) {
+			return null;
+		} else {
+			String relativized = destPath.substring(rootPath.length());
+			return relativized.startsWith("/") || relativized.startsWith("\\") ? relativized.substring(1) : relativized;
+		}
 	}
 }
