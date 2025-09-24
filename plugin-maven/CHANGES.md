@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [3.0.0] - 2025-09-24
 ### Changes
 * **BREAKING** Bump the required Java to `17`. ([#2375](https://github.com/diffplug/spotless/issues/2375), [#2540](https://github.com/diffplug/spotless/pull/2540))
 * **BREAKING** Renamed `removeWildcardImports` to `forbidWildcardImports`. ([#2633](https://github.com/diffplug/spotless/pull/2633))
