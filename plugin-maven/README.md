@@ -1786,6 +1786,12 @@ See [here](../INTELLIJ_IDEA_SCREENSHOTS.md) for an explanation on how to extract
   <searchRegex>(Hello) W[a-z]{3}d</searchRegex>
   <replacement>$1 Mars</replacement>
 </replaceRegex>
+
+<forbidRegex>
+  <name>Forbid FooBar</name>
+  <searchRegex>import foo\.bar\.(.*)</searchRegex>
+  <lintDetail>foobar is officially abandoned, use fizzbuzz instead</lintDetail>
+</forbidRegex>
 ```
 
 <a name="license-header-options"></a>
