@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package com.diffplug.spotless.npm;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -44,8 +47,8 @@ class FileFinder {
 				.stream()
 				.map(Supplier::get)
 				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.findFirst();
+				.findFirst()
+				.map(Optional::get);
 	}
 
 	static class Builder {

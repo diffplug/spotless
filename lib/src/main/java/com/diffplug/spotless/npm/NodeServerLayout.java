@@ -81,11 +81,7 @@ class NodeServerLayout {
 		if (!packageLockJsonFile.isFile()) {
 			return false;
 		}
-		if (!serveJsFile().isFile()) {
-			return false;
-		}
-		// npmrc is optional, so must not be checked here
-		return true;
+		return serveJsFile().isFile(); // npmrc is optional, so must not be checked here
 	}
 
 	public boolean isNodeModulesPrepared() {
@@ -96,7 +92,7 @@ class NodeServerLayout {
 		// check if it is NOT empty
 		return ThrowingEx.get(() -> {
 			try (Stream<Path> entries = Files.list(nodeModulesInstallDirPath)) {
-				return entries.findFirst().isPresent();
+				return entries.findAny().isPresent();
 			}
 		});
 	}

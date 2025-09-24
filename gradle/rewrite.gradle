@@ -1,0 +1,7 @@
+apply plugin: 'org.openrewrite.rewrite'
+
+rewrite {
+	activeRecipe("tech.picnic.errorprone.refasterrules.StreamRulesRecipes")
+	exportDatatables = true
+	failOnDryRunResults = true
+}

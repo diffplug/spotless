@@ -414,8 +414,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterStepFactory> getFormatterStepFactories() {
-		return Stream.of(licenseHeader)
-				.filter(Objects::nonNull)
+		return Stream.ofNullable(licenseHeader)
 				.collect(toList());
 	}
 
