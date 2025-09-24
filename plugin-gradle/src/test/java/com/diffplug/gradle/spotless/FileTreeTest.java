@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import static com.diffplug.gradle.spotless.FormatExtension.relativize;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -26,6 +24,7 @@ import org.gradle.api.file.ConfigurableFileTree;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.TestProvisioner;
 
@@ -51,7 +50,7 @@ class FileTreeTest extends ResourceHarness {
 	void relativePathDoes() throws IOException {
 		File someFile = setFile("someFolder/someFile").toContent("");
 		File someFolder = someFile.getParentFile();
-		fileTree.exclude(relativize(rootFolder(), someFolder));
+		fileTree.exclude(LintSuppression.relativizeAsUnix(rootFolder(), someFolder));
 		Assertions.assertThat(fileTree).containsExactlyInAnyOrder();
 	}
 }

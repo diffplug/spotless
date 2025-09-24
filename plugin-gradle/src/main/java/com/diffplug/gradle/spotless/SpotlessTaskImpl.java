@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.LintState;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.extra.GitRatchet;
 
 @CacheableTask
@@ -101,7 +102,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			for (FileChange fileChange : inputs.getFileChanges(target)) {
 				File input = fileChange.getFile();
 				File projectDir = getProjectDir().get().getAsFile();
-				String relativePath = FormatExtension.relativize(projectDir, input);
+				String relativePath = LintSuppression.relativizeAsUnix(projectDir, input);
 				if (relativePath == null) {
 					throw new IllegalArgumentException(StringPrinter.buildString(printer -> {
 						printer.println("Spotless error! All target files must be within the project dir.");
