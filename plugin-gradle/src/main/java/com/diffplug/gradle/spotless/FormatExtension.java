@@ -347,24 +347,9 @@ public class FormatExtension {
 	}
 
 	private static void relativizeIfSubdir(List<String> relativePaths, File root, File dest) {
-		String relativized = relativize(root, dest);
+		String relativized = LintSuppression.relativizeAsUnix(root, dest);
 		if (relativized != null) {
 			relativePaths.add(relativized);
-		}
-	}
-
-	/**
-	 * Returns the relative path between root and dest, or null if dest is not a
-	 * child of root.
-	 */
-	static @Nullable String relativize(File root, File dest) {
-		String rootPath = root.getAbsolutePath();
-		String destPath = dest.getAbsolutePath();
-		if (!destPath.startsWith(rootPath)) {
-			return null;
-		} else {
-			String relativized = destPath.substring(rootPath.length());
-			return relativized.startsWith("/") || relativized.startsWith("\\") ? relativized.substring(1) : relativized;
 		}
 	}
 

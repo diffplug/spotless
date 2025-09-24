@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * **BREAKING** Bump the required Gradle to `7.3` and required Java to `17`. ([#2375](https://github.com/diffplug/spotless/issues/2375), [#2540](https://github.com/diffplug/spotless/pull/2540))
 * **BREAKING** `spotlessInstallGitPrePushHook` task is now installed only on the root project. ([#2570](https://github.com/diffplug/spotless/pull/2570))
+* **BREAKING** `LintSuppression` now enforces unix-style paths in its `setPath` method. ([#2629](https://github.com/diffplug/spotless/pull/2629))
 * Running `spotlessCheck` with violations unilaterally produces the error message `Run './gradlew spotlessApply' to fix these violations`. ([#2592](https://github.com/diffplug/spotless/issues/2592))
 * Bump JGit from `6.10.1` to `7.3.0` ([#2257](https://github.com/diffplug/spotless/pull/2257))
   * Adds support for worktrees (fixes [#1765](https://github.com/diffplug/spotless/issues/1765))
@@ -16,7 +17,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   * **BREAKING** use `TrailingCommaManagementStrategy` enum instead of `manageTrailingCommas` boolean configuration option
 * Bump default `ktlint` version to latest `1.5.0` -> `1.7.1`. ([#2555](https://github.com/diffplug/spotless/pull/2555))
 * Bump default `palantir-java-format` version to latest `2.57.0` -> `2.71.0`.
-
 ### Fixed
 * Respect system gitconfig when performing git operations ([#2404](https://github.com/diffplug/spotless/issues/2404))
 * Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))

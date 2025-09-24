@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
@@ -68,6 +68,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 		ImpactedFilesTracker counter = new ImpactedFilesTracker();
 
 		List<File> problemFiles = new ArrayList<>();
+		List<Map.Entry<File, LintState>> lintProblems = new ArrayList<>();
 		for (File file : files) {
 			if (upToDateChecker.isUpToDate(file.toPath())) {
 				counter.skippedAsCleanCache();
@@ -78,9 +79,16 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 			}
 			buildContext.removeMessages(file);
 			try {
-				DirtyState dirtyState = DirtyState.of(formatter, file);
-				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
-					problemFiles.add(file);
+				LintState lintState = super.calculateLintState(formatter, file);
+				boolean hasDirtyState = !lintState.getDirtyState().isClean() && !lintState.getDirtyState().didNotConverge();
+				boolean hasUnsuppressedLints = lintState.isHasLints();
+
+				if (hasDirtyState || hasUnsuppressedLints) {
+					if (hasUnsuppressedLints) {
+						lintProblems.add(Map.entry(file, lintState));
+					} else {
+						problemFiles.add(file);
+					}
 					if (buildContext.isIncremental()) {
 						Map.Entry<Integer, String> diffEntry = DiffMessageFormatter.diff(baseDir.toPath(), formatter, file);
 						buildContext.addMessage(file, diffEntry.getKey() + 1, 0, INCREMENTAL_MESSAGE_PREFIX + diffEntry.getValue(), m2eIncrementalBuildMessageSeverity.getSeverity(), null);
@@ -104,11 +112,20 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 		}
 
 		if (!problemFiles.isEmpty()) {
+			// Prioritize formatting violations first (matching Gradle behavior)
 			throw new MojoExecutionException(DiffMessageFormatter.builder()
 					.runToFix("Run 'mvn spotless:apply' to fix these violations.")
 					.formatter(baseDir.toPath(), formatter)
 					.problemFiles(problemFiles)
 					.getMessage());
+		} else if (!lintProblems.isEmpty()) {
+			// Show lints only if there are no formatting violations
+			Map.Entry<File, LintState> firstLintProblem = lintProblems.get(0);
+			File file = firstLintProblem.getKey();
+			LintState lintState = firstLintProblem.getValue();
+			String stepName = lintState.getLintsByStep(formatter).keySet().iterator().next();
+			throw new MojoExecutionException(String.format("Unable to format file %s%nStep '%s' found problem in '%s':%n%s",
+					file, stepName, file.getName(), lintState.asStringOneLine(file, formatter)));
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,16 @@ package com.diffplug.spotless.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.LintState;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
 /**
@@ -60,14 +63,38 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 			}
 
 			try {
-				DirtyState dirtyState = DirtyState.of(formatter, file);
-				if (!dirtyState.isClean() && !dirtyState.didNotConverge()) {
+				LintState lintState = super.calculateLintState(formatter, file);
+				boolean hasDirtyState = !lintState.getDirtyState().isClean() && !lintState.getDirtyState().didNotConverge();
+				boolean hasUnsuppressedLints = lintState.isHasLints();
+
+				if (hasDirtyState) {
 					getLog().info(String.format("clean file: %s", file));
-					dirtyState.writeCanonicalTo(file);
+					lintState.getDirtyState().writeCanonicalTo(file);
 					buildContext.refresh(file);
 					counter.cleaned();
 				} else {
 					counter.checkedButAlreadyClean();
+				}
+
+				// In apply mode, any lints should fail the build (matching Gradle behavior)
+				if (hasUnsuppressedLints) {
+					int lintCount = lintState.getLintsByStep(formatter).values().stream()
+							.mapToInt(List::size)
+							.sum();
+					StringBuilder message = new StringBuilder();
+					message.append("There were ").append(lintCount).append(" lint error(s), they must be fixed or suppressed.");
+
+					// Build lint messages in Gradle format (using relative path, not just filename)
+					for (Map.Entry<String, List<com.diffplug.spotless.Lint>> stepEntry : lintState.getLintsByStep(formatter).entrySet()) {
+						String stepName = stepEntry.getKey();
+						for (com.diffplug.spotless.Lint lint : stepEntry.getValue()) {
+							String relativePath = LintSuppression.relativizeAsUnix(baseDir, file);
+							message.append("\n  ").append(relativePath).append(":");
+							lint.addWarningMessageTo(message, stepName, true);
+						}
+					}
+					message.append("\n  Resolve these lints or suppress with `<lintSuppressions>`");
+					throw new MojoExecutionException(message.toString());
 				}
 			} catch (IOException | RuntimeException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);

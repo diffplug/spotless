@@ -17,6 +17,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `palantir-java-format` version to latest `2.57.0` -> `2.71.0`.
 ### Fixed
 * Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))
+### Added
+* `<lintSupressions>` API ([#2309](https://github.com/diffplug/spotless/issues/2309))
 
 ## [2.46.1] - 2025-07-21
 ### Fixed

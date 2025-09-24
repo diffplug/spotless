@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.Provisioner;
 
 public class FormatterConfig {
@@ -33,9 +34,10 @@ public class FormatterConfig {
 	private final FileLocator fileLocator;
 	private final List<FormatterStepFactory> globalStepFactories;
 	private final Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory;
+	private final List<LintSuppression> lintSuppressions;
 
 	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, Optional<String> ratchetFrom, Provisioner provisioner,
-			FileLocator fileLocator, List<FormatterStepFactory> globalStepFactories, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory) {
+			FileLocator fileLocator, List<FormatterStepFactory> globalStepFactories, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory, List<LintSuppression> lintSuppressions) {
 		this.encoding = encoding;
 		this.lineEndings = lineEndings;
 		this.ratchetFrom = ratchetFrom;
@@ -43,6 +45,7 @@ public class FormatterConfig {
 		this.fileLocator = fileLocator;
 		this.globalStepFactories = globalStepFactories;
 		this.spotlessSetLicenseHeaderYearsFromGitHistory = spotlessSetLicenseHeaderYearsFromGitHistory;
+		this.lintSuppressions = lintSuppressions;
 	}
 
 	public String getEncoding() {
@@ -71,5 +74,9 @@ public class FormatterConfig {
 
 	public FileLocator getFileLocator() {
 		return fileLocator;
+	}
+
+	public List<LintSuppression> getLintSuppressions() {
+		return unmodifiableList(lintSuppressions);
 	}
 }

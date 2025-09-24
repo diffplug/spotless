@@ -54,6 +54,8 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintState;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.maven.antlr4.Antlr4;
@@ -213,6 +215,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private UpToDateChecking upToDateChecking = UpToDateChecking.enabled();
 
+	@Parameter
+	private List<LintSuppression> lintSuppressions = new ArrayList<>();
+
 	/**
 	 * If set to {@code true} will also run on incremental builds (i.e. within Eclipse with m2e).
 	 * Otherwise this goal is skipped in incremental builds and only runs on full builds.
@@ -220,7 +225,20 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(defaultValue = "false")
 	protected boolean m2eEnableForIncrementalBuild;
 
+	protected List<LintSuppression> getLintSuppressions() {
+		return lintSuppressions;
+	}
+
 	protected abstract void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
+
+	protected LintState calculateLintState(Formatter formatter, File file) throws IOException {
+		String relativePath = LintSuppression.relativizeAsUnix(baseDir, file);
+		if (relativePath == null) {
+			// File is not within baseDir, use absolute path as fallback
+			relativePath = file.getAbsolutePath();
+		}
+		return LintState.of(formatter, file).withRemovedSuppressions(formatter, relativePath, lintSuppressions);
+	}
 
 	private static final int MINIMUM_JRE = 11;
 
@@ -378,7 +396,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		FileLocator fileLocator = getFileLocator();
 		final Optional<String> optionalRatchetFrom = Optional.ofNullable(this.ratchetFrom)
 				.filter(ratchet -> !RATCHETFROM_NONE.equals(ratchet));
-		return new FormatterConfig(baseDir, encoding, lineEndings, optionalRatchetFrom, provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory));
+		return new FormatterConfig(baseDir, encoding, lineEndings, optionalRatchetFrom, provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory), lintSuppressions);
 	}
 
 	private FileLocator getFileLocator() {
