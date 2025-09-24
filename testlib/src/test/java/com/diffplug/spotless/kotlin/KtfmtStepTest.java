@@ -21,6 +21,9 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.*;
 
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
+
 class KtfmtStepTest extends ResourceHarness {
 	@Test
 	void behavior() throws Exception {
@@ -37,6 +40,7 @@ class KtfmtStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@DisabledOnJre(JRE.JAVA_25)
 	void dropboxStyle_0_16() throws Exception {
 		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
 		FormatterStep step = KtfmtStep.create("0.16", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
@@ -44,6 +48,7 @@ class KtfmtStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@DisabledOnJre(JRE.JAVA_25)
 	void dropboxStyle_0_18() throws Exception {
 		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
 		FormatterStep step = KtfmtStep.create("0.18", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
@@ -51,6 +56,7 @@ class KtfmtStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@DisabledOnJre(JRE.JAVA_25)
 	void dropboxStyle_0_22() throws Exception {
 		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
 		FormatterStep step = KtfmtStep.create("0.22", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
