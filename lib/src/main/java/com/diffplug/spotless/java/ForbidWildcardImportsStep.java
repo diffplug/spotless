@@ -19,7 +19,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.generic.ReplaceRegexStep;
 
 /** Forbids any wildcard import statements. */
-public final class ForbidWildcardImports {
+public final class ForbidWildcardImportsStep {
 
 	/**
 	 * Matches lines like 'import foo.*;' or 'import static foo.*;'.
@@ -28,7 +28,7 @@ public final class ForbidWildcardImports {
 	private static final String NAME = "forbidWildcardImports";
 	private static final String ERROR = "Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this";
 
-	private ForbidWildcardImports() {}
+	private ForbidWildcardImportsStep() {}
 
 	public static FormatterStep create() {
 		return ReplaceRegexStep.lint(NAME, REGEX, ERROR);

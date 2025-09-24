@@ -16,12 +16,13 @@
 package com.diffplug.spotless.maven.java;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.java.ForbidWildcardImportsStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class ForbidWildcardImports implements FormatterStepFactory {
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		return com.diffplug.spotless.java.ForbidWildcardImports.create();
+		return ForbidWildcardImportsStep.create();
 	}
 }

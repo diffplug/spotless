@@ -36,7 +36,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.CleanthatJavaStep;
-import com.diffplug.spotless.java.ForbidWildcardImports;
+import com.diffplug.spotless.java.ForbidWildcardImportsStep;
 import com.diffplug.spotless.java.FormatAnnotationsStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
@@ -159,7 +159,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public void forbidWildcardImports() {
-		addStep(ForbidWildcardImports.create());
+		addStep(ForbidWildcardImportsStep.create());
 	}
 
 	/** Uses the <a href="https://github.com/google/google-java-format">google-java-format</a> jar to format source code. */
