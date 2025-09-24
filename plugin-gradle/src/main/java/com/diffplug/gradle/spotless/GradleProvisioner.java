@@ -163,8 +163,7 @@ class GradleProvisioner {
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
-			} else if (obj instanceof Request) {
-				Request o = (Request) obj;
+			} else if (obj instanceof Request o) {
 				return o.withTransitives == withTransitives && o.mavenCoords.equals(mavenCoords);
 			} else {
 				return false;

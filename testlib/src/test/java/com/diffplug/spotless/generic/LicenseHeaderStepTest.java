@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,15 +133,16 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	}
 
 	private String licenceWithAddress() {
-		return "Copyright &#169; $YEAR FooBar Inc. All Rights Reserved.\n" +
-				" *\n" +
-				" * Use of this software is covered by inscrutable legal protection and\n" +
-				" * complex automation. Violaters of undisclosed terms must expect\n" +
-				" * unforeseen consequences.\n" +
-				" *\n" +
-				" * FooBar, Inc.\n" +
-				" * 9 Food Truck\n" +
-				" * Perry Derry, TX 55656 USA";
+		return """
+				Copyright &#169; $YEAR FooBar Inc. All Rights Reserved.
+				 *
+				 * Use of this software is covered by inscrutable legal protection and
+				 * complex automation. Violaters of undisclosed terms must expect
+				 * unforeseen consequences.
+				 *
+				 * FooBar, Inc.
+				 * 9 Food Truck
+				 * Perry Derry, TX 55656 USA""";
 	}
 
 	private String header(String contents) throws IOException {

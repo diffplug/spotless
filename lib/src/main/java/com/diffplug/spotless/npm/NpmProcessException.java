@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,14 @@
  */
 package com.diffplug.spotless.npm;
 
+import java.io.Serial;
+
 import javax.annotation.CheckForNull;
 
 import com.diffplug.spotless.ProcessRunner;
 
 public class NpmProcessException extends RuntimeException {
+	@Serial
 	private static final long serialVersionUID = 6424331316676759525L;
 	private final transient ProcessRunner.Result result;
 

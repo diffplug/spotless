@@ -209,7 +209,7 @@ class FormatterPropertiesTest extends ResourceHarness {
 			for (String expectedValue : VALID_VALUES) {
 				// A parsable (valid) file contains keys of the following format
 				String validValueName = (null == expectedValue) ? "null" : expectedValue;
-				String key = String.format("%s.%s", fileName, validValueName);
+				String key = "%s.%s".formatted(fileName, validValueName);
 				if (!settingsProps.containsKey(key)) {
 					failWithMessage("Key <%s> not part of formatter settings.", key);
 				}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,8 @@ class JvmTest {
 	void supportAdd() {
 		Integer differentVersions[] = {0, 1, 2};
 		Arrays.asList(differentVersions).stream().forEach(v -> testSupport.add(v + Jvm.version(), v.toString()));
-		Arrays.asList(differentVersions).stream().forEach(v -> assertThat(testSupport.toString()).contains(String.format("Version %d", v)));
-		assertThat(testSupport.toString()).contains(String.format("%s alternatives", TEST_NAME));
+		Arrays.asList(differentVersions).stream().forEach(v -> assertThat(testSupport.toString()).contains("Version %d".formatted(v)));
+		assertThat(testSupport.toString()).contains("%s alternatives".formatted(TEST_NAME));
 	}
 
 	@ParameterizedTest(name = "{index} {1}")
@@ -98,8 +98,8 @@ class JvmTest {
 				testSupport.assertFormatterSupported(fmtVersion);
 			}).getLints().get(0).getDetail();
 			assertThat(proposal).contains(String.format("on JVM %d", Jvm.version()));
-			assertThat(proposal).contains(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion));
-			assertThat(proposal).contains(String.format("try %s alternatives", TEST_NAME));
+			assertThat(proposal).contains("%s %s requires JVM %d+".formatted(TEST_NAME, fmtVersion, higherJvmVersion));
+			assertThat(proposal).contains("try %s alternatives".formatted(TEST_NAME));
 
 			proposal = assertThrows(Exception.class, () -> {
 				testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
@@ -107,22 +107,22 @@ class JvmTest {
 				}).apply("");
 			}).getMessage();
 			assertThat(proposal).contains(String.format("on JVM %d", Jvm.version()));
-			assertThat(proposal).contains(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion));
-			assertThat(proposal).contains(String.format("try %s alternatives", TEST_NAME));
+			assertThat(proposal).contains("%s %s requires JVM %d+".formatted(TEST_NAME, fmtVersion, higherJvmVersion));
+			assertThat(proposal).contains("try %s alternatives".formatted(TEST_NAME));
 		}
 
 		for (String fmtVersion : Arrays.asList("1.2.4", "2", "1.2.5-SNAPSHOT")) {
 			String proposal = assertThrows(Lint.ShortcutException.class, () -> {
 				testSupport.assertFormatterSupported(fmtVersion);
 			}).getLints().get(0).getDetail();
-			assertThat(proposal).contains(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion + 1));
+			assertThat(proposal).contains("%s %s requires JVM %d+".formatted(TEST_NAME, fmtVersion, higherJvmVersion + 1));
 
 			proposal = assertThrows(Exception.class, () -> {
 				testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
 					throw testException;
 				}).apply("");
 			}).getMessage();
-			assertThat(proposal).contains(String.format("%s %s requires JVM %d+", TEST_NAME, fmtVersion, higherJvmVersion + 1));
+			assertThat(proposal).contains("%s %s requires JVM %d+".formatted(TEST_NAME, fmtVersion, higherJvmVersion + 1));
 		}
 	}
 
@@ -159,9 +159,9 @@ class JvmTest {
 				}).apply("");
 			}).getMessage();
 			assertThat(proposal).contains(String.format("on JVM %d", Jvm.version()));
-			assertThat(proposal).contains(String.format("limits you to %s %s", TEST_NAME, "1"));
-			assertThat(proposal).contains(String.format("upgrade your JVM to %d+", higherJvm));
-			assertThat(proposal).contains(String.format("then you can use %s %s", TEST_NAME, "2"));
+			assertThat(proposal).contains("limits you to %s %s".formatted(TEST_NAME, "1"));
+			assertThat(proposal).contains("upgrade your JVM to %d+".formatted(higherJvm));
+			assertThat(proposal).contains("then you can use %s %s".formatted(TEST_NAME, "2"));
 		}
 	}
 

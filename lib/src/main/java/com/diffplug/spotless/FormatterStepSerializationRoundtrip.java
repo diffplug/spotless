@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -23,6 +24,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializable, EqualityState extends Serializable> extends FormatterStepEqualityOnStateSerialization<EqualityState> {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private final String name;
 	@SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED", justification = "HackClone")
@@ -93,12 +95,12 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 	 * It works in conjunction with ConfigurationCacheHackList to allow Spotless to work with all of Gradle's cache systems.
 	 */
 	static class HackClone<RoundtripState extends Serializable, EqualityState extends Serializable> implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 		@SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED", justification = "HackClone")
 		transient FormatterStepSerializationRoundtrip<?, ?> original;
 		boolean optimizeForEquality;
-		@Nullable
-		FormatterStepSerializationRoundtrip cleaned;
+		@Nullable FormatterStepSerializationRoundtrip cleaned;
 
 		HackClone(@Nullable FormatterStepSerializationRoundtrip<RoundtripState, EqualityState> original, boolean optimizeForEquality) {
 			this.original = original;

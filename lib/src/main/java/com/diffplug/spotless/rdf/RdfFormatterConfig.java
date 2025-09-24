@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,12 @@
  */
 package com.diffplug.spotless.rdf;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class RdfFormatterConfig implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private boolean failOnWarning = true;
 	private String turtleFormatterVersion = RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION;

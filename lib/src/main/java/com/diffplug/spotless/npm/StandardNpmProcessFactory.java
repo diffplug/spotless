@@ -75,7 +75,7 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 		protected abstract String describe();
 
 		public String doDescribe() {
-			return String.format("%s in %s [%s]", getClass().getSimpleName(), workingDir, String.join(" ", commandLine()));
+			return "%s in %s [%s]".formatted(getClass().getSimpleName(), workingDir, String.join(" ", commandLine()));
 		}
 	}
 

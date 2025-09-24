@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import javax.annotation.Nonnull;
 import com.diffplug.spotless.Lint;
 
 class PrettierMissingParserException extends RuntimeException implements Lint.Has {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private static final Map<String, String> EXTENSIONS_TO_PLUGINS;
@@ -100,7 +102,7 @@ class PrettierMissingParserException extends RuntimeException implements Lint.Ha
 		return "A good candidate for file '" + file + "' is '" + pluginName + "\n"
 				+ "See if you can find it on <https://prettier.io/docs/en/plugins.html#official-plugins>\n"
 				+ "or search on npmjs.com for a plugin matching that name: "
-				+ String.format("<https://www.npmjs.com/search?ranking=popularity&q=%s>", pluginName)
+				+ "<https://www.npmjs.com/search?ranking=popularity&q=%s>".formatted(pluginName)
 				+ "\n\n"
 				+ "For instructions on how to include plugins for prettier in spotless see our documentation:\n"
 				+ "- for Gradle <https://github.com/diffplug/spotless/tree/main/plugin-gradle#prettier-plugins>\n"

@@ -50,7 +50,7 @@ final class BiomeExecutableDownloader {
 	private static final String CHECKSUM_ALGORITHM = "SHA-256";
 
 	/**
-	 * The pattern for {@link String#format(String, Object...) String.format()} for
+	 * The pattern for {@link String#formatted(Object...) String.format()} for
 	 * the platform part of the Biome executable download URL. First parameter is the
 	 * OS, second parameter the architecture, the third the file extension.
 	 */
@@ -277,8 +277,8 @@ final class BiomeExecutableDownloader {
 		var osCodeName = getOsCodeName(platform.getOs());
 		var architectureCodeName = getArchitectureCodeName(platform.getArchitecture());
 		var extension = getDownloadUrlExtension(platform.getOs());
-		var platformString = String.format(PLATFORM_PATTERN, osCodeName, architectureCodeName, extension);
-		return String.format(BiomeSettings.getUrlPattern(version), version, platformString);
+		var platformString = PLATFORM_PATTERN.formatted(osCodeName, architectureCodeName, extension);
+		return BiomeSettings.getUrlPattern(version).formatted(version, platformString);
 	}
 
 	/**
@@ -313,7 +313,7 @@ final class BiomeExecutableDownloader {
 	private Path getExecutablePath(String version, Platform platform) {
 		var os = platform.getOs().name().toLowerCase(Locale.ROOT);
 		var arch = platform.getArchitecture().name().toLowerCase(Locale.ROOT);
-		var fileName = String.format(BiomeSettings.getDownloadFilePattern(), os, arch, version);
+		var fileName = BiomeSettings.getDownloadFilePattern().formatted(os, arch, version);
 		return downloadDir.resolve(fileName);
 	}
 

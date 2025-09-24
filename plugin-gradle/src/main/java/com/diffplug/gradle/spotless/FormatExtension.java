@@ -306,14 +306,13 @@ public class FormatExtension {
 	}
 
 	private final FileCollection parseTargetIsExclude(Object target, boolean isExclude) {
-		if (target instanceof Collection) {
-			return parseTargetsIsExclude(((Collection<?>) target).toArray(), isExclude);
+		if (target instanceof Collection<?> collection) {
+			return parseTargetsIsExclude(collection.toArray(), isExclude);
 		} else if (target instanceof FileCollection) {
 			return (FileCollection) target;
-		} else if (target instanceof String) {
+		} else if (target instanceof String targetString) {
 			File dir = getProject().getProjectDir();
 			ConfigurableFileTree matchedFiles = getProject().fileTree(dir);
-			String targetString = (String) target;
 			matchedFiles.include(targetString);
 
 			// since people are likely to do '**/*.md', we want to make sure to exclude

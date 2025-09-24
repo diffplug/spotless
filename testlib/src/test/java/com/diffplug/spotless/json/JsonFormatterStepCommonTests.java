@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,14 @@ package com.diffplug.spotless.json;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.apiguardian.api.API;
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.*;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.SerializableEqualityTester;
+import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.TestProvisioner;
 
 public abstract class JsonFormatterStepCommonTests {
 
@@ -96,8 +101,8 @@ public abstract class JsonFormatterStepCommonTests {
 	}
 
 	protected void doWithResource(String name) {
-		String before = String.format("json/%sBefore.json", name);
-		String after = String.format("json/%sAfter.json", name);
+		String before = "json/%sBefore.json".formatted(name);
+		String after = "json/%sAfter.json".formatted(name);
 		getStepHarness().testResource(before, after);
 	}
 }

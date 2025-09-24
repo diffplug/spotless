@@ -253,7 +253,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Override
 	public final void execute() throws MojoExecutionException {
 		if (shouldSkip()) {
-			getLog().info(String.format("Spotless %s skipped", goal));
+			getLog().info("Spotless %s skipped".formatted(goal));
 			return;
 		}
 

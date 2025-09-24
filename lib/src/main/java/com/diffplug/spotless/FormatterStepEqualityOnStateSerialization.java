@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +32,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 abstract class FormatterStepEqualityOnStateSerialization<State extends Serializable> implements FormatterStep, Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	protected abstract State stateSupplier() throws Exception;
@@ -75,8 +77,8 @@ abstract class FormatterStepEqualityOnStateSerialization<State extends Serializa
 
 	@Override
 	public void close() {
-		if (formatter instanceof FormatterFunc.Closeable) {
-			((FormatterFunc.Closeable) formatter).close();
+		if (formatter instanceof FormatterFunc.Closeable closeable) {
+			closeable.close();
 			formatter = null;
 		}
 	}

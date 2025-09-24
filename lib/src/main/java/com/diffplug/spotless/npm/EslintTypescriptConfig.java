@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
+import java.io.Serial;
 
 import javax.annotation.Nullable;
 
 import com.diffplug.spotless.FileSignature;
 
 public class EslintTypescriptConfig extends EslintConfig {
+	@Serial
 	private static final long serialVersionUID = 2L;
 
 	@SuppressWarnings("unused")
@@ -37,8 +39,7 @@ public class EslintTypescriptConfig extends EslintConfig {
 		return new EslintTypescriptConfig(eslintConfigPath, this.getEslintConfigJs(), getTypescriptConfigPath());
 	}
 
-	@Nullable
-	public File getTypescriptConfigPath() {
+	@Nullable public File getTypescriptConfigPath() {
 		return typescriptConfigPathSignature == null ? null : this.typescriptConfigPathSignature.get().getOnlyFile();
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
  */
 package com.diffplug.spotless.npm;
 
+import java.io.Serial;
+
 class BlacklistedOptionException extends RuntimeException {
+	@Serial
 	private static final long serialVersionUID = -5876348893394153811L;
 
 	public BlacklistedOptionException(String blacklistedOption) {

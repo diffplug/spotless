@@ -34,12 +34,13 @@ class KtlintTest extends MavenIntegrationHarness {
 
 	@Test
 	void testKtlintEditorConfigOverride() throws Exception {
-		writePomWithKotlinSteps("<ktlint>\n" +
-				"  <editorConfigOverride>\n" +
-				"    <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>\n" +
-				"    <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>\n" +
-				"  </editorConfigOverride>\n" +
-				"</ktlint>");
+		writePomWithKotlinSteps("""
+				<ktlint>
+				  <editorConfigOverride>
+				    <ij_kotlin_allow_trailing_comma>true</ij_kotlin_allow_trailing_comma>
+				    <ij_kotlin_allow_trailing_comma_on_call_site>true</ij_kotlin_allow_trailing_comma_on_call_site>
+				  </editorConfigOverride>
+				</ktlint>""");
 
 		String path = "src/main/kotlin/Main.kt";
 		setFile(path).toResource("kotlin/ktlint/experimentalEditorConfigOverride.dirty");
@@ -57,35 +58,38 @@ class KtlintTest extends MavenIntegrationHarness {
 	@Test
 	void testEditorConfigOverrideWithUnsetCodeStyleDoesNotOverrideEditorConfigCodeStyleWithDefault() throws Exception {
 		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
-		writePomWithKotlinSteps("<ktlint>\n" +
-				"  <editorConfigOverride>\n" +
-				"    <ktlint_test_key>true</ktlint_test_key>\n" +
-				"  </editorConfigOverride>\n" +
-				"</ktlint>");
+		writePomWithKotlinSteps("""
+				<ktlint>
+				  <editorConfigOverride>
+				    <ktlint_test_key>true</ktlint_test_key>
+				  </editorConfigOverride>
+				</ktlint>""");
 		checkKtlintOfficialStyle();
 	}
 
 	@Test
 	void testSetEditorConfigCanOverrideEditorConfigFile() throws Exception {
 		setFile(".editorconfig").toResource("kotlin/ktlint/intellij_idea/.editorconfig");
-		writePomWithKotlinSteps("<ktlint>\n" +
-				"  <editorConfigOverride>\n" +
-				"    <ktlint_code_style>ktlint_official</ktlint_code_style>\n" +
-				"  </editorConfigOverride>\n" +
-				"</ktlint>");
+		writePomWithKotlinSteps("""
+				<ktlint>
+				  <editorConfigOverride>
+				    <ktlint_code_style>ktlint_official</ktlint_code_style>
+				  </editorConfigOverride>
+				</ktlint>""");
 		checkKtlintOfficialStyle();
 	}
 
 	@Test
 	void testWithCustomRuleSetApply() throws Exception {
-		writePomWithKotlinSteps("<ktlint>\n" +
-				"  <customRuleSets>\n" +
-				"    <value>io.nlopez.compose.rules:ktlint:0.4.25</value>\n" +
-				"  </customRuleSets>\n" +
-				"  <editorConfigOverride>\n" +
-				"    <ktlint_function_naming_ignore_when_annotated_with>Composable</ktlint_function_naming_ignore_when_annotated_with>\n" +
-				"  </editorConfigOverride>\n" +
-				"</ktlint>");
+		writePomWithKotlinSteps("""
+				<ktlint>
+				  <customRuleSets>
+				    <value>io.nlopez.compose.rules:ktlint:0.4.25</value>
+				  </customRuleSets>
+				  <editorConfigOverride>
+				    <ktlint_function_naming_ignore_when_annotated_with>Composable</ktlint_function_naming_ignore_when_annotated_with>
+				  </editorConfigOverride>
+				</ktlint>""");
 		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/listScreen.dirty");
 		ProcessRunner.Result result = mavenRunner().withArguments("spotless:check").runHasError();
 		Assertions.assertThat(result.toString()).contains("Composable functions that return Unit should start with an uppercase letter.");

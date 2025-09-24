@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -33,6 +34,7 @@ import javax.annotation.Nullable;
  * will find grep, confirm that it is version 2.5.7, and then return.
  */
 public class ForeignExe implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private @Nullable String pathToExe;
 	private String versionFlag = "--version";

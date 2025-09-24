@@ -100,10 +100,10 @@ public final class FormatterProperties {
 				final Properties newSettings = FileParser.XML.executeXmlContent(contentElement);
 				properties.properties.putAll(newSettings);
 			} catch (IOException | IllegalArgumentException exception) {
-				String message = String.format("Failed to add preferences from XML:%n%s%n", contentElement);
+				String message = "Failed to add preferences from XML:%n%s%n".formatted(contentElement);
 				final String detailedMessage = exception.getMessage();
 				if (null != detailedMessage) {
-					message += String.format(" %s", detailedMessage);
+					message += " %s".formatted(detailedMessage);
 				}
 				throw new IllegalArgumentException(message, exception);
 			}
@@ -129,17 +129,17 @@ public final class FormatterProperties {
 	private void add(final File settingsFile) throws IllegalArgumentException {
 		Objects.requireNonNull(settingsFile);
 		if (!(settingsFile.isFile() && settingsFile.canRead())) {
-			String msg = String.format("Settings file '%s' does not exist or can not be read.", settingsFile);
+			String msg = "Settings file '%s' does not exist or can not be read.".formatted(settingsFile);
 			throw new IllegalArgumentException(msg);
 		}
 		try {
 			Properties newSettings = FileParser.parse(settingsFile);
 			properties.putAll(newSettings);
 		} catch (IOException | IllegalArgumentException exception) {
-			String message = String.format("Failed to add properties from '%s' to formatter settings.", settingsFile);
+			String message = "Failed to add properties from '%s' to formatter settings.".formatted(settingsFile);
 			String detailedMessage = exception.getMessage();
 			if (null != detailedMessage) {
-				message += String.format(" %s", detailedMessage);
+				message += " %s".formatted(detailedMessage);
 			}
 			throw new IllegalArgumentException(message, exception);
 		}
@@ -241,8 +241,7 @@ public final class FormatterProperties {
 					return parser.execute(file);
 				}
 			}
-			String msg = String.format(
-					"The file name extension '%1$s' is not part of the supported file extensions [%2$s].",
+			String msg = "The file name extension '%1$s' is not part of the supported file extensions [%2$s].".formatted(
 					fileNameExtension, Arrays.toString(FileParser.values()));
 			throw new IllegalArgumentException(msg);
 
@@ -341,7 +340,7 @@ public final class FormatterProperties {
 					return parser.execute(is, rootNode);
 				}
 			}
-			String msg = String.format("The XML root node '%1$s' is not part of the supported root nodes [%2$s].",
+			String msg = "The XML root node '%1$s' is not part of the supported root nodes [%2$s].".formatted(
 					rootNodeName, Arrays.toString(XmlParser.values()));
 			throw new IllegalArgumentException(msg);
 		}

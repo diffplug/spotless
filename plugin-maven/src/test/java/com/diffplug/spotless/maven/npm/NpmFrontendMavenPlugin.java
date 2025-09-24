@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,31 +36,31 @@ public final class NpmFrontendMavenPlugin {
 	public static String[] pomPluginLines(String nodeVersion, String npmVersion) {
 		return new String[]{
 				"<plugin>",
-				String.format("  <groupId>%s</groupId>", GROUP_ID),
-				String.format("  <artifactId>%s</artifactId>", ARTIFACT_ID),
-				String.format("  <version>%s</version>", VERSION),
+				"  <groupId>%s</groupId>".formatted(GROUP_ID),
+				"  <artifactId>%s</artifactId>".formatted(ARTIFACT_ID),
+				"  <version>%s</version>".formatted(VERSION),
 				"  <executions>",
 				"    <execution>",
 				"      <id>install node and npm</id>",
 				"      <goals>",
-				String.format("        <goal>%s</goal>", GOAL_INSTALL_NODE_AND_NPM),
+				"        <goal>%s</goal>".formatted(GOAL_INSTALL_NODE_AND_NPM),
 				"      </goals>",
 				"    </execution>",
 				"  </executions>",
 				"  <configuration>",
 				(nodeVersion != null ? "    <nodeVersion>" + nodeVersion + "</nodeVersion>" : ""),
 				(npmVersion != null ? "     <npmVersion>" + npmVersion + "</npmVersion>" : ""),
-				String.format("    <installDirectory>%s</installDirectory>", INSTALL_DIRECTORY),
+				"    <installDirectory>%s</installDirectory>".formatted(INSTALL_DIRECTORY),
 				"  </configuration>",
 				"</plugin>"
 		};
 	}
 
 	public static String installNpmMavenGoal() {
-		return String.format("%s:%s:%s", GROUP_ID, ARTIFACT_ID, GOAL_INSTALL_NODE_AND_NPM);
+		return "%s:%s:%s".formatted(GROUP_ID, ARTIFACT_ID, GOAL_INSTALL_NODE_AND_NPM);
 	}
 
 	public static String installedNpmPath() {
-		return String.format("%s/node/npm%s", INSTALL_DIRECTORY, System.getProperty("os.name").toLowerCase().contains("win") ? ".cmd" : "");
+		return "%s/node/npm%s".formatted(INSTALL_DIRECTORY, System.getProperty("os.name").toLowerCase().contains("win") ? ".cmd" : "");
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -93,7 +94,7 @@ public enum LineEnding {
 	}
 
 	static class ConstantLineEndingPolicy extends NoLambda.EqualityBasedOnSerialization implements Policy {
-		private static final long serialVersionUID = 1L;
+		@Serial private static final long serialVersionUID = 1L;
 
 		final String lineEnding;
 
@@ -108,7 +109,7 @@ public enum LineEnding {
 	}
 
 	static class PreserveLineEndingPolicy extends NoLambda.EqualityBasedOnSerialization implements Policy {
-        private static final long serialVersionUID = 2L;
+		@Serial private static final long serialVersionUID = 2L;
 
         @Override
         public String getEndingFor(File file) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.pom;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +26,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 public class SortPomStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.github.ekryd.sortpom:sortpom-sorter:";
 	public static final String NAME = "sortPom";
@@ -49,6 +51,7 @@ public class SortPomStep implements Serializable {
 	}
 
 	private static class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1;
 
 		private final SortPomCfg cfg;

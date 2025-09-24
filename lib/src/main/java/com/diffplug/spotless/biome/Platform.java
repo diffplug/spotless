@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,6 +86,6 @@ class Platform {
 
 	@Override
 	public String toString() {
-		return String.format("Platform[os=%s,architecture=%s]", os, architecture);
+		return "Platform[os=%s,architecture=%s]".formatted(os, architecture);
 	}
 }

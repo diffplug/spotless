@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,6 +27,7 @@ import com.diffplug.spotless.FileSignature;
 
 public class PrettierConfig implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -8709340269833126583L;
 
 	private final FileSignature.Promised prettierConfigPathSignature;
@@ -37,8 +39,7 @@ public class PrettierConfig implements Serializable {
 		this.options = options == null ? new TreeMap<>() : new TreeMap<>(options);
 	}
 
-	@Nullable
-	public File getPrettierConfigPath() {
+	@Nullable public File getPrettierConfigPath() {
 		return prettierConfigPathSignature == null ? null : prettierConfigPathSignature.get().getOnlyFile();
 	}
 

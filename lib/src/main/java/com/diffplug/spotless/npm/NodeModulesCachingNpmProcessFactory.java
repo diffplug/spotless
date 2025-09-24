@@ -107,7 +107,7 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 
 		@Override
 		public String describe() {
-			return String.format("Wrapper around [%s] to cache node_modules in [%s]", actualNpmInstallProcess.describe(), cacheDir.getAbsolutePath());
+			return "Wrapper around [%s] to cache node_modules in [%s]".formatted(actualNpmInstallProcess.describe(), cacheDir.getAbsolutePath());
 		}
 	}
 

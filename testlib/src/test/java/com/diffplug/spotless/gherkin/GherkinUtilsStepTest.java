@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,8 +117,8 @@ public class GherkinUtilsStepTest {
 	}
 
 	private static void doWithResource(StepHarness stepHarness, String name) {
-		String before = String.format("gherkin/%sBefore.feature", name);
-		String after = String.format("gherkin/%sAfter.feature", name);
+		String before = "gherkin/%sBefore.feature".formatted(name);
+		String after = "gherkin/%sAfter.feature".formatted(name);
 		stepHarness.testResource(before, after);
 	}
 }

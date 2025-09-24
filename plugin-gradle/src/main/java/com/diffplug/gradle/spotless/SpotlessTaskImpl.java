@@ -151,7 +151,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 			// Need to copy the original file to the tmp location just to remember the file attributes
 			Files.copy(input.toPath(), cleanFile.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
 
-			getLogger().info(String.format("Writing clean file: %s", cleanFile));
+			getLogger().info("Writing clean file: %s".formatted(cleanFile));
 			lintState.getDirtyState().writeCanonicalTo(cleanFile);
 		}
 		if (!lintState.isHasLints()) {

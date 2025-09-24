@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.gherkin;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +27,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 public class GherkinUtilsStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "io.cucumber:gherkin-utils:";
 	private static final String DEFAULT_VERSION = "9.2.0";
@@ -57,6 +59,7 @@ public class GherkinUtilsStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final GherkinUtilsConfig gherkinSimpleConfig;

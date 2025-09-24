@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,18 +28,17 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import javax.annotation.Nullable;
-
 import org.apache.maven.plugin.logging.Log;
 
 import com.diffplug.common.annotations.VisibleForTesting;
+
+import jakarta.annotation.Nullable;
 
 class FileIndex {
 
@@ -102,8 +101,7 @@ class FileIndex {
 		}
 	}
 
-	@Nullable
-	Instant getLastModifiedTime(Path file) {
+	@Nullable Instant getLastModifiedTime(Path file) {
 		if (!file.startsWith(projectDir)) {
 			return null;
 		}
@@ -169,7 +167,7 @@ class FileIndex {
 				throw new IOException("Incorrect index file. No separator found in '" + line + "'");
 			}
 
-			Path relativeFile = Paths.get(line.substring(0, separatorIndex));
+			Path relativeFile = Path.of(line.substring(0, separatorIndex));
 			Path absoluteFile = projectDir.resolve(relativeFile);
 			if (Files.notExists(absoluteFile)) {
 				log.info("File stored in the index does not exist: " + relativeFile);

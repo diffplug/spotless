@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
@@ -33,11 +34,11 @@ import javax.annotation.Nullable;
  * equals() and hashCode(), so you don't have to.
  */
 public abstract class LazyForwardingEquality<T extends Serializable> implements Serializable, NoLambda {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/** Lazily initialized - null indicates that the state has not yet been set. */
-	@Nullable
-	private transient volatile T state;
+	@Nullable private transient volatile T state;
 
 	/**
 	 * This function is guaranteed to be called at most once.
@@ -124,10 +125,10 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 
 	/** Ensures that the lazy state has been evaluated. */
 	public static void unlazy(Object in) {
-		if (in instanceof LazyForwardingEquality) {
-			((LazyForwardingEquality<?>) in).state();
-		} else if (in instanceof DelegateFormatterStep) {
-			unlazy(((DelegateFormatterStep) in).delegateStep);
+		if (in instanceof LazyForwardingEquality<?> equality) {
+			equality.state();
+		} else if (in instanceof DelegateFormatterStep step) {
+			unlazy(step.delegateStep);
 		} else if (in instanceof Iterable) {
 			Iterable<Object> cast = (Iterable<Object>) in;
 			for (Object c : cast) {

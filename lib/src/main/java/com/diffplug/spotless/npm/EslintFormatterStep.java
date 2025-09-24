@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,9 +174,9 @@ public class EslintFormatterStep {
 			if (eslintConfig.getEslintConfigJs() != null) {
 				eslintCallOptions.put(FormatOption.ESLINT_OVERRIDE_CONFIG, eslintConfig.getEslintConfigJs());
 			}
-			if (eslintConfig instanceof EslintTypescriptConfig) {
+			if (eslintConfig instanceof EslintTypescriptConfig config) {
 				// if we are a ts config, see if we need to use specific paths or use default projectDir
-				File tsConfigFilePath = ((EslintTypescriptConfig) eslintConfig).getTypescriptConfigPath();
+				File tsConfigFilePath = config.getTypescriptConfigPath();
 				File tsConfigRootDir = tsConfigFilePath != null ? tsConfigFilePath.getParentFile() : projectDir;
 				eslintCallOptions.put(FormatOption.TS_CONFIG_ROOT_DIR, nodeModulesDir.getAbsoluteFile().toPath().relativize(tsConfigRootDir.getAbsoluteFile().toPath()).toString());
 			}

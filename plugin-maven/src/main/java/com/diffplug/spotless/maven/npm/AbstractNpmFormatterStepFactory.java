@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package com.diffplug.spotless.maven.npm;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
@@ -74,7 +74,7 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 		if ("true".equals(this.npmInstallCache.toLowerCase(Locale.ROOT))) {
 			return new File(buildDir(stepConfig), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
 		}
-		return Paths.get(this.npmInstallCache).toFile();
+		return Path.of(this.npmInstallCache).toFile();
 	}
 
 	protected File baseDir(FormatterStepConfig stepConfig) {

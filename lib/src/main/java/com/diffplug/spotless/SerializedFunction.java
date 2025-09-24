@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @FunctionalInterface
@@ -28,6 +29,7 @@ public interface SerializedFunction<T, R> extends Serializable, ThrowingEx.Funct
 	}
 
 	class AlwaysReturns<T, R> implements SerializedFunction<T, R> {
+		@Serial
 		private static final long serialVersionUID = 1L;
 		private final R value;
 

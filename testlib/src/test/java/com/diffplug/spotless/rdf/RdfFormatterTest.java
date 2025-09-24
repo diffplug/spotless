@@ -103,7 +103,7 @@ public class RdfFormatterTest extends ResourceHarness {
 						.stream().noneMatch(out -> out.getFileName().equals(in.getFileName())))
 				.collect(Collectors.toList());
 		if (!missingOutputs.isEmpty()) {
-			throw new IllegalStateException(String.format("'after' directory %s is missing files corresponding to these 'before' files: %s", beforeDir, missingOutputs));
+			throw new IllegalStateException("'after' directory %s is missing files corresponding to these 'before' files: %s".formatted(beforeDir, missingOutputs));
 		}
 		List<Path> missingInputs = outputs
 				.stream()
@@ -111,13 +111,13 @@ public class RdfFormatterTest extends ResourceHarness {
 						.stream().noneMatch(in -> in.getFileName().equals(o.getFileName())))
 				.collect(Collectors.toList());
 		if (!missingInputs.isEmpty()) {
-			throw new IllegalStateException(String.format("'before' directory %s is missing files corresponding to these 'after' files: %s", afterDir, missingInputs));
+			throw new IllegalStateException("'before' directory %s is missing files corresponding to these 'after' files: %s".formatted(afterDir, missingInputs));
 		}
 		List<Arguments> arguments = new ArrayList<>();
 		for (Path input : inputs) {
 			Optional<Path> output = outputs.stream().filter(o -> o.getFileName().equals(input.getFileName())).findFirst();
 			if (output.isEmpty()) {
-				throw new IllegalStateException(String.format("'after' directory %s is missing file %s corresponding to 'before' file %s", afterDir, input.getFileName(), input));
+				throw new IllegalStateException("'after' directory %s is missing file %s corresponding to 'before' file %s".formatted(afterDir, input.getFileName(), input));
 			}
 			arguments.add(Arguments.of(unixRelative(input), unixRelative(output.get())));
 		}

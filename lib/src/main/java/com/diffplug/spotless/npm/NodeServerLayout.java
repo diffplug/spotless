@@ -52,7 +52,7 @@ class NodeServerLayout {
 			throw new IllegalArgumentException("package.json must contain a name property");
 		}
 		String packageName = matcher.group(1);
-		return String.format("%s-node-modules-%s", packageName, md5Hash);
+		return "%s-node-modules-%s".formatted(packageName, md5Hash);
 	}
 
 	File nodeModulesDir() {
@@ -103,8 +103,7 @@ class NodeServerLayout {
 
 	@Override
 	public String toString() {
-		return String.format(
-				"NodeServerLayout[nodeModulesDir=%s, packageJsonFile=%s, serveJsFile=%s, npmrcFile=%s]",
+		return "NodeServerLayout[nodeModulesDir=%s, packageJsonFile=%s, serveJsFile=%s, npmrcFile=%s]".formatted(
 				this.nodeModulesDir,
 				this.packageJsonFile,
 				this.serveJsFile,

@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +52,7 @@ import com.diffplug.spotless.yaml.SerializeToByteArrayHack;
  * to make Spotless work with all of Gradle's cache systems at once.
  */
 public class ConfigurationCacheHackList implements java.io.Serializable {
+	@Serial
 	private static final long serialVersionUID = 6914178791997323870L;
 
 	private boolean optimizeForEquality;
@@ -108,8 +110,8 @@ public class ConfigurationCacheHackList implements java.io.Serializable {
 
 	public void addAll(Collection<? extends FormatterStep> c) {
 		for (FormatterStep step : c) {
-			if (step instanceof FormatterStepSerializationRoundtrip) {
-				var clone = ((FormatterStepSerializationRoundtrip) step).hackClone(optimizeForEquality);
+			if (step instanceof FormatterStepSerializationRoundtrip roundtrip) {
+				var clone = roundtrip.hackClone(optimizeForEquality);
 				backingList.add(clone);
 			} else {
 				backingList.add(step);
@@ -120,8 +122,8 @@ public class ConfigurationCacheHackList implements java.io.Serializable {
 	public List<FormatterStep> getSteps() {
 		var result = new ArrayList<FormatterStep>(backingList.size());
 		for (Object obj : backingList) {
-			if (obj instanceof FormatterStepSerializationRoundtrip.HackClone) {
-				result.add(((FormatterStepSerializationRoundtrip.HackClone) obj).rehydrate());
+			if (obj instanceof FormatterStepSerializationRoundtrip.HackClone clone) {
+				result.add(clone.rehydrate());
 			} else {
 				result.add((FormatterStep) obj);
 			}

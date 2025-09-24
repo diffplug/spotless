@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,8 +89,8 @@ public final class ThrowingEx {
 	 * {@link WrappedAsRuntimeException} and returned.
 	 */
 	public static RuntimeException asRuntime(Exception e) {
-		if (e instanceof RuntimeException) {
-			return (RuntimeException) e;
+		if (e instanceof RuntimeException exception) {
+			return exception;
 		} else {
 			return new WrappedAsRuntimeException(e);
 		}
@@ -128,10 +128,10 @@ public final class ThrowingEx {
 	 * }</pre>
 	 */
 	static RuntimeException asRuntimeRethrowError(Throwable e) {
-		if (e instanceof Error) {
-			throw (Error) e;
-		} else if (e instanceof RuntimeException) {
-			return (RuntimeException) e;
+		if (e instanceof Error error) {
+			throw error;
+		} else if (e instanceof RuntimeException exception) {
+			return exception;
 		} else {
 			return new WrappedAsRuntimeException(e);
 		}

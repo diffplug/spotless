@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,18 +31,20 @@ class EncodingErrorMsgTest {
 		cp1252asUtf8("", null);
 		// single char
 		cp1252asUtf8("a", null);
-		cp1252asUtf8("°", "Encoding error! Spotless uses UTF-8 by default.  At line 1 col 1:\n" +
-				"� <- UTF-8\n" +
-				"° <- windows-1252\n" +
-				"° <- ISO-8859-1\n" +
-				"ｰ <- Shift_JIS");
+		cp1252asUtf8("°", """
+				Encoding error! Spotless uses UTF-8 by default.  At line 1 col 1:
+				� <- UTF-8
+				° <- windows-1252
+				° <- ISO-8859-1
+				ｰ <- Shift_JIS""");
 		// multiline
 		cp1252asUtf8("\n123\nabc\n", null);
-		cp1252asUtf8("\n123\nabc°\nABC", "Encoding error! Spotless uses UTF-8 by default.  At line 3 col 4:\n" +
-				"abc�␤AB <- UTF-8\n" +
-				"abc°␤AB <- windows-1252\n" +
-				"abc°␤AB <- ISO-8859-1\n" +
-				"abcｰ␤AB <- Shift_JIS");
+		cp1252asUtf8("\n123\nabc°\nABC", """
+				Encoding error! Spotless uses UTF-8 by default.  At line 3 col 4:
+				abc�␤AB <- UTF-8
+				abc°␤AB <- windows-1252
+				abc°␤AB <- ISO-8859-1
+				abcｰ␤AB <- Shift_JIS""");
 	}
 
 	private void cp1252asUtf8(String test, @Nullable String expectedMessage) throws UnsupportedEncodingException {
@@ -65,20 +67,22 @@ class EncodingErrorMsgTest {
 		// multibyte UTF-8 can hide too
 		utf8asCP1252("😂", null);
 		// but some will trigger problems we can detect
-		utf8asCP1252("⍻", "Encoding error! You configured Spotless to use windows-1252.  At line 1 col 2:\n" +
-				"â�» <- windows-1252\n" +
-				"⍻ <- UTF-8\n" +
-				"â» <- ISO-8859-1\n" +
-				"竝ｻ <- Shift_JIS"); // there are some codepoints where it doesn't
+		utf8asCP1252("⍻", """
+				Encoding error! You configured Spotless to use windows-1252.  At line 1 col 2:
+				â�» <- windows-1252
+				⍻ <- UTF-8
+				â» <- ISO-8859-1
+				竝ｻ <- Shift_JIS"""); // there are some codepoints where it doesn't
 		// multiline
 		utf8asCP1252("\n123\nabc\n", null);
 		utf8asCP1252("\n123\nabc°\nABC", null);
 		utf8asCP1252("\n123\nabc😂\nABC", null);
-		utf8asCP1252("\n123\nabc⍻\nABC", "Encoding error! You configured Spotless to use windows-1252.  At line 3 col 5:\n" +
-				"bcâ�»␤A <- windows-1252\n" +
-				"bc⍻␤ABC <- UTF-8\n" +
-				"bcâ»␤A <- ISO-8859-1\n" +
-				"bc竝ｻ␤AB <- Shift_JIS");
+		utf8asCP1252("\n123\nabc⍻\nABC", """
+				Encoding error! You configured Spotless to use windows-1252.  At line 3 col 5:
+				bcâ�»␤A <- windows-1252
+				bc⍻␤ABC <- UTF-8
+				bcâ»␤A <- ISO-8859-1
+				bc竝ｻ␤AB <- Shift_JIS""");
 	}
 
 	private void utf8asCP1252(String test, @Nullable String expectedMessage) throws UnsupportedEncodingException {

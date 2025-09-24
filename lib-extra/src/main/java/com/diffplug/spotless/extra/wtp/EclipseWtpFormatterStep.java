@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ public enum EclipseWtpFormatterStep {
 				return (String) method.invoke(formatter, input);
 			} catch (InvocationTargetException exceptionWrapper) {
 				Throwable throwable = exceptionWrapper.getTargetException();
-				Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
+				Exception exception = (throwable instanceof Exception e) ? e : null;
 				throw (null == exception) ? exceptionWrapper : exception;
 			}
 		};
@@ -85,7 +85,7 @@ public enum EclipseWtpFormatterStep {
 					return (String) method.invoke(formatter, unix, file.getAbsolutePath());
 				} catch (InvocationTargetException exceptionWrapper) {
 					Throwable throwable = exceptionWrapper.getTargetException();
-					Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
+					Exception exception = (throwable instanceof Exception e) ? e : null;
 					throw (null == exception) ? exceptionWrapper : exception;
 				}
 			}

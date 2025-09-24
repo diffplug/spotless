@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.yaml;
 
+import java.io.Serial;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,6 +26,7 @@ import com.diffplug.spotless.json.JacksonConfig;
  * Specialization of {@link JacksonConfig} for YAML documents
  */
 public class JacksonYamlConfig extends JacksonConfig {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	protected Map<String, Boolean> yamlFeatureToToggle = new LinkedHashMap<>();

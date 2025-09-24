@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.java;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +25,7 @@ import com.diffplug.spotless.Provisioner;
 
 /** Uses google-java-format or cleanthat.UnnecessaryImport, but only to remove unused imports. */
 public class RemoveUnusedImportsStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	static final String NAME = "removeUnusedImports";
 

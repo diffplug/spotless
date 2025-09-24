@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.json;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +31,7 @@ import com.diffplug.spotless.Provisioner;
  * Simple JSON formatter which reformats the file according to the org.json library's default pretty-printing, but has no ability to customise more than the indentation size.
  */
 public final class JsonSimpleStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "org.json:json:";
 	private static final String DEFAULT_VERSION = "20210307";
@@ -56,6 +58,7 @@ public final class JsonSimpleStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final int indentSpaces;
@@ -97,7 +100,7 @@ public final class JsonSimpleStep implements Serializable {
 					return format(arrayConstructor, arrayToString, s);
 				}
 
-				throw new IllegalArgumentException(String.format("Unable to determine JSON type, expected a '{' or '[' but found '%s'", first));
+				throw new IllegalArgumentException("Unable to determine JSON type, expected a '{' or '[' but found '%s'".formatted(first));
 			};
 		}
 

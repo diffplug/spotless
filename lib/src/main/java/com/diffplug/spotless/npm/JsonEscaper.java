@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,11 @@ final class JsonEscaper {
 
 	public static String jsonEscape(Object val) {
 		requireNonNull(val);
-		if (val instanceof JsonRawValue) {
-			return jsonEscape((JsonRawValue) val);
+		if (val instanceof JsonRawValue value) {
+			return jsonEscape(value);
 		}
-		if (val instanceof String) {
-			return jsonEscape((String) val);
+		if (val instanceof String string) {
+			return jsonEscape(string);
 		}
 		if (ListableAdapter.canAdapt(val)) {
 			// create an array

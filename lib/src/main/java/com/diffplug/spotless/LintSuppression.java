@@ -16,11 +16,13 @@
 package com.diffplug.spotless;
 
 import java.io.File;
+import java.io.Serial;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
 
 public class LintSuppression implements java.io.Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private static final String ALL = "*";

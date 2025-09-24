@@ -124,8 +124,7 @@ public final class IdeaStep {
 
 		@Override
 		public String toString() {
-			return String.format(
-					"IdeaStepBuilder[useDefaults=%s, binaryPath=%s, codeStyleSettingsPath=%s, ideaProperties=%s, buildDir=%s]",
+			return "IdeaStepBuilder[useDefaults=%s, binaryPath=%s, codeStyleSettingsPath=%s, ideaProperties=%s, buildDir=%s]".formatted(
 					this.useDefaults,
 					this.binaryPath,
 					this.codeStyleSettingsPath,
@@ -175,7 +174,7 @@ public final class IdeaStep {
 
 		@CheckForNull
 		private static String pathToExe(String binaryPath) {
-			String testEnvBinaryPath = TestEnvVars.read().get(String.format("%s.%s", IdeaStep.class.getName(), "binaryPath"));
+			String testEnvBinaryPath = TestEnvVars.read().get("%s.%s".formatted(IdeaStep.class.getName(), "binaryPath"));
 			if (testEnvBinaryPath != null) {
 				return testEnvBinaryPath;
 			}
@@ -247,7 +246,7 @@ public final class IdeaStep {
 
 			Path parent = ideaProps.getParent();
 			if (parent == null) {
-				throw new IllegalStateException(String.format("Parent directory for IDEA properties file %s cannot be null", ideaProps));
+				throw new IllegalStateException("Parent directory for IDEA properties file %s cannot be null".formatted(ideaProps));
 			}
 			ThrowingEx.run(() -> Files.createDirectories(parent));
 

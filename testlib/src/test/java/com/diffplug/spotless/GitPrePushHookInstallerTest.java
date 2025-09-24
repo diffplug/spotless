@@ -37,17 +37,17 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 	private final GitPreHookLogger logger = new GitPreHookLogger() {
 		@Override
 		public void info(String format, Object... arguments) {
-			logs.add(String.format(format, arguments));
+			logs.add(format.formatted(arguments));
 		}
 
 		@Override
 		public void warn(String format, Object... arguments) {
-			logs.add(String.format(format, arguments));
+			logs.add(format.formatted(arguments));
 		}
 
 		@Override
 		public void error(String format, Object... arguments) {
-			logs.add(String.format(format, arguments));
+			logs.add(format.formatted(arguments));
 		}
 	};
 

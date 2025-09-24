@@ -28,6 +28,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 * Add a `lint` mode to `ReplaceRegexStep` ([#2571](https://github.com/diffplug/spotless/pull/2571))
 * `LintSuppression` now enforces unix-style paths in its `setPath` and `relativizeAsUnix` methods. ([#2629](https://github.com/diffplug/spotless/pull/2629))
+* Add `rewrite` support ([#2588](https://github.com/diffplug/spotless/pull/2588))
 
 ## [3.3.1] - 2025-07-21
 ### Fixed

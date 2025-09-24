@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Locale;
 
 import org.gradle.api.DefaultTask;
@@ -59,7 +58,7 @@ public class SpotlessDiagnoseTask extends DefaultTask {
 					Path relative = srcRoot.relativize(file.toPath());
 					Path diagnoseFile = diagnoseRoot.resolve(relative);
 					for (int i = 0; i < padded.steps().size(); ++i) {
-						Path path = Paths.get(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.ROOT) + i);
+						Path path = Path.of(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.ROOT) + i);
 						Files.createDirectories(path.getParent());
 						String version = padded.steps().get(i);
 						Files.write(path, version.getBytes(formatter.getEncoding()));

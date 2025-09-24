@@ -82,7 +82,7 @@ public class MavenRunner {
 		if (!systemProperties.isEmpty()) {
 			// add system properties as environment variables as MAVEN_OPTS or append if already there
 			String sysProps = systemProperties.entrySet().stream()
-					.map(entry -> String.format("-D%s=%s", entry.getKey(), entry.getValue()))
+					.map(entry -> "-D%s=%s".formatted(entry.getKey(), entry.getValue()))
 					.collect(Collectors.joining(" "));
 			String mavenOpts = Stream.of(env.getOrDefault("MAVEN_OPTS", ""), sysProps)
 					.collect(Collectors.joining(" "));
