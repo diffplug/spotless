@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 
-	@Nullable
-	GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
+	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 
 	Provisioner provisionerFor(SpotlessExtension spotless) {
 		if (spotless instanceof SpotlessExtensionPredeclare) {
@@ -110,7 +109,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		}
 	}
 
-	static abstract class ClientTask extends DefaultTask {
+	abstract static class ClientTask extends DefaultTask {
 		@Internal
 		abstract Property<File> getSpotlessCleanDirectory();
 

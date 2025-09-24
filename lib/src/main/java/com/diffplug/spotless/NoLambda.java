@@ -44,7 +44,7 @@ public interface NoLambda extends Serializable {
 	public byte[] toBytes();
 
 	/** An implementation of NoLambda in which equality is based on the serialized representation of itself. */
-	public static abstract class EqualityBasedOnSerialization implements NoLambda {
+	public abstract static class EqualityBasedOnSerialization implements NoLambda {
 		@Serial
 		private static final long serialVersionUID = 1733798699224768949L;
 

@@ -17,7 +17,6 @@ package com.diffplug.spotless.glue.scalafmt;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import org.scalafmt.Scalafmt;
@@ -43,7 +42,7 @@ public class ScalafmtFormatterFunc implements FormatterFunc.NeedsFile {
 			config = (ScalafmtConfig) method.invoke(ScalafmtConfig$.MODULE$);
 		} else {
 			File file = configSignature.getOnlyFile();
-			String configStr = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			String configStr = Files.readString(file.toPath());
 			config = Scalafmt.parseHoconConfig(configStr).get();
 		}
 

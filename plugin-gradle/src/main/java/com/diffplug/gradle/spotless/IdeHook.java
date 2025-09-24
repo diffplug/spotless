@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,9 @@ class IdeHook {
 		}
 	}
 
-	final static String PROPERTY = "spotlessIdeHook";
-	final static String USE_STD_IN = "spotlessIdeHookUseStdIn";
-	final static String USE_STD_OUT = "spotlessIdeHookUseStdOut";
+	static final String PROPERTY = "spotlessIdeHook";
+	static final String USE_STD_IN = "spotlessIdeHookUseStdIn";
+	static final String USE_STD_OUT = "spotlessIdeHookUseStdOut";
 
 	private static void dumpIsClean() {
 		System.err.println("IS CLEAN");

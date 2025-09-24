@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,19 @@ import java.util.Locale;
  */
 enum KeywordCase {
 	UPPER {
+		@Override
 		public String transform(String value) {
 			return value.toUpperCase(Locale.ENGLISH);
 		}
 	},
 	LOWER {
+		@Override
 		public String transform(String value) {
 			return value.toLowerCase(Locale.ENGLISH);
 		}
 	},
 	ORIGINAL {
+		@Override
 		public String transform(String value) {
 			return value;
 		}

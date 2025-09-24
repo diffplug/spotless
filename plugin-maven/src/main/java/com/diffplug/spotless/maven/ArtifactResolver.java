@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import org.eclipse.aether.resolution.DependencyResult;
 
 public class ArtifactResolver {
 
-	private final static Exclusion EXCLUDE_ALL_TRANSITIVES = new Exclusion("*", "*", "*", "*");
+	private static final Exclusion EXCLUDE_ALL_TRANSITIVES = new Exclusion("*", "*", "*", "*");
 
 	private final RepositorySystem repositorySystem;
 	private final RepositorySystemSession session;
