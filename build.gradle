@@ -31,5 +31,5 @@ spotless {
 
 dependencies {
 	rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.14.1"))
-	rewrite("org.openrewrite.recipe:rewrite-migrate-java:3.17.1")
+	rewrite("org.openrewrite.recipe:rewrite-migrate-java:3.18.0")
 }
