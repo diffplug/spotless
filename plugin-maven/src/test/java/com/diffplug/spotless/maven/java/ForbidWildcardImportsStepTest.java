@@ -22,8 +22,8 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 class ForbidWildcardImportsStepTest extends MavenIntegrationHarness {
 
 	@Test
-	void testRemoveWildcardImports() throws Exception {
-		writePomWithJavaSteps("<removeWildcardImports/>");
+	void testForbidWildcardImports() throws Exception {
+		writePomWithJavaSteps("<forbidWildcardImports/>");
 
 		String path = "src/main/java/test.java";
 		setFile(path).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
