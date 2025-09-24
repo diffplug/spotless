@@ -45,7 +45,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 	private boolean spotlessIdeHookUseStdOut;
 
 	@Override
-	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, List<LintSuppression> lintSuppressions) throws MojoExecutionException {
+	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		if (isIdeHook()) {
 			IdeHook.performHook(files, formatter, spotlessIdeHook, spotlessIdeHookUseStdIn, spotlessIdeHookUseStdOut);
 			return;
@@ -63,12 +63,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 			}
 
 			try {
-				String relativePath = relativize(baseDir, file);
-				if (relativePath == null) {
-					// File is not within baseDir, use absolute path as fallback
-					relativePath = file.getAbsolutePath();
-				}
-				LintState lintState = LintState.of(formatter, file).withRemovedSuppressions(formatter, relativePath, lintSuppressions);
+				LintState lintState = super.calculateLintState(formatter, file);
 				boolean hasDirtyState = !lintState.getDirtyState().isClean() && !lintState.getDirtyState().didNotConverge();
 				boolean hasUnsuppressedLints = lintState.isHasLints();
 
@@ -93,6 +88,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 					for (Map.Entry<String, List<com.diffplug.spotless.Lint>> stepEntry : lintState.getLintsByStep(formatter).entrySet()) {
 						String stepName = stepEntry.getKey();
 						for (com.diffplug.spotless.Lint lint : stepEntry.getValue()) {
+							String relativePath = LintSuppression.relativizeAsUnix(baseDir, file);
 							message.append("\n  ").append(relativePath).append(":");
 							lint.addWarningMessageTo(message, stepName, true);
 						}

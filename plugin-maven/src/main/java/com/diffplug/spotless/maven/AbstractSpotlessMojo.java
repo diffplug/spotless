@@ -54,6 +54,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
@@ -228,7 +229,16 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		return lintSuppressions;
 	}
 
-	protected abstract void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, List<LintSuppression> lintSuppressions) throws MojoExecutionException;
+	protected abstract void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException;
+
+	protected LintState calculateLintState(Formatter formatter, File file) throws IOException {
+		String relativePath = LintSuppression.relativizeAsUnix(baseDir, file);
+		if (relativePath == null) {
+			// File is not within baseDir, use absolute path as fallback
+			relativePath = file.getAbsolutePath();
+		}
+		return LintState.of(formatter, file).withRemovedSuppressions(formatter, relativePath, lintSuppressions);
+	}
 
 	private static final int MINIMUM_JRE = 11;
 
@@ -261,7 +271,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			for (FormatterFactory factory : formattersHolder.openFormatters.keySet()) {
 				Formatter formatter = formattersHolder.openFormatters.get(factory);
 				Iterable<File> files = formattersHolder.factoryToFiles.get(factory).get();
-				process(formattersHolder.nameFor(factory), files, formatter, upToDateChecker, getLintSuppressions());
+				process(formattersHolder.nameFor(factory), files, formatter, upToDateChecker);
 			}
 		} catch (PluginException e) {
 			throw e.asMojoExecutionException();
@@ -423,20 +433,5 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			checker = UpToDateChecker.noop(project, indexFile, getLog());
 		}
 		return UpToDateChecker.wrapWithBuildContext(checker, buildContext);
-	}
-
-	/**
-	 * Returns the relative path between root and dest, or null if dest is not a
-	 * child of root.
-	 */
-	static String relativize(File root, File dest) {
-		String rootPath = root.getAbsolutePath();
-		String destPath = dest.getAbsolutePath();
-		if (!destPath.startsWith(rootPath)) {
-			return null;
-		} else {
-			String relativized = destPath.substring(rootPath.length());
-			return relativized.startsWith("/") || relativized.startsWith("\\") ? relativized.substring(1) : relativized;
-		}
 	}
 }

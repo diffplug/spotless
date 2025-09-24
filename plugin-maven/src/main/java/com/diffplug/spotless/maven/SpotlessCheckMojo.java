@@ -29,7 +29,6 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.LintState;
-import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.extra.integration.DiffMessageFormatter;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
 
@@ -65,7 +64,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 	private MessageSeverity m2eIncrementalBuildMessageSeverity;
 
 	@Override
-	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker, List<LintSuppression> lintSuppressions) throws MojoExecutionException {
+	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
 		ImpactedFilesTracker counter = new ImpactedFilesTracker();
 
 		List<File> problemFiles = new ArrayList<>();
@@ -80,12 +79,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 			}
 			buildContext.removeMessages(file);
 			try {
-				String relativePath = relativize(baseDir, file);
-				if (relativePath == null) {
-					// File is not within baseDir, use absolute path as fallback
-					relativePath = file.getAbsolutePath();
-				}
-				LintState lintState = LintState.of(formatter, file).withRemovedSuppressions(formatter, relativePath, lintSuppressions);
+				LintState lintState = super.calculateLintState(formatter, file);
 				boolean hasDirtyState = !lintState.getDirtyState().isClean() && !lintState.getDirtyState().didNotConverge();
 				boolean hasUnsuppressedLints = lintState.isHasLints();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
  */
 package com.diffplug.spotless;
 
+import java.io.File;
 import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 public class LintSuppression implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
@@ -30,6 +33,9 @@ public class LintSuppression implements java.io.Serializable {
 	}
 
 	public void setPath(String path) {
+		if (path.indexOf('\\') != -1) {
+			throw new IllegalArgumentException("Path must use only unix style path separator `/`, this was " + path);
+		}
 		this.path = Objects.requireNonNull(path);
 	}
 
@@ -89,5 +95,21 @@ public class LintSuppression implements java.io.Serializable {
 				", step='" + step + '\'' +
 				", code='" + shortCode + '\'' +
 				'}';
+	}
+
+	/**
+	 * Returns the relative path between root and dest, or null if dest is not a
+	 * child of root. Guaranteed to only have unix-separators.
+	 */
+	public static @Nullable String relativizeAsUnix(File root, File dest) {
+		String rootPath = root.getAbsolutePath();
+		String destPath = dest.getAbsolutePath();
+		if (!destPath.startsWith(rootPath)) {
+			return null;
+		} else {
+			String relativized = destPath.substring(rootPath.length());
+			String unixified = relativized.replace('\\', '/');
+			return unixified.startsWith("/") ? unixified.substring(1) : unixified;
+		}
 	}
 }
