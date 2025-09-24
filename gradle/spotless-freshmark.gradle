@@ -47,13 +47,11 @@ if (tasks.names.contains('changelogCheck')) {
 	// freshmark should run after the changelog bump
 	changelogBumpFreshmark.dependsOn tasks.named('changelogBump')
 
-	def changelogBumpFreshmarkGitAdd = tasks.register('changelogBumpFreshmarkGitAdd') {
+	def changelogBumpFreshmarkGitAdd = tasks.register('changelogBumpFreshmarkGitAdd', Exec) {
 		// this git add should run after the freshmark
 		dependsOn(changelogBumpFreshmark)
 		// do the git add
-		doLast {
-			exec { commandLine 'git', 'add' , '*.md' }
-		}
+		commandLine 'git', 'add' , '*.md'
 	}
 	tasks.named('changelogPush').configure {
 		dependsOn changelogBumpFreshmarkGitAdd
