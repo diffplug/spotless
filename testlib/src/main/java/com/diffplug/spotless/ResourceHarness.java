@@ -87,9 +87,9 @@ public class ResourceHarness {
 		try (InputStream in = ResourceHarness.class.getResourceAsStream(path)) {
 			if (in == null) {
 				if (new File(path).isAbsolute()) {
-					throw new RuntimeException(String.format("Resource not found in classpath: '%s'", path));
+					throw new RuntimeException("Resource not found in classpath: '%s'".formatted(path));
 				} else {
-					throw new RuntimeException(String.format("Resource not found in classpath: '%s' - did you mean '/%1$s'?", path));
+					throw new RuntimeException("Resource not found in classpath: '%s' - did you mean '/%1$s'?".formatted(path));
 				}
 			}
 			try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {

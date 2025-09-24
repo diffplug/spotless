@@ -223,8 +223,8 @@ public class MavenIntegrationHarness extends ResourceHarness {
 				.withProjectDir(rootFolder())
 				.withRunner(runner);
 		System.getProperties().forEach((key, value) -> {
-			if (key instanceof String && ((String) key).startsWith("spotless") && value instanceof String) {
-				mavenRunner.withSystemProperty((String) key, (String) value);
+			if (key instanceof String string && string.startsWith("spotless") && value instanceof String string1) {
+				mavenRunner.withSystemProperty(string, string1);
 			}
 		});
 		return mavenRunner;

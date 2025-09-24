@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.kotlin;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/pinterest/ktlint">ktlint</a> as a FormatterStep. */
 public class KtLintStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "1.7.1";
 	private static final String NAME = "ktlint";
@@ -89,6 +91,7 @@ public class KtLintStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 		/** The jar that contains the formatter. */
 		private final JarState jarState;

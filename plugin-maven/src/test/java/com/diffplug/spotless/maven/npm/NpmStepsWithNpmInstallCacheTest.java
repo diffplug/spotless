@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
@@ -85,7 +84,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				.doesNotContain("Using cached node_modules for");
 
 		// recursively delete target folder to simulate a fresh run (except the default cache folder)
-		recursiveDelete(Paths.get(rootFolder().getAbsolutePath(), "target"), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
+		recursiveDelete(Path.of(rootFolder().getAbsolutePath(), "target"), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
 
 		Result result2 = run("typescript", suffix);
 		Assertions.assertThat(result2.stdOutUtf8())
@@ -129,7 +128,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				.doesNotContain("Using cached node_modules for");
 
 		// recursively delete target folder to simulate a fresh run
-		recursiveDelete(Paths.get(rootFolder().getAbsolutePath(), "target"), null);
+		recursiveDelete(Path.of(rootFolder().getAbsolutePath(), "target"), null);
 
 		Result result2 = run("typescript", suffix);
 		Assertions.assertThat(result2.stdOutUtf8())

@@ -97,7 +97,7 @@ public final class GrEclipseFormatterStep {
 						return (String) method.invoke(formatter, input);
 					} catch (InvocationTargetException exceptionWrapper) {
 						Throwable throwable = exceptionWrapper.getTargetException();
-						Exception exception = (throwable instanceof Exception) ? (Exception) throwable : null;
+						Exception exception = (throwable instanceof Exception e) ? e : null;
 						throw (null == exception) ? exceptionWrapper : exception;
 					}
 				});

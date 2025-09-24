@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ final class ModuleHelper {
 					message.append("WARNING: Some required internal classes are unavailable. Please consider adding the following JVM arguments\n");
 					message.append("WARNING: ");
 					for (String name : failedToOpen) {
-						message.append(String.format("--add-opens jdk.compiler/%s=ALL-UNNAMED", name));
+						message.append("--add-opens jdk.compiler/%s=ALL-UNNAMED".formatted(name));
 					}
 					LOGGER.warn("{}", message);
 				}
@@ -127,8 +127,7 @@ final class ModuleHelper {
 		}
 	}
 
-	@Nullable
-	@SuppressFBWarnings("REC_CATCH_EXCEPTION") // workaround JDK11
+	@Nullable @SuppressFBWarnings("REC_CATCH_EXCEPTION") // workaround JDK11
 	private static Collection<?> allModules() {
 		// calling ModuleLayer.boot().modules() by reflection
 		try {

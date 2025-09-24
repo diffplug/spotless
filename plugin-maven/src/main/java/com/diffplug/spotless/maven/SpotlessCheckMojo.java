@@ -105,10 +105,10 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
 		// We print the number of considered files which is useful when ratchetFrom is setup
 		if (counter.getTotal() > 0) {
-			getLog().info(String.format("Spotless.%s is keeping %s files clean - %s needs changes to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
+			getLog().info("Spotless.%s is keeping %s files clean - %s needs changes to be clean, %s were already clean, %s were skipped because caching determined they were already clean".formatted(
 					name, counter.getTotal(), counter.getCleaned(), counter.getCheckedButAlreadyClean(), counter.getSkippedAsCleanCache()));
 		} else {
-			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", name));
+			getLog().debug("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart".formatted(name));
 		}
 
 		if (!problemFiles.isEmpty()) {
@@ -124,7 +124,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 			File file = firstLintProblem.getKey();
 			LintState lintState = firstLintProblem.getValue();
 			String stepName = lintState.getLintsByStep(formatter).keySet().iterator().next();
-			throw new MojoExecutionException(String.format("Unable to format file %s%nStep '%s' found problem in '%s':%n%s",
+			throw new MojoExecutionException("Unable to format file %s%nStep '%s' found problem in '%s':%n%s".formatted(
 					file, stepName, file.getName(), lintState.asStringOneLine(file, formatter)));
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,14 +77,15 @@ class NpmExecutableResolver {
 	}
 
 	static String explainMessage() {
-		return "Spotless tries to find your npm executable automatically. It looks for npm in the following places:\n" +
-				"- An executable referenced by the java system property 'npm.exec' - if such a system property exists.\n" +
-				"- The environment variable 'NVM_BIN' - if such an environment variable exists.\n" +
-				"- The environment variable 'NVM_SYMLINK' - if such an environment variable exists.\n" +
-				"- The environment variable 'NODE_PATH' - if such an environment variable exists.\n" +
-				"- In your 'PATH' environment variable\n" +
-				"\n" +
-				"If autodiscovery fails for your system, try to set one of the environment variables correctly or\n" +
-				"try setting the system property 'npm.exec' in the build process to override autodiscovery.";
+		return """
+				Spotless tries to find your npm executable automatically. It looks for npm in the following places:
+				- An executable referenced by the java system property 'npm.exec' - if such a system property exists.
+				- The environment variable 'NVM_BIN' - if such an environment variable exists.
+				- The environment variable 'NVM_SYMLINK' - if such an environment variable exists.
+				- The environment variable 'NODE_PATH' - if such an environment variable exists.
+				- In your 'PATH' environment variable
+
+				If autodiscovery fails for your system, try to set one of the environment variables correctly or
+				try setting the system property 'npm.exec' in the build process to override autodiscovery.""";
 	}
 }

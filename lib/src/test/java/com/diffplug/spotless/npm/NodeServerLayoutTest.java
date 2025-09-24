@@ -68,7 +68,7 @@ class NodeServerLayoutTest extends ResourceHarness {
 	static String prettierPackageJson(Map<String, String> dependencies) {
 		String templateContent = NpmResourceHelper.readUtf8StringFromClasspath(NodeServerLayoutTest.class, "/com/diffplug/spotless/npm/prettier-package.json");
 		String dependenciesList = dependencies.entrySet().stream()
-				.map(entry -> String.format("\"%s\": \"%s\"", entry.getKey(), entry.getValue()))
+				.map(entry -> "\"%s\": \"%s\"".formatted(entry.getKey(), entry.getValue()))
 				.reduce((a, b) -> a + ",\n  " + b)
 				.orElse("");
 

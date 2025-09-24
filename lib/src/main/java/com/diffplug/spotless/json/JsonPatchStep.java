@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.json;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,16 +31,15 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 public class JsonPatchStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.flipkart.zjsonpatch:zjsonpatch";
 	private static final String DEFAULT_VERSION = "0.4.16";
 	public static final String NAME = "apply-json-patch";
 
 	private final JarState.Promised jarState;
-	@Nullable
-	private final List<Map<String, Object>> patch;
-	@Nullable
-	private final String patchString;
+	@Nullable private final List<Map<String, Object>> patch;
+	@Nullable private final String patchString;
 
 	private JsonPatchStep(JarState.Promised jarState,
 			@Nullable String patchString,
@@ -82,13 +82,12 @@ public class JsonPatchStep implements Serializable {
 	}
 
 	static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;
-		@Nullable
-		private final List<Map<String, Object>> patch;
-		@Nullable
-		private final String patchString;
+		@Nullable private final List<Map<String, Object>> patch;
+		@Nullable private final String patchString;
 
 		State(JarState jarState,
 				@Nullable String patchString,

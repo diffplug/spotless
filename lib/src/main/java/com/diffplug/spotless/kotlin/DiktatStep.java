@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,22 @@
 package com.diffplug.spotless.kotlin;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.diffplug.spotless.*;
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/cqfn/diKTat">diktat</a> as a FormatterStep. */
 public class DiktatStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private final JarState.Promised jarState;
 	private final String versionDiktat;
@@ -86,6 +92,7 @@ public class DiktatStep implements Serializable {
 	}
 
 	static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		final JarState jar;

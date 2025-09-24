@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.annotation.Nullable;
@@ -23,6 +24,7 @@ import javax.annotation.Nullable;
 import com.diffplug.spotless.FileSignature;
 
 public class EslintConfig implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("unused")
@@ -38,13 +40,11 @@ public class EslintConfig implements Serializable {
 		return new EslintConfig(eslintConfigPath, this.eslintConfigJs);
 	}
 
-	@Nullable
-	public File getEslintConfigPath() {
+	@Nullable public File getEslintConfigPath() {
 		return eslintConfigPathSignature == null ? null : eslintConfigPathSignature.get().getOnlyFile();
 	}
 
-	@Nullable
-	public String getEslintConfigJs() {
+	@Nullable public String getEslintConfigJs() {
 		return eslintConfigJs;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.nio.file.FileSystemException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -108,11 +107,11 @@ class ShadowCopy {
 	}
 
 	private File entry(String key, String origName) {
-		return Paths.get(shadowCopyRoot().getAbsolutePath(), key, origName).toFile();
+		return Path.of(shadowCopyRoot().getAbsolutePath(), key, origName).toFile();
 	}
 
 	public File copyEntryInto(String key, String origName, File targetParentFolder) {
-		File target = Paths.get(targetParentFolder.getAbsolutePath(), origName).toFile();
+		File target = Path.of(targetParentFolder.getAbsolutePath(), origName).toFile();
 		if (target.exists()) {
 			logger.warn("Shadow copy destination already exists, deleting! {}: {}", key, target);
 			ThrowingEx.run(() -> Files.walkFileTree(target.toPath(), new DeleteDirectoryRecursively()));

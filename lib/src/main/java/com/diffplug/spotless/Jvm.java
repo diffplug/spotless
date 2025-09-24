@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,10 +90,10 @@ public final class Jvm {
 		public Support<V> add(int minimumJvmVersion, V maxFormatterVersion) {
 			Objects.requireNonNull(maxFormatterVersion);
 			if (null != jvm2fmtMaxVersion.put(minimumJvmVersion, maxFormatterVersion)) {
-				throw new IllegalArgumentException(String.format("Added duplicate entry for JVM %d+.", minimumJvmVersion));
+				throw new IllegalArgumentException("Added duplicate entry for JVM %d+.".formatted(minimumJvmVersion));
 			}
 			if (null != fmtMaxVersion2jvmVersion.put(maxFormatterVersion, minimumJvmVersion)) {
-				throw new IllegalArgumentException(String.format("Added duplicate entry for formatter version %s.", maxFormatterVersion));
+				throw new IllegalArgumentException("Added duplicate entry for formatter version %s.".formatted(maxFormatterVersion));
 			}
 			verifyVersionRangesDoNotIntersect(jvm2fmtMaxVersion, minimumJvmVersion, maxFormatterVersion);
 			return this;
@@ -102,7 +102,7 @@ public final class Jvm {
 		public Support<V> addMin(int minimumJvmVersion, V minFormatterVersion) {
 			Objects.requireNonNull(minFormatterVersion);
 			if (null != jvm2fmtMinVersion.put(minimumJvmVersion, minFormatterVersion)) {
-				throw new IllegalArgumentException(String.format("Added duplicate entry for JVM %d+.", minimumJvmVersion));
+				throw new IllegalArgumentException("Added duplicate entry for JVM %d+.".formatted(minimumJvmVersion));
 			}
 			verifyVersionRangesDoNotIntersect(jvm2fmtMinVersion, minimumJvmVersion, minFormatterVersion);
 			return this;
@@ -111,23 +111,21 @@ public final class Jvm {
 		private void verifyVersionRangesDoNotIntersect(NavigableMap<Integer, V> jvm2fmtVersion, int minimumJvmVersion, V formatterVersion) {
 			Map.Entry<Integer, V> lower = jvm2fmtVersion.lowerEntry(minimumJvmVersion);
 			if ((null != lower) && (fmtVersionComparator.compare(formatterVersion, lower.getValue()) <= 0)) {
-				throw new IllegalArgumentException(String.format("%d/%s should be lower than %d/%s", minimumJvmVersion, formatterVersion, lower.getKey(), lower.getValue()));
+				throw new IllegalArgumentException("%d/%s should be lower than %d/%s".formatted(minimumJvmVersion, formatterVersion, lower.getKey(), lower.getValue()));
 			}
 			Map.Entry<Integer, V> higher = jvm2fmtVersion.higherEntry(minimumJvmVersion);
 			if ((null != higher) && (fmtVersionComparator.compare(formatterVersion, higher.getValue()) >= 0)) {
-				throw new IllegalArgumentException(String.format("%d/%s should be higher than %d/%s", minimumJvmVersion, formatterVersion, higher.getKey(), higher.getValue()));
+				throw new IllegalArgumentException("%d/%s should be higher than %d/%s".formatted(minimumJvmVersion, formatterVersion, higher.getKey(), higher.getValue()));
 			}
 		}
 
 		/** @return Highest formatter version recommended for this JVM (null, if JVM not supported) */
-		@Nullable
-		public V getRecommendedFormatterVersion() {
+		@Nullable public V getRecommendedFormatterVersion() {
 			Integer configuredJvmVersionOrNull = jvm2fmtMaxVersion.floorKey(Jvm.version());
 			return (null == configuredJvmVersionOrNull) ? null : jvm2fmtMaxVersion.get(configuredJvmVersionOrNull);
 		}
 
-		@Nullable
-		public V getMinimumRequiredFormatterVersion() {
+		@Nullable public V getMinimumRequiredFormatterVersion() {
 			Integer configuredJvmVersionOrNull = jvm2fmtMinVersion.floorKey(Jvm.version());
 			return (null == configuredJvmVersionOrNull) ? null : jvm2fmtMinVersion.get(configuredJvmVersionOrNull);
 		}
@@ -154,7 +152,7 @@ public final class Jvm {
 			// check if the formatter version is too low for the jvm version
 			V minimumFormatterVersion = getMinimumRequiredFormatterVersion();
 			if ((null != minimumFormatterVersion) && (fmtVersionComparator.compare(fmtVersion, minimumFormatterVersion) < 0)) {
-				return String.format("You are running Spotless on JVM %d. This requires %s of at least %s (you are using %s).%n", Jvm.version(), fmtName, minimumFormatterVersion, fmtVersion);
+				return "You are running Spotless on JVM %d. This requires %s of at least %s (you are using %s).%n".formatted(Jvm.version(), fmtName, minimumFormatterVersion, fmtVersion);
 			}
 			// otherwise all is well
 			return "";
@@ -162,16 +160,16 @@ public final class Jvm {
 
 		private String buildUpgradeJvmMessage(V fmtVersion) {
 			StringBuilder builder = new StringBuilder();
-			builder.append(String.format("You are running Spotless on JVM %d", Jvm.version()));
+			builder.append("You are running Spotless on JVM %d".formatted(Jvm.version()));
 			V recommendedFmtVersionOrNull = getRecommendedFormatterVersion();
 			if (null != recommendedFmtVersionOrNull) {
-				builder.append(String.format(", which limits you to %s %s.%n", fmtName, recommendedFmtVersionOrNull));
+				builder.append(", which limits you to %s %s.%n".formatted(fmtName, recommendedFmtVersionOrNull));
 			} else {
 				Entry<V, Integer> nextFmtVersionOrNull = fmtMaxVersion2jvmVersion.ceilingEntry(fmtVersion);
 				if (null != nextFmtVersionOrNull) {
-					builder.append(String.format(". %s %s requires JVM %d+", fmtName, fmtVersion, nextFmtVersionOrNull.getValue()));
+					builder.append(". %s %s requires JVM %d+".formatted(fmtName, fmtVersion, nextFmtVersionOrNull.getValue()));
 				}
-				builder.append(String.format(".%n"));
+				builder.append(".%n".formatted());
 			}
 			return builder.toString();
 		}
@@ -230,22 +228,22 @@ public final class Jvm {
 			V minimumFormatterVersion = getMinimumRequiredFormatterVersion();
 			V recommendedFmtVersionOrNull = getRecommendedFormatterVersion();
 			if ((null != minimumFormatterVersion) && (fmtVersionComparator.compare(fmtVersion, minimumFormatterVersion) < 0)) {
-				builder.append(String.format("You are running Spotless on JVM %d. This requires %s of at least %s.%n", Jvm.version(), fmtName, minimumFormatterVersion));
-				builder.append(String.format("You are using %s %s.%n", fmtName, fmtVersion));
+				builder.append("You are running Spotless on JVM %d. This requires %s of at least %s.%n".formatted(Jvm.version(), fmtName, minimumFormatterVersion));
+				builder.append("You are using %s %s.%n".formatted(fmtName, fmtVersion));
 				if (null != recommendedFmtVersionOrNull) {
-					builder.append(String.format("%s %s is the recommended version, which may have fixed this problem.%n", fmtName, recommendedFmtVersionOrNull));
+					builder.append("%s %s is the recommended version, which may have fixed this problem.%n".formatted(fmtName, recommendedFmtVersionOrNull));
 				}
 				// check if the formatter is outdated on this jvm
 			} else if (null != recommendedFmtVersionOrNull && (fmtVersionComparator.compare(fmtVersion, recommendedFmtVersionOrNull) < 0)) {
-				builder.append(String.format("%s %s is currently being used, but outdated.%n", fmtName, fmtVersion));
-				builder.append(String.format("%s %s is the recommended version, which may have fixed this problem.%n", fmtName, recommendedFmtVersionOrNull));
-				builder.append(String.format("%s %s requires JVM %d+.", fmtName, recommendedFmtVersionOrNull, getRequiredJvmVersion(recommendedFmtVersionOrNull)));
+				builder.append("%s %s is currently being used, but outdated.%n".formatted(fmtName, fmtVersion));
+				builder.append("%s %s is the recommended version, which may have fixed this problem.%n".formatted(fmtName, recommendedFmtVersionOrNull));
+				builder.append("%s %s requires JVM %d+.".formatted(fmtName, recommendedFmtVersionOrNull, getRequiredJvmVersion(recommendedFmtVersionOrNull)));
 			} else {
 				V higherFormatterVersionOrNull = fmtMaxVersion2jvmVersion.higherKey(fmtVersion);
 				if (null != higherFormatterVersionOrNull) {
 					builder.append(buildUpgradeJvmMessage(fmtVersion));
 					Integer higherJvmVersion = fmtMaxVersion2jvmVersion.get(higherFormatterVersionOrNull);
-					builder.append(String.format("If you upgrade your JVM to %d+, then you can use %s %s, which may have fixed this problem.", higherJvmVersion, fmtName, higherFormatterVersionOrNull));
+					builder.append("If you upgrade your JVM to %d+, then you can use %s %s, which may have fixed this problem.".formatted(higherJvmVersion, fmtName, higherFormatterVersionOrNull));
 				}
 			}
 			return builder.toString();
@@ -253,9 +251,9 @@ public final class Jvm {
 
 		@Override
 		public String toString() {
-			return String.format("%s alternatives:%n", fmtName) +
+			return "%s alternatives:%n".formatted(fmtName) +
 					jvm2fmtMaxVersion.entrySet().stream().map(
-							e -> String.format("- Version %s requires JVM %d+", e.getValue(), e.getKey())).collect(Collectors.joining(System.lineSeparator()));
+							e -> "- Version %s requires JVM %d+".formatted(e.getValue(), e.getKey())).collect(Collectors.joining(System.lineSeparator()));
 		}
 
 		@SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")
@@ -288,7 +286,7 @@ public final class Jvm {
 					}
 					return Arrays.asList(versionString.split("\\.")).stream().mapToInt(Integer::parseInt).toArray();
 				} catch (Exception e) {
-					throw new IllegalArgumentException(String.format("Not a semantic version: %s", versionObject), e);
+					throw new IllegalArgumentException("Not a semantic version: %s".formatted(versionObject), e);
 				}
 			}
 		};

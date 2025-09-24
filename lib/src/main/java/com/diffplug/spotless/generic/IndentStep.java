@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.generic;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -23,6 +24,7 @@ import com.diffplug.spotless.SerializedFunction;
 
 /** Simple step which checks for consistent indentation characters. */
 public final class IndentStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	final Type type;

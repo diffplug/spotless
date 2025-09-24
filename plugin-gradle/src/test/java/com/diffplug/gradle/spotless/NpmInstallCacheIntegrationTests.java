@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import static com.diffplug.gradle.spotless.FormatExtension.NpmStepConfig.SPOTLES
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
@@ -54,7 +54,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		Assertions.assertThat(result.getOutput())
 				.doesNotContain("Using cached node_modules for")
 				.contains("Caching node_modules for ")
-				.contains(Paths.get(dir1.getAbsolutePath(), "build", SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME).toString());
+				.contains(Path.of(dir1.getAbsolutePath(), "build", SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME).toString());
 
 	}
 

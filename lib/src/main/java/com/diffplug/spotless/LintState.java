@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -181,8 +181,8 @@ public class LintState {
 				}
 			}
 			List<Lint> lintsForStep;
-			if (exceptionForLint instanceof Lint.Has) {
-				lintsForStep = ((Lint.Has) exceptionForLint).getLints();
+			if (exceptionForLint instanceof Lint.Has has) {
+				lintsForStep = has.getLints();
 			} else if (exceptionForLint != null && exceptionForLint != formatStepCausedNoChange()) {
 				lintsForStep = List.of(Lint.createFromThrowable(step, exceptionForLint));
 			} else {

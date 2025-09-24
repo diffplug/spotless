@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.spotless.groovy;
 
 import java.io.BufferedReader;
+import java.io.Serial;
 import java.io.Serializable;
 import java.io.StringReader;
 
@@ -28,6 +29,7 @@ import com.diffplug.spotless.FormatterStep;
  * @author Jose Luis Badano
  */
 public final class RemoveSemicolonsStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "Remove unnecessary semicolons";
 
@@ -42,6 +44,7 @@ public final class RemoveSemicolonsStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		FormatterFunc toFormatter() {

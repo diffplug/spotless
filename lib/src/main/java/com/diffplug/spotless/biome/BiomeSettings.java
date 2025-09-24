@@ -48,7 +48,7 @@ public final class BiomeSettings {
 	}
 
 	/**
-	 * @return The pattern for {@link String#format(String, Object...)
+	 * @return The pattern for {@link String#formatted(Object...)
 	 *         String.format()} for the file name of a Biome executable for a
 	 *         certain version and architecture. The first parameter is the platform,
 	 *         the second is the OS, the third is the architecture.
@@ -59,7 +59,7 @@ public final class BiomeSettings {
 
 	/**
 	 * @param version The biome version for which to get the URL pattern, e.g. 1.2.0 or 2.0.6.
-	 * @return The pattern for {@link String#format(String, Object...)
+	 * @return The pattern for {@link String#formatted(Object...)
 	 *         String.format()} for the URL where the executables can be downloaded.
 	 *         The first parameter is the version, the second parameter is the OS /
 	 *         platform.

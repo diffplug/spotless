@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ public enum EslintStyleGuide {
 
 	public String asMavenXmlStringMergedWith(Map<String, String> devDependencies) {
 		return mergedWith(devDependencies).entrySet().stream()
-				.map(entry -> String.format("<property><name>%s</name><value>%s</value></property>", entry.getKey(), entry.getValue()))
+				.map(entry -> "<property><name>%s</name><value>%s</value></property>".formatted(entry.getKey(), entry.getValue()))
 				.collect(Collectors.joining("", "<devDependencyProperties>", "</devDependencyProperties>"));
 	}
 

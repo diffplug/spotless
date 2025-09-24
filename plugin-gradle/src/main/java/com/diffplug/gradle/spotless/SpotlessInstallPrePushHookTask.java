@@ -65,17 +65,17 @@ public abstract class SpotlessInstallPrePushHookTask extends DefaultTask {
 		final var logger = new GitPreHookLogger() {
 			@Override
 			public void info(String format, Object... arguments) {
-				getLogger().lifecycle(String.format(format, arguments));
+				getLogger().lifecycle(format.formatted(arguments));
 			}
 
 			@Override
 			public void warn(String format, Object... arguments) {
-				getLogger().warn(String.format(format, arguments));
+				getLogger().warn(format.formatted(arguments));
 			}
 
 			@Override
 			public void error(String format, Object... arguments) {
-				getLogger().error(String.format(format, arguments));
+				getLogger().error(format.formatted(arguments));
 			}
 		};
 

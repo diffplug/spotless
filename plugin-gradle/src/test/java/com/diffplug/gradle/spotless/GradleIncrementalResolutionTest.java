@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,16 +57,18 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 		// check will run against all three the first time.
 		checkRanAgainst("abc");
 		// Subsequent runs will use the cached error message
-		checkRanAgainstNoneButError().contains("> The following files had format violations:\n" +
-				"      b.md\n" +
-				"          @@ -1 +1 @@\n" +
-				"          -B\n" +
-				"          +b");
-		checkRanAgainstNoneButError().contains("> The following files had format violations:\n" +
-				"      b.md\n" +
-				"          @@ -1 +1 @@\n" +
-				"          -B\n" +
-				"          +b");
+		checkRanAgainstNoneButError().contains("""
+				> The following files had format violations:
+				      b.md
+				          @@ -1 +1 @@
+				          -B
+				          +b""");
+		checkRanAgainstNoneButError().contains("""
+				> The following files had format violations:
+				      b.md
+				          @@ -1 +1 @@
+				          -B
+				          +b""");
 		// apply will simply copy outputs the first time: no formatters executed
 		applyRanAgainst("");
 		// the second time, it will only run on the file that was changed by apply
@@ -79,11 +81,12 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 		// then check runs against just the changed file
 		checkRanAgainst("a");
 		// even after failing once the error is still there
-		checkRanAgainstNoneButError().contains("> The following files had format violations:\n" +
-				"      a.md\n" +
-				"          @@ -1 +1 @@\n" +
-				"          -A\n" +
-				"          +a");
+		checkRanAgainstNoneButError().contains("""
+				> The following files had format violations:
+				      a.md
+				          @@ -1 +1 @@
+				          -A
+				          +a""");
 		// and so does apply
 		applyRanAgainst();
 		applyRanAgainst("a");

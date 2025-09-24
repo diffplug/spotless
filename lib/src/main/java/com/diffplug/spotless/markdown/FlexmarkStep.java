@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.markdown;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Objects;
@@ -26,6 +27,7 @@ import com.diffplug.spotless.Provisioner;
 
 /** A step for <a href="https://github.com/vsch/flexmark-java">flexmark-java</a>. */
 public class FlexmarkStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "0.64.8";
 	private static final String MAVEN_COORDINATE = "com.vladsch.flexmark:flexmark-all:";
@@ -61,6 +63,7 @@ public class FlexmarkStep implements Serializable {
 	}
 
 	private static class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;

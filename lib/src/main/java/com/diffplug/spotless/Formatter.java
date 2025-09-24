@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 /** Formatter which performs the full formatting. */
 public final class Formatter implements Serializable, AutoCloseable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	// The name is used for logging purpose. It does not convey any applicative

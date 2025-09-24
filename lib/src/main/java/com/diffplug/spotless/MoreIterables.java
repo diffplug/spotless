@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ final class MoreIterables {
 	/** Returns a shallow copy of input elements, throwing on null elements. */
 	static <T> List<T> toNullHostileList(Iterable<T> input) {
 		requireElementsNonNull(input);
-		List<T> shallowCopy = (input instanceof Collection)
-				? new ArrayList<>(((Collection<?>) input).size())
+		List<T> shallowCopy = (input instanceof Collection<?> c)
+				? new ArrayList<>(c.size())
 				: new ArrayList<>();
 		input.forEach(shallowCopy::add);
 		return shallowCopy;

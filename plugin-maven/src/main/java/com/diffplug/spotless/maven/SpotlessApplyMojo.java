@@ -68,7 +68,7 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 				boolean hasUnsuppressedLints = lintState.isHasLints();
 
 				if (hasDirtyState) {
-					getLog().info(String.format("clean file: %s", file));
+					getLog().info("clean file: %s".formatted(file));
 					lintState.getDirtyState().writeCanonicalTo(file);
 					buildContext.refresh(file);
 					counter.cleaned();
@@ -105,10 +105,10 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 
 		// We print the number of considered files which is useful when ratchetFrom is setup
 		if (counter.getTotal() > 0) {
-			getLog().info(String.format("Spotless.%s is keeping %s files clean - %s were changed to be clean, %s were already clean, %s were skipped because caching determined they were already clean",
+			getLog().info("Spotless.%s is keeping %s files clean - %s were changed to be clean, %s were already clean, %s were skipped because caching determined they were already clean".formatted(
 					name, counter.getTotal(), counter.getCleaned(), counter.getCheckedButAlreadyClean(), counter.getSkippedAsCleanCache()));
 		} else {
-			getLog().debug(String.format("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart", name));
+			getLog().debug("Spotless.%s has no target files. Examine your `<includes>`: https://github.com/diffplug/spotless/tree/main/plugin-maven#quickstart".formatted(name));
 		}
 	}
 

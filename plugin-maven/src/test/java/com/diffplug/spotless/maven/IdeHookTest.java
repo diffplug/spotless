@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,15 +30,16 @@ class IdeHookTest extends MavenIntegrationHarness {
 
 	@BeforeEach
 	void before() throws IOException {
-		writePomWithFormatSteps("<includes>\n" +
-				"                                <include>DIRTY.md</include>\n" +
-				"                                <include>CLEAN.md</include>\n" +
-				"                            </includes>\n" +
-				"                            <replace>\n" +
-				"                                <name>Greetings to Mars</name>\n" +
-				"                                <search>World</search>\n" +
-				"                                <replacement>Mars</replacement>\n" +
-				"                            </replace>");
+		writePomWithFormatSteps("""
+				<includes>
+				                                <include>DIRTY.md</include>
+				                                <include>CLEAN.md</include>
+				                            </includes>
+				                            <replace>
+				                                <name>Greetings to Mars</name>
+				                                <search>World</search>
+				                                <replacement>Mars</replacement>
+				                            </replace>""");
 
 		dirty = setFile("DIRTY.md").toContent("World");
 		clean = setFile("CLEAN.md").toContent("Mars");

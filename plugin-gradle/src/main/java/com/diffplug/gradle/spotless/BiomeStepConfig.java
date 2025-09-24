@@ -18,7 +18,7 @@ package com.diffplug.gradle.spotless;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -227,7 +227,7 @@ public abstract class BiomeStepConfig<Self extends BiomeStepConfig<Self>> {
 	 * @return The resolved path to the Biome executable.
 	 */
 	private String resolvePathToExe() {
-		var fileNameOnly = pathToExe instanceof String && Paths.get(pathToExe.toString()).getNameCount() == 1;
+		var fileNameOnly = pathToExe instanceof String && Path.of(pathToExe.toString()).getNameCount() == 1;
 		if (fileNameOnly) {
 			return pathToExe.toString();
 		} else {

@@ -22,7 +22,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -161,7 +160,7 @@ public class BiomeStep {
 	 * @param filePath Path to the file to make executable.
 	 */
 	private static void makeExecutable(String filePath) {
-		var exePath = Paths.get(filePath);
+		var exePath = Path.of(filePath);
 		attemptToAddPosixPermission(exePath, PosixFilePermission.GROUP_EXECUTE);
 		attemptToAddPosixPermission(exePath, PosixFilePermission.OTHERS_EXECUTE);
 		attemptToAddPosixPermission(exePath, PosixFilePermission.OWNER_EXECUTE);
@@ -199,7 +198,7 @@ public class BiomeStep {
 			return;
 		}
 		var atLeastV2 = BiomeSettings.versionHigherThanOrEqualTo(version, 2, 0, 0);
-		var path = Paths.get(configPath);
+		var path = Path.of(configPath);
 		var configFile = Files.isRegularFile(path) && atLeastV2 ? path : path.resolve(BiomeSettings.configName());
 		if (!Files.exists(path)) {
 			throw new IllegalArgumentException("Biome config directory does not exist: " + path);
@@ -323,13 +322,13 @@ public class BiomeStep {
 	private String resolveExe() throws IOException, InterruptedException {
 		new ForeignExe();
 		if (pathToExe != null) {
-			if (Paths.get(pathToExe).getNameCount() == 1) {
+			if (Path.of(pathToExe).getNameCount() == 1) {
 				return resolveNameAgainstPath(pathToExe);
 			} else {
 				return pathToExe;
 			}
 		} else {
-			var downloader = new BiomeExecutableDownloader(Paths.get(downloadDir));
+			var downloader = new BiomeExecutableDownloader(Path.of(downloadDir));
 			var downloaded = downloader.ensureDownloaded(version).toString();
 			makeExecutable(downloaded);
 			return downloaded;

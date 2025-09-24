@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +42,7 @@ public final class Lint implements Serializable {
 		return new Lint(lineStart, lineEnd, shortCode, detail);
 	}
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private int lineStart, lineEnd; // 1-indexed, inclusive

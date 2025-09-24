@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,8 +125,8 @@ class JsonSimpleStepTest {
 	}
 
 	private static void doWithResource(StepHarness stepHarness, String name) {
-		String before = String.format("json/%sBefore.json", name);
-		String after = String.format("json/%sAfter.json", name);
+		String before = "json/%sBefore.json".formatted(name);
+		String after = "json/%sAfter.json".formatted(name);
 		stepHarness.testResource(before, after);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.java;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import com.diffplug.spotless.SerializedFunction;
  * Note: A type annotation is an annotation that is meta-annotated with {@code @Target({ElementType.TYPE_USE})}.
  */
 public final class FormatAnnotationsStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -426,6 +428,7 @@ public final class FormatAnnotationsStep implements Serializable {
 
 	// TODO: Read from a local .type-annotations file.
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final Set<String> typeAnnotations = new HashSet<>(defaultTypeAnnotations);

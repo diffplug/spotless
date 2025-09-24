@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.rdf;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -27,6 +28,7 @@ import com.diffplug.spotless.Provisioner;
 
 public class RdfFormatterStep implements Serializable {
 	public static final String LATEST_TURTLE_FORMATTER_VERSION = "1.2.13";
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private static final String TURTLE_FORMATTER_COORDINATES = "de.atextor:turtle-formatter";
@@ -60,6 +62,7 @@ public class RdfFormatterStep implements Serializable {
 	}
 
 	public static class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final RdfFormatterConfig config;

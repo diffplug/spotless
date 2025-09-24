@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
@@ -40,7 +39,7 @@ class BiomeStepTest extends ResourceHarness {
 	@BeforeAll
 	static void createDownloadDir() throws IOException {
 		// We do not want to download Biome each time we execute a test
-		var userHome = Paths.get(StandardSystemProperty.USER_HOME.value());
+		var userHome = Path.of(StandardSystemProperty.USER_HOME.value());
 		downloadDir = userHome.resolve(".gradle").resolve("rome-dl-test").toAbsolutePath().normalize().toString();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,8 @@ class NodeExecutableResolver {
 	}
 
 	public static String explainMessage() {
-		return "Spotless was unable to find a node executable.\n" +
-				"Either specify the node executable explicitly or make sure it can be found next to the npm executable.";
+		return """
+				Spotless was unable to find a node executable.
+				Either specify the node executable explicitly or make sure it can be found next to the npm executable.""";
 	}
 }

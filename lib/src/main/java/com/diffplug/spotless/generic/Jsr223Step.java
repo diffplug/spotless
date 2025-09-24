@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.generic;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,9 +30,9 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 public final class Jsr223Step implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
-	@Nullable
-	private final JarState.Promised jarState;
+	@Nullable private final JarState.Promised jarState;
 	private final String engine;
 	private final String script;
 
@@ -56,10 +57,10 @@ public final class Jsr223Step implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
-		@Nullable
-		private final JarState jarState;
+		@Nullable private final JarState jarState;
 		private final String engine;
 		private final String script;
 

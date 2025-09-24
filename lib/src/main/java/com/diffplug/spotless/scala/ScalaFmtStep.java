@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.spotless.scala;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/scalameta/scalafmt">scalafmt</a> as a FormatterStep. */
 public class ScalaFmtStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	static final String DEFAULT_VERSION = "3.8.1";
@@ -40,8 +42,7 @@ public class ScalaFmtStep implements Serializable {
 	private static final String MAVEN_COORDINATE = "org.scalameta:scalafmt-core_";
 
 	private final JarState.Promised jarState;
-	@Nullable
-	private final File configFile;
+	@Nullable private final File configFile;
 
 	private ScalaFmtStep(JarState.Promised jarState, @Nullable File configFile) {
 		this.jarState = jarState;
@@ -78,6 +79,7 @@ public class ScalaFmtStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;

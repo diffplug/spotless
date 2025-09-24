@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.Collections;
@@ -43,6 +44,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final TimedLogger timedLogger = TimedLogger.forLogger(logger);
 
+	@Serial
 	private static final long serialVersionUID = 1460749955865959948L;
 
 	private final String stepName;
@@ -117,7 +119,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 				final UUID nodeServerInstanceId = UUID.randomUUID();
 				// The npm process will output the randomly selected port of the http server process to 'server-<id>.port' file
 				// so in order to be safe, remove such a file if it exists before starting.
-				final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), String.format("server-%s.port", nodeServerInstanceId));
+				final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server-%s.port".formatted(nodeServerInstanceId));
 				NpmResourceHelper.deleteFileIfExists(serverPortFile);
 				// start the http server in node
 				server = nodeServeApp.startNpmServeProcess(nodeServerInstanceId);
@@ -211,6 +213,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	protected static class ServerStartException extends RuntimeException {
+		@Serial
 		private static final long serialVersionUID = -8803977379866483002L;
 
 		public ServerStartException(String message, Throwable cause) {

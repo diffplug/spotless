@@ -16,6 +16,7 @@
 package com.diffplug.spotless.java;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -37,6 +38,7 @@ import com.diffplug.spotless.Provisioner;
  */
 // https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md#how-to-add-a-new-formatterstep
 public final class CleanthatJavaStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "cleanthat";
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
@@ -146,6 +148,7 @@ public final class CleanthatJavaStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;

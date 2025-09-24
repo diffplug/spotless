@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.json;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +31,7 @@ import com.diffplug.spotless.Provisioner;
  */
 // https://stackoverflow.com/questions/14515994/convert-json-string-to-pretty-print-json-output-using-jackson
 public class JacksonJsonStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.core:jackson-databind:";
 	private static final String DEFAULT_VERSION = "2.20.0";
@@ -66,6 +68,7 @@ public class JacksonJsonStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final JacksonConfig jacksonConfig;

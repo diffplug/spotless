@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -146,7 +145,7 @@ public class FileLocator {
 	}
 
 	private static File findUserHome() {
-		var home = Paths.get(System.getenv("user.home"));
+		var home = Path.of(System.getenv("user.home"));
 		return home.resolve(".rome").toAbsolutePath().toFile();
 	}
 }

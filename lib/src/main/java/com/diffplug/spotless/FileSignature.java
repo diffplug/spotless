@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -38,6 +39,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /** Computes a signature for any needed files. */
 public final class FileSignature implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 2L;
 
 	/*
@@ -98,6 +100,7 @@ public final class FileSignature implements Serializable {
 
 	/** A view of `FileSignature` which can be safely roundtripped. */
 	public static class Promised implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 		private final List<File> files;
 		@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
@@ -212,6 +215,7 @@ public final class FileSignature implements Serializable {
 
 	@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 	private static final class Sig implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 6727302747168655222L;
 
 		@SuppressWarnings("unused")

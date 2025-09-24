@@ -50,8 +50,8 @@ public final class SpotlessCache {
 
 		@Override
 		public final boolean equals(Object other) {
-			return other instanceof SerializedKey
-					&& Arrays.equals(serialized, ((SerializedKey) other).serialized);
+			return other instanceof SerializedKey sk
+					&& Arrays.equals(serialized, sk.serialized);
 		}
 
 		@Override

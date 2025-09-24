@@ -15,10 +15,12 @@
  */
 package com.diffplug.spotless.pom;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 // Class and members must be public, otherwise we get failed to access class com.diffplug.spotless.pom.SortPomInternalState from class com.diffplug.spotless.pom.SortPomFormatterFunc (com.diffplug.spotless.pom.SortPomInternalState is in unnamed module of loader org.codehaus.plexus.classworlds.realm.ClassRealm @682bd3c4; com.diffplug.spotless.pom.SortPomFormatterFunc is in unnamed module of loader com.diffplug.spotless.pom.DelegatingClassLoader @573284a5)
 public class SortPomCfg implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public String version = "4.0.0";

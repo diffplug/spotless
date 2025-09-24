@@ -60,17 +60,17 @@ public class SpotlessInstallPrePushHookMojo extends AbstractMojo {
 		final var logger = new GitPreHookLogger() {
 			@Override
 			public void info(String format, Object... arguments) {
-				getLog().info(String.format(format, arguments));
+				getLog().info(format.formatted(arguments));
 			}
 
 			@Override
 			public void warn(String format, Object... arguments) {
-				getLog().warn(String.format(format, arguments));
+				getLog().warn(format.formatted(arguments));
 			}
 
 			@Override
 			public void error(String format, Object... arguments) {
-				getLog().error(String.format(format, arguments));
+				getLog().error(format.formatted(arguments));
 			}
 		};
 

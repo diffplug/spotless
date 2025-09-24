@@ -20,6 +20,7 @@ import static com.diffplug.spotless.kotlin.KtfmtStep.Style.DROPBOX;
 import static com.diffplug.spotless.kotlin.KtfmtStep.Style.META;
 import static com.diffplug.spotless.kotlin.KtfmtStep.TrailingCommaManagementStrategy.ONLY_ADD;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -39,6 +40,7 @@ import com.diffplug.spotless.ThrowingEx;
  * Wraps up <a href="https://github.com/facebook/ktfmt">ktfmt</a> as a FormatterStep.
  */
 public class KtfmtStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "0.58";
 	private static final String NAME = "ktfmt";
@@ -142,6 +144,7 @@ public class KtfmtStep implements Serializable {
 
 	public static class KtfmtFormattingOptions implements Serializable {
 
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		@Nullable private Integer maxWidth = null;
@@ -225,6 +228,7 @@ public class KtfmtStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 		private final String version;
 		@Nullable private final Style style;
@@ -310,10 +314,10 @@ public class KtfmtStep implements Serializable {
 			}
 
 			if (BadSemver.version(version) < BadSemver.version(style.since)) {
-				throw new IllegalStateException(String.format("The style %s is available from version %s (current version: %s)", style.name(), style.since, version));
+				throw new IllegalStateException("The style %s is available from version %s (current version: %s)".formatted(style.name(), style.since, version));
 			}
 			if (style.until != null && BadSemver.version(version) > BadSemver.version(style.until)) {
-				throw new IllegalStateException(String.format("The style %s is no longer available from version %s (current version: %s)", style.name(), style.until, version));
+				throw new IllegalStateException("The style %s is no longer available from version %s (current version: %s)".formatted(style.name(), style.until, version));
 			}
 		}
 

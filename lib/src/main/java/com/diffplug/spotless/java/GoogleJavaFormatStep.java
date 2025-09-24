@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.java;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Objects;
@@ -27,6 +28,7 @@ import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/google/google-java-format">google-java-format</a> as a FormatterStep. */
 public class GoogleJavaFormatStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_STYLE = "GOOGLE";
 	private static final boolean DEFAULT_REFLOW_LONG_STRINGS = false;
@@ -153,6 +155,7 @@ public class GoogleJavaFormatStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;

@@ -132,8 +132,7 @@ class FenceStepTest extends ResourceHarness {
 			return uppercase ? "uppercase" : "lowercase";
 		}
 
-		@org.jetbrains.annotations.Nullable
-		@Override
+		@org.jetbrains.annotations.Nullable @Override
 		public String format(String rawUnix, File file) throws Exception {
 			return uppercase ? rawUnix.toUpperCase() : rawUnix.toLowerCase();
 		}
@@ -150,7 +149,7 @@ class FenceStepTest extends ResourceHarness {
 
 		@Override
 		public boolean equals(Object obj) {
-			return obj instanceof ToCaseStep && getName().equals(((ToCaseStep) obj).getName());
+			return obj instanceof ToCaseStep tcs && getName().equals(tcs.getName());
 		}
 	}
 }

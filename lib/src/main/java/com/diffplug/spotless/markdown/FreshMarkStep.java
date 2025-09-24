@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.spotless.markdown;
 
 import static com.diffplug.spotless.markdown.LibMarkdownPreconditions.requireKeysAndValuesNonNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import com.diffplug.spotless.Provisioner;
 
 /** A step for <a href="https://github.com/diffplug/freshmark">FreshMark</a>. */
 public class FreshMarkStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private static final String DEFAULT_VERSION = "1.3.1";
@@ -91,6 +93,7 @@ public class FreshMarkStep implements Serializable {
 	}
 
 	private static class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;

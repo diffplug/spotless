@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -209,7 +209,7 @@ class ReflectionHelper {
 							+ "the presence of warnings, set the configuration parameter 'failOnWarning' to 'false' (default: 'true')");
 				}
 				throw new RuntimeException(
-						String.format("line %d, col %d: %s (severity: %s)", line, col, message, severity));
+						"line %d, col %d: %s (severity: %s)".formatted(line, col, message, severity));
 			}
 			return null;
 		}
@@ -303,7 +303,7 @@ class ReflectionHelper {
 					Collectors.toList());
 			if (selectedEnumValueList.isEmpty()) {
 				throw new IllegalArgumentException(
-						String.format("Cannot set config option %s to value %s: value must be one of %s",
+						"Cannot set config option %s to value %s: value must be one of %s".formatted(
 								method.getName(),
 								parameterValueAsString,
 								Arrays.stream(param.getEnumConstants()).map(e -> {
@@ -316,7 +316,7 @@ class ReflectionHelper {
 										Collectors.joining(",", "[", "]"))));
 			} else if (selectedEnumValueList.size() > 1) {
 				throw new IllegalArgumentException(
-						String.format("Found more than 1 enum value for name %s, that should never happen",
+						"Found more than 1 enum value for name %s, that should never happen".formatted(
 								parameterValueAsString));
 			}
 			method.invoke(builder, selectedEnumValueList.get(0));
@@ -339,8 +339,7 @@ class ReflectionHelper {
 		} else if (List.class.isAssignableFrom(param)) {
 			method.invoke(builder, makeListOf(((ParameterizedType) method.getGenericParameterTypes()[0]).getActualTypeArguments()[0], parameterValueAsString));
 		} else {
-			throw new IllegalArgumentException(String.format(
-					"Cannot handle turtle-formatter config option %s: parameters of type %s are not implemented in the spotless plugin yet",
+			throw new IllegalArgumentException("Cannot handle turtle-formatter config option %s: parameters of type %s are not implemented in the spotless plugin yet".formatted(
 					method.getName(), param.getName()));
 		}
 	}
@@ -398,7 +397,7 @@ class ReflectionHelper {
 		if (type.equals(TurtleFormatKnownPrefix)) {
 			return getKnownPrefix(stringRepresentation);
 		}
-		throw new IllegalArgumentException(String.format("Cannot instantiate class %s from string representation %s", type, stringRepresentation));
+		throw new IllegalArgumentException("Cannot instantiate class %s from string representation %s".formatted(type, stringRepresentation));
 	}
 
 	private String tryToMakeUri(String stringRepresentation)
@@ -430,7 +429,7 @@ class ReflectionHelper {
 				}
 			}
 		}
-		throw new IllegalArgumentException(String.format("Unable to find FormattingStyle.KnownPrefix for prefix '%s'. Options are: %s", stringRepresentation, options.stream().collect(
+		throw new IllegalArgumentException("Unable to find FormattingStyle.KnownPrefix for prefix '%s'. Options are: %s".formatted(stringRepresentation, options.stream().collect(
 				Collectors.joining(",\n\t", "\n\t", "\n"))));
 	}
 
@@ -451,18 +450,18 @@ class ReflectionHelper {
 					.sorted(Comparator.comparing(Method::getName)).collect(
 							Collectors.toList());
 			throw new RuntimeException(
-					String.format("Unrecognized configuration parameter name: %s. Candidates are:%n%s", optionName, candidates.stream().map(Method::getName).collect(
+					"Unrecognized configuration parameter name: %s. Candidates are:%n%s".formatted(optionName, candidates.stream().map(Method::getName).collect(
 							Collectors.joining("\n\t", "\t", ""))));
 		}
 		if (methods.size() > 1) {
 			throw new RuntimeException(
-					String.format("More than one builder method found for configuration parameter name: %s",
+					"More than one builder method found for configuration parameter name: %s".formatted(
 							optionName));
 		}
 		Method method = methods.get(0);
 		if (method.getParameterCount() != 1) {
 			throw new RuntimeException(
-					String.format("Method with unexpected parameter count %s found for configuration parameter name: %s",
+					"Method with unexpected parameter count %s found for configuration parameter name: %s".formatted(
 							method.getParameterCount(),
 							optionName));
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,14 +64,14 @@ public class ShfmtStep {
 	}
 
 	private RoundtripState createRoundtrip() throws IOException, InterruptedException {
-		String howToInstall = "" +
-				"You can download shfmt from https://github.com/mvdan/sh and " +
-				"then point Spotless to it with {@code pathToExe('/path/to/shfmt')} " +
-				"or you can use your platform's package manager:" +
-				"\n  win:   choco install shfmt" +
-				"\n  mac:   brew install shfmt" +
-				"\n  linux: apt install shfmt" +
-				"\n    github issue to handle this better: https://github.com/diffplug/spotless/issues/673";
+		String howToInstall = """
+				You can download shfmt from https://github.com/mvdan/sh and \
+				then point Spotless to it with {@code pathToExe('/path/to/shfmt')} \
+				or you can use your platform's package manager:
+				  win:   choco install shfmt
+				  mac:   brew install shfmt
+				  linux: apt install shfmt
+				    github issue to handle this better: https://github.com/diffplug/spotless/issues/673""";
 		final ForeignExe exe = ForeignExe.nameAndVersion("shfmt", version)
 				.pathToExe(pathToExe)
 				.versionRegex(Pattern.compile("([\\d.]+)"))

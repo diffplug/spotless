@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,11 +51,11 @@ public class RdfFormatterFunc implements FormatterFunc {
 		int lastDot = filename.lastIndexOf('.');
 		if (lastDot < 0) {
 			throw new IllegalArgumentException(
-					String.format("File %s has no file extension, cannot determine RDF format", file.getAbsolutePath()));
+					"File %s has no file extension, cannot determine RDF format".formatted(file.getAbsolutePath()));
 		}
 		if (lastDot + 1 >= filename.length()) {
 			throw new IllegalArgumentException(
-					String.format("File %s has no file extension, cannot determine RDF format", file.getAbsolutePath()));
+					"File %s has no file extension, cannot determine RDF format".formatted(file.getAbsolutePath()));
 		}
 		String extension = filename.substring(lastDot + 1);
 
@@ -72,7 +72,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 			if (NQUADS_EXTENSIONS.contains(extension)) {
 				return formatNQuads(rawUnix, file);
 			}
-			throw new IllegalArgumentException(String.format("Cannot handle file with extension %s", extension));
+			throw new IllegalArgumentException("Cannot handle file with extension %s".formatted(extension));
 		} catch (InvocationTargetException e) {
 			throw new RuntimeException("Error formatting file " + file.getPath(), e.getCause());
 		} catch (Exception e) {
@@ -113,8 +113,8 @@ public class RdfFormatterFunc implements FormatterFunc {
 			long afterSize = reflectionHelper.modelSize(modelAfter);
 			String diffResult;
 			if (beforeSize != afterSize) {
-				diffResult = String.format("< %,d triples", beforeSize);
-				diffResult += String.format("> %,d triples", afterSize);
+				diffResult = "< %,d triples".formatted(beforeSize);
+				diffResult += "> %,d triples".formatted(afterSize);
 			} else {
 				diffResult = calculateDiff(reflectionHelper, modelBefore, modelAfter);
 			}
@@ -153,9 +153,9 @@ public class RdfFormatterFunc implements FormatterFunc {
 				})
 				.collect(Collectors.toList());
 		if (!(onlyInBeforeContent.isEmpty() && onlyInAfterContent.isEmpty())) {
-			diffResult = onlyInBeforeContent.stream().map(s -> String.format("< %s", s))
+			diffResult = onlyInBeforeContent.stream().map(s -> "< %s".formatted(s))
 					.collect(Collectors.joining("\n"));
-			diffResult += "\n" + onlyInAfterContent.stream().map(s -> String.format("> %s", s)).collect(Collectors.joining("\n"));
+			diffResult += "\n" + onlyInAfterContent.stream().map(s -> "> %s".formatted(s)).collect(Collectors.joining("\n"));
 		} else {
 			diffResult = "'before' and 'after' content differs, but we don't know why. This is probably a bug.";
 		}

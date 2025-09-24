@@ -19,6 +19,7 @@ import static com.diffplug.spotless.java.LibJavaPreconditions.requireElementsNon
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -41,6 +42,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializedFunction;
 
 public final class ImportOrderStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final boolean WILDCARDS_LAST_DEFAULT = false;
 	private static final boolean SEMANTIC_SORT_DEFAULT = false;
@@ -113,6 +115,7 @@ public final class ImportOrderStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final List<String> importOrder;

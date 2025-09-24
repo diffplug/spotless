@@ -16,6 +16,7 @@
 package com.diffplug.spotless.yaml;
 
 import java.io.File;
+import java.io.Serial;
 
 import javax.annotation.Nullable;
 
@@ -37,6 +38,7 @@ import com.diffplug.spotless.FormatterStep;
  * problems with up-to-dateness, then adding this step can be a workaround.
  */
 public class SerializeToByteArrayHack implements FormatterStep {
+	@Serial
 	private static final long serialVersionUID = 8071047581828362545L;
 
 	@Override
@@ -44,8 +46,7 @@ public class SerializeToByteArrayHack implements FormatterStep {
 		return "hack to force serializing objects to byte array";
 	}
 
-	@Nullable
-	@Override
+	@Nullable @Override
 	public String format(String rawUnix, File file) throws Exception {
 		return null;
 	}

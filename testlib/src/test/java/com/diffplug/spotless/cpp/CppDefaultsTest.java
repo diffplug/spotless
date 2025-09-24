@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class CppDefaultsTest extends ResourceHarness {
 			try {
 				output = step.format(testSource, dummyFile);
 			} catch (IllegalArgumentException e) {
-				throw new AssertionError(String.format("No delimiter found in '%s'", testSource), e);
+				throw new AssertionError("No delimiter found in '%s'".formatted(testSource), e);
 			}
 			String expected = testSource.replaceAll("(.*?)\\@", header + '\n');
 			assertThat(output).isEqualTo(expected).as("Unexpected header insertion for '$s'.", testSource);

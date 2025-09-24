@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.json.gson;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +27,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 public class GsonStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATES = "com.google.code.gson:gson";
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Gson; maybe you set an incompatible version?";
@@ -53,6 +55,7 @@ public class GsonStep implements Serializable {
 	}
 
 	private static final class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = -3240568265160440420L;
 
 		private final JarState jarState;
