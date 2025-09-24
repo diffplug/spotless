@@ -15,11 +15,14 @@
  */
 package com.diffplug.spotless.npm;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.time.Duration;
@@ -130,7 +133,7 @@ final class NpmResourceHelper {
 		Objects.requireNonNull(relativePath);
 		try {
 			// create file pointing to relativePath in targetDir
-			final Path relativeTargetFile = Paths.get(targetDir.getAbsolutePath(), relativePath);
+			final Path relativeTargetFile = Path.of(targetDir.getAbsolutePath(), relativePath);
 			assertDirectoryExists(relativeTargetFile.getParent().toFile());
 
 			Files.copy(file.toPath(), relativeTargetFile, StandardCopyOption.REPLACE_EXISTING);

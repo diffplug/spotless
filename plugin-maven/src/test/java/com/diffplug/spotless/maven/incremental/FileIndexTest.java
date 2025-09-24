@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.List;
@@ -214,7 +213,7 @@ class FileIndexTest extends FileIndexHarness {
 	@Test
 	void setLastModifiedTimeThrowsForNonProjectFile() {
 		FileIndex index = FileIndex.read(config, log);
-		Path nonProjectFile = Paths.get("non-project-file");
+		Path nonProjectFile = Path.of("non-project-file");
 
 		assertThatThrownBy(() -> index.setLastModifiedTime(nonProjectFile, Instant.now())).isInstanceOf(IllegalArgumentException.class);
 	}
@@ -256,7 +255,7 @@ class FileIndexTest extends FileIndexHarness {
 
 	@Test
 	void writeFailsWhenIndexFilesDoesNotHaveParentDir() {
-		when(config.getIndexFile()).thenReturn(Paths.get("file-without-parent"));
+		when(config.getIndexFile()).thenReturn(Path.of("file-without-parent"));
 		FileIndex index = FileIndex.read(config, log);
 		assertThat(index.size()).isZero();
 

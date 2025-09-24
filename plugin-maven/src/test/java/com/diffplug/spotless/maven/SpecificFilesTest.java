@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.diffplug.spotless.maven;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,9 +25,9 @@ public class SpecificFilesTest extends MavenIntegrationHarness {
 		String rel = "src/main/java/test" + number + ".java";
 		Path path;
 		if (absolute) {
-			path = Paths.get(rootFolder().getAbsolutePath(), rel);
+			path = Path.of(rootFolder().getAbsolutePath(), rel);
 		} else {
-			path = Paths.get(rel);
+			path = Path.of(rel);
 		}
 		String result = path.toString();
 		if (!isOnWindows()) {

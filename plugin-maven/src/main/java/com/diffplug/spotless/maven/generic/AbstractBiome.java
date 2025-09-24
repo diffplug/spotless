@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.maven.generic;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -163,7 +163,7 @@ public abstract class AbstractBiome implements FormatterStepFactory {
 	 * @return The resolved path to the Biome executable.
 	 */
 	private String resolveExePath(FormatterStepConfig config) {
-		var path = Paths.get(pathToExe);
+		var path = Path.of(pathToExe);
 		if (path.getNameCount() == 1) {
 			return path.toString();
 		} else {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -68,8 +70,7 @@ public class TsFmtFormatterStep {
 
 		private final File buildDir;
 
-		@Nullable
-		private final TypedTsFmtConfigFile configFile;
+		@Nullable private final TypedTsFmtConfigFile configFile;
 
 		public State(String stepName, Map<String, String> versions, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,

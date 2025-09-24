@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.diffplug.spotless.maven;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -64,7 +63,7 @@ final class GitRatchetMaven extends GitRatchet<File> {
 		indexDiff.diff();
 
 		String workTreePath = repository.getWorkTree().getPath();
-		Path baseDirPath = Paths.get(baseDir.getPath());
+		Path baseDirPath = Path.of(baseDir.getPath());
 
 		Set<String> dirtyPaths = new HashSet<>(indexDiff.getChanged());
 		dirtyPaths.addAll(indexDiff.getAdded());
@@ -93,7 +92,7 @@ final class GitRatchetMaven extends GitRatchet<File> {
 		dirtyPaths.removeAll(indexDiff.getMissing());
 
 		return dirtyPaths.stream()
-				.map(path -> baseDirPath.relativize(Paths.get(workTreePath, path)).toString())
+				.map(path -> baseDirPath.relativize(Path.of(workTreePath, path)).toString())
 				.collect(Collectors.toList());
 	}
 }

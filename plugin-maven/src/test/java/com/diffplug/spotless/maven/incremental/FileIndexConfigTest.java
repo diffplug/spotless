@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
@@ -32,7 +31,7 @@ class FileIndexConfigTest {
 		MavenProject project = mavenProject();
 		FileIndexConfig config = new FileIndexConfig(project, getIndexFile(project), PluginFingerprint.from("foo"));
 
-		assertThat(config.getProjectDir()).isEqualTo(Paths.get("projectDir"));
+		assertThat(config.getProjectDir()).isEqualTo(Path.of("projectDir"));
 	}
 
 	@Test
@@ -41,7 +40,7 @@ class FileIndexConfigTest {
 		FileIndexConfig config = new FileIndexConfig(project, getIndexFile(project), PluginFingerprint.from("foo"));
 
 		assertThat(config.getIndexFile())
-				.isEqualTo(Paths.get("projectDir", "target", "spotless-index"));
+				.isEqualTo(Path.of("projectDir", "target", "spotless-index"));
 	}
 
 	@Test

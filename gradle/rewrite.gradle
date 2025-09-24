@@ -1,0 +1,7 @@
+apply plugin: 'org.openrewrite.rewrite'
+
+rewrite {
+	activeRecipe("org.openrewrite.java.migrate.Java8toJava11")
+	exportDatatables = true
+	failOnDryRunResults = true
+}

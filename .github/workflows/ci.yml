@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   sanityCheck:
-    name: spotlessCheck assemble testClasses
+    name: spotlessCheck rewriteDryRun assemble testClasses
     runs-on: ubuntu-latest
     env:
       buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
@@ -31,6 +31,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: spotlessCheck
         run: ./gradlew spotlessCheck
+      - name: rewriteDryRun
+        run: ./gradlew rewriteDryRun
       - name: assemble testClasses
         run: ./gradlew assemble testClasses
   build:
@@ -66,10 +68,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: build (maven-only)
         if: matrix.kind == 'maven'
-        run: ./gradlew :plugin-maven:build -x spotlessCheck
+        run: ./gradlew :plugin-maven:build -x spotlessCheck -x rewriteDryRun
       - name: build (everything-but-maven)
         if: matrix.kind == 'gradle'
-        run: ./gradlew build -x spotlessCheck -PSPOTLESS_EXCLUDE_MAVEN=true
+        run: ./gradlew build -x spotlessCheck -x rewriteDryRun -PSPOTLESS_EXCLUDE_MAVEN=true
       - name: test npm
         if: matrix.kind == 'npm'
         run: ./gradlew testNpm

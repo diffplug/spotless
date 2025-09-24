@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.codehaus.plexus.resource.ResourceManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,12 +56,12 @@ class FileLocatorTest extends ResourceHarness {
 
 	@Test
 	void locateXmlFile() throws Exception {
-		testFileLocator(Paths.get("tmp", "configs", "my-config.xml").toString(), "xml");
+		testFileLocator(Path.of("tmp", "configs", "my-config.xml").toString(), "xml");
 	}
 
 	@Test
 	void locatePropertiesFile() throws Exception {
-		testFileLocator(Paths.get("home", "ubuntu", "my-other-config.properties").toString(), "properties");
+		testFileLocator(Path.of("home", "ubuntu", "my-other-config.properties").toString(), "properties");
 	}
 
 	@Test

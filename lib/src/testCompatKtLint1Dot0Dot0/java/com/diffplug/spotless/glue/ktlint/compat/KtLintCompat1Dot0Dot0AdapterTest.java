@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +33,7 @@ public class KtLintCompat1Dot0Dot0AdapterTest {
 	public void testDefaults(@TempDir Path path) throws IOException {
 		KtLintCompat1Dot0Dot0Adapter KtLintCompat1Dot0Dot0Adapter = new KtLintCompat1Dot0Dot0Adapter();
 		var content = loadAndWriteText(path, "EmptyClassBody.kt");
-		final Path filePath = Paths.get(path.toString(), "EmptyClassBody.kt");
+		final Path filePath = Path.of(path.toString(), "EmptyClassBody.kt");
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 
@@ -46,7 +45,7 @@ public class KtLintCompat1Dot0Dot0AdapterTest {
 	public void testEditorConfigCanDisable(@TempDir Path path) throws IOException {
 		KtLintCompat1Dot0Dot0Adapter KtLintCompat1Dot0Dot0Adapter = new KtLintCompat1Dot0Dot0Adapter();
 		var content = loadAndWriteText(path, "FailsNoSemicolons.kt");
-		final Path filePath = Paths.get(path.toString(), "FailsNoSemicolons.kt");
+		final Path filePath = Path.of(path.toString(), "FailsNoSemicolons.kt");
 
 		Map<String, Object> editorConfigOverrideMap = new HashMap<>();
 		editorConfigOverrideMap.put("indent_style", "tab");
