@@ -230,7 +230,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
-    <removeWildcardImports /> <!-- drop any import ending with '*' -->
+    <forbidWildcardImports /> <!-- yell if any import ends with '*' -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
@@ -249,10 +249,10 @@ any other maven phase (i.e. compile) then it can be configured as below;
 </removeUnusedImports>
 ```
 
-### removeWildcardImports
+### forbidWildcardImports
 
 ```xml
-<removeWildcardImports/>
+<forbidWildcardImports/>
 ```
 
 ### google-java-format
@@ -1786,6 +1786,12 @@ See [here](../INTELLIJ_IDEA_SCREENSHOTS.md) for an explanation on how to extract
   <searchRegex>(Hello) W[a-z]{3}d</searchRegex>
   <replacement>$1 Mars</replacement>
 </replaceRegex>
+
+<forbidRegex>
+  <name>Forbid FooBar</name>
+  <searchRegex>import foo\.bar\.(.*)</searchRegex>
+  <lintDetail>foobar is officially abandoned, use fizzbuzz instead</lintDetail>
+</forbidRegex>
 ```
 
 <a name="license-header-options"></a>
@@ -1950,7 +1956,7 @@ Sometimes Spotless will encounter lint errors that can't be auto-fixed. For exam
 
 ```
 [ERROR] Unable to format file src/main/java/com/example/App.java
-[ERROR] Step 'removeWildcardImports' found problem in 'App.java':
+[ERROR] Step 'forbidWildcardImports' found problem in 'App.java':
 [ERROR]   Do not use wildcard imports
 ```
 
@@ -1963,12 +1969,12 @@ To suppress these lints, you can use the `<lintSuppressions>` configuration:
   <version>${spotless.version}</version>
   <configuration>
     <java>
-      <removeWildcardImports/>
+      <forbidWildcardImports/>
     </java>
     <lintSuppressions>
       <lintSuppression>
         <path>src/main/java/com/example/App.java</path>
-        <step>removeWildcardImports</step>
+        <step>forbidWildcardImports</step>
         <shortCode>*</shortCode>
       </lintSuppression>
     </lintSuppressions>
@@ -1988,13 +1994,13 @@ You can suppress multiple patterns:
   <!-- Suppress all wildcard import errors in legacy code -->
   <lintSuppression>
     <path>src/main/java/com/example/legacy/*</path>
-    <step>removeWildcardImports</step>
+    <step>forbidWildcardImports</step>
     <shortCode>*</shortCode>
   </lintSuppression>
   <!-- Suppress all errors from a specific step -->
   <lintSuppression>
     <path>*</path>
-    <step>removeWildcardImports</step>
+    <step>forbidWildcardImports</step>
     <shortCode>*</shortCode>
   </lintSuppression>
 </lintSuppressions>

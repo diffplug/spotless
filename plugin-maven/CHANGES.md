@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changes
 * **BREAKING** Bump the required Java to `17`. ([#2375](https://github.com/diffplug/spotless/issues/2375), [#2540](https://github.com/diffplug/spotless/pull/2540))
+* **BREAKING** Renamed `removeWildcardImports` to `forbidWildcardImports`. ([#2633](https://github.com/diffplug/spotless/pull/2633))
 * **BREAKING** `spotless:install-git-pre-push-hook` task is now always installed in the root `.git/hooks` directory by resolving the top-level project base directory. ([#2570](https://github.com/diffplug/spotless/pull/2570))
 * Bump JGit from `6.10.1` to `7.3.0` ([#2257](https://github.com/diffplug/spotless/pull/2257))
   * Adds support for worktrees (fixes [#1765](https://github.com/diffplug/spotless/issues/1765))
@@ -19,6 +20,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Fix `spaceBeforeSeparator` in Jackson formatter. ([#2103](https://github.com/diffplug/spotless/pull/2103))
 ### Added
 * `<lintSupressions>` API ([#2309](https://github.com/diffplug/spotless/issues/2309))
+* There is now a `forbidRegex(String name, String searchRegex, String lintDetail)` which throws a lint anytime the regex matches. ([#2633](https://github.com/diffplug/spotless/pull/2633))
 
 ## [2.46.1] - 2025-07-21
 ### Fixed
