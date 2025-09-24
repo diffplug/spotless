@@ -368,7 +368,8 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		String trimTrailingString = sanitizedVersion.substring(0, help1);
 
 		String sanitizeBiomeNative = trimTrailingString.replaceAll("spotless-data/biome/biome-(.+),", "biome-exe");
-		String sanitizeFilePath = sanitizeBiomeNative.replaceAll(rootFolder().getAbsolutePath(), "PROJECT_DIR");
-		return Selfie.expectSelfie(sanitizeFilePath);
+		String sanitizeFilePath = sanitizeBiomeNative.replace(rootFolder().getAbsolutePath(), "${PROJECT_DIR}");
+		String sanitizeUserHome = sanitizeFilePath.replace(System.getProperty("user.home"), "${user.home}");
+		return Selfie.expectSelfie(sanitizeUserHome);
 	}
 }
