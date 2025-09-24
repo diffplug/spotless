@@ -103,9 +103,9 @@ model {
 					from components.java
 				}
 
-				groupId project.group
-				artifactId project.ext.artifactId
-				version project.version
+				groupId = project.group
+				artifactId = project.ext.artifactId
+				version = project.version
 
 				def projectExtArtifactId = project.ext.artifactId
 				def projectDescription = project.description
