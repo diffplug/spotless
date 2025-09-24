@@ -1,17 +1,5 @@
 apply plugin: 'com.diffplug.spotless'
 spotless {
-	def noInternalDepsClosure = {
-		String text = it
-		/*
-		 * No good way to get around using this import:
-		 * https://github.com/gradle/gradle/issues/3191
-		 */
-		String regex = "import org\\.gradle\\.api\\.internal\\.(?!plugins\\.DslObject)(?!project\\.ProjectInternal)"
-		if ((text.contains('import org.gradle.internal.') || text.find(regex)) &&
-				!text.contains('def noInternalDepsClosure')) {
-			throw new AssertionError("Accidental internal import")
-		}
-	}
 	if (project != rootProject) {
 		// the rootProject doesn't have any java
 		java {
@@ -22,9 +10,9 @@ spotless {
 			eclipse().configFile rootProject.file('gradle/spotless.eclipseformat.xml')
 			trimTrailingWhitespace()
 			removeUnusedImports()
-			removeWildcardImports()
 			formatAnnotations()
-			custom 'noInternalDeps', noInternalDepsClosure
+			forbidWildcardImports()
+			forbidRegex('ForbidGradleInternal', 'import org\\.gradle\\.api\\.internal\\.(.*)', "Don't use Gradle's internal API")
 		}
 	}
 	groovyGradle {
