@@ -93,6 +93,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Dependency resolution modes](#dependency-resolution-modes)
   - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
   - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
+  - [Sharing Spotless Configuration](#sharing-configuration)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
 
 ***Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.***
@@ -1907,6 +1908,26 @@ cmd> gradle spotlessApply -PspotlessFiles=my/file/pattern.java,more/generic/.*-p
 ```
 
 The patterns are matched using `String#matches(String)` against the absolute file path.
+
+## Sharing Configuration
+
+Rather than copying the formatter files across many projects, it is possible to define a common configuration that is deployed as a standard artifact so that it can be then be reused by each project; for example:
+
+```kotlin
+    val spotlessConfig by configurations.creating
+    dependencies {
+        spotlessConfig("org.mycompany:code-configuration:1.0.0")
+    }
+    spotless {
+        java {
+            removeUnusedImports()
+            importOrder(resources.text.fromArchiveEntry(spotlessConfig, "java-import-order.txt").asString())
+            eclipse().configXml(resources.text.fromArchiveEntry(spotlessConfig, "java-formatter.xml").asString())
+        }
+    }
+```
+
+In this example, the files `java-import-order.txt` and `java-formatter.xml` should be at the root of the deployed `org.mycompany:code-configuration:1.0.0` jar.
 
 ## Example configurations (from real-world projects)
 
