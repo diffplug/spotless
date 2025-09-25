@@ -111,7 +111,7 @@ public class ResourceHarness {
 	}
 
 	public String read(Path path, Charset encoding) throws IOException {
-		return new String(Files.readAllBytes(path), encoding);
+		return Files.readString(path, encoding);
 	}
 
 	public void replace(String path, String toReplace, String replaceWith) throws IOException {
@@ -214,7 +214,7 @@ public class ResourceHarness {
 		}
 
 		public void matches(Consumer<AbstractCharSequenceAssert<?, String>> conditions) throws IOException {
-			String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			String content = Files.readString(file.toPath());
 			conditions.accept(assertThat(content));
 		}
 	}

@@ -251,7 +251,7 @@ public final class DiffMessageFormatter {
 	}
 
 	private static Map.Entry<Integer, String> diff(CleanProvider formatter, File file) throws IOException {
-		String raw = new String(Files.readAllBytes(file.toPath()), formatter.getEncoding());
+		String raw = Files.readString(file.toPath(), formatter.getEncoding());
 		String rawUnix = LineEnding.toUnix(raw);
 		String formatted = formatter.getFormatted(file, rawUnix);
 		String formattedUnix = LineEnding.toUnix(formatted);

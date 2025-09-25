@@ -43,8 +43,8 @@ class JvmTest {
 	@Test
 	void supportAdd() {
 		Integer differentVersions[] = {0, 1, 2};
-		Arrays.asList(differentVersions).stream().forEach(v -> testSupport.add(v + Jvm.version(), v.toString()));
-		Arrays.asList(differentVersions).stream().forEach(v -> assertThat(testSupport.toString()).contains("Version %d".formatted(v)));
+		Arrays.asList(differentVersions).forEach(v -> testSupport.add(v + Jvm.version(), v.toString()));
+		Arrays.asList(differentVersions).forEach(v -> assertThat(testSupport.toString()).contains("Version %d".formatted(v)));
 		assertThat(testSupport.toString()).contains("%s alternatives".formatted(TEST_NAME));
 	}
 

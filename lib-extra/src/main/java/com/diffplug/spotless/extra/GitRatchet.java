@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,9 +132,9 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 		return treeWalk.idEqual(TREE, WORKDIR);
 	}
 
-	private final static int TREE = 0;
-	private final static int INDEX = 1;
-	private final static int WORKDIR = 2;
+	private static final int TREE = 0;
+	private static final int INDEX = 1;
+	private static final int WORKDIR = 2;
 
 	Map<File, Repository> gitRoots = new HashMap<>();
 	Table<Repository, String, ObjectId> rootTreeShaCache = HashBasedTable.create();

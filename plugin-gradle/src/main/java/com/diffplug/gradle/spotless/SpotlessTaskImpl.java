@@ -55,6 +55,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	abstract Property<IdeHook.State> getIdeHookState();
 
 	@Internal
+	@Override
 	abstract DirectoryProperty getProjectDir();
 
 	void init(Provider<SpotlessTaskService> service) {
