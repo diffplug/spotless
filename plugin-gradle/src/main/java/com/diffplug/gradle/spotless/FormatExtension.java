@@ -748,7 +748,7 @@ public class FormatExtension {
 			replaceStep.accept(createStep());
 		}
 
-		abstract protected FormatterStep createStep();
+		protected abstract FormatterStep createStep();
 
 	}
 

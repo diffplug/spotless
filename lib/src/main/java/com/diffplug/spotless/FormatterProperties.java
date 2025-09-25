@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -113,7 +114,7 @@ public final class FormatterProperties {
 
 	public static FormatterProperties merge(Properties... properties) {
 		FormatterProperties merged = new FormatterProperties();
-		List.of(properties).stream().forEach((source) -> merged.properties.putAll(source));
+		List.of(properties).forEach((source) -> merged.properties.putAll(source));
 		return merged;
 	}
 
@@ -201,6 +202,21 @@ public final class FormatterProperties {
 			private Node getRootNode(final InputStream is) throws IOException, IllegalArgumentException {
 				try {
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+					try {
+						dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
+						dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+						dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+
+						dbf.setXIncludeAware(false);
+						dbf.setExpandEntityReferences(false);
+
+						dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+					} catch (ParserConfigurationException e) {
+						throw new IllegalStateException("Some features are not supported by your XML processor.", e);
+					}
 					/*
 					 * It is not required to validate or normalize attribute values for
 					 * the XMLs currently supported. Disabling validation is supported by

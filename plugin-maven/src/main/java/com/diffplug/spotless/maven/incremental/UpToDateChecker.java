@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ public interface UpToDateChecker extends AutoCloseable {
 
 	void setUpToDate(Path file);
 
+	@Override
 	void close();
 
 	static UpToDateChecker noop(MavenProject project, Path indexFile, Log log) {

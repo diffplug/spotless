@@ -63,11 +63,13 @@ public class JsonExtension extends FormatExtension {
 	 * offline, you can specify the path to the Biome executable via
 	 * {@code biome().pathToExe(...)}.
 	 */
+	@Override
 	public BiomeJson biome() {
 		return biome(null);
 	}
 
 	/** Downloads the given Biome version from the network. */
+	@Override
 	public BiomeJson biome(String version) {
 		var biomeConfig = new BiomeJson(version);
 		addStep(biomeConfig.createStep());

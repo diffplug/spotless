@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -33,7 +34,7 @@ import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.eclipse.EclipseResourceHarness;
 
 public class EclipseWtpFormatterStepTest {
-	private final static Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "4.8.0");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "4.8.0");
 
 	private static class NestedTests extends EclipseResourceHarness {
 		private final String unformatted, formatted;
@@ -76,7 +77,7 @@ public class EclipseWtpFormatterStepTest {
 		private File createPropertyFile(Consumer<Properties> config) throws IOException {
 			Properties configProps = new Properties();
 			config.accept(configProps);
-			File tempFile = File.createTempFile("EclipseWtpFormatterStepTest-", ".properties");
+			File tempFile = Files.createTempFile("EclipseWtpFormatterStepTest-", ".properties").toFile();
 			OutputStream tempOut = new FileOutputStream(tempFile);
 			configProps.store(tempOut, "test properties");
 			tempOut.flush();

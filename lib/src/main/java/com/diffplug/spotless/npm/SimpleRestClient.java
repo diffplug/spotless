@@ -93,7 +93,7 @@ class SimpleRestClient {
 		}
 	}
 
-	static abstract class SimpleRestException extends RuntimeException {
+	abstract static class SimpleRestException extends RuntimeException {
 		private static final long serialVersionUID = -8260821395756603787L;
 
 		public SimpleRestException() {}

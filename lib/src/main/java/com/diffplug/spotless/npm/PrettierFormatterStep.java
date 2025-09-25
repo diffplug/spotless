@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,7 +137,7 @@ public class PrettierFormatterStep {
 				return prettierConfigOptions;
 			}
 			// if the file has no name, we  cannot use it
-			if (file.getName().trim().length() == 0) {
+			if (file.getName().trim().isEmpty()) {
 				return prettierConfigOptions;
 			}
 			// if it is not there, we add it at the beginning of the Options

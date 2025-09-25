@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
 class FileSignatureTest extends ResourceHarness {
-	private final static String[] inputPaths = {"A", "C", "C", "A", "B"};
-	private final static String[] expectedPathList = inputPaths;
-	private final static String[] expectedPathSet = {"A", "B", "C"};
+	private static final String[] inputPaths = {"A", "C", "C", "A", "B"};
+	private static final String[] expectedPathList = inputPaths;
+	private static final String[] expectedPathSet = {"A", "B", "C"};
 
 	@Test
 	void testFromList() throws IOException {

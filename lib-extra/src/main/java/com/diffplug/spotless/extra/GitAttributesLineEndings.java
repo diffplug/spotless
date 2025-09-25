@@ -146,7 +146,7 @@ public final class GitAttributesLineEndings {
 		private static final long serialVersionUID = -2534772773057900619L;
 
 		/** this is transient, to simulate PathSensitive.RELATIVE */
-		transient final String rootDir;
+		final transient String rootDir;
 		/** the line ending used for most files */
 		final String defaultEnding;
 		/** any exceptions to that default, in terms of relative path from rootDir */

@@ -6,7 +6,7 @@ pluginManagement {
 }
 
 plugins {
-	id 'com.diffplug.spotless' version '7.2.1' apply false
+	id 'com.diffplug.spotless' version '8.0.0' apply false
 	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'com.gradle.plugin-publish' version '2.0.0' apply false
 	// https://github.com/gradle-nexus/publish-plugin/releases
@@ -20,10 +20,10 @@ plugins {
 	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
 	id 'io.github.davidburstrom.version-compatibility' version '0.5.0' apply false
 	// https://plugins.gradle.org/plugin/com.gradle.develocity
-	id 'com.gradle.develocity' version '3.19.2'
+	id 'com.gradle.develocity' version '4.2'
 	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
 	id 'dev.equo.ide' version '1.7.8' apply false
-	id 'org.openrewrite.rewrite' version '7.16.0' apply false
+	id 'org.openrewrite.rewrite' version '7.17.0' apply false
 }
 
 dependencyResolutionManagement {

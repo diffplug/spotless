@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,12 @@ import com.diffplug.spotless.npm.EslintFormatterStep;
 
 public class EslintJs extends AbstractEslint {
 
+	@Override
 	protected EslintConfig eslintConfig(FormatterStepConfig stepConfig) {
 		return new EslintConfig(this.configFile != null ? stepConfig.getFileLocator().locateFile(this.configFile) : null, this.configJs);
 	}
 
+	@Override
 	protected Map<String, String> createDefaultDependencies() {
 		return this.eslintVersion == null ? EslintFormatterStep.defaultDevDependencies() : EslintFormatterStep.defaultDevDependenciesWithEslint(this.eslintVersion);
 	}

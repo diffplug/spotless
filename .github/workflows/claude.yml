@@ -22,15 +22,29 @@ jobs:
         with:
           script: |
             try {
+              // Get username - prioritize sender (the person who triggered the event)
+              const username = github.event.sender?.login ||
+                              github.event.comment?.user?.login;
+
+              if (!username) {
+                console.log('Could not determine username from event payload');
+                console.log(`Event type: ${github.event_name}`);
+                console.log(`Event payload keys: ${Object.keys(github.event).join(', ')}`);
+                return false;
+              }
+
+              console.log(`Checking team membership for user: ${username} (triggered by ${github.event_name} event)`);
+
               const { data } = await github.rest.teams.getMembershipForUserInOrg({
                 org: 'diffplug',
                 team_slug: 'spotless',
-                username: github.event.sender.login
+                username: username
               });
-              console.log(`User ${github.event.sender.login} membership status: ${data.state}`);
+              console.log(`User ${username} membership status: ${data.state}`);
               return data.state === 'active';
             } catch (error) {
-              console.log(`User ${github.event.sender.login} is not a member of the Spotless team`);
+              const username = github.event.sender?.login || github.event.comment?.user?.login || 'unknown user';
+              console.log(`User ${username} is not a member of the Spotless team or error occurred: ${error.message}`);
               return false;
             }
 

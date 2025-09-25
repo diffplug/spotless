@@ -82,9 +82,9 @@ public class KtfmtStep implements Serializable {
 		;
 		// @formatter:on
 
-		final private String format;
-		final private String since;
-		final private @Nullable String until;
+		private final String format;
+		private final String since;
+		private final @Nullable String until;
 
 		Style(String format, String since) {
 			this.format = format;
