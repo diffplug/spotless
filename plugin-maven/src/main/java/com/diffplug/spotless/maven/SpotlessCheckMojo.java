@@ -120,7 +120,7 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 					.getMessage());
 		} else if (!lintProblems.isEmpty()) {
 			// Show lints only if there are no formatting violations
-			Map.Entry<File, LintState> firstLintProblem = lintProblems.get(0);
+			Map.Entry<File, LintState> firstLintProblem = lintProblems.getFirst();
 			File file = firstLintProblem.getKey();
 			LintState lintState = firstLintProblem.getValue();
 			String stepName = lintState.getLintsByStep(formatter).keySet().iterator().next();

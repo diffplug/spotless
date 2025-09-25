@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@ import java.util.stream.Collectors;
 /** Common utilities for C/C++ */
 public class CppDefaults {
 	//Prevent instantiation
-	private CppDefaults() {};
+	private CppDefaults() {}
 
 	/**
-	 * Default delimiter expression shall cover most valid and common starts of C/C++ declarations and definitions.
-	 * Furthermore it shall not conflict with terms commonly used within license headers.
-	 * Note that the longest match is selected. Hence "using namespace foo" is preferred over "namespace foo".
-	 */
+	* Default delimiter expression shall cover most valid and common starts of C/C++ declarations and definitions.
+	* Furthermore it shall not conflict with terms commonly used within license headers.
+	* Note that the longest match is selected. Hence "using namespace foo" is preferred over "namespace foo".
+	*/
 	public static final String DELIMITER_EXPR = Arrays.asList(
 			"#define", "#error", "#if", "#ifdef", "#ifndef", "#include", "#pragma", "#undef",
 			"asm", "class", "namespace", "struct", "typedef", "using namespace",

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,16 +84,16 @@ class PaddedCellTest {
 
 	@Test
 	void fourState() throws IOException {
-		misbehaved(input -> {
-			// @formatter:off
-			switch (input) {
-			case "A": return "B";
-			case "B": return "C";
-			case "C": return "D";
-			default:  return "A";
-			}
+		misbehaved(input->{
+		// @formatter:off
+			return switch (input) {
+			case "A" -> "B";
+			case "B" -> "C";
+			case "C" -> "D";
+			default -> "A";
+			};
 			// @formatter:on
-		}, "CCC", CYCLE, "A,B,C,D", "A");
+		},"CCC",CYCLE,"A,B,C,D","A");
 	}
 
 	@Test

@@ -44,7 +44,6 @@ class IdeHookTest extends MavenIntegrationHarness {
 		dirty = setFile("DIRTY.md").toContent("World");
 		clean = setFile("CLEAN.md").toContent("Mars");
 		outofbounds = setFile("OUTOFBOUNDS.md").toContent("Mars");
-		;
 	}
 
 	private void runWith(String... arguments) throws IOException, InterruptedException {

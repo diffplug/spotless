@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,15 +176,11 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@ParameterizedTest(name = "{index}: useJavaCommunityPluginFileConfig with prettier {0}")
 	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
 	void useJavaCommunityPluginFileConfig(String prettierVersion) throws IOException {
-		var prettierPluginJava = "";
-		switch (prettierVersion) {
-		case PRETTIER_VERSION_2:
-			prettierPluginJava = "2.1.0"; // last version to support v2
-			break;
-		case PRETTIER_VERSION_3:
-			prettierPluginJava = "2.3.0"; // latest to support v3
-			break;
-		}
+		var prettierPluginJava = switch (prettierVersion) {
+		case PRETTIER_VERSION_2 -> "2.1.0";
+		case PRETTIER_VERSION_3 -> "2.3.0";
+			default -> "";
+		};
 		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc_java_plugin.yml");
 		setFile("build.gradle").toLines(
 				"plugins {",

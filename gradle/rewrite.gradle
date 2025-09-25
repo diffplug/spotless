@@ -1,7 +1,7 @@
 apply plugin: 'org.openrewrite.rewrite'
 
 rewrite {
-	activeRecipe("org.openrewrite.java.migrate.UpgradeToJava17")
+	activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
 	exportDatatables = true
 	failOnDryRunResults = true
 }

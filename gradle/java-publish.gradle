@@ -77,7 +77,7 @@ javadoc {
 	//
 	// Thus, no javadoc warnings.
 	options.addStringOption('Xdoclint:none', '-quiet')
-	options.addStringOption('source', '17')
+	options.addStringOption('source', '21')
 	// setup the header
 	options.header javadocInfo
 	// setup links

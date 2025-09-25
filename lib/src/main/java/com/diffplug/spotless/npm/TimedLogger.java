@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ class TimedLogger {
 		}
 
 		private Object[] paramsForEnd() {
-			if (params.isEmpty() || !(params.get(params.size() - 1) instanceof Throwable)) {
+			if (params.isEmpty() || !(params.getLast() instanceof Throwable)) {
 				// if the last element is not a throwable, we can add the duration as the last element
 				return Stream.concat(params.stream(), Stream.of(lazy(this::durationString))).toArray();
 			}
@@ -119,7 +119,7 @@ class TimedLogger {
 			return Stream.concat(
 					params.stream().limit(params.size() - 1),
 					Stream.of(lazy(this::durationString),
-							params.get(params.size() - 1)))
+							params.getLast()))
 					.toArray();
 		}
 

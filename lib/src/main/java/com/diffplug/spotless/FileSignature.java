@@ -140,7 +140,7 @@ public final class FileSignature implements Serializable {
 	/** Returns the only file in this signature, throwing an exception if there are more or less than 1 file. */
 	public File getOnlyFile() {
 		if (files.size() == 1) {
-			return files.iterator().next();
+			return files.getFirst();
 		} else {
 			throw new IllegalArgumentException("Expected one file, but was " + files.size());
 		}

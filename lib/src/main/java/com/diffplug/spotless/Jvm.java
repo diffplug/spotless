@@ -289,7 +289,7 @@ public final class Jvm {
 					throw new IllegalArgumentException("Not a semantic version: %s".formatted(versionObject), e);
 				}
 			}
-		};
+		}
 	}
 
 	/**

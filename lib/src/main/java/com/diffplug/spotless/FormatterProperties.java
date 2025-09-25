@@ -301,7 +301,7 @@ public final class FormatterProperties {
 					message += "]%n The formatter can only cope with a single profile per configuration file. Please remove the other profiles.";
 					throw new IllegalArgumentException(message);
 				}
-				return profiles.iterator().next();
+				return profiles.getFirst();
 			}
 
 			private List<Node> getChildren(final Node node, final String nodeName) {

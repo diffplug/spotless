@@ -203,8 +203,8 @@ final class ImportSorterImpl {
 			}
 		}
 		// if there is \n on the end, remove it
-		if (!template.isEmpty() && template.get(template.size() - 1).equals(ImportSorter.N)) {
-			template.remove(template.size() - 1);
+		if (!template.isEmpty() && template.getLast().equals(ImportSorter.N)) {
+			template.removeLast();
 		}
 		return template;
 	}

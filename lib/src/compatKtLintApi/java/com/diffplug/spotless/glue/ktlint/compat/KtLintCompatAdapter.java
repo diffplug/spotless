@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@ package com.diffplug.spotless.glue.ktlint.compat;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Map;
 
 public interface KtLintCompatAdapter {
@@ -30,16 +28,13 @@ public interface KtLintCompatAdapter {
 			Map<String, Object> editorConfigOverrideMap) throws NoSuchFieldException, IllegalAccessException;
 
 	static void setCodeContent(Object code, String content) {
-		AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
-			try {
-				Field contentField = code.getClass().getDeclaredField("content");
-				contentField.setAccessible(true);
-				contentField.set(code, content);
-			} catch (NoSuchFieldException | IllegalAccessException e) {
-				// Handle exceptions as needed
-				throw new RuntimeException("Failed to set content field", e);
-			}
-			return null;
-		});
+		try {
+			Field contentField = code.getClass().getDeclaredField("content");
+			contentField.setAccessible(true);
+			contentField.set(code, content);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			// Handle exceptions as needed
+			throw new RuntimeException("Failed to set content field", e);
+		}
 	}
 }

@@ -201,7 +201,7 @@ public final class DiffMessageFormatter {
 		//     ... (more lines that didn't fit)
 		List<String> lines = NEWLINE_SPLITTER.splitToList(arg);
 		if (!lines.isEmpty()) {
-			addIntendedLine(NORMAL_INDENT, lines.get(0));
+			addIntendedLine(NORMAL_INDENT, lines.getFirst());
 		}
 		for (int i = 1; i < Math.min(MIN_LINES_PER_FILE, lines.size()); ++i) {
 			addIntendedLine(DIFF_INDENT, lines.get(i));
