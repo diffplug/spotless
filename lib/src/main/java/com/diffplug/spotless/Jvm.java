@@ -122,12 +122,12 @@ public final class Jvm {
 		/** @return Highest formatter version recommended for this JVM (null, if JVM not supported) */
 		@Nullable public V getRecommendedFormatterVersion() {
 			Integer configuredJvmVersionOrNull = jvm2fmtMaxVersion.floorKey(Jvm.version());
-			return (null == configuredJvmVersionOrNull) ? null : jvm2fmtMaxVersion.get(configuredJvmVersionOrNull);
+			return null == configuredJvmVersionOrNull ? null : jvm2fmtMaxVersion.get(configuredJvmVersionOrNull);
 		}
 
 		@Nullable public V getMinimumRequiredFormatterVersion() {
 			Integer configuredJvmVersionOrNull = jvm2fmtMinVersion.floorKey(Jvm.version());
-			return (null == configuredJvmVersionOrNull) ? null : jvm2fmtMinVersion.get(configuredJvmVersionOrNull);
+			return null == configuredJvmVersionOrNull ? null : jvm2fmtMinVersion.get(configuredJvmVersionOrNull);
 		}
 
 		/**

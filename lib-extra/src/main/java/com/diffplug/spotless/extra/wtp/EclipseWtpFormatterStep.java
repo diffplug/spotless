@@ -67,8 +67,8 @@ public enum EclipseWtpFormatterStep {
 				return (String) method.invoke(formatter, input);
 			} catch (InvocationTargetException exceptionWrapper) {
 				Throwable throwable = exceptionWrapper.getTargetException();
-				Exception exception = (throwable instanceof Exception e) ? e : null;
-				throw (null == exception) ? exceptionWrapper : exception;
+				Exception exception = throwable instanceof Exception e ? e : null;
+				throw null == exception ? exceptionWrapper : exception;
 			}
 		};
 	}
@@ -85,8 +85,8 @@ public enum EclipseWtpFormatterStep {
 					return (String) method.invoke(formatter, unix, file.getAbsolutePath());
 				} catch (InvocationTargetException exceptionWrapper) {
 					Throwable throwable = exceptionWrapper.getTargetException();
-					Exception exception = (throwable instanceof Exception e) ? e : null;
-					throw (null == exception) ? exceptionWrapper : exception;
+					Exception exception = throwable instanceof Exception e ? e : null;
+					throw null == exception ? exceptionWrapper : exception;
 				}
 			}
 		});

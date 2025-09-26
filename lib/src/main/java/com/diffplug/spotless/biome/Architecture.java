@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,22 +40,22 @@ enum Architecture {
 		var msg = "Unsupported architecture " + arch + "/" + version
 				+ ", specify the path to the Biome executable manually";
 
-		if (arch.equals("ppc64le")) {
+		if ("ppc64le".equals(arch)) {
 			throw new IllegalStateException(msg);
 		}
-		if (arch.equals("s390x")) {
+		if ("s390x".equals(arch)) {
 			throw new IllegalStateException(msg);
 		}
-		if (arch.equals("ppc64")) {
+		if ("ppc64".equals(arch)) {
 			throw new IllegalStateException(msg);
 		}
-		if (arch.equals("ppc")) {
+		if ("ppc".equals(arch)) {
 			throw new IllegalStateException(msg);
 		}
-		if (arch.equals("aarch64")) {
+		if ("aarch64".equals(arch)) {
 			return ARM64;
 		}
-		if (arch.equals("arm")) {
+		if ("arm".equals(arch)) {
 			if (version.contains("v7")) {
 				throw new IllegalStateException(msg);
 			}

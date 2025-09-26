@@ -100,13 +100,13 @@ class ReflectionHelper {
 		this.TurtleFormatFormattingStyleClass = classLoader.loadClass("de.atextor.turtle.formatter.FormattingStyle");
 		Class<?>[] innerClasses = TurtleFormatFormattingStyleClass.getDeclaredClasses();
 		this.TurtleFormatFormattingStyleBuilderClass = Arrays.stream(innerClasses)
-				.filter(c -> c.getSimpleName().equals("FormattingStyleBuilder")).findFirst().get();
-		this.TurtleFormatKnownPrefix = Arrays.stream(innerClasses).filter(c -> c.getSimpleName().equals("KnownPrefix")).findFirst().get();
+				.filter(c -> "FormattingStyleBuilder".equals(c.getSimpleName())).findFirst().get();
+		this.TurtleFormatKnownPrefix = Arrays.stream(innerClasses).filter(c -> "KnownPrefix".equals(c.getSimpleName())).findFirst().get();
 		this.getSubject = JenaStatementClass.getMethod("getSubject");
 		this.getPredicate = JenaStatementClass.getMethod("getPredicate");
 		this.getObject = JenaStatementClass.getMethod("getObject");
 		this.isAnon = JenaRDFNodeClass.getMethod("isAnon");
-		this.getGraph = JenaModelClass.getMethod(("getGraph"));
+		this.getGraph = JenaModelClass.getMethod("getGraph");
 		this.JenaGraphClass = classLoader.loadClass("org.apache.jena.graph.Graph");
 		this.JenaTriple = classLoader.loadClass("org.apache.jena.graph.Triple");
 		this.graphFindTriple = JenaGraphClass.getMethod("find", JenaTriple);
@@ -201,10 +201,10 @@ class ReflectionHelper {
 			long line = (long) args[1];
 			long col = (long) args[2];
 			String severity = method.getName();
-			if (severity.equals("warning") && !state.getConfig().isFailOnWarning()) {
+			if ("warning".equals(severity) && !state.getConfig().isFailOnWarning()) {
 				logger.warn("{}({},{}): {}", this.filePath, line, col, message);
 			} else {
-				if (severity.equals("warning")) {
+				if ("warning".equals(severity)) {
 					logger.error("Formatter fails because of a parser warning. To make the formatter succeed in"
 							+ "the presence of warnings, set the configuration parameter 'failOnWarning' to 'false' (default: 'true')");
 				}
@@ -503,7 +503,7 @@ class ReflectionHelper {
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			if (method.getName().equals("listSubjects") && method.getParameterCount() == 0) {
+			if ("listSubjects".equals(method.getName()) && method.getParameterCount() == 0) {
 				Object resIterator = method.invoke(jenaModel);
 				List<Object> resources = new ArrayList<>();
 				while (hasNext(resIterator)) {

@@ -114,7 +114,7 @@ public final class FormatterProperties {
 
 	public static FormatterProperties merge(Properties... properties) {
 		FormatterProperties merged = new FormatterProperties();
-		List.of(properties).forEach((source) -> merged.properties.putAll(source));
+		List.of(properties).forEach(source -> merged.properties.putAll(source));
 		return merged;
 	}
 
@@ -300,7 +300,7 @@ public final class FormatterProperties {
 					 * A missing value is interpreted as an empty string,
 					 * similar to the Properties behavior
 					 */
-					String valString = (null == value) ? "" : value.getNodeValue();
+					String valString = null == value ? "" : value.getNodeValue();
 					properties.setProperty(idString, valString);
 				}
 				return properties;
@@ -332,7 +332,7 @@ public final class FormatterProperties {
 
 		private static String getProfileName(Node profile) {
 			Node nameAttribute = profile.getAttributes().getNamedItem("name");
-			return (null == nameAttribute) ? "" : nameAttribute.getNodeValue();
+			return null == nameAttribute ? "" : nameAttribute.getNodeValue();
 		}
 
 		private final String rootNodeName;

@@ -58,9 +58,9 @@ public class LintSuppression implements java.io.Serializable {
 	}
 
 	public boolean suppresses(String relativePath, FormatterStep formatterStep, Lint lint) {
-		if (path.equals(ALL) || path.equals(relativePath)) {
-			if (step.equals(ALL) || formatterStep.getName().equals(this.step)) {
-				if (shortCode.equals(ALL) || lint.getShortCode().equals(this.shortCode)) {
+		if (ALL.equals(path) || path.equals(relativePath)) {
+			if (ALL.equals(step) || formatterStep.getName().equals(this.step)) {
+				if (ALL.equals(shortCode) || lint.getShortCode().equals(this.shortCode)) {
 					return true;
 				}
 			}
@@ -69,7 +69,7 @@ public class LintSuppression implements java.io.Serializable {
 	}
 
 	public void ensureDoesNotSuppressAll() {
-		boolean suppressAll = path.equals(ALL) && step.equals(ALL) && shortCode.equals(ALL);
+		boolean suppressAll = ALL.equals(path) && ALL.equals(step) && ALL.equals(shortCode);
 		if (suppressAll) {
 			throw new IllegalArgumentException("You must specify a specific `file`, `step`, or `shortCode`.");
 		}
