@@ -34,6 +34,6 @@ dependencies {
 	rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.18.0')
 	rewrite('org.openrewrite.recipe:rewrite-java-security:3.19.0')
 	rewrite('org.openrewrite.recipe:rewrite-rewrite:0.13.0')
-	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.17.0')
+	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.18.0')
 	rewrite('org.openrewrite.recipe:rewrite-third-party:0.27.0')
 }
