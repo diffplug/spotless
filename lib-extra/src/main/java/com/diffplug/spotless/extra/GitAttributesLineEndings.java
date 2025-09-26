@@ -154,7 +154,7 @@ public final class GitAttributesLineEndings {
 
 		CachedEndings(File projectDir, Runtime runtime, Iterable<File> toFormat) {
 			String rootPath = FileSignature.pathNativeToUnix(projectDir.getAbsolutePath());
-			rootDir = rootPath.equals("/") ? rootPath : rootPath + "/";
+			rootDir = "/".equals(rootPath) ? rootPath : rootPath + "/";
 			defaultEnding = runtime.defaultEnding;
 			for (File file : toFormat) {
 				String ending = runtime.getEndingFor(file);

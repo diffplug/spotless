@@ -23,8 +23,8 @@ jobs:
           script: |
             try {
               // Get username - prioritize sender (the person who triggered the event)
-              const username = github.event.sender?.login ||
-                              github.event.comment?.user?.login;
+              const username = github.event?.sender?.login ||
+                              github.event?.comment?.user?.login;
 
               if (!username) {
                 console.log('Could not determine username from event payload');

@@ -203,7 +203,7 @@ final class ImportSorterImpl {
 			}
 		}
 		// if there is \n on the end, remove it
-		if (!template.isEmpty() && template.get(template.size() - 1).equals(ImportSorter.N)) {
+		if (!template.isEmpty() && ImportSorter.N.equals(template.get(template.size() - 1))) {
 			template.remove(template.size() - 1);
 		}
 		return template;
@@ -217,7 +217,7 @@ final class ImportSorterImpl {
 		List<String> strings = new ArrayList<>();
 
 		for (String s : sortedImported) {
-			if (s.equals(ImportSorter.N)) {
+			if (ImportSorter.N.equals(s)) {
 				strings.add(s);
 			} else {
 				strings.add(lineFormat.formatted(s) + ImportSorter.N);
@@ -264,7 +264,7 @@ final class ImportSorterImpl {
 		if (!samePrefix) {
 			return string1.compareTo(string2);
 		}
-		return (string1IsWildcard == wildcardsLast) ? 1 : -1;
+		return string1IsWildcard == wildcardsLast ? 1 : -1;
 	}
 
 	private static class LexicographicalOrderingComparator implements Comparator<String>, Serializable {

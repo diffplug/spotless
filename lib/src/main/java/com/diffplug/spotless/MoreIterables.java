@@ -31,7 +31,7 @@ final class MoreIterables {
 	/** Returns a shallow copy of input elements, throwing on null elements. */
 	static <T> List<T> toNullHostileList(Iterable<T> input) {
 		requireElementsNonNull(input);
-		List<T> shallowCopy = (input instanceof Collection<?> c)
+		List<T> shallowCopy = input instanceof Collection<?> c
 				? new ArrayList<>(c.size())
 				: new ArrayList<>();
 		input.forEach(shallowCopy::add);

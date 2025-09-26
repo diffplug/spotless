@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class JdtFlags {
 	}
 
 	private static boolean isPackageVisible(BodyDeclaration bodyDeclaration) {
-		return (!isPrivate(bodyDeclaration) && !isProtected(bodyDeclaration) && !isPublic(bodyDeclaration));
+		return !isPrivate(bodyDeclaration) && !isProtected(bodyDeclaration) && !isPublic(bodyDeclaration);
 	}
 
 	private static boolean isPrivate(BodyDeclaration bodyDeclaration) {
