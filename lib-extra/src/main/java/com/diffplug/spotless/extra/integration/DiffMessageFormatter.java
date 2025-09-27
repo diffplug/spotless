@@ -112,7 +112,7 @@ public final class DiffMessageFormatter {
 		}
 	}
 
-	public static class Builder {
+	public static final class Builder {
 		private Builder() {}
 
 		private String runToFix;
@@ -161,7 +161,7 @@ public final class DiffMessageFormatter {
 	public static final int MAX_FILES_TO_LIST = 10;
 
 	private final StringBuilder buffer = new StringBuilder(MAX_CHECK_MESSAGE_LINES * 64);
-	private int numLines = 0;
+	private int numLines;
 
 	private final CleanProvider formatter;
 
@@ -203,7 +203,7 @@ public final class DiffMessageFormatter {
 		if (!lines.isEmpty()) {
 			addIntendedLine(NORMAL_INDENT, lines.get(0));
 		}
-		for (int i = 1; i < Math.min(MIN_LINES_PER_FILE, lines.size()); ++i) {
+		for (int i = 1; i < Math.min(MIN_LINES_PER_FILE, lines.size()); i++) {
 			addIntendedLine(DIFF_INDENT, lines.get(i));
 		}
 

@@ -62,11 +62,11 @@ public class JavascriptExtension extends FormatExtension {
 			extends NpmStepConfig<EslintBaseConfig<T>> {
 		Map<String, String> devDependencies = new LinkedHashMap<>();
 
-		@Nullable Object configFilePath = null;
+		@Nullable Object configFilePath;
 
-		@Nullable String configJs = null;
+		@Nullable String configJs;
 
-		public EslintBaseConfig(Project project, Consumer<FormatterStep> replaceStep,
+		protected EslintBaseConfig(Project project, Consumer<FormatterStep> replaceStep,
 				Map<String, String> devDependencies) {
 			super(project, replaceStep);
 			this.devDependencies.putAll(requireNonNull(devDependencies));

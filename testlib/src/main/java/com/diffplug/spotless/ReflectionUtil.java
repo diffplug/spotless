@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.Iterator;
  * just copy-paste these methods where you need
  * them.
  */
-public class ReflectionUtil {
+public final class ReflectionUtil {
 	public static void dumpAllInfo(String name, Object obj) {
 		System.out.println(name + " of type " + obj.getClass());
 		for (Method method : obj.getClass().getMethods()) {
@@ -50,4 +50,6 @@ public class ReflectionUtil {
 		}
 		System.out.println(")");
 	}
+
+	private ReflectionUtil() {}
 }

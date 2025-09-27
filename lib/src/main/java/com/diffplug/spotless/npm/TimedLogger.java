@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import com.diffplug.spotless.ThrowingEx;
 /**
  * A logger that logs the time it took to execute a block of code.
  */
-class TimedLogger {
+final class TimedLogger {
 
 	public static final String MESSAGE_PREFIX_BEGIN = "[BEGIN] ";
 
@@ -158,7 +158,7 @@ class TimedLogger {
 	}
 
 	static class TestTicker implements Ticker {
-		private long time = 0;
+		private long time;
 
 		@Override
 		public long read() {

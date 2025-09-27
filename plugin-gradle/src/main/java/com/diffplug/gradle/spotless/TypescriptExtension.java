@@ -74,7 +74,7 @@ public class TypescriptExtension extends FormatExtension {
 
 		@Nullable TsConfigFileType configFileType = null;
 
-		@Nullable Object configFilePath = null;
+		@Nullable Object configFilePath;
 
 		private final Map<String, String> devDependencies;
 
@@ -196,7 +196,7 @@ public class TypescriptExtension extends FormatExtension {
 
 	public class TypescriptEslintConfig extends EslintBaseConfig<TypescriptEslintConfig> {
 
-		@Nullable Object typescriptConfigFilePath = null;
+		@Nullable Object typescriptConfigFilePath;
 
 		public TypescriptEslintConfig(Map<String, String> devDependencies) {
 			super(getProject(), TypescriptExtension.this::replaceStep, devDependencies);

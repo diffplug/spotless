@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import com.diffplug.spotless.ProcessRunner;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public class BufStep {
+public final class BufStep {
 	public static String name() {
 		return "buf";
 	}

@@ -146,9 +146,9 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	}
 
 	private String header(String contents) throws IOException {
-		return "/*\n" +
-				" * " + contents + "\n" +
-				" **/\n";
+		return "/*\n"
+				+ " * " + contents + "\n"
+				+ " **/\n";
 	}
 
 	private String hasHeader(String header) throws IOException {

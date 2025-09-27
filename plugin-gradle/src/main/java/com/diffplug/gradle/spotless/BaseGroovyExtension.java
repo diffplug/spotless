@@ -54,7 +54,7 @@ public abstract class BaseGroovyExtension extends FormatExtension {
 		return new GrEclipseConfig(version, this);
 	}
 
-	public static class GrEclipseConfig {
+	public static final class GrEclipseConfig {
 		private final EquoBasedStepBuilder builder;
 		private final FormatExtension extension;
 

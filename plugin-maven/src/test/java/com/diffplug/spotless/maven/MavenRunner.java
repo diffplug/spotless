@@ -33,7 +33,7 @@ import com.diffplug.spotless.ProcessRunner;
  * Harness for running a Maven build, same idea as the
  * <a href="https://docs.gradle.org/current/javadoc/org/gradle/testkit/runner/GradleRunner.html">GradleRunner from the Gradle testkit</a>.
  */
-public class MavenRunner {
+public final class MavenRunner {
 	public static MavenRunner create() {
 		return new MavenRunner();
 	}
@@ -42,8 +42,8 @@ public class MavenRunner {
 
 	private File projectDir;
 	private String[] args;
-	private Map<String, String> environment = new HashMap<>();
-	private Map<String, String> systemProperties = new HashMap<>();
+	private final Map<String, String> environment = new HashMap<>();
+	private final Map<String, String> systemProperties = new HashMap<>();
 	private ProcessRunner runner;
 
 	public MavenRunner withProjectDir(File projectDir) {

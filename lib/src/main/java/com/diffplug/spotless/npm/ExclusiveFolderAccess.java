@@ -37,7 +37,7 @@ interface ExclusiveFolderAccess {
 
 	void runExclusively(ThrowingEx.Runnable runnable);
 
-	class ExclusiveFolderAccessSharedMutex implements ExclusiveFolderAccess {
+	final class ExclusiveFolderAccessSharedMutex implements ExclusiveFolderAccess {
 
 		private static final ConcurrentHashMap<String, Lock> mutexes = new ConcurrentHashMap<>();
 

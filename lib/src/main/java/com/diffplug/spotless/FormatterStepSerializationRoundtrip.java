@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
@@ -66,7 +67,7 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 		return equalityStateToFormatter.apply(equalityState);
 	}
 
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+	private void writeObject(ObjectOutputStream out) throws IOException {
 		if (initializer == null) {
 			// then this instance was created by Gradle's ConfigurationCacheHackList and the following will hold true
 			if (roundtripStateInternal == null && equalityStateInternal == null) {
@@ -108,7 +109,7 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 		}
 
 		@SuppressFBWarnings(value = "NP_NONNULL_PARAM_VIOLATION", justification = "HackClone")
-		private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		private void writeObject(ObjectOutputStream out) throws IOException {
 			if (cleaned == null) {
 				cleaned = new FormatterStepSerializationRoundtrip(original.name, null, original.equalityStateExtractor, original.equalityStateToFormatter);
 				if (optimizeForEquality) {
@@ -126,10 +127,12 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o)
+			if (this == o) {
 				return true;
-			if (o == null || getClass() != o.getClass())
+			}
+			if (o == null || getClass() != o.getClass()) {
 				return false;
+			}
 			HackClone<?, ?> that = (HackClone<?, ?>) o;
 			return optimizeForEquality == that.optimizeForEquality && rehydrate().equals(that.rehydrate());
 		}

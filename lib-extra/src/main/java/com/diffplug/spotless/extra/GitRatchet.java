@@ -62,7 +62,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 		return isClean(project, treeSha, relativePath);
 	}
 
-	private Map<Repository, DirCache> dirCaches = new HashMap<>();
+	private final Map<Repository, DirCache> dirCaches = new HashMap<>();
 
 	/**
 	 * This is the highest-level method, which all the others serve.  Given the sha
