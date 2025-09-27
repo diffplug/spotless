@@ -3,6 +3,7 @@ apply plugin: 'org.openrewrite.rewrite'
 rewrite {
 	activeRecipe('com.diffplug.spotless.SanityCheck')
 	exclusions.addAll(
+			'**.dirty.java',
 			'**_gradle_node_plugin_example_**',
 			'**gradle/changelog.gradle',
 			'**gradle/java-publish.gradle',
