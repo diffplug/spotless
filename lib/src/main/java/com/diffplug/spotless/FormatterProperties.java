@@ -114,7 +114,7 @@ public final class FormatterProperties {
 
 	public static FormatterProperties merge(Properties... properties) {
 		FormatterProperties merged = new FormatterProperties();
-		List.of(properties).forEach(source -> merged.properties.putAll(source));
+		List.of(properties).forEach(merged.properties::putAll);
 		return merged;
 	}
 

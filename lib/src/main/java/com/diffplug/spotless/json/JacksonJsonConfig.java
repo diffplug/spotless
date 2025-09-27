@@ -31,7 +31,7 @@ public class JacksonJsonConfig extends JacksonConfig {
 
 	// https://github.com/revelc/formatter-maven-plugin/pull/280
 	// By default, Jackson adds a ' ' before separator, which is not standard with most IDE/JSON libraries
-	protected boolean spaceBeforeSeparator = false;
+	protected boolean spaceBeforeSeparator;
 
 	public Map<String, Boolean> getJsonFeatureToToggle() {
 		return Collections.unmodifiableMap(jsonFeatureToToggle);

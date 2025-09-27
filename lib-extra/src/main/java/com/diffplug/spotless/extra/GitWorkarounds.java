@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,7 +202,7 @@ public final class GitWorkarounds {
 			return new IOException("Empty 'commondir' file: " + commonDir.getAbsolutePath());
 		}
 
-		@SuppressFBWarnings(value = "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
+		@SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 		@Override
 		public FileRepositoryBuilder readEnvironment(SystemReader sr) {
 			super.readEnvironment(sr);

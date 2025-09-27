@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Note: gofmt doesn't have a version flag, because it's part of standard Go distribution.
  * So `go` executable can be used to determine base path and version, and path to gofmt can be built from it.
  */
-public class GofmtFormatStep {
+public final class GofmtFormatStep {
 	public static String name() {
 		return "gofmt";
 	}
@@ -67,15 +67,15 @@ public class GofmtFormatStep {
 	}
 
 	private RoundtripState createRountrip() throws IOException, InterruptedException {
-		String howToInstall = "gofmt is a part of standard go distribution. If spotless can't discover it automatically, " +
-				"you can point Spotless to the go binary with {@code pathToExe('/path/to/go')}";
+		String howToInstall = "gofmt is a part of standard go distribution. If spotless can't discover it automatically, "
+				+ "you can point Spotless to the go binary with {@code pathToExe('/path/to/go')}";
 		final ForeignExe exe = ForeignExe.nameAndVersion("go", version)
 				.pathToExe(pathToExe)
 				.versionFlag("version")
 				.fixCantFind(howToInstall)
 				.fixWrongVersion(
-						"You can tell Spotless to use the version you already have with {@code gofmt('{versionFound}')}" +
-								"or you can install the currently specified Go version, {version}.\n" + howToInstall);
+						"You can tell Spotless to use the version you already have with {@code gofmt('{versionFound}')}"
+								+ "or you can install the currently specified Go version, {version}.\n" + howToInstall);
 		return new RoundtripState(version, exe);
 	}
 

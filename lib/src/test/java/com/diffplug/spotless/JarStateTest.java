@@ -15,13 +15,16 @@
  */
 package com.diffplug.spotless;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.SoftAssertions;
@@ -33,7 +36,7 @@ import org.junit.jupiter.api.io.TempDir;
 class JarStateTest {
 
 	@TempDir
-	java.nio.file.Path tempDir;
+	Path tempDir;
 
 	File a;
 
@@ -68,7 +71,7 @@ class JarStateTest {
 	@Test
 	void itReturnsForcedClassloaderIfSetNoMatterIfSetBeforeOrAfterCreation() throws IOException {
 		JarState stateA = JarState.from(a.getName(), provisioner);
-		ClassLoader forcedClassLoader = new URLClassLoader(new java.net.URL[0]);
+		ClassLoader forcedClassLoader = new URLClassLoader(new URL[0]);
 		JarState.setForcedClassLoader(forcedClassLoader);
 		JarState stateB = JarState.from(b.getName(), provisioner);
 
@@ -81,7 +84,7 @@ class JarStateTest {
 	@Test
 	void itReturnsForcedClassloaderEvenWhenRountripSerialized() throws IOException, ClassNotFoundException {
 		JarState stateA = JarState.from(a.getName(), provisioner);
-		ClassLoader forcedClassLoader = new URLClassLoader(new java.net.URL[0]);
+		ClassLoader forcedClassLoader = new URLClassLoader(new URL[0]);
 		JarState.setForcedClassLoader(forcedClassLoader);
 		JarState stateB = JarState.from(b.getName(), provisioner);
 
@@ -99,7 +102,7 @@ class JarStateTest {
 		try (ObjectOutputStream oOut = new ObjectOutputStream(outputStream)) {
 			oOut.writeObject(state);
 		}
-		try (ObjectInputStream oIn = new ObjectInputStream(new java.io.ByteArrayInputStream(outputStream.toByteArray()))) {
+		try (ObjectInputStream oIn = new ObjectInputStream(new ByteArrayInputStream(outputStream.toByteArray()))) {
 			return (JarState) oIn.readObject();
 		}
 	}

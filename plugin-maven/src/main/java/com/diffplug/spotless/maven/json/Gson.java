@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ public class Gson implements FormatterStepFactory {
 	int indentSpaces = Json.DEFAULT_INDENTATION;
 
 	@Parameter
-	boolean sortByKeys = false;
+	boolean sortByKeys;
 
 	@Parameter
-	boolean escapeHtml = false;
+	boolean escapeHtml;
 
 	@Parameter
 	String version = GsonStep.DEFAULT_VERSION;

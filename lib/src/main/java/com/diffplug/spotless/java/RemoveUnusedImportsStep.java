@@ -24,7 +24,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 
 /** Uses google-java-format or cleanthat.UnnecessaryImport, but only to remove unused imports. */
-public class RemoveUnusedImportsStep implements Serializable {
+public final class RemoveUnusedImportsStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	static final String NAME = "removeUnusedImports";

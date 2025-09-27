@@ -28,22 +28,26 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 /**
  * This class is derived and adapted code from the Eclipse JDT project (Derivative Works according to EPL 2.0 license).
  */
-class JdtFlags {
+final class JdtFlags {
 
 	static final int VISIBILITY_CODE_INVALID = -1;
 
 	static boolean isStatic(BodyDeclaration bodyDeclaration) {
-		if (isNestedInterfaceOrAnnotation(bodyDeclaration))
+		if (isNestedInterfaceOrAnnotation(bodyDeclaration)) {
 			return true;
+		}
 		int nodeType = bodyDeclaration.getNodeType();
 		if (nodeType != ASTNode.METHOD_DECLARATION
 				&& nodeType != ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION
-				&& isInterfaceOrAnnotationMember(bodyDeclaration))
+				&& isInterfaceOrAnnotationMember(bodyDeclaration)) {
 			return true;
-		if (bodyDeclaration instanceof EnumConstantDeclaration)
+		}
+		if (bodyDeclaration instanceof EnumConstantDeclaration) {
 			return true;
-		if (bodyDeclaration instanceof EnumDeclaration && bodyDeclaration.getParent() instanceof AbstractTypeDeclaration)
+		}
+		if (bodyDeclaration instanceof EnumDeclaration && bodyDeclaration.getParent() instanceof AbstractTypeDeclaration) {
 			return true;
+		}
 		return Modifier.isStatic(bodyDeclaration.getModifiers());
 	}
 
@@ -60,8 +64,9 @@ class JdtFlags {
 	}
 
 	private static boolean isPublic(BodyDeclaration bodyDeclaration) {
-		if (isInterfaceOrAnnotationMember(bodyDeclaration))
+		if (isInterfaceOrAnnotationMember(bodyDeclaration)) {
 			return true;
+		}
 		return Modifier.isPublic(bodyDeclaration.getModifiers());
 	}
 
@@ -80,15 +85,18 @@ class JdtFlags {
 	}
 
 	static int getVisibilityCode(BodyDeclaration bodyDeclaration) {
-		if (isPublic(bodyDeclaration))
+		if (isPublic(bodyDeclaration)) {
 			return Modifier.PUBLIC;
-		else if (isProtected(bodyDeclaration))
+		} else if (isProtected(bodyDeclaration)) {
 			return Modifier.PROTECTED;
-		else if (isPackageVisible(bodyDeclaration))
+		} else if (isPackageVisible(bodyDeclaration)) {
 			return Modifier.NONE;
-		else if (isPrivate(bodyDeclaration))
+		} else if (isPrivate(bodyDeclaration)) {
 			return Modifier.PRIVATE;
+		}
 		Assert.isTrue(false);
 		return VISIBILITY_CODE_INVALID;
 	}
+
+	private JdtFlags() {}
 }

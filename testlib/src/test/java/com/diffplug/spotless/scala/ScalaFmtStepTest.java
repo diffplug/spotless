@@ -57,16 +57,14 @@ class ScalaFmtStepTest extends ResourceHarness {
 	@Test
 	void behaviorConfigFileVersionDoesnotMatchLibrary() {
 		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
-		Assertions.assertThatThrownBy(() -> {
-			step.format("", new File(""));
-		}).cause().message().contains("Spotless is using 3.0.0 but the config file declares 3.8.1. Both must match. Update the version declared in the plugin's settings and/or the config file.");
+		Assertions.assertThatThrownBy(() -> step.format("", new File(""))).cause().message().contains("Spotless is using 3.0.0 but the config file declares 3.8.1. Both must match. Update the version declared in the plugin's settings and/or the config file.");
 	}
 
 	@Test
 	void equality() {
 		new SerializableEqualityTester() {
 			String version = "3.6.1";
-			File configFile = null;
+			File configFile;
 
 			@Override
 			protected void setupTest(API api) {
@@ -94,8 +92,6 @@ class ScalaFmtStepTest extends ResourceHarness {
 	void invalidConfiguration() {
 		File invalidConfFile = createTestFile("scala/scalafmt/scalafmt.invalid.conf");
 		Provisioner provisioner = TestProvisioner.mavenCentral();
-		Assertions.assertThatThrownBy(() -> {
-			ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile).format("", new File(""));
-		}).cause().message().contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
+		Assertions.assertThatThrownBy(() -> ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile).format("", new File(""))).cause().message().contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
 	}
 }

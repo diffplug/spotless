@@ -26,7 +26,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
-public class Antlr4FormatterStep implements Serializable {
+public final class Antlr4FormatterStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.khubla.antlr4formatter:antlr4-formatter:";

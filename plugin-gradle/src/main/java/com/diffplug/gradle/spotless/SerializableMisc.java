@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.io.Files;
 
-class SerializableMisc {
+final class SerializableMisc {
 	static void toFile(Serializable obj, File file) {
 		try {
 			java.nio.file.Files.createDirectories(file.getParentFile().toPath());
@@ -65,4 +65,6 @@ class SerializableMisc {
 			throw Errors.asRuntime(e);
 		}
 	}
+
+	private SerializableMisc() {}
 }

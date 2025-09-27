@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import java.util.LinkedHashSet;
 
 import javax.annotation.Nullable;
 
-class EncodingErrorMsg {
+final class EncodingErrorMsg {
 	static final char UNREPRESENTABLE = '�';
-	private static int CONTEXT = 3;
+	private static final int CONTEXT = 3;
 
 	static @Nullable String msg(String chars, byte[] bytes, Charset charset) {
 		int unrepresentable = chars.indexOf(UNREPRESENTABLE);
@@ -70,12 +70,12 @@ class EncodingErrorMsg {
 		if (charset.equals(StandardCharsets.UTF_8)) {
 			message.append("Spotless uses UTF-8 by default.");
 		} else {
-			message.append("You configured Spotless to use " + charset.name() + ".");
+			message.append("You configured Spotless to use ").append(charset.name()).append(".");
 		}
 
 		int line = 1;
 		int col = 1;
-		for (int i = 0; i < unrepresentable; ++i) {
+		for (int i = 0; i < unrepresentable; i++) {
 			char c = chars.charAt(i);
 			if (c == '\n') {
 				++line;
@@ -84,7 +84,7 @@ class EncodingErrorMsg {
 				++col;
 			}
 		}
-		message.append("  At line " + line + " col " + col + ":");
+		message.append("  At line ").append(line).append(" col ").append(col).append(":");
 
 		// https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html
 		LinkedHashSet<Charset> encodings = new LinkedHashSet<>();

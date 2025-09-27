@@ -29,11 +29,11 @@ import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
 /** Formatter step which calls out to the Groovy-Eclipse formatter. */
 public enum EclipseWtpFormatterStep {
 	// @formatter:off
-	CSS ("EclipseCssFormatterStepImpl",  EclipseWtpFormatterStep::applyWithoutFile),
+	CSS("EclipseCssFormatterStepImpl", EclipseWtpFormatterStep::applyWithoutFile),
 	HTML("EclipseHtmlFormatterStepImpl", EclipseWtpFormatterStep::applyWithoutFile),
-	JS  ("EclipseJsFormatterStepImpl",   EclipseWtpFormatterStep::applyWithoutFile),
+	JS("EclipseJsFormatterStepImpl", EclipseWtpFormatterStep::applyWithoutFile),
 	JSON("EclipseJsonFormatterStepImpl", EclipseWtpFormatterStep::applyWithoutFile),
-	XML ("EclipseXmlFormatterStepImpl",  EclipseWtpFormatterStep::applyWithFile);
+	XML("EclipseXmlFormatterStepImpl", EclipseWtpFormatterStep::applyWithFile);
 	// @formatter:on
 
 	private static final String NAME = "eclipse wtp formatter";

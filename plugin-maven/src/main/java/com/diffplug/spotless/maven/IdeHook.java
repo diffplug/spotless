@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import com.diffplug.common.io.ByteStreams;
 import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
 
-class IdeHook {
+final class IdeHook {
 
 	private static void dumpIsClean() {
 		System.err.println("IS CLEAN");
@@ -80,4 +80,6 @@ class IdeHook {
 		}
 		return false;
 	}
+
+	private IdeHook() {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package com.diffplug.spotless.maven;
  * Tracks the number of processed files, typically by a single Formatter for a whole repository
  */
 class ImpactedFilesTracker {
-	protected int nbskippedAsCleanCache = 0;
-	protected int nbCheckedButAlreadyClean = 0;
-	protected int nbCleaned = 0;
+	protected int nbskippedAsCleanCache;
+	protected int nbCheckedButAlreadyClean;
+	protected int nbCleaned;
 
 	/**
 	 * Some cache mechanism may indicate some content is clean, without having to execute the cleaning process

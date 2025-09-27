@@ -80,8 +80,8 @@ public final class Jsr223Step implements Serializable {
 			ScriptEngine scriptEngine = scriptEngineManager.getEngineByName(engine);
 
 			if (scriptEngine == null) {
-				throw new IllegalArgumentException("Unknown script engine '" + engine + "'. Available engines: " +
-						scriptEngineManager.getEngineFactories().stream().flatMap(f -> f.getNames().stream()).collect(Collectors.joining(", ")));
+				throw new IllegalArgumentException("Unknown script engine '" + engine + "'. Available engines: "
+						+ scriptEngineManager.getEngineFactories().stream().flatMap(f -> f.getNames().stream()).collect(Collectors.joining(", ")));
 			}
 
 			// evaluate script code

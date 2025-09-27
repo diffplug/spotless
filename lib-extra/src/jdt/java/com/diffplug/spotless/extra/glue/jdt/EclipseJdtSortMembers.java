@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.internal.core.SortElementsOperation;
 
-public class EclipseJdtSortMembers {
+public final class EclipseJdtSortMembers {
 
 	private static final Pattern PATTERN_DO_NOT_SORT_FIELDS = Pattern.compile("@SortMembers:doNotSortFields\\s*=\\s*(false|true)");
 	private static final Pattern PATTERN_ENABLED = Pattern.compile("@SortMembers:enabled\\s*=\\s*(false|true)");
@@ -244,4 +244,6 @@ public class EclipseJdtSortMembers {
 			return new SortProperties(enabled, membersOrder, doNotSortFields, sortByVisibility, visibilityOrder);
 		}
 	}
+
+	private EclipseJdtSortMembers() {}
 }

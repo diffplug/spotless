@@ -31,7 +31,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Lint;
 
-public class FenceStep {
+public final class FenceStep {
 	/** Declares the name of the step. */
 	public static FenceStep named(String name) {
 		return new FenceStep(name);
@@ -100,7 +100,7 @@ public class FenceStep {
 		APPLY, PRESERVE
 	}
 
-	private static class RoundtripAndEqualityState implements Serializable {
+	private static final class RoundtripAndEqualityState implements Serializable {
 		private static final long serialVersionUID = 272603249547598947L;
 		final String regexPattern;
 		final int regexFlags;

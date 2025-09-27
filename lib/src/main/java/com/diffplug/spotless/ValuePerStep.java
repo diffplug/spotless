@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ class ValuePerStep<T> extends AbstractList<T> {
 	private final int size;
 	private @Nullable T value;
 	private int valueIdx;
-	private @Nullable Object[] multipleValues = null;
+	private @Nullable Object[] multipleValues;
 
 	ValuePerStep(Formatter formatter) {
 		this.size = formatter.getSteps().size();

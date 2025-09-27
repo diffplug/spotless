@@ -164,23 +164,26 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 				return CONSTRUCTORS_INDEX;
 			}
 			int flags = method.getModifiers();
-			if (Modifier.isStatic(flags))
+			if (Modifier.isStatic(flags)) {
 				return STATIC_METHODS_INDEX;
-			else
+			} else {
 				return METHOD_INDEX;
+			}
 		}
 		case ASTNode.FIELD_DECLARATION: {
-			if (JdtFlags.isStatic(bodyDeclaration))
+			if (JdtFlags.isStatic(bodyDeclaration)) {
 				return STATIC_FIELDS_INDEX;
-			else
+			} else {
 				return FIELDS_INDEX;
+			}
 		}
 		case ASTNode.INITIALIZER: {
 			int flags = bodyDeclaration.getModifiers();
-			if (Modifier.isStatic(flags))
+			if (Modifier.isStatic(flags)) {
 				return STATIC_INIT_INDEX;
-			else
+			} else {
 				return INIT_INDEX;
+			}
 		}
 		case ASTNode.TYPE_DECLARATION:
 		case ASTNode.ENUM_DECLARATION:

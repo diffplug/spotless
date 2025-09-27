@@ -21,7 +21,7 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
 abstract class BumpThisNumberIfACustomStepChangesTest extends GradleIntegrationHarness {
-	private boolean useConfigCache;
+	private final boolean useConfigCache;
 
 	BumpThisNumberIfACustomStepChangesTest(boolean useConfigCache) {
 		this.useConfigCache = useConfigCache;

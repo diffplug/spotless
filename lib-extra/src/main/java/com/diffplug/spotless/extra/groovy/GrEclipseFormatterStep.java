@@ -66,9 +66,7 @@ public final class GrEclipseFormatterStep {
 						"org.codehaus.groovy.eclipse.core",
 						"org.eclipse.jdt.groovy.core",
 						"org.codehaus.groovy"));
-				model.addFilterAndValidate("no-debug", filter -> {
-					filter.exclude("org.eclipse.jdt.debug");
-				});
+				model.addFilterAndValidate("no-debug", filter -> filter.exclude("org.eclipse.jdt.debug"));
 				// work around https://github.com/groovy/groovy-eclipse/issues/1617
 				model.useMavenCentral = false;
 				return model;

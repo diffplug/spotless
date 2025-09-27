@@ -61,8 +61,8 @@ final class FilterByFileFormatterStep extends DelegateFormatterStep {
 			return false;
 		}
 		FilterByFileFormatterStep that = (FilterByFileFormatterStep) o;
-		return Objects.equals(delegateStep, that.delegateStep) &&
-				Objects.equals(filter, that.filter);
+		return Objects.equals(delegateStep, that.delegateStep)
+				&& Objects.equals(filter, that.filter);
 	}
 
 	@Override

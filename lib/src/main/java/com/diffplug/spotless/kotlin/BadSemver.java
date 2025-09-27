@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.diffplug.spotless.kotlin;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class BadSemver {
+final class BadSemver {
 	protected static int version(String input) {
 		Matcher matcher = BAD_SEMVER.matcher(input);
 		if (!matcher.find() || matcher.start() != 0) {
@@ -40,4 +40,6 @@ class BadSemver {
 	}
 
 	private static final Pattern BAD_SEMVER = Pattern.compile("(\\d+)\\.(\\d+)\\.*(\\d+)*");
+
+	private BadSemver() {}
 }

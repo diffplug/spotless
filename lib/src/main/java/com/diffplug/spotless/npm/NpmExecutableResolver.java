@@ -35,7 +35,7 @@ import java.util.function.Function;
  *     	</ol>
  * </ol>
  */
-class NpmExecutableResolver {
+final class NpmExecutableResolver {
 
 	private static final FileFinder NPM_EXECUTABLE_FINDER = FileFinder.finderForExecutableFilename(npmExecutableName())
 			.candidateSystemProperty("npm.exec")

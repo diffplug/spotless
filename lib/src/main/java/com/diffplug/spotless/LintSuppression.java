@@ -17,11 +17,12 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-public class LintSuppression implements java.io.Serializable {
+public class LintSuppression implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
@@ -77,10 +78,12 @@ public class LintSuppression implements java.io.Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (o == null || getClass() != o.getClass())
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
+		}
 		LintSuppression that = (LintSuppression) o;
 		return Objects.equals(path, that.path) && Objects.equals(step, that.step) && Objects.equals(shortCode, that.shortCode);
 	}
@@ -92,11 +95,11 @@ public class LintSuppression implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "LintSuppression{" +
-				"file='" + path + '\'' +
-				", step='" + step + '\'' +
-				", code='" + shortCode + '\'' +
-				'}';
+		return "LintSuppression{"
+				+ "file='" + path + '\''
+				+ ", step='" + step + '\''
+				+ ", code='" + shortCode + '\''
+				+ '}';
 	}
 
 	/**

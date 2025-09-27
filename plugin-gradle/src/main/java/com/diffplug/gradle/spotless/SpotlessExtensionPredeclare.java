@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,14 @@ public class SpotlessExtensionPredeclare extends SpotlessExtension {
 	public SpotlessExtensionPredeclare(Project project, GradleProvisioner.Policy policy) {
 		super(project);
 		getRegisterDependenciesTask().getTaskService().get().predeclaredProvisioner = policy.dedupingProvisioner(project);
-		project.afterEvaluate(unused -> {
-			toSetup.forEach((name, formatExtension) -> {
-				for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
-					lazyAction.execute(formatExtension);
-				}
-				getRegisterDependenciesTask().steps.addAll(formatExtension.steps);
-				// needed to fix Deemon memory leaks (#1194), but this line came from https://github.com/diffplug/spotless/pull/1206
-				LazyForwardingEquality.unlazy(getRegisterDependenciesTask().steps);
-			});
-		});
+		project.afterEvaluate(unused -> toSetup.forEach((name, formatExtension) -> {
+			for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
+				lazyAction.execute(formatExtension);
+			}
+			getRegisterDependenciesTask().steps.addAll(formatExtension.steps);
+			// needed to fix Deemon memory leaks (#1194), but this line came from https://github.com/diffplug/spotless/pull/1206
+			LazyForwardingEquality.unlazy(getRegisterDependenciesTask().steps);
+		}));
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public abstract class GitPrePushHookInstaller {
 
 	private static final Object LOCK = new Object();
 
-	private static volatile boolean installing = false;
+	private static volatile boolean installing;
 
 	/**
 	 * Logger for recording informational and error messages during the installation process.
@@ -57,7 +57,7 @@ public abstract class GitPrePushHookInstaller {
 	 * @param logger The logger for recording messages.
 	 * @param root   The root directory of the Git repository.
 	 */
-	public GitPrePushHookInstaller(GitPreHookLogger logger, File root) {
+	protected GitPrePushHookInstaller(GitPreHookLogger logger, File root) {
 		this.logger = requireNonNull(logger, "logger can not be null");
 		this.root = requireNonNull(root, "root file can not be null");
 	}

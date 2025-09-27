@@ -78,9 +78,7 @@ public class EclipseBasedStepBuilder {
 
 	/** Returns the FormatterStep (whose state will be calculated lazily). */
 	public FormatterStep build() {
-		var roundtrippableState = new EclipseStep(formatterVersion, formatterStepExt, FileSignature.promise(settingsFiles), JarState.promise(() -> {
-			return JarState.withoutTransitives(dependencies, jarProvisioner);
-		}));
+		var roundtrippableState = new EclipseStep(formatterVersion, formatterStepExt, FileSignature.promise(settingsFiles), JarState.promise(() -> JarState.withoutTransitives(dependencies, jarProvisioner)));
 		return FormatterStep.create(formatterName + formatterStepExt, roundtrippableState,
 				EclipseStep::state, stateToFormatter);
 	}

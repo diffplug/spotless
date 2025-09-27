@@ -25,6 +25,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.maven.incremental.UpToDateChecker;
@@ -85,9 +86,9 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 					message.append("There were ").append(lintCount).append(" lint error(s), they must be fixed or suppressed.");
 
 					// Build lint messages in Gradle format (using relative path, not just filename)
-					for (Map.Entry<String, List<com.diffplug.spotless.Lint>> stepEntry : lintState.getLintsByStep(formatter).entrySet()) {
+					for (Map.Entry<String, List<Lint>> stepEntry : lintState.getLintsByStep(formatter).entrySet()) {
 						String stepName = stepEntry.getKey();
-						for (com.diffplug.spotless.Lint lint : stepEntry.getValue()) {
+						for (Lint lint : stepEntry.getValue()) {
 							String relativePath = LintSuppression.relativizeAsUnix(baseDir, file);
 							message.append("\n  ").append(relativePath).append(":");
 							lint.addWarningMessageTo(message, stepName, true);

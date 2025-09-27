@@ -22,11 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-class TestEnvVars {
+final class TestEnvVars {
 
 	private final Map<String, String> envVars;
 
@@ -48,7 +49,7 @@ class TestEnvVars {
 		Optional<Path> resolvedTestenvProps = candidateTestEnvLocations().filter(Files::exists).findFirst();
 		resolvedTestenvProps.ifPresent(testenvProps -> {
 			try (var reader = Files.newBufferedReader(testenvProps)) {
-				java.util.Properties properties = new java.util.Properties();
+				Properties properties = new Properties();
 				properties.load(reader);
 				for (String name : properties.stringPropertyNames()) {
 					envVars.put(name, properties.getProperty(name));

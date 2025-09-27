@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 
 	protected abstract boolean isScript();
 
-	public class DiktatConfig {
+	public final class DiktatConfig {
 		private final String version;
 		private FileSignature config;
 
@@ -97,7 +97,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 		}
 	}
 
-	public class KtfmtConfig {
+	public final class KtfmtConfig {
 		private final String version;
 		private final ConfigurableStyle configurableStyle = new ConfigurableStyle();
 		private KtfmtStep.Style style;
@@ -149,7 +149,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 		}
 	}
 
-	public class KtlintConfig {
+	public final class KtlintConfig {
 		private final String version;
 		private FileSignature editorConfigPath;
 		private Map<String, Object> editorConfigOverride;

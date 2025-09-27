@@ -34,7 +34,7 @@ import com.diffplug.spotless.ProcessRunner;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public class ShfmtStep {
+public final class ShfmtStep {
 	public static String name() {
 		return "shfmt";
 	}
@@ -77,8 +77,8 @@ public class ShfmtStep {
 				.versionRegex(Pattern.compile("([\\d.]+)"))
 				.fixCantFind(howToInstall)
 				.fixWrongVersion(
-						"You can tell Spotless to use the version you already have with {@code shfmt('{versionFound}')}" +
-								"or you can download the currently specified version, {version}.\n" + howToInstall);
+						"You can tell Spotless to use the version you already have with {@code shfmt('{versionFound}')}"
+								+ "or you can download the currently specified version, {version}.\n" + howToInstall);
 		return new RoundtripState(version, exe);
 	}
 

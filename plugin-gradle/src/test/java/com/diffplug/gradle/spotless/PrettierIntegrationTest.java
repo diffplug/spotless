@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,13 +52,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		switch (prettierVersion) {
-		case PRETTIER_VERSION_2:
+		if (PRETTIER_VERSION_2.equals(prettierVersion)) {
 			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
-			break;
-		case PRETTIER_VERSION_3:
+		} else if (PRETTIER_VERSION_3.equals(prettierVersion)) {
 			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_3.clean");
-			break;
 		}
 	}
 
@@ -105,13 +102,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
-		switch (prettierVersion) {
-		case PRETTIER_VERSION_2:
+		if (PRETTIER_VERSION_2.equals(prettierVersion)) {
 			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");
-			break;
-		case PRETTIER_VERSION_3:
+		} else if (PRETTIER_VERSION_3.equals(prettierVersion)) {
 			assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_3.clean");
-			break;
 		}
 	}
 
@@ -140,14 +134,11 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	void useJavaCommunityPlugin(String prettierVersion) throws IOException {
 		var prettierPluginJava = "";
 		var prettierConfigPluginsStr = "";
-		switch (prettierVersion) {
-		case PRETTIER_VERSION_2:
-			prettierPluginJava = "2.1.0"; // last version to support v2
-			break;
-		case PRETTIER_VERSION_3:
+		if (PRETTIER_VERSION_2.equals(prettierVersion)) {
+			prettierPluginJava = "2.1.0";
+		} else if (PRETTIER_VERSION_3.equals(prettierVersion)) {
 			prettierPluginJava = "2.3.0"; // latest to support v3
 			prettierConfigPluginsStr = "prettierConfig['plugins'] = ['prettier-plugin-java']";
-			break;
 		}
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -177,13 +168,10 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	@ValueSource(strings = {PRETTIER_VERSION_2, PRETTIER_VERSION_3})
 	void useJavaCommunityPluginFileConfig(String prettierVersion) throws IOException {
 		var prettierPluginJava = "";
-		switch (prettierVersion) {
-		case PRETTIER_VERSION_2:
-			prettierPluginJava = "2.1.0"; // last version to support v2
-			break;
-		case PRETTIER_VERSION_3:
-			prettierPluginJava = "2.3.0"; // latest to support v3
-			break;
+		if (PRETTIER_VERSION_2.equals(prettierVersion)) {
+			prettierPluginJava = "2.1.0";
+		} else if (PRETTIER_VERSION_3.equals(prettierVersion)) {
+			prettierPluginJava = "2.3.0";
 		}
 		setFile(".prettierrc.yml").toResource("npm/prettier/config/.prettierrc_java_plugin.yml");
 		setFile("build.gradle").toLines(
@@ -235,14 +223,11 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 	void usePhpCommunityPlugin(String prettierVersion) throws IOException {
 		var prettierPluginPhp = "";
 		var prettierConfigPluginsStr = "";
-		switch (prettierVersion) {
-		case PRETTIER_VERSION_2:
-			prettierPluginPhp = "0.19.7"; // last version to support v2
-			break;
-		case PRETTIER_VERSION_3:
+		if (PRETTIER_VERSION_2.equals(prettierVersion)) {
+			prettierPluginPhp = "0.19.7";
+		} else if (PRETTIER_VERSION_3.equals(prettierVersion)) {
 			prettierPluginPhp = "0.20.1"; // latest to support v3
 			prettierConfigPluginsStr = "prettierConfig['plugins'] = ['@prettier/plugin-php']";
-			break;
 		}
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -280,17 +265,14 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		var prettierPluginPhp = "";
 		var prettierConfigPluginsJavaStr = "";
 		var prettierConfigPluginsPhpStr = "";
-		switch (prettierVersion) {
-		case PRETTIER_VERSION_2:
+		if (PRETTIER_VERSION_2.equals(prettierVersion)) {
 			prettierPluginJava = "2.1.0"; // last version to support v2
-			prettierPluginPhp = "0.19.7"; // last version to support v2
-			break;
-		case PRETTIER_VERSION_3:
+			prettierPluginPhp = "0.19.7";
+		} else if (PRETTIER_VERSION_3.equals(prettierVersion)) {
 			prettierPluginJava = "2.3.0"; // latest to support v3
 			prettierPluginPhp = "0.20.1"; // latest to support v3
 			prettierConfigPluginsJavaStr = "prettierConfigJava['plugins'] = ['prettier-plugin-java']";
 			prettierConfigPluginsPhpStr = "prettierConfigPhp['plugins'] = ['@prettier/plugin-php']";
-			break;
 		}
 		setFile("build.gradle").toLines(
 				"plugins {",

@@ -40,7 +40,7 @@ import com.diffplug.common.annotations.VisibleForTesting;
 
 import jakarta.annotation.Nullable;
 
-class FileIndex {
+final class FileIndex {
 
 	private static final String SEPARATOR = " ";
 

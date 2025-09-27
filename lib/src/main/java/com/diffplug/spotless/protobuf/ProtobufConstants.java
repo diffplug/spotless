@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.protobuf;
 
-public class ProtobufConstants {
+public final class ProtobufConstants {
 	public static final String LICENSE_HEADER_DELIMITER = "syntax";
+
+	private ProtobufConstants() {}
 }

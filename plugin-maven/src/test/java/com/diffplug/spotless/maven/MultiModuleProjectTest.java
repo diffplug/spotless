@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,7 +177,7 @@ class MultiModuleProjectTest extends MavenIntegrationHarness {
 		}
 	}
 
-	static class SubProjectFile {
+	static final class SubProjectFile {
 
 		private final String from;
 		private final String to;

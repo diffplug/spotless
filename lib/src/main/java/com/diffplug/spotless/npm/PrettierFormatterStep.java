@@ -35,7 +35,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
-public class PrettierFormatterStep {
+public final class PrettierFormatterStep {
 
 	private static final Logger logger = LoggerFactory.getLogger(PrettierFormatterStep.class);
 
@@ -43,11 +43,11 @@ public class PrettierFormatterStep {
 
 	public static final String DEFAULT_VERSION = "2.8.8";
 
-	public static final Map<String, String> defaultDevDependencies() {
+	public static Map<String, String> defaultDevDependencies() {
 		return defaultDevDependenciesWithPrettier(DEFAULT_VERSION);
 	}
 
-	public static final Map<String, String> defaultDevDependenciesWithPrettier(String version) {
+	public static Map<String, String> defaultDevDependenciesWithPrettier(String version) {
 		return Collections.singletonMap("prettier", version);
 	}
 
@@ -147,5 +147,7 @@ public class PrettierFormatterStep {
 			return "{" + filePathOption + (hasAnyConfigOption ? "," : "") + prettierConfigOptions.substring(startOfConfigOption + 1);
 		}
 	}
+
+	private PrettierFormatterStep() {}
 
 }

@@ -92,10 +92,12 @@ public class RdfFormatterStep implements Serializable {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o)
+			if (this == o) {
 				return true;
-			if (!(o instanceof State))
+			}
+			if (!(o instanceof State)) {
 				return false;
+			}
 			State state = (State) o;
 			return Objects.equals(getConfig(), state.getConfig()) && Objects.equals(
 					getTurtleFormatterStyle(), state.getTurtleFormatterStyle())

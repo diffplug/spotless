@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
@@ -93,12 +94,13 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		if (Jvm.version() >= 16) {
 			// for GJF https://github.com/diffplug/spotless/issues/834
 			setFile(".mvn/jvm.config").toContent(
-					"--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED" +
-							" --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED" +
-							" --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED" +
-							" --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED" +
-							" --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" +
+					"--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"
+							+ " --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED"
+							+ " --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED"
+							+ " --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED"
+							+ " --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"
 							// this last line is for Detekt
+							+ // this last line is for Detekt
 							" --add-opens java.base/java.lang=ALL-UNNAMED");
 		}
 		// copy the mvnw resources
@@ -359,7 +361,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	protected StringSelfie expectSelfieErrorMsg(ProcessRunner.Result result) {
 		String concatenatedError = result.stdOutUtf8().lines()
 				.map(line -> line.startsWith(ERROR_PREFIX) ? line.substring(ERROR_PREFIX.length()) : null)
-				.filter(line -> line != null)
+				.filter(Objects::nonNull)
 				.collect(Collectors.joining("\n"));
 
 		String sanitizedVersion = concatenatedError.replaceFirst("com\\.diffplug\\.spotless:spotless-maven-plugin:([^:]+):", "com.diffplug.spotless:spotless-maven-plugin:VERSION:");

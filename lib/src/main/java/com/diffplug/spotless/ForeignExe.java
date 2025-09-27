@@ -39,7 +39,8 @@ public class ForeignExe implements Serializable {
 	private @Nullable String pathToExe;
 	private String versionFlag = "--version";
 	private Pattern versionRegex = Pattern.compile("version (\\S*)");
-	private @Nullable String fixCantFind, fixWrongVersion;
+	private @Nullable String fixCantFind;
+	private @Nullable String fixWrongVersion;
 
 	// MANDATORY
 	private String name;

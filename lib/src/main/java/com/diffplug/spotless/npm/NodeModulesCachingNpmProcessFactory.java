@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.ProcessRunner.Result;
 
-public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
+public final class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 
 	private static final Logger logger = LoggerFactory.getLogger(NodeModulesCachingNpmProcessFactory.class);
 

@@ -57,7 +57,7 @@ public class SpotlessDiagnoseTask extends DefaultTask {
 					// the file is misbehaved, so we'll write all its steps to DIAGNOSE_DIR
 					Path relative = srcRoot.relativize(file.toPath());
 					Path diagnoseFile = diagnoseRoot.resolve(relative);
-					for (int i = 0; i < padded.steps().size(); ++i) {
+					for (int i = 0; i < padded.steps().size(); i++) {
 						Path path = Path.of(diagnoseFile + "." + padded.type().name().toLowerCase(Locale.ROOT) + i);
 						Files.createDirectories(path.getParent());
 						String version = padded.steps().get(i);

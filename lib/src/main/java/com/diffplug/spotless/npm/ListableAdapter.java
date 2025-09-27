@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-class ListableAdapter<T> implements Iterable<T> {
+final class ListableAdapter<T> implements Iterable<T> {
 
 	private final List<T> delegate;
 

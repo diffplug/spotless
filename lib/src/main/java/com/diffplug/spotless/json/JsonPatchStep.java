@@ -30,7 +30,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public class JsonPatchStep implements Serializable {
+public final class JsonPatchStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.flipkart.zjsonpatch:zjsonpatch";

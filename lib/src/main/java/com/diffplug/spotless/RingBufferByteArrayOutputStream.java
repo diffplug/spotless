@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ class RingBufferByteArrayOutputStream extends ByteArrayOutputStream {
 
 	private final int limit;
 
-	private int zeroIndexPointer = 0;
+	private int zeroIndexPointer;
 
-	private boolean isOverLimit = false;
+	private boolean isOverLimit;
 
 	public RingBufferByteArrayOutputStream(int limit) {
 		this(limit, 32);

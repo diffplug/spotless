@@ -60,7 +60,7 @@ public final class Jvm {
 	 * Utility to map constraints of formatter to this JVM
 	 * @param <V> Version type of formatter
 	 */
-	public static class Support<V> {
+	public static final class Support<V> {
 		static final String LINT_CODE = "jvm-version";
 
 		private final String fmtName;
@@ -251,8 +251,8 @@ public final class Jvm {
 
 		@Override
 		public String toString() {
-			return "%s alternatives:%n".formatted(fmtName) +
-					jvm2fmtMaxVersion.entrySet().stream().map(
+			return "%s alternatives:%n".formatted(fmtName)
+					+ jvm2fmtMaxVersion.entrySet().stream().map(
 							e -> "- Version %s requires JVM %d+".formatted(e.getValue(), e.getKey())).collect(Collectors.joining(System.lineSeparator()));
 		}
 
@@ -289,7 +289,7 @@ public final class Jvm {
 					throw new IllegalArgumentException("Not a semantic version: %s".formatted(versionObject), e);
 				}
 			}
-		};
+		}
 	}
 
 	/**
@@ -300,6 +300,8 @@ public final class Jvm {
 	 */
 	public static <V> Support<V> support(String formatterName) {
 		Objects.requireNonNull(formatterName);
-		return new Support<V>(formatterName);
+		return new Support<>(formatterName);
 	}
+
+	private Jvm() {}
 }

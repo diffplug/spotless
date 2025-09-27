@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.diffplug.spotless;
 import java.util.Locale;
 
 /** These FormatterStep are meant to be used for testing only. */
-public class TestingOnly {
+public final class TestingOnly {
 	public static FormatterStep lowercase() {
 		return FormatterStep.create("lowercase", "lowercaseStateUnused", unused -> TestingOnly::lowercase);
 	}
@@ -34,4 +34,6 @@ public class TestingOnly {
 	private static String diverge(String raw) {
 		return raw + " ";
 	}
+
+	private TestingOnly() {}
 }

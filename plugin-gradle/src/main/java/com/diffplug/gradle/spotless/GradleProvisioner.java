@@ -38,7 +38,7 @@ import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
 
 /** Should be package-private. */
-class GradleProvisioner {
+final class GradleProvisioner {
 	private GradleProvisioner() {}
 
 	enum Policy {
@@ -135,8 +135,8 @@ class GradleProvisioner {
 					projName = projName + "/";
 				}
 				throw new GradleException(String.format(
-						"You need to add a repository containing the '%s' artifact in '%sbuild.gradle'.%n" +
-								"E.g.: 'repositories { mavenCentral() }'",
+						"You need to add a repository containing the '%s' artifact in '%sbuild.gradle'.%n"
+								+ "E.g.: 'repositories { mavenCentral() }'",
 						mavenCoords, projName), e);
 			}
 		};

@@ -36,7 +36,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
-public class TsFmtFormatterStep {
+public final class TsFmtFormatterStep {
 
 	private static final Logger logger = LoggerFactory.getLogger(TsFmtFormatterStep.class);
 
@@ -126,4 +126,6 @@ public class TsFmtFormatterStep {
 			restServer.close();
 		}
 	}
+
+	private TsFmtFormatterStep() {}
 }

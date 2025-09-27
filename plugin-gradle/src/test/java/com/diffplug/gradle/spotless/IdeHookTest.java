@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,12 @@ import com.diffplug.common.io.Files;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class IdeHookTest extends GradleIntegrationHarness {
-	private String output, error;
-	private File dirty, clean, diverge, outofbounds;
+	private String output;
+	private String error;
+	private File dirty;
+	private File clean;
+	private File diverge;
+	private File outofbounds;
 
 	@BeforeEach
 	void before() throws IOException {
@@ -70,7 +74,7 @@ class IdeHookTest extends GradleIntegrationHarness {
 		StringBuilder output = new StringBuilder();
 		StringBuilder error = new StringBuilder();
 		try (Writer outputWriter = new StringPrinter(output::append).toWriter();
-				Writer errorWriter = new StringPrinter(error::append).toWriter();) {
+				Writer errorWriter = new StringPrinter(error::append).toWriter()) {
 			gradleRunner(configurationCache)
 					.withArguments(arguments)
 					.forwardStdOutput(outputWriter)

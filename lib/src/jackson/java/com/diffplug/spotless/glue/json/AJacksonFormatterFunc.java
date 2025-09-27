@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ import com.diffplug.spotless.json.JacksonConfig;
  */
 // https://github.com/FasterXML/jackson-dataformats-text/issues/372
 public abstract class AJacksonFormatterFunc implements FormatterFunc {
-	private JacksonConfig jacksonConfig;
+	private final JacksonConfig jacksonConfig;
 
-	public AJacksonFormatterFunc(JacksonConfig jacksonConfig) {
+	protected AJacksonFormatterFunc(JacksonConfig jacksonConfig) {
 		this.jacksonConfig = jacksonConfig;
 	}
 
@@ -49,9 +49,7 @@ public abstract class AJacksonFormatterFunc implements FormatterFunc {
 		try {
 			// ObjectNode is not compatible with SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS
 			Object objectNode = objectMapper.readValue(input, inferType(input));
-			String output = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectNode);
-
-			return output;
+			return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectNode);
 		} catch (JsonProcessingException e) {
 			throw new IllegalArgumentException("Unable to format. input='" + input + "'", e);
 		}
