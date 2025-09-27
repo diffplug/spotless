@@ -31,7 +31,7 @@ public class SortPomCfg implements Serializable {
 
 	public boolean expandEmptyElements;
 
-	public boolean spaceBeforeCloseEmptyElement = false;
+	public boolean spaceBeforeCloseEmptyElement;
 
 	public boolean keepBlankLines = true;
 
@@ -39,29 +39,29 @@ public class SortPomCfg implements Serializable {
 
 	public int nrOfIndentSpace = 2;
 
-	public boolean indentBlankLines = false;
+	public boolean indentBlankLines;
 
-	public boolean indentSchemaLocation = false;
+	public boolean indentSchemaLocation;
 
-	public String indentAttribute = null;
+	public String indentAttribute;
 
 	public String predefinedSortOrder = "recommended_2008_06";
 
-	public boolean quiet = false;
+	public boolean quiet;
 
-	public String sortOrderFile = null;
+	public String sortOrderFile;
 
-	public String sortDependencies = null;
+	public String sortDependencies;
 
-	public String sortDependencyManagement = null;
+	public String sortDependencyManagement;
 
-	public String sortDependencyExclusions = null;
+	public String sortDependencyExclusions;
 
-	public String sortPlugins = null;
+	public String sortPlugins;
 
-	public boolean sortProperties = false;
+	public boolean sortProperties;
 
-	public boolean sortModules = false;
+	public boolean sortModules;
 
-	public boolean sortExecutions = false;
+	public boolean sortExecutions;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ProcessRunner;
 
-public class NativeCmdStep {
+public final class NativeCmdStep {
 	// prevent direct instantiation
 	private NativeCmdStep() {}
 

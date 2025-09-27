@@ -42,7 +42,7 @@ import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.io.Files;
 
-public class TestProvisioner {
+public final class TestProvisioner {
 	public static Project gradleProject(File dir) {
 		File userHome = new File(StandardSystemProperty.USER_HOME.value());
 		return ProjectBuilder.builder()
@@ -143,9 +143,7 @@ public class TestProvisioner {
 		return mavenCentral.get();
 	}
 
-	private static final Supplier<Provisioner> mavenCentral = Suppliers.memoize(() -> {
-		return caching("mavenCentral", () -> createWithRepositories(repo -> repo.mavenCentral()));
-	});
+	private static final Supplier<Provisioner> mavenCentral = Suppliers.memoize(() -> caching("mavenCentral", () -> createWithRepositories(repo -> repo.mavenCentral())));
 
 	/** Creates a Provisioner for the local maven repo for development purpose. */
 	public static Provisioner mavenLocal() {
@@ -159,9 +157,7 @@ public class TestProvisioner {
 		return snapshots.get();
 	}
 
-	private static final Supplier<Provisioner> snapshots = () -> createWithRepositories(repo -> {
-		repo.maven(setup -> {
-			setup.setUrl("https://oss.sonatype.org/content/repositories/snapshots");
-		});
-	});
+	private static final Supplier<Provisioner> snapshots = () -> createWithRepositories(repo -> repo.maven(setup -> setup.setUrl("https://oss.sonatype.org/content/repositories/snapshots")));
+
+	private TestProvisioner() {}
 }

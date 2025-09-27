@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,7 +130,7 @@ public class GrEclipseFormatterStepImpl {
 			synchronized (GroovyLogManager.manager) {
 				GroovyLogManager.manager.removeLogger(this);
 			}
-			return 0 != errors.size();
+			return !errors.isEmpty();
 		}
 
 		@Override
@@ -138,7 +138,7 @@ public class GrEclipseFormatterStepImpl {
 			StringBuilder string = new StringBuilder();
 			if (1 < errors.size()) {
 				string.append("Multiple problems detected during step execution:");
-			} else if (0 == errors.size()) {
+			} else if (errors.isEmpty()) {
 				string.append("Step sucesfully executed.");
 			}
 			for (Throwable error : errors) {

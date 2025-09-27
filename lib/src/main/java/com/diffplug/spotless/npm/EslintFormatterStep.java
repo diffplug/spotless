@@ -39,7 +39,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.npm.EslintRestService.FormatOption;
 
-public class EslintFormatterStep {
+public final class EslintFormatterStep {
 
 	private static final Logger logger = LoggerFactory.getLogger(EslintFormatterStep.class);
 
@@ -182,4 +182,6 @@ public class EslintFormatterStep {
 			}
 		}
 	}
+
+	private EslintFormatterStep() {}
 }

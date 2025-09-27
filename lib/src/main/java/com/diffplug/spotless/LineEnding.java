@@ -126,7 +126,7 @@ public enum LineEnding {
             char currentCharacter = 0;
             int readResult;
             while ((readResult = reader.read()) != -1) {
-                currentCharacter = (char)readResult;
+                currentCharacter = (char) readResult;
                 if (currentCharacter == '\n') {
                     if (previousCharacter == '\r') {
                         return WINDOWS.str();

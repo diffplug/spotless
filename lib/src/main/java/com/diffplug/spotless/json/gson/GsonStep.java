@@ -26,7 +26,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public class GsonStep implements Serializable {
+public final class GsonStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATES = "com.google.code.gson:gson";

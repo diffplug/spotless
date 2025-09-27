@@ -61,7 +61,7 @@ public class ArtifactResolver {
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
 	public Set<File> resolve(boolean withTransitives, Collection<String> mavenCoordinates) {
-		Collection<Exclusion> excludeTransitive = new ArrayList<Exclusion>(1);
+		Collection<Exclusion> excludeTransitive = new ArrayList<>(1);
 		if (!withTransitives) {
 			excludeTransitive.add(EXCLUDE_ALL_TRANSITIVES);
 		}

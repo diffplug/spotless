@@ -42,7 +42,7 @@ class JvmTest {
 
 	@Test
 	void supportAdd() {
-		Integer differentVersions[] = {0, 1, 2};
+		Integer[] differentVersions = {0, 1, 2};
 		Arrays.asList(differentVersions).forEach(v -> testSupport.add(v + Jvm.version(), v.toString()));
 		Arrays.asList(differentVersions).forEach(v -> assertThat(testSupport.toString()).contains("Version %d".formatted(v)));
 		assertThat(testSupport.toString()).contains("%s alternatives".formatted(TEST_NAME));
@@ -51,9 +51,7 @@ class JvmTest {
 	@ParameterizedTest(name = "{index} {1}")
 	@MethodSource
 	void supportAddFailsFor(Consumer<Jvm.Support<String>> configuration, String nameNotUsed) {
-		assertThrows(IllegalArgumentException.class, () -> {
-			configuration.accept(testSupport);
-		});
+		assertThrows(IllegalArgumentException.class, () -> configuration.accept(testSupport));
 	}
 
 	private static Stream<Arguments> supportAddFailsFor() {
@@ -76,11 +74,9 @@ class JvmTest {
 		testSupport.assertFormatterSupported("0.1");
 
 		Exception expected = new Exception("Some test exception");
-		Exception actual = assertThrows(Exception.class, () -> {
-			testSupport.suggestLaterVersionOnError("0.0", unused -> {
-				throw expected;
-			}).apply("");
-		});
+		Exception actual = assertThrows(Exception.class, () -> testSupport.suggestLaterVersionOnError("0.0", unused -> {
+			throw expected;
+		}).apply(""));
 		assertEquals(expected, actual);
 	}
 
@@ -94,34 +90,26 @@ class JvmTest {
 		assertNull(testSupport.getRecommendedFormatterVersion(), "No formatter version is supported");
 
 		for (String fmtVersion : Arrays.asList("1.2", "1.2.3", "1.2-SNAPSHOT", "1.2.3-SNAPSHOT")) {
-			String proposal = assertThrows(Lint.ShortcutException.class, () -> {
-				testSupport.assertFormatterSupported(fmtVersion);
-			}).getLints().get(0).getDetail();
+			String proposal = assertThrows(Lint.ShortcutException.class, () -> testSupport.assertFormatterSupported(fmtVersion)).getLints().get(0).getDetail();
 			assertThat(proposal).contains(String.format("on JVM %d", Jvm.version()));
 			assertThat(proposal).contains("%s %s requires JVM %d+".formatted(TEST_NAME, fmtVersion, higherJvmVersion));
 			assertThat(proposal).contains("try %s alternatives".formatted(TEST_NAME));
 
-			proposal = assertThrows(Exception.class, () -> {
-				testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
-					throw testException;
-				}).apply("");
-			}).getMessage();
+			proposal = assertThrows(Exception.class, () -> testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
+				throw testException;
+			}).apply("")).getMessage();
 			assertThat(proposal).contains(String.format("on JVM %d", Jvm.version()));
 			assertThat(proposal).contains("%s %s requires JVM %d+".formatted(TEST_NAME, fmtVersion, higherJvmVersion));
 			assertThat(proposal).contains("try %s alternatives".formatted(TEST_NAME));
 		}
 
 		for (String fmtVersion : Arrays.asList("1.2.4", "2", "1.2.5-SNAPSHOT")) {
-			String proposal = assertThrows(Lint.ShortcutException.class, () -> {
-				testSupport.assertFormatterSupported(fmtVersion);
-			}).getLints().get(0).getDetail();
+			String proposal = assertThrows(Lint.ShortcutException.class, () -> testSupport.assertFormatterSupported(fmtVersion)).getLints().get(0).getDetail();
 			assertThat(proposal).contains("%s %s requires JVM %d+".formatted(TEST_NAME, fmtVersion, higherJvmVersion + 1));
 
-			proposal = assertThrows(Exception.class, () -> {
-				testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
-					throw testException;
-				}).apply("");
-			}).getMessage();
+			proposal = assertThrows(Exception.class, () -> testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
+				throw testException;
+			}).apply("")).getMessage();
 			assertThat(proposal).contains("%s %s requires JVM %d+".formatted(TEST_NAME, fmtVersion, higherJvmVersion + 1));
 		}
 	}
@@ -135,14 +123,12 @@ class JvmTest {
 		for (String fmtVersion : Arrays.asList("0", "1", "1.9", "1.9-SNAPSHOT")) {
 			testSupport.assertFormatterSupported(fmtVersion);
 
-			String proposal = assertThrows(Exception.class, () -> {
-				testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
-					throw new Exception("Some test exception");
-				}).apply("");
-			}).getMessage();
-			assertThat(proposal.replace("\r", "")).isEqualTo("My Test Formatter " + fmtVersion + " is currently being used, but outdated.\n" +
-					"My Test Formatter 2 is the recommended version, which may have fixed this problem.\n" +
-					"My Test Formatter 2 requires JVM " + requiredJvm + "+.");
+			String proposal = assertThrows(Exception.class, () -> testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
+				throw new Exception("Some test exception");
+			}).apply("")).getMessage();
+			assertThat(proposal.replace("\r", "")).isEqualTo("My Test Formatter " + fmtVersion + " is currently being used, but outdated.\n"
+					+ "My Test Formatter 2 is the recommended version, which may have fixed this problem.\n"
+					+ "My Test Formatter 2 requires JVM " + requiredJvm + "+.");
 		}
 	}
 
@@ -153,11 +139,9 @@ class JvmTest {
 		testSupport.add(higherJvm, "2");
 		testSupport.add(higherJvm + 1, "3");
 		for (String fmtVersion : Arrays.asList("1", "1.0")) {
-			String proposal = assertThrows(Exception.class, () -> {
-				testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
-					throw new Exception("Some test exception");
-				}).apply("");
-			}).getMessage();
+			String proposal = assertThrows(Exception.class, () -> testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
+				throw new Exception("Some test exception");
+			}).apply("")).getMessage();
 			assertThat(proposal).contains(String.format("on JVM %d", Jvm.version()));
 			assertThat(proposal).contains("limits you to %s %s".formatted(TEST_NAME, "1"));
 			assertThat(proposal).contains("upgrade your JVM to %d+".formatted(higherJvm));
@@ -172,11 +156,9 @@ class JvmTest {
 			testSupport.assertFormatterSupported(fmtVersion);
 
 			Exception testException = new Exception("Some test exception");
-			Exception exception = assertThrows(Exception.class, () -> {
-				testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
-					throw testException;
-				}).apply("");
-			});
+			Exception exception = assertThrows(Exception.class, () -> testSupport.suggestLaterVersionOnError(fmtVersion, unused -> {
+				throw testException;
+			}).apply(""));
 			assertEquals(testException, exception);
 		}
 	}

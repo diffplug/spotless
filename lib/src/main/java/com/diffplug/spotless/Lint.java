@@ -45,7 +45,8 @@ public final class Lint implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private int lineStart, lineEnd; // 1-indexed, inclusive
+	private int lineStart;
+	private int lineEnd; // 1-indexed, inclusive
 	private String shortCode; // e.g. CN_IDIOM https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#cn-class-implements-cloneable-but-does-not-define-or-use-clone-method-cn-idiom
 	private String detail;
 
@@ -128,10 +129,12 @@ public final class Lint implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (o == null || getClass() != o.getClass())
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
+		}
 		Lint lint = (Lint) o;
 		return lineStart == lint.lineStart && lineEnd == lint.lineEnd && Objects.equals(shortCode, lint.shortCode) && Objects.equals(detail, lint.detail);
 	}
@@ -182,7 +185,7 @@ public final class Lint implements Serializable {
 	}
 
 	private static String msgFrom(String message) {
-		for (int i = 0; i < message.length(); ++i) {
+		for (int i = 0; i < message.length(); i++) {
 			if (Character.isLetter(message.charAt(i))) {
 				return message.substring(i);
 			}

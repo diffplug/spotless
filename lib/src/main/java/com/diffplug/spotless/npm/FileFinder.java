@@ -26,7 +26,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-class FileFinder {
+final class FileFinder {
 
 	private final List<Supplier<Optional<File>>> fileCandidateFinders;
 

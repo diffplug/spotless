@@ -39,7 +39,7 @@ import com.diffplug.spotless.ThrowingEx;
 /**
  * Wraps up <a href="https://github.com/facebook/ktfmt">ktfmt</a> as a FormatterStep.
  */
-public class KtfmtStep implements Serializable {
+public final class KtfmtStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "0.58";
@@ -147,13 +147,13 @@ public class KtfmtStep implements Serializable {
 		@Serial
 		private static final long serialVersionUID = 1L;
 
-		@Nullable private Integer maxWidth = null;
+		@Nullable private Integer maxWidth;
 
-		@Nullable private Integer blockIndent = null;
+		@Nullable private Integer blockIndent;
 
-		@Nullable private Integer continuationIndent = null;
+		@Nullable private Integer continuationIndent;
 
-		@Nullable private Boolean removeUnusedImports = null;
+		@Nullable private Boolean removeUnusedImports;
 
 		@Nullable private TrailingCommaManagementStrategy trailingCommaManagementStrategy;
 

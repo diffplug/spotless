@@ -61,7 +61,7 @@ public abstract class EquoBasedStepBuilder {
 	private File cacheDirectory;
 
 	/** Initialize valid default configuration, taking latest version */
-	public EquoBasedStepBuilder(
+	protected EquoBasedStepBuilder(
 			String formatterName,
 			Provisioner mavenProvisioner,
 			@Nullable String defaultVersion,

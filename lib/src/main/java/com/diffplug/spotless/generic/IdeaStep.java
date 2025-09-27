@@ -133,7 +133,7 @@ public final class IdeaStep {
 		}
 	}
 
-	private static class State implements Serializable {
+	private static final class State implements Serializable {
 
 		private static final long serialVersionUID = -1426311255869303398L;
 
@@ -232,9 +232,8 @@ public final class IdeaStep {
 
 		private Map<String, String> createEnv() {
 			File ideaProps = createIdeaPropertiesFile();
-			Map<String, String> env = Map.ofEntries(
+			return Map.ofEntries(
 					Map.entry("IDEA_PROPERTIES", ThrowingEx.get(ideaProps::getCanonicalPath)));
-			return env;
 		}
 
 		private File createIdeaPropertiesFile() {

@@ -76,8 +76,8 @@ class ReflectionHelper {
 	private final Method getGraph;
 	private final Method tripleGetObject;
 
-	private Object turtleFormatter = null;
-	private Object jenaModelInstance = null;
+	private Object turtleFormatter;
+	private final Object jenaModelInstance;
 
 	public ReflectionHelper(RdfFormatterStep.State state)
 			throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -271,8 +271,7 @@ class ReflectionHelper {
 			Method method = getBuilderMethod(optionName);
 			callBuilderMethod(builder, method, state.getTurtleFormatterStyle().get(optionName));
 		}
-		Object style = TurtleFormatFormattingStyleBuilderClass.getMethod("build").invoke(builder);
-		return style;
+		return TurtleFormatFormattingStyleBuilderClass.getMethod("build").invoke(builder);
 	}
 
 	public String formatWithTurtleFormatter(String ttlContent)
@@ -284,9 +283,8 @@ class ReflectionHelper {
 
 	private Object newTurtleFormatter(Object style)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		Object formatter = TurtleFormatFormatterClass.getConstructor(TurtleFormatFormattingStyleClass)
+		return TurtleFormatFormatterClass.getConstructor(TurtleFormatFormattingStyleClass)
 				.newInstance(style);
-		return formatter;
 	}
 
 	private void callBuilderMethod(Object builder, Method method, String parameterValueAsString)
@@ -346,14 +344,13 @@ class ReflectionHelper {
 
 	private Object makeListOf(Type type, String parameterValueAsString) {
 		String[] entries = split(parameterValueAsString);
-		List<Object> ret = Arrays.stream(entries).map(e -> {
+		return Arrays.stream(entries).map(e -> {
 			try {
 				return instantiate(type, e);
 			} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 		}).collect(Collectors.toList());
-		return ret;
 	}
 
 	private Object makeSetOf(Type type, String parameterValueAsString) {

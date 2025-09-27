@@ -174,7 +174,7 @@ public final class CleanthatJavaStep implements Serializable {
 			this.includeDraft = includeDraft;
 		}
 
-		private static class JvmSupportFormatterFunc implements FormatterFunc {
+		private static final class JvmSupportFormatterFunc implements FormatterFunc {
 
 			final Object formatter;
 			final Method formatterMethod;
