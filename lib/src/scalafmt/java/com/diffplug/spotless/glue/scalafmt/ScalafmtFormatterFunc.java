@@ -52,8 +52,8 @@ public class ScalafmtFormatterFunc implements FormatterFunc.NeedsFile {
 		String scalafmtLibraryVersion = Versions.version();
 		if (!config.version().equals(scalafmtLibraryVersion)) {
 			throw new IllegalArgumentException(
-					"Spotless is using " + scalafmtLibraryVersion + " but the config file declares " + config.version() +
-							". Both must match. Update the version declared in the plugin's settings and/or the config file.");
+					"Spotless is using " + scalafmtLibraryVersion + " but the config file declares " + config.version()
+							+ ". Both must match. Update the version declared in the plugin's settings and/or the config file.");
 		}
 	}
 

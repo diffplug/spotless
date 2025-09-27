@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-class ObjectDigestOutputStream extends ObjectOutputStream {
+final class ObjectDigestOutputStream extends ObjectOutputStream {
 
 	private final MessageDigest messageDigest;
 

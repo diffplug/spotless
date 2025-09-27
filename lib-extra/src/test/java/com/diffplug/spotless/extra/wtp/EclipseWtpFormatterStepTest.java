@@ -37,7 +37,8 @@ public class EclipseWtpFormatterStepTest {
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("Oldest Version").add(8, "4.8.0");
 
 	private static class NestedTests extends EclipseResourceHarness {
-		private final String unformatted, formatted;
+		private final String unformatted;
+		private final String formatted;
 
 		public NestedTests(String unformatted, String formatted, EclipseWtpFormatterStep kind) {
 			super(kind.createBuilder(TestProvisioner.mavenCentral()));

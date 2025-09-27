@@ -85,10 +85,11 @@ public class SpecificFilesTest extends MavenIntegrationHarness {
 	@Test
 	void regexp() throws IOException, InterruptedException {
 		String pattern;
-		if (isOnWindows())
+		if (isOnWindows()) {
 			pattern = "\".*\\\\src\\\\main\\\\java\\\\test(1|3).java\"";
-		else
+		} else {
 			pattern = "'.*/src/main/java/test(1|3).java'";
+		}
 		integration(pattern, true, false, true);
 	}
 }

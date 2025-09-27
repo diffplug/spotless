@@ -30,7 +30,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/cqfn/diKTat">diktat</a> as a FormatterStep. */
-public class DiktatStep implements Serializable {
+public final class DiktatStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private final JarState.Promised jarState;

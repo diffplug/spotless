@@ -30,7 +30,7 @@ import com.diffplug.spotless.Provisioner;
  * Simple YAML formatter which reformats the file according to Jackson YAMLFactory.
  */
 // https://stackoverflow.com/questions/14515994/convert-json-string-to-pretty-print-json-output-using-jackson
-public class JacksonJsonStep implements Serializable {
+public final class JacksonJsonStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.core:jackson-databind:";

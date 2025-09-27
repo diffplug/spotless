@@ -185,7 +185,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 				}
 			});
 			StringBuilder builder = new StringBuilder();
-			builder.append("There were " + total.get() + " lint error(s), they must be fixed or suppressed.\n");
+			builder.append("There were ").append(total.get()).append(" lint error(s), they must be fixed or suppressed.\n");
 			for (Map.Entry<String, LinkedHashMap<String, List<Lint>>> lintsPerFile : allLints.entrySet()) {
 				for (Map.Entry<String, List<Lint>> stepLints : lintsPerFile.getValue().entrySet()) {
 					String stepName = stepLints.getKey();

@@ -52,7 +52,7 @@ final class ModuleHelper {
 		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.api", "DiagnosticFormatter$PositionKind");
 	}
 
-	private static boolean checkDone = false;
+	private static boolean checkDone;
 
 	public static synchronized void doOpenInternalPackagesIfRequired() {
 		if (Jvm.version() < 16 || checkDone) {

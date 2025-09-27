@@ -37,7 +37,9 @@ public class FileLocator {
 	static final String TMP_RESOURCE_FILE_PREFIX = "spotless-resource-";
 
 	private final ResourceManager resourceManager;
-	private final File baseDir, buildDir, dataDir;
+	private final File baseDir;
+	private final File buildDir;
+	private final File dataDir;
 
 	public FileLocator(ResourceManager resourceManager, File baseDir, File buildDir) {
 		this.resourceManager = Objects.requireNonNull(resourceManager);

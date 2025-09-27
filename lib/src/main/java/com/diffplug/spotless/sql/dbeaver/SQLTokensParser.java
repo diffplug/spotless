@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,13 @@ class SQLTokensParser {
 	private static final SQLDialect sqlDialect = SQLDialect.INSTANCE;
 
 	private final String[][] quoteStrings;
-	private String fBefore = null;
+	private String fBefore;
 	private int fPos;
-	private char structSeparator;
-	private String catalogSeparator;
-	private Set<String> commands = new HashSet<>();
-	private String[] singleLineComments;
-	private char[] singleLineCommentStart;
+	private final char structSeparator;
+	private final String catalogSeparator;
+	private final Set<String> commands = new HashSet<>();
+	private final String[] singleLineComments;
+	private final char[] singleLineCommentStart;
 
 	SQLTokensParser() {
 		this.structSeparator = sqlDialect.getStructSeparator();
@@ -50,10 +50,11 @@ class SQLTokensParser {
 		this.singleLineComments = sqlDialect.getSingleLineComments();
 		this.singleLineCommentStart = new char[this.singleLineComments.length];
 		for (int i = 0; i < singleLineComments.length; i++) {
-			if (singleLineComments[i].isEmpty())
+			if (singleLineComments[i].isEmpty()) {
 				singleLineCommentStart[i] = 0;
-			else
+			} else {
 				singleLineCommentStart[i] = singleLineComments[i].charAt(0);
+			}
 		}
 	}
 
@@ -292,11 +293,13 @@ class SQLTokensParser {
 	}
 
 	private static boolean contains(char[] array, char value) {
-		if (array == null || array.length == 0)
+		if (array == null || array.length == 0) {
 			return false;
+		}
 		for (char aChar : array) {
-			if (aChar == value)
+			if (aChar == value) {
 				return true;
+			}
 		}
 		return false;
 	}

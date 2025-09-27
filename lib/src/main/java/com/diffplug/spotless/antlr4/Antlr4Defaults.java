@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.antlr4;
 
-public class Antlr4Defaults {
+public final class Antlr4Defaults {
 	private static final String LICENSE_HEADER_DELIMITER = "(grammar|lexer grammar|parser grammar)";
 	private static final String INCLUDES = "src/*/antlr4/**/*.g4";
 

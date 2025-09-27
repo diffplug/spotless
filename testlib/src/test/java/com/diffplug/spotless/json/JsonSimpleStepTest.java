@@ -105,7 +105,7 @@ class JsonSimpleStepTest {
 	@Test
 	void equality() {
 		new SerializableEqualityTester() {
-			int spaces = 0;
+			int spaces;
 
 			@Override
 			protected void setupTest(API api) {

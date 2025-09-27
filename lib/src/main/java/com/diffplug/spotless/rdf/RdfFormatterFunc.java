@@ -153,9 +153,9 @@ public class RdfFormatterFunc implements FormatterFunc {
 				})
 				.collect(Collectors.toList());
 		if (!(onlyInBeforeContent.isEmpty() && onlyInAfterContent.isEmpty())) {
-			diffResult = onlyInBeforeContent.stream().map(s -> "< %s".formatted(s))
+			diffResult = onlyInBeforeContent.stream().map("< %s"::formatted)
 					.collect(Collectors.joining("\n"));
-			diffResult += "\n" + onlyInAfterContent.stream().map(s -> "> %s".formatted(s)).collect(Collectors.joining("\n"));
+			diffResult += "\n" + onlyInAfterContent.stream().map("> %s"::formatted).collect(Collectors.joining("\n"));
 		} else {
 			diffResult = "'before' and 'after' content differs, but we don't know why. This is probably a bug.";
 		}

@@ -42,7 +42,7 @@ import com.diffplug.spotless.ProcessRunner;
  * It delegates to the Biome executable. The Biome executable is downloaded from
  * the network when no executable path is provided explicitly.
  */
-public class BiomeStep {
+public final class BiomeStep {
 	private static final Logger logger = LoggerFactory.getLogger(BiomeStep.class);
 
 	/**
@@ -345,7 +345,7 @@ public class BiomeStep {
 	 * caching purposes. Spotless keeps a cache of which files need to be formatted.
 	 * The cache is busted when the serialized form of a state instance changes.
 	 */
-	private static class State implements Serializable {
+	private static final class State implements Serializable {
 		private static final long serialVersionUID = 6846790911054484379L;
 
 		/** Path to the exe file */
