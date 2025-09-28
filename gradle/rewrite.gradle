@@ -1,7 +1,7 @@
 apply plugin: 'org.openrewrite.rewrite'
 
 rewrite {
-	activeRecipe('com.diffplug.spotless.SanityCheck')
+	activeRecipe('com.diffplug.spotless.openrewrite.SanityCheck')
 	exclusions.addAll(
 			'**.dirty.java',
 			'**_gradle_node_plugin_example_**',
