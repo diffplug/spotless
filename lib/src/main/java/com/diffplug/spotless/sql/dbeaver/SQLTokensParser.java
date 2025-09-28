@@ -71,31 +71,35 @@ class SQLTokensParser {
 	}
 
 	private static boolean isSymbol(final char argChar) {
-		// double quote
-		// question mark
-		// percent
-		// ampersand
-		// quote
-		// left paren
-		// right paren
-		// vertical bar
-		// asterisk
-		// plus sign
-		// comma
-		// minus sign
-		// period
-		// solidus
-		// colon
-		// semicolon
-		// less than operator
-		// equals operator
-		// greater than operator
-		// greater than operator
-		// greater than operator
-		// apos
-		// bracket open
-		// bracket close
-		return switch(argChar){case'"','?','%','&','\'','(',')','|','*','+',',','-','.','/',':',';','<','=','>','!','~','`','[',']'->true;default->false;};
+		switch (argChar) {
+		case '"': // double quote
+		case '?': // question mark
+		case '%': // percent
+		case '&': // ampersand
+		case '\'': // quote
+		case '(': // left paren
+		case ')': // right paren
+		case '|': // vertical bar
+		case '*': // asterisk
+		case '+': // plus sign
+		case ',': // comma
+		case '-': // minus sign
+		case '.': // period
+		case '/': // solidus
+		case ':': // colon
+		case ';': // semicolon
+		case '<': // less than operator
+		case '=': // equals operator
+		case '>': // greater than operator
+		case '!': // greater than operator
+		case '~': // greater than operator
+		case '`': // apos
+		case '[': // bracket open
+		case ']': // bracket close
+			return true;
+		default:
+			return false;
+		}
 	}
 
 	private FormatterToken nextToken() {

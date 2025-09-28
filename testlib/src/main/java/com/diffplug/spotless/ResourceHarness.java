@@ -178,7 +178,7 @@ public class ResourceHarness {
 		return new ReadAsserter(file);
 	}
 
-	public static final class ReadAsserter {
+	public static class ReadAsserter {
 		private final File file;
 
 		private ReadAsserter(File file) {
@@ -223,7 +223,7 @@ public class ResourceHarness {
 		return new WriteAsserter(newFile(path));
 	}
 
-	public static final class WriteAsserter {
+	public static class WriteAsserter {
 		private File file;
 
 		private WriteAsserter(File file) {
@@ -240,12 +240,16 @@ public class ResourceHarness {
 		}
 
 		public File toContent(String content, Charset charset) {
-			ThrowingEx.run(() -> Files.write(file.toPath(), content.getBytes(charset)));
+			ThrowingEx.run(() -> {
+				Files.write(file.toPath(), content.getBytes(charset));
+			});
 			return file;
 		}
 
 		public File toResource(String path) {
-			ThrowingEx.run(() -> Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8)));
+			ThrowingEx.run(() -> {
+				Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8));
+			});
 			return file;
 		}
 

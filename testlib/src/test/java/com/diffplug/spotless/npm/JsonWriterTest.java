@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2023 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import com.diffplug.spotless.ResourceHarness;
 
 class JsonWriterTest extends ResourceHarness {
 
-	private final JsonWriter jsonWriter = new JsonWriter();
+	private JsonWriter jsonWriter = new JsonWriter();
 
 	@Test
 	void itWritesAValidEmptyObject() {
