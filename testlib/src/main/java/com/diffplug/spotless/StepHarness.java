@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +25,7 @@ import com.diffplug.selfie.Selfie;
 import com.diffplug.selfie.StringSelfie;
 
 /** An api for testing a {@code FormatterStep} that doesn't depend on the File path. DO NOT ADD FILE SUPPORT TO THIS, use {@link StepHarnessWithFile} if you need that. */
-public final class StepHarness extends StepHarnessBase {
+public class StepHarness extends StepHarnessBase {
 	private StepHarness(Formatter formatter, RoundTrip roundTrip) {
 		super(formatter, roundTrip);
 	}

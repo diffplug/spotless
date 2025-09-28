@@ -72,7 +72,7 @@ class PalantirJavaFormatStepTest extends ResourceHarness {
 		new SerializableEqualityTester() {
 			String version = "1.1.0";
 			String style = "";
-			boolean formatJavadoc;
+			boolean formatJavadoc = false;
 
 			@Override
 			protected void setupTest(API api) {

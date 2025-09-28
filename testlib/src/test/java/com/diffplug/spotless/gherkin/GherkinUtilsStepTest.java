@@ -97,7 +97,7 @@ public class GherkinUtilsStepTest {
 	@Test
 	public void equality() {
 		new SerializableEqualityTester() {
-			int spaces;
+			int spaces = 0;
 
 			@Override
 			protected void setupTest(API api) {

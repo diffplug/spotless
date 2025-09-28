@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2024 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 		return new NpmrcResolver().tryFind().orElse(null);
 	}
 
-	private File buildDir;
+	private File buildDir = null;
 
 	protected File buildDir() {
 		if (this.buildDir == null) {
@@ -48,7 +48,7 @@ public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 		return this.buildDir;
 	}
 
-	private File projectDir;
+	private File projectDir = null;
 
 	protected File projectDir() {
 		if (this.projectDir == null) {

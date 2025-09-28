@@ -14,7 +14,8 @@ rewrite {
 			'**package-info.java',
 			'**plugin-maven/build.gradle',
 			'**settings.gradle',
-			'**special-tests.gradle'
+			'**special-tests.gradle',
+			'**testlib/src/main/resources**'
 			)
 	exportDatatables = true
 	failOnDryRunResults = true
