@@ -44,6 +44,6 @@ recipeList:
   - tech.picnic.errorprone.refasterrules.PrimitiveRulesRecipes
   - tech.picnic.errorprone.refasterrules.StreamRulesRecipes
   - tech.picnic.errorprone.refasterrules.TimeRulesRecipes
-  # - org.openrewrite.staticanalysis.CodeCleanup # bug
+  # - org.openrewrite.staticanalysis.CodeCleanup # bug https://github.com/openrewrite/rewrite/pull/6084
   # - org.openrewrite.staticanalysis.UnnecessaryThrows # bug
 ---
