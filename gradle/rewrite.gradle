@@ -4,6 +4,7 @@ rewrite {
 	activeRecipe('com.diffplug.spotless.openrewrite.SanityCheck')
 	exclusions.addAll(
 			'**.dirty.java',
+			'**FormatterProperties.java',
 			'**_gradle_node_plugin_example_**',
 			'**gradle/changelog.gradle',
 			'**gradle/java-publish.gradle',
