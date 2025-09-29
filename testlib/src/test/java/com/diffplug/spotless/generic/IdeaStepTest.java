@@ -104,7 +104,7 @@ class IdeaStepTest extends ResourceHarness {
 				"formatting was applied to clean file");
 	}
 
-	private File buildDir = null;
+	private File buildDir;
 
 	protected File buildDir() {
 		if (this.buildDir == null) {

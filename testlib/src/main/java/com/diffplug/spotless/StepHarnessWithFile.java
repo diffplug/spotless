@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.util.Objects;
 import com.diffplug.selfie.StringSelfie;
 
 /** An api for testing a {@code FormatterStep} that depends on the File path. */
-public class StepHarnessWithFile extends StepHarnessBase {
+public final class StepHarnessWithFile extends StepHarnessBase {
 	private final ResourceHarness harness;
 
 	private StepHarnessWithFile(ResourceHarness harness, Formatter formatter, RoundTrip roundTrip) {
