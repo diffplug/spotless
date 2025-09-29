@@ -29,7 +29,7 @@ import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.NoLambda;
 
-class IdeHook {
+final class IdeHook {
 	static class State extends NoLambda.EqualityBasedOnSerialization {
 		final @Nullable String path;
 		final boolean useStdIn;
@@ -99,4 +99,6 @@ class IdeHook {
 			}
 		}
 	}
+
+	private IdeHook() {}
 }

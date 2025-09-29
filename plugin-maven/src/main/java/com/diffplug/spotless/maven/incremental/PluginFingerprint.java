@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import com.diffplug.spotless.Formatter;
  *    <li>Formatter instances created according to the POM configuration</li>
  * </ol>
  */
-class PluginFingerprint {
+final class PluginFingerprint {
 
 	private static final String SPOTLESS_PLUGIN_KEY = "com.diffplug.spotless:spotless-maven-plugin";
 

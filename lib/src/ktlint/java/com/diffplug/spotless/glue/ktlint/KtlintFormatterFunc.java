@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,12 @@ import java.util.Map;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Lint;
-import com.diffplug.spotless.glue.ktlint.compat.*;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot48Dot0Adapter;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot49Dot0Adapter;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat0Dot50Dot0Adapter;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat1Dot0Dot0Adapter;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompatAdapter;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompatReporting;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	private final KtLintCompatAdapter adapter;

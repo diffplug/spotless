@@ -76,7 +76,7 @@ public final class FileSignature implements Serializable {
 			StringBuilder builder = new StringBuilder();
 			builder.append("For these files:\n");
 			for (File file : files) {
-				builder.append("  " + file.getAbsolutePath() + "\n");
+				builder.append("  ").append(file.getAbsolutePath()).append("\n");
 			}
 			builder.append("a caching signature is being generated, which will be based only on their\n");
 			builder.append("names, not their full path (foo.txt, not C:\folder\foo.txt). Unexpectedly,\n");
@@ -99,7 +99,7 @@ public final class FileSignature implements Serializable {
 	}
 
 	/** A view of `FileSignature` which can be safely roundtripped. */
-	public static class Promised implements Serializable {
+	public static final class Promised implements Serializable {
 		@Serial
 		private static final long serialVersionUID = 1L;
 		private final List<File> files;
@@ -146,7 +146,7 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
-	private static boolean machineIsWin = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
+	private static final boolean machineIsWin = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
 
 	/** Returns true if this JVM is running on a windows machine. */
 	public static boolean machineIsWin() {

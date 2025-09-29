@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 
 import com.diffplug.spotless.ProcessRunner;
 
-public class StandardNpmProcessFactory implements NpmProcessFactory {
+public final class StandardNpmProcessFactory implements NpmProcessFactory {
 
 	public static final StandardNpmProcessFactory INSTANCE = new StandardNpmProcessFactory();
 
@@ -48,7 +48,7 @@ public class StandardNpmProcessFactory implements NpmProcessFactory {
 		protected final File workingDir;
 		protected final NpmFormatterStepLocations formatterStepLocations;
 
-		public AbstractStandardNpmProcess(File workingDir, NpmFormatterStepLocations formatterStepLocations) {
+		protected AbstractStandardNpmProcess(File workingDir, NpmFormatterStepLocations formatterStepLocations) {
 			this.formatterStepLocations = formatterStepLocations;
 			this.workingDir = workingDir;
 		}

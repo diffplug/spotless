@@ -18,7 +18,7 @@ package com.diffplug.spotless.npm;
 import java.io.File;
 import java.util.Optional;
 
-class NodeExecutableResolver {
+final class NodeExecutableResolver {
 
 	private NodeExecutableResolver() {
 		// no instance

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class ImportOrder implements FormatterStepFactory {
 	private String order;
 
 	@Parameter
-	private boolean wildcardsLast = false;
+	private boolean wildcardsLast;
 
 	/**
 	 * Whether imports should be sorted based on semantics (i.e. sorted by package,
@@ -44,7 +44,7 @@ public class ImportOrder implements FormatterStepFactory {
 	 * lexicographically.
 	 */
 	@Parameter
-	private boolean semanticSort = false;
+	private boolean semanticSort;
 
 	/**
 	 * The prefixes that should be treated as packages for

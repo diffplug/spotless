@@ -16,6 +16,8 @@
 package com.diffplug.spotless;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,7 +53,7 @@ import com.diffplug.spotless.yaml.SerializeToByteArrayHack;
  * It is a horrific hack, but it works, and it's the only way I can figure
  * to make Spotless work with all of Gradle's cache systems at once.
  */
-public class ConfigurationCacheHackList implements java.io.Serializable {
+public final class ConfigurationCacheHackList implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 6914178791997323870L;
 
@@ -59,10 +61,10 @@ public class ConfigurationCacheHackList implements java.io.Serializable {
 	private ArrayList<Object> backingList = new ArrayList<>();
 
 	private boolean shouldWeSerializeToByteArrayFirst() {
-		return backingList.stream().anyMatch(step -> step instanceof SerializeToByteArrayHack);
+		return backingList.stream().anyMatch(SerializeToByteArrayHack.class::isInstance);
 	}
 
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+	private void writeObject(ObjectOutputStream out) throws IOException {
 		boolean serializeToByteArrayFirst = shouldWeSerializeToByteArrayFirst();
 		out.writeBoolean(serializeToByteArrayFirst);
 		out.writeBoolean(optimizeForEquality);
@@ -78,7 +80,7 @@ public class ConfigurationCacheHackList implements java.io.Serializable {
 		}
 	}
 
-	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		boolean serializeToByteArrayFirst = in.readBoolean();
 		optimizeForEquality = in.readBoolean();
 		backingList = new ArrayList<>();
@@ -133,13 +135,15 @@ public class ConfigurationCacheHackList implements java.io.Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (o == null || getClass() != o.getClass())
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
+		}
 		ConfigurationCacheHackList stepList = (ConfigurationCacheHackList) o;
-		return optimizeForEquality == stepList.optimizeForEquality &&
-				backingList.equals(stepList.backingList);
+		return optimizeForEquality == stepList.optimizeForEquality
+				&& backingList.equals(stepList.backingList);
 	}
 
 	@Override

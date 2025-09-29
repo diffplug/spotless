@@ -26,7 +26,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** A step for <a href="https://github.com/vsch/flexmark-java">flexmark-java</a>. */
-public class FlexmarkStep implements Serializable {
+public final class FlexmarkStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "0.64.8";

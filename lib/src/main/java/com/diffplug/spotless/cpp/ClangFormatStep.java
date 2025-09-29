@@ -32,7 +32,7 @@ import com.diffplug.spotless.ProcessRunner;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public class ClangFormatStep {
+public final class ClangFormatStep {
 	public static String name() {
 		return "clang";
 	}
@@ -80,8 +80,8 @@ public class ClangFormatStep {
 				.pathToExe(pathToExe)
 				.fixCantFind(howToInstall)
 				.fixWrongVersion(
-						"You can tell Spotless to use the version you already have with {@code clangFormat('{versionFound}')}" +
-								"or you can download the currently specified version, {version}.\n" + howToInstall);
+						"You can tell Spotless to use the version you already have with {@code clangFormat('{versionFound}')}"
+								+ "or you can download the currently specified version, {version}.\n" + howToInstall);
 		return new RoundtripState(this, exe);
 	}
 

@@ -31,7 +31,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/scalameta/scalafmt">scalafmt</a> as a FormatterStep. */
-public class ScalaFmtStep implements Serializable {
+public final class ScalaFmtStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
