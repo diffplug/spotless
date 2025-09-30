@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.maven;
 
+import static com.diffplug.common.base.Strings.isNullOrEmpty;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -114,6 +116,6 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 	}
 
 	private boolean isIdeHook() {
-		return !(spotlessIdeHook == null || spotlessIdeHook.isEmpty());
+		return !isNullOrEmpty(spotlessIdeHook);
 	}
 }

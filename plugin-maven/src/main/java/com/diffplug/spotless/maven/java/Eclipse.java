@@ -61,30 +61,30 @@ public class Eclipse implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		EclipseJdtFormatterStep.Builder eclipseConfig = EclipseJdtFormatterStep.createBuilder(stepConfig.getProvisioner());
 		eclipseConfig.setVersion(version == null ? EclipseJdtFormatterStep.defaultVersion() : version);
-		if (null != file) {
+		if (file != null) {
 			File settingsFile = stepConfig.getFileLocator().locateFile(file);
 			eclipseConfig.setPreferences(Arrays.asList(settingsFile));
 		}
 		eclipseConfig.setP2Mirrors(p2Mirrors);
-		if (null != cacheDirectory) {
+		if (cacheDirectory != null) {
 			eclipseConfig.setCacheDirectory(cacheDirectory);
 		}
-		if (null != sortMembersEnabled) {
+		if (sortMembersEnabled != null) {
 			eclipseConfig.sortMembersEnabled(sortMembersEnabled);
 		}
-		if (null != sortMembersOrder) {
+		if (sortMembersOrder != null) {
 			eclipseConfig.sortMembersOrder(sortMembersOrder);
 		}
-		if (null != sortMembersDoNotSortFields) {
+		if (sortMembersDoNotSortFields != null) {
 			eclipseConfig.sortMembersDoNotSortFields(sortMembersDoNotSortFields);
 		}
-		if (null != sortMembersVisibilityOrder) {
+		if (sortMembersVisibilityOrder != null) {
 			eclipseConfig.sortMembersVisibilityOrder(sortMembersVisibilityOrder);
 		}
-		if (null != sortMembersVisibilityOrderEnabled) {
+		if (sortMembersVisibilityOrderEnabled != null) {
 			eclipseConfig.sortMembersVisibilityOrderEnabled(sortMembersVisibilityOrderEnabled);
 		}
-		if (null != cacheDirectory) {
+		if (cacheDirectory != null) {
 			eclipseConfig.setCacheDirectory(cacheDirectory);
 		}
 		return eclipseConfig.build();

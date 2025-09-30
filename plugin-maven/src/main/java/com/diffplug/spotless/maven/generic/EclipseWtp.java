@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class EclipseWtp implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		EclipseBasedStepBuilder eclipseConfig = type.createBuilder(stepConfig.getProvisioner());
 		eclipseConfig.setVersion(version == null ? EclipseWtpFormatterStep.defaultVersion() : version);
-		if (null != files) {
+		if (files != null) {
 			eclipseConfig.setPreferences(
 					stream(files).map(file -> stepConfig.getFileLocator().locateFile(file)).collect(toList()));
 		}

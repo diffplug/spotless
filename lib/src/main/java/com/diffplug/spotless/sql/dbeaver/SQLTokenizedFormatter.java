@@ -293,8 +293,8 @@ public class SQLTokenizedFormatter {
 			FormatterToken t4 = argList.get(index - 4);
 
 			if ("(".equals(t4.getString())
-					&& t3.getString().trim().isEmpty()
-					&& t1.getString().trim().isEmpty()
+					&& t3.getString().isBlank()
+					&& t1.getString().isBlank()
 					&& ")".equalsIgnoreCase(t0.getString())) {
 				t4.setString(t4.getString() + t2.getString() + t0.getString());
 				argList.remove(index);

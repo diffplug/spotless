@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static com.diffplug.common.base.Strings.isNullOrEmpty;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -229,7 +230,7 @@ public class GradleIntegrationHarness extends ResourceHarness {
 
 	private static File getTestKitDir() {
 		String gradleUserHome = System.getenv("GRADLE_USER_HOME");
-		if (gradleUserHome == null || gradleUserHome.isEmpty()) {
+		if (isNullOrEmpty(gradleUserHome)) {
 			gradleUserHome = new File(System.getProperty("user.home"), ".gradle").getAbsolutePath();
 		}
 		return new File(gradleUserHome, "testkit");

@@ -85,13 +85,10 @@ public class NpmPathResolver implements Serializable {
 	}
 
 	public String resolveNpmrcContent() {
-		File npmrcFile = Optional.ofNullable(this.explicitNpmrcFile)
-				.orElseGet(() -> new NpmrcResolver(additionalNpmrcLocations).tryFind()
-						.orElse(null));
-		if (npmrcFile != null) {
-			return NpmResourceHelper.readUtf8StringFromFile(npmrcFile);
-		}
-		return null;
+		return Optional.ofNullable(explicitNpmrcFile)
+				.or(() -> new NpmrcResolver(additionalNpmrcLocations).tryFind())
+				.map(NpmResourceHelper::readUtf8StringFromFile)
+				.orElse(null);
 	}
 
 }
