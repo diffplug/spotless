@@ -159,7 +159,7 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		TreeDef<File> treeDef = TreeDef.forFile(Errors.rethrow());
 		List<File> files = TreeStream.depthFirst(treeDef, rootFolder())
 				.filter(File::isFile)
-				.collect(Collectors.toList());
+				.toList();
 
 		ListIterator<File> iterator = files.listIterator(files.size());
 		int rootLength = rootFolder().getAbsolutePath().length() + 1;
@@ -210,13 +210,13 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	public static List<String> outcomes(BuildResult build, TaskOutcome outcome) {
 		return build.taskPaths(outcome).stream()
 				.filter(s -> !s.equals(":spotlessInternalRegisterDependencies"))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	public static List<BuildTask> outcomes(BuildResult build) {
 		return build.getTasks().stream()
 				.filter(t -> !t.getPath().equals(":spotlessInternalRegisterDependencies"))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	static String buildResultToString(BuildResult result) {

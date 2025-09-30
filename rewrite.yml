@@ -19,6 +19,10 @@ recipeList:
   - org.openrewrite.staticanalysis.CommonStaticAnalysis
   - org.openrewrite.staticanalysis.EqualsAvoidsNull
   - org.openrewrite.staticanalysis.JavaApiBestPractices
+  - org.openrewrite.java.migrate.util.ReplaceStreamCollectWithToList
+  - org.openrewrite.java.migrate.util.SequencedCollection
+  - org.openrewrite.java.migrate.util.MigrateInflaterDeflaterToClose
+  - org.openrewrite.java.migrate.util.JavaUtilAPIs
   - org.openrewrite.staticanalysis.LowercasePackage
   - org.openrewrite.staticanalysis.MissingOverrideAnnotation
   - org.openrewrite.staticanalysis.ModifierOrder

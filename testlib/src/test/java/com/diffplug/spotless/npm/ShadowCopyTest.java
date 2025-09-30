@@ -157,7 +157,7 @@ class ShadowCopyTest extends ResourceHarness {
 		}
 		return Arrays.stream(folder.listFiles())
 				.sorted(Comparator.comparing(File::getName).thenComparing(File::getAbsolutePath))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private void assertFileIsEqualButNotSameAbsolutePath(File expected, File actual) {

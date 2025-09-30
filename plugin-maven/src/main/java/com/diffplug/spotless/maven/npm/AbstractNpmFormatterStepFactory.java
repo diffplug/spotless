@@ -19,7 +19,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -79,7 +79,7 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 	}
 
 	protected NpmPathResolver npmPathResolver(FormatterStepConfig stepConfig) {
-		return new NpmPathResolver(npm(stepConfig), node(stepConfig), npmrc(stepConfig), Collections.singletonList(baseDir(stepConfig)));
+		return new NpmPathResolver(npm(stepConfig), node(stepConfig), npmrc(stepConfig), List.of(baseDir(stepConfig)));
 	}
 
 	protected boolean moreThanOneNonNull(Object... objects) {

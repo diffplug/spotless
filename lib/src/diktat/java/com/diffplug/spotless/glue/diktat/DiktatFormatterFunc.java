@@ -46,7 +46,7 @@ public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 		try {
 			return adapter.format(file, unix, isScript);
 		} catch (DiktatReporting.LintException e) {
-			throw Lint.shortcut(e.lints.stream().map(lint -> Lint.atLine(lint.line, lint.ruleId, lint.detail)).collect(Collectors.toList()));
+			throw Lint.shortcut(e.lints.stream().map(lint -> Lint.atLine(lint.line, lint.ruleId, lint.detail)).toList());
 		}
 	}
 }

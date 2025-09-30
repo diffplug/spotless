@@ -50,15 +50,15 @@ class FormatterPropertiesTest extends ResourceHarness {
 	};
 
 	private List<String> validPropertiesResources() {
-		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> !it.endsWith(".xml")).collect(Collectors.toList());
+		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> !it.endsWith(".xml")).toList();
 	}
 
 	private List<String> validXmlResources() {
-		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> it.endsWith(".xml")).collect(Collectors.toList());
+		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> it.endsWith(".xml")).toList();
 	}
 
 	private List<String> invalidXmlResources() {
-		return List.of(INVALID_SETTINGS_RESOURCES).stream().filter(it -> it.endsWith(".xml")).collect(Collectors.toList());
+		return List.of(INVALID_SETTINGS_RESOURCES).stream().filter(it -> it.endsWith(".xml")).toList();
 	}
 
 	private static final String[] VALID_VALUES = {

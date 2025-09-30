@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -48,7 +47,7 @@ public final class PrettierFormatterStep {
 	}
 
 	public static Map<String, String> defaultDevDependenciesWithPrettier(String version) {
-		return Collections.singletonMap("prettier", version);
+		return Map.of("prettier", version);
 	}
 
 	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {

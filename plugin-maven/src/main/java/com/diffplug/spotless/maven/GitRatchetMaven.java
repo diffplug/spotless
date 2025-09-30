@@ -93,6 +93,6 @@ final class GitRatchetMaven extends GitRatchet<File> {
 
 		return dirtyPaths.stream()
 				.map(path -> baseDirPath.relativize(Path.of(workTreePath, path)).toString())
-				.collect(Collectors.toList());
+				.toList();
 	}
 }

@@ -141,7 +141,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 						throw new RuntimeException(e);
 					}
 				})
-				.collect(Collectors.toList());
+				.toList();
 
 		List<Object> onlyInAfterContent = reflectionHelper.streamGraph(graphAfter)
 				.filter(triple -> {
@@ -151,7 +151,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 						throw new RuntimeException(e);
 					}
 				})
-				.collect(Collectors.toList());
+				.toList();
 		if (!(onlyInBeforeContent.isEmpty() && onlyInAfterContent.isEmpty())) {
 			diffResult = onlyInBeforeContent.stream().map("< %s"::formatted)
 					.collect(Collectors.joining("\n"));

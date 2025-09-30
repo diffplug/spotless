@@ -314,7 +314,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			final String[] includePatterns = this.filePatterns.split(",");
 			final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
 					.map(Pattern::compile)
-					.collect(Collectors.toList());
+					.toList();
 			final Predicate<File> shouldInclude = file -> compiledIncludePatterns
 					.stream()
 					.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())

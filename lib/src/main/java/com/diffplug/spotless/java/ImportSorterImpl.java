@@ -57,7 +57,7 @@ final class ImportSorterImpl {
 			this.subGroups = Stream.of(importOrder.split("\\" + SUBGROUP_SEPARATOR, -1))
 					.map(this::normalizeStatic)
 					.filter(group -> !knownGroupings.contains(group))
-					.collect(Collectors.toList());
+					.toList();
 			knownGroupings.addAll(this.subGroups);
 		}
 
@@ -91,7 +91,7 @@ final class ImportSorterImpl {
 
 	private ImportSorterImpl(List<String> importOrder, boolean wildcardsLast, boolean semanticSort,
 			Set<String> treatAsPackage, Set<String> treatAsClass) {
-		importsGroups = importOrder.stream().filter(Objects::nonNull).map(order -> new ImportsGroup(order, knownGroupings)).collect(Collectors.toList());
+		importsGroups = importOrder.stream().filter(Objects::nonNull).map(order -> new ImportsGroup(order, knownGroupings)).toList();
 		putStaticItemIfNotExists(importsGroups);
 		putCatchAllGroupIfNotExists(importsGroups);
 
@@ -101,7 +101,7 @@ final class ImportSorterImpl {
 			ordering = new LexicographicalOrderingComparator(wildcardsLast);
 		}
 
-		List<String> subgroups = importsGroups.stream().map(ImportsGroup::getSubGroups).flatMap(Collection::stream).collect(Collectors.toList());
+		List<String> subgroups = importsGroups.stream().map(ImportsGroup::getSubGroups).flatMap(Collection::stream).toList();
 		this.allImportOrderItems.addAll(subgroups);
 	}
 

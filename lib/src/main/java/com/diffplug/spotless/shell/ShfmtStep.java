@@ -123,7 +123,7 @@ public final class ShfmtStep {
 
 			// This will ensure that the next file name is retrieved on every format
 			final List<String> finalArgs = Stream.concat(args.stream(), Stream.of(file.getAbsolutePath()))
-					.collect(Collectors.toList());
+					.toList();
 
 			return runner.exec(input.getBytes(StandardCharsets.UTF_8), finalArgs).assertExitZero(StandardCharsets.UTF_8);
 		}

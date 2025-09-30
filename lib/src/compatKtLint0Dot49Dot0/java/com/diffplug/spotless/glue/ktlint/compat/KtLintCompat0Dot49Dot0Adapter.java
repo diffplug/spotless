@@ -137,7 +137,7 @@ public class KtLintCompat0Dot49Dot0Adapter implements KtLintCompatAdapter {
 			editorConfigOverride = EditorConfigOverride.Companion.getEMPTY_EDITOR_CONFIG_OVERRIDE();
 		} else {
 			editorConfigOverride = createEditorConfigOverride(allRuleProviders.stream().map(
-					RuleProvider::createNewRuleInstance).collect(Collectors.toList()),
+					RuleProvider::createNewRuleInstance).toList(),
 					editorConfigOverrideMap);
 		}
 		EditorConfigDefaults editorConfig;

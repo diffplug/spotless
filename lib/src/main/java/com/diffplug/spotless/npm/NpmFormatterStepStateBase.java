@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -164,7 +163,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 				builder.append(",\n");
 			}
 		}
-		return replacePlaceholders(template, Collections.singletonMap("devDependencies", builder.toString()));
+		return replacePlaceholders(template, Map.of("devDependencies", builder.toString()));
 	}
 
 	private static String replacePlaceholders(String template, Map<String, String> replacements) {

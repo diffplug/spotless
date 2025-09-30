@@ -92,16 +92,16 @@ public class RdfFormatterTest extends ResourceHarness {
 		List<Path> inputs = listTestResources(beforeDir)
 				.stream()
 				.map(s -> Path.of(beforeDir, s))
-				.collect(Collectors.toList());
+				.toList();
 		List<Path> outputs = listTestResources(afterDir)
 				.stream()
 				.map(s -> Path.of(afterDir, s))
-				.collect(Collectors.toList());
+				.toList();
 		List<Path> missingOutputs = inputs
 				.stream()
 				.filter(in -> outputs
 						.stream().noneMatch(out -> out.getFileName().equals(in.getFileName())))
-				.collect(Collectors.toList());
+				.toList();
 		if (!missingOutputs.isEmpty()) {
 			throw new IllegalStateException("'after' directory %s is missing files corresponding to these 'before' files: %s".formatted(beforeDir, missingOutputs));
 		}
@@ -109,7 +109,7 @@ public class RdfFormatterTest extends ResourceHarness {
 				.stream()
 				.filter(o -> inputs
 						.stream().noneMatch(in -> in.getFileName().equals(o.getFileName())))
-				.collect(Collectors.toList());
+				.toList();
 		if (!missingInputs.isEmpty()) {
 			throw new IllegalStateException("'before' directory %s is missing files corresponding to these 'after' files: %s".formatted(afterDir, missingInputs));
 		}

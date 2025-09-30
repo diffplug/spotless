@@ -350,7 +350,7 @@ class ReflectionHelper {
 			} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-		}).collect(Collectors.toList());
+		}).toList();
 	}
 
 	private Object makeSetOf(Type type, String parameterValueAsString) {
