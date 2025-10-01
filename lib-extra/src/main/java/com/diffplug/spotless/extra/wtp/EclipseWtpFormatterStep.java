@@ -68,7 +68,7 @@ public enum EclipseWtpFormatterStep {
 			} catch (InvocationTargetException exceptionWrapper) {
 				Throwable throwable = exceptionWrapper.getTargetException();
 				Exception exception = throwable instanceof Exception e ? e : null;
-				throw null == exception ? exceptionWrapper : exception;
+				throw exception == null ? exceptionWrapper : exception;
 			}
 		};
 	}
@@ -86,7 +86,7 @@ public enum EclipseWtpFormatterStep {
 				} catch (InvocationTargetException exceptionWrapper) {
 					Throwable throwable = exceptionWrapper.getTargetException();
 					Exception exception = throwable instanceof Exception e ? e : null;
-					throw null == exception ? exceptionWrapper : exception;
+					throw exception == null ? exceptionWrapper : exception;
 				}
 			}
 		});

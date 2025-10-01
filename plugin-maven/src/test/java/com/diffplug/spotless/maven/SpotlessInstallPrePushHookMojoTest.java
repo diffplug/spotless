@@ -143,7 +143,7 @@ class SpotlessInstallPrePushHookMojoTest extends MavenIntegrationHarness {
 					throw new RuntimeException("Could not find git bash executable");
 				}
 
-				executor = bashPath.get();
+				executor = bashPath.orElseThrow();
 			}
 
 			return runner.exec(rootFolder(), Map.of("JAVA_HOME", System.getProperty("java.home")), null, List.of(executor, hookFile));

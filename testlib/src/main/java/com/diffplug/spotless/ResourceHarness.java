@@ -127,7 +127,7 @@ public class ResourceHarness {
 	public static String getTestResource(String filename) {
 		Optional<URL> resourceUrl = getTestResourceUrl(filename);
 		if (resourceUrl.isPresent()) {
-			return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(resourceUrl.get(), StandardCharsets.UTF_8)));
+			return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(resourceUrl.orElseThrow(), StandardCharsets.UTF_8)));
 		}
 		throw new IllegalArgumentException("No such resource " + filename);
 	}

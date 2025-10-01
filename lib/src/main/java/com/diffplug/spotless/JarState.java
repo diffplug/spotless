@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -132,7 +131,7 @@ public final class JarState implements Serializable {
 		Objects.requireNonNull(provisioner, "provisioner");
 		Set<File> jars = provisioner.provisionWithTransitives(withTransitives, mavenCoordinates);
 		if (jars.isEmpty()) {
-			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinates.stream().collect(Collectors.joining(", ")));
+			throw new NoSuchElementException("Resolved to an empty result: " + String.join(", ", mavenCoordinates));
 		}
 		FileSignature fileSignature = FileSignature.signAsSet(jars);
 		return new JarState(fileSignature);

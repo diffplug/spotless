@@ -145,8 +145,8 @@ final class BiomeExecutableDownloader {
 		logger.debug("Ensuring that Biome for platform '{}' is downloaded", platform);
 		var existing = findDownloaded(version);
 		if (existing.isPresent()) {
-			logger.debug("Biome was already downloaded, using executable at '{}'", existing.get());
-			return existing.get();
+			logger.debug("Biome was already downloaded, using executable at '{}'", existing.orElseThrow());
+			return existing.orElseThrow();
 		} else {
 			logger.debug("Biome was not yet downloaded, attempting to download executable");
 			return download(version);

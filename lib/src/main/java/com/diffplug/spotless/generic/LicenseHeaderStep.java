@@ -241,9 +241,9 @@ public final class LicenseHeaderStep {
 			Optional<String> yearToken = getYearToken(licenseHeader);
 			if (yearToken.isPresent()) {
 				this.yearToday = String.valueOf(YearMonth.now().getYear());
-				int yearTokenIndex = licenseHeader.indexOf(yearToken.get());
+				int yearTokenIndex = licenseHeader.indexOf(yearToken.orElseThrow());
 				this.beforeYear = licenseHeader.substring(0, yearTokenIndex);
-				this.afterYear = licenseHeader.substring(yearTokenIndex + yearToken.get().length());
+				this.afterYear = licenseHeader.substring(yearTokenIndex + yearToken.orElseThrow().length());
 				this.yearSepOrFull = yearSeparator;
 				this.updateYearWithLatest = updateYearWithLatest;
 

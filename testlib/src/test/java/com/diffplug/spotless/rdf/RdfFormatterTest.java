@@ -119,7 +119,7 @@ public class RdfFormatterTest extends ResourceHarness {
 			if (output.isEmpty()) {
 				throw new IllegalStateException("'after' directory %s is missing file %s corresponding to 'before' file %s".formatted(afterDir, input.getFileName(), input));
 			}
-			arguments.add(Arguments.of(unixRelative(input), unixRelative(output.get())));
+			arguments.add(Arguments.of(unixRelative(input), unixRelative(output.orElseThrow())));
 		}
 		return arguments;
 	}

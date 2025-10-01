@@ -137,7 +137,7 @@ public final class PrettierFormatterStep {
 				return prettierConfigOptions;
 			}
 			// if the file has no name, we  cannot use it
-			if (file.getName().trim().isEmpty()) {
+			if (file.getName().isBlank()) {
 				return prettierConfigOptions;
 			}
 			// if it is not there, we add it at the beginning of the Options
