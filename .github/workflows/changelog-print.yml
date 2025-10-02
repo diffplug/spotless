@@ -15,5 +15,5 @@ jobs:
           java-version: 21
           distribution: 'temurin'
       - name: gradle caching
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
       - run: ./gradlew changelogPrint

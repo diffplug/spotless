@@ -27,7 +27,7 @@ jobs:
           distribution: "temurin"
           java-version: 21
       - name: gradle caching
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
       - name: spotlessCheck
         run: ./gradlew spotlessCheck
       - name: rewriteDryRun
@@ -64,7 +64,7 @@ jobs:
           distribution: "temurin"
           java-version: ${{ matrix.jre }}
       - name: gradle caching
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
       - name: build (maven-only)
         if: matrix.kind == 'maven'
         run: ./gradlew :plugin-maven:build -x spotlessCheck -x rewriteDryRun
