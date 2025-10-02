@@ -42,8 +42,8 @@ class NodeServerLayoutTest extends ResourceHarness {
 	@Test
 	void itCalculatesDifferentNodeModulesDirForDifferentPackageJson() throws IOException {
 		File testDir = newFolder("build");
-		String packageJsonContent1 = prettierPackageJson(Collections.singletonMap("prettier-plugin-xy", "^2.0.0"));
-		String packageJsonContent2 = prettierPackageJson(Collections.singletonMap("prettier-plugin-xy", "^2.1.0"));
+		String packageJsonContent1 = prettierPackageJson(Map.of("prettier-plugin-xy", "^2.0.0"));
+		String packageJsonContent2 = prettierPackageJson(Map.of("prettier-plugin-xy", "^2.1.0"));
 		String serveJsContent = "fun main() { console.log('Hello, world!'); }";
 
 		NodeServerLayout layout1 = new NodeServerLayout(testDir, packageJsonContent1, serveJsContent);

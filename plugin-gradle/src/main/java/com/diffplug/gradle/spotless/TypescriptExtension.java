@@ -169,7 +169,7 @@ public class TypescriptExtension extends FormatExtension {
 
 		private void fixParserToTypescript() {
 			if (this.prettierConfig == null) {
-				this.prettierConfig = new TreeMap<>(Collections.singletonMap("parser", "typescript"));
+				this.prettierConfig = new TreeMap<>(Map.of("parser", "typescript"));
 			} else {
 				final Object replaced = this.prettierConfig.put("parser", "typescript");
 				if (replaced != null) {

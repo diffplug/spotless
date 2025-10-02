@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Collections;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -62,7 +62,7 @@ public class YamlExtension extends FormatExtension {
 		 * Refers to com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature
 		 */
 		public JacksonYamlGradleConfig yamlFeature(String feature, boolean toggle) {
-			this.jacksonConfig.appendYamlFeatureToToggle(Collections.singletonMap(feature, toggle));
+			this.jacksonConfig.appendYamlFeatureToToggle(Map.of(feature, toggle));
 			formatExtension.replaceStep(createStep());
 			return this;
 		}
