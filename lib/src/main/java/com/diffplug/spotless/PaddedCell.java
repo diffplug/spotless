@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,12 +105,12 @@ public final class PaddedCell {
 		}
 		String appliedOnce = formatter.computeWithLint(original, file, exceptionPerStep);
 		if (appliedOnce.equals(original)) {
-			return Type.CONVERGE.create(file, Collections.singletonList(appliedOnce));
+			return Type.CONVERGE.create(file, List.of(appliedOnce));
 		}
 
 		String appliedTwice = formatter.computeWithLint(appliedOnce, file, exceptionPerStep);
 		if (appliedOnce.equals(appliedTwice)) {
-			return Type.CONVERGE.create(file, Collections.singletonList(appliedOnce));
+			return Type.CONVERGE.create(file, List.of(appliedOnce));
 		}
 
 		List<String> appliedN = new ArrayList<>();

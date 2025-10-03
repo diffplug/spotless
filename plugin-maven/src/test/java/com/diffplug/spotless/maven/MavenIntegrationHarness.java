@@ -17,7 +17,6 @@ package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
 import static java.util.Arrays.stream;
-import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -298,7 +297,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		}
 
 		if (modules != null) {
-			List<Map<String, String>> moduleNames = stream(modules).map(name -> singletonMap(MODULE_NAME, name)).collect(toList());
+			List<Map<String, String>> moduleNames = stream(modules).map(name -> Map.of(MODULE_NAME, name)).collect(toList());
 			params.put(MODULES, moduleNames);
 		}
 

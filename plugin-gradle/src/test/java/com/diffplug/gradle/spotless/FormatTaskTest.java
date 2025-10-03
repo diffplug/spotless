@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.gradle.api.Project;
 import org.gradle.api.services.BuildServiceParameters;
@@ -50,7 +50,7 @@ class FormatTaskTest extends ResourceHarness {
 		File testFile = setFile("testFile").toContent("\r\n");
 		File outputFile = new File(spotlessTask.getCleanDirectory(), "testFile");
 
-		spotlessTask.setTarget(Collections.singleton(testFile));
+		spotlessTask.setTarget(Set.of(testFile));
 		Tasks.execute(spotlessTask);
 
 		assertFile(outputFile).hasContent("\n");
@@ -60,7 +60,7 @@ class FormatTaskTest extends ResourceHarness {
 	void testStep() throws Exception {
 		File testFile = setFile("testFile").toContent("apple");
 		File outputFile = new File(spotlessTask.getCleanDirectory(), "testFile");
-		spotlessTask.setTarget(Collections.singleton(testFile));
+		spotlessTask.setTarget(Set.of(testFile));
 
 		spotlessTask.setSteps(List.of(ReplaceStep.create("double-p", "pp", "p")));
 		Tasks.execute(spotlessTask);
