@@ -33,12 +33,16 @@ public class Idea implements FormatterStepFactory {
 	@Parameter
 	private Boolean withDefaults = true;
 
+	@Parameter
+	private Integer batchSize = IdeaStep.DEFAULT_BATCH_SIZE;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		return IdeaStep.newBuilder(config.getFileLocator().getBuildDir())
 				.setUseDefaults(withDefaults)
 				.setCodeStyleSettingsPath(codeStyleSettingsPath)
 				.setBinaryPath(binaryPath)
+				.setBatchSize(batchSize)
 				.build();
 	}
 }

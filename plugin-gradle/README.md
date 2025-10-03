@@ -1657,6 +1657,9 @@ spotless {
 
     // if idea is not on your path, you must specify the path to the executable
     idea().binaryPath('/path/to/idea')
+    
+    // to set the number of files per IDEA involcation (default: 100)
+    idea().batchSize(100)
   }
 }
 ```
@@ -1666,7 +1669,6 @@ See [here](../INTELLIJ_IDEA_SCREENSHOTS.md) for an explanation on how to extract
 
 ### Limitations
 - Currently, only IntelliJ IDEA is supported - none of the other jetbrains IDE. Consider opening a PR if you want to change this.
-- Launching IntelliJ IDEA from the command line is pretty expensive and as of now, we do this for each file. If you want to change this, consider opening a PR.
 
 ## Generic steps
 

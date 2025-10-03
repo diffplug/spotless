@@ -22,7 +22,9 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,8 +32,9 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.CheckForNull;
@@ -57,6 +60,10 @@ public final class IdeaStep {
 
 	public static final String IDEA_CONFIG_PATH_PROPERTY = "idea.config.path";
 	public static final String IDEA_SYSTEM_PATH_PROPERTY = "idea.system.path";
+
+	/** Default batch size for formatting multiple files in a single IDEA invocation */
+	public static final int DEFAULT_BATCH_SIZE = 100;
+
 	@Nonnull
 	private final IdeaStepBuilder builder;
 
@@ -87,6 +94,7 @@ public final class IdeaStep {
 		private String binaryPath = IDEA_EXECUTABLE_DEFAULT;
 		@Nullable private String codeStyleSettingsPath;
 		private final Map<String, String> ideaProperties = new HashMap<>();
+		private int batchSize = DEFAULT_BATCH_SIZE;
 
 		@Nonnull
 		private final File buildDir;
@@ -118,18 +126,34 @@ public final class IdeaStep {
 			return this;
 		}
 
+		/**
+		 * Sets the batch size for formatting multiple files in a single IDEA invocation.
+		 * Default is {@link #DEFAULT_BATCH_SIZE}.
+		 *
+		 * @param batchSize the maximum number of files to format in a single batch (must be >= 1)
+		 * @return this builder
+		 */
+		public IdeaStepBuilder setBatchSize(int batchSize) {
+			if (batchSize < 1) {
+				throw new IllegalArgumentException("Batch size must be at least 1, got: " + batchSize);
+			}
+			this.batchSize = batchSize;
+			return this;
+		}
+
 		public FormatterStep build() {
 			return create(this);
 		}
 
 		@Override
 		public String toString() {
-			return "IdeaStepBuilder[useDefaults=%s, binaryPath=%s, codeStyleSettingsPath=%s, ideaProperties=%s, buildDir=%s]".formatted(
+			return "IdeaStepBuilder[useDefaults=%s, binaryPath=%s, codeStyleSettingsPath=%s, ideaProperties=%s, buildDir=%s, batchSize=%d]".formatted(
 					this.useDefaults,
 					this.binaryPath,
 					this.codeStyleSettingsPath,
 					this.ideaProperties,
-					this.buildDir);
+					this.buildDir,
+					this.batchSize);
 		}
 	}
 
@@ -142,6 +166,7 @@ public final class IdeaStep {
 		@Nullable private final String codeStyleSettingsPath;
 		private final boolean withDefaults;
 		private final TreeMap<String, String> ideaProperties;
+		private final int batchSize;
 
 		private State(@Nonnull IdeaStepBuilder builder) {
 			LOGGER.debug("Creating {} state with configuration {}", NAME, builder);
@@ -150,6 +175,7 @@ public final class IdeaStep {
 			this.codeStyleSettingsPath = builder.codeStyleSettingsPath;
 			this.ideaProperties = new TreeMap<>(builder.ideaProperties);
 			this.binaryPath = resolveFullBinaryPathAndCheckVersion(builder.binaryPath);
+			this.batchSize = builder.batchSize;
 		}
 
 		private static String resolveFullBinaryPathAndCheckVersion(String binaryPath) {
@@ -211,22 +237,50 @@ public final class IdeaStep {
 			return System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac");
 		}
 
-		private String format(IdeaStepFormatterCleanupResources ideaStepFormatterCleanupResources, String unix, File file) throws Exception {
-			// since we cannot directly work with the file, we need to write the unix string to a temporary file
-			File tempFile = Files.createTempFile("spotless", file.getName()).toFile();
-			try {
-				Files.write(tempFile.toPath(), unix.getBytes(StandardCharsets.UTF_8));
-				List<String> params = getParams(tempFile);
+		/**
+		 * Represents a file to be formatted, tracking both the temporary file and the original file reference.
+		 */
+		private static class FileToFormat {
+			final File tempFile;
+			final File originalFile;
 
-				Map<String, String> env = createEnv();
-				LOGGER.info("Launching IDEA formatter for orig file {} with params: {} and env: {}", file, params, env);
-				var result = ideaStepFormatterCleanupResources.runner.exec(null, env, null, params);
-				LOGGER.debug("command finished with exit code: {}", result.exitCode());
-				LOGGER.debug("command finished with stdout: {}",
-						result.assertExitZero(StandardCharsets.UTF_8));
-				return Files.readString(tempFile.toPath());
-			} finally {
-				Files.delete(tempFile.toPath());
+			FileToFormat(File tempFile, File originalFile) {
+				this.tempFile = tempFile;
+				this.originalFile = originalFile;
+			}
+		}
+
+		private String format(IdeaStepFormatterCleanupResources ideaStepFormatterCleanupResources, String unix, File file) throws Exception {
+			// Delegate to the batch formatter in the cleanup resources
+			return ideaStepFormatterCleanupResources.formatFile(this, unix, file);
+		}
+
+		/**
+		 * Formats multiple files in a single IDEA invocation.
+		 *
+		 * @param ideaStepFormatterCleanupResources the cleanup resources containing the process runner
+		 * @param filesToFormat the list of files to format
+		 * @throws Exception if formatting fails
+		 */
+		private void formatBatch(IdeaStepFormatterCleanupResources ideaStepFormatterCleanupResources, List<FileToFormat> filesToFormat) throws Exception {
+			if (filesToFormat.isEmpty()) {
+				return;
+			}
+
+			LOGGER.info("Formatting batch of {} files with IDEA", filesToFormat.size());
+
+			List<String> params = getParamsForBatch(filesToFormat);
+			Map<String, String> env = createEnv();
+
+			LOGGER.debug("Launching IDEA formatter with params: {} and env: {}", params, env);
+			var result = ideaStepFormatterCleanupResources.runner.exec(null, env, null, params);
+			LOGGER.debug("Batch command finished with exit code: {}", result.exitCode());
+			LOGGER.debug("Batch command finished with stdout: {}", result.assertExitZero(StandardCharsets.UTF_8));
+
+			// Read back the formatted content for each file
+			for (FileToFormat fileToFormat : filesToFormat) {
+				String formatted = Files.readString(fileToFormat.tempFile.toPath());
+				ideaStepFormatterCleanupResources.cacheFormattedResult(fileToFormat.originalFile, formatted);
 			}
 		}
 
@@ -266,7 +320,10 @@ public final class IdeaStep {
 			return ideaProps.toFile();
 		}
 
-		private List<String> getParams(File file) {
+		/**
+		 * Builds command-line parameters for formatting multiple files in a single invocation.
+		 */
+		private List<String> getParamsForBatch(List<FileToFormat> filesToFormat) {
 			/* https://www.jetbrains.com/help/idea/command-line-formatter.html */
 			var builder = Stream.<String> builder();
 			builder.add(binaryPath);
@@ -278,13 +335,18 @@ public final class IdeaStep {
 				builder.add("-s");
 				builder.add(codeStyleSettingsPath);
 			}
-			builder.add("-charset").add("UTF-8");
-			builder.add(ThrowingEx.get(file::getCanonicalPath));
-			return builder.build().collect(Collectors.toList());
+			builder.add("-charset");
+			builder.add("UTF-8");
+
+			// Add all file paths
+			for (FileToFormat fileToFormat : filesToFormat) {
+				builder.add(ThrowingEx.get(fileToFormat.tempFile::getCanonicalPath));
+			}
+			return builder.build().toList();
 		}
 
 		private FormatterFunc.Closeable toFunc() {
-			IdeaStepFormatterCleanupResources ideaStepFormatterCleanupResources = new IdeaStepFormatterCleanupResources(uniqueBuildFolder, new ProcessRunner());
+			IdeaStepFormatterCleanupResources ideaStepFormatterCleanupResources = new IdeaStepFormatterCleanupResources(uniqueBuildFolder, new ProcessRunner(), batchSize);
 			return FormatterFunc.Closeable.of(ideaStepFormatterCleanupResources, this::format);
 		}
 	}
@@ -294,14 +356,116 @@ public final class IdeaStep {
 		private final File uniqueBuildFolder;
 		@Nonnull
 		private final ProcessRunner runner;
+		private final int batchSize;
 
-		public IdeaStepFormatterCleanupResources(@Nonnull File uniqueBuildFolder, @Nonnull ProcessRunner runner) {
+		// Batch processing state (transient - not serialized)
+		private final Map<File, String> formattedCache = new LinkedHashMap<>();
+		private final List<State.FileToFormat> pendingBatch = new ArrayList<>();
+		private final Lock batchLock = new ReentrantLock();
+		private State currentState;
+
+		public IdeaStepFormatterCleanupResources(@Nonnull File uniqueBuildFolder, @Nonnull ProcessRunner runner, int batchSize) {
 			this.uniqueBuildFolder = uniqueBuildFolder;
 			this.runner = runner;
+			this.batchSize = batchSize;
+		}
+
+		/**
+		 * Formats a single file, using batch processing for efficiency.
+		 * Files are accumulated and formatted in batches to minimize IDEA process startups.
+		 */
+		String formatFile(State state, String unix, File file) throws Exception {
+			batchLock.lock();
+			try {
+				// Store the state reference for batch processing
+				if (currentState == null) {
+					currentState = state;
+				}
+
+				// Check if we already have the formatted result cached
+				if (formattedCache.containsKey(file)) {
+					String result = formattedCache.remove(file);
+					LOGGER.debug("Returning cached formatted result for file: {}", file);
+					return result;
+				}
+
+				// Create a temporary file for this content
+				File tempFile = Files.createTempFile(uniqueBuildFolder.toPath(), "spotless", file.getName()).toFile();
+				Files.write(tempFile.toPath(), unix.getBytes(StandardCharsets.UTF_8));
+
+				// Add to pending batch
+				pendingBatch.add(new State.FileToFormat(tempFile, file));
+				LOGGER.debug("Added file {} to pending batch (size: {})", file, pendingBatch.size());
+
+				// If batch is full, process it
+				if (pendingBatch.size() >= batchSize) {
+					LOGGER.info("Batch size reached ({}/{}), processing batch", pendingBatch.size(), batchSize);
+					processPendingBatch();
+				}
+
+				// Check cache again after potential batch processing
+				if (formattedCache.containsKey(file)) {
+					return formattedCache.remove(file);
+				}
+
+				// If still not in cache, we need to process immediately (shouldn't happen normally)
+				// This is a safety fallback
+				LOGGER.warn("File {} not found in cache after batch processing, forcing immediate format", file);
+				List<State.FileToFormat> singleFileBatch = new ArrayList<>();
+				singleFileBatch.add(new State.FileToFormat(tempFile, file));
+				currentState.formatBatch(this, singleFileBatch);
+				return formattedCache.remove(file);
+
+			} finally {
+				batchLock.unlock();
+			}
+		}
+
+		/**
+		 * Caches a formatted result for a file.
+		 */
+		void cacheFormattedResult(File originalFile, String formatted) {
+			formattedCache.put(originalFile, formatted);
+		}
+
+		/**
+		 * Processes all pending files in the current batch.
+		 */
+		private void processPendingBatch() throws Exception {
+			if (pendingBatch.isEmpty() || currentState == null) {
+				return;
+			}
+
+			List<State.FileToFormat> batchToProcess = new ArrayList<>(pendingBatch);
+			pendingBatch.clear();
+
+			try {
+				currentState.formatBatch(this, batchToProcess);
+			} finally {
+				// Clean up temp files
+				for (State.FileToFormat fileToFormat : batchToProcess) {
+					try {
+						Files.deleteIfExists(fileToFormat.tempFile.toPath());
+					} catch (IOException e) {
+						LOGGER.warn("Failed to delete temporary file: {}", fileToFormat.tempFile, e);
+					}
+				}
+			}
 		}
 
 		@Override
 		public void close() throws Exception {
+			batchLock.lock();
+			try {
+				// Process any remaining files in the batch
+				if (!pendingBatch.isEmpty()) {
+					LOGGER.info("Processing remaining {} files in batch on close", pendingBatch.size());
+					processPendingBatch();
+				}
+			} finally {
+				batchLock.unlock();
+			}
+
 			// close the runner
 			runner.close();
 			// delete the unique build folder
