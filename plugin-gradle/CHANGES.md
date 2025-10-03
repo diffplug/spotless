@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+* Add `batchSize` to `<idea>` formatter which determines the number of files to format in a single IDEA invocation (default=100) ([#2662](https://github.com/diffplug/spotless/pull/2662))
 
 ## [8.0.0] - 2025-09-24
 ### Changed

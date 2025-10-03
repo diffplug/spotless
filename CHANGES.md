@@ -10,6 +10,7 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+* Add batching to IDEA formatter ([#2662](https://github.com/diffplug/spotless/pull/2662))
 
 ## [4.0.0] - 2025-09-24
 ### Changes

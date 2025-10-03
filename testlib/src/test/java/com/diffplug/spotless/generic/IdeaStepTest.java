@@ -104,6 +104,109 @@ class IdeaStepTest extends ResourceHarness {
 				"formatting was applied to clean file");
 	}
 
+	@Test
+	void batchFormattingSingleBatch() throws Exception {
+		// Test formatting multiple files in a single batch
+		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
+		FormatterStep step = IdeaStep.newBuilder(buildDir())
+				.setUseDefaults(true)
+				.setBatchSize(5) // Batch size larger than number of files
+				.build();
+
+		// Format 3 files - should all be in one batch
+		for (int i = 0; i < 3; i++) {
+			File dirtyFile = newFile("dirty" + i + ".java");
+			Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
+			var result = step.format(dirtyJava, dirtyFile);
+			Assertions.assertNotEquals(dirtyJava, result,
+					"file " + i + " was not formatted");
+		}
+	}
+
+	@Test
+	void batchFormattingMultipleBatches() throws Exception {
+		// Test formatting files across exactly 3 batches
+		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
+		FormatterStep step = IdeaStep.newBuilder(buildDir())
+				.setUseDefaults(true)
+				.setBatchSize(2) // Small batch size to force multiple batches
+				.build();
+
+		// Format 6 files - should be exactly 3 batches (2+2+2)
+		for (int i = 0; i < 6; i++) {
+			File dirtyFile = newFile("batch_dirty" + i + ".java");
+			Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
+			var result = step.format(dirtyJava, dirtyFile);
+			Assertions.assertNotEquals(dirtyJava, result,
+					"file " + i + " was not formatted in batch");
+		}
+	}
+
+	@Test
+	void batchFormattingPartialLastBatch() throws Exception {
+		// Test formatting files with a partial last batch
+		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
+		FormatterStep step = IdeaStep.newBuilder(buildDir())
+				.setUseDefaults(true)
+				.setBatchSize(2) // Small batch size
+				.build();
+
+		// Format 7 files - should be 4 batches (2+2+2+1)
+		for (int i = 0; i < 7; i++) {
+			File dirtyFile = newFile("partial_dirty" + i + ".java");
+			Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
+			var result = step.format(dirtyJava, dirtyFile);
+			Assertions.assertNotEquals(dirtyJava, result,
+					"file " + i + " was not formatted with partial batch");
+		}
+	}
+
+	@Test
+	void batchFormattingMixedCleanAndDirty() throws Exception {
+		// Test formatting a mix of clean and dirty files across multiple batches
+		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
+		String cleanJava = ResourceHarness.getTestResource("java/idea/full.clean.java");
+		FormatterStep step = IdeaStep.newBuilder(buildDir())
+				.setUseDefaults(true)
+				.setBatchSize(3)
+				.build();
+
+		// Format 9 files (3 batches) - alternating dirty and clean
+		for (int i = 0; i < 9; i++) {
+			boolean isDirty = i % 2 == 0;
+			String content = isDirty ? dirtyJava : cleanJava;
+			File file = newFile("mixed" + i + ".java");
+			Files.write(content, file, StandardCharsets.UTF_8);
+			var result = step.format(content, file);
+
+			if (isDirty) {
+				Assertions.assertNotEquals(content, result,
+						"dirty file " + i + " was not formatted");
+			} else {
+				Assertions.assertEquals(content, result,
+						"clean file " + i + " was incorrectly modified");
+			}
+		}
+	}
+
+	@Test
+	void batchSizeValidation() {
+		// Test that batch size must be at least 1
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			IdeaStep.newBuilder(buildDir())
+					.setUseDefaults(true)
+					.setBatchSize(0)
+					.build();
+		}, "batch size of 0 should throw exception");
+
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			IdeaStep.newBuilder(buildDir())
+					.setUseDefaults(true)
+					.setBatchSize(-1)
+					.build();
+		}, "negative batch size should throw exception");
+	}
+
 	private File buildDir;
 
 	protected File buildDir() {
