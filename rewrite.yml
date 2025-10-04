@@ -24,6 +24,7 @@ recipeList:
   - org.openrewrite.java.recipes.JavaRecipeBestPractices
   - org.openrewrite.java.recipes.RecipeTestingBestPractices
   - org.openrewrite.java.security.JavaSecurityBestPractices
+  - org.openrewrite.staticanalysis.BufferedWriterCreationRecipes
   - org.openrewrite.staticanalysis.CommonStaticAnalysis
   - org.openrewrite.staticanalysis.EqualsAvoidsNull
   - org.openrewrite.staticanalysis.JavaApiBestPractices
@@ -36,6 +37,9 @@ recipeList:
   - org.openrewrite.staticanalysis.RemoveUnusedLocalVariables
   - org.openrewrite.staticanalysis.RemoveUnusedPrivateFields
   - org.openrewrite.staticanalysis.RemoveUnusedPrivateMethods
+  - org.openrewrite.staticanalysis.ReplaceApacheCommonsLang3ValidateNotNullWithObjectsRequireNonNull
+  - org.openrewrite.staticanalysis.SimplifyTernaryRecipes
+  - org.openrewrite.staticanalysis.URLEqualsHashCodeRecipes
   - org.openrewrite.staticanalysis.UnnecessaryCloseInTryWithResources
   - org.openrewrite.staticanalysis.UnnecessaryExplicitTypeArguments
   - org.openrewrite.staticanalysis.UnnecessaryParentheses
@@ -58,4 +62,29 @@ recipeList:
   - tech.picnic.errorprone.refasterrules.StreamRulesRecipes
   - tech.picnic.errorprone.refasterrules.StringRulesRecipes
   - tech.picnic.errorprone.refasterrules.TimeRulesRecipes
+---
+name: com.diffplug.spotless.openrewrite.SpotlessFormat
+styleConfigs:
+  - org.openrewrite.java.style.ImportLayoutStyle:
+      classCountToUseStarImport: 999
+      nameCountToUseStarImport: 999
+      # bug https://github.com/openrewrite/rewrite/issues/6107
+      #      layout:
+      #        - import java.*
+      #        - <blank line>
+      #        - import javax.*
+      #        - <blank line>
+      #        - import org.*
+      #        - <blank line>
+      #        - import com.*
+      #        - <blank line>
+      #        - import com.diffplug.*
+      #        - <blank line>
+      #        - import static all other imports
+      #        - <blank line>
+      #        - import all other imports
+      #        - <blank line>
+  - org.openrewrite.java.style.TabsAndIndentsStyle:
+      useTabCharacter: true
+      tabSize: 4
 ---
