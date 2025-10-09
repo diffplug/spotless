@@ -123,7 +123,7 @@ public final class GoogleJavaFormatStep implements Serializable {
 			.addMin(11, "1.8") // we only support google-java-format >= 1.8 due to api changes
 			.addMin(16, "1.10.0") // java 16 requires at least 1.10.0 due to jdk api changes in JavaTokenizer
 			.addMin(21, "1.17.0") // java 21 requires at least 1.17.0 due to https://github.com/google/google-java-format/issues/898
-			.add(17, "1.28.0"); // default version
+			.add(21, "1.29.0"); // default version
 
 	public static String defaultGroupArtifact() {
 		return MAVEN_COORDINATE;
