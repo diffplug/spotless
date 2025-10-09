@@ -10,7 +10,6 @@ tags:
   - cleanup
 recipeList:
   - org.openrewrite.gradle.EnableGradleBuildCache
-  - org.openrewrite.gradle.EnableGradleParallelExecution
   - org.openrewrite.gradle.GradleBestPractices
   - org.openrewrite.java.RemoveUnusedImports
   - org.openrewrite.java.format.NormalizeFormat

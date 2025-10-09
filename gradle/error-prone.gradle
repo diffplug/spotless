@@ -1,0 +1,66 @@
+import static java.lang.System.getenv
+
+apply plugin: 'net.ltgt.errorprone'
+
+dependencies {
+	errorprone('com.google.errorprone:error_prone_core:2.42.0')
+	errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.25.0')
+	errorprone('tech.picnic.error-prone-support:refaster-runner:0.25.0')
+	constraints {
+		errorprone('com.google.guava:guava') {
+			version {
+				require('33.4.8-jre')
+			}
+			because('Older versions use deprecated methods in sun.misc.Unsafe')
+			// https://github.com/junit-team/junit-framework/pull/5039#discussion_r2414490581
+		}
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.errorprone {
+		errorproneArgs.add('-XepOpt:Refaster:NamePattern=^(?!.*Rules\\$).*')
+		error(
+				'DirectReturn',
+				// 'ConstantNaming',
+				// 'LexicographicalAnnotationAttributeListing',
+				// 'LexicographicalAnnotationListing',
+				// 'MissingOverride',
+				// 'NonStaticImport',
+				// 'OptionalMapUnusedValue',
+				// 'OptionalOfRedundantMethod',
+				// 'RedundantSetterCall',
+				// 'RedundantStringConversion',
+				// 'RedundantStringEscape',
+				// 'StaticImport',
+				// 'StringJoin',
+				// 'UnnecessaryCheckNotNull',
+				// 'UnnecessaryTypeArgument',
+				// 'UnusedAnonymousClass',
+				// 'UnusedCollectionModifiedInPlace',
+				)
+		if (!getenv().containsKey('CI') && getenv('IN_PLACE')?.toBoolean()) {
+			errorproneArgs.addAll(
+					'-XepPatchLocation:IN_PLACE',
+					'-XepPatchChecks:' +
+					'DirectReturn,'
+					// 'ConstantNaming,' +
+					// 'MissingOverride,' +
+					// 'StaticImport,' +
+					// LexicographicalAnnotationAttributeListing,' +
+					// LexicographicalAnnotationListing,' +
+					// NonStaticImport,' +
+					// OptionalMapUnusedValue,' +
+					// OptionalOfRedundantMethod,' +
+					// RedundantSetterCall,' +
+					// RedundantStringConversion,' +
+					// RedundantStringEscape,' +
+					// StringJoin,' +
+					// UnnecessaryCheckNotNull,' +
+					// UnnecessaryTypeArgument,' +
+					// UnusedAnonymousClass,' +
+					// UnusedCollectionModifiedInPlace,'
+					)
+		}
+	}
+}
