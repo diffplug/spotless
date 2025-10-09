@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -65,7 +64,7 @@ public final class EslintFormatterStep {
 	}
 
 	public static Map<String, String> defaultDevDependenciesWithEslint(String version) {
-		return Collections.singletonMap("eslint", version);
+		return Map.of("eslint", version);
 	}
 
 	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,7 +44,7 @@ class JsonWriter {
 	}
 
 	JsonWriter put(String name, Object value) {
-		verifyValues(Collections.singletonMap(name, value));
+		verifyValues(Map.of(name, value));
 		this.valueMap.put(name, value);
 		return this;
 	}

@@ -17,7 +17,6 @@ package com.diffplug.spotless.maven;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -163,7 +162,7 @@ class MultiModuleProjectTest extends MavenIntegrationHarness {
 				String subProjectName = entry.getKey();
 				List<SubProjectFile> subProjectFiles = entry.getValue();
 
-				String content = createPomXmlContent("/multi-module/pom-child.xml.mustache", singletonMap(CHILD_ID, subProjectName));
+				String content = createPomXmlContent("/multi-module/pom-child.xml.mustache", Map.of(CHILD_ID, subProjectName));
 				setFile(subProjectName + "/pom.xml").toContent(content);
 
 				createSubProjectFiles(subProjectName, subProjectFiles);

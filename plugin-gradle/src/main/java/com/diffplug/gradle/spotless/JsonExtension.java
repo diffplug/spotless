@@ -15,7 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -165,7 +164,7 @@ public class JsonExtension extends FormatExtension {
 		 * Refers to com.fasterxml.jackson.core.JsonGenerator.Feature
 		 */
 		public JacksonJsonGradleConfig jsonFeature(String feature, boolean toggle) {
-			this.jacksonConfig.appendJsonFeatureToToggle(Collections.singletonMap(feature, toggle));
+			this.jacksonConfig.appendJsonFeatureToToggle(Map.of(feature, toggle));
 			formatExtension.replaceStep(createStep());
 			return this;
 		}

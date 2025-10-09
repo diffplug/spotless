@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -200,7 +199,7 @@ public class JavascriptExtension extends FormatExtension {
 
 		private void fixParserToJavascript() {
 			if (this.prettierConfig == null) {
-				this.prettierConfig = Collections.singletonMap("parser", DEFAULT_PRETTIER_JS_PARSER);
+				this.prettierConfig = Map.of("parser", DEFAULT_PRETTIER_JS_PARSER);
 			} else {
 				final Object currentParser = this.prettierConfig.get("parser");
 				if (PRETTIER_JS_PARSERS.contains(String.valueOf(currentParser))) {

@@ -15,7 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Collections;
+import java.util.Map;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JacksonConfig;
@@ -36,7 +36,7 @@ public abstract class AJacksonGradleConfig<T extends AJacksonGradleConfig> {
 	}
 
 	public T feature(String feature, boolean toggle) {
-		this.jacksonConfig.appendFeatureToToggle(Collections.singletonMap(feature, toggle));
+		this.jacksonConfig.appendFeatureToToggle(Map.of(feature, toggle));
 		formatExtension.replaceStep(createStep());
 		return self();
 	}
