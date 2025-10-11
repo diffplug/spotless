@@ -12,6 +12,7 @@ repositories {
 apply from: rootProject.file('gradle/java-publish.gradle')
 apply from: rootProject.file('gradle/changelog.gradle')
 allprojects {
+	apply from: rootProject.file('gradle/error-prone.gradle')
 	apply from: rootProject.file('gradle/rewrite.gradle')
 	apply from: rootProject.file('gradle/spotless.gradle')
 }
