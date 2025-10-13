@@ -186,7 +186,7 @@ class SQLTokensParser {
 						s.append(fChar);
 					}
 				}
-				return new FormatterToken(TokenType.COMMAND, word + s, start_pos);
+				return new FormatterToken(TokenType.COMMAND, word + s.toString(), start_pos);
 			}
 			if (sqlDialect.getKeywordType(word) != null) {
 				return new FormatterToken(TokenType.KEYWORD, word, start_pos);

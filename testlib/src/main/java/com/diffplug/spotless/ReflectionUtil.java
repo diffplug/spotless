@@ -37,7 +37,7 @@ public class ReflectionUtil {
 
 	public static void dumpMethod(Method method) {
 		System.out.print(Modifier.toString(method.getModifiers()));
-		System.out.print(" " + method.getReturnType());
+		System.out.print(" " + method.getReturnType().toString());
 		System.out.print(" " + method.getName() + "(");
 		Iterator<Parameter> paramIter = Arrays.asList(method.getParameters()).iterator();
 		while (paramIter.hasNext()) {

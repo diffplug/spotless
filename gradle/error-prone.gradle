@@ -19,11 +19,11 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
 	options.errorprone {
 		disableAllChecks = true // consider removal to avoid error prone error´s, following convention over configuration.
-		error('RedundantStringConversion')
+		error('ConstantNaming')
 		if (!getenv().containsKey('CI') && getenv('IN_PLACE')?.toBoolean()) {
 			errorproneArgs.addAll(
 				'-XepPatchLocation:IN_PLACE',
-				'-XepPatchChecks:RedundantStringConversion'
+				'-XepPatchChecks:ConstantNaming'
 			)
 		}
 	}

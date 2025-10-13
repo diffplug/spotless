@@ -261,7 +261,7 @@ final class BiomeExecutableDownloader {
 		var parent = file.getParent();
 		var base = parent != null ? parent : file;
 		var fileName = file.getFileName();
-		var checksumName = fileName != null ? fileName + ".sha256" : "checksum.sha256";
+		var checksumName = fileName != null ? fileName.toString() + ".sha256" : "checksum.sha256";
 		return base.resolve(checksumName);
 	}
 

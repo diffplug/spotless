@@ -134,7 +134,7 @@ public class ForeignExe implements Serializable {
 			errorMsg.append(msgFix);
 			errorMsg.append('\n');
 		}
-		errorMsg.append(cmd);
+		errorMsg.append(cmd.toString());
 		return new RuntimeException(errorMsg.toString());
 	}
 }
