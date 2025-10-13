@@ -140,22 +140,22 @@ public class TestProvisioner {
 
 	/** Creates a Provisioner for the mavenCentral repo. */
 	public static Provisioner mavenCentral() {
-		return mavenCentral.get();
+		return MAVEN_CENTRAL.get();
 	}
 
-	private static final Supplier<Provisioner> mavenCentral = Suppliers.memoize(() -> caching("mavenCentral", () -> createWithRepositories(repo -> repo.mavenCentral())));
+	private static final Supplier<Provisioner> MAVEN_CENTRAL = Suppliers.memoize(() -> caching("mavenCentral", () -> createWithRepositories(repo -> repo.mavenCentral())));
 
 	/** Creates a Provisioner for the local maven repo for development purpose. */
 	public static Provisioner mavenLocal() {
-		return mavenLocal.get();
+		return MAVEN_LOCAL.get();
 	}
 
-	private static final Supplier<Provisioner> mavenLocal = () -> createWithRepositories(repo -> repo.mavenLocal());
+	private static final Supplier<Provisioner> MAVEN_LOCAL = () -> createWithRepositories(repo -> repo.mavenLocal());
 
 	/** Creates a Provisioner for the Sonatype snapshots maven repo for development purpose. */
 	public static Provisioner snapshots() {
-		return snapshots.get();
+		return SNAPSHOTS.get();
 	}
 
-	private static final Supplier<Provisioner> snapshots = () -> createWithRepositories(repo -> repo.maven(setup -> setup.setUrl("https://oss.sonatype.org/content/repositories/snapshots")));
+	private static final Supplier<Provisioner> SNAPSHOTS = () -> createWithRepositories(repo -> repo.maven(setup -> setup.setUrl("https://oss.sonatype.org/content/repositories/snapshots")));
 }

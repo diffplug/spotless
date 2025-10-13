@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class ReflectionHelper {
-	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	private final RdfFormatterStep.State state;
 	private final ClassLoader classLoader;
 	private final Class<?> JenaRdfDataMgrClass;
@@ -202,10 +202,10 @@ class ReflectionHelper {
 			long col = (long) args[2];
 			String severity = method.getName();
 			if ("warning".equals(severity) && !state.getConfig().isFailOnWarning()) {
-				logger.warn("{}({},{}): {}", this.filePath, line, col, message);
+				LOGGER.warn("{}({},{}): {}", this.filePath, line, col, message);
 			} else {
 				if ("warning".equals(severity)) {
-					logger.error("Formatter fails because of a parser warning. To make the formatter succeed in"
+					LOGGER.error("Formatter fails because of a parser warning. To make the formatter succeed in"
 							+ "the presence of warnings, set the configuration parameter 'failOnWarning' to 'false' (default: 'true')");
 				}
 				throw new RuntimeException(

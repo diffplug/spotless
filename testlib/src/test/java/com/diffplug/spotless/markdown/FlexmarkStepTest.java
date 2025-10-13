@@ -21,11 +21,11 @@ import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
 class FlexmarkStepTest {
-	private static final String oldestSupported = "0.62.2";
+	private static final String OLDEST_SUPPORTED = "0.62.2";
 
 	@Test
 	void behaviorOldest() {
-		StepHarness.forStep(FlexmarkStep.create(oldestSupported, TestProvisioner.mavenCentral()))
+		StepHarness.forStep(FlexmarkStep.create(OLDEST_SUPPORTED, TestProvisioner.mavenCentral()))
 				.testResource(
 						"markdown/flexmark/FlexmarkUnformatted.md",
 						"markdown/flexmark/FlexmarkFormatted.md");

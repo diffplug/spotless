@@ -146,11 +146,11 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
-	private static final boolean machineIsWin = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
+	private static final boolean MACHINE_IS_WIN = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
 
 	/** Returns true if this JVM is running on a windows machine. */
 	public static boolean machineIsWin() {
-		return machineIsWin;
+		return MACHINE_IS_WIN;
 	}
 
 	/** Transforms a native path to a unix one. */

@@ -83,7 +83,7 @@ import groovy.lang.Closure;
 /** Adds a {@code spotless{Name}Check} and {@code spotless{Name}Apply} task. */
 public class FormatExtension {
 
-	private static final Logger logger = LoggerFactory.getLogger(FormatExtension.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FormatExtension.class);
 
 	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
@@ -548,7 +548,7 @@ public class FormatExtension {
 	}
 
 	private static void logDeprecation(String methodName, String replacement) {
-		logger.warn("'{}' is deprecated, use '{}' in your gradle build script instead.", methodName, replacement);
+		LOGGER.warn("'{}' is deprecated, use '{}' in your gradle build script instead.", methodName, replacement);
 	}
 
 	/** Ensures formatting of files via native binary. */

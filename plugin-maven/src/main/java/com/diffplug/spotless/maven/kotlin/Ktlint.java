@@ -31,7 +31,7 @@ import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class Ktlint implements FormatterStepFactory {
-	private static final File defaultEditorConfig = new File(".editorconfig");
+	private static final File DEFAULT_EDITOR_CONFIG = new File(".editorconfig");
 
 	@Parameter
 	private String version;
@@ -46,8 +46,8 @@ public class Ktlint implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(final FormatterStepConfig stepConfig) {
 		String ktlintVersion = version != null ? version : KtLintStep.defaultVersion();
 		FileSignature configPath = null;
-		if (editorConfigPath == null && defaultEditorConfig.exists()) {
-			editorConfigPath = defaultEditorConfig.getPath();
+		if (editorConfigPath == null && DEFAULT_EDITOR_CONFIG.exists()) {
+			editorConfigPath = DEFAULT_EDITOR_CONFIG.getPath();
 		}
 		if (editorConfigPath != null) {
 			configPath = ThrowingEx.get(() -> FileSignature.signAsList(stepConfig.getFileLocator().locateFile(editorConfigPath)));
