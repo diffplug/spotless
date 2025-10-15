@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class ReflectionUtil {
 
 	public static void dumpMethod(Method method) {
 		System.out.print(Modifier.toString(method.getModifiers()));
-		System.out.print(" " + method.getReturnType().toString());
+		System.out.print(" " + method.getReturnType());
 		System.out.print(" " + method.getName() + "(");
 		Iterator<Parameter> paramIter = Arrays.asList(method.getParameters()).iterator();
 		while (paramIter.hasNext()) {

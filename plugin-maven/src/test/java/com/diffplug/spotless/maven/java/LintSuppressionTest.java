@@ -161,8 +161,8 @@ class LintSuppressionTest extends MavenIntegrationHarness {
 		}
 
 		// Create the configuration
-		String javaGroup = "<java>" + javaSteps.toString() + "</java>";
-		String fullConfiguration = javaGroup + globalConfig.toString();
+		String javaGroup = "<java>" + javaSteps + "</java>";
+		String fullConfiguration = javaGroup + globalConfig;
 
 		writePom(fullConfiguration);
 	}
