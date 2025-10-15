@@ -17,6 +17,9 @@ recipeList:
   - org.openrewrite.java.format.NormalizeLineBreaks
   - org.openrewrite.java.format.RemoveTrailingWhitespace
   - org.openrewrite.java.migrate.UpgradeToJava17
+  - org.openrewrite.java.migrate.lang.FindVirtualThreadOpportunities
+  - org.openrewrite.java.migrate.lang.StringRulesRecipes
+  - org.openrewrite.java.migrate.util.JavaLangAPIs
   - org.openrewrite.java.migrate.util.JavaUtilAPIs
   - org.openrewrite.java.migrate.util.MigrateInflaterDeflaterToClose
   - org.openrewrite.java.migrate.util.ReplaceStreamCollectWithToList

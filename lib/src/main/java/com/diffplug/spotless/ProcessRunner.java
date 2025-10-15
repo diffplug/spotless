@@ -48,8 +48,8 @@ import javax.annotation.Nullable;
  * calls to an external process.
  */
 public class ProcessRunner implements AutoCloseable {
-	private final ExecutorService threadStdOut = Executors.newSingleThreadExecutor();
-	private final ExecutorService threadStdErr = Executors.newSingleThreadExecutor();
+	private final ExecutorService threadStdOut = /*~~>*/Executors.newSingleThreadExecutor();
+	private final ExecutorService threadStdErr = /*~~>*/Executors.newSingleThreadExecutor();
 	private final ByteArrayOutputStream bufStdOut;
 	private final ByteArrayOutputStream bufStdErr;
 

@@ -380,7 +380,7 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 
 	private void parallelRun(ThrowableRun runnable) {
 		IntStream.range(0, 5)
-				.mapToObj(i -> new Thread(() -> {
+				.mapToObj(i -> /*~~>*/new Thread(() -> {
 					try {
 						runnable.run();
 					} catch (Exception e) {
