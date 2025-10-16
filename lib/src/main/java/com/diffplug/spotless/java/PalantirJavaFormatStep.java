@@ -23,7 +23,6 @@ import java.util.Objects;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
-import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/palantir/palantir-java-format">palantir-java-format</a> fork of
@@ -35,7 +34,7 @@ public final class PalantirJavaFormatStep implements Serializable {
 	private static final String DEFAULT_STYLE = "PALANTIR";
 	private static final String NAME = "palantir-java-format";
 	public static final String MAVEN_COORDINATE = "com.palantir.javaformat:palantir-java-format:";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(8, "1.1.0").add(11, "2.28.0").add(21, "2.71.0");
+	public static final String DEFAULT_VERSION = "2.80.0"; // compatible with Java 11+
 
 	/** The jar that contains the formatter. */
 	private final JarState.Promised jarState;
@@ -90,7 +89,7 @@ public final class PalantirJavaFormatStep implements Serializable {
 
 	/** Get default formatter version */
 	public static String defaultVersion() {
-		return JVM_SUPPORT.getRecommendedFormatterVersion();
+		return DEFAULT_VERSION;
 	}
 
 	/** Get default style */
@@ -129,7 +128,7 @@ public final class PalantirJavaFormatStep implements Serializable {
 			final Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.pjf.PalantirJavaFormatFormatterFunc");
 			// 1st arg is "style", 2nd arg is "formatJavadoc"
 			final Constructor<?> constructor = formatterFunc.getConstructor(String.class, boolean.class);
-			return JVM_SUPPORT.suggestLaterVersionOnError(formatterVersion, (FormatterFunc) constructor.newInstance(style, formatJavadoc));
+			return (FormatterFunc) constructor.newInstance(style, formatJavadoc);
 		}
 	}
 }
