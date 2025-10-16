@@ -197,10 +197,10 @@ public class LintState {
 
 	/** Returns the DirtyState which corresponds to {@code isClean()}. */
 	public static LintState clean() {
-		return isClean;
+		return IS_CLEAN;
 	}
 
-	private static final LintState isClean = new LintState(DirtyState.clean(), null);
+	private static final LintState IS_CLEAN = new LintState(DirtyState.clean(), null);
 
 	static Throwable formatStepCausedNoChange() {
 		return FormatterCausedNoChange.INSTANCE;

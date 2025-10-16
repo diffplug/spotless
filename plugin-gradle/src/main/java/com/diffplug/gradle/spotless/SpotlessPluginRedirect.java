@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 	}
 
 	static boolean gradleIsTooOld() {
-		return badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_min);
+		return badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_MIN);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class SpotlessPluginRedirect implements Plugin<Project> {
 				"If you like the idea behind 'ratchetFrom', you should checkout spotless-changelog",
 				"https://github.com/diffplug/spotless-changelog");
 		if (gradleIsTooOld()) {
-			errorMsg = errorMsg.replace("To migrate:\n", "To migrate:\n- Upgrade Gradle to " + SpotlessPlugin.VER_GRADLE_min + " or newer (you're on " + GradleVersion.current().getVersion() + ")\n");
+			errorMsg = errorMsg.replace("To migrate:\n", "To migrate:\n- Upgrade Gradle to " + SpotlessPlugin.VER_GRADLE_MIN + " or newer (you're on " + GradleVersion.current().getVersion() + ")\n");
 		}
 		throw new GradleException(errorMsg);
 	}

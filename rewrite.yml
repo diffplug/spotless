@@ -17,6 +17,8 @@ recipeList:
   - org.openrewrite.java.format.NormalizeLineBreaks
   - org.openrewrite.java.format.RemoveTrailingWhitespace
   - org.openrewrite.java.migrate.UpgradeToJava17
+  - org.openrewrite.java.migrate.lang.StringRulesRecipes
+  - org.openrewrite.java.migrate.util.JavaLangAPIs
   - org.openrewrite.java.migrate.util.JavaUtilAPIs
   - org.openrewrite.java.migrate.util.MigrateInflaterDeflaterToClose
   - org.openrewrite.java.migrate.util.ReplaceStreamCollectWithToList
@@ -62,6 +64,7 @@ recipeList:
   - tech.picnic.errorprone.refasterrules.StreamRulesRecipes
   - tech.picnic.errorprone.refasterrules.StringRulesRecipes
   - tech.picnic.errorprone.refasterrules.TimeRulesRecipes
+  # - org.openrewrite.java.migrate.lang.FindVirtualThreadOpportunities # don't want to use: https://github.com/diffplug/spotless/pull/2684#discussion_r2433831887
 ---
 name: com.diffplug.spotless.openrewrite.SpotlessFormat
 styleConfigs:

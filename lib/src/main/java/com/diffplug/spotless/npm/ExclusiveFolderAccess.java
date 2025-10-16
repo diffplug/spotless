@@ -39,7 +39,7 @@ interface ExclusiveFolderAccess {
 
 	final class ExclusiveFolderAccessSharedMutex implements ExclusiveFolderAccess {
 
-		private static final ConcurrentHashMap<String, Lock> mutexes = new ConcurrentHashMap<>();
+		private static final ConcurrentHashMap<String, Lock> MUTEXES = new ConcurrentHashMap<>();
 
 		private final String path;
 
@@ -48,7 +48,7 @@ interface ExclusiveFolderAccess {
 		}
 
 		private Lock getMutex() {
-			return mutexes.computeIfAbsent(path, k -> new ReentrantLock());
+			return MUTEXES.computeIfAbsent(path, k -> new ReentrantLock());
 		}
 
 		@Override

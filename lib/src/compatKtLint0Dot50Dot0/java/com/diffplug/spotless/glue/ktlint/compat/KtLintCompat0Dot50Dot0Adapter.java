@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import kotlin.jvm.functions.Function2;
 
 public class KtLintCompat0Dot50Dot0Adapter implements KtLintCompatAdapter {
 
-	private static final Logger logger = LoggerFactory.getLogger(KtLintCompat0Dot50Dot0Adapter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(KtLintCompat0Dot50Dot0Adapter.class);
 
 	private static final List<EditorConfigProperty<?>> DEFAULT_EDITOR_CONFIG_PROPERTIES;
 

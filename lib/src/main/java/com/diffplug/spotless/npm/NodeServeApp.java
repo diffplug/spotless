@@ -26,16 +26,16 @@ import com.diffplug.spotless.ProcessRunner;
 
 public class NodeServeApp extends NodeApp {
 
-	private static final Logger logger = LoggerFactory.getLogger(NodeApp.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(NodeApp.class);
 
-	private static final TimedLogger timedLogger = TimedLogger.forLogger(logger);
+	private static final TimedLogger TIMED_LOGGER = TimedLogger.forLogger(LOGGER);
 
 	public NodeServeApp(@Nonnull NodeServerLayout nodeServerLayout, @Nonnull NpmConfig npmConfig, @Nonnull NpmFormatterStepLocations formatterStepLocations) {
 		super(nodeServerLayout, npmConfig, formatterStepLocations);
 	}
 
 	ProcessRunner.LongRunningProcess startNpmServeProcess(UUID nodeServerInstanceId) {
-		return timedLogger.withInfo("Starting npm based server in {} with {}.", this.nodeServerLayout.nodeModulesDir(), this.npmProcessFactory.describe())
+		return TIMED_LOGGER.withInfo("Starting npm based server in {} with {}.", this.nodeServerLayout.nodeModulesDir(), this.npmProcessFactory.describe())
 				.call(() -> npmProcessFactory.createNpmServeProcess(nodeServerLayout, formatterStepLocations, nodeServerInstanceId).start());
 	}
 

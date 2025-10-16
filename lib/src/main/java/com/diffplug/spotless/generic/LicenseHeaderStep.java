@@ -203,10 +203,10 @@ public final class LicenseHeaderStep {
 		return UNSUPPORTED_JVM_FILES_FILTER;
 	}
 
-	public static final String spotlessSetLicenseHeaderYearsFromGitHistory = "spotlessSetLicenseHeaderYearsFromGitHistory";
+	public static final String SPOTLESS_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY = "spotlessSetLicenseHeaderYearsFromGitHistory";
 
 	public static String FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY() {
-		return spotlessSetLicenseHeaderYearsFromGitHistory;
+		return SPOTLESS_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY;
 	}
 
 	private static final class Runtime implements Serializable {

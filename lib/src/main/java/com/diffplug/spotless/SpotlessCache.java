@@ -76,7 +76,7 @@ public final class SpotlessCache {
 	}
 
 	static SpotlessCache instance() {
-		return instance;
+		return INSTANCE;
 	}
 
 	/**
@@ -84,9 +84,9 @@ public final class SpotlessCache {
 	 */
 	private static void clear() {
 		List<URLClassLoader> toDelete;
-		synchronized (instance) {
-			toDelete = new ArrayList<>(instance.cache.values());
-			instance.cache.clear();
+		synchronized (INSTANCE) {
+			toDelete = new ArrayList<>(INSTANCE.cache.values());
+			INSTANCE.cache.clear();
 		}
 		for (URLClassLoader classLoader : toDelete) {
 			try {
@@ -104,7 +104,7 @@ public final class SpotlessCache {
 	 * If {@code key} is null, the clear will always happen (as though null != null).
 	 */
 	public static boolean clearOnce(@Nullable Object key) {
-		synchronized (instance) {
+		synchronized (INSTANCE) {
 			if (key == null) {
 				lastClear = null;
 			} else if (key.equals(lastClear)) {
@@ -117,5 +117,5 @@ public final class SpotlessCache {
 		return true;
 	}
 
-	private static final SpotlessCache instance = new SpotlessCache();
+	private static final SpotlessCache INSTANCE = new SpotlessCache();
 }

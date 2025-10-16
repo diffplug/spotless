@@ -33,7 +33,7 @@ import sortpom.logger.SortPomLogger;
 import sortpom.parameter.PluginParameters;
 
 public class SortPomFormatterFunc implements FormatterFunc {
-	private static final Logger logger = LoggerFactory.getLogger(SortPomFormatterFunc.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SortPomFormatterFunc.class);
 	private final SortPomCfg cfg;
 
 	public SortPomFormatterFunc(SortPomCfg cfg) {
@@ -101,19 +101,19 @@ public class SortPomFormatterFunc implements FormatterFunc {
 
 		@Override
 		public void warn(String content) {
-			logger.warn(content);
+			LOGGER.warn(content);
 		}
 
 		@Override
 		public void info(String content) {
 			if (!quiet) {
-				logger.info(content);
+				LOGGER.info(content);
 			}
 		}
 
 		@Override
 		public void error(String content) {
-			logger.error(content);
+			LOGGER.error(content);
 		}
 	}
 }

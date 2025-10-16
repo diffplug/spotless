@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 class ShadowCopy {
 
-	private static final Logger logger = LoggerFactory.getLogger(ShadowCopy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ShadowCopy.class);
 
 	private final Supplier<File> shadowCopyRootSupplier;
 
@@ -59,13 +59,13 @@ class ShadowCopy {
 	public void addEntry(String key, File orig) {
 		File target = entry(key, orig.getName());
 		if (target.exists()) {
-			logger.debug("Shadow copy entry already exists, not overwriting: {}", key);
+			LOGGER.debug("Shadow copy entry already exists, not overwriting: {}", key);
 		} else {
 			try {
 				storeEntry(key, orig, target);
 			} catch (Throwable ex) {
 				// Log but don't fail
-				logger.warn("Unable to store cache entry for {}", key, ex);
+				LOGGER.warn("Unable to store cache entry for {}", key, ex);
 			}
 		}
 	}
@@ -75,20 +75,20 @@ class ShadowCopy {
 		// Create a temp directory in the same directory as target
 		Files.createDirectories(target.toPath().getParent());
 		Path tempDirectory = Files.createTempDirectory(target.toPath().getParent(), key);
-		logger.debug("Will store entry {} to temporary directory {}, which is a sibling of the ultimate target {}", orig, tempDirectory, target);
+		LOGGER.debug("Will store entry {} to temporary directory {}, which is a sibling of the ultimate target {}", orig, tempDirectory, target);
 
 		try {
 			// Copy orig to temp dir
 			Files.walkFileTree(orig.toPath(), new CopyDirectoryRecursively(tempDirectory, orig.toPath()));
 			try {
-				logger.debug("Finished storing entry {}. Atomically moving temporary directory {} into final place {}", key, tempDirectory, target);
+				LOGGER.debug("Finished storing entry {}. Atomically moving temporary directory {} into final place {}", key, tempDirectory, target);
 				// Atomically rename the completed cache entry into place
 				Files.move(tempDirectory, target.toPath(), StandardCopyOption.ATOMIC_MOVE);
 			} catch (FileAlreadyExistsException | DirectoryNotEmptyException e) {
 				// Someone already beat us to it
-				logger.debug("Shadow copy entry now exists, not overwriting: {}", key);
+				LOGGER.debug("Shadow copy entry now exists, not overwriting: {}", key);
 			} catch (AtomicMoveNotSupportedException e) {
-				logger.warn("The filesystem at {} does not support atomic moves. Spotless cannot safely cache on such a system due to race conditions. Caching has been skipped.", target.toPath().getParent(), e);
+				LOGGER.warn("The filesystem at {} does not support atomic moves. Spotless cannot safely cache on such a system due to race conditions. Caching has been skipped.", target.toPath().getParent(), e);
 			}
 		} finally {
 			// Best effort to clean up
@@ -96,7 +96,7 @@ class ShadowCopy {
 				try {
 					Files.walkFileTree(tempDirectory, new DeleteDirectoryRecursively());
 				} catch (Throwable ex) {
-					logger.warn("Ignoring error while cleaning up temporary copy", ex);
+					LOGGER.warn("Ignoring error while cleaning up temporary copy", ex);
 				}
 			}
 		}
@@ -113,7 +113,7 @@ class ShadowCopy {
 	public File copyEntryInto(String key, String origName, File targetParentFolder) {
 		File target = Path.of(targetParentFolder.getAbsolutePath(), origName).toFile();
 		if (target.exists()) {
-			logger.warn("Shadow copy destination already exists, deleting! {}: {}", key, target);
+			LOGGER.warn("Shadow copy destination already exists, deleting! {}: {}", key, target);
 			ThrowingEx.run(() -> Files.walkFileTree(target.toPath(), new DeleteDirectoryRecursively()));
 		}
 		// copy directory "orig" to "target" using hard links if possible or a plain copy otherwise
@@ -151,10 +151,10 @@ class ShadowCopy {
 					Files.createLink(target.resolve(orig.relativize(file)), file);
 					return super.visitFile(file, attrs);
 				} catch (UnsupportedOperationException | SecurityException | FileSystemException e) {
-					logger.debug("Shadow copy entry does not support hard links: {}. Switching to 'copy'.", file, e);
+					LOGGER.debug("Shadow copy entry does not support hard links: {}. Switching to 'copy'.", file, e);
 					tryHardLink = false; // remember that hard links are not supported
 				} catch (IOException e) {
-					logger.debug("Shadow copy entry failed to create hard link: {}. Switching to 'copy'.", file, e);
+					LOGGER.debug("Shadow copy entry failed to create hard link: {}. Switching to 'copy'.", file, e);
 					tryHardLink = false; // remember that hard links are not supported
 				}
 			}
