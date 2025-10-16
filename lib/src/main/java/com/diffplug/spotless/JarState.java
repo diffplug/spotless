@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class JarState implements Serializable {
 
-	private static final Logger logger = LoggerFactory.getLogger(JarState.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JarState.class);
 
 	// Let the classloader be overridden for tools using different approaches to classloading
 	@Nullable private static ClassLoader forcedClassLoader;
@@ -53,7 +53,7 @@ public final class JarState implements Serializable {
 	/** Overrides the classloader used by all JarStates. */
 	public static void setForcedClassLoader(@Nullable ClassLoader forcedClassLoader) {
 		if (!Objects.equals(JarState.forcedClassLoader, forcedClassLoader)) {
-			logger.info("Overriding the forced classloader for JarState from {} to {}", JarState.forcedClassLoader, forcedClassLoader);
+			LOGGER.info("Overriding the forced classloader for JarState from {} to {}", JarState.forcedClassLoader, forcedClassLoader);
 		}
 		JarState.forcedClassLoader = forcedClassLoader;
 	}

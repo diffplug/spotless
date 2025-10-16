@@ -16,6 +16,7 @@
 package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
+import static com.diffplug.spotless.generic.LicenseHeaderStep.SPOTLESS_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
@@ -58,7 +59,6 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.Provisioner;
-import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.maven.antlr4.Antlr4;
 import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.css.Css;
@@ -210,7 +210,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
 
-	@Parameter(property = LicenseHeaderStep.spotlessSetLicenseHeaderYearsFromGitHistory)
+	@Parameter(property = SPOTLESS_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY)
 	private String setLicenseHeaderYearsFromGitHistory;
 
 	@Parameter
