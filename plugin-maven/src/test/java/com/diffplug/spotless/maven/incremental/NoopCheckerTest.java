@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class NoopCheckerTest extends ResourceHarness {
 
 	@Test
 	void deletesExistingIndexFileWhenCreated() {
-		Log log = mock(Log.class);
+		Log log = mock();
 		try (UpToDateChecker realChecker = UpToDateChecker.forProject(project, indexFile, singletonList(dummyFormatter()), log)) {
 			realChecker.setUpToDate(existingSourceFile);
 		}
@@ -76,7 +76,7 @@ class NoopCheckerTest extends ResourceHarness {
 	void doesNothingWhenIndexFileDoesNotExist() {
 		assertThat(indexFile).doesNotExist();
 
-		Log log = mock(Log.class);
+		Log log = mock();
 		try (UpToDateChecker noopChecker = UpToDateChecker.noop(project, indexFile, log)) {
 			assertThat(noopChecker).isNotNull();
 		}

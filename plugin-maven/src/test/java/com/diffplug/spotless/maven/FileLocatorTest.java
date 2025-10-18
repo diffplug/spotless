@@ -40,7 +40,7 @@ class FileLocatorTest extends ResourceHarness {
 
 	@BeforeEach
 	void beforeEach() {
-		resourceManager = mock(ResourceManager.class);
+		resourceManager = mock();
 		fileLocator = new FileLocator(resourceManager, rootFolder(), rootFolder());
 	}
 
