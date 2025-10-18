@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 	private static EditorConfigOverride createEditorConfigOverride(final List<Rule> rules, Map<String, Object> editorConfigOverrideMap) {
 		// Get properties from rules in the rule sets
 		Stream<EditorConfigProperty<?>> ruleProperties = rules.stream()
-				.filter(rule -> rule instanceof UsesEditorConfigProperties)
+				.filter(UsesEditorConfigProperties.class::isInstance)
 				.flatMap(rule -> ((UsesEditorConfigProperties) rule).getEditorConfigProperties().stream());
 
 		// Create a mapping of properties to their names based on rule properties and default properties
