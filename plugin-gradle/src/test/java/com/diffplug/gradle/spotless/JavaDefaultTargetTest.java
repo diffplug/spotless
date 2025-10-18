@@ -101,6 +101,26 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 		assertFile("test.java").sameAsResource("java/removewildcardimports/JavaCodeWildcardsFormatted.test");
 	}
 
+	@Test
+	void removeModuleImports() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"    java {",
+				"        target file('test.java')",
+				"        forbidModuleImports()",
+				"    }",
+				"}");
+
+		setFile("test.java").toResource("java/forbidmoduleimports/JavaCodeModuleImportsUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").buildAndFail();
+		assertFile("test.java").sameAsResource("java/forbidmoduleimports/JavaCodeModuleImportsFormatted.test");
+	}
+
 	/**
 	 * Triggers the special case in {@link FormatExtension#setupTask(SpotlessTask)} with {@code toggleFence} and
 	 * {@code targetExcludeContentPattern} both being not {@code null}.
