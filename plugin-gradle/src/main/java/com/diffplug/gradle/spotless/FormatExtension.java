@@ -1076,10 +1076,10 @@ public class FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setLintSuppressions(lintSuppressions);
-		setupTask(task, normalizeTargetExclude());
+		setupTask(task, normalizeTargetExclusion());
 	}
 
-	private FileCollection normalizeTargetExclude() {
+	private FileCollection normalizeTargetExclusion() {
 		if (targetExclude != null) {
 			Set<File> expandedExcludeFiles = new HashSet<>();
 			for (File file : targetExclude.getFiles()) {
