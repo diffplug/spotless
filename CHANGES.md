@@ -12,6 +12,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 - palantirJavaFormat is no longer arbitrarily set to outdated versions on Java 17, latest available version is always used ([#2686](https://github.com/diffplug/spotless/pull/2686) fixes [#2685](https://github.com/diffplug/spotless/issues/2685))
+### Added
+- Add a `forbidModuleImports` API for java ([#2679](https://github.com/diffplug/spotless/issues/2679))
 
 ## [4.0.0] - 2025-09-24
 ### Changes
