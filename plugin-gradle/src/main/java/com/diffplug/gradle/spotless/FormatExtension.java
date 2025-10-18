@@ -30,9 +30,11 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -45,7 +47,6 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileTree;
-import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskProvider;
@@ -1075,7 +1076,26 @@ public class FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setLintSuppressions(lintSuppressions);
-		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
+		setupTask(task, normalizeTargetExclude());
+	}
+
+	private FileCollection normalizeTargetExclude() {
+		if (targetExclude != null) {
+			Set<File> expandedExcludeFiles = new HashSet<>();
+			for (File file : targetExclude.getFiles()) {
+				if (file.isDirectory()) {
+					expandedExcludeFiles.addAll(getProject().fileTree(file).getFiles()); // include all files within it recursively.
+				} else {
+					expandedExcludeFiles.add(file);
+				}
+			}
+			return target.minus(getProject().files(expandedExcludeFiles));
+		} else {
+			return target;
+		}
+	}
+
+	private void setupTask(final SpotlessTask task, final FileCollection totalTarget) {
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
 		if (toggleFence != null) {
@@ -1087,13 +1107,10 @@ public class FormatExtension {
 		}
 		if (targetExcludeContentPattern != null) {
 			steps.replaceAll(
-					formatterStep -> formatterStep.filterByContent(OnMatch.EXCLUDE, targetExcludeContentPattern));
+				formatterStep -> formatterStep.filterByContent(OnMatch.EXCLUDE, targetExcludeContentPattern));
 		}
 		task.setSteps(steps);
-		Directory projectDir = getProject().getLayout().getProjectDirectory();
-		LineEnding lineEndings = getLineEndings();
-		task.setLineEndingsPolicy(
-				getProject().provider(() -> lineEndings.createPolicy(projectDir.getAsFile(), () -> totalTarget)));
+		task.setLineEndingsPolicy(getProject().provider(() -> getLineEndings().createPolicy(getProject().getLayout().getProjectDirectory().getAsFile(), () -> totalTarget)));
 		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
 		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
 	}
