@@ -52,9 +52,7 @@ public class EclipseWtpFormatterStepTest {
 			harnessFor(version).test("someFilename", unformatted, formatted);
 		}
 
-		private static Stream<String> formatWithVersion() {
-			return Stream.of(JVM_SUPPORT.getRecommendedFormatterVersion(), EclipseWtpFormatterStep.defaultVersion());
-		}
+		
 
 		/**
 		 * Check that configuration change is supported by all WTP formatters.

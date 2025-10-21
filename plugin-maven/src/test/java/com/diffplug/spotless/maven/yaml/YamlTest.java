@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 public class YamlTest extends MavenIntegrationHarness {
-	private static final Logger LOGGER = LoggerFactory.getLogger(YamlTest.class);
+	
 
 	@Test
 	public void testFormatYaml_WithJackson_defaultConfig_separatorComments() throws Exception {

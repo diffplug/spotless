@@ -111,14 +111,14 @@ public final class PalantirJavaFormatStep implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;
-		private final String formatterVersion;
+
 		private final String style;
 		private final boolean formatJavadoc;
 
-		State(JarState jarState, String formatterVersion, String style, boolean formatJavadoc) {
+		State(JarState jarState, String style, boolean formatJavadoc) {
 			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = jarState;
-			this.formatterVersion = formatterVersion;
+
 			this.style = style;
 			this.formatJavadoc = formatJavadoc;
 		}

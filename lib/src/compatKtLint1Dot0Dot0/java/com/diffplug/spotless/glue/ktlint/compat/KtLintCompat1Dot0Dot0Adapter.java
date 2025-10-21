@@ -24,9 +24,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3;
 import com.pinterest.ktlint.rule.engine.api.Code;
 import com.pinterest.ktlint.rule.engine.api.EditorConfigDefaults;
@@ -53,8 +50,6 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
 public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(KtLintCompat1Dot0Dot0Adapter.class);
 
 	private static final List<EditorConfigProperty<?>> DEFAULT_EDITOR_CONFIG_PROPERTIES;
 

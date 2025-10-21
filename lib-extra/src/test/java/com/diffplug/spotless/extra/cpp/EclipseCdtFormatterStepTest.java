@@ -36,7 +36,5 @@ class EclipseCdtFormatterStepTest extends EquoResourceHarness {
 				"#include <a.h>;\nint main(int argc, char *argv[]) {\n}\n");
 	}
 
-	private static Stream<String> formatWithVersion() {
-		return Stream.of("11.0", "11.6", EclipseCdtFormatterStep.defaultVersion());
-	}
+	
 }

@@ -234,24 +234,12 @@ class TimedLoggerTest {
 			this.throwable = throwable;
 		}
 
-		public Level level() {
-			return level;
-		}
-
-		public Marker marker() {
-			return marker;
-		}
-
 		public String msg() {
 			return msg;
 		}
 
 		public Object[] arguments() {
 			return arguments;
-		}
-
-		public Throwable throwable() {
-			return throwable;
 		}
 
 		@Override

@@ -50,7 +50,7 @@ class JavascriptFormatStepTest extends MavenIntegrationHarness {
 			setFile(".eslintrc.js").toResource("npm/eslint/javascript/custom_rules/.eslintrc.js");
 			setFile(TEST_FILE_PATH).toResource("npm/eslint/javascript/custom_rules/javascript-es6.dirty");
 
-			ProcessRunner.Result result = mavenRunner().withArguments("spotless:apply").runNoError();
+			
 			assertFile(TEST_FILE_PATH).sameAsResource("npm/eslint/javascript/custom_rules/javascript-es6.clean");
 		}
 

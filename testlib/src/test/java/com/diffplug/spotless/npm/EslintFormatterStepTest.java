@@ -48,7 +48,7 @@ class EslintFormatterStepTest {
 		void formattingUsingRulesetsFile(String ruleSetName) throws Exception {
 			String filedir = "npm/eslint/javascript/" + ruleSetName + "/";
 
-			String testDir = "formatting_ruleset_" + ruleSetName.replace('/', '_') + "/";
+			
 			//			File testDirFile = newFolder(testDir);
 
 			final File eslintRc = createTestFile(filedir + ".eslintrc.js");

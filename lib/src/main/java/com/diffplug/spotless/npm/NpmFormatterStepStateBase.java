@@ -41,18 +41,15 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NpmFormatterStepStateBase.class);
 
-	private static final TimedLogger TIMED_LOGGER = TimedLogger.forLogger(LOGGER);
-
 	@Serial
 	private static final long serialVersionUID = 1460749955865959948L;
 
-	private final String stepName;
 	private final NpmConfig npmConfig;
 
 	public final NpmFormatterStepLocations locations;
 
 	protected NpmFormatterStepStateBase(String stepName, NpmConfig npmConfig, NpmFormatterStepLocations locations) throws IOException {
-		this.stepName = requireNonNull(stepName);
+
 		this.npmConfig = requireNonNull(npmConfig);
 		this.locations = locations;
 	}

@@ -43,9 +43,7 @@ class EclipseJdtFormatterStepTest extends EquoResourceHarness {
 				"package p;\nclass C {\n}");
 	}
 
-	private static Stream<String> formatWithVersion() {
-		return Stream.of("4.9", EclipseJdtFormatterStep.defaultVersion());
-	}
+	
 
 	/** New format interface requires source file information to distinguish module-info from compilation unit */
 	@Nested

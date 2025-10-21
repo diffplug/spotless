@@ -51,7 +51,7 @@ public class SelfTest {
 		});
 		project.getBuildscript().getRepositories().mavenCentral();
 		SpotlessTaskImpl onlyTask = project.getTasks().stream()
-				.filter(task -> task instanceof SpotlessTaskImpl)
+				.filter(SpotlessTaskImpl.class::isInstance)
 				.map(task -> (SpotlessTaskImpl) task)
 				.collect(MoreCollectors.singleOrEmpty()).get();
 		Tasks.execute(onlyTask);

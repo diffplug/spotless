@@ -88,7 +88,7 @@ class MultipleTargetsTest extends GradleIntegrationHarness {
 		initContent(TARGET_FILES, "A");
 		initContent(NON_TARGET_FILES, "A");
 
-		BuildResult result = gradleRunner().withArguments("spotlessApply").build();
+		
 
 		checkContent(TARGET_FILES, "a");
 		checkContent(NON_TARGET_FILES, "A");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 package com.diffplug.spotless.glue.gherkin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.gherkin.GherkinUtilsConfig;
 
@@ -30,12 +27,9 @@ import io.cucumber.messages.types.Source;
 import io.cucumber.messages.types.SourceMediaType;
 
 public class GherkinUtilsFormatterFunc implements FormatterFunc {
-	private static final Logger LOGGER = LoggerFactory.getLogger(GherkinUtilsFormatterFunc.class);
-
-	private final GherkinUtilsConfig gherkinSimpleConfig;
 
 	public GherkinUtilsFormatterFunc(GherkinUtilsConfig gherkinSimpleConfig) {
-		this.gherkinSimpleConfig = gherkinSimpleConfig;
+
 	}
 
 	// Follows https://github.com/cucumber/gherkin-utils/blob/main/java/src/test/java/io/cucumber/gherkin/utils/pretty/PrettyTest.java

@@ -50,7 +50,7 @@ class JvmTest {
 
 	@ParameterizedTest(name = "{index} {1}")
 	@MethodSource
-	void supportAddFailsFor(Consumer<Jvm.Support<String>> configuration, String nameNotUsed) {
+	void supportAddFailsFor(Consumer<Jvm.Support<String>> configuration, String ignored) {
 		assertThrows(IllegalArgumentException.class, () -> configuration.accept(testSupport));
 	}
 

@@ -23,11 +23,6 @@ tasks.withType(JavaCompile).configureEach {
 				'NonStaticImport',
 				'Slf4jLoggerDeclaration', // logger -> log
 				'StaticImport',
-				// critical, finds lots of bugs... unused configs and stuff.
-				'Unused',
-				'UnusedMethod',
-				'UnusedParameters',
-				'UnusedVariable',
 				)
 		error(
 				'AmbiguousJsonCreator',
@@ -52,11 +47,15 @@ tasks.withType(JavaCompile).configureEach {
 				'SelfAssignment',
 				'StringJoin',
 				'StringJoining',
+				'Unused',
 				)
 		// fixme bug: this only happens when the file is dirty!
 		// up2date checking (caching) must consider file changes, as file is currently corrupt!
 		// fix SelfTest.java:L22 ForbidGradleInternal(import org.gradle.api.internal.project.ProjectInternal;)
 		errorproneArgs.add('-XepExcludedPaths:.*/SelfTest.java')
+		// bug https://github.com/google/error-prone/issues/5289
+		errorproneArgs.add('-XepExcludedPaths:.*/EclipseJdtFormatterStepTest.java')
+		errorproneArgs.add('-XepExcludedPaths:.*/JvmTest.java')
 		if (!getenv().containsKey('CI') && getenv('IN_PLACE')?.toBoolean()) {
 			errorproneArgs.addAll(
 					'-XepPatchLocation:IN_PLACE',
@@ -86,7 +85,10 @@ tasks.withType(JavaCompile).configureEach {
 					'Slf4jLogStatement,' +
 					'StringJoin,' +
 					'StringJoining,' +
-					'TimeZoneUsage,'
+					'TimeZoneUsage,' +
+					'UnusedMethod,' +
+					'UnusedParameters,' +
+					'UnusedVariable,'
 					)
 		}
 	}

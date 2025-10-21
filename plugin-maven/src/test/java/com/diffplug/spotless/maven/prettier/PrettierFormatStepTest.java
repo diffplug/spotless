@@ -44,7 +44,7 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 	}
 
 	private ProcessRunner.Result runExpectingError(String kind, String suffix) throws IOException, InterruptedException {
-		String path = prepareRun(kind, suffix);
+		
 		return mavenRunner().withArguments("spotless:apply").runHasError();
 	}
 

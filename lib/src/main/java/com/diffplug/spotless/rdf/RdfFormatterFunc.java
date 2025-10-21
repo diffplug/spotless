@@ -64,13 +64,13 @@ public class RdfFormatterFunc implements FormatterFunc {
 				return formatTurtle(rawUnix, file, reflectionHelper);
 			}
 			if (TRIG_EXTENSIONS.contains(extension)) {
-				return formatTrig(rawUnix, file);
+				return formatTrig();
 			}
 			if (NTRIPLES_EXTENSIONS.contains(extension)) {
-				return formatNTriples(rawUnix, file);
+				return formatNTriples();
 			}
 			if (NQUADS_EXTENSIONS.contains(extension)) {
-				return formatNQuads(rawUnix, file);
+				return formatNQuads();
 			}
 			throw new IllegalArgumentException("Cannot handle file with extension %s".formatted(extension));
 		} catch (InvocationTargetException e) {
@@ -80,15 +80,15 @@ public class RdfFormatterFunc implements FormatterFunc {
 		}
 	}
 
-	private String formatNQuads(String rawUnix, File file) {
+	private String formatNQuads() {
 		throw new UnsupportedOperationException("NQUADS formatting not supported yet");
 	}
 
-	private String formatNTriples(String rawUnix, File file) {
+	private String formatNTriples() {
 		throw new UnsupportedOperationException("NTRIPLES formatting not supported yet");
 	}
 
-	private String formatTrig(String rawUnix, File file) {
+	private String formatTrig() {
 		throw new UnsupportedOperationException("TRIG formatting not supported yet");
 	}
 

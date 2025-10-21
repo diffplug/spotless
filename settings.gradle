@@ -27,12 +27,12 @@ dependencyResolutionManagement {
 	}
 }
 
-if (System.env['CI'] != null) {
+if (getenv('CI') != null) {
 	// use the remote buildcache on all CI builds
 	buildCache {
 		def cred = {
-			if (System.env[it] != null) {
-				return System.env[it]
+			if (getenv(it) != null) {
+				return getenv(it)
 			} else {
 				return System.getProperty(it)
 			}

@@ -30,8 +30,6 @@ import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.java.TargetJvmEnvironment;
 import org.gradle.api.initialization.dsl.ScriptHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.collect.ImmutableList;
@@ -141,8 +139,6 @@ final class GradleProvisioner {
 			}
 		};
 	}
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(GradleProvisioner.class);
 
 	/** Models a request to the provisioner. */
 	private static class Request {

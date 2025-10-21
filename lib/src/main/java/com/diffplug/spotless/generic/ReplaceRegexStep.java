@@ -68,12 +68,12 @@ public final class ReplaceRegexStep {
 		private static final long serialVersionUID = 1L;
 
 		private final Pattern regex;
-		private final String ruleId;
+
 		private final String lintDetail;
 
-		LintState(Pattern regex, String ruleId, String lintDetail) {
+		LintState(Pattern regex, String lintDetail) {
 			this.regex = regex;
-			this.ruleId = ruleId;
+
 			this.lintDetail = lintDetail;
 		}
 

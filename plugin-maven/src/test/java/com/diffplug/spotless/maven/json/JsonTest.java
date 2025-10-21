@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 public class JsonTest extends MavenIntegrationHarness {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JsonTest.class);
+	
 
 	@Test
 	public void testFormatJson_WithSimple_defaultConfig_sortByKeys() throws Exception {
