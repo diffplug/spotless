@@ -44,7 +44,7 @@ public final class ReplaceRegexStep {
 		Objects.requireNonNull(regex, "regex");
 		Objects.requireNonNull(lintDetail, "lintDetail");
 		return FormatterStep.createLazy(name,
-				() -> new LintState(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), name, lintDetail),
+				() -> new LintState(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), lintDetail),
 				LintState::toLinter);
 	}
 
