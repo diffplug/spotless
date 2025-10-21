@@ -1,3 +1,5 @@
+import static java.lang.System.getenv
+
 pluginManagement {
 	repositories {
 		mavenCentral()
@@ -6,25 +8,17 @@ pluginManagement {
 }
 
 plugins {
+	id 'com.adarshr.test-logger' version '4.0.0' apply false // https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
 	id 'com.diffplug.spotless' version '8.0.0' apply false
-	// https://plugins.gradle.org/plugin/com.gradle.plugin-publish
-	id 'com.gradle.plugin-publish' version '2.0.0' apply false
-	// https://github.com/gradle-nexus/publish-plugin/releases
-	id 'io.github.gradle-nexus.publish-plugin' version '2.0.0' apply false
-	// https://github.com/spotbugs/spotbugs-gradle-plugin/releases
-	id 'com.github.spotbugs' version '6.4.4' apply false
-	// https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
-	id 'com.diffplug.spotless-changelog' version '3.1.2' apply false
-	// https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
-	id 'com.adarshr.test-logger' version '4.0.0' apply false
-	// https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
-	id 'io.github.davidburstrom.version-compatibility' version '0.5.0' apply false
-	// https://plugins.gradle.org/plugin/com.gradle.develocity
-	id 'com.gradle.develocity' version '4.2.2'
-	// https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
-	id 'dev.equo.ide' version '1.7.8' apply false
-	id 'org.openrewrite.rewrite' version '7.18.0' apply false
+	id 'com.diffplug.spotless-changelog' version '3.1.2' apply false // https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
+	id 'com.github.spotbugs' version '6.4.4' apply false // https://github.com/spotbugs/spotbugs-gradle-plugin/releases
+	id 'com.gradle.develocity' version '4.2.2' // https://plugins.gradle.org/plugin/com.gradle.develocity
+	id 'com.gradle.plugin-publish' version '2.0.0' apply false // https://plugins.gradle.org/plugin/com.gradle.plugin-publish
+	id 'dev.equo.ide' version '1.7.8' apply false // https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
+	id 'io.github.davidburstrom.version-compatibility' version '0.5.0' apply false // https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
+	id 'io.github.gradle-nexus.publish-plugin' version '2.0.0' apply false // https://github.com/gradle-nexus/publish-plugin/releases
 	id 'net.ltgt.errorprone' version '4.3.0' apply false
+	id 'org.openrewrite.rewrite' version '7.18.0' apply false
 }
 
 dependencyResolutionManagement {
@@ -61,14 +55,12 @@ if (System.env['CI'] != null) {
 	}
 }
 
-def isCI = providers.environmentVariable('CI').present
-
 develocity {
 	buildScan {
 		termsOfUseUrl = "https://gradle.com/terms-of-service"
 		termsOfUseAgree = "yes"
 		publishing {
-			onlyIf { isCI }
+			onlyIf { providers.environmentVariable('CI').present }
 		}
 	}
 }
@@ -78,26 +70,25 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = 'spotless'
 
-include 'lib'		// reusable library with no dependencies
-include 'testlib'	// library for sharing test infrastructure between the projects below
-
+include 'lib' // reusable library with no dependencies
 include 'lib-extra'	// reusable library with lots of dependencies
 include 'plugin-gradle'	// gradle-specific glue code
+include 'testlib' // library for sharing test infrastructure between the projects below
 
-def getStartProperty(java.lang.String name) {
+def getStartProperty(String name) {
 	def value = startParameter.getProjectProperties().get(name)
 	if(null != value) {
 		return value
 	}
 	// user properties are not available in the startParameter
-	def userPropertiesFile = new java.io.File(startParameter.getGradleUserHomeDir(), 'gradle.properties')
-	def userProperties = new java.util.Properties()
+	def userPropertiesFile = new File(startParameter.getGradleUserHomeDir(), 'gradle.properties')
+	def userProperties = new Properties()
 	if (userPropertiesFile.exists()) {
 		userProperties.load(userPropertiesFile.newReader())
 	}
 	return userProperties.get(name)
 }
 
-if (System.getenv('SPOTLESS_EXCLUDE_MAVEN') != 'true' && getStartProperty('SPOTLESS_EXCLUDE_MAVEN') != 'true') {
-	include 'plugin-maven'	// maven-specific glue code
+if (!getenv('SPOTLESS_EXCLUDE_MAVEN')?.toBoolean() && !Boolean.valueOf(getStartProperty('SPOTLESS_EXCLUDE_MAVEN') as String)) {
+	include 'plugin-maven' // maven-specific glue code
 }
