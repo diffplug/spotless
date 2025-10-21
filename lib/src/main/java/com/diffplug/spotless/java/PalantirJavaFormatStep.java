@@ -40,17 +40,16 @@ public final class PalantirJavaFormatStep implements Serializable {
 	private final JarState.Promised jarState;
 	/** Version of the formatter jar. */
 	private final String formatterVersion;
-	
+
 	/** Whether to format Java docs. */
 	private final boolean formatJavadoc;
 
 	private PalantirJavaFormatStep(JarState.Promised jarState,
 			String formatterVersion,
-			String style,
 			boolean formatJavadoc) {
 		this.jarState = jarState;
 		this.formatterVersion = formatterVersion;
-		
+
 		this.formatJavadoc = formatJavadoc;
 	}
 
@@ -78,11 +77,10 @@ public final class PalantirJavaFormatStep implements Serializable {
 	 */
 	public static FormatterStep create(String version, String style, boolean formatJavadoc, Provisioner provisioner) {
 		Objects.requireNonNull(version, "version");
-		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
 
 		return FormatterStep.create(NAME,
-				new PalantirJavaFormatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner)), version, style, formatJavadoc),
+				new PalantirJavaFormatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner)), version, formatJavadoc),
 				PalantirJavaFormatStep::equalityState,
 				State::createFormat);
 	}
