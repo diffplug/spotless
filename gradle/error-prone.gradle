@@ -50,7 +50,7 @@ tasks.withType(JavaCompile).configureEach {
 				'Unused',
 				'UnusedMethod',
 				'UnusedParameters',
-				'UnusedVariables,'
+				'UnusedVariable'
 				)
 		// fixme bug: this only happens when the file is dirty!
 		// up2date checking (caching) must consider file changes, as file is currently corrupt!
@@ -91,7 +91,7 @@ tasks.withType(JavaCompile).configureEach {
 					'TimeZoneUsage,' +
 					'UnusedMethod,' +
 					'UnusedParameters,' +
-					'UnusedVariables,'
+					'UnusedVariable,'
 					)
 		}
 	}
