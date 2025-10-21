@@ -49,7 +49,7 @@ tasks.withType(JavaCompile).configureEach {
 				'StringJoining',
 				'Unused',
 				'UnusedMethod',
-				'UnusedParameters',
+				'UnusedParameter',
 				'UnusedVariables,'
 				)
 		// fixme bug: this only happens when the file is dirty!
@@ -90,7 +90,7 @@ tasks.withType(JavaCompile).configureEach {
 					'StringJoining,' +
 					'TimeZoneUsage,' +
 					'UnusedMethod,' +
-					'UnusedParameters,' +
+					'UnusedParameter,' +
 					'UnusedVariables,'
 					)
 		}
