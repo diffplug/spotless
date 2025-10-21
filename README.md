@@ -195,7 +195,6 @@ Once someone has filled in one square of the formatter/build system matrix, it's
 - Thanks to [Matthias Balke](https://github.com/matthiasbalke) for [adding support for Antlr](https://github.com/diffplug/spotless/pull/328).
 - Thanks to [Matthias Andreas Benkard](https://github.com/benkard) for adding support for google-java-format 1.8+ ([#563](https://github.com/diffplug/spotless/pull/563))
 - Thanks to [Thomas Broyer](https://github.com/tbroyer) for adding support for google-java-format's [skip-reflowing-long-strings option](https://github.com/diffplug/spotless/pull/929).
-- Thanks to [Ranadeep Polavarapu](https://github.com/RanadeepPolavarapu) for adding support for ktfmt ([#569](https://github.com/diffplug/spotless/pull/569))
 - Thanks to [Hakanai](https://github.com/hakanai) for adding [wildcards last support to the import sorter](https://github.com/diffplug/spotless/pull/956).
 - Thanks to [Kevin Brooks](https://github.com/k-brooks) for [updating all eclipse-based formatters to 4.13](https://github.com/diffplug/spotless/pull/482) and [fixing Groovy for multiproject](https://github.com/diffplug/spotless/issues/877).
 - Thanks to [Dylan Baroody](https://github.com/dylanbaroody) for fixing [sql formatting support for JDBI bind list params](https://github.com/diffplug/spotless/pull/955).
