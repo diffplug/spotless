@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.npm.EslintFormatterStep;
@@ -50,7 +49,6 @@ class JavascriptFormatStepTest extends MavenIntegrationHarness {
 			setFile(".eslintrc.js").toResource("npm/eslint/javascript/custom_rules/.eslintrc.js");
 			setFile(TEST_FILE_PATH).toResource("npm/eslint/javascript/custom_rules/javascript-es6.dirty");
 
-			
 			assertFile(TEST_FILE_PATH).sameAsResource("npm/eslint/javascript/custom_rules/javascript-es6.clean");
 		}
 

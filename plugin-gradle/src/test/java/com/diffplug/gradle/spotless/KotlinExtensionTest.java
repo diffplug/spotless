@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 class KotlinExtensionTest extends GradleIntegrationHarness {
 	private static final String HEADER = "// License Header";
-	
 
 	@Test
 	void integrationDiktat() throws IOException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,10 @@
 package com.diffplug.spotless.maven.json;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 public class JsonTest extends MavenIntegrationHarness {
-	
 
 	@Test
 	public void testFormatJson_WithSimple_defaultConfig_sortByKeys() throws Exception {

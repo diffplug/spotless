@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.extra.groovy;
 
-import java.util.stream.Stream;
-
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -24,8 +22,6 @@ import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 public class GrEclipseFormatterStepTest extends EquoResourceHarness {
-	
-	
 
 	public GrEclipseFormatterStepTest() {
 		super(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()));
@@ -38,5 +34,4 @@ public class GrEclipseFormatterStepTest extends EquoResourceHarness {
 				"class F{ def m(){} }", "class F{\n\tdef m(){}\n}");
 	}
 
-	
 }

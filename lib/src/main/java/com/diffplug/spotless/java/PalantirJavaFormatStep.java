@@ -103,7 +103,7 @@ public final class PalantirJavaFormatStep implements Serializable {
 	}
 
 	private State equalityState() {
-		return new State(jarState.get(), formatterVersion, style, formatJavadoc);
+		return new State(jarState.get(), formatterVersion, formatJavadoc);
 	}
 
 	private static final class State implements Serializable {

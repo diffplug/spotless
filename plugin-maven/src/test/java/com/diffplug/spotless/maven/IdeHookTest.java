@@ -29,7 +29,7 @@ class IdeHookTest extends MavenIntegrationHarness {
 	private String error;
 	private File dirty;
 	private File clean;
-	
+
 	private File outofbounds;
 
 	@BeforeEach

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.io.IOException;
 import java.util.List;
 
-import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.collect.Lists;
@@ -87,8 +86,6 @@ class MultipleTargetsTest extends GradleIntegrationHarness {
 
 		initContent(TARGET_FILES, "A");
 		initContent(NON_TARGET_FILES, "A");
-
-		
 
 		checkContent(TARGET_FILES, "a");
 		checkContent(NON_TARGET_FILES, "A");

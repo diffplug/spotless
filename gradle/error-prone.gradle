@@ -56,7 +56,7 @@ tasks.withType(JavaCompile).configureEach {
 		// bug https://github.com/google/error-prone/issues/5289
 		errorproneArgs.add('-XepExcludedPaths:.*/EclipseJdtFormatterStepTest.java')
 		errorproneArgs.add('-XepExcludedPaths:.*/JvmTest.java')
-		if (!getenv().containsKey('CI') && getenv('IN_PLACE')?.toBoolean()) {
+		if (!getenv().containsKey('CI') && getenv('IN_PLACEe')?.toBoolean()) {
 			errorproneArgs.addAll(
 					'-XepPatchLocation:IN_PLACE',
 					'-XepPatchChecks:' +

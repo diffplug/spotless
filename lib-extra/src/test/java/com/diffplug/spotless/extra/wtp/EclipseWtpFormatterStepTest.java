@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Properties;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -51,8 +50,6 @@ public class EclipseWtpFormatterStepTest {
 		void formatWithVersion(String version) throws Exception {
 			harnessFor(version).test("someFilename", unformatted, formatted);
 		}
-
-		
 
 		/**
 		 * Check that configuration change is supported by all WTP formatters.
