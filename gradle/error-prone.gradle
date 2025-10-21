@@ -20,9 +20,7 @@ tasks.withType(JavaCompile).configureEach {
 				// patchable
 				'LexicographicalAnnotationAttributeListing',
 				'LexicographicalAnnotationListing',
-				'NonStaticImport',
 				'Slf4jLoggerDeclaration', // logger -> log
-				'StaticImport',
 				// critical, finds lots of bugs... unused configs and stuff.
 				'Unused',
 				'UnusedMethod',
@@ -31,6 +29,8 @@ tasks.withType(JavaCompile).configureEach {
 				)
 		error(
 				'AmbiguousJsonCreator',
+//				'NonStaticImport',
+//				'StaticImport',
 				'AssertJNullnessAssertion',
 				'AutowiredConstructor',
 				'CanonicalAnnotationSyntax',
@@ -79,6 +79,8 @@ tasks.withType(JavaCompile).configureEach {
 					'MockitoMockClassReference,' +
 					'MockitoStubbing,' +
 					'NestedOptionals,' +
+					'NonStaticImport,' +
+					'StaticImport,' +
 					'PrimitiveComparison,' +
 					'RedundantStringConversion,' +
 					'RedundantStringEscape,' +
