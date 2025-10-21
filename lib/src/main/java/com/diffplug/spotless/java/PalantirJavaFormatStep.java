@@ -75,7 +75,7 @@ public final class PalantirJavaFormatStep implements Serializable {
 	 * Creates a step which formats everything - code, import order, unused imports, and Java docs. And with the given
 	 * format style.
 	 */
-	public static FormatterStep create(String version, String style, boolean formatJavadoc, Provisioner provisioner) {
+	public static FormatterStep create(String version, String ignored, boolean formatJavadoc, Provisioner provisioner) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 
