@@ -29,8 +29,6 @@ tasks.withType(JavaCompile).configureEach {
 				)
 		error(
 				'AmbiguousJsonCreator',
-//				'NonStaticImport',
-//				'StaticImport',
 				'AssertJNullnessAssertion',
 				'AutowiredConstructor',
 				'CanonicalAnnotationSyntax',
@@ -46,10 +44,12 @@ tasks.withType(JavaCompile).configureEach {
 				'MockitoMockClassReference',
 				'MockitoStubbing',
 				'NestedOptionals',
+				'NonStaticImport',
 				'PrimitiveComparison',
 				'RedundantStringConversion',
 				'RedundantStringEscape',
 				'SelfAssignment',
+				'StaticImport',
 				'StringJoin',
 				'StringJoining',
 				)
@@ -80,12 +80,12 @@ tasks.withType(JavaCompile).configureEach {
 					'MockitoStubbing,' +
 					'NestedOptionals,' +
 					'NonStaticImport,' +
-					'StaticImport,' +
 					'PrimitiveComparison,' +
 					'RedundantStringConversion,' +
 					'RedundantStringEscape,' +
 					'SelfAssignment,' +
 					'Slf4jLogStatement,' +
+					'StaticImport,' +
 					'StringJoin,' +
 					'StringJoining,' +
 					'TimeZoneUsage,'

@@ -15,6 +15,12 @@
  */
 package com.diffplug.spotless.extra.glue.groovy;
 
+import static java.util.Collections.synchronizedList;
+
+import dev.equo.solstice.NestedJars;
+import dev.equo.solstice.ShimIdeBootstrapServices;
+import dev.equo.solstice.Solstice;
+import dev.equo.solstice.p2.CacheLocations;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import org.codehaus.groovy.eclipse.GroovyLogManager;
 import org.codehaus.groovy.eclipse.IGroovyLogger;
 import org.codehaus.groovy.eclipse.TraceCategory;
@@ -42,11 +47,6 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.text.edits.TextEdit;
 import org.osgi.framework.Constants;
-
-import dev.equo.solstice.NestedJars;
-import dev.equo.solstice.ShimIdeBootstrapServices;
-import dev.equo.solstice.Solstice;
-import dev.equo.solstice.p2.CacheLocations;
 
 /** Spotless-Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStepImpl {
@@ -111,7 +111,7 @@ public class GrEclipseFormatterStepImpl {
 			 * We need a synchronized list here, in case multiple instantiations
 			 * run in parallel.
 			 */
-			errors = Collections.synchronizedList(new ArrayList<>());
+			errors = synchronizedList(new ArrayList<>());
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.addLogListener(this);
 			synchronized (GroovyLogManager.manager) {

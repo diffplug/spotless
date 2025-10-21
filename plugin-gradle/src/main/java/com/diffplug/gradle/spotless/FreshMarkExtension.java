@@ -16,19 +16,17 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+import static java.util.Objects.requireNonNull;
 
+import com.diffplug.spotless.FormatterProperties;
+import com.diffplug.spotless.markdown.FreshMarkStep;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-
 import javax.inject.Inject;
-
 import org.gradle.api.Action;
-
-import com.diffplug.spotless.FormatterProperties;
-import com.diffplug.spotless.markdown.FreshMarkStep;
 
 public class FreshMarkExtension extends FormatExtension {
 	static final String NAME = "freshmark";
@@ -42,7 +40,7 @@ public class FreshMarkExtension extends FormatExtension {
 	}
 
 	public void properties(Action<Map<String, Object>> action) {
-		propertyActions.add(Objects.requireNonNull(action));
+		propertyActions.add(requireNonNull(action));
 	}
 
 	public void propertiesFile(Object... files) {

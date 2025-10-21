@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Objects;
 
 final class LibPreconditions {
@@ -22,9 +24,9 @@ final class LibPreconditions {
 	private LibPreconditions() {}
 
 	static <T, I extends Iterable<T>> I requireElementsNonNull(I elements) {
-		Objects.requireNonNull(elements);
+		requireNonNull(elements);
 		for (Object element : elements) {
-			Objects.requireNonNull(element);
+			requireNonNull(element);
 		}
 		return elements;
 	}

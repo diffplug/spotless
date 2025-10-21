@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +58,7 @@ class FeatureClassLoader extends URLClassLoader {
 	 */
 	FeatureClassLoader(URL[] urls, ClassLoader buildToolClassLoader) {
 		super(urls, getParentClassLoader());
-		Objects.requireNonNull(buildToolClassLoader);
+		requireNonNull(buildToolClassLoader);
 		this.buildToolClassLoader = buildToolClassLoader;
 	}
 

@@ -16,17 +16,16 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.gradle.api.Project;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
 import com.diffplug.spotless.extra.groovy.GrEclipseFormatterStep;
 import com.diffplug.spotless.groovy.RemoveSemicolonsStep;
 import com.diffplug.spotless.java.ImportOrderStep;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import org.gradle.api.Project;
 
 public abstract class BaseGroovyExtension extends FormatExtension {
 	protected BaseGroovyExtension(SpotlessExtension spotless) {
@@ -38,7 +37,7 @@ public abstract class BaseGroovyExtension extends FormatExtension {
 	}
 
 	public void importOrderFile(Object importOrderFile) {
-		Objects.requireNonNull(importOrderFile);
+		requireNonNull(importOrderFile);
 		addStep(ImportOrderStep.forGroovy().createFrom(getProject().file(importOrderFile)));
 	}
 

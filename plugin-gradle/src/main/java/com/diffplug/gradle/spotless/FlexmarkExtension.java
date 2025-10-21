@@ -15,12 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Objects;
-
-import javax.inject.Inject;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.markdown.FlexmarkStep;
+import java.util.Objects;
+import javax.inject.Inject;
 
 public class FlexmarkExtension extends FormatExtension {
 	static final String NAME = "flexmark";
@@ -52,7 +52,7 @@ public class FlexmarkExtension extends FormatExtension {
 		private final String version;
 
 		FlexmarkFormatterConfig(String version) {
-			this.version = Objects.requireNonNull(version);
+			this.version = requireNonNull(version);
 			addStep(createStep());
 		}
 

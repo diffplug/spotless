@@ -15,6 +15,11 @@
  */
 package com.diffplug.spotless.rdf;
 
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+
 import java.io.File;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
@@ -38,7 +43,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -298,7 +302,7 @@ class ReflectionHelper {
 					throw new RuntimeException(ex);
 				}
 			}).collect(
-					Collectors.toList());
+					toList());
 			if (selectedEnumValueList.isEmpty()) {
 				throw new IllegalArgumentException(
 						"Cannot set config option %s to value %s: value must be one of %s".formatted(
@@ -311,7 +315,7 @@ class ReflectionHelper {
 										throw new RuntimeException(ex);
 									}
 								}).collect(
-										Collectors.joining(",", "[", "]"))));
+										joining(",", "[", "]"))));
 			} else if (selectedEnumValueList.size() > 1) {
 				throw new IllegalArgumentException(
 						"Found more than 1 enum value for name %s, that should never happen".formatted(
@@ -350,7 +354,7 @@ class ReflectionHelper {
 			} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-		}).collect(Collectors.toList());
+		}).collect(toList());
 	}
 
 	private Object makeSetOf(Type type, String parameterValueAsString) {
@@ -361,7 +365,7 @@ class ReflectionHelper {
 			} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-		}).collect(Collectors.toSet());
+		}).collect(toSet());
 	}
 
 	private Object instantiate(Type type, String stringRepresentation)
@@ -427,7 +431,7 @@ class ReflectionHelper {
 			}
 		}
 		throw new IllegalArgumentException("Unable to find FormattingStyle.KnownPrefix for prefix '%s'. Options are: %s".formatted(stringRepresentation, options.stream().collect(
-				Collectors.joining(",\n\t", "\n\t", "\n"))));
+				joining(",\n\t", "\n\t", "\n"))));
 	}
 
 	private static String[] split(String parameterValueAsString) {
@@ -441,14 +445,14 @@ class ReflectionHelper {
 		Method[] allMethods = TurtleFormatFormattingStyleBuilderClass.getDeclaredMethods();
 		List<Method> methods = Arrays.stream(allMethods).filter(m -> m.getName().equals(optionName))
 				.collect(
-						Collectors.toList());
+						toList());
 		if (methods.isEmpty()) {
 			List<Method> candidates = Arrays.stream(allMethods).filter(m -> m.getParameterCount() == 1)
-					.sorted(Comparator.comparing(Method::getName)).collect(
-							Collectors.toList());
+					.sorted(comparing(Method::getName)).collect(
+							toList());
 			throw new RuntimeException(
 					"Unrecognized configuration parameter name: %s. Candidates are:%n%s".formatted(optionName, candidates.stream().map(Method::getName).collect(
-							Collectors.joining("\n\t", "\t", ""))));
+							joining("\n\t", "\t", ""))));
 		}
 		if (methods.size() > 1) {
 			throw new RuntimeException(
@@ -506,7 +510,7 @@ class ReflectionHelper {
 				while (hasNext(resIterator)) {
 					resources.add(next(resIterator));
 				}
-				resources.sort(Comparator.comparing(x -> {
+				resources.sort(comparing(x -> {
 					try {
 						return (String) x.getClass().getMethod("getURI").invoke(x);
 					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

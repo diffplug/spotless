@@ -15,15 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Consumer;
-
-import javax.annotation.Nullable;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSortedMap;
@@ -32,6 +26,14 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 public abstract class BaseKotlinExtension extends FormatExtension {
 	protected BaseKotlinExtension(SpotlessExtension spotless) {
@@ -53,7 +55,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 
 	/** Adds the specified version of <a href="https://github.com/pinterest/ktlint">ktlint</a>. */
 	public KtlintConfig ktlint(String version) throws IOException {
-		return new KtlintConfig(version, Collections.emptyMap(), Collections.emptyList());
+		return new KtlintConfig(version, emptyMap(), emptyList());
 	}
 
 	/** Uses the <a href="https://github.com/facebook/ktfmt">ktfmt</a> jar to format source code. */
@@ -76,7 +78,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 		private FileSignature config;
 
 		private DiktatConfig(String version) {
-			Objects.requireNonNull(version, "version");
+			requireNonNull(version, "version");
 			this.version = version;
 			addStep(createStep());
 		}
@@ -104,8 +106,8 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 		private KtfmtStep.KtfmtFormattingOptions options;
 
 		private KtfmtConfig(String version) {
-			Objects.requireNonNull(version);
-			this.version = Objects.requireNonNull(version);
+			requireNonNull(version);
+			this.version = requireNonNull(version);
 			addStep(createStep());
 		}
 
@@ -159,7 +161,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 				String version,
 				Map<String, Object> editorConfigOverride,
 				List<String> customRuleSets) throws IOException {
-			Objects.requireNonNull(version);
+			requireNonNull(version);
 			File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
 			FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
 			this.version = version;

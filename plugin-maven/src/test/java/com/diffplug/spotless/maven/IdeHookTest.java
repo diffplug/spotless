@@ -15,14 +15,14 @@
  */
 package com.diffplug.spotless.maven;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.diffplug.spotless.ProcessRunner;
 import java.io.File;
 import java.io.IOException;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.diffplug.spotless.ProcessRunner;
 
 class IdeHookTest extends MavenIntegrationHarness {
 	private String output;
@@ -62,28 +62,28 @@ class IdeHookTest extends MavenIntegrationHarness {
 	@Test
 	void dirty() throws IOException, InterruptedException {
 		runWith("spotless:apply", "--quiet", "-DspotlessIdeHook=\"" + dirty.getAbsolutePath() + "\"", "-DspotlessIdeHookUseStdOut=true");
-		Assertions.assertThat(output).isEqualTo("Mars");
-		Assertions.assertThat(error).startsWith("IS DIRTY");
+		assertThat(output).isEqualTo("Mars");
+		assertThat(error).startsWith("IS DIRTY");
 	}
 
 	@Test
 	void clean() throws IOException, InterruptedException {
 		runWith("spotless:apply", "--quiet", "-DspotlessIdeHook=" + clean.getAbsolutePath(), "-DspotlessIdeHookUseStdOut=true");
-		Assertions.assertThat(output).isEmpty();
-		Assertions.assertThat(error).startsWith("IS CLEAN");
+		assertThat(output).isEmpty();
+		assertThat(error).startsWith("IS CLEAN");
 	}
 
 	@Test
 	void outofbounds() throws IOException, InterruptedException {
 		runWith("spotless:apply", "--quiet", "-DspotlessIdeHook=" + outofbounds.getAbsolutePath(), "-DspotlessIdeHookUseStdOut=true");
-		Assertions.assertThat(output).isEmpty();
-		Assertions.assertThat(error).isEmpty();
+		assertThat(output).isEmpty();
+		assertThat(error).isEmpty();
 	}
 
 	@Test
 	void notAbsolute() throws IOException, InterruptedException {
 		runWith("spotless:apply", "--quiet", "-DspotlessIdeHook=\"pom.xml\"", "-DspotlessIdeHookUseStdOut=true");
-		Assertions.assertThat(output).isEmpty();
-		Assertions.assertThat(error).contains("Argument passed to spotlessIdeHook must be an absolute path");
+		assertThat(output).isEmpty();
+		assertThat(error).contains("Argument passed to spotlessIdeHook must be an absolute path");
 	}
 }

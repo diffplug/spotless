@@ -15,6 +15,14 @@
  */
 package com.diffplug.spotless.go;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.spotless.ForeignExe;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ProcessRunner;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -23,15 +31,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
-
-import com.diffplug.spotless.ForeignExe;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ProcessRunner;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Note: gofmt doesn't have a version flag, because it's part of standard Go distribution.
@@ -104,7 +104,7 @@ public final class GofmtFormatStep {
 
 		public EqualityState(String version, ForeignExe goExecutable) {
 			this.version = version;
-			this.exe = Objects.requireNonNull(goExecutable);
+			this.exe = requireNonNull(goExecutable);
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
@@ -116,7 +116,7 @@ public final class GofmtFormatStep {
 			}
 			String pathToGoFmt = goBasePath.resolve("gofmt").toString();
 			processArgs.add(pathToGoFmt);
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), processArgs).assertExitZero(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(UTF_8), processArgs).assertExitZero(UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {

@@ -15,6 +15,15 @@
  */
 package com.diffplug.spotless.kotlin;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -25,14 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-
 import javax.annotation.Nullable;
-
-import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JarState;
-import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/pinterest/ktlint">ktlint</a> as a FormatterStep. */
 public final class KtLintStep implements Serializable {
@@ -63,7 +65,7 @@ public final class KtLintStep implements Serializable {
 	}
 
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return create(version, provisioner, null, Collections.emptyMap(), Collections.emptyList());
+		return create(version, provisioner, null, emptyMap(), emptyList());
 	}
 
 	public static FormatterStep create(String version,
@@ -71,8 +73,8 @@ public final class KtLintStep implements Serializable {
 			@Nullable FileSignature editorConfig,
 			Map<String, Object> editorConfigOverride,
 			List<String> customRuleSets) {
-		Objects.requireNonNull(version, "version");
-		Objects.requireNonNull(provisioner, "provisioner");
+		requireNonNull(version, "version");
+		requireNonNull(provisioner, "provisioner");
 		String ktlintCoordinate = (version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version;
 		Set<String> mavenCoordinates = new HashSet<>(customRuleSets);
 		mavenCoordinates.add(ktlintCoordinate);

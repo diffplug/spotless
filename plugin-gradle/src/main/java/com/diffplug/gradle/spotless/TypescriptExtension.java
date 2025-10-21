@@ -15,18 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Objects.requireNonNull;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
-import org.gradle.api.Project;
 
 import com.diffplug.gradle.spotless.JavascriptExtension.EslintBaseConfig;
 import com.diffplug.spotless.FormatterStep;
@@ -38,6 +28,14 @@ import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.npm.TsConfigFileType;
 import com.diffplug.spotless.npm.TsFmtFormatterStep;
 import com.diffplug.spotless.npm.TypedTsFmtConfigFile;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import org.gradle.api.Project;
 
 public class TypescriptExtension extends FormatExtension {
 
@@ -70,7 +68,7 @@ public class TypescriptExtension extends FormatExtension {
 
 	public class TypescriptFormatExtension extends NpmStepConfig<TypescriptFormatExtension> {
 
-		private Map<String, Object> config = Collections.emptyMap();
+		private Map<String, Object> config = emptyMap();
 
 		@Nullable TsConfigFileType configFileType = null;
 
@@ -80,7 +78,7 @@ public class TypescriptExtension extends FormatExtension {
 
 		TypescriptFormatExtension(Map<String, String> devDependencies) {
 			super(getProject(), TypescriptExtension.this::replaceStep);
-			this.devDependencies = Objects.requireNonNull(devDependencies);
+			this.devDependencies = requireNonNull(devDependencies);
 		}
 
 		public TypescriptFormatExtension config(final Map<String, Object> config) {

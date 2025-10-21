@@ -15,14 +15,14 @@
  */
 package com.diffplug.spotless.maven.cpp;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.apache.maven.project.MavenProject;
+import static java.util.Collections.emptySet;
 
 import com.diffplug.spotless.cpp.CppDefaults;
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.generic.LicenseHeader;
+import java.util.Collections;
+import java.util.Set;
+import org.apache.maven.project.MavenProject;
 
 /**
  * A {@link FormatterFactory} implementation that corresponds to {@code <cpp>...</cpp>} configuration element.
@@ -33,7 +33,7 @@ import com.diffplug.spotless.maven.generic.LicenseHeader;
 public class Cpp extends FormatterFactory {
 	@Override
 	public Set<String> defaultIncludes(MavenProject project) {
-		return Collections.emptySet();
+		return emptySet();
 	}
 
 	public void addEclipseCdt(EclipseCdt eclipse) {

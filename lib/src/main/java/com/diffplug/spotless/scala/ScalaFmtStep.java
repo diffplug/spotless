@@ -15,6 +15,13 @@
  */
 package com.diffplug.spotless.scala;
 
+import static java.util.Collections.emptySet;
+
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serial;
@@ -22,14 +29,7 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.Set;
-
 import javax.annotation.Nullable;
-
-import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JarState;
-import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/scalameta/scalafmt">scalafmt</a> as a FormatterStep. */
 public final class ScalaFmtStep implements Serializable {
@@ -88,7 +88,7 @@ public final class ScalaFmtStep implements Serializable {
 
 		State(JarState jarState, @Nullable File configFile) throws IOException {
 			this.jarState = jarState;
-			this.configSignature = FileSignature.signAsList(configFile == null ? Collections.emptySet() : Set.of(configFile));
+			this.configSignature = FileSignature.signAsList(configFile == null ? emptySet() : Set.of(configFile));
 		}
 
 		FormatterFunc createFormat() throws Exception {

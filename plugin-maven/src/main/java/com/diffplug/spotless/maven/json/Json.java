@@ -15,12 +15,12 @@
  */
 package com.diffplug.spotless.maven.json;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.apache.maven.project.MavenProject;
+import static java.util.Collections.emptySet;
 
 import com.diffplug.spotless.maven.FormatterFactory;
+import java.util.Collections;
+import java.util.Set;
+import org.apache.maven.project.MavenProject;
 
 /**
  * A {@link FormatterFactory} implementation that corresponds to {@code <json>...</json>} configuration element.
@@ -30,7 +30,7 @@ public class Json extends FormatterFactory {
 
 	@Override
 	public Set<String> defaultIncludes(MavenProject project) {
-		return Collections.emptySet();
+		return emptySet();
 	}
 
 	@Override

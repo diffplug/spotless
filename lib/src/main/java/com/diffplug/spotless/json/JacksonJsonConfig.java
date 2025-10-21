@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.json;
 
+import static java.util.Collections.unmodifiableMap;
+
 import java.io.Serial;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -34,7 +36,7 @@ public class JacksonJsonConfig extends JacksonConfig {
 	protected boolean spaceBeforeSeparator;
 
 	public Map<String, Boolean> getJsonFeatureToToggle() {
-		return Collections.unmodifiableMap(jsonFeatureToToggle);
+		return unmodifiableMap(jsonFeatureToToggle);
 	}
 
 	/**

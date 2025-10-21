@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 
 import java.io.ByteArrayOutputStream;
@@ -33,7 +34,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -223,11 +223,11 @@ public class ProcessRunner implements AutoCloseable {
 		}
 
 		public String stdOutUtf8() {
-			return new String(stdOut, StandardCharsets.UTF_8);
+			return new String(stdOut, UTF_8);
 		}
 
 		public String stdErrUtf8() {
-			return new String(stdErr, StandardCharsets.UTF_8);
+			return new String(stdErr, UTF_8);
 		}
 
 		/** Returns true if the exit code was not zero. */

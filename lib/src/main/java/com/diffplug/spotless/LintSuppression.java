@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
 
 public class LintSuppression implements Serializable {
@@ -39,7 +40,7 @@ public class LintSuppression implements Serializable {
 		if (path.indexOf('\\') != -1) {
 			throw new IllegalArgumentException("Path must use only unix style path separator `/`, this was " + path);
 		}
-		this.path = Objects.requireNonNull(path);
+		this.path = requireNonNull(path);
 	}
 
 	public String getStep() {
@@ -47,7 +48,7 @@ public class LintSuppression implements Serializable {
 	}
 
 	public void setStep(String step) {
-		this.step = Objects.requireNonNull(step);
+		this.step = requireNonNull(step);
 	}
 
 	public String getShortCode() {
@@ -55,7 +56,7 @@ public class LintSuppression implements Serializable {
 	}
 
 	public void setShortCode(String shortCode) {
-		this.shortCode = Objects.requireNonNull(shortCode);
+		this.shortCode = requireNonNull(shortCode);
 	}
 
 	public boolean suppresses(String relativePath, FormatterStep formatterStep, Lint lint) {

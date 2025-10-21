@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
+import static java.util.Comparator.naturalOrder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +41,7 @@ final class MoreIterables {
 
 	/** Sorts "raw" using {@link Comparator#naturalOrder()} and removes duplicates, throwing on null elements. */
 	static <T extends Comparable<T>> List<T> toSortedSet(Iterable<T> raw) {
-		return toSortedSet(raw, Comparator.naturalOrder());
+		return toSortedSet(raw, naturalOrder());
 	}
 
 	/** Sorts "raw" and removes duplicates, throwing on null elements. */

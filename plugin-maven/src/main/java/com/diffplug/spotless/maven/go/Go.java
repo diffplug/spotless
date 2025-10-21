@@ -15,17 +15,17 @@
  */
 package com.diffplug.spotless.maven.go;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.apache.maven.project.MavenProject;
+import static java.util.Collections.emptySet;
 
 import com.diffplug.spotless.maven.FormatterFactory;
+import java.util.Collections;
+import java.util.Set;
+import org.apache.maven.project.MavenProject;
 
 public class Go extends FormatterFactory {
 	@Override
 	public Set<String> defaultIncludes(MavenProject project) {
-		return Collections.emptySet();
+		return emptySet();
 	}
 
 	@Override

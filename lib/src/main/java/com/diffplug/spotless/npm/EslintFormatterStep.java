@@ -55,7 +55,7 @@ public final class EslintFormatterStep {
 		dependencies.put("@typescript-eslint/eslint-plugin", "^6.1.0");
 		dependencies.put("@typescript-eslint/parser", "^6.1.0");
 		dependencies.put("typescript", "^5.1.6");
-		dependencies.put("eslint", Objects.requireNonNull(eslintVersion));
+		dependencies.put("eslint", requireNonNull(eslintVersion));
 		return dependencies;
 	}
 

@@ -15,6 +15,17 @@
  */
 package com.diffplug.spotless.extra;
 
+import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.common.base.Errors;
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.LazyForwardingEquality;
+import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.extra.GitWorkarounds.RepositorySpecificResolver;
+import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
+import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharSequenceNodeFactory;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,9 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
-
 import javax.annotation.Nullable;
-
 import org.eclipse.jgit.attributes.Attribute;
 import org.eclipse.jgit.attributes.AttributesNode;
 import org.eclipse.jgit.attributes.AttributesRule;
@@ -44,17 +53,6 @@ import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.SystemReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
-import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharSequenceNodeFactory;
-
-import com.diffplug.common.base.Errors;
-import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.LazyForwardingEquality;
-import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.extra.GitWorkarounds.RepositorySpecificResolver;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Uses <a href="https://git-scm.com/docs/gitattributes">.gitattributes</a> to determine
@@ -120,8 +118,8 @@ public final class GitAttributesLineEndings {
 		transient Supplier<Iterable<File>> toFormat;
 
 		RelocatablePolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
-			this.projectDir = Objects.requireNonNull(projectDir, "projectDir");
-			this.toFormat = Objects.requireNonNull(toFormat, "toFormat");
+			this.projectDir = requireNonNull(projectDir, "projectDir");
+			this.toFormat = requireNonNull(toFormat, "toFormat");
 		}
 
 		@Override
@@ -260,10 +258,10 @@ public final class GitAttributesLineEndings {
 		final String defaultEnding;
 
 		private Runtime(List<AttributesRule> infoRules, @Nullable File workTree, Config config, List<AttributesRule> globalRules) {
-			this.infoRules = Objects.requireNonNull(infoRules);
+			this.infoRules = requireNonNull(infoRules);
 			this.workTree = workTree;
 			this.defaultEnding = findDefaultLineEnding(config).str();
-			this.globalRules = Objects.requireNonNull(globalRules);
+			this.globalRules = requireNonNull(globalRules);
 		}
 
 		private static final String KEY_EOL = "eol";
@@ -389,7 +387,7 @@ public final class GitAttributesLineEndings {
 				LOGGER.warn("Problem parsing {}", file.getAbsolutePath(), e);
 			}
 		}
-		return Collections.emptyList();
+		return emptyList();
 	}
 
 	/** Parses an attribute value from a list of rules, returning null if there is no match for the given key. */

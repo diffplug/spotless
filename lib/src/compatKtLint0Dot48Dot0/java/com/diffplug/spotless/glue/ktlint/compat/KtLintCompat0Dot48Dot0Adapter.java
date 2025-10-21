@@ -15,15 +15,9 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ServiceLoader;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import com.pinterest.ktlint.core.KtLintRuleEngine;
 import com.pinterest.ktlint.core.LintError;
@@ -41,7 +35,15 @@ import com.pinterest.ktlint.core.api.editorconfig.IndentStyleEditorConfigPropert
 import com.pinterest.ktlint.core.api.editorconfig.InsertFinalNewLineEditorConfigPropertyKt;
 import com.pinterest.ktlint.core.api.editorconfig.MaxLineLengthEditorConfigPropertyKt;
 import com.pinterest.ktlint.core.api.editorconfig.RuleExecutionEditorConfigPropertyKt;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import kotlin.Pair;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
@@ -83,7 +85,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 		Set<RuleProvider> allRuleProviders = ServiceLoader.load(RuleSetProviderV2.class, RuleSetProviderV2.class.getClassLoader())
 				.stream()
 				.flatMap(loader -> loader.get().getRuleProviders().stream())
-				.collect(Collectors.toUnmodifiableSet());
+				.collect(toUnmodifiableSet());
 
 		EditorConfigOverride editorConfigOverride;
 		if (editorConfigOverrideMap.isEmpty()) {
@@ -91,7 +93,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 		} else {
 			editorConfigOverride = createEditorConfigOverride(allRuleProviders.stream().map(
 					RuleProvider::createNewRuleInstance).collect(
-							Collectors.toList()),
+							toList()),
 					editorConfigOverrideMap);
 		}
 		EditorConfigDefaults editorConfig;
@@ -122,7 +124,7 @@ public class KtLintCompat0Dot48Dot0Adapter implements KtLintCompatAdapter {
 		Map<String, EditorConfigProperty<?>> supportedProperties = Stream
 				.concat(ruleProperties, DEFAULT_EDITOR_CONFIG_PROPERTIES.stream())
 				.distinct()
-				.collect(Collectors.toMap(EditorConfigProperty::getName, property -> property));
+				.collect(toMap(EditorConfigProperty::getName, property -> property));
 
 		// Create config properties based on provided property names and values
 		@SuppressWarnings("unchecked")

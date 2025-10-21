@@ -15,8 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.IOException;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +35,6 @@ class MultiProjectAfterEvaluate extends GradleIntegrationHarness {
 						"repositories { mavenCentral() }",
 						"spotless { java { googleJavaFormat() } }");
 		String output = gradleRunner().withArguments("spotlessApply", "--warning-mode", "all").build().getOutput().replace("\r\n", "\n");
-		Assertions.assertThat(output).doesNotContain("Using method Project#afterEvaluate(Action) when the project is already evaluated has been deprecated.");
+		assertThat(output).doesNotContain("Using method Project#afterEvaluate(Action) when the project is already evaluated has been deprecated.");
 	}
 }

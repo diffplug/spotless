@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-
 import javax.annotation.Nonnull;
 
 final class ListableAdapter<T> implements Iterable<T> {
@@ -28,7 +29,7 @@ final class ListableAdapter<T> implements Iterable<T> {
 
 	@SuppressWarnings("unchecked")
 	private ListableAdapter(Object delegate) {
-		Objects.requireNonNull(delegate);
+		requireNonNull(delegate);
 		if (!canAdapt(delegate)) {
 			throw new IllegalArgumentException("Cannot create ListableAdapter from " + delegate.getClass() + ". Use canAdapt() to check first.");
 		}
@@ -52,7 +53,7 @@ final class ListableAdapter<T> implements Iterable<T> {
 	}
 
 	static boolean canAdapt(Object delegate) {
-		Objects.requireNonNull(delegate);
+		requireNonNull(delegate);
 		return delegate instanceof List || delegate.getClass().isArray();
 	}
 }

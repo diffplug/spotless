@@ -15,16 +15,7 @@
  */
 package com.diffplug.spotless.glue.diktat.compat;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import static java.util.Collections.emptyList;
 
 import com.saveourtool.diktat.DiktatFactoriesKt;
 import com.saveourtool.diktat.DiktatProcessor;
@@ -32,8 +23,16 @@ import com.saveourtool.diktat.api.DiktatCallback;
 import com.saveourtool.diktat.api.DiktatError;
 import com.saveourtool.diktat.api.DiktatRuleConfig;
 import com.saveourtool.diktat.api.DiktatRuleSet;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import kotlin.Unit;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class DiktatCompat2Dot0Dot0Adapter implements DiktatCompatAdapter {
 	private final DiktatProcessor processor;
@@ -85,7 +84,7 @@ public class DiktatCompat2Dot0Dot0Adapter implements DiktatCompatAdapter {
 
 	private static List<DiktatRuleConfig> readRuleConfigs(File configFile) {
 		if (configFile == null) {
-			return Collections.emptyList();
+			return emptyList();
 		}
 		try (final InputStream configInputStream = new FileInputStream(configFile)) {
 			return DiktatFactoriesKt.getDiktatRuleConfigReader().invoke(configInputStream);

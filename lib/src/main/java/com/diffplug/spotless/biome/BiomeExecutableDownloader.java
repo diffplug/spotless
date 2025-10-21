@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.biome;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
@@ -33,7 +35,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,7 +202,7 @@ final class BiomeExecutableDownloader {
 		}
 		try {
 			var actualChecksum = computeChecksum(filePath, CHECKSUM_ALGORITHM);
-			var expectedChecksum = readTextFile(checksumPath, StandardCharsets.ISO_8859_1);
+			var expectedChecksum = readTextFile(checksumPath, ISO_8859_1);
 			LOGGER.debug("Expected checksum: {}, actual checksum: {}", expectedChecksum, actualChecksum);
 			return Objects.equals(expectedChecksum, actualChecksum);
 		} catch (final IOException ignored) {
@@ -363,7 +364,7 @@ final class BiomeExecutableDownloader {
 	private void writeChecksumFile(Path file, Path checksumPath) throws IOException {
 		var checksum = computeChecksum(file, CHECKSUM_ALGORITHM);
 		try (var out = Files.newOutputStream(checksumPath, WRITE_OPTIONS)) {
-			out.write(checksum.getBytes(StandardCharsets.ISO_8859_1));
+			out.write(checksum.getBytes(ISO_8859_1));
 		}
 	}
 }

@@ -15,18 +15,18 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.diffplug.spotless.LintSuppression;
+import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestProvisioner;
 import java.io.File;
 import java.io.IOException;
-
 import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.diffplug.spotless.LintSuppression;
-import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.TestProvisioner;
 
 class FileTreeTest extends ResourceHarness {
 	private ConfigurableFileTree fileTree;
@@ -43,7 +43,7 @@ class FileTreeTest extends ResourceHarness {
 		File someFile = setFile("someFolder/someFile").toContent("");
 		File someFolder = someFile.getParentFile();
 		fileTree.exclude(someFolder.getAbsolutePath());
-		Assertions.assertThat(fileTree).containsExactlyInAnyOrder(someFile);
+		assertThat(fileTree).containsExactlyInAnyOrder(someFile);
 	}
 
 	@Test
@@ -51,6 +51,6 @@ class FileTreeTest extends ResourceHarness {
 		File someFile = setFile("someFolder/someFile").toContent("");
 		File someFolder = someFile.getParentFile();
 		fileTree.exclude(LintSuppression.relativizeAsUnix(rootFolder(), someFolder));
-		Assertions.assertThat(fileTree).containsExactlyInAnyOrder();
+		assertThat(fileTree).containsExactlyInAnyOrder();
 	}
 }

@@ -15,19 +15,8 @@
  */
 package com.diffplug.spotless.extra;
 
+import static java.util.Objects.requireNonNullElse;
 import static java.util.stream.Collectors.toMap;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-
-import javax.annotation.Nullable;
 
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FileSignature;
@@ -37,13 +26,22 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
-
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.p2.CacheLocations;
 import dev.equo.solstice.p2.P2ClientCache;
 import dev.equo.solstice.p2.P2Model;
 import dev.equo.solstice.p2.P2QueryCache;
 import dev.equo.solstice.p2.P2QueryResult;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import javax.annotation.Nullable;
 
 /**
  * Generic Eclipse based formatter step {@link State} builder.
@@ -190,8 +188,8 @@ public abstract class EquoBasedStepBuilder {
 				ImmutableMap<String, String> stepProperties) {
 
 			this.semanticVersion = semanticVersion;
-			this.settingProperties = Objects.requireNonNullElse(settingProperties, new ArrayList<>());
-			this.settingXml = Objects.requireNonNullElse(settingXml, new ArrayList<>());
+			this.settingProperties = requireNonNullElse(settingProperties, new ArrayList<>());
+			this.settingXml = requireNonNullElse(settingXml, new ArrayList<>());
 			this.settingsPromise = settingsPromise;
 			this.jarPromise = jarPromise;
 			this.stepProperties = stepProperties;
@@ -218,8 +216,8 @@ public abstract class EquoBasedStepBuilder {
 		public State(String semanticVersion, JarState jarState, List<String> settingProperties, List<String> settingXml, FileSignature settingsFiles, ImmutableMap<String, String> stepProperties) {
 			this.semanticVersion = semanticVersion;
 			this.jarState = jarState;
-			this.settingProperties = Objects.requireNonNullElse(settingProperties, new ArrayList<>());
-			this.settingXml = Objects.requireNonNullElse(settingXml, new ArrayList<>());
+			this.settingProperties = requireNonNullElse(settingProperties, new ArrayList<>());
+			this.settingXml = requireNonNullElse(settingXml, new ArrayList<>());
 			this.settingsFiles = settingsFiles;
 			this.stepProperties = stepProperties;
 		}

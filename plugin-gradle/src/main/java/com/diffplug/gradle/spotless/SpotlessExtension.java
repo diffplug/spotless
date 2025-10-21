@@ -15,23 +15,21 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 
+import com.diffplug.spotless.LineEnding;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
-
-import com.diffplug.spotless.LineEnding;
 
 public abstract class SpotlessExtension {
 	final Project project;
@@ -73,7 +71,7 @@ public abstract class SpotlessExtension {
 		this.lineEndings = requireNonNull(lineEndings);
 	}
 
-	Charset encoding = StandardCharsets.UTF_8;
+	Charset encoding = UTF_8;
 
 	/** Returns the encoding to use. */
 	public Charset getEncoding() {

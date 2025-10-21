@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLClassLoader;
@@ -24,9 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public final class SpotlessCache {
 		final int hashCode;
 
 		SerializedKey(Serializable key) {
-			Objects.requireNonNull(key);
+			requireNonNull(key);
 			serialized = LazyForwardingEquality.toBytes(key);
 			hashCode = Arrays.hashCode(serialized);
 		}

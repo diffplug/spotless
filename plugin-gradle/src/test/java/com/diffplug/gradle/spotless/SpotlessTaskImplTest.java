@@ -15,32 +15,36 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.diffplug.spotless.Formatter;
 import java.io.File;
 import java.nio.file.Path;
-
 import org.assertj.core.api.Assertions;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.logging.Logger;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.diffplug.spotless.Formatter;
-
 public class SpotlessTaskImplTest {
 	@Test
 	public void testThrowsMessageContainsFilename() throws Exception {
-		SpotlessTaskImpl task = Mockito.mock(Mockito.CALLS_REAL_METHODS);
-		Mockito.when(task.getLogger()).thenReturn(Mockito.mock(Logger.class));
+		SpotlessTaskImpl task = mock(CALLS_REAL_METHODS);
+		when(task.getLogger()).thenReturn(mock(Logger.class));
 
 		File projectDir = Path.of("unitTests", "projectDir").toFile();
-		DirectoryProperty projectDirProperty = Mockito.mock(Mockito.RETURNS_DEEP_STUBS);
-		Mockito.when(projectDirProperty.get().getAsFile()).thenReturn(projectDir);
+		DirectoryProperty projectDirProperty = mock(RETURNS_DEEP_STUBS);
+		when(projectDirProperty.get().getAsFile()).thenReturn(projectDir);
 
-		Mockito.when(task.getProjectDir()).thenReturn(projectDirProperty);
+		when(task.getProjectDir()).thenReturn(projectDirProperty);
 
 		File input = Path.of("unitTests", "projectDir", "someInput").toFile();
-		Formatter formatter = Mockito.mock();
+		Formatter formatter = mock();
 
-		Assertions.assertThatThrownBy(() -> task.processInputFile(null, formatter, input, "someInput")).hasMessageContaining(input.toString());
+		assertThatThrownBy(() -> task.processInputFile(null, formatter, input, "someInput")).hasMessageContaining(input.toString());
 	}
 }

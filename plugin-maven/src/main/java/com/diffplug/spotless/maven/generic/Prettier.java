@@ -15,6 +15,14 @@
  */
 package com.diffplug.spotless.maven.generic;
 
+import static java.util.stream.Collectors.toMap;
+
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.maven.FormatterStepConfig;
+import com.diffplug.spotless.maven.npm.AbstractNpmFormatterStepFactory;
+import com.diffplug.spotless.npm.NpmPathResolver;
+import com.diffplug.spotless.npm.PrettierConfig;
+import com.diffplug.spotless.npm.PrettierFormatterStep;
 import java.io.File;
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -23,15 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
 import org.apache.maven.plugins.annotations.Parameter;
-
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.maven.FormatterStepConfig;
-import com.diffplug.spotless.maven.npm.AbstractNpmFormatterStepFactory;
-import com.diffplug.spotless.npm.NpmPathResolver;
-import com.diffplug.spotless.npm.PrettierConfig;
-import com.diffplug.spotless.npm.PrettierFormatterStep;
 
 public class Prettier extends AbstractNpmFormatterStepFactory {
 
@@ -97,7 +97,7 @@ public class Prettier extends AbstractNpmFormatterStepFactory {
 						}
 						return entry;
 					})
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+					.collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
 		} else {
 			configInline = null;
 		}

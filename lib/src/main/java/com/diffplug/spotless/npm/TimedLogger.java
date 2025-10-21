@@ -16,16 +16,14 @@
 package com.diffplug.spotless.npm;
 
 import static com.diffplug.spotless.LazyArgLogger.lazy;
+import static java.util.Objects.requireNonNull;
 
+import com.diffplug.spotless.ThrowingEx;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
-
-import com.diffplug.spotless.ThrowingEx;
 
 /**
  * A logger that logs the time it took to execute a block of code.
@@ -42,7 +40,7 @@ final class TimedLogger {
 	private final Ticker ticker;
 
 	private TimedLogger(@Nonnull Logger logger, Ticker ticker) {
-		this.logger = Objects.requireNonNull(logger);
+		this.logger = requireNonNull(logger);
 		this.ticker = ticker;
 	}
 
@@ -89,10 +87,10 @@ final class TimedLogger {
 		private final long startedAt;
 
 		public Timed(@Nonnull Ticker ticker, @Nonnull String msg, @Nonnull List<Object> params, @Nonnull LogToLevelMethod delegatedLogger) {
-			this.ticker = Objects.requireNonNull(ticker);
-			this.msg = Objects.requireNonNull(msg);
-			this.params = List.copyOf(Objects.requireNonNull(params));
-			this.delegatedLogger = Objects.requireNonNull(delegatedLogger);
+			this.ticker = requireNonNull(ticker);
+			this.msg = requireNonNull(msg);
+			this.params = List.copyOf(requireNonNull(params));
+			this.delegatedLogger = requireNonNull(delegatedLogger);
 			this.startedAt = ticker.read();
 			logStart();
 		}
@@ -183,11 +181,11 @@ final class TimedLogger {
 		private final Object[] args;
 
 		public TimedExec(LogActiveMethod logActiveMethod, LogToLevelMethod logMethod, Ticker ticker, String message, Object... args) {
-			this.logActiveMethod = Objects.requireNonNull(logActiveMethod);
-			this.logMethod = Objects.requireNonNull(logMethod);
-			this.ticker = Objects.requireNonNull(ticker);
-			this.message = Objects.requireNonNull(message);
-			this.args = Objects.requireNonNull(args);
+			this.logActiveMethod = requireNonNull(logActiveMethod);
+			this.logMethod = requireNonNull(logMethod);
+			this.ticker = requireNonNull(ticker);
+			this.message = requireNonNull(message);
+			this.args = requireNonNull(args);
 		}
 
 		public void run(ThrowingEx.Runnable r) {

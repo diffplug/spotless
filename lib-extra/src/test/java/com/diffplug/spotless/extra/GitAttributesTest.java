@@ -15,21 +15,21 @@
  */
 package com.diffplug.spotless.extra;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.assertj.core.api.Assertions;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.ClearGitConfig;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.ResourceHarness;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.assertj.core.api.Assertions;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.jupiter.api.Test;
 
 @ClearGitConfig
 class GitAttributesTest extends ResourceHarness {
@@ -56,27 +56,27 @@ class GitAttributesTest extends ResourceHarness {
 				"*.MF eol=crlf"));
 		{
 			GitAttributesLineEndings.AttributesCache cache = new GitAttributesLineEndings.AttributesCache();
-			Assertions.assertThat(cache.valueFor(newFile("someFile"), "eol")).isEqualTo("lf");
-			Assertions.assertThat(cache.valueFor(newFile("subfolder/someFile"), "eol")).isEqualTo("lf");
-			Assertions.assertThat(cache.valueFor(newFile("MANIFEST.MF"), "eol")).isEqualTo("crlf");
-			Assertions.assertThat(cache.valueFor(newFile("subfolder/MANIFEST.MF"), "eol")).isEqualTo("crlf");
+			assertThat(cache.valueFor(newFile("someFile"), "eol")).isEqualTo("lf");
+			assertThat(cache.valueFor(newFile("subfolder/someFile"), "eol")).isEqualTo("lf");
+			assertThat(cache.valueFor(newFile("MANIFEST.MF"), "eol")).isEqualTo("crlf");
+			assertThat(cache.valueFor(newFile("subfolder/MANIFEST.MF"), "eol")).isEqualTo("crlf");
 
 			// write out a .gitattributes for the subfolder
 			setFile("subfolder/.gitattributes").toContent("* eol=lf");
 
 			// it shouldn't change anything, because it's cached
-			Assertions.assertThat(cache.valueFor(newFile("someFile"), "eol")).isEqualTo("lf");
-			Assertions.assertThat(cache.valueFor(newFile("subfolder/someFile"), "eol")).isEqualTo("lf");
-			Assertions.assertThat(cache.valueFor(newFile("MANIFEST.MF"), "eol")).isEqualTo("crlf");
-			Assertions.assertThat(cache.valueFor(newFile("subfolder/MANIFEST.MF"), "eol")).isEqualTo("crlf");
+			assertThat(cache.valueFor(newFile("someFile"), "eol")).isEqualTo("lf");
+			assertThat(cache.valueFor(newFile("subfolder/someFile"), "eol")).isEqualTo("lf");
+			assertThat(cache.valueFor(newFile("MANIFEST.MF"), "eol")).isEqualTo("crlf");
+			assertThat(cache.valueFor(newFile("subfolder/MANIFEST.MF"), "eol")).isEqualTo("crlf");
 		}
 		{
 			// but if we make a new cache, it should change
 			GitAttributesLineEndings.AttributesCache cache = new GitAttributesLineEndings.AttributesCache();
-			Assertions.assertThat(cache.valueFor(newFile("someFile"), "eol")).isEqualTo("lf");
-			Assertions.assertThat(cache.valueFor(newFile("subfolder/someFile"), "eol")).isEqualTo("lf");
-			Assertions.assertThat(cache.valueFor(newFile("MANIFEST.MF"), "eol")).isEqualTo("crlf");
-			Assertions.assertThat(cache.valueFor(newFile("subfolder/MANIFEST.MF"), "eol")).isEqualTo("lf");
+			assertThat(cache.valueFor(newFile("someFile"), "eol")).isEqualTo("lf");
+			assertThat(cache.valueFor(newFile("subfolder/someFile"), "eol")).isEqualTo("lf");
+			assertThat(cache.valueFor(newFile("MANIFEST.MF"), "eol")).isEqualTo("crlf");
+			assertThat(cache.valueFor(newFile("subfolder/MANIFEST.MF"), "eol")).isEqualTo("lf");
 		}
 	}
 
@@ -86,10 +86,10 @@ class GitAttributesTest extends ResourceHarness {
 				"* eol=lf",
 				"*.MF eol=crlf"));
 		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(rootFolder(), () -> testFiles());
-		Assertions.assertThat(policy.getEndingFor(newFile("someFile"))).isEqualTo("\n");
-		Assertions.assertThat(policy.getEndingFor(newFile("subfolder/someFile"))).isEqualTo("\n");
-		Assertions.assertThat(policy.getEndingFor(newFile("MANIFEST.MF"))).isEqualTo("\r\n");
-		Assertions.assertThat(policy.getEndingFor(newFile("subfolder/MANIFEST.MF"))).isEqualTo("\r\n");
+		assertThat(policy.getEndingFor(newFile("someFile"))).isEqualTo("\n");
+		assertThat(policy.getEndingFor(newFile("subfolder/someFile"))).isEqualTo("\n");
+		assertThat(policy.getEndingFor(newFile("MANIFEST.MF"))).isEqualTo("\r\n");
+		assertThat(policy.getEndingFor(newFile("subfolder/MANIFEST.MF"))).isEqualTo("\r\n");
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class GitAttributesTest extends ResourceHarness {
 				"autocrlf=true",
 				"eol=lf"));
 		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(rootFolder(), () -> testFiles());
-		Assertions.assertThat(policy.getEndingFor(newFile("someFile"))).isEqualTo("\r\n");
+		assertThat(policy.getEndingFor(newFile("someFile"))).isEqualTo("\r\n");
 	}
 
 	@Test
@@ -114,10 +114,10 @@ class GitAttributesTest extends ResourceHarness {
 				"* eol=lf",
 				"*.MF eol=crlf"));
 		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(projectFolder, () -> testFiles("project/"));
-		Assertions.assertThat(policy.getEndingFor(newFile("project/someFile"))).isEqualTo("\n");
-		Assertions.assertThat(policy.getEndingFor(newFile("project/subfolder/someFile"))).isEqualTo("\n");
-		Assertions.assertThat(policy.getEndingFor(newFile("project/MANIFEST.MF"))).isEqualTo("\r\n");
-		Assertions.assertThat(policy.getEndingFor(newFile("project/subfolder/MANIFEST.MF"))).isEqualTo("\r\n");
+		assertThat(policy.getEndingFor(newFile("project/someFile"))).isEqualTo("\n");
+		assertThat(policy.getEndingFor(newFile("project/subfolder/someFile"))).isEqualTo("\n");
+		assertThat(policy.getEndingFor(newFile("project/MANIFEST.MF"))).isEqualTo("\r\n");
+		assertThat(policy.getEndingFor(newFile("project/subfolder/MANIFEST.MF"))).isEqualTo("\r\n");
 	}
 
 	@Test
@@ -136,9 +136,9 @@ class GitAttributesTest extends ResourceHarness {
 				"* eol=lf",
 				"*.MF eol=crlf"));
 		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(projectFolder, () -> testFiles("project/"));
-		Assertions.assertThat(policy.getEndingFor(newFile("project/someFile"))).isEqualTo("\n");
-		Assertions.assertThat(policy.getEndingFor(newFile("project/subfolder/someFile"))).isEqualTo("\n");
-		Assertions.assertThat(policy.getEndingFor(newFile("project/MANIFEST.MF"))).isEqualTo("\r\n");
-		Assertions.assertThat(policy.getEndingFor(newFile("project/subfolder/MANIFEST.MF"))).isEqualTo("\r\n");
+		assertThat(policy.getEndingFor(newFile("project/someFile"))).isEqualTo("\n");
+		assertThat(policy.getEndingFor(newFile("project/subfolder/someFile"))).isEqualTo("\n");
+		assertThat(policy.getEndingFor(newFile("project/MANIFEST.MF"))).isEqualTo("\r\n");
+		assertThat(policy.getEndingFor(newFile("project/subfolder/MANIFEST.MF"))).isEqualTo("\r\n");
 	}
 }

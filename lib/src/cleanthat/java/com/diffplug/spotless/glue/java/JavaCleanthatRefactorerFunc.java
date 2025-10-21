@@ -15,17 +15,9 @@
  */
 package com.diffplug.spotless.glue.java;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Collections.emptyList;
 
 import com.diffplug.spotless.FormatterFunc;
-
 import eu.solven.cleanthat.config.pojo.CleanthatEngineProperties;
 import eu.solven.cleanthat.config.pojo.SourceCodeProperties;
 import eu.solven.cleanthat.engine.java.IJdkVersionConstants;
@@ -33,6 +25,13 @@ import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorer;
 import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorerProperties;
 import eu.solven.cleanthat.formatter.LineEnding;
 import eu.solven.cleanthat.formatter.PathAndContent;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The glue for CleanThat: it is build over the version in build.gradle, but at runtime it will be executed over
@@ -48,8 +47,8 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc.NeedsFile {
 
 	public JavaCleanthatRefactorerFunc(String jdkVersion, List<String> included, List<String> excluded, boolean includeDraft) {
 		this.jdkVersion = jdkVersion == null ? IJdkVersionConstants.JDK_8 : jdkVersion;
-		this.included = included == null ? Collections.emptyList() : included;
-		this.excluded = excluded == null ? Collections.emptyList() : excluded;
+		this.included = included == null ? emptyList() : included;
+		this.excluded = excluded == null ? emptyList() : excluded;
 		this.includeDraft = includeDraft;
 	}
 

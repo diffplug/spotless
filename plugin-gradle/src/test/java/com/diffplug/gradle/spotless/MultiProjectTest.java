@@ -15,12 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.IOException;
-
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.diffplug.common.base.StringPrinter;
+import java.io.IOException;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class MultiProjectTest extends GradleIntegrationHarness {
 	private static final int N = 100;
@@ -87,7 +87,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"}",
 				"spotless { predeclareDeps() }");
 		createNSubprojects();
-		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
+		assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
 				.contains("Add a step with [com.google.googlejavaformat:google-java-format:1.17.0] into the `spotlessPredeclare` block in the root project.");
 	}
 
@@ -133,7 +133,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"}",
 				"spotless { predeclareDepsFromBuildscript() }");
 		createNSubprojects();
-		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
+		assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
 				.contains("Could not find method spotlessPredeclare() for arguments");
 	}
 
@@ -148,7 +148,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				" java { googleJavaFormat('1.17.0') }",
 				"}");
 		createNSubprojects();
-		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
+		assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
 				.contains("Could not find method spotlessPredeclare() for arguments");
 	}
 }

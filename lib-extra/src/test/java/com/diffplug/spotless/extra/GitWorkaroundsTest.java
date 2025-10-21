@@ -15,9 +15,13 @@
  */
 package com.diffplug.spotless.extra;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.diffplug.spotless.ClearGitConfig;
+import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.extra.GitWorkarounds.RepositorySpecificResolver;
 import java.io.File;
 import java.io.IOException;
-
 import org.assertj.core.api.Assertions;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -27,10 +31,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.ClearGitConfig;
-import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.extra.GitWorkarounds.RepositorySpecificResolver;
-
 @ClearGitConfig
 class GitWorkaroundsTest extends ResourceHarness {
 	@Test
@@ -39,7 +39,7 @@ class GitWorkaroundsTest extends ResourceHarness {
 		Git.init().setDirectory(projectFolder).call();
 
 		RepositorySpecificResolver repositorySpecificResolver = GitWorkarounds.fileRepositoryResolverForProject(projectFolder);
-		Assertions.assertThat(repositorySpecificResolver.getGitDir()).isEqualTo(new File(projectFolder, ".git"));
+		assertThat(repositorySpecificResolver.getGitDir()).isEqualTo(new File(projectFolder, ".git"));
 	}
 
 	@Test
@@ -49,7 +49,7 @@ class GitWorkaroundsTest extends ResourceHarness {
 		Git.init().setDirectory(projectFolder).setGitDir(gitDir).call();
 
 		RepositorySpecificResolver repositorySpecificResolver = GitWorkarounds.fileRepositoryResolverForProject(projectFolder);
-		Assertions.assertThat(repositorySpecificResolver.getGitDir()).isEqualTo(gitDir);
+		assertThat(repositorySpecificResolver.getGitDir()).isEqualTo(gitDir);
 	}
 
 	@Nested
@@ -87,15 +87,15 @@ class GitWorkaroundsTest extends ResourceHarness {
 			// Test worktree 1
 			{
 				RepositorySpecificResolver repositorySpecificResolver = GitWorkarounds.fileRepositoryResolverForProject(project1Tree);
-				Assertions.assertThat(repositorySpecificResolver.getGitDir()).isEqualTo(project1GitDir);
-				Assertions.assertThat(repositorySpecificResolver.resolveWithCommonDir(Constants.CONFIG)).isEqualTo(new File(commonGitDir, Constants.CONFIG));
+				assertThat(repositorySpecificResolver.getGitDir()).isEqualTo(project1GitDir);
+				assertThat(repositorySpecificResolver.resolveWithCommonDir(Constants.CONFIG)).isEqualTo(new File(commonGitDir, Constants.CONFIG));
 			}
 
 			// Test worktree 2
 			{
 				RepositorySpecificResolver repositorySpecificResolver = GitWorkarounds.fileRepositoryResolverForProject(project2Tree);
-				Assertions.assertThat(repositorySpecificResolver.getGitDir()).isEqualTo(project2GitDir);
-				Assertions.assertThat(repositorySpecificResolver.resolveWithCommonDir(Constants.CONFIG)).isEqualTo(new File(commonGitDir, Constants.CONFIG));
+				assertThat(repositorySpecificResolver.getGitDir()).isEqualTo(project2GitDir);
+				assertThat(repositorySpecificResolver.resolveWithCommonDir(Constants.CONFIG)).isEqualTo(new File(commonGitDir, Constants.CONFIG));
 			}
 		}
 
@@ -103,20 +103,20 @@ class GitWorkaroundsTest extends ResourceHarness {
 		void perWorktreeConfig() throws IOException {
 			setFile("project.git/config").toLines("[core]", "mySetting = true");
 
-			Assertions.assertThat(getMySetting(project1Tree)).isTrue();
-			Assertions.assertThat(getMySetting(project2Tree)).isTrue();
+			assertThat(getMySetting(project1Tree)).isTrue();
+			assertThat(getMySetting(project2Tree)).isTrue();
 
 			// Override setting for project 1, but don't enable extension yet
 			setFile("project.git/worktrees/project-w1/config.worktree").toLines("[core]", "mySetting = false");
 
-			Assertions.assertThat(getMySetting(project1Tree)).isTrue();
-			Assertions.assertThat(getMySetting(project2Tree)).isTrue();
+			assertThat(getMySetting(project1Tree)).isTrue();
+			assertThat(getMySetting(project2Tree)).isTrue();
 
 			// Enable extension
 			setFile("project.git/config").toLines("[core]", "mySetting = true", "[extensions]", "worktreeConfig = true");
 
-			Assertions.assertThat(getMySetting(project1Tree)).isFalse(); // Should now be overridden by config.worktree
-			Assertions.assertThat(getMySetting(project2Tree)).isTrue();
+			assertThat(getMySetting(project1Tree)).isFalse(); // Should now be overridden by config.worktree
+			assertThat(getMySetting(project2Tree)).isTrue();
 		}
 
 		private boolean getMySetting(File projectDir) {

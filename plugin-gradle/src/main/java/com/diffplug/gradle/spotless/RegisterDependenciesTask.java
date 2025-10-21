@@ -15,14 +15,17 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.io.Files;
+import com.diffplug.spotless.FormatterStep;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildServiceRegistry;
@@ -32,10 +35,6 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.build.event.BuildEventsListenerRegistry;
 import org.gradle.work.DisableCachingByDefault;
-
-import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.io.Files;
-import com.diffplug.spotless.FormatterStep;
 
 /**
  * NOT AN END-USER TASK, DO NOT USE FOR ANYTHING!
@@ -88,7 +87,7 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 	@TaskAction
 	public void trivialFunction() throws IOException {
 		Files.createParentDirs(unitOutput);
-		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
+		Files.write(Integer.toString(1), unitOutput, UTF_8);
 	}
 
 	// this field is stupid, but we need it, see https://github.com/diffplug/spotless/issues/1260

@@ -16,7 +16,11 @@
 package com.diffplug.spotless.maven.npm;
 
 import static com.diffplug.spotless.maven.npm.AbstractNpmFormatterStepFactory.SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.diffplug.spotless.ProcessRunner.Result;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
+import com.diffplug.spotless.tag.NpmTest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -24,14 +28,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import com.diffplug.spotless.ProcessRunner.Result;
-import com.diffplug.spotless.maven.MavenIntegrationHarness;
-import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
 public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
@@ -48,7 +47,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				"  <configFile>.prettierrc.yml</configFile>",
 				"</prettier>");
 		Result result = run("typescript", suffix);
-		Assertions.assertThat(result.stdOutUtf8()).doesNotContain("Caching node_modules for").doesNotContain("Using cached node_modules for");
+		assertThat(result.stdOutUtf8()).doesNotContain("Caching node_modules for").doesNotContain("Using cached node_modules for");
 	}
 
 	@Test
@@ -61,7 +60,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				"  <npmInstallCache>true</npmInstallCache>",
 				"</prettier>");
 		Result result = run("typescript", suffix);
-		Assertions.assertThat(result.stdOutUtf8())
+		assertThat(result.stdOutUtf8())
 				.contains("Caching node_modules for")
 				.contains(SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME)
 				.doesNotContain("Using cached node_modules for");
@@ -78,7 +77,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				"  <npmInstallCache>true</npmInstallCache>",
 				"</prettier>");
 		Result result1 = run("typescript", suffix);
-		Assertions.assertThat(result1.stdOutUtf8())
+		assertThat(result1.stdOutUtf8())
 				.contains("Caching node_modules for")
 				.contains(SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME)
 				.doesNotContain("Using cached node_modules for");
@@ -87,7 +86,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 		recursiveDelete(Path.of(rootFolder().getAbsolutePath(), "target"), SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME);
 
 		Result result2 = run("typescript", suffix);
-		Assertions.assertThat(result2.stdOutUtf8())
+		assertThat(result2.stdOutUtf8())
 				.doesNotContain("Caching node_modules for")
 				.contains(SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME)
 				.contains("Using cached node_modules for");
@@ -104,7 +103,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				"  <npmInstallCache>" + cacheDir.getAbsolutePath() + "</npmInstallCache>",
 				"</prettier>");
 		Result result = run("typescript", suffix);
-		Assertions.assertThat(result.stdOutUtf8())
+		assertThat(result.stdOutUtf8())
 				.contains("Caching node_modules for")
 				.contains(Path.of(cacheDir.getAbsolutePath()).toAbsolutePath().toString())
 				.doesNotContain("Using cached node_modules for");
@@ -122,7 +121,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 				"  <npmInstallCache>" + cacheDir.getAbsolutePath() + "</npmInstallCache>",
 				"</prettier>");
 		Result result1 = run("typescript", suffix);
-		Assertions.assertThat(result1.stdOutUtf8())
+		assertThat(result1.stdOutUtf8())
 				.contains("Caching node_modules for")
 				.contains(Path.of(cacheDir.getAbsolutePath()).toAbsolutePath().toString())
 				.doesNotContain("Using cached node_modules for");
@@ -131,7 +130,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 		recursiveDelete(Path.of(rootFolder().getAbsolutePath(), "target"), null);
 
 		Result result2 = run("typescript", suffix);
-		Assertions.assertThat(result2.stdOutUtf8())
+		assertThat(result2.stdOutUtf8())
 				.doesNotContain("Caching node_modules for")
 				.contains(Path.of(cacheDir.getAbsolutePath()).toAbsolutePath().toString())
 				.contains("Using cached node_modules for");

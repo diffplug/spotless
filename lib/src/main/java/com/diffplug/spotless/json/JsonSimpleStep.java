@@ -15,17 +15,18 @@
  */
 package com.diffplug.spotless.json;
 
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
-
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JarState;
-import com.diffplug.spotless.Provisioner;
 
 /**
  * Simple JSON formatter which reformats the file according to the org.json library's default pretty-printing, but has no ability to customise more than the indentation size.
@@ -46,7 +47,7 @@ public final class JsonSimpleStep implements Serializable {
 	}
 
 	public static FormatterStep create(int indent, Provisioner provisioner) {
-		Objects.requireNonNull(provisioner, "provisioner cannot be null");
+		requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.create(NAME,
 				new JsonSimpleStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + DEFAULT_VERSION, provisioner)), indent),
 				JsonSimpleStep::equalityState,

@@ -15,21 +15,22 @@
  */
 package com.diffplug.spotless.npm;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.Collections;
-
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptyMap;
 
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.tag.NpmTest;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Collections;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @NpmTest
 class TsFmtFormatterStepTest {
@@ -52,7 +53,7 @@ class TsFmtFormatterStepTest {
 			// some config options expect to see at least one file in the baseDir, so let's write one there
 			File srcDir = new File(rootFolder(), "src/main/typescript");
 			Files.createDirectories(srcDir.toPath());
-			Files.write(new File(srcDir, configFileNameWithoutExtension + ".ts").toPath(), getTestResource(dirtyFile).getBytes(StandardCharsets.UTF_8));
+			Files.write(new File(srcDir, configFileNameWithoutExtension + ".ts").toPath(), getTestResource(dirtyFile).getBytes(UTF_8));
 
 			final FormatterStep formatterStep = TsFmtFormatterStep.create(
 					TsFmtFormatterStep.defaultDevDependencies(),
@@ -62,7 +63,7 @@ class TsFmtFormatterStepTest {
 					null,
 					npmPathResolver(),
 					TypedTsFmtConfigFile.named(configFileNameWithoutExtension, configFile),
-					Collections.emptyMap());
+					emptyMap());
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);

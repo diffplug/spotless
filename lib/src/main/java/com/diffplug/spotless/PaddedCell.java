@@ -16,6 +16,10 @@
 package com.diffplug.spotless;
 
 import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Comparator.comparingInt;
+import static java.util.Objects.requireNonNull;
+import static java.util.function.Function.identity;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -48,8 +52,8 @@ public final class PaddedCell {
 	private final List<String> steps;
 
 	private PaddedCell(File file, Type type, List<String> steps) {
-		this.file = Objects.requireNonNull(file, "file");
-		this.type = Objects.requireNonNull(type, "type");
+		this.file = requireNonNull(file, "file");
+		this.type = requireNonNull(type, "type");
 		// defensive copy
 		this.steps = new ArrayList<>(steps);
 		requireElementsNonNull(this.steps);
@@ -67,7 +71,7 @@ public final class PaddedCell {
 
 	/** Returns the steps it takes to get to the result. */
 	public List<String> steps() {
-		return Collections.unmodifiableList(steps);
+		return unmodifiableList(steps);
 	}
 
 	/**
@@ -81,8 +85,8 @@ public final class PaddedCell {
 	 *
 	 */
 	public static PaddedCell check(Formatter formatter, File file) {
-		Objects.requireNonNull(formatter, "formatter");
-		Objects.requireNonNull(file, "file");
+		requireNonNull(formatter, "formatter");
+		requireNonNull(file, "file");
 		byte[] rawBytes = ThrowingEx.get(() -> Files.readAllBytes(file.toPath()));
 		String raw = new String(rawBytes, formatter.getEncoding());
 		String original = LineEnding.toUnix(raw);
@@ -153,7 +157,7 @@ public final class PaddedCell {
 		// @formatter:off
 		switch (type) {
 		case CONVERGE:	return steps.get(steps.size() - 1);
-		case CYCLE:		return Collections.min(steps, Comparator.comparingInt(String::length).thenComparing(Function.identity()));
+		case CYCLE:		return Collections.min(steps, comparingInt(String::length).thenComparing(identity()));
 		case DIVERGE:	throw new IllegalArgumentException("No canonical form for a diverging result");
 		default:	throw new IllegalArgumentException("Unknown type: " + type);
 		}

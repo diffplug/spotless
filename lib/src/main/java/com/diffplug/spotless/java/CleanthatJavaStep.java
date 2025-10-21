@@ -15,6 +15,14 @@
  */
 package com.diffplug.spotless.java;
 
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Jvm;
+import com.diffplug.spotless.Provisioner;
 import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
@@ -23,13 +31,6 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-
-import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JarState;
-import com.diffplug.spotless.Jvm;
-import com.diffplug.spotless.Provisioner;
 
 /**
  * Enables CleanThat as a SpotLess step.
@@ -111,12 +112,12 @@ public final class CleanthatJavaStep implements Serializable {
 			List<String> excluded,
 			boolean includeDraft,
 			Provisioner provisioner) {
-		Objects.requireNonNull(groupArtifact, "groupArtifact");
+		requireNonNull(groupArtifact, "groupArtifact");
 		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
 			throw new IllegalArgumentException("groupArtifact must be in the form 'groupId:artifactId'. it was: " + groupArtifact);
 		}
-		Objects.requireNonNull(version, "version");
-		Objects.requireNonNull(provisioner, "provisioner");
+		requireNonNull(version, "version");
+		requireNonNull(provisioner, "provisioner");
 		return FormatterStep.create(stepName,
 				new CleanthatJavaStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, sourceJdkVersion, included, excluded, includeDraft),
 				CleanthatJavaStep::equalityState,
@@ -136,7 +137,7 @@ public final class CleanthatJavaStep implements Serializable {
 
 	/** Get default formatter version */
 	public static String defaultVersion() {
-		return Objects.requireNonNull(JVM_SUPPORT.getRecommendedFormatterVersion());
+		return requireNonNull(JVM_SUPPORT.getRecommendedFormatterVersion());
 	}
 
 	public static String defaultGroupArtifact() {

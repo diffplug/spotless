@@ -15,14 +15,7 @@
  */
 package com.diffplug.spotless.npm;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Map;
-
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import static java.util.Collections.emptyMap;
 
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterStep;
@@ -31,6 +24,13 @@ import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.tag.NpmTest;
+import java.io.File;
+import java.util.Collections;
+import java.util.Map;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @NpmTest
 class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
@@ -118,7 +118,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 					buildDir(),
 					null,
 					npmPathResolver(),
-					new PrettierConfig(null, Collections.emptyMap()));
+					new PrettierConfig(null, emptyMap()));
 
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
 				stepHarness.testResource("test.json", dirtyFile, cleanFile);

@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -26,7 +29,6 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-
 import javax.annotation.Nullable;
 
 final class EncodingErrorMsg {
@@ -67,7 +69,7 @@ final class EncodingErrorMsg {
 		charBuf = CharBuffer.allocate(Math.min(unrepresentable + 2 * CONTEXT, chars.length()));
 
 		message = new StringBuilder("Encoding error! ");
-		if (charset.equals(StandardCharsets.UTF_8)) {
+		if (charset.equals(UTF_8)) {
 			message.append("Spotless uses UTF-8 by default.");
 		} else {
 			message.append("You configured Spotless to use ").append(charset.name()).append(".");
@@ -89,9 +91,9 @@ final class EncodingErrorMsg {
 		// https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html
 		LinkedHashSet<Charset> encodings = new LinkedHashSet<>();
 		encodings.add(charset); // the encoding we are using
-		encodings.add(StandardCharsets.UTF_8);  // followed by likely encodings
+		encodings.add(UTF_8);  // followed by likely encodings
 		addIfAvailable(encodings, "windows-1252");
-		encodings.add(StandardCharsets.ISO_8859_1);
+		encodings.add(ISO_8859_1);
 		addIfAvailable(encodings, "Shift_JIS");
 		addIfAvailable(encodings, "Big5");
 		addIfAvailable(encodings, "Big5-HKSCS");

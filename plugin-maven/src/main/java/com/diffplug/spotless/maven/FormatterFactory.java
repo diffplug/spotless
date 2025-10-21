@@ -17,20 +17,8 @@ package com.diffplug.spotless.maven;
 
 import static com.diffplug.spotless.maven.AbstractSpotlessMojo.RATCHETFROM_NONE;
 import static java.util.Collections.emptySet;
-
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
-import org.eclipse.aether.RepositorySystemSession;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toCollection;
 
 import com.diffplug.common.collect.Sets;
 import com.diffplug.spotless.Formatter;
@@ -49,6 +37,18 @@ import com.diffplug.spotless.maven.generic.Replace;
 import com.diffplug.spotless.maven.generic.ReplaceRegex;
 import com.diffplug.spotless.maven.generic.ToggleOffOn;
 import com.diffplug.spotless.maven.generic.TrimTrailingWhitespace;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.eclipse.aether.RepositorySystemSession;
 
 public abstract class FormatterFactory {
 	@Parameter
@@ -96,7 +96,7 @@ public abstract class FormatterFactory {
 		List<FormatterStep> formatterSteps = factories.stream()
 				.filter(Objects::nonNull) // all unrecognized steps from XML config appear as nulls in the list
 				.map(factory -> factory.newFormatterStep(stepConfig))
-				.collect(Collectors.toCollection(ArrayList::new));
+				.collect(toCollection(ArrayList::new));
 		if (toggle != null) {
 			List<FormatterStep> formatterStepsBeforeToggle = formatterSteps;
 			formatterSteps = List.of(toggle.createFence().preserveWithin(formatterStepsBeforeToggle));
@@ -162,7 +162,7 @@ public abstract class FormatterFactory {
 	}
 
 	protected final void addStepFactory(FormatterStepFactory stepFactory) {
-		Objects.requireNonNull(stepFactory);
+		requireNonNull(stepFactory);
 		stepFactories.add(stepFactory);
 	}
 

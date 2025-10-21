@@ -17,41 +17,9 @@ package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
 import static com.diffplug.spotless.generic.LicenseHeaderStep.SPOTLESS_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.resource.ResourceManager;
-import org.codehaus.plexus.resource.loader.FileResourceLoader;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.MatchPatterns;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.sonatype.plexus.build.incremental.BuildContext;
+import static java.util.stream.Collectors.toSet;
 
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.Jvm;
@@ -83,6 +51,38 @@ import com.diffplug.spotless.maven.shell.Shell;
 import com.diffplug.spotless.maven.sql.Sql;
 import com.diffplug.spotless.maven.typescript.Typescript;
 import com.diffplug.spotless.maven.yaml.Yaml;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.resource.ResourceManager;
+import org.codehaus.plexus.resource.loader.FileResourceLoader;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.MatchPatterns;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private static final String DEFAULT_INDEX_FILE_NAME = "spotless-index";
@@ -145,7 +145,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private LicenseHeader licenseHeader;
 
 	@Parameter
-	private List<Format> formats = Collections.emptyList();
+	private List<Format> formats = emptyList();
 
 	@Parameter
 	private Css css;
@@ -315,7 +315,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			final String[] includePatterns = this.filePatterns.split(",");
 			final List<Pattern> compiledIncludePatterns = Arrays.stream(includePatterns)
 					.map(Pattern::compile)
-					.collect(Collectors.toList());
+					.collect(toList());
 			final Predicate<File> shouldInclude = file -> compiledIncludePatterns
 					.stream()
 					.anyMatch(filePattern -> filePattern.matcher(file.getAbsolutePath())
@@ -365,7 +365,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		return StreamSupport.stream(patterns.spliterator(), true)
 				.map(pattern -> pattern.replace('/', File.separatorChar))
 				.map(pattern -> pattern.replace('\\', File.separatorChar))
-				.collect(Collectors.toSet());
+				.collect(toSet());
 	}
 
 	private static String withTrailingSeparator(String path) {

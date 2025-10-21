@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
-
 import javax.annotation.Nonnull;
 
 class NpmConfig implements Serializable {
@@ -34,7 +35,7 @@ class NpmConfig implements Serializable {
 	private final String npmrcContent;
 
 	public NpmConfig(@Nonnull String packageJsonContent, String serveScriptContent, String npmrcContent) {
-		this.packageJsonContent = Objects.requireNonNull(packageJsonContent);
+		this.packageJsonContent = requireNonNull(packageJsonContent);
 		this.serveScriptContent = serveScriptContent;
 		this.npmrcContent = npmrcContent;
 	}

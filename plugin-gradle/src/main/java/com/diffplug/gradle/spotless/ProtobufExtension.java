@@ -16,13 +16,12 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.spotless.protobuf.ProtobufConstants.LICENSE_HEADER_DELIMITER;
-
-import java.util.Objects;
-
-import javax.inject.Inject;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.protobuf.BufStep;
+import java.util.Objects;
+import javax.inject.Inject;
 
 public class ProtobufExtension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "protobuf";
@@ -53,7 +52,7 @@ public class ProtobufExtension extends FormatExtension implements HasBuiltinDeli
 
 	/** Adds the specified version of <a href="https://buf.build/">buf</a>. */
 	public BufFormatExtension buf(String version) {
-		Objects.requireNonNull(version);
+		requireNonNull(version);
 		return new BufFormatExtension(version);
 	}
 

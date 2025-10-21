@@ -15,10 +15,7 @@
  */
 package com.diffplug.spotless.scala;
 
-import java.io.File;
-
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
@@ -26,6 +23,9 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
+import java.io.File;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class ScalaFmtStepTest extends ResourceHarness {
 	@Test
@@ -57,7 +57,7 @@ class ScalaFmtStepTest extends ResourceHarness {
 	@Test
 	void behaviorConfigFileVersionDoesnotMatchLibrary() {
 		FormatterStep step = ScalaFmtStep.create("3.0.0", TestProvisioner.mavenCentral(), createTestFile("scala/scalafmt/scalafmt.conf"));
-		Assertions.assertThatThrownBy(() -> step.format("", new File(""))).cause().message().contains("Spotless is using 3.0.0 but the config file declares 3.8.1. Both must match. Update the version declared in the plugin's settings and/or the config file.");
+		assertThatThrownBy(() -> step.format("", new File(""))).cause().message().contains("Spotless is using 3.0.0 but the config file declares 3.8.1. Both must match. Update the version declared in the plugin's settings and/or the config file.");
 	}
 
 	@Test
@@ -92,6 +92,6 @@ class ScalaFmtStepTest extends ResourceHarness {
 	void invalidConfiguration() {
 		File invalidConfFile = createTestFile("scala/scalafmt/scalafmt.invalid.conf");
 		Provisioner provisioner = TestProvisioner.mavenCentral();
-		Assertions.assertThatThrownBy(() -> ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile).format("", new File(""))).cause().message().contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
+		assertThatThrownBy(() -> ScalaFmtStep.create("3.0.0", provisioner, invalidConfFile).format("", new File(""))).cause().message().contains("found option 'invalidScalaFmtConfigField' which wasn't expected");
 	}
 }

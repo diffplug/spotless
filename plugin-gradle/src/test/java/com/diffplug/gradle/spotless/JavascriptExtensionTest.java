@@ -15,18 +15,18 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.IOException;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.diffplug.spotless.npm.EslintFormatterStep;
+import com.diffplug.spotless.npm.EslintStyleGuide;
+import com.diffplug.spotless.tag.NpmTest;
+import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import com.diffplug.spotless.npm.EslintFormatterStep;
-import com.diffplug.spotless.npm.EslintStyleGuide;
-import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
 class JavascriptExtensionTest extends GradleIntegrationHarness {
@@ -126,7 +126,7 @@ class JavascriptExtensionTest extends GradleIntegrationHarness {
 					"}");
 			setFile("test.js").toResource("npm/eslint/javascript/styleguide/standard/javascript-es6.dirty");
 			BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
-			Assertions.assertThat(spotlessApply.getOutput()).contains("ESLint must be configured");
+			assertThat(spotlessApply.getOutput()).contains("ESLint must be configured");
 		}
 
 		@Test

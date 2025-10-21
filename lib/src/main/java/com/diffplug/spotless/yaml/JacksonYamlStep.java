@@ -15,16 +15,17 @@
  */
 package com.diffplug.spotless.yaml;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import java.io.Serial;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 /**
  * Simple YAML formatter which reformats the file according to Jackson YAMLFactory.
@@ -53,8 +54,8 @@ public final class JacksonYamlStep implements Serializable {
 	public static FormatterStep create(JacksonYamlConfig jacksonConfig,
 			String jacksonVersion,
 			Provisioner provisioner) {
-		Objects.requireNonNull(jacksonConfig, "jacksonConfig cannot be null");
-		Objects.requireNonNull(provisioner, "provisioner cannot be null");
+		requireNonNull(jacksonConfig, "jacksonConfig cannot be null");
+		requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.create(NAME,
 				new JacksonYamlStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + jacksonVersion, provisioner)), jacksonConfig),
 				JacksonYamlStep::equalityState,

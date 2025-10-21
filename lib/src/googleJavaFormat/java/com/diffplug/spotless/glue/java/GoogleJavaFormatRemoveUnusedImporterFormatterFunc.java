@@ -15,13 +15,12 @@
  */
 package com.diffplug.spotless.glue.java;
 
-import java.util.Objects;
-
-import javax.annotation.Nonnull;
-
-import com.google.googlejavaformat.java.RemoveUnusedImports;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.FormatterFunc;
+import com.google.googlejavaformat.java.RemoveUnusedImports;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 
 public class GoogleJavaFormatRemoveUnusedImporterFormatterFunc implements FormatterFunc {
 
@@ -29,7 +28,7 @@ public class GoogleJavaFormatRemoveUnusedImporterFormatterFunc implements Format
 	private final String version;
 
 	public GoogleJavaFormatRemoveUnusedImporterFormatterFunc(@Nonnull String version) {
-		this.version = Objects.requireNonNull(version);
+		this.version = requireNonNull(version);
 	}
 
 	@Override

@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import static com.diffplug.spotless.MoreIterables.toSortedSet;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.util.Arrays;
@@ -29,7 +30,7 @@ class SerializableFileFilterImpl {
 		private final String[] namesToSkip;
 
 		SkipFilesNamed(String... namesToSkip) {
-			Objects.requireNonNull(namesToSkip);
+			requireNonNull(namesToSkip);
 			List<String> sorted = toSortedSet(Arrays.asList(namesToSkip));
 			this.namesToSkip = sorted.toArray(new String[sorted.size()]);
 		}

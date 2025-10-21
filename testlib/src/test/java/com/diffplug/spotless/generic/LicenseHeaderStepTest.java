@@ -15,14 +15,9 @@
  */
 package com.diffplug.spotless.generic;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.ZoneOffset;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static java.time.ZoneOffset.UTC;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
@@ -30,6 +25,13 @@ import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.generic.LicenseHeaderStep.YearMode;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class LicenseHeaderStepTest extends ResourceHarness {
 	private static final String FILE_NO_LICENSE = "license/FileWithoutLicenseHeader.test";
@@ -185,9 +187,9 @@ class LicenseHeaderStepTest extends ResourceHarness {
 	void efficient() throws Throwable {
 		FormatterStep step = LicenseHeaderStep.headerDelimiter("LicenseHeader\n", "contentstart").build();
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
-		Assertions.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 		// If no change is required, it should return the exact same string for efficiency reasons
-		Assertions.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
 
 	@Test
@@ -195,8 +197,8 @@ class LicenseHeaderStepTest extends ResourceHarness {
 		// The sanitizer should add a \n
 		FormatterStep step = LicenseHeaderStep.headerDelimiter("LicenseHeader", "contentstart").build();
 		String alreadyCorrect = "LicenseHeader\ncontentstart";
-		Assertions.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
-		Assertions.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
 
 	@Test
@@ -204,8 +206,8 @@ class LicenseHeaderStepTest extends ResourceHarness {
 		// if the user wants extra lines after the header, we shouldn't clobber them
 		FormatterStep step = LicenseHeaderStep.headerDelimiter("LicenseHeader\n\n", "contentstart").build();
 		String alreadyCorrect = "LicenseHeader\n\ncontentstart";
-		Assertions.assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
-		Assertions.assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		assertEquals(alreadyCorrect, step.format(alreadyCorrect, new File("")));
+		assertSame(alreadyCorrect, step.format(alreadyCorrect, new File("")));
 	}
 
 	@Test
@@ -250,7 +252,7 @@ class LicenseHeaderStepTest extends ResourceHarness {
 
 	@Test
 	void should_update_year_for_license_with_address() throws Throwable {
-		int currentYear = LocalDate.now(ZoneOffset.UTC).getYear();
+		int currentYear = LocalDate.now(UTC).getYear();
 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(licenceWithAddress()), PACKAGE_).withYearMode(YearMode.UPDATE_TO_TODAY).build();
 		StepHarness.forStep(step).test(
 				hasHeader(licenceWithAddress().replace("$YEAR", "2015")),

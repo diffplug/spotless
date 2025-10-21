@@ -15,13 +15,7 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.maven.plugins.annotations.Parameter;
+import static java.util.Collections.emptyList;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
@@ -29,6 +23,12 @@ import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
+import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.maven.plugins.annotations.Parameter;
 
 public class Ktlint implements FormatterStepFactory {
 	private static final File DEFAULT_EDITOR_CONFIG = new File(".editorconfig");
@@ -56,7 +56,7 @@ public class Ktlint implements FormatterStepFactory {
 			editorConfigOverride = new HashMap<>();
 		}
 		if (customRuleSets == null) {
-			customRuleSets = Collections.emptyList();
+			customRuleSets = emptyList();
 		}
 		return KtLintStep.create(
 				ktlintVersion,

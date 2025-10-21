@@ -15,6 +15,13 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Comparator.reverseOrder;
+
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.StandardSystemProperty;
+import com.diffplug.common.base.Suppliers;
+import com.diffplug.common.collect.ImmutableSet;
+import com.diffplug.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -25,7 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
@@ -35,12 +41,6 @@ import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.java.TargetJvmEnvironment;
 import org.gradle.testfixtures.ProjectBuilder;
-
-import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.StandardSystemProperty;
-import com.diffplug.common.base.Suppliers;
-import com.diffplug.common.collect.ImmutableSet;
-import com.diffplug.common.io.Files;
 
 public class TestProvisioner {
 	public static Project gradleProject(File dir) {
@@ -86,7 +86,7 @@ public class TestProvisioner {
 				// delete the temp dir
 				try {
 					java.nio.file.Files.walk(tempDir.toPath())
-							.sorted(Comparator.reverseOrder())
+							.sorted(reverseOrder())
 							.map(Path::toFile)
 							.forEach(File::delete);
 				} catch (IOException e) {

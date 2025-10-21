@@ -16,15 +16,21 @@
 package com.diffplug.spotless.maven.incremental;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.NeverUpToDateStep;
+import com.diffplug.spotless.SerializedFunction;
+import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginManagement;
@@ -33,13 +39,6 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
 import org.junit.jupiter.api.Test;
-
-import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.NeverUpToDateStep;
-import com.diffplug.spotless.SerializedFunction;
-import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class PluginFingerprintTest extends MavenIntegrationHarness {
 
@@ -126,7 +125,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		spotlessPlugin.setVersion("1.2.3");
 		project.getBuild().addPlugin(spotlessPlugin);
 
-		PluginFingerprint fingerprint = PluginFingerprint.from(project, Collections.emptyList());
+		PluginFingerprint fingerprint = PluginFingerprint.from(project, emptyList());
 
 		assertThat(fingerprint).isNotNull();
 	}
@@ -143,7 +142,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		pluginManagement.addPlugin(spotlessPlugin);
 		project.getBuild().setPluginManagement(pluginManagement);
 
-		PluginFingerprint fingerprint = PluginFingerprint.from(project, Collections.emptyList());
+		PluginFingerprint fingerprint = PluginFingerprint.from(project, emptyList());
 
 		assertThat(fingerprint).isNotNull();
 	}

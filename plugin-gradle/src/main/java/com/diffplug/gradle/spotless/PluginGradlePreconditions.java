@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Objects;
 
 final class PluginGradlePreconditions {
@@ -23,17 +25,17 @@ final class PluginGradlePreconditions {
 
 	@SafeVarargs
 	static <T> T[] requireElementsNonNull(T... elements) {
-		Objects.requireNonNull(elements);
+		requireNonNull(elements);
 		for (T element : elements) {
-			Objects.requireNonNull(element);
+			requireNonNull(element);
 		}
 		return elements;
 	}
 
 	static <T, I extends Iterable<T>> I requireElementsNonNull(I elements) {
-		Objects.requireNonNull(elements);
+		requireNonNull(elements);
 		for (Object element : elements) {
-			Objects.requireNonNull(element);
+			requireNonNull(element);
 		}
 		return elements;
 	}

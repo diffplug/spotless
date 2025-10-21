@@ -15,22 +15,22 @@
  */
 package com.diffplug.spotless.sql;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
+import static java.util.Collections.emptySet;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 
 class DBeaverSQLFormatterStepTest extends ResourceHarness {
 
 	@Test
 	void behavior() {
-		FormatterStep step = DBeaverSQLFormatterStep.create(Collections.emptySet());
+		FormatterStep step = DBeaverSQLFormatterStep.create(emptySet());
 		StepHarness.forStep(step)
 				.testResource("sql/dbeaver/full.dirty", "sql/dbeaver/full.clean")
 				.testResource("sql/dbeaver/V1_initial.sql.dirty", "sql/dbeaver/V1_initial.sql.clean")

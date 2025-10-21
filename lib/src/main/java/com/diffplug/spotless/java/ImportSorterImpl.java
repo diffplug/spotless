@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.java;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +29,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.annotation.Nullable;
 
 /*not thread safe*/
@@ -57,7 +58,7 @@ final class ImportSorterImpl {
 			this.subGroups = Stream.of(importOrder.split("\\" + SUBGROUP_SEPARATOR, -1))
 					.map(this::normalizeStatic)
 					.filter(group -> !knownGroupings.contains(group))
-					.collect(Collectors.toList());
+					.collect(toList());
 			knownGroupings.addAll(this.subGroups);
 		}
 
@@ -91,7 +92,7 @@ final class ImportSorterImpl {
 
 	private ImportSorterImpl(List<String> importOrder, boolean wildcardsLast, boolean semanticSort,
 			Set<String> treatAsPackage, Set<String> treatAsClass) {
-		importsGroups = importOrder.stream().filter(Objects::nonNull).map(order -> new ImportsGroup(order, knownGroupings)).collect(Collectors.toList());
+		importsGroups = importOrder.stream().filter(Objects::nonNull).map(order -> new ImportsGroup(order, knownGroupings)).collect(toList());
 		putStaticItemIfNotExists(importsGroups);
 		putCatchAllGroupIfNotExists(importsGroups);
 
@@ -101,7 +102,7 @@ final class ImportSorterImpl {
 			ordering = new LexicographicalOrderingComparator(wildcardsLast);
 		}
 
-		List<String> subgroups = importsGroups.stream().map(ImportsGroup::getSubGroups).flatMap(Collection::stream).collect(Collectors.toList());
+		List<String> subgroups = importsGroups.stream().map(ImportsGroup::getSubGroups).flatMap(Collection::stream).collect(toList());
 		this.allImportOrderItems.addAll(subgroups);
 	}
 

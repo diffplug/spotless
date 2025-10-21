@@ -15,8 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.IOException;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -52,8 +53,8 @@ class ConfigAvoidanceTest extends GradleIntegrationHarness {
 		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
 		String help = gradleRunner().withArguments("help").build().getOutput();
-		Assertions.assertThat(help).doesNotContain("Canary was configured");
+		assertThat(help).doesNotContain("Canary was configured");
 		String check = gradleRunner().withArguments("check").buildAndFail().getOutput();
-		Assertions.assertThat(check).contains("Canary was configured", "Canary ran", "Execution failed for task ':spotlessJavaCheck'");
+		assertThat(check).contains("Canary was configured", "Canary ran", "Execution failed for task ':spotlessJavaCheck'");
 	}
 }

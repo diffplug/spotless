@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
 
 /**
@@ -164,7 +165,7 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 			String name,
 			State state,
 			SerializedFunction<State, FormatterFunc> stateToFormatter) {
-		Objects.requireNonNull(state, "state");
+		requireNonNull(state, "state");
 		return createLazy(name, () -> state, stateToFormatter);
 	}
 }

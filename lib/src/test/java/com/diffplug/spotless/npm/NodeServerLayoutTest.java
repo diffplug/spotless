@@ -15,23 +15,22 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.diffplug.spotless.ResourceHarness;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
-
-import com.diffplug.spotless.ResourceHarness;
 
 class NodeServerLayoutTest extends ResourceHarness {
 
 	@Test
 	void itCalculatesSameNodeModulesDirForSameContent() throws IOException {
 		File testDir = newFolder("build");
-		String packageJsonContent = prettierPackageJson(Collections.emptyMap());
+		String packageJsonContent = prettierPackageJson(emptyMap());
 		String serveJsContent = "fun main() { console.log('Hello, world!'); }";
 		NodeServerLayout layout1 = new NodeServerLayout(testDir, packageJsonContent, serveJsContent);
 		NodeServerLayout layout2 = new NodeServerLayout(testDir, packageJsonContent, serveJsContent);
@@ -55,7 +54,7 @@ class NodeServerLayoutTest extends ResourceHarness {
 	@Test
 	void itCalculatesDifferentNodeModulesDirForDifferentServeJs() throws IOException {
 		File testDir = newFolder("build");
-		String packageJsonContent = prettierPackageJson(Collections.emptyMap());
+		String packageJsonContent = prettierPackageJson(emptyMap());
 		String serveJsContent1 = "fun main() { console.log('Hello, world!'); }";
 		String serveJsContent2 = "fun main() { console.log('Goodbye, world!'); }";
 

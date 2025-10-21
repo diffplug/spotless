@@ -15,12 +15,13 @@
  */
 package com.diffplug.spotless.yaml;
 
+import static java.util.Collections.unmodifiableMap;
+
+import com.diffplug.spotless.json.JacksonConfig;
 import java.io.Serial;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import com.diffplug.spotless.json.JacksonConfig;
 
 /**
  * Specialization of {@link JacksonConfig} for YAML documents
@@ -32,7 +33,7 @@ public class JacksonYamlConfig extends JacksonConfig {
 	protected Map<String, Boolean> yamlFeatureToToggle = new LinkedHashMap<>();
 
 	public Map<String, Boolean> getYamlFeatureToToggle() {
-		return Collections.unmodifiableMap(yamlFeatureToToggle);
+		return unmodifiableMap(yamlFeatureToToggle);
 	}
 
 	/**

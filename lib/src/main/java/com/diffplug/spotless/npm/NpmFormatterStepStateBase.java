@@ -16,7 +16,12 @@
 package com.diffplug.spotless.npm;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.UUID.randomUUID;
 
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.ProcessRunner;
+import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
+import com.diffplug.spotless.ThrowingEx;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serial;
@@ -28,14 +33,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.ProcessRunner;
-import com.diffplug.spotless.ProcessRunner.LongRunningProcess;
-import com.diffplug.spotless.ThrowingEx;
 
 abstract class NpmFormatterStepStateBase implements Serializable {
 
@@ -115,7 +114,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			assertNodeServerDirReady();
 			LongRunningProcess server = null;
 			try {
-				final UUID nodeServerInstanceId = UUID.randomUUID();
+				final UUID nodeServerInstanceId = randomUUID();
 				// The npm process will output the randomly selected port of the http server process to 'server-<id>.port' file
 				// so in order to be safe, remove such a file if it exists before starting.
 				final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server-%s.port".formatted(nodeServerInstanceId));

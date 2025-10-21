@@ -15,6 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Collections.synchronizedMap;
+
+import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.base.Unhandled;
+import com.diffplug.spotless.Lint;
+import com.diffplug.spotless.Provisioner;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,10 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.DirectoryProperty;
@@ -41,11 +45,6 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.tooling.events.FinishEvent;
 import org.gradle.tooling.events.OperationCompletionListener;
 
-import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.base.Unhandled;
-import com.diffplug.spotless.Lint;
-import com.diffplug.spotless.Provisioner;
-
 /**
  * Allows the check and apply tasks to coordinate
  * with each other (and the source task) to reduce
@@ -53,9 +52,9 @@ import com.diffplug.spotless.Provisioner;
  * apply already did).
  */
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
-	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
-	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
-	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, SpotlessApply> apply = synchronizedMap(new HashMap<>());
+	private final Map<String, SpotlessTask> source = synchronizedMap(new HashMap<>());
+	private final Map<String, Provisioner> provisioner = synchronizedMap(new HashMap<>());
 
 	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 

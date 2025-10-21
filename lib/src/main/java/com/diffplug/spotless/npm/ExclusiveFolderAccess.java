@@ -15,15 +15,15 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.spotless.ThrowingEx;
 import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import javax.annotation.Nonnull;
-
-import com.diffplug.spotless.ThrowingEx;
 
 interface ExclusiveFolderAccess {
 
@@ -32,7 +32,7 @@ interface ExclusiveFolderAccess {
 	}
 
 	static ExclusiveFolderAccess forFolder(@Nonnull String path) {
-		return new ExclusiveFolderAccessSharedMutex(Objects.requireNonNull(path));
+		return new ExclusiveFolderAccessSharedMutex(requireNonNull(path));
 	}
 
 	void runExclusively(ThrowingEx.Runnable runnable);
@@ -44,7 +44,7 @@ interface ExclusiveFolderAccess {
 		private final String path;
 
 		private ExclusiveFolderAccessSharedMutex(@Nonnull String path) {
-			this.path = Objects.requireNonNull(path);
+			this.path = requireNonNull(path);
 		}
 
 		private Lock getMutex() {

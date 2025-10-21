@@ -15,6 +15,11 @@
  */
 package com.diffplug.spotless.java;
 
+import static java.util.Collections.emptyList;
+
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.SerializedFunction;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -24,10 +29,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.SerializedFunction;
 
 /**
  * Some formatters put every annotation on its own line
@@ -417,7 +418,7 @@ public final class FormatAnnotationsStep implements Serializable {
 	private static final String NAME = "No line break between type annotation and type";
 
 	public static FormatterStep create() {
-		return create(Collections.emptyList(), Collections.emptyList());
+		return create(emptyList(), emptyList());
 	}
 
 	public static FormatterStep create(List<String> addedTypeAnnotations, List<String> removedTypeAnnotations) {

@@ -15,6 +15,16 @@
  */
 package com.diffplug.spotless.generic;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toList;
+
+import com.diffplug.spotless.ForeignExe;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ProcessRunner;
+import com.diffplug.spotless.ThrowingEx;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,19 +43,11 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.diffplug.spotless.ForeignExe;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ProcessRunner;
-import com.diffplug.spotless.ThrowingEx;
 
 public final class IdeaStep {
 
@@ -65,7 +67,7 @@ public final class IdeaStep {
 	}
 
 	public static IdeaStepBuilder newBuilder(@Nonnull File buildDir) {
-		return new IdeaStepBuilder(Objects.requireNonNull(buildDir));
+		return new IdeaStepBuilder(requireNonNull(buildDir));
 	}
 
 	private static FormatterStep create(IdeaStepBuilder builder) {
@@ -77,7 +79,7 @@ public final class IdeaStep {
 	}
 
 	private State createState() {
-		return new State(Objects.requireNonNull(builder));
+		return new State(requireNonNull(builder));
 	}
 
 	public static final class IdeaStepBuilder {
@@ -92,7 +94,7 @@ public final class IdeaStep {
 		private final File buildDir;
 
 		private IdeaStepBuilder(@Nonnull File buildDir) {
-			this.buildDir = Objects.requireNonNull(buildDir);
+			this.buildDir = requireNonNull(buildDir);
 		}
 
 		public IdeaStepBuilder setUseDefaults(boolean useDefaults) {
@@ -101,7 +103,7 @@ public final class IdeaStep {
 		}
 
 		public IdeaStepBuilder setBinaryPath(@Nonnull String binaryPath) {
-			this.binaryPath = Objects.requireNonNull(binaryPath);
+			this.binaryPath = requireNonNull(binaryPath);
 			return this;
 		}
 
@@ -145,7 +147,7 @@ public final class IdeaStep {
 
 		private State(@Nonnull IdeaStepBuilder builder) {
 			LOGGER.debug("Creating {} state with configuration {}", NAME, builder);
-			this.uniqueBuildFolder = new File(builder.buildDir, UUID.randomUUID().toString());
+			this.uniqueBuildFolder = new File(builder.buildDir, randomUUID().toString());
 			this.withDefaults = builder.useDefaults;
 			this.codeStyleSettingsPath = builder.codeStyleSettingsPath;
 			this.ideaProperties = new TreeMap<>(builder.ideaProperties);
@@ -215,7 +217,7 @@ public final class IdeaStep {
 			// since we cannot directly work with the file, we need to write the unix string to a temporary file
 			File tempFile = Files.createTempFile("spotless", file.getName()).toFile();
 			try {
-				Files.write(tempFile.toPath(), unix.getBytes(StandardCharsets.UTF_8));
+				Files.write(tempFile.toPath(), unix.getBytes(UTF_8));
 				List<String> params = getParams(tempFile);
 
 				Map<String, String> env = createEnv();
@@ -223,7 +225,7 @@ public final class IdeaStep {
 				var result = ideaStepFormatterCleanupResources.runner.exec(null, env, null, params);
 				LOGGER.debug("command finished with exit code: {}", result.exitCode());
 				LOGGER.debug("command finished with stdout: {}",
-						result.assertExitZero(StandardCharsets.UTF_8));
+						result.assertExitZero(UTF_8));
 				return Files.readString(tempFile.toPath());
 			} finally {
 				Files.delete(tempFile.toPath());
@@ -280,7 +282,7 @@ public final class IdeaStep {
 			}
 			builder.add("-charset").add("UTF-8");
 			builder.add(ThrowingEx.get(file::getCanonicalPath));
-			return builder.build().collect(Collectors.toList());
+			return builder.build().collect(toList());
 		}
 
 		private FormatterFunc.Closeable toFunc() {

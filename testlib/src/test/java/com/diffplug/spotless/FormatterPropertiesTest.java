@@ -15,7 +15,9 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
@@ -26,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -50,15 +51,15 @@ class FormatterPropertiesTest extends ResourceHarness {
 	};
 
 	private List<String> validPropertiesResources() {
-		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> !it.endsWith(".xml")).collect(Collectors.toList());
+		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> !it.endsWith(".xml")).collect(toList());
 	}
 
 	private List<String> validXmlResources() {
-		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> it.endsWith(".xml")).collect(Collectors.toList());
+		return List.of(VALID_SETTINGS_RESOURCES).stream().filter(it -> it.endsWith(".xml")).collect(toList());
 	}
 
 	private List<String> invalidXmlResources() {
-		return List.of(INVALID_SETTINGS_RESOURCES).stream().filter(it -> it.endsWith(".xml")).collect(Collectors.toList());
+		return List.of(INVALID_SETTINGS_RESOURCES).stream().filter(it -> it.endsWith(".xml")).collect(toList());
 	}
 
 	private static final String[] VALID_VALUES = {
@@ -181,7 +182,7 @@ class FormatterPropertiesTest extends ResourceHarness {
 		String filePath = FileSignature.pathUnixToNative("does/not/exist.properties");
 		try {
 			FormatterProperties.from(new File(filePath));
-			Assertions.fail("Should have thrown");
+			fail("Should have thrown");
 		} catch (IllegalArgumentException ex) {
 			assertThat(ex.getMessage())
 					.as("IllegalArgumentException does not contain path of non-existing file.").contains(filePath);

@@ -15,17 +15,19 @@
  */
 package com.diffplug.spotless.generic;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.diffplug.common.io.Files;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.tag.IdeaTest;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 @IdeaTest
 class IdeaStepTest extends ResourceHarness {
@@ -36,19 +38,19 @@ class IdeaStepTest extends ResourceHarness {
 
 		String name = step.getName();
 
-		Assertions.assertEquals("IDEA", name);
+		assertEquals("IDEA", name);
 	}
 
 	@Test
 	void notFormattings() throws Exception {
 		File cleanFile = newFile("clean.java");
 		String cleanJava = ResourceHarness.getTestResource("java/idea/full.clean.java");
-		Files.write(cleanJava, cleanFile, StandardCharsets.UTF_8);
+		Files.write(cleanJava, cleanFile, UTF_8);
 		FormatterStep step = IdeaStep.newBuilder(buildDir()).setUseDefaults(true).build();
 
 		var result = step.format(cleanJava, cleanFile);
 
-		Assertions.assertEquals(cleanJava, result,
+		assertEquals(cleanJava, result,
 				"formatting was applied to clean file");
 	}
 
@@ -56,12 +58,12 @@ class IdeaStepTest extends ResourceHarness {
 	void formattings() throws Exception {
 		File dirtyFile = newFile("dirty.java");
 		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
-		Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
+		Files.write(dirtyJava, dirtyFile, UTF_8);
 		FormatterStep step = IdeaStep.newBuilder(buildDir()).setUseDefaults(true).build();
 
 		var result = step.format(dirtyJava, dirtyFile);
 
-		Assertions.assertNotEquals(dirtyJava, result,
+		assertNotEquals(dirtyJava, result,
 				"files were not changed after reformat");
 	}
 
@@ -69,12 +71,12 @@ class IdeaStepTest extends ResourceHarness {
 	void formattingsWorkWithDefaultParameters() throws Exception {
 		File dirtyFile = newFile("dirty.java");
 		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
-		Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
+		Files.write(dirtyJava, dirtyFile, UTF_8);
 		FormatterStep step = IdeaStep.newBuilder(buildDir()).build();
 
 		var result = step.format(dirtyJava, dirtyFile);
 
-		Assertions.assertNotEquals(dirtyJava, result,
+		assertNotEquals(dirtyJava, result,
 				"files were not changed after reformat");
 	}
 
@@ -82,12 +84,12 @@ class IdeaStepTest extends ResourceHarness {
 	void formattingsWithoutDefaultDoesNothing() throws Exception {
 		File dirtyFile = newFile("dirty.java");
 		String dirtyJava = ResourceHarness.getTestResource("java/idea/full.dirty.java");
-		Files.write(dirtyJava, dirtyFile, StandardCharsets.UTF_8);
+		Files.write(dirtyJava, dirtyFile, UTF_8);
 		FormatterStep step = IdeaStep.newBuilder(buildDir()).setUseDefaults(false).build();
 
 		var result = step.format(dirtyJava, dirtyFile);
 
-		Assertions.assertEquals(dirtyJava, result,
+		assertEquals(dirtyJava, result,
 				"files were changed after reformat");
 	}
 
@@ -95,12 +97,12 @@ class IdeaStepTest extends ResourceHarness {
 	void configureFile() throws Exception {
 		File cleanFile = newFile("clean.java");
 		String cleanJava = ResourceHarness.getTestResource("java/idea/full.clean.java");
-		Files.write(cleanJava, cleanFile, StandardCharsets.UTF_8);
+		Files.write(cleanJava, cleanFile, UTF_8);
 		FormatterStep step = IdeaStep.newBuilder(buildDir()).setUseDefaults(true).build();
 
 		var result = step.format(cleanJava, cleanFile);
 
-		Assertions.assertEquals(cleanJava, result,
+		assertEquals(cleanJava, result,
 				"formatting was applied to clean file");
 	}
 

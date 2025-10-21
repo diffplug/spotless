@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Objects;
 
 /** Superclass of all compound FormatterSteps necessary for {@link com.diffplug.spotless.LazyForwardingEquality#unlazy(java.lang.Object)}. */
@@ -22,7 +24,7 @@ abstract class DelegateFormatterStep implements FormatterStep {
 	protected final FormatterStep delegateStep;
 
 	DelegateFormatterStep(FormatterStep delegateStep) {
-		this.delegateStep = Objects.requireNonNull(delegateStep);
+		this.delegateStep = requireNonNull(delegateStep);
 	}
 
 	@Override

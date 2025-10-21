@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.markdown;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
 import java.util.Objects;
 
@@ -23,11 +25,11 @@ final class LibMarkdownPreconditions {
 	private LibMarkdownPreconditions() {}
 
 	static <K, V> Map<K, V> requireKeysAndValuesNonNull(Map<K, V> map) {
-		Objects.requireNonNull(map);
+		requireNonNull(map);
 		map.forEach((key, value) -> {
 			String errorMessage = key + "=" + value;
-			Objects.requireNonNull(key, errorMessage);
-			Objects.requireNonNull(value, errorMessage);
+			requireNonNull(key, errorMessage);
+			requireNonNull(value, errorMessage);
 		});
 		return map;
 	}

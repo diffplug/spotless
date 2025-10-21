@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 	@Test
@@ -104,7 +105,7 @@ class CleanthatJavaRefactorerTest extends MavenIntegrationHarness {
 		String path = "src/main/java/test.java";
 		setFile(path).toResource("java/cleanthat/" + dirtyPath);
 		// .withRemoteDebug(21654)
-		Assertions.assertThat(mavenRunner().withArguments("spotless:apply").runNoError().stdOutUtf8()).doesNotContain("[ERROR]");
+		assertThat(mavenRunner().withArguments("spotless:apply").runNoError().stdOutUtf8()).doesNotContain("[ERROR]");
 		assertFile(path).sameAsResource("java/cleanthat/" + cleanPath);
 	}
 }

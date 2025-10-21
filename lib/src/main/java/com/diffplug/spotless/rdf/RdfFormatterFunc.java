@@ -15,15 +15,17 @@
  */
 package com.diffplug.spotless.rdf;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.LineEnding;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.LineEnding;
 
 public class RdfFormatterFunc implements FormatterFunc {
 	private static final Set<String> TURTLE_EXTENSIONS = Set.of("ttl", "turtle");
@@ -141,7 +143,7 @@ public class RdfFormatterFunc implements FormatterFunc {
 						throw new RuntimeException(e);
 					}
 				})
-				.collect(Collectors.toList());
+				.collect(toList());
 
 		List<Object> onlyInAfterContent = reflectionHelper.streamGraph(graphAfter)
 				.filter(triple -> {
@@ -151,11 +153,11 @@ public class RdfFormatterFunc implements FormatterFunc {
 						throw new RuntimeException(e);
 					}
 				})
-				.collect(Collectors.toList());
+				.collect(toList());
 		if (!(onlyInBeforeContent.isEmpty() && onlyInAfterContent.isEmpty())) {
 			diffResult = onlyInBeforeContent.stream().map("< %s"::formatted)
-					.collect(Collectors.joining("\n"));
-			diffResult += "\n" + onlyInAfterContent.stream().map("> %s"::formatted).collect(Collectors.joining("\n"));
+					.collect(joining("\n"));
+			diffResult += "\n" + onlyInAfterContent.stream().map("> %s"::formatted).collect(joining("\n"));
 		} else {
 			diffResult = "'before' and 'after' content differs, but we don't know why. This is probably a bug.";
 		}

@@ -15,19 +15,19 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.stream.Collectors.toList;
+
+import com.diffplug.spotless.extra.GitRatchet;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.eclipse.jgit.lib.IndexDiff;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
-
-import com.diffplug.spotless.extra.GitRatchet;
 
 final class GitRatchetMaven extends GitRatchet<File> {
 	private GitRatchetMaven() {}
@@ -93,6 +93,6 @@ final class GitRatchetMaven extends GitRatchet<File> {
 
 		return dirtyPaths.stream()
 				.map(path -> baseDirPath.relativize(Path.of(workTreePath, path)).toString())
-				.collect(Collectors.toList());
+				.collect(toList());
 	}
 }

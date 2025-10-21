@@ -15,13 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
-
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -55,6 +55,6 @@ class FilePermissionsTest extends GradleIntegrationHarness {
 	}
 
 	private AbstractStringAssert<?> assertPermissions(Path path) throws IOException {
-		return Assertions.assertThat(PosixFilePermissions.toString(Files.getPosixFilePermissions(path)));
+		return assertThat(PosixFilePermissions.toString(Files.getPosixFilePermissions(path)));
 	}
 }

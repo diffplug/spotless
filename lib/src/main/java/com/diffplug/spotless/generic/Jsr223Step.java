@@ -15,19 +15,20 @@
  */
 package com.diffplug.spotless.generic;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 
 public final class Jsr223Step implements Serializable {
 	@Serial
@@ -43,9 +44,9 @@ public final class Jsr223Step implements Serializable {
 	}
 
 	public static FormatterStep create(String name, @Nullable String dependency, CharSequence engine, CharSequence script, Provisioner provisioner) {
-		Objects.requireNonNull(name, "name");
-		Objects.requireNonNull(engine, "engine");
-		Objects.requireNonNull(script, "script");
+		requireNonNull(name, "name");
+		requireNonNull(engine, "engine");
+		requireNonNull(script, "script");
 		return FormatterStep.create(name,
 				new Jsr223Step(dependency == null ? null : JarState.promise(() -> JarState.from(dependency, provisioner)), engine.toString(), script.toString()),
 				Jsr223Step::equalityState,
@@ -81,7 +82,7 @@ public final class Jsr223Step implements Serializable {
 
 			if (scriptEngine == null) {
 				throw new IllegalArgumentException("Unknown script engine '" + engine + "'. Available engines: "
-						+ scriptEngineManager.getEngineFactories().stream().flatMap(f -> f.getNames().stream()).collect(Collectors.joining(", ")));
+						+ scriptEngineManager.getEngineFactories().stream().flatMap(f -> f.getNames().stream()).collect(joining(", ")));
 			}
 
 			// evaluate script code

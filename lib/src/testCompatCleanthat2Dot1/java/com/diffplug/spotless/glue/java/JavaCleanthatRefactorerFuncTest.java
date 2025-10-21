@@ -15,14 +15,15 @@
  */
 package com.diffplug.spotless.glue.java;
 
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorer;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class JavaCleanthatRefactorerFuncTest {
 	@Test
 	public void testMutatorsDetection() {
-		Assertions.assertThat(JavaRefactorer.getAllIncluded()).isNotEmpty();
+		assertThat(JavaRefactorer.getAllIncluded()).isNotEmpty();
 	}
 }

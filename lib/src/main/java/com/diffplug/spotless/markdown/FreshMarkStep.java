@@ -16,7 +16,13 @@
 package com.diffplug.spotless.markdown;
 
 import static com.diffplug.spotless.markdown.LibMarkdownPreconditions.requireKeysAndValuesNonNull;
+import static java.util.Objects.requireNonNull;
 
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Jvm;
+import com.diffplug.spotless.Provisioner;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -27,15 +33,8 @@ import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Consumer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JarState;
-import com.diffplug.spotless.Jvm;
-import com.diffplug.spotless.Provisioner;
 
 /** A step for <a href="https://github.com/diffplug/freshmark">FreshMark</a>. */
 public final class FreshMarkStep implements Serializable {
@@ -67,9 +66,9 @@ public final class FreshMarkStep implements Serializable {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, Map<String, ?> properties, Provisioner provisioner) {
-		Objects.requireNonNull(version, "version");
-		Objects.requireNonNull(properties, "properties");
-		Objects.requireNonNull(provisioner, "provisioner");
+		requireNonNull(version, "version");
+		requireNonNull(properties, "properties");
+		requireNonNull(provisioner, "provisioner");
 
 		List<String> mavenCoordinates = new ArrayList<>();
 		mavenCoordinates.add(MAVEN_COORDINATE + version);

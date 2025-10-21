@@ -15,16 +15,17 @@
  */
 package com.diffplug.spotless.json.gson;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
+import java.io.Serial;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 public final class GsonStep implements Serializable {
 	@Serial
@@ -43,7 +44,7 @@ public final class GsonStep implements Serializable {
 	}
 
 	public static FormatterStep create(GsonConfig gsonConfig, Provisioner provisioner) {
-		Objects.requireNonNull(provisioner, "provisioner cannot be null");
+		requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.create(NAME,
 				new GsonStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATES + ":" + gsonConfig.getVersion(), provisioner)), gsonConfig),
 				GsonStep::equalityState,

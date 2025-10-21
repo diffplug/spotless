@@ -15,17 +15,16 @@
  */
 package com.diffplug.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.diffplug.spotless.generic.EndWithNewlineStep;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.junit.jupiter.api.Test;
-
-import com.diffplug.spotless.generic.EndWithNewlineStep;
 
 public class LintSuppressionTest {
 	private LintState dummyLintState() {
@@ -39,7 +38,7 @@ public class LintSuppressionTest {
 	private Formatter formatter() {
 		return Formatter.builder()
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.encoding(StandardCharsets.UTF_8)
+				.encoding(UTF_8)
 				.steps(List.of(EndWithNewlineStep.create()))
 				.build();
 	}

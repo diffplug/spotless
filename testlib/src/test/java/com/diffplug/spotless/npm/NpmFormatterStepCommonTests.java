@@ -15,16 +15,17 @@
  */
 package com.diffplug.spotless.npm;
 
-import java.io.File;
-import java.util.Collections;
+import static java.util.Collections.emptyList;
 
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.ThrowingEx;
+import java.io.File;
+import java.util.Collections;
 
 public abstract class NpmFormatterStepCommonTests extends ResourceHarness {
 
 	protected NpmPathResolver npmPathResolver() {
-		return new NpmPathResolver(npmExecutable(), nodeExecutable(), npmrc(), Collections.emptyList());
+		return new NpmPathResolver(npmExecutable(), nodeExecutable(), npmrc(), emptyList());
 	}
 
 	private File npmExecutable() {

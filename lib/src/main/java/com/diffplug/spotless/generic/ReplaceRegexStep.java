@@ -15,6 +15,13 @@
  */
 package com.diffplug.spotless.generic;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.regex.Pattern.MULTILINE;
+import static java.util.regex.Pattern.UNIX_LINES;
+
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Lint;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,29 +29,25 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.Lint;
-
 public final class ReplaceRegexStep {
 	// prevent direct instantiation
 	private ReplaceRegexStep() {}
 
 	public static FormatterStep create(String name, String regex, String replacement) {
-		Objects.requireNonNull(name, "name");
-		Objects.requireNonNull(regex, "regex");
-		Objects.requireNonNull(replacement, "replacement");
+		requireNonNull(name, "name");
+		requireNonNull(regex, "regex");
+		requireNonNull(replacement, "replacement");
 		return FormatterStep.createLazy(name,
-				() -> new State(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), replacement),
+				() -> new State(Pattern.compile(regex, UNIX_LINES | MULTILINE), replacement),
 				State::toFormatter);
 	}
 
 	public static FormatterStep lint(String name, String regex, String lintDetail) {
-		Objects.requireNonNull(name, "name");
-		Objects.requireNonNull(regex, "regex");
-		Objects.requireNonNull(lintDetail, "lintDetail");
+		requireNonNull(name, "name");
+		requireNonNull(regex, "regex");
+		requireNonNull(lintDetail, "lintDetail");
 		return FormatterStep.createLazy(name,
-				() -> new LintState(Pattern.compile(regex, Pattern.UNIX_LINES | Pattern.MULTILINE), name, lintDetail),
+				() -> new LintState(Pattern.compile(regex, UNIX_LINES | MULTILINE), name, lintDetail),
 				LintState::toLinter);
 	}
 

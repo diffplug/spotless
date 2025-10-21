@@ -15,17 +15,16 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.spotless.ProcessRunner.Result;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
 import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.diffplug.spotless.ProcessRunner.Result;
 
 public final class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 
@@ -38,7 +37,7 @@ public final class NodeModulesCachingNpmProcessFactory implements NpmProcessFact
 	private final ShadowCopy shadowCopy;
 
 	private NodeModulesCachingNpmProcessFactory(@Nonnull File cacheDir) {
-		this.cacheDir = Objects.requireNonNull(cacheDir);
+		this.cacheDir = requireNonNull(cacheDir);
 		assertDir(); // throws if cacheDir is not a directory
 		this.shadowCopy = new ShadowCopy(this::assertDir);
 	}

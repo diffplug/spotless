@@ -15,8 +15,7 @@
  */
 package com.diffplug.spotless.glue.diktat;
 
-import java.io.File;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Lint;
@@ -24,6 +23,8 @@ import com.diffplug.spotless.glue.diktat.compat.DiktatCompat1Dot2Dot5Adapter;
 import com.diffplug.spotless.glue.diktat.compat.DiktatCompat2Dot0Dot0Adapter;
 import com.diffplug.spotless.glue.diktat.compat.DiktatCompatAdapter;
 import com.diffplug.spotless.glue.diktat.compat.DiktatReporting;
+import java.io.File;
+import java.util.stream.Collectors;
 
 public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 	private final DiktatCompatAdapter adapter;
@@ -46,7 +47,7 @@ public class DiktatFormatterFunc implements FormatterFunc.NeedsFile {
 		try {
 			return adapter.format(file, unix, isScript);
 		} catch (DiktatReporting.LintException e) {
-			throw Lint.shortcut(e.lints.stream().map(lint -> Lint.atLine(lint.line, lint.ruleId, lint.detail)).collect(Collectors.toList()));
+			throw Lint.shortcut(e.lints.stream().map(lint -> Lint.atLine(lint.line, lint.ruleId, lint.detail)).collect(toList()));
 		}
 	}
 }

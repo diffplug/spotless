@@ -15,13 +15,20 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.spotless.ConfigurationCacheHackList;
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintSuppression;
+import com.diffplug.spotless.extra.GitRatchet;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
 import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
@@ -37,13 +44,6 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.work.DisableCachingByDefault;
 import org.gradle.work.Incremental;
 
-import com.diffplug.spotless.ConfigurationCacheHackList;
-import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.LintSuppression;
-import com.diffplug.spotless.extra.GitRatchet;
-
 @DisableCachingByDefault(because = "abstract definition")
 public abstract class SpotlessTask extends DefaultTask {
 	@Internal
@@ -58,7 +58,7 @@ public abstract class SpotlessTask extends DefaultTask {
 	}
 
 	public void setEncoding(String encoding) {
-		this.encoding = Objects.requireNonNull(encoding);
+		this.encoding = requireNonNull(encoding);
 	}
 
 	protected Provider<LineEnding.Policy> lineEndingsPolicy = null;
@@ -127,7 +127,7 @@ public abstract class SpotlessTask extends DefaultTask {
 	protected List<LintSuppression> lintSuppressions = new ArrayList<>();
 
 	public void setLintSuppressions(List<LintSuppression> lintSuppressions) {
-		this.lintSuppressions = Objects.requireNonNull(lintSuppressions);
+		this.lintSuppressions = requireNonNull(lintSuppressions);
 	}
 
 	@Input

@@ -15,10 +15,7 @@
  */
 package com.diffplug.spotless.maven.yaml;
 
-import java.util.Collections;
-import java.util.Map;
-
-import org.apache.maven.plugins.annotations.Parameter;
+import static java.util.Collections.emptyMap;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterFactory;
@@ -26,6 +23,9 @@ import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 import com.diffplug.spotless.yaml.JacksonYamlConfig;
 import com.diffplug.spotless.yaml.JacksonYamlStep;
+import java.util.Collections;
+import java.util.Map;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * A {@link FormatterFactory} implementation that corresponds to {@code <jackson>...</jackson>} configuration element.
@@ -36,10 +36,10 @@ public class JacksonYaml implements FormatterStepFactory {
 	private String version = JacksonYamlStep.defaultVersion();
 
 	@Parameter
-	private Map<String, Boolean> features = Collections.emptyMap();
+	private Map<String, Boolean> features = emptyMap();
 
 	@Parameter
-	private Map<String, Boolean> yamlFeatures = Collections.emptyMap();
+	private Map<String, Boolean> yamlFeatures = emptyMap();
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {

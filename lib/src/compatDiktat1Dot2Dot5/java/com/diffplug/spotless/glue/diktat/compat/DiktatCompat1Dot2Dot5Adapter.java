@@ -15,22 +15,21 @@
  */
 package com.diffplug.spotless.glue.diktat.compat;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 
 import com.pinterest.ktlint.core.KtLint;
 import com.pinterest.ktlint.core.LintError;
 import com.pinterest.ktlint.core.RuleSet;
 import com.pinterest.ktlint.core.api.EditorConfigOverride;
-
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
+import org.cqfn.diktat.ruleset.rules.DiktatRuleSetProvider;
 
 public class DiktatCompat1Dot2Dot5Adapter implements DiktatCompatAdapter {
 	private final List<RuleSet> ruleSets;
@@ -41,7 +40,7 @@ public class DiktatCompat1Dot2Dot5Adapter implements DiktatCompatAdapter {
 		if (configFile != null) {
 			System.setProperty("diktat.config.path", configFile.getAbsolutePath());
 		}
-		this.ruleSets = Collections.singletonList(new DiktatRuleSetProvider().get());
+		this.ruleSets = singletonList(new DiktatRuleSetProvider().get());
 		this.formatterCallback = new FormatterCallback(errors);
 	}
 
@@ -70,7 +69,7 @@ public class DiktatCompat1Dot2Dot5Adapter implements DiktatCompatAdapter {
 				file.getAbsolutePath(),
 				content,
 				ruleSets,
-				Collections.emptyMap(),
+				emptyMap(),
 				formatterCallback,
 				isScript,
 				null,

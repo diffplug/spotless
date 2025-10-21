@@ -15,6 +15,16 @@
  */
 package com.diffplug.spotless.extra.integration;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.common.base.CharMatcher;
+import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.Preconditions;
+import com.diffplug.common.base.Splitter;
+import com.diffplug.spotless.Formatter;
+import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.PaddedCell;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -26,21 +36,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Objects;
-
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.MyersDiff;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
-
-import com.diffplug.common.base.CharMatcher;
-import com.diffplug.common.base.Errors;
-import com.diffplug.common.base.Preconditions;
-import com.diffplug.common.base.Splitter;
-import com.diffplug.spotless.Formatter;
-import com.diffplug.spotless.LineEnding;
-import com.diffplug.spotless.PaddedCell;
 
 /** Formats the messages of failed spotlessCheck invocations with a nice diff message. */
 public final class DiffMessageFormatter {
@@ -62,8 +63,8 @@ public final class DiffMessageFormatter {
 		private final Formatter formatter;
 
 		CleanProviderFormatter(Path rootDir, Formatter formatter) {
-			this.rootDir = Objects.requireNonNull(rootDir);
-			this.formatter = Objects.requireNonNull(formatter);
+			this.rootDir = requireNonNull(rootDir);
+			this.formatter = requireNonNull(formatter);
 		}
 
 		@Override
@@ -121,7 +122,7 @@ public final class DiffMessageFormatter {
 
 		/** "Run 'gradlew spotlessApply' to fix these violations." */
 		public Builder runToFix(String runToFix) {
-			this.runToFix = Objects.requireNonNull(runToFix);
+			this.runToFix = requireNonNull(runToFix);
 			return this;
 		}
 
@@ -136,7 +137,7 @@ public final class DiffMessageFormatter {
 		}
 
 		public Builder problemFiles(List<File> problemFiles) {
-			this.problemFiles = Objects.requireNonNull(problemFiles);
+			this.problemFiles = requireNonNull(problemFiles);
 			Preconditions.checkArgument(!problemFiles.isEmpty(), "cannot be empty");
 			return this;
 		}
@@ -144,9 +145,9 @@ public final class DiffMessageFormatter {
 		/** Returns the error message. */
 		public String getMessage() {
 			try {
-				Objects.requireNonNull(runToFix, "runToFix");
-				Objects.requireNonNull(formatter, "formatter");
-				Objects.requireNonNull(problemFiles, "problemFiles");
+				requireNonNull(runToFix, "runToFix");
+				requireNonNull(formatter, "formatter");
+				requireNonNull(problemFiles, "problemFiles");
 				DiffMessageFormatter diffFormater = new DiffMessageFormatter(formatter, problemFiles);
 				return "The following files had format violations:\n"
 						+ diffFormater.buffer
@@ -166,7 +167,7 @@ public final class DiffMessageFormatter {
 	private final CleanProvider formatter;
 
 	private DiffMessageFormatter(CleanProvider formatter, List<File> problemFiles) throws IOException {
-		this.formatter = Objects.requireNonNull(formatter, "formatter");
+		this.formatter = requireNonNull(formatter, "formatter");
 		ListIterator<File> problemIter = problemFiles.listIterator();
 		while (problemIter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
 			File file = problemIter.next();
@@ -275,8 +276,8 @@ public final class DiffMessageFormatter {
 		dirty = visibleWhitespaceLineEndings(dirty, whitespace, lineEndings);
 		clean = visibleWhitespaceLineEndings(clean, whitespace, lineEndings);
 
-		RawText a = new RawText(dirty.getBytes(StandardCharsets.UTF_8));
-		RawText b = new RawText(clean.getBytes(StandardCharsets.UTF_8));
+		RawText a = new RawText(dirty.getBytes(UTF_8));
+		RawText b = new RawText(clean.getBytes(UTF_8));
 		EditList edits = new EditList();
 		edits.addAll(MyersDiff.INSTANCE.diff(RawTextComparator.DEFAULT, a, b));
 

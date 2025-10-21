@@ -16,17 +16,18 @@
 package com.diffplug.spotless.kotlin;
 
 import static com.diffplug.spotless.FileSignature.signAsList;
-
-import java.io.File;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
+import java.io.File;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class DiktatStepTest extends ResourceHarness {
 	@Test
@@ -49,12 +50,12 @@ class DiktatStepTest extends ResourceHarness {
 
 	@Test
 	void notSupportedVersion() {
-		final IllegalStateException notSupportedException = Assertions.assertThrows(IllegalStateException.class,
+		final IllegalStateException notSupportedException = assertThrows(IllegalStateException.class,
 				() -> DiktatStep.create("1.1.0", TestProvisioner.mavenCentral()));
-		Assertions.assertTrue(
+		assertTrue(
 				notSupportedException.getMessage().contains("Minimum required Diktat version is 1.2.1, you tried 1.1.0 which is too old"));
 
-		Assertions.assertDoesNotThrow(() -> DiktatStep.create("1.2.1", TestProvisioner.mavenCentral()));
-		Assertions.assertDoesNotThrow(() -> DiktatStep.create("2.0.0", TestProvisioner.mavenCentral()));
+		assertDoesNotThrow(() -> DiktatStep.create("1.2.1", TestProvisioner.mavenCentral()));
+		assertDoesNotThrow(() -> DiktatStep.create("2.0.0", TestProvisioner.mavenCentral()));
 	}
 }

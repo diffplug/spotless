@@ -15,6 +15,10 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.spotless.Lint;
 import java.io.File;
 import java.io.Serial;
 import java.util.Arrays;
@@ -23,10 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import javax.annotation.Nonnull;
-
-import com.diffplug.spotless.Lint;
 
 class PrettierMissingParserException extends RuntimeException implements Lint.Has {
 	@Serial
@@ -82,14 +83,14 @@ class PrettierMissingParserException extends RuntimeException implements Lint.Ha
 		Arrays.asList(".nginx", ".nginxconf").forEach(ext -> plugins.put(ext, "prettier-plugin-nginx"));
 		plugins.put(".sol", "prettier-plugin-solidity");
 
-		EXTENSIONS_TO_PLUGINS = Collections.unmodifiableMap(plugins);
+		EXTENSIONS_TO_PLUGINS = unmodifiableMap(plugins);
 	}
 
 	private final File file;
 
 	public PrettierMissingParserException(@Nonnull File file, Exception cause) {
 		super("Prettier could not infer a parser for file '" + file + "'. Maybe you need to include a prettier plugin in devDependencies?\n\n" + recommendPlugin(file), cause);
-		this.file = Objects.requireNonNull(file);
+		this.file = requireNonNull(file);
 	}
 
 	@Override

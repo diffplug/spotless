@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.generic;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,7 +26,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
-
 import javax.annotation.Nullable;
 
 final class TestEnvVars {
@@ -72,7 +73,7 @@ final class TestEnvVars {
 		builder.add(
 				Path.of(System.getProperty("user.dir"), "testenv.properties"));
 		builder.add(
-				Objects.requireNonNull(Path.of(System.getProperty("user.dir")).getParent()).resolve("testenv.properties"));
+				requireNonNull(Path.of(System.getProperty("user.dir")).getParent()).resolve("testenv.properties"));
 		return builder.build();
 	}
 

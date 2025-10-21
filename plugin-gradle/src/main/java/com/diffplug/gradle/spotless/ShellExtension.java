@@ -15,12 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Objects;
-
-import javax.inject.Inject;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.shell.ShfmtStep;
+import java.util.Objects;
+import javax.inject.Inject;
 
 public class ShellExtension extends FormatExtension {
 	private static final String SHELL_FILE_EXTENSION = "**/*.sh";
@@ -43,7 +43,7 @@ public class ShellExtension extends FormatExtension {
 
 	/** Adds the specified version of <a href="https://github.com/mvdan/sh">shfmt</a>. */
 	public ShfmtExtension shfmt(String version) {
-		Objects.requireNonNull(version);
+		requireNonNull(version);
 		return new ShfmtExtension(version);
 	}
 

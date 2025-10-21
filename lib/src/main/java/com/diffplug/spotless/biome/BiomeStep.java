@@ -15,6 +15,13 @@
  */
 package com.diffplug.spotless.biome;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import com.diffplug.spotless.FileSignature;
+import com.diffplug.spotless.ForeignExe;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ProcessRunner;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,15 +32,8 @@ import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashSet;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.diffplug.spotless.FileSignature;
-import com.diffplug.spotless.ForeignExe;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ProcessRunner;
 
 /**
  * formatter step that formats JavaScript and TypeScript code with Biome:
@@ -418,7 +418,7 @@ public final class BiomeStep {
 		 *                              for Biome to finish formatting.
 		 */
 		private String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
-			var stdin = input.getBytes(StandardCharsets.UTF_8);
+			var stdin = input.getBytes(UTF_8);
 			var args = buildBiomeCommand(file);
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Running Biome command to format code: '{}'", String.join(", ", args));
@@ -428,7 +428,7 @@ public final class BiomeStep {
 			if (!stdErr.isEmpty()) {
 				LOGGER.warn("Biome stderr ouptut for file '{}'\n{}", file, stdErr.trim());
 			}
-			var formatted = runnerResult.assertExitZero(StandardCharsets.UTF_8);
+			var formatted = runnerResult.assertExitZero(UTF_8);
 			// When biome encounters an ignored file, it does not output any formatted code
 			// Ignored files come from (a) the biome.json configuration file and (b) from
 			// a list of hard-coded file names, such as package.json or tsconfig.json.

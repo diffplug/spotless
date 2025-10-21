@@ -15,8 +15,10 @@
  */
 package com.diffplug.spotless;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Objects;
 import org.assertj.core.api.Assertions;
 
 class StepHarnessBase implements AutoCloseable {
@@ -28,12 +30,12 @@ class StepHarnessBase implements AutoCloseable {
 
 	protected StepHarnessBase(Formatter formatter, RoundTrip roundTrip) {
 		if (roundTrip == RoundTrip.DONT_ROUNDTRIP) {
-			this.formatter = Objects.requireNonNull(formatter);
+			this.formatter = requireNonNull(formatter);
 			return;
 		}
 		Formatter roundTripped = SerializableEqualityTester.reserialize(formatter);
 		if (roundTrip == RoundTrip.ASSERT_EQUAL) {
-			Assertions.assertThat(roundTripped).isEqualTo(formatter);
+			assertThat(roundTripped).isEqualTo(formatter);
 		}
 		this.formatter = roundTripped;
 	}

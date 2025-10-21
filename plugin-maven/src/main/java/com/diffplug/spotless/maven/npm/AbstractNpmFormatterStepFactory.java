@@ -15,6 +15,11 @@
  */
 package com.diffplug.spotless.maven.npm;
 
+import static java.util.stream.Collectors.toMap;
+
+import com.diffplug.spotless.maven.FormatterStepConfig;
+import com.diffplug.spotless.maven.FormatterStepFactory;
+import com.diffplug.spotless.npm.NpmPathResolver;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.AbstractMap;
@@ -25,12 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
 import org.apache.maven.plugins.annotations.Parameter;
-
-import com.diffplug.spotless.maven.FormatterStepConfig;
-import com.diffplug.spotless.maven.FormatterStepFactory;
-import com.diffplug.spotless.npm.NpmPathResolver;
 
 public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFactory {
 
@@ -93,6 +93,6 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 		return devDependencyProperties.stringPropertyNames()
 				.stream()
 				.map(name -> new AbstractMap.SimpleEntry<>(name, devDependencyProperties.getProperty(name)))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+				.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 }

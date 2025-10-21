@@ -15,10 +15,9 @@
  */
 package com.diffplug.spotless.glue.java;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
-import javax.annotation.Nonnull;
-
+import com.diffplug.spotless.FormatterFunc;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
 import com.google.googlejavaformat.java.ImportOrderer;
@@ -26,8 +25,8 @@ import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.google.googlejavaformat.java.JavaFormatterOptions.Style;
 import com.google.googlejavaformat.java.RemoveUnusedImports;
 import com.google.googlejavaformat.java.StringWrapper;
-
-import com.diffplug.spotless.FormatterFunc;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 
 // Used via reflection by the Gradle plugin.
 @SuppressWarnings("unused")
@@ -47,8 +46,8 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 	private final boolean reorderImports;
 
 	public GoogleJavaFormatFormatterFunc(@Nonnull String version, @Nonnull String style, boolean reflowStrings, boolean reorderImports, boolean formatJavadoc) {
-		this.version = Objects.requireNonNull(version);
-		this.formatterStyle = Style.valueOf(Objects.requireNonNull(style));
+		this.version = requireNonNull(version);
+		this.formatterStyle = Style.valueOf(requireNonNull(style));
 		this.reflowStrings = reflowStrings;
 		this.reorderImports = reorderImports;
 

@@ -15,12 +15,13 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
 
 final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
@@ -30,13 +31,13 @@ final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 	FilterByContentPatternFormatterStep(FormatterStep delegateStep, OnMatch onMatch, String contentPattern) {
 		super(delegateStep);
 		this.onMatch = onMatch;
-		this.contentPattern = Pattern.compile(Objects.requireNonNull(contentPattern));
+		this.contentPattern = Pattern.compile(requireNonNull(contentPattern));
 	}
 
 	@Override
 	public @Nullable String format(String raw, File file) throws Exception {
-		Objects.requireNonNull(raw, "raw");
-		Objects.requireNonNull(file, "file");
+		requireNonNull(raw, "raw");
+		requireNonNull(file, "file");
 		if (contentPattern.matcher(raw).find() == (onMatch == OnMatch.INCLUDE)) {
 			return delegateStep.format(raw, file);
 		} else {
@@ -46,8 +47,8 @@ final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 
 	@Override
 	public List<Lint> lint(String raw, File file) throws Exception {
-		Objects.requireNonNull(raw, "raw");
-		Objects.requireNonNull(file, "file");
+		requireNonNull(raw, "raw");
+		requireNonNull(file, "file");
 		if (contentPattern.matcher(raw).find() == (onMatch == OnMatch.INCLUDE)) {
 			return delegateStep.lint(raw, file);
 		} else {

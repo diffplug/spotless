@@ -18,6 +18,9 @@ package com.diffplug.spotless;
 import static com.diffplug.spotless.PaddedCell.Type.CONVERGE;
 import static com.diffplug.spotless.PaddedCell.Type.CYCLE;
 import static com.diffplug.spotless.PaddedCell.Type.DIVERGE;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -50,23 +52,23 @@ class PaddedCellTest {
 		formatterSteps.add(NeverUpToDateStep.create("step", step));
 		try (Formatter formatter = Formatter.builder()
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.encoding(StandardCharsets.UTF_8)
+				.encoding(UTF_8)
 				.steps(formatterSteps).build()) {
 
 			File file = new File(rootFolder, "input");
-			Files.write(file.toPath(), input.getBytes(StandardCharsets.UTF_8));
+			Files.write(file.toPath(), input.getBytes(UTF_8));
 
 			PaddedCell result = PaddedCell.check(formatter, file);
-			Assertions.assertEquals(misbehaved, result.misbehaved());
-			Assertions.assertEquals(expectedOutputType, result.type());
+			assertEquals(misbehaved, result.misbehaved());
+			assertEquals(expectedOutputType, result.type());
 
 			String actual = String.join(",", result.steps());
-			Assertions.assertEquals(expectedSteps, actual);
+			assertEquals(expectedSteps, actual);
 
 			if (canonical == null) {
-				Assertions.assertThrows(IllegalArgumentException.class, result::canonical);
+				assertThrows(IllegalArgumentException.class, result::canonical);
 			} else {
-				Assertions.assertEquals(canonical, result.canonical());
+				assertEquals(canonical, result.canonical());
 			}
 		}
 	}
@@ -121,7 +123,7 @@ class PaddedCellTest {
 				Collections.rotate(unordered, 1);
 				PaddedCell result = CYCLE.create(rootFolder, unordered);
 				// make sure the canonical result is always the appropriate one
-				Assertions.assertEquals(canonical, result.canonical());
+				assertEquals(canonical, result.canonical());
 			}
 		};
 		// alphabetic

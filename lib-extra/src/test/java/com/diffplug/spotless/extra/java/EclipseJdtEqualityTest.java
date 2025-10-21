@@ -15,6 +15,13 @@
  */
 package com.diffplug.spotless.extra.java;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.ThrowingEx;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -22,14 +29,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.ThrowingEx;
 
 public class EclipseJdtEqualityTest extends ResourceHarness {
 	@Test
@@ -39,12 +40,12 @@ public class EclipseJdtEqualityTest extends ResourceHarness {
 		var step1 = withSettingsFile(settings1);
 		var step2 = withSettingsFile(settings2);
 
-		Assertions.assertTrue(step1.equals(step2));
-		Assertions.assertTrue(step1.hashCode() == step2.hashCode());
+		assertTrue(step1.equals(step2));
+		assertTrue(step1.hashCode() == step2.hashCode());
 
 		var serialized1 = toBytes(step1);
 		var serialized2 = toBytes(step2);
-		Assertions.assertFalse(Arrays.equals(serialized1, serialized2));
+		assertFalse(Arrays.equals(serialized1, serialized2));
 	}
 
 	private static FormatterStep withSettingsFile(File settingsFile) {

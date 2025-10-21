@@ -15,6 +15,15 @@
  */
 package com.diffplug.spotless.shell;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+
+import com.diffplug.spotless.ForeignExe;
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ProcessRunner;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -24,15 +33,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.annotation.Nullable;
-
-import com.diffplug.spotless.ForeignExe;
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ProcessRunner;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public final class ShfmtStep {
 	public static String name() {
@@ -111,7 +112,7 @@ public final class ShfmtStep {
 
 		EqualityState(String version, ForeignExe pathToExe) {
 			this.version = version;
-			this.exe = Objects.requireNonNull(pathToExe);
+			this.exe = requireNonNull(pathToExe);
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
@@ -123,9 +124,9 @@ public final class ShfmtStep {
 
 			// This will ensure that the next file name is retrieved on every format
 			final List<String> finalArgs = Stream.concat(args.stream(), Stream.of(file.getAbsolutePath()))
-					.collect(Collectors.toList());
+					.collect(toList());
 
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), finalArgs).assertExitZero(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(UTF_8), finalArgs).assertExitZero(UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {

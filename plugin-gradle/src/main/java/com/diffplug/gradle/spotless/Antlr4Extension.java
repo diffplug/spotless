@@ -15,13 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Objects;
-
-import javax.inject.Inject;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.antlr4.Antlr4Defaults;
 import com.diffplug.spotless.antlr4.Antlr4FormatterStep;
+import java.util.Objects;
+import javax.inject.Inject;
 
 public class Antlr4Extension extends FormatExtension implements HasBuiltinDelimiterForLicense {
 	static final String NAME = "antlr4";
@@ -44,7 +44,7 @@ public class Antlr4Extension extends FormatExtension implements HasBuiltinDelimi
 		private final String version;
 
 		Antlr4FormatterConfig(String version) {
-			this.version = Objects.requireNonNull(version);
+			this.version = requireNonNull(version);
 			addStep(createStep());
 		}
 

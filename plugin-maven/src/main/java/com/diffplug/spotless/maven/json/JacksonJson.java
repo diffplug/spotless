@@ -15,10 +15,7 @@
  */
 package com.diffplug.spotless.maven.json;
 
-import java.util.Collections;
-import java.util.Map;
-
-import org.apache.maven.plugins.annotations.Parameter;
+import static java.util.Collections.emptyMap;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JacksonJsonConfig;
@@ -26,6 +23,9 @@ import com.diffplug.spotless.json.JacksonJsonStep;
 import com.diffplug.spotless.maven.FormatterFactory;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
+import java.util.Collections;
+import java.util.Map;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * A {@link FormatterFactory} implementation that corresponds to {@code <jackson>...</jackson>} configuration element.
@@ -39,10 +39,10 @@ public class JacksonJson implements FormatterStepFactory {
 	private boolean spaceBeforeSeparator = new JacksonJsonConfig().isSpaceBeforeSeparator();
 
 	@Parameter
-	private Map<String, Boolean> features = Collections.emptyMap();
+	private Map<String, Boolean> features = emptyMap();
 
 	@Parameter
-	private Map<String, Boolean> jsonFeatures = Collections.emptyMap();
+	private Map<String, Boolean> jsonFeatures = emptyMap();
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {

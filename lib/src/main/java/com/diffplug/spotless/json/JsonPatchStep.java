@@ -15,6 +15,12 @@
  */
 package com.diffplug.spotless.json;
 
+import static java.util.Objects.requireNonNull;
+
+import com.diffplug.spotless.FormatterFunc;
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Provisioner;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -22,13 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
-
-import com.diffplug.spotless.FormatterFunc;
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.JarState;
-import com.diffplug.spotless.Provisioner;
 
 public final class JsonPatchStep implements Serializable {
 	@Serial
@@ -54,9 +54,9 @@ public final class JsonPatchStep implements Serializable {
 	}
 
 	public static FormatterStep create(String zjsonPatchVersion, String patchString, Provisioner provisioner) {
-		Objects.requireNonNull(zjsonPatchVersion, "zjsonPatchVersion cannot be null");
-		Objects.requireNonNull(patchString, "patchString cannot be null");
-		Objects.requireNonNull(provisioner, "provisioner cannot be null");
+		requireNonNull(zjsonPatchVersion, "zjsonPatchVersion cannot be null");
+		requireNonNull(patchString, "patchString cannot be null");
+		requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.create(NAME,
 				new JsonPatchStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + ":" + zjsonPatchVersion, provisioner)), patchString, null),
 				JsonPatchStep::equalityState,
@@ -68,9 +68,9 @@ public final class JsonPatchStep implements Serializable {
 	}
 
 	public static FormatterStep create(String zjsonPatchVersion, List<Map<String, Object>> patch, Provisioner provisioner) {
-		Objects.requireNonNull(zjsonPatchVersion, "zjsonPatchVersion cannot be null");
-		Objects.requireNonNull(patch, "patch cannot be null");
-		Objects.requireNonNull(provisioner, "provisioner cannot be null");
+		requireNonNull(zjsonPatchVersion, "zjsonPatchVersion cannot be null");
+		requireNonNull(patch, "patch cannot be null");
+		requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.create(NAME,
 				new JsonPatchStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + ":" + zjsonPatchVersion, provisioner)), null, patch),
 				JsonPatchStep::equalityState,

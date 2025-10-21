@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
@@ -22,7 +24,6 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
 
 /**
@@ -49,20 +50,20 @@ public class ForeignExe implements Serializable {
 	/** The name of the executable, used by "where" (win) and "which" (unix). */
 	public static ForeignExe nameAndVersion(String exeName, String version) {
 		ForeignExe foreign = new ForeignExe();
-		foreign.name = Objects.requireNonNull(exeName);
-		foreign.version = Objects.requireNonNull(version);
+		foreign.name = requireNonNull(exeName);
+		foreign.version = requireNonNull(version);
 		return foreign;
 	}
 
 	/** The flag which causes the exe to print its version (defaults to --version). */
 	public ForeignExe versionFlag(String versionFlag) {
-		this.versionFlag = Objects.requireNonNull(versionFlag);
+		this.versionFlag = requireNonNull(versionFlag);
 		return this;
 	}
 
 	/** A regex which can parse the version out of the output of the {@link #versionFlag(String)} command (defaults to {@code version (\\S*)}) */
 	public ForeignExe versionRegex(Pattern versionRegex) {
-		this.versionRegex = Objects.requireNonNull(versionRegex);
+		this.versionRegex = requireNonNull(versionRegex);
 		return this;
 	}
 

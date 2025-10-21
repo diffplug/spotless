@@ -17,15 +17,13 @@ package com.diffplug.spotless.npm;
 
 import static com.diffplug.spotless.npm.NpmProcessFactory.OnlinePreferrence.PREFER_OFFLINE;
 import static com.diffplug.spotless.npm.NpmProcessFactory.OnlinePreferrence.PREFER_ONLINE;
-
-import java.util.Objects;
-
-import javax.annotation.Nonnull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.ProcessRunner;
+import java.util.Objects;
+import javax.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NodeApp {
 
@@ -46,10 +44,10 @@ public class NodeApp {
 	protected final NpmFormatterStepLocations formatterStepLocations;
 
 	public NodeApp(@Nonnull NodeServerLayout nodeServerLayout, @Nonnull NpmConfig npmConfig, @Nonnull NpmFormatterStepLocations formatterStepLocations) {
-		this.nodeServerLayout = Objects.requireNonNull(nodeServerLayout);
-		this.npmConfig = Objects.requireNonNull(npmConfig);
+		this.nodeServerLayout = requireNonNull(nodeServerLayout);
+		this.npmConfig = requireNonNull(npmConfig);
 		this.npmProcessFactory = processFactory(formatterStepLocations);
-		this.formatterStepLocations = Objects.requireNonNull(formatterStepLocations);
+		this.formatterStepLocations = requireNonNull(formatterStepLocations);
 	}
 
 	private static NpmProcessFactory processFactory(NpmFormatterStepLocations formatterStepLocations) {

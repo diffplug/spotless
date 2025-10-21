@@ -15,6 +15,12 @@
  */
 package com.diffplug.spotless.rdf;
 
+import static java.util.stream.Collectors.toList;
+
+import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.TestProvisioner;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -22,16 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 import org.opentest4j.AssertionFailedError;
-
-import com.diffplug.spotless.FormatterStep;
-import com.diffplug.spotless.ResourceHarness;
-import com.diffplug.spotless.StepHarness;
-import com.diffplug.spotless.TestProvisioner;
 
 public class RdfFormatterTest extends ResourceHarness {
 
@@ -92,16 +92,16 @@ public class RdfFormatterTest extends ResourceHarness {
 		List<Path> inputs = listTestResources(beforeDir)
 				.stream()
 				.map(s -> Path.of(beforeDir, s))
-				.collect(Collectors.toList());
+				.collect(toList());
 		List<Path> outputs = listTestResources(afterDir)
 				.stream()
 				.map(s -> Path.of(afterDir, s))
-				.collect(Collectors.toList());
+				.collect(toList());
 		List<Path> missingOutputs = inputs
 				.stream()
 				.filter(in -> outputs
 						.stream().noneMatch(out -> out.getFileName().equals(in.getFileName())))
-				.collect(Collectors.toList());
+				.collect(toList());
 		if (!missingOutputs.isEmpty()) {
 			throw new IllegalStateException("'after' directory %s is missing files corresponding to these 'before' files: %s".formatted(beforeDir, missingOutputs));
 		}
@@ -109,7 +109,7 @@ public class RdfFormatterTest extends ResourceHarness {
 				.stream()
 				.filter(o -> inputs
 						.stream().noneMatch(in -> in.getFileName().equals(o.getFileName())))
-				.collect(Collectors.toList());
+				.collect(toList());
 		if (!missingInputs.isEmpty()) {
 			throw new IllegalStateException("'before' directory %s is missing files corresponding to these 'after' files: %s".formatted(afterDir, missingInputs));
 		}

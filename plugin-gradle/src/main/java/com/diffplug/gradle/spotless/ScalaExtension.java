@@ -15,16 +15,15 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
-import java.util.Objects;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
-import org.gradle.api.tasks.SourceSet;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.scala.ScalaFmtStep;
+import java.io.File;
+import java.util.Objects;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import org.gradle.api.tasks.SourceSet;
 
 public class ScalaExtension extends FormatExtension implements JvmLang {
 	static final String NAME = "scala";
@@ -50,18 +49,18 @@ public class ScalaExtension extends FormatExtension implements JvmLang {
 		Object configFile;
 
 		ScalaFmtConfig(String version) {
-			this.version = Objects.requireNonNull(version);
+			this.version = requireNonNull(version);
 			addStep(createStep());
 		}
 
 		public ScalaFmtConfig configFile(Object configFile) {
-			this.configFile = Objects.requireNonNull(configFile);
+			this.configFile = requireNonNull(configFile);
 			replaceStep(createStep());
 			return this;
 		}
 
 		public ScalaFmtConfig scalaMajorVersion(String scalaMajorVersion) {
-			this.scalaMajorVersion = Objects.requireNonNull(scalaMajorVersion);
+			this.scalaMajorVersion = requireNonNull(scalaMajorVersion);
 			replaceStep(createStep());
 			return this;
 		}

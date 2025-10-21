@@ -15,11 +15,14 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Objects.requireNonNull;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.diffplug.spotless.ClearGitConfig;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 import java.util.TimeZone;
-
 import org.assertj.core.api.Assertions;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -35,8 +38,6 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import com.diffplug.spotless.ClearGitConfig;
 
 @ClearGitConfig
 class GitRatchetGradleTest extends GradleIntegrationHarness {
@@ -197,9 +198,9 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 			ObjectId cleanFolder = TreeWalk.forPath(git.getRepository(), "clean", baseline.getTree()).getObjectId(0);
 			ObjectId dirtyFolder = TreeWalk.forPath(git.getRepository(), "dirty", baseline.getTree()).getObjectId(0);
 
-			Assertions.assertThat(baseline.getTree().toObjectId()).isEqualTo(ObjectId.fromString(BASELINE_ROOT));
-			Assertions.assertThat(cleanFolder).isEqualTo(ObjectId.fromString(BASELINE_CLEAN));
-			Assertions.assertThat(dirtyFolder).isEqualTo(ObjectId.fromString(BASELINE_DIRTY));
+			assertThat(baseline.getTree().toObjectId()).isEqualTo(ObjectId.fromString(BASELINE_ROOT));
+			assertThat(cleanFolder).isEqualTo(ObjectId.fromString(BASELINE_CLEAN));
+			assertThat(dirtyFolder).isEqualTo(ObjectId.fromString(BASELINE_DIRTY));
 
 			assertPass("spotlessCheck")
 					.outcome(":spotlessCheck", TaskOutcome.SUCCESS)
@@ -231,7 +232,7 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 					.outcome(":added:spotlessMisc", TaskOutcome.UP_TO_DATE);
 
 			RevCommit next = addAndCommit(git);
-			Assertions.assertThat(next.getTree().toObjectId()).isNotEqualTo(baseline.getTree().toObjectId());
+			assertThat(next.getTree().toObjectId()).isNotEqualTo(baseline.getTree().toObjectId());
 			// if we commit to main (the baseline), then tasks will be out of date only because the baseline changed
 			// TO REPEAAT:
 			// - everything was up-to-date
@@ -240,8 +241,8 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 
 			ObjectId nextCleanFolder = TreeWalk.forPath(git.getRepository(), "clean", next.getTree()).getObjectId(0);
 			ObjectId nextDirtyFolder = TreeWalk.forPath(git.getRepository(), "dirty", next.getTree()).getObjectId(0);
-			Assertions.assertThat(nextCleanFolder).isEqualTo(cleanFolder);    // the baseline for 'clean' didn't change
-			Assertions.assertThat(nextDirtyFolder).isNotEqualTo(dirtyFolder); // only the baseline for dirty
+			assertThat(nextCleanFolder).isEqualTo(cleanFolder);    // the baseline for 'clean' didn't change
+			assertThat(nextDirtyFolder).isNotEqualTo(dirtyFolder); // only the baseline for dirty
 
 			// check will still pass, but the tasks are all out of date
 			assertPass("spotlessCheck")
@@ -256,14 +257,14 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 		BuildResult result;
 
 		BuildResultAssertion(BuildResult result) {
-			this.result = Objects.requireNonNull(result);
+			this.result = requireNonNull(result);
 		}
 
 		public BuildResultAssertion outcome(String taskPath, TaskOutcome expected) {
 			TaskOutcome actual = result.getTasks().stream()
 					.filter(task -> task.getPath().equals(taskPath))
 					.findAny().get().getOutcome();
-			Assertions.assertThat(actual).isEqualTo(expected);
+			assertThat(actual).isEqualTo(expected);
 			return this;
 		}
 	}

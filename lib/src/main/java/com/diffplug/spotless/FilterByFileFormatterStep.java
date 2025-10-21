@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
 
 final class FilterByFileFormatterStep extends DelegateFormatterStep {
@@ -27,13 +28,13 @@ final class FilterByFileFormatterStep extends DelegateFormatterStep {
 
 	FilterByFileFormatterStep(FormatterStep delegateStep, SerializableFileFilter filter) {
 		super(delegateStep);
-		this.filter = Objects.requireNonNull(filter);
+		this.filter = requireNonNull(filter);
 	}
 
 	@Override
 	public @Nullable String format(String raw, File file) throws Exception {
-		Objects.requireNonNull(raw, "raw");
-		Objects.requireNonNull(file, "file");
+		requireNonNull(raw, "raw");
+		requireNonNull(file, "file");
 		if (filter.accept(file)) {
 			return delegateStep.format(raw, file);
 		} else {
@@ -43,8 +44,8 @@ final class FilterByFileFormatterStep extends DelegateFormatterStep {
 
 	@Override
 	public List<Lint> lint(String content, File file) throws Exception {
-		Objects.requireNonNull(content, "content");
-		Objects.requireNonNull(file, "file");
+		requireNonNull(content, "content");
+		requireNonNull(file, "file");
 		if (filter.accept(file)) {
 			return delegateStep.lint(content, file);
 		} else {

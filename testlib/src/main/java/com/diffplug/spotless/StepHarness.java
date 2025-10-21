@@ -15,14 +15,14 @@
  */
 package com.diffplug.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import com.diffplug.selfie.Selfie;
 import com.diffplug.selfie.StringSelfie;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /** An api for testing a {@code FormatterStep} that doesn't depend on the File path. DO NOT ADD FILE SUPPORT TO THIS, use {@link StepHarnessWithFile} if you need that. */
 public final class StepHarness extends StepHarnessBase {
@@ -40,7 +40,7 @@ public final class StepHarness extends StepHarnessBase {
 		return forFormatter(Formatter.builder()
 				.steps(Arrays.asList(steps))
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.encoding(StandardCharsets.UTF_8)
+				.encoding(UTF_8)
 				.build());
 	}
 
@@ -53,7 +53,7 @@ public final class StepHarness extends StepHarnessBase {
 		return new StepHarness(Formatter.builder()
 				.steps(Arrays.asList(step))
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.encoding(StandardCharsets.UTF_8)
+				.encoding(UTF_8)
 				.build(), RoundTrip.DONT_ROUNDTRIP);
 	}
 

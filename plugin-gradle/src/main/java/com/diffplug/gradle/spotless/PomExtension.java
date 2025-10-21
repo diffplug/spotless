@@ -15,13 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Objects;
-
-import javax.inject.Inject;
+import static java.util.Objects.requireNonNull;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.pom.SortPomCfg;
 import com.diffplug.spotless.pom.SortPomStep;
+import java.util.Objects;
+import javax.inject.Inject;
 
 public class PomExtension extends FormatExtension {
 	private static final String POM_FILE = "pom.xml";
@@ -46,7 +46,7 @@ public class PomExtension extends FormatExtension {
 	}
 
 	public SortPomGradleConfig sortPom(String version) {
-		Objects.requireNonNull(version);
+		requireNonNull(version);
 		return new SortPomGradleConfig(version);
 	}
 
@@ -59,7 +59,7 @@ public class PomExtension extends FormatExtension {
 
 		SortPomGradleConfig(String version) {
 			this();
-			cfg.version = Objects.requireNonNull(version);
+			cfg.version = requireNonNull(version);
 		}
 
 		public SortPomGradleConfig encoding(String encoding) {

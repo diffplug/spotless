@@ -15,8 +15,12 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.diffplug.spotless.Jvm;
+import com.diffplug.spotless.ProcessRunner;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -25,9 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.diffplug.spotless.Jvm;
-import com.diffplug.spotless.ProcessRunner;
 
 /**
  * Harness for running a Maven build, same idea as the
@@ -47,12 +48,12 @@ public final class MavenRunner {
 	private ProcessRunner runner;
 
 	public MavenRunner withProjectDir(File projectDir) {
-		this.projectDir = Objects.requireNonNull(projectDir);
+		this.projectDir = requireNonNull(projectDir);
 		return this;
 	}
 
 	public MavenRunner withArguments(String... args) {
-		this.args = Objects.requireNonNull(args);
+		this.args = requireNonNull(args);
 		return this;
 	}
 
@@ -83,17 +84,17 @@ public final class MavenRunner {
 			// add system properties as environment variables as MAVEN_OPTS or append if already there
 			String sysProps = systemProperties.entrySet().stream()
 					.map(entry -> "-D%s=%s".formatted(entry.getKey(), entry.getValue()))
-					.collect(Collectors.joining(" "));
+					.collect(joining(" "));
 			String mavenOpts = Stream.of(env.getOrDefault("MAVEN_OPTS", ""), sysProps)
-					.collect(Collectors.joining(" "));
+					.collect(joining(" "));
 			env.put("MAVEN_OPTS", mavenOpts.trim());
 		}
 		return env;
 	}
 
 	private ProcessRunner.Result run() throws IOException, InterruptedException {
-		Objects.requireNonNull(projectDir, "Need to call withProjectDir() first");
-		Objects.requireNonNull(args, "Need to call withArguments() first");
+		requireNonNull(projectDir, "Need to call withProjectDir() first");
+		requireNonNull(args, "Need to call withArguments() first");
 		// run Maven with the given args in the given directory
 		String argsString = "-e " + String.join(" ", Arrays.asList(args));
 		return runner.shellWinUnix(projectDir, calculateEnvironment(), "mvnw " + argsString, "./mvnw " + argsString);
