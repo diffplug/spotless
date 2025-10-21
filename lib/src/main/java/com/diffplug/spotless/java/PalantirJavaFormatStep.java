@@ -40,7 +40,7 @@ public final class PalantirJavaFormatStep implements Serializable {
 	private final JarState.Promised jarState;
 	/** Version of the formatter jar. */
 	private final String formatterVersion;
-	private final String style;
+	
 	/** Whether to format Java docs. */
 	private final boolean formatJavadoc;
 
@@ -50,7 +50,7 @@ public final class PalantirJavaFormatStep implements Serializable {
 			boolean formatJavadoc) {
 		this.jarState = jarState;
 		this.formatterVersion = formatterVersion;
-		this.style = style;
+		
 		this.formatJavadoc = formatJavadoc;
 	}
 
