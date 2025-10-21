@@ -83,7 +83,7 @@ import groovy.lang.Closure;
 /** Adds a {@code spotless{Name}Check} and {@code spotless{Name}Apply} task. */
 public class FormatExtension {
 
-	private static final Logger logger = LoggerFactory.getLogger(FormatExtension.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FormatExtension.class);
 
 	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
@@ -469,9 +469,9 @@ public class FormatExtension {
 	 */
 	public void custom(String name, FormatterFunc formatter) {
 		requireNonNull(formatter, "formatter");
-		if (badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_minVersionForCustom)) {
+		if (badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_MIN_VERSION_FOR_CUSTOM)) {
 			throw new GradleException("The 'custom' method is only available if you are using Gradle "
-					+ SpotlessPlugin.VER_GRADLE_minVersionForCustom
+					+ SpotlessPlugin.VER_GRADLE_MIN_VERSION_FOR_CUSTOM
 					+ " or newer, this is "
 					+ GradleVersion.current().getVersion());
 		}
@@ -548,7 +548,7 @@ public class FormatExtension {
 	}
 
 	private static void logDeprecation(String methodName, String replacement) {
-		logger.warn("'{}' is deprecated, use '{}' in your gradle build script instead.", methodName, replacement);
+		LOGGER.warn("'{}' is deprecated, use '{}' in your gradle build script instead.", methodName, replacement);
 	}
 
 	/** Ensures formatting of files via native binary. */

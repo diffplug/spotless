@@ -37,7 +37,7 @@ import com.diffplug.spotless.annotations.Internal;
 public class SQLTokenizedFormatter {
 
 	private static final String[] JOIN_BEGIN = {"LEFT", "RIGHT", "INNER", "OUTER", "JOIN"};
-	private static final SQLDialect sqlDialect = SQLDialect.INSTANCE;
+	private static final SQLDialect SQL_DIALECT = SQLDialect.INSTANCE;
 	private DBeaverSQLFormatterConfiguration formatterCfg;
 	private List<Boolean> functionBracket = new ArrayList<>();
 	private List<String> statementDelimiters = new ArrayList<>(2);
@@ -251,7 +251,7 @@ public class SQLTokenizedFormatter {
 				}
 			} else if (token.getType() == TokenType.COMMENT) {
 				boolean isComment = false;
-				String[] slComments = sqlDialect.getSingleLineComments();
+				String[] slComments = SQL_DIALECT.getSingleLineComments();
 				for (String slc : slComments) {
 					if (token.getString().startsWith(slc)) {
 						isComment = true;
@@ -259,7 +259,7 @@ public class SQLTokenizedFormatter {
 					}
 				}
 				if (!isComment) {
-					Pair<String, String> mlComments = sqlDialect.getMultiLineComments();
+					Pair<String, String> mlComments = SQL_DIALECT.getMultiLineComments();
 					if (token.getString().startsWith(mlComments.getFirst())) {
 						index += insertReturnAndIndent(argList, index + 1, indent);
 					}
@@ -385,7 +385,7 @@ public class SQLTokenizedFormatter {
 	}
 
 	private boolean isFunction(String name) {
-		return sqlDialect.getKeywordType(name) == DBPKeywordType.FUNCTION;
+		return SQL_DIALECT.getKeywordType(name) == DBPKeywordType.FUNCTION;
 	}
 
 	private static String getDefaultLineSeparator() {
@@ -406,7 +406,7 @@ public class SQLTokenizedFormatter {
 				final FormatterToken token = argList.get(argIndex);
 				final FormatterToken prevToken = argList.get(argIndex - 1);
 				if (token.getType() == TokenType.COMMENT
-						&& isCommentLine(sqlDialect, token.getString())
+						&& isCommentLine(SQL_DIALECT, token.getString())
 						&& prevToken.getType() != TokenType.END) {
 					s.setCharAt(0, ' ');
 					s.setLength(1);

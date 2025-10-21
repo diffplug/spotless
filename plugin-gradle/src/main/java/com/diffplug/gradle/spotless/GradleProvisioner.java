@@ -142,7 +142,7 @@ final class GradleProvisioner {
 		};
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(GradleProvisioner.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GradleProvisioner.class);
 
 	/** Models a request to the provisioner. */
 	private static class Request {

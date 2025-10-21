@@ -29,9 +29,9 @@ import com.diffplug.spotless.ProcessRunner;
 
 public class NodeApp {
 
-	private static final Logger logger = LoggerFactory.getLogger(NodeApp.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(NodeApp.class);
 
-	private static final TimedLogger timedLogger = TimedLogger.forLogger(logger);
+	private static final TimedLogger TIMED_LOGGER = TimedLogger.forLogger(LOGGER);
 
 	@Nonnull
 	protected final NodeServerLayout nodeServerLayout;
@@ -54,10 +54,10 @@ public class NodeApp {
 
 	private static NpmProcessFactory processFactory(NpmFormatterStepLocations formatterStepLocations) {
 		if (formatterStepLocations.cacheDir() != null) {
-			logger.info("Caching npm install results in {}.", formatterStepLocations.cacheDir());
+			LOGGER.info("Caching npm install results in {}.", formatterStepLocations.cacheDir());
 			return NodeModulesCachingNpmProcessFactory.create(formatterStepLocations.cacheDir());
 		}
-		logger.debug("Not caching npm install results.");
+		LOGGER.debug("Not caching npm install results.");
 		return StandardNpmProcessFactory.INSTANCE;
 	}
 
@@ -70,7 +70,7 @@ public class NodeApp {
 	}
 
 	void prepareNodeAppLayout() {
-		timedLogger.withInfo("Preparing {} for npm step {}.", this.nodeServerLayout, getClass().getName()).run(() -> {
+		TIMED_LOGGER.withInfo("Preparing {} for npm step {}.", this.nodeServerLayout, getClass().getName()).run(() -> {
 			NpmResourceHelper.assertDirectoryExists(nodeServerLayout.nodeModulesDir());
 			NpmResourceHelper.writeUtf8StringToFile(nodeServerLayout.packageJsonFile(), this.npmConfig.getPackageJsonContent());
 			if (this.npmConfig.getServeScriptContent() != null) {
@@ -87,7 +87,7 @@ public class NodeApp {
 	}
 
 	void npmInstall() {
-		timedLogger.withInfo("Installing npm dependencies for {} with {}.", this.nodeServerLayout, this.npmProcessFactory.describe())
+		TIMED_LOGGER.withInfo("Installing npm dependencies for {} with {}.", this.nodeServerLayout, this.npmProcessFactory.describe())
 				.run(this::optimizedNpmInstall);
 	}
 
