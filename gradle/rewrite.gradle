@@ -2,7 +2,6 @@ apply plugin: 'org.openrewrite.rewrite'
 
 rewrite {
 	activeRecipe('com.diffplug.spotless.openrewrite.SanityCheck')
-	activeStyle('com.diffplug.spotless.openrewrite.SpotlessFormat')
 	exclusions.addAll(
 			'**.dirty.java',
 			'**FormatterProperties.java',

@@ -5,30 +5,88 @@ apply plugin: 'net.ltgt.errorprone'
 dependencies {
 	errorprone('com.google.errorprone:error_prone_core:2.42.0')
 	errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.25.0')
-	constraints {
-		errorprone('com.google.guava:guava') {
-			version {
-				require('33.4.8-jre')
-			}
-			because('Older versions use deprecated methods in sun.misc.Unsafe')
-			// https://github.com/junit-team/junit-framework/pull/5039#discussion_r2414490581
-		}
-	}
 }
 
 tasks.withType(JavaCompile).configureEach {
 	options.errorprone {
-		disableAllChecks = true // consider removal to avoid error prone error´s, following convention over configuration.
-		error(
-				'ConstantNaming',
-				'RedundantStringConversion',
+		disable( // not patchable
+				'FormatStringConcatenation',
+				'FunctionalInterfaceMethodChanged',
+				'JavaxInjectOnAbstractMethod',
+				'OverridesJavaxInjectableMethod',
+				'ReturnValueIgnored',
+				'Slf4jLogStatement',
+				'MissingSummary',
+				// patchable
+				'LexicographicalAnnotationAttributeListing',
+				'LexicographicalAnnotationListing',
+				'NonStaticImport',
+				'Slf4jLoggerDeclaration', // logger -> log
+				'StaticImport',
+				// critical, finds lots of bugs... unused configs and stuff.
+				'Unused',
+				'UnusedMethod',
+				'UnusedParameters',
+				'UnusedVariable',
 				)
+		error(
+				'AmbiguousJsonCreator',
+				'AssertJNullnessAssertion',
+				'AutowiredConstructor',
+				'CanonicalAnnotationSyntax',
+				'CollectorMutability',
+				'ConstantNaming',
+				'DirectReturn',
+				'EmptyMethod',
+				'ExplicitArgumentEnumeration',
+				'ExplicitEnumOrdering',
+				'IdentityConversion',
+				'ImmutablesSortedSetComparator',
+				'IsInstanceLambdaUsage',
+				'MockitoMockClassReference',
+				'MockitoStubbing',
+				'NestedOptionals',
+				'PrimitiveComparison',
+				'RedundantStringConversion',
+				'RedundantStringEscape',
+				'SelfAssignment',
+				'StringJoin',
+				'StringJoining',
+				)
+		// fixme bug: this only happens when the file is dirty!
+		// up2date checking (caching) must consider file changes, as file is currently corrupt!
+		// fix SelfTest.java:L22 ForbidGradleInternal(import org.gradle.api.internal.project.ProjectInternal;)
+		errorproneArgs.add('-XepExcludedPaths:.*/SelfTest.java')
 		if (!getenv().containsKey('CI') && getenv('IN_PLACE')?.toBoolean()) {
 			errorproneArgs.addAll(
 					'-XepPatchLocation:IN_PLACE',
 					'-XepPatchChecks:' +
+					'AmbiguousJsonCreator,' +
+					'ArrayEquals,' +
+					'AssertJNullnessAssertion,' +
+					'AutowiredConstructor,' +
+					'CanonicalAnnotationSyntax,' +
+					'CollectorMutability,' +
 					'ConstantNaming,' +
-					'RedundantStringConversion,'
+					'DirectReturn,' +
+					'EmptyMethod,' +
+					'ExplicitArgumentEnumeration,' +
+					'ExplicitEnumOrdering,' +
+					'FormatStringConcatenation,' +
+					'IdentityConversion,' +
+					'ImmutablesSortedSetComparator,' +
+					'IsInstanceLambdaUsage,' +
+					'MockitoMockClassReference,' +
+					'MockitoStubbing,' +
+					'NestedOptionals,' +
+					'PrimitiveComparison,' +
+					'RedundantStringConversion,' +
+					'RedundantStringEscape,' +
+					'SelfAssignment,' +
+					'Slf4jLogStatement,' +
+					'StringJoin,' +
+					'StringJoining,' +
+					'TimeZoneUsage,'
 					)
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 
 	@ParameterizedTest
 	//@ValueSource(ints = {0, 1}) // TODO: this is a flaky configuration cache issue that started with Gradle 8.5
-	@ValueSource(ints = {0})
+	@ValueSource(ints = 0)
 	void singleProjectExhaustive(int useConfigCache) throws Exception {
 		try (Git git = initRepo()) {
 			if (useConfigCache == 1) {
@@ -158,7 +158,7 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 
 	@ParameterizedTest
 	//@ValueSource(ints = {0, 1}) // TODO: this is a flaky configuration cache issue that started with Gradle 8.5
-	@ValueSource(ints = {0})
+	@ValueSource(ints = 0)
 	void multiProject(int useConfigCache) throws Exception {
 		try (Git git = initRepo()) {
 			if (useConfigCache == 1) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ abstract class FileIndexHarness {
 
 	protected static final PluginFingerprint FINGERPRINT = PluginFingerprint.from("foo");
 
-	protected final FileIndexConfig config = mock(FileIndexConfig.class);
-	protected final Log log = mock(Log.class);
+	protected final FileIndexConfig config = mock();
+	protected final Log log = mock();
 
 	protected Path tempDir;
 
