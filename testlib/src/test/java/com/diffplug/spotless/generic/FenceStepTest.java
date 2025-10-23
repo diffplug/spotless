@@ -18,6 +18,7 @@ package com.diffplug.spotless.generic;
 import java.io.File;
 import java.util.Arrays;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
@@ -132,7 +133,7 @@ class FenceStepTest extends ResourceHarness {
 			return uppercase ? "uppercase" : "lowercase";
 		}
 
-		@org.jetbrains.annotations.Nullable @Override
+		@Nullable @Override
 		public String format(String rawUnix, File file) throws Exception {
 			return uppercase ? rawUnix.toUpperCase() : rawUnix.toLowerCase();
 		}
