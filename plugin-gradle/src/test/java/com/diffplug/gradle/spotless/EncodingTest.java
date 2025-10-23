@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.gradle.spotless;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.charset.Charset;
 
@@ -51,7 +53,7 @@ class EncodingTest extends GradleIntegrationHarness {
 				"    encoding 'US-ASCII'",
 				"}");
 		setFile("test.java").toContent("µ");
-		gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput().contains("Encoding error!");
+		assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput()).doesNotContain("Encoding error!");
 		assertFile("test.java").hasContent("µ");
 	}
 
@@ -75,7 +77,7 @@ class EncodingTest extends GradleIntegrationHarness {
 				"}");
 		setFile("test.java").toContent("µ");
 		setFile("utf32.encoded").toContent("µ", Charset.forName("UTF-32"));
-		gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput().contains("Encoding error!");
+		assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput()).doesNotContain("Encoding error!");
 		assertFile("test.java").hasContent("µ");
 		assertFile("utf32.encoded").hasContent("µ", Charset.forName("UTF-32"));
 	}

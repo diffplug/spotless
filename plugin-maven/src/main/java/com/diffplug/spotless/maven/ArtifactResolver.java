@@ -66,7 +66,7 @@ public class ArtifactResolver {
 			excludeTransitive.add(EXCLUDE_ALL_TRANSITIVES);
 		}
 		List<Dependency> dependencies = mavenCoordinates.stream()
-				.map(coordinateString -> new DefaultArtifact(coordinateString))
+				.map(DefaultArtifact::new)
 				.map(artifact -> new Dependency(artifact, null, null, excludeTransitive))
 				.collect(toList());
 		CollectRequest collectRequest = new CollectRequest(dependencies, null, repositories);

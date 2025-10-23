@@ -196,7 +196,7 @@ class FormatterPropertiesTest extends ResourceHarness {
 
 		/** Check that the values form all valid files are part of the settings properties. */
 		public FormatterSettingsAssert containsSpecificValuesOf(Collection<File> files) {
-			files.forEach(file -> containsSpecificValuesOf(file));
+			files.forEach(this::containsSpecificValuesOf);
 			return this;
 		}
 
