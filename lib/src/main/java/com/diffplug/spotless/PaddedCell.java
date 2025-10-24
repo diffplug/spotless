@@ -150,25 +150,20 @@ public final class PaddedCell {
 
 	/** Returns the "canonical" form for this particular result (only possible if isResolvable). */
 	public String canonical() {
-		// @formatter:off
-		switch (type) {
-		case CONVERGE:	return steps.get(steps.size() - 1);
-		case CYCLE:		return Collections.min(steps, Comparator.comparingInt(String::length).thenComparing(Function.identity()));
-		case DIVERGE:	throw new IllegalArgumentException("No canonical form for a diverging result");
-		default:	throw new IllegalArgumentException("Unknown type: " + type);
-		}
-		// @formatter:on
+		return switch (type) {
+			case CONVERGE -> steps.get(steps.size() - 1);
+			case CYCLE ->
+				Collections.min(steps, Comparator.comparingInt(String::length).thenComparing(Function.identity()));
+			case DIVERGE -> throw new IllegalArgumentException("No canonical form for a diverging result");
+		};
 	}
 
 	/** Returns a string which describes this result. */
 	public String userMessage() {
-		// @formatter:off
-		switch (type) {
-		case CONVERGE:	return "converges after " + steps.size() + " steps";
-		case CYCLE:		return "cycles between " + steps.size() + " steps";
-		case DIVERGE:	return "diverges after " + steps.size() + " steps";
-		default:	throw new IllegalArgumentException("Unknown type: " + type);
-		}
-		// @formatter:on
+		return switch (type) {
+			case CONVERGE -> "converges after " + steps.size() + " steps";
+			case CYCLE -> "cycles between " + steps.size() + " steps";
+			case DIVERGE -> "diverges after " + steps.size() + " steps";
+		};
 	}
 }

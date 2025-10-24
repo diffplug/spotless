@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless.generic;
 
+import static com.diffplug.spotless.generic.IndentStep.Type.SPACE;
+import static com.diffplug.spotless.generic.IndentStep.Type.TAB;
+
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -102,22 +105,13 @@ public final class IndentStep implements Serializable {
 
 				// add the leading space in a canonical way
 				if (numSpaces > 0) {
-					switch (state.type) {
-					case SPACE:
-						for (int i = 0; i < numSpaces; i++) {
-							builder.append(' ');
-						}
-						break;
-					case TAB:
-						for (int i = 0; i < numSpaces / state.numSpacesPerTab; i++) {
-							builder.append('\t');
-						}
+					if (state.type == SPACE) {
+						builder.append(" ".repeat(numSpaces));
+					} else if (state.type == TAB) {
+						builder.append("\t".repeat(Math.max(0, numSpaces / state.numSpacesPerTab)));
 						if (mightBeMultiLineComment && (numSpaces % state.numSpacesPerTab == 1)) {
 							builder.append(' ');
 						}
-						break;
-					default:
-						throw new IllegalArgumentException("Unexpected enum " + state.type);
 					}
 				}
 
