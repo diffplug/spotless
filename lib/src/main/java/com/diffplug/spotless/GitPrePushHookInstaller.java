@@ -266,7 +266,7 @@ public abstract class GitPrePushHookInstaller {
 	private String executorPath(Executor executor) {
 		final var wrapper = executorWrapperFile(executor);
 		if (wrapper.exists()) {
-			return "./" + wrapper.getName();
+			return wrapper.getAbsolutePath().replace("\\", "/");
 		}
 
 		logger.info("Local %s wrapper (%s) not found, falling back to global command '%s'",
