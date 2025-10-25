@@ -207,6 +207,7 @@ spotless {
 
     removeUnusedImports()
     forbidWildcardImports()
+    forbidModuleImports()
 
     // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
     cleanthat()          // has its own section below
@@ -253,6 +254,16 @@ spotless {
 spotless {
   java {
     forbidWildcardImports()
+  }
+}
+```
+
+### forbidModuleImports
+
+```
+spotless {
+  java {
+    forbidModuleImports()
   }
 }
 ```
