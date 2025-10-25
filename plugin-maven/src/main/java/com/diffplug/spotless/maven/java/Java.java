@@ -80,6 +80,10 @@ public class Java extends FormatterFactory {
 		addStepFactory(forbidWildcardImports);
 	}
 
+	public void addForbidModuleImports(ForbidModuleImports forbidModuleImports) {
+		addStepFactory(forbidModuleImports);
+	}
+
 	public void addFormatAnnotations(FormatAnnotations formatAnnotations) {
 		addStepFactory(formatAnnotations);
 	}
