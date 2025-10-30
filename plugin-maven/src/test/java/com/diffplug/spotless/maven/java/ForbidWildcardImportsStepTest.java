@@ -26,9 +26,9 @@ class ForbidWildcardImportsStepTest extends MavenIntegrationHarness {
 		writePomWithJavaSteps("<forbidWildcardImports/>");
 
 		String path = "src/main/java/test.java";
-		setFile(path).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
+		setFile(path).toResource("java/forbidwildcardimports/JavaCodeWildcardsUnformatted.test");
 		var selfie = expectSelfieErrorMsg(mavenRunner().withArguments("spotless:apply").runHasError());
-		assertFile(path).sameAsResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
+		assertFile(path).sameAsResource("java/forbidwildcardimports/JavaCodeWildcardsUnformatted.test");
 		selfie.toBe("""
 				Failed to execute goal com.diffplug.spotless:spotless-maven-plugin:VERSION:apply (default-cli) on project spotless-maven-plugin-tests: There were 5 lint error(s), they must be fixed or suppressed.
 				src/main/java/test.java:L1 forbidWildcardImports(import java.util.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this
