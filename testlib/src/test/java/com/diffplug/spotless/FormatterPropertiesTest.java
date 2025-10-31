@@ -214,7 +214,7 @@ class FormatterPropertiesTest extends ResourceHarness {
 					failWithMessage("Key <%s> not part of formatter settings.", key);
 				}
 				String value = settingsProps.getProperty(key);
-				if ((expectedValue != null) && (!expectedValue.equals(value))) {
+				if ((expectedValue != null) && !expectedValue.equals(value)) {
 					failWithMessage("Value of key <%s> is '%s' and not '%s' as expected.", key, value, expectedValue);
 				}
 			}

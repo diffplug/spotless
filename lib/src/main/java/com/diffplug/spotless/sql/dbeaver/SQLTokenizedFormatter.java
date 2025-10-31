@@ -125,7 +125,7 @@ public class SQLTokenizedFormatter {
 			// Concatenate tokens
 			if (t0.getType() == TokenType.KEYWORD && t1.getType() == TokenType.SPACE && t2.getType() == TokenType.KEYWORD) {
 				if ((("ORDER".equals(tokenString) || "GROUP".equals(tokenString) || "CONNECT".equals(tokenString)) && "BY".equals(token2String))
-						|| (("START".equals(tokenString)) && "WITH".equals(token2String))) {
+						|| ("START".equals(tokenString) && "WITH".equals(token2String))) {
 					t0.setString(t0.getString() + " " + t2.getString());
 					argList.remove(index + 1);
 					argList.remove(index + 1);

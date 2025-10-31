@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless.generic;
 
+import static com.diffplug.spotless.generic.FenceStep.Kind.APPLY;
+import static com.diffplug.spotless.generic.FenceStep.Kind.PRESERVE;
+
 import java.io.File;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
@@ -78,7 +81,7 @@ public final class FenceStep {
 
 	/** Returns a step which will apply the given steps but preserve the content selected by the regex / openClose pair. */
 	public FormatterStep preserveWithin(List<FormatterStep> steps) {
-		return createStep(Kind.PRESERVE, steps);
+		return createStep(PRESERVE, steps);
 	}
 
 	/**
@@ -86,7 +89,7 @@ public final class FenceStep {
 	 * Linting within the substeps is not supported.
 	 */
 	public FormatterStep applyWithin(List<FormatterStep> steps) {
-		return createStep(Kind.APPLY, steps);
+		return createStep(APPLY, steps);
 	}
 
 	private FormatterStep createStep(Kind kind, List<FormatterStep> steps) {
@@ -96,7 +99,7 @@ public final class FenceStep {
 				RoundtripAndEqualityState::toFormatterFunc);
 	}
 
-	private enum Kind {
+	enum Kind {
 		APPLY, PRESERVE
 	}
 
@@ -210,24 +213,22 @@ public final class FenceStep {
 			}
 			List<String> groups = groupsZeroed();
 			Matcher matcher = regex.matcher(unix);
-			switch (kind) {
-			case APPLY:
+			if (kind == APPLY) {
 				while (matcher.find()) {
 					// apply the formatter to each group
 					groups.add(formatter.compute(matcher.group(1), file));
 				}
 				// and then assemble the result right away
 				return assembleGroups(unix);
-			case PRESERVE:
+			} else if (kind == PRESERVE) {
 				while (matcher.find()) {
 					// store whatever is within the open/close tags
 					groups.add(matcher.group(1));
 				}
 				String formatted = formatter.compute(unix, file);
 				return assembleGroups(formatted);
-			default:
-				throw new Error();
 			}
+			throw new Error();
 		}
 
 		@Override
