@@ -1,0 +1,4 @@
+import module java.base;
+import module java.sql;
+
+public class Test {}
