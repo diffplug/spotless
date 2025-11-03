@@ -8,6 +8,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Use absolute path in the git pre push hook
 ### Fixed
 - palantirJavaFormat is no longer arbitrarily set to outdated versions on Java 17, latest available version is always used ([#2686](https://github.com/diffplug/spotless/pull/2686) fixes [#2685](https://github.com/diffplug/spotless/issues/2685))
+- Fix XML tag for escapeHtml in README.md ([#2712](https://github.com/diffplug/spotless/pull/2712))
 
 ## [3.0.0] - 2025-09-24
 ### Changes
