@@ -47,9 +47,6 @@ versionCompatibility {
 			// we will support no more than 2 breaking changes at a time = 3 incompatible versions
 			// we will try to drop down to only one version if a stable API can be maintained for a full year
 			versions = [
-				'0.48.0',
-				'0.49.0',
-				'0.50.0',
 				'1.0.0',
 			]
 			targetSourceSetName = 'ktlint'
@@ -110,18 +107,6 @@ dependencies {
 			strictly '1.7' // for JDK 8 compatibility
 		}
 	}
-	// ktlint oldest supported version
-	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
-	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
-	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
-	// ktlint previous supported version
-	compatKtLint0Dot49Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:0.49.0'
-	compatKtLint0Dot49Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.49.0'
-	compatKtLint0Dot49Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.17'
-	// ktlint previous supported version
-	compatKtLint0Dot50Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:0.50.0'
-	compatKtLint0Dot50Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.50.0'
-	compatKtLint0Dot50Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.17'
 	// ktlint latest supported version
 	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:1.0.0'
 	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:1.0.0'
