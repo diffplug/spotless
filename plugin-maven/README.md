@@ -1030,7 +1030,7 @@ Uses Google Gson to also allow sorting by keys besides custom indentation - usef
 <gson>
   <indentSpaces>4</indentSpaces>        <!-- optional: specify the number of spaces to use -->
   <sortByKeys>false</sortByKeys>        <!-- optional: sort JSON by its keys -->
-  <escapeHtml>false</indentSpaces>      <!-- optional: escape HTML in values -->
+  <escapeHtml>false</escapeHtml>      <!-- optional: escape HTML in values -->
   <version>2.8.1</version>              <!-- optional: specify version -->
 </gson>
 ```
