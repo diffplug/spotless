@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.generic;
 
+import static com.diffplug.spotless.FormatterStep.createLazy;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -132,27 +134,21 @@ public final class LicenseHeaderStep {
 	public FormatterStep build() {
 		FormatterStep formatterStep;
 		if (yearMode.get() == YearMode.SET_FROM_GIT) {
-			formatterStep = FormatterStep.createLazy(name, () -> {
-				boolean updateYear = false; // doesn't matter
-				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
-			}, new SetLicenseHeaderYearsFromGitHistory());
+			formatterStep = createLazy(
+				name,
+				() -> new Runtime(headerLazy.get(), delimiter, yearSeparator, false, skipLinesMatching),
+				new SetLicenseHeaderYearsFromGitHistory());
 		} else {
-			formatterStep = FormatterStep.createLazy(name, () -> {
-				// by default, we should update the year if the user is using ratchetFrom
-				boolean updateYear;
-				switch (yearMode.get()) {
-				case PRESERVE:
-					updateYear = false;
-					break;
-				case UPDATE_TO_TODAY:
-					updateYear = true;
-					break;
-				case SET_FROM_GIT:
-				default:
-					throw new IllegalStateException(yearMode.toString());
-				}
-				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
-			}, step -> FormatterFunc.needsFile(step::format));
+			formatterStep = createLazy(
+				name,
+				() -> new Runtime(headerLazy.get(), delimiter, yearSeparator,
+					// by default, we should update the year if the user is using ratchetFrom
+					switch (yearMode.get()) {
+						case PRESERVE -> false;
+						case UPDATE_TO_TODAY -> true;
+						default -> throw new IllegalStateException(yearMode.toString());
+					}, skipLinesMatching),
+				step -> FormatterFunc.needsFile(step::format));
 		}
 		if (contentPattern == null) {
 			return formatterStep;

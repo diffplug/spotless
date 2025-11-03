@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.extra.glue.jdt;
 
+import static org.eclipse.jdt.core.util.CompilationUnitSorter.RELATIVE_ORDER;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -347,33 +349,18 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 	}
 
 	private static int sortPreservedCategory(int category) {
-		switch (category) {
-		case STATIC_FIELDS_INDEX:
-		case STATIC_INIT_INDEX:
-			return STATIC_FIELDS_INDEX;
-		case FIELDS_INDEX:
-		case INIT_INDEX:
-			return FIELDS_INDEX;
-		default:
-			return category;
-		}
+		return switch (category) {
+			case STATIC_FIELDS_INDEX, STATIC_INIT_INDEX -> STATIC_FIELDS_INDEX;
+			case FIELDS_INDEX, INIT_INDEX -> FIELDS_INDEX;
+			default -> category;
+		};
 	}
 
-	private boolean isSortPreserved(BodyDeclaration bodyDeclaration) {
-		switch (bodyDeclaration.getNodeType()) {
-		case ASTNode.FIELD_DECLARATION:
-		case ASTNode.ENUM_CONSTANT_DECLARATION:
-		case ASTNode.INITIALIZER:
-			return true;
-		default:
-			return false;
-		}
-	}
+	private boolean isSortPreserved(BodyDeclaration bodyDeclaration) {return switch(bodyDeclaration.getNodeType()){case ASTNode.FIELD_DECLARATION,ASTNode.ENUM_CONSTANT_DECLARATION,ASTNode.INITIALIZER->true;default->false;};}
 
 	private int preserveRelativeOrder(BodyDeclaration bodyDeclaration1, BodyDeclaration bodyDeclaration2) {
-		int value1 = (Integer) bodyDeclaration1.getProperty(CompilationUnitSorter.RELATIVE_ORDER);
-		int value2 = (Integer) bodyDeclaration2.getProperty(CompilationUnitSorter.RELATIVE_ORDER);
-		return value1 - value2;
+		return (Integer) bodyDeclaration1.getProperty(RELATIVE_ORDER) -
+				(Integer) bodyDeclaration2.getProperty(RELATIVE_ORDER);
 	}
 
 	private int compareNames(BodyDeclaration bodyDeclaration1, BodyDeclaration bodyDeclaration2, String name1, String name2) {

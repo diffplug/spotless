@@ -325,16 +325,12 @@ public final class KtfmtStep implements Serializable {
 		 * @return com.diffplug.spotless.glue.ktfmt.KtfmtStyle enum value name
 		 */
 		private String getKtfmtStyleOption(Style style) {
-			switch (style) {
-			case META:
-				return "META";
-			case GOOGLE:
-				return "GOOGLE";
-			case KOTLINLANG:
-				return "KOTLIN_LANG";
-			default:
-				throw new IllegalStateException("Unsupported style: " + style);
-			}
+			return switch (style) {
+				case META -> "META";
+				case GOOGLE -> "GOOGLE";
+				case KOTLINLANG -> "KOTLIN_LANG";
+				default -> throw new IllegalStateException("Unsupported style: " + style);
+			};
 		}
 	}
 

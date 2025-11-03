@@ -58,7 +58,6 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 			case META -> Formatter.META_FORMAT;
 			case GOOGLE -> Formatter.GOOGLE_FORMAT;
 			case KOTLIN_LANG -> Formatter.KOTLINLANG_FORMAT;
-			default -> throw new IllegalStateException("Unknown formatting option " + style);
 		};
 
 		if (ktfmtFormattingOptions != null) {

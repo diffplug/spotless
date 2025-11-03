@@ -71,35 +71,35 @@ class SQLTokensParser {
 	}
 
 	private static boolean isSymbol(final char argChar) {
-		switch (argChar) {
-		case '"': // double quote
-		case '?': // question mark
-		case '%': // percent
-		case '&': // ampersand
-		case '\'': // quote
-		case '(': // left paren
-		case ')': // right paren
-		case '|': // vertical bar
-		case '*': // asterisk
-		case '+': // plus sign
-		case ',': // comma
-		case '-': // minus sign
-		case '.': // period
-		case '/': // solidus
-		case ':': // colon
-		case ';': // semicolon
-		case '<': // less than operator
-		case '=': // equals operator
-		case '>': // greater than operator
-		case '!': // greater than operator
-		case '~': // greater than operator
-		case '`': // apos
-		case '[': // bracket open
-		case ']': // bracket close
-			return true;
-		default:
-			return false;
-		}
+		// @formatter:off
+		return switch (argChar) {
+			case '!' -> true; // exclamation mark
+			case '"' -> true; // double quote
+			case '%' -> true; // percent
+			case '&' -> true; // ampersand
+			case '(' -> true; // left paren
+			case ')' -> true; // right paren
+			case '*' -> true; // asterisk
+			case '+' -> true; // plus sign
+			case ',' -> true; // comma
+			case '-' -> true; // minus sign
+			case '.' -> true; // period
+			case '/' -> true; // solidus
+			case ':' -> true; // colon
+			case ';' -> true; // semicolon
+			case '<' -> true; // less than operator
+			case '=' -> true; // equals operator
+			case '>' -> true; // greater than operator
+			case '?' -> true; // question mark
+			case '[' -> true; // bracket open
+			case '\'' -> true;// quote
+			case ']' -> true; // bracket close
+			case '`' -> true; // backtick
+			case '|' -> true; // vertical bar
+			case '~' -> true; // tilde
+			default -> false;
+		};
+		// @formatter:on
 	}
 
 	private FormatterToken nextToken() {

@@ -49,13 +49,11 @@ public final class RemoveUnusedImportsStep implements Serializable {
 
 	public static FormatterStep create(String unusedImportRemover, Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner");
-		switch (unusedImportRemover) {
-		case GJF:
-			return GoogleJavaFormatStep.createRemoveUnusedImportsOnly(provisioner);
-		case CLEANTHAT:
-			return CleanthatJavaStep.createWithStepName(NAME, CleanthatJavaStep.defaultGroupArtifact(), CleanthatJavaStep.defaultVersion(), "99.9", List.of(CLEANTHAT_MUTATOR), List.of(), false, provisioner);
-		default:
-			throw new IllegalArgumentException("Invalid unusedImportRemover: " + unusedImportRemover);
-		}
+		return switch (unusedImportRemover) {
+			case GJF -> GoogleJavaFormatStep.createRemoveUnusedImportsOnly(provisioner);
+			case CLEANTHAT ->
+				CleanthatJavaStep.createWithStepName(NAME, CleanthatJavaStep.defaultGroupArtifact(), CleanthatJavaStep.defaultVersion(), "99.9", List.of(CLEANTHAT_MUTATOR), List.of(), false, provisioner);
+			default -> throw new IllegalArgumentException("Invalid unusedImportRemover: " + unusedImportRemover);
+		};
 	}
 }

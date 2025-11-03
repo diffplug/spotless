@@ -456,32 +456,22 @@ public final class BiomeStep {
 			}
 			var dot = name.lastIndexOf(".");
 			var ext = dot >= 0 ? name.substring(dot + 1) : name;
-			switch (language) {
-			case "js?":
-				return "jsx".equals(ext) || "js".equals(ext) || "mjs".equals(ext) || "cjs".equals(ext) ? name
-						: "file.js";
-			case "ts?":
-				return "tsx".equals(ext) || "ts".equals(ext) || "mts".equals(ext) || "cts".equals(ext) ? name
-						: "file.js";
-			case "js":
-				return "js".equals(ext) || "mjs".equals(ext) || "cjs".equals(ext) ? name : "file.js";
-			case "jsx":
-				return "jsx".equals(ext) ? name : "file.jsx";
-			case "ts":
-				return "ts".equals(ext) || "mts".equals(ext) || "cts".equals(ext) ? name : "file.ts";
-			case "tsx":
-				return "tsx".equals(ext) ? name : "file.tsx";
-			case "json":
-				return "json".equals(ext) ? name : "file.json";
-			case "jsonc":
-				return "jsonc".equals(ext) ? name : "file.jsonc";
-			case "css":
-				return "css".equals(ext) ? name : "file.css";
-			// so that we can support new languages such as css or yaml when Biome adds
-			// support for them without having to change the code
-			default:
-				return "file." + language;
-			}
+			return switch (language) {
+				case "js?" -> "jsx".equals(ext) || "js".equals(ext) || "mjs".equals(ext) || "cjs".equals(ext) ? name
+					: "file.js";
+				case "ts?" -> "tsx".equals(ext) || "ts".equals(ext) || "mts".equals(ext) || "cts".equals(ext) ? name
+					: "file.js";
+				case "js" -> "js".equals(ext) || "mjs".equals(ext) || "cjs".equals(ext) ? name : "file.js";
+				case "jsx" -> "jsx".equals(ext) ? name : "file.jsx";
+				case "ts" -> "ts".equals(ext) || "mts".equals(ext) || "cts".equals(ext) ? name : "file.ts";
+				case "tsx" -> "tsx".equals(ext) ? name : "file.tsx";
+				case "json" -> "json".equals(ext) ? name : "file.json";
+				case "jsonc" -> "jsonc".equals(ext) ? name : "file.jsonc";
+				case "css" -> "css".equals(ext) ? name : "file.css";
+				// so that we can support new languages such as css or yaml when Biome adds
+				// support for them without having to change the code
+				default -> "file." + language;
+			};
 		}
 
 		/**
@@ -491,8 +481,7 @@ public final class BiomeStep {
 		 * @return A formatter function for formatting code.
 		 */
 		private FormatterFunc.Closeable toFunc() {
-			var runner = new ProcessRunner();
-			return FormatterFunc.Closeable.of(runner, this::format);
+			return FormatterFunc.Closeable.of(new ProcessRunner(), this::format);
 		}
 	}
 }

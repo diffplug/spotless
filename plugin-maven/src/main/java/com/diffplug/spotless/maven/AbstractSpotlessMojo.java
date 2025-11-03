@@ -288,16 +288,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			return true;
 		}
 
-		switch (goal) {
-		case GOAL_CHECK:
-			return checkSkip;
-		case GOAL_APPLY:
-			return applySkip;
-		default:
-			break;
-		}
+		return switch (goal) {
+			case GOAL_CHECK -> checkSkip;
+			case GOAL_APPLY -> applySkip;
+			default -> false;
+		};
 
-		return false;
 	}
 
 	private List<File> collectFiles(FormatterFactory formatterFactory, FormatterConfig config) {

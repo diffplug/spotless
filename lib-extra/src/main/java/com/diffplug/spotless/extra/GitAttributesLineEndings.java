@@ -15,6 +15,10 @@
  */
 package com.diffplug.spotless.extra;
 
+import static com.diffplug.spotless.LineEnding.PLATFORM_NATIVE;
+import static com.diffplug.spotless.LineEnding.UNIX;
+import static com.diffplug.spotless.LineEnding.WINDOWS;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -91,10 +95,9 @@ public final class GitAttributesLineEndings {
 		protected String calculateState() throws Exception {
 			var files = toFormat.get().iterator();
 			if (files.hasNext()) {
-				Runtime runtime = new RuntimeInit(projectDir).atRuntime();
-				return runtime.getEndingFor(files.next());
+				return new RuntimeInit(projectDir).atRuntime().getEndingFor(files.next());
 			} else {
-				return LineEnding.UNIX.str();
+				return UNIX.str();
 			}
 		}
 
@@ -300,15 +303,14 @@ public final class GitAttributesLineEndings {
 		}
 
 		private static String convertEolToLineEnding(String eol, File file) {
-			switch (eol.toLowerCase(Locale.ROOT)) {
-			case "lf":
-				return LineEnding.UNIX.str();
-			case "crlf":
-				return LineEnding.WINDOWS.str();
-			default:
-				LOGGER.warn(".gitattributes file has unspecified eol value: {} for {}, defaulting to platform native", eol, file);
-				return LineEnding.PLATFORM_NATIVE.str();
-			}
+			return switch (eol.toLowerCase(Locale.ROOT)) {
+				case "lf" -> UNIX.str();
+				case "crlf" -> WINDOWS.str();
+				default -> {
+					LOGGER.warn(".gitattributes file has unspecified eol value: {} for {}, defaulting to platform native", eol, file);
+					yield PLATFORM_NATIVE.str();
+				}
+			};
 		}
 
 		private LineEnding findDefaultLineEnding(Config config) {
@@ -318,12 +320,12 @@ public final class GitAttributesLineEndings {
 				// autocrlf=true converts CRLF->LF during commit
 				//               and converts LF->CRLF during checkout
 				// so CRLF is the default line ending
-				return LineEnding.WINDOWS;
+				return WINDOWS;
 			} else if (autoCRLF == AutoCRLF.INPUT) {
 				// autocrlf=input converts CRLF->LF during commit
 				//                and does no conversion during checkout
 				// mostly used on Unix, so LF is the default encoding
-				return LineEnding.UNIX;
+				return UNIX;
 			} else if (autoCRLF == AutoCRLF.FALSE) {
 				// handle core.eol
 				EOL eol = config.getEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_EOL, EOL.NATIVE);
@@ -335,14 +337,11 @@ public final class GitAttributesLineEndings {
 
 		/** Creates a LineEnding from an EOL. */
 		private static LineEnding fromEol(EOL eol) {
-			// @formatter:off
-			switch (eol) {
-			case CRLF:    return LineEnding.WINDOWS;
-			case LF:      return LineEnding.UNIX;
-			case NATIVE:  return LineEnding.PLATFORM_NATIVE;
-			default: throw new IllegalArgumentException("Unknown eol " + eol);
-			}
-			// @formatter:on
+			return switch (eol) {
+				case CRLF -> WINDOWS;
+				case LF -> UNIX;
+				case NATIVE -> PLATFORM_NATIVE;
+			};
 		}
 	}
 
