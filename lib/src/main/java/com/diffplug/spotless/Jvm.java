@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static java.lang.System.lineSeparator;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -253,7 +255,7 @@ public final class Jvm {
 		public String toString() {
 			return "%s alternatives:%n".formatted(fmtName)
 					+ jvm2fmtMaxVersion.entrySet().stream().map(
-							e -> "- Version %s requires JVM %d+".formatted(e.getValue(), e.getKey())).collect(Collectors.joining(System.lineSeparator()));
+							e -> "- Version %s requires JVM %d+".formatted(e.getValue(), e.getKey())).collect(Collectors.joining(lineSeparator()));
 		}
 
 		@SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")

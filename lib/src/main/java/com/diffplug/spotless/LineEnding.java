@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static java.lang.System.lineSeparator;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,11 +32,11 @@ import java.util.function.Supplier;
  * Represents the line endings which should be written by the tool.
  */
 public enum LineEnding {
-	// @formatter:off
 	/** Uses the same line endings as Git, using {@code .gitattributes} and the {@code core.eol} property. */
 	GIT_ATTRIBUTES {
 		/** .gitattributes is path-specific, so you must use {@link LineEnding#createPolicy(File, Supplier)}. */
-		@Override @Deprecated
+		@Override
+		@Deprecated
 		public Policy createPolicy() {
 			return super.createPolicy();
 		}
@@ -42,7 +44,8 @@ public enum LineEnding {
 	/** Uses the same line endings as Git, and assumes that every single file being formatted will have the same line ending. */
 	GIT_ATTRIBUTES_FAST_ALLSAME {
 		/** .gitattributes is path-specific, so you must use {@link LineEnding#createPolicy(File, Supplier)}. */
-		@Override @Deprecated
+		@Override
+		@Deprecated
 		public Policy createPolicy() {
 			return super.createPolicy();
 		}
@@ -51,13 +54,12 @@ public enum LineEnding {
 	PLATFORM_NATIVE,
 	/** {@code \r\n} */
 	WINDOWS,
-    /** {@code \n} */
-    UNIX,
-    /** {@code \r} */
-    MAC_CLASSIC,
-    /** preserve the line ending of the first line (no matter which format) */
-    PRESERVE;
-	// @formatter:on
+	/** {@code \n} */
+	UNIX,
+	/** {@code \r} */
+	MAC_CLASSIC,
+	/** preserve the line ending of the first line (no matter which format) */
+	PRESERVE;
 
 	/** Returns a {@link Policy} appropriate for files which are contained within the given rootFolder. */
 	public Policy createPolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
@@ -80,21 +82,21 @@ public enum LineEnding {
 		}
 	}
 
-	// @formatter:off
 	/** Should use {@link #createPolicy(File, Supplier)} instead, but this will work iff its a path-independent LineEnding policy. */
 	public Policy createPolicy() {
-		switch (this) {
-		case PLATFORM_NATIVE:	return _PLATFORM_NATIVE_POLICY;
-		case WINDOWS:			return WINDOWS_POLICY;
-		case UNIX:				return UNIX_POLICY;
-		case MAC_CLASSIC:		return MAC_CLASSIC_POLICY;
-		case PRESERVE:			return PRESERVE_POLICY;
-		default:	throw new UnsupportedOperationException(this + " is a path-specific line ending.");
-		}
+		return switch (this) {
+			case PLATFORM_NATIVE -> _PLATFORM_NATIVE_POLICY;
+			case WINDOWS -> WINDOWS_POLICY;
+			case UNIX -> UNIX_POLICY;
+			case MAC_CLASSIC -> MAC_CLASSIC_POLICY;
+			case PRESERVE -> PRESERVE_POLICY;
+			default -> throw new UnsupportedOperationException(this + " is a path-specific line ending.");
+		};
 	}
 
 	static class ConstantLineEndingPolicy extends NoLambda.EqualityBasedOnSerialization implements Policy {
-		@Serial private static final long serialVersionUID = 1L;
+		@Serial
+		private static final long serialVersionUID = 1L;
 
 		final String lineEnding;
 
@@ -109,50 +111,51 @@ public enum LineEnding {
 	}
 
 	static class PreserveLineEndingPolicy extends NoLambda.EqualityBasedOnSerialization implements Policy {
-		@Serial private static final long serialVersionUID = 2L;
+		@Serial
+		private static final long serialVersionUID = 2L;
 
-        @Override
-        public String getEndingFor(File file) {
-            // assume US-ASCII encoding (only line ending characters need to be decoded anyways)
-            try (Reader reader = new FileReader(file, StandardCharsets.US_ASCII)) {
-                return getEndingFor(reader);
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Could not determine line ending of file: " + file, e);
-            }
-        }
+		@Override
+		public String getEndingFor(File file) {
+			// assume US-ASCII encoding (only line ending characters need to be decoded anyways)
+			try (Reader reader = new FileReader(file, StandardCharsets.US_ASCII)) {
+				return getEndingFor(reader);
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Could not determine line ending of file: " + file, e);
+			}
+		}
 
-        static String getEndingFor(Reader reader) throws IOException {
-            char previousCharacter = 0;
-            char currentCharacter = 0;
-            int readResult;
-            while ((readResult = reader.read()) != -1) {
-                currentCharacter = (char) readResult;
-                if (currentCharacter == '\n') {
-                    if (previousCharacter == '\r') {
-                        return WINDOWS.str();
-                    } else {
-                        return UNIX.str();
-                    }
-                } else {
-                    if (previousCharacter == '\r') {
-                        return MAC_CLASSIC.str();
-                    }
-                }
-                previousCharacter = currentCharacter;
-            }
-            if (previousCharacter == '\r') {
-                return MAC_CLASSIC.str();
-            }
-            // assume UNIX line endings if no line ending was found
-            return UNIX.str();
-        }
+		static String getEndingFor(Reader reader) throws IOException {
+			char previousCharacter = 0;
+			char currentCharacter;
+			int readResult;
+			while ((readResult = reader.read()) != -1) {
+				currentCharacter = (char) readResult;
+				if (currentCharacter == '\n') {
+					if (previousCharacter == '\r') {
+						return WINDOWS.str();
+					} else {
+						return UNIX.str();
+					}
+				} else {
+					if (previousCharacter == '\r') {
+						return MAC_CLASSIC.str();
+					}
+				}
+				previousCharacter = currentCharacter;
+			}
+			if (previousCharacter == '\r') {
+				return MAC_CLASSIC.str();
+			}
+			// assume UNIX line endings if no line ending was found
+			return UNIX.str();
+		}
 	}
 
 	private static final Policy WINDOWS_POLICY = new ConstantLineEndingPolicy(WINDOWS.str());
 	private static final Policy UNIX_POLICY = new ConstantLineEndingPolicy(UNIX.str());
-    private static final Policy MAC_CLASSIC_POLICY = new ConstantLineEndingPolicy(MAC_CLASSIC.str());
-    private static final Policy PRESERVE_POLICY = new PreserveLineEndingPolicy();
-	private static final String _PLATFORM_NATIVE = System.getProperty("line.separator");
+	private static final Policy MAC_CLASSIC_POLICY = new ConstantLineEndingPolicy(MAC_CLASSIC.str());
+	private static final Policy PRESERVE_POLICY = new PreserveLineEndingPolicy();
+	private static final String _PLATFORM_NATIVE = lineSeparator();
 	private static final Policy _PLATFORM_NATIVE_POLICY = new ConstantLineEndingPolicy(_PLATFORM_NATIVE);
 	private static final boolean NATIVE_IS_WIN = _PLATFORM_NATIVE.equals(WINDOWS.str());
 
@@ -169,15 +172,14 @@ public enum LineEnding {
 
 	/** Returns the standard line ending for this policy. */
 	public String str() {
-		switch (this) {
-		case PLATFORM_NATIVE:	return _PLATFORM_NATIVE;
-		case WINDOWS:			return "\r\n";
-		case UNIX:				return "\n";
-		case MAC_CLASSIC:		return "\r";
-		default:	throw new UnsupportedOperationException(this + " is a path-specific line ending.");
-		}
+		return switch (this) {
+			case PLATFORM_NATIVE -> _PLATFORM_NATIVE;
+			case WINDOWS -> "\r\n";
+			case UNIX -> "\n";
+			case MAC_CLASSIC -> "\r";
+			default -> throw new UnsupportedOperationException(this + " is a path-specific line ending.");
+		};
 	}
-	// @formatter:on
 
 	/** A policy for line endings which can vary based on the specific file being requested. */
 	public interface Policy extends Serializable, NoLambda {

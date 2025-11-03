@@ -347,28 +347,14 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 	}
 
 	private static int sortPreservedCategory(int category) {
-		switch (category) {
-		case STATIC_FIELDS_INDEX:
-		case STATIC_INIT_INDEX:
-			return STATIC_FIELDS_INDEX;
-		case FIELDS_INDEX:
-		case INIT_INDEX:
-			return FIELDS_INDEX;
-		default:
-			return category;
-		}
+		return switch (category) {
+			case STATIC_FIELDS_INDEX, STATIC_INIT_INDEX -> STATIC_FIELDS_INDEX;
+			case FIELDS_INDEX, INIT_INDEX -> FIELDS_INDEX;
+			default -> category;
+		};
 	}
 
-	private boolean isSortPreserved(BodyDeclaration bodyDeclaration) {
-		switch (bodyDeclaration.getNodeType()) {
-		case ASTNode.FIELD_DECLARATION:
-		case ASTNode.ENUM_CONSTANT_DECLARATION:
-		case ASTNode.INITIALIZER:
-			return true;
-		default:
-			return false;
-		}
-	}
+	private boolean isSortPreserved(BodyDeclaration bodyDeclaration) {return switch(bodyDeclaration.getNodeType()){case ASTNode.FIELD_DECLARATION,ASTNode.ENUM_CONSTANT_DECLARATION,ASTNode.INITIALIZER->true;default->false;};}
 
 	private int preserveRelativeOrder(BodyDeclaration bodyDeclaration1, BodyDeclaration bodyDeclaration2) {
 		int value1 = (Integer) bodyDeclaration1.getProperty(CompilationUnitSorter.RELATIVE_ORDER);

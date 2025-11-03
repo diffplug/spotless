@@ -300,15 +300,14 @@ public final class GitAttributesLineEndings {
 		}
 
 		private static String convertEolToLineEnding(String eol, File file) {
-			switch (eol.toLowerCase(Locale.ROOT)) {
-			case "lf":
-				return LineEnding.UNIX.str();
-			case "crlf":
-				return LineEnding.WINDOWS.str();
-			default:
-				LOGGER.warn(".gitattributes file has unspecified eol value: {} for {}, defaulting to platform native", eol, file);
-				return LineEnding.PLATFORM_NATIVE.str();
-			}
+			return switch (eol.toLowerCase(Locale.ROOT)) {
+				case "lf" -> LineEnding.UNIX.str();
+				case "crlf" -> LineEnding.WINDOWS.str();
+				default -> {
+					LOGGER.warn(".gitattributes file has unspecified eol value: {} for {}, defaulting to platform native", eol, file);
+					yield LineEnding.PLATFORM_NATIVE.str();
+				}
+			};
 		}
 
 		private LineEnding findDefaultLineEnding(Config config) {
@@ -335,14 +334,11 @@ public final class GitAttributesLineEndings {
 
 		/** Creates a LineEnding from an EOL. */
 		private static LineEnding fromEol(EOL eol) {
-			// @formatter:off
-			switch (eol) {
-			case CRLF:    return LineEnding.WINDOWS;
-			case LF:      return LineEnding.UNIX;
-			case NATIVE:  return LineEnding.PLATFORM_NATIVE;
-			default: throw new IllegalArgumentException("Unknown eol " + eol);
-			}
-			// @formatter:on
+			return switch (eol) {
+				case CRLF -> LineEnding.WINDOWS;
+				case LF -> LineEnding.UNIX;
+				case NATIVE -> LineEnding.PLATFORM_NATIVE;
+			};
 		}
 	}
 

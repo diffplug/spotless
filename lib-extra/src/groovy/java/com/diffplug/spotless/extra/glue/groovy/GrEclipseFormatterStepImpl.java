@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.extra.glue.groovy;
 
+import static java.lang.System.lineSeparator;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -143,7 +145,7 @@ public class GrEclipseFormatterStepImpl {
 			}
 			for (Throwable error : errors) {
 				error.printStackTrace();
-				string.append(System.lineSeparator());
+				string.append(lineSeparator());
 				string.append(error.getMessage());
 			}
 

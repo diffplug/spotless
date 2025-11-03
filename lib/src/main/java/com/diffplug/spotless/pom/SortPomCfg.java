@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.pom;
 
+import static java.lang.System.lineSeparator;
+
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -27,7 +29,7 @@ public class SortPomCfg implements Serializable {
 
 	public String encoding = "UTF-8";
 
-	public String lineSeparator = System.getProperty("line.separator");
+	public String lineSeparator = lineSeparator();
 
 	public boolean expandEmptyElements;
 

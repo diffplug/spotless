@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.pom;
 
+import static java.lang.System.lineSeparator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ class SortPomCfgTest {
 		// Test default values using AssertJ
 		assertThat(cfg.version).isEqualTo("4.0.0");
 		assertThat(cfg.encoding).isEqualTo("UTF-8");
-		assertThat(cfg.lineSeparator).isEqualTo(System.getProperty("line.separator"));
+		assertThat(cfg.lineSeparator).isEqualTo(lineSeparator());
 		assertThat(cfg.expandEmptyElements).isFalse();
 		assertThat(cfg.spaceBeforeCloseEmptyElement).isFalse();
 		assertThat(cfg.keepBlankLines).isTrue();

@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.groovy;
 
+import static java.lang.System.lineSeparator;
+
 import java.io.BufferedReader;
 import java.io.Serial;
 import java.io.Serializable;
@@ -54,7 +56,7 @@ public final class RemoveSemicolonsStep implements Serializable {
 					String line;
 					while ((line = reader.readLine()) != null) {
 						result.append(removeSemicolon(line));
-						result.append(System.lineSeparator());
+						result.append(lineSeparator());
 					}
 					return result.toString();
 				}
