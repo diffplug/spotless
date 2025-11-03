@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.sql.dbeaver;
 
+import static java.lang.Integer.parseInt;
+
 import java.util.Properties;
 
 import com.diffplug.spotless.annotations.Internal;
@@ -59,18 +61,13 @@ public class DBeaverSQLFormatterConfiguration {
 		this.keywordCase = KeywordCase.valueOf(properties.getProperty(SQL_FORMATTER_KEYWORD_CASE, "UPPER"));
 		this.statementDelimiters = properties.getProperty(SQL_FORMATTER_STATEMENT_DELIMITER, SQLDialect.INSTANCE
 				.getScriptDelimiter());
-		String indentType = properties.getProperty(SQL_FORMATTER_INDENT_TYPE, "space");
-		int indentSize = Integer.parseInt(properties.getProperty(SQL_FORMATTER_INDENT_SIZE, "4"));
-		indentString = getIndentString(indentType, indentSize);
+		indentString = getIndentString(
+				properties.getProperty(SQL_FORMATTER_INDENT_TYPE, "space"),
+				parseInt(properties.getProperty(SQL_FORMATTER_INDENT_SIZE, "4")));
 	}
 
 	private String getIndentString(String indentType, int indentSize) {
-		char indentChar = "space".equals(indentType) ? ' ' : '\t';
-		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = 0; i < indentSize; i++) {
-			stringBuilder.append(indentChar);
-		}
-		return stringBuilder.toString();
+		return String.valueOf("space".equals(indentType) ? ' ' : '\t').repeat(indentSize);
 	}
 
 	String getStatementDelimiter() {
