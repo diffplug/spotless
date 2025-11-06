@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.markdown;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.StepHarness;
@@ -25,7 +27,9 @@ class FlexmarkStepTest {
 
 	@Test
 	void behaviorOldest() {
-		StepHarness.forStep(FlexmarkStep.create(OLDEST_SUPPORTED, TestProvisioner.mavenCentral()))
+		FlexmarkConfig config = new FlexmarkConfig();
+		config.setExtensions(List.of("YamlFrontMatter"));
+		StepHarness.forStep(FlexmarkStep.create(OLDEST_SUPPORTED, TestProvisioner.mavenCentral(), config))
 				.testResource(
 						"markdown/flexmark/FlexmarkUnformatted.md",
 						"markdown/flexmark/FlexmarkFormatted.md");
@@ -33,7 +37,9 @@ class FlexmarkStepTest {
 
 	@Test
 	void behaviorLatest() {
-		StepHarness.forStep(FlexmarkStep.create(TestProvisioner.mavenCentral()))
+		FlexmarkConfig config = new FlexmarkConfig();
+		config.setExtensions(List.of("YamlFrontMatter"));
+		StepHarness.forStep(FlexmarkStep.create(TestProvisioner.mavenCentral(), config))
 				.testResource(
 						"markdown/flexmark/FlexmarkUnformatted.md",
 						"markdown/flexmark/FlexmarkFormatted.md");

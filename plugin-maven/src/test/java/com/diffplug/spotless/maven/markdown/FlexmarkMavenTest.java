@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,17 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 public class FlexmarkMavenTest extends MavenIntegrationHarness {
 
 	@Test
-	public void testFlexmarkWithDefaultConfig() throws Exception {
-		writePomWithMarkdownSteps("<flexmark />");
+	public void testFlexmarkWithSimpleConfig() throws Exception {
+		writePomWithMarkdownSteps("<flexmark><pegdownExtensions>ALL,TOC</pegdownExtensions><extensions>YamlFrontMatter,Emoji</extensions></flexmark>");
+
+		setFile("markdown_test.md").toResource("markdown/flexmark/FlexmarkUnformatted.md");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("markdown_test.md").sameAsResource("markdown/flexmark/FlexmarkFormatted.md");
+	}
+
+	@Test
+	public void testFlexmarkWithComplexConfig() throws Exception {
+		writePomWithMarkdownSteps("<flexmark><emulationProfile>COMMONMARK</emulationProfile><pegdownExtensions>0x0000FFFF</pegdownExtensions><extensions>com.vladsch.flexmark.ext.yaml.front.matter.YamlFrontMatterExtension</extensions></flexmark>");
 
 		setFile("markdown_test.md").toResource("markdown/flexmark/FlexmarkUnformatted.md");
 		mavenRunner().withArguments("spotless:apply").runNoError();

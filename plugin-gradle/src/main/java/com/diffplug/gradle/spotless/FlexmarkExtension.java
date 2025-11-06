@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.markdown.FlexmarkConfig;
 import com.diffplug.spotless.markdown.FlexmarkStep;
 
 public class FlexmarkExtension extends FormatExtension {
@@ -50,14 +52,35 @@ public class FlexmarkExtension extends FormatExtension {
 	public class FlexmarkFormatterConfig {
 
 		private final String version;
+		private final FlexmarkConfig config = new FlexmarkConfig();
 
 		FlexmarkFormatterConfig(String version) {
 			this.version = Objects.requireNonNull(version);
 			addStep(createStep());
 		}
 
+		public FlexmarkFormatterConfig emulationProfile(String emulationProfile) {
+			this.config.setEmulationProfile(emulationProfile);
+			return this;
+		}
+
+		public FlexmarkFormatterConfig pegdownExtensions(int pegdownExtensions) {
+			this.config.setPegdownExtensions(List.of(Integer.toString(pegdownExtensions)));
+			return this;
+		}
+
+		public FlexmarkFormatterConfig pegdownExtensions(String... pegdownExtensions) {
+			this.config.setPegdownExtensions(List.of(pegdownExtensions));
+			return this;
+		}
+
+		public FlexmarkFormatterConfig extensions(String... extensions) {
+			this.config.setExtensions(List.of(extensions));
+			return this;
+		}
+
 		private FormatterStep createStep() {
-			return FlexmarkStep.create(this.version, provisioner());
+			return FlexmarkStep.create(this.version, provisioner(), config);
 		}
 	}
 

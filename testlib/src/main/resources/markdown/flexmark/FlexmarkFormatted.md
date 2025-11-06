@@ -1,3 +1,8 @@
+---
+layout: post
+title: YAML Front Matter
+---
+
 # Heading
 
 -----
