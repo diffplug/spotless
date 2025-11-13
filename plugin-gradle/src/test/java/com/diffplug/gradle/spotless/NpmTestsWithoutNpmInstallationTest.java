@@ -183,7 +183,7 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 		setFile("build.gradle").toResource("com/diffplug/gradle/spotless/NpmTestsWithoutNpmInstallationTest_gradle_node_plugin_example_1.gradle");
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		BuildResult spotlessApply = gradleRunner()
-				.withGradleVersion(GradleVersionSupport.STABLE_CONFIGURATION_CACHE.version)
+				.withGradleVersion(GradleVersionSupport.MINIMUM.version)
 				.withArguments("--stacktrace", "--configuration-cache", "spotlessApply").build();
 		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("test.ts").sameAsResource("npm/prettier/config/typescript.configfile_prettier_2.clean");

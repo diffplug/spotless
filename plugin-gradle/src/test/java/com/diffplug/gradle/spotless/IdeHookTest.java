@@ -88,8 +88,7 @@ class IdeHookTest extends GradleIntegrationHarness {
 	protected GradleRunner gradleRunner(boolean configurationCache) throws IOException {
 		if (configurationCache) {
 			setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
-			setFile("settings.gradle").toContent("enableFeaturePreview(\"STABLE_CONFIGURATION_CACHE\")");
-			return super.gradleRunner().withGradleVersion(GradleVersionSupport.STABLE_CONFIGURATION_CACHE.version);
+			return super.gradleRunner().withGradleVersion(GradleVersionSupport.MINIMUM.version);
 		} else {
 			File gradleProps = new File(rootFolder(), "gradle.properties");
 			if (gradleProps.exists()) {
