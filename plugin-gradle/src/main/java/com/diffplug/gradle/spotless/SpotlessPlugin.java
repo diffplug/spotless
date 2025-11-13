@@ -15,11 +15,16 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.lang.reflect.Method;
+
+import javax.annotation.Nonnull;
+
 import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.provider.Provider;
 import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.Jvm;
@@ -42,7 +47,9 @@ public class SpotlessPlugin implements Plugin<Project> {
 					+ "https://docs.gradle.org/current/userguide/building_java_projects.html#sec:java_cross_compilation");
 		}
 		// if -PspotlessModern=true, then use the modern stuff instead of the legacy stuff
-		if (project.getProviders().gradleProperty(SPOTLESS_MODERN).isPresent()) {
+		Provider<String> spotlessModernProperty = safeForUseAtConfigurationTime(
+				project.getProviders().gradleProperty(SPOTLESS_MODERN));
+		if (spotlessModernProperty.isPresent()) {
 			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
 		}
 		// make sure there's a `clean` and a `check`
@@ -63,5 +70,16 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	static String capitalize(String input) {
 		return Character.toUpperCase(input.charAt(0)) + input.substring(1);
+	}
+
+	static <T> Provider<T> safeForUseAtConfigurationTime(@Nonnull Provider<T> provider) {
+		try {
+			Method method = Provider.class.getMethod("forUseAtConfigurationTime");
+			@SuppressWarnings("unchecked")
+			Provider<T> configuredProvider = (Provider<T>) method.invoke(provider);
+			return configuredProvider;
+		} catch (ReflectiveOperationException e) {
+			return provider;
+		}
 	}
 }
