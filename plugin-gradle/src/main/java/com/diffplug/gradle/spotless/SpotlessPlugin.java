@@ -47,8 +47,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 					+ "https://docs.gradle.org/current/userguide/building_java_projects.html#sec:java_cross_compilation");
 		}
 		// if -PspotlessModern=true, then use the modern stuff instead of the legacy stuff
-		Provider<String> spotlessModernProperty = safeForUseAtConfigurationTime(
-				project.getProviders().gradleProperty(SPOTLESS_MODERN));
+		Provider<String> spotlessModernProperty = forUseAtConfigurationTime(project.getProviders().gradleProperty(SPOTLESS_MODERN));
 		if (spotlessModernProperty.isPresent()) {
 			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
 		}
@@ -72,14 +71,29 @@ public class SpotlessPlugin implements Plugin<Project> {
 		return Character.toUpperCase(input.charAt(0)) + input.substring(1);
 	}
 
-	static <T> Provider<T> safeForUseAtConfigurationTime(@Nonnull Provider<T> provider) {
-		try {
-			Method method = Provider.class.getMethod("forUseAtConfigurationTime");
-			@SuppressWarnings("unchecked")
-			Provider<T> configuredProvider = (Provider<T>) method.invoke(provider);
-			return configuredProvider;
-		} catch (ReflectiveOperationException e) {
+	static Provider<String> forUseAtConfigurationTime(@Nonnull Provider<String> provider) {
+		if (isGradle73OrNewer() && !isGradle74OrNewer()) {
+			try {
+				// Use reflection to access the forUseAtConfigurationTime method as it was removed in Gradle 9.
+				Method method = Provider.class.getMethod("forUseAtConfigurationTime");
+				return (Provider<String>) method.invoke(provider);
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to invoke forUseAtConfigurationTime via reflection", e);
+			}
+		} else {
 			return provider;
 		}
+	}
+
+	static boolean isGradle73OrNewer() {
+		return isGradleNewerThan("7.3");
+	}
+
+	static boolean isGradle74OrNewer() {
+		return isGradleNewerThan("7.4");
+	}
+
+	private static boolean isGradleNewerThan(String version) {
+		return GradleVersion.current().compareTo(GradleVersion.version(version)) >= 0;
 	}
 }
