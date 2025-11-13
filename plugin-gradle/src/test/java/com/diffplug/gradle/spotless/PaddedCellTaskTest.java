@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.List;
 import org.gradle.api.Project;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildServiceParameters;
+import org.gradle.api.tasks.TaskProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -49,40 +50,36 @@ class PaddedCellTaskTest extends ResourceHarness {
 			}
 		});
 		File file;
-		File outputFile;
-		SpotlessTaskImpl source;
-		SpotlessCheck check;
-		SpotlessApply apply;
+		Provider<File> outputFile;
+		TaskProvider<SpotlessTaskImpl> source;
+		TaskProvider<SpotlessCheck> check;
+		TaskProvider<SpotlessApply> apply;
 
 		Bundle(String name, SerializedFunction<String, String> function) throws IOException {
 			this.name = name;
 			file = setFile("src/test." + name).toContent("CCC");
 			FormatterStep step = NeverUpToDateStep.create(name, function);
-			source = createFormatTask(name, step);
-			check = createCheckTask(name, source);
-			apply = createApplyTask(name, source);
-			outputFile = new File(source.getCleanDirectory() + "/src", file.getName());
+			source = registerFormatTask(name, step);
+			check = registerCheckTask(name, source);
+			apply = registerApplyTask(name, source);
+			outputFile = source.map(task -> new File(task.getCleanDirectory() + "/src", file.getName()));
 		}
 
-		private SpotlessTaskImpl createFormatTask(String name, FormatterStep step) {
-			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
-			task.init(taskService);
-			task.setSteps(List.of(step));
-			task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
-			task.setTarget(Collections.singletonList(file));
-			return task;
+		private TaskProvider<SpotlessTaskImpl> registerFormatTask(String name, FormatterStep step) {
+			return project.getTasks().register("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class, task -> {
+				task.init(taskService);
+				task.setSteps(List.of(step));
+				task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
+				task.setTarget(Collections.singletonList(file));
+			});
 		}
 
-		private SpotlessCheck createCheckTask(String name, SpotlessTaskImpl source) {
-			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
-			task.init(source);
-			return task;
+		private TaskProvider<SpotlessCheck> registerCheckTask(String name, TaskProvider<SpotlessTaskImpl> source) {
+			return project.getTasks().register("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class, task -> task.init(source));
 		}
 
-		private SpotlessApply createApplyTask(String name, SpotlessTaskImpl source) {
-			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
-			task.init(source);
-			return task;
+		private TaskProvider<SpotlessApply> registerApplyTask(String name, TaskProvider<SpotlessTaskImpl> source) {
+			return project.getTasks().register("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class, task -> task.init(source));
 		}
 
 		String checkFailureMsg() {
@@ -95,23 +92,23 @@ class PaddedCellTaskTest extends ResourceHarness {
 		}
 
 		void diagnose() throws IOException {
-			SpotlessDiagnoseTask diagnose = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Diagnose", SpotlessDiagnoseTask.class);
-			diagnose.source = source;
-			diagnose.performAction();
+			TaskProvider<SpotlessDiagnoseTask> diagnose = project.getTasks().register("spotless" + SpotlessPlugin.capitalize(name) + "Diagnose", SpotlessDiagnoseTask.class);
+			diagnose.get().source = source;
+			diagnose.get().performAction();
 		}
 
 		void format() throws Exception {
-			Tasks.execute(source);
+			Tasks.execute(source.get());
 		}
 
 		void apply() throws Exception {
-			Tasks.execute(source);
-			apply.performAction();
+			Tasks.execute(source.get());
+			apply.get().performAction();
 		}
 
 		void check() throws Exception {
-			Tasks.execute(source);
-			check.performActionTest();
+			Tasks.execute(source.get());
+			check.get().performActionTest();
 		}
 	}
 
@@ -143,10 +140,10 @@ class PaddedCellTaskTest extends ResourceHarness {
 		converge.format();
 		diverge.format();
 
-		assertFile(wellbehaved.outputFile).hasContent("42");	// cycle -> first element in cycle
-		assertFile(cycle.outputFile).hasContent("A");		// cycle -> first element in cycle
-		assertFile(converge.outputFile).hasContent("");	// converge -> converges
-		assertThat(diverge.outputFile).doesNotExist();	// diverge -> no change
+		assertFile(wellbehaved.outputFile.get()).hasContent("42");    // cycle -> first element in cycle
+		assertFile(cycle.outputFile.get()).hasContent("A");        // cycle -> first element in cycle
+		assertFile(converge.outputFile.get()).hasContent("");    // converge -> converges
+		assertThat(diverge.outputFile.get()).doesNotExist();    // diverge -> no change
 	}
 
 	@Test
@@ -161,10 +158,10 @@ class PaddedCellTaskTest extends ResourceHarness {
 		converge.apply();
 		diverge.apply();
 
-		assertFile(wellbehaved.file).hasContent("42");	// cycle -> first element in cycle
-		assertFile(cycle.file).hasContent("A");		// cycle -> first element in cycle
-		assertFile(converge.file).hasContent("");	// converge -> converges
-		assertFile(diverge.file).hasContent("CCC");	// diverge -> no change
+		assertFile(wellbehaved.file).hasContent("42");    // cycle -> first element in cycle
+		assertFile(cycle.file).hasContent("A");        // cycle -> first element in cycle
+		assertFile(converge.file).hasContent("");    // converge -> converges
+		assertFile(diverge.file).hasContent("CCC");    // diverge -> no change
 
 		// After apply, check should pass
 		wellbehaved.check();
