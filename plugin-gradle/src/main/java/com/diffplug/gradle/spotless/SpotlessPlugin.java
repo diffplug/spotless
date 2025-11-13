@@ -42,7 +42,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 					+ "https://docs.gradle.org/current/userguide/building_java_projects.html#sec:java_cross_compilation");
 		}
 		// if -PspotlessModern=true, then use the modern stuff instead of the legacy stuff
-		if (project.hasProperty(SPOTLESS_MODERN)) {
+		if (project.getProviders().gradleProperty(SPOTLESS_MODERN).isPresent()) {
 			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
 		}
 		// make sure there's a `clean` and a `check`
