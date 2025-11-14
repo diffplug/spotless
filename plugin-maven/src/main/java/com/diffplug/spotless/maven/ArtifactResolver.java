@@ -39,6 +39,8 @@ import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
 
+import com.diffplug.spotless.LazyFiles;
+
 public class ArtifactResolver {
 
 	private static final Exclusion EXCLUDE_ALL_TRANSITIVES = new Exclusion("*", "*", "*", "*");
@@ -60,7 +62,7 @@ public class ArtifactResolver {
 	 * Given a set of maven coordinates, returns a set of jars which include all
 	 * of the specified coordinates and optionally their transitive dependencies.
 	 */
-	public Set<File> resolve(boolean withTransitives, Collection<String> mavenCoordinates) {
+	public LazyFiles resolve(boolean withTransitives, Collection<String> mavenCoordinates) {
 		Collection<Exclusion> excludeTransitive = new ArrayList<>(1);
 		if (!withTransitives) {
 			excludeTransitive.add(EXCLUDE_ALL_TRANSITIVES);
@@ -73,12 +75,13 @@ public class ArtifactResolver {
 		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
 		DependencyResult dependencyResult = resolveDependencies(dependencyRequest);
 
-		return dependencyResult.getArtifactResults()
+		Set<File> jars = dependencyResult.getArtifactResults()
 				.stream()
 				.peek(this::logResolved)
 				.map(ArtifactResult::getArtifact)
 				.map(Artifact::getFile)
 				.collect(toSet());
+		return LazyFiles.of(jars);
 	}
 
 	private DependencyResult resolveDependencies(DependencyRequest dependencyRequest) {
