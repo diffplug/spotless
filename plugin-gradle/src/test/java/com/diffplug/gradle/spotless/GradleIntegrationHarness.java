@@ -58,8 +58,12 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		GradleVersionSupport(String version) {
 			String minVersionForRunningJRE;
 			switch (Jvm.version()) {
+			case 26:
+				throw new IllegalStateException("Gradle does not yet support running on Java 26. " +
+						"You need to update the case ref to https://docs.gradle.org/current/userguide/compatibility.html.");
 			case 25:
-				// TODO: https://docs.gradle.org/current/userguide/compatibility.html
+				minVersionForRunningJRE = "9.1.0";
+				break;
 			case 24:
 				minVersionForRunningJRE = "8.14";
 				break;
