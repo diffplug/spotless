@@ -12,8 +12,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changes
 * Bump default `ktfmt` version to latest `0.58` -> `0.59`. ([#2681](https://github.com/diffplug/spotless/pull/2681)
+* Use Task Providers for task initialization. [#2719](https://github.com/diffplug/spotless/pull/2719)
+* **BREAKING** Bump minimum supported Gradle version from 7.3 to 8.1. [#2719](https://github.com/diffplug/spotless/pull/2719)
 ### Fixed
-- palantirJavaFormat is no longer arbitrarily set to outdated versions on Java 17, latest available version is always used ([#2686](https://github.com/diffplug/spotless/pull/2686) fixes [#2685](https://github.com/diffplug/spotless/issues/2685))
+* palantirJavaFormat is no longer arbitrarily set to outdated versions on Java 17, latest available version is always used ([#2686](https://github.com/diffplug/spotless/pull/2686) fixes [#2685](https://github.com/diffplug/spotless/issues/2685))
 ### Removed
 * **BREAKING** Drop support for older Ktlint versions. ([#2711](https://github.com/diffplug/spotless/pull/2711))
 

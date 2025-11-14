@@ -1139,7 +1139,7 @@ public class FormatExtension {
 		return spotless.project.getTasks().register(taskName, SpotlessApply.class,
 				task -> {
 					task.dependsOn(spotlessTask);
-					task.init(spotlessTask.get());
+					task.init(spotlessTask);
 				});
 	}
 

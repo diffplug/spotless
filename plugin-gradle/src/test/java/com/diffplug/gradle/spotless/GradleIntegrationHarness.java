@@ -46,9 +46,6 @@ public class GradleIntegrationHarness extends ResourceHarness {
 	public enum GradleVersionSupport {
 		MINIMUM(SpotlessPlugin.VER_GRADLE_MIN),
 
-		// https://docs.gradle.org/7.5/userguide/configuration_cache.html#config_cache:stable
-		STABLE_CONFIGURATION_CACHE("7.5"),
-
 		CUSTOM_STEPS(SpotlessPlugin.VER_GRADLE_MIN_VERSION_FOR_CUSTOM),
 
 		;
@@ -78,12 +75,6 @@ public class GradleIntegrationHarness extends ResourceHarness {
 				break;
 			case 20:
 				minVersionForRunningJRE = "8.3";
-				break;
-			case 19:
-				minVersionForRunningJRE = "7.6";
-				break;
-			case 18:
-				minVersionForRunningJRE = "7.5";
 				break;
 			default:
 				minVersionForRunningJRE = null;
