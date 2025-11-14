@@ -130,7 +130,6 @@ final class GradleProvisioner {
 								attr.attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, project.getObjects().named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM));
 							});
 						});
-
 				final FileCollection configFiles = project.files(config);
 				return configFiles::getFiles;
 			} catch (Exception e) {
