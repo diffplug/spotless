@@ -78,7 +78,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		// create the check and apply control tasks
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
-			task.init(spotlessTask.get());
+			task.init(spotlessTask);
 			task.setGroup(TASK_GROUP);
 			task.setEnabled(ideHook.path == null);
 			task.dependsOn(spotlessTask);
@@ -86,11 +86,10 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		rootApplyTask.configure(task -> task.dependsOn(ideHook.path == null ? applyTask : spotlessTask));
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
-			SpotlessTaskImpl source = spotlessTask.get();
 			task.setGroup(TASK_GROUP);
-			task.init(source);
+			task.init(spotlessTask);
 			task.setEnabled(ideHook.path == null);
-			task.dependsOn(source);
+			task.dependsOn(spotlessTask);
 
 			// if the user runs both, make sure that apply happens first,
 			task.mustRunAfter(applyTask);
@@ -99,7 +98,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		// create the diagnose task
 		TaskProvider<SpotlessDiagnoseTask> diagnoseTask = tasks.register(taskName + DIAGNOSE, SpotlessDiagnoseTask.class, task -> {
-			task.source = spotlessTask.get();
+			task.source = spotlessTask;
 			task.setGroup(TASK_GROUP);
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});
