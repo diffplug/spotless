@@ -38,10 +38,8 @@ spotless {
 
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
-	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
-		// needed for EclipseCdtFormatterStepTest
-		jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
-	}
+	// needed for EclipseCdtFormatterStepTest
+	jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
 }
 
 def NEEDS_P2_DEPS = [
@@ -50,9 +48,6 @@ def NEEDS_P2_DEPS = [
 	'groovy',
 	'jdt'
 ]
-if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
-	NEEDS_P2_DEPS.remove('cdt')
-}
 for (needsP2 in NEEDS_P2_DEPS) {
 	sourceSets.register(needsP2) {
 		compileClasspath += sourceSets.main.output
