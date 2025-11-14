@@ -15,16 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.lang.reflect.Method;
-
-import javax.annotation.Nonnull;
-
 import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.provider.Provider;
 import org.gradle.util.GradleVersion;
 
 import com.diffplug.spotless.Jvm;
@@ -47,8 +42,7 @@ public class SpotlessPlugin implements Plugin<Project> {
 					+ "https://docs.gradle.org/current/userguide/building_java_projects.html#sec:java_cross_compilation");
 		}
 		// if -PspotlessModern=true, then use the modern stuff instead of the legacy stuff
-		Provider<String> spotlessModernProperty = forUseAtConfigurationTime(project.getProviders().gradleProperty(SPOTLESS_MODERN));
-		if (spotlessModernProperty.isPresent()) {
+		if (GradleCompat.isPropertyPresent(project, SPOTLESS_MODERN)) {
 			project.getLogger().warn("'spotlessModern' has no effect as of Spotless 5.0, recommend removing it.");
 		}
 		// make sure there's a `clean` and a `check`
@@ -69,31 +63,5 @@ public class SpotlessPlugin implements Plugin<Project> {
 
 	static String capitalize(String input) {
 		return Character.toUpperCase(input.charAt(0)) + input.substring(1);
-	}
-
-	static Provider<String> forUseAtConfigurationTime(@Nonnull Provider<String> provider) {
-		if (isGradle73OrNewer() && !isGradle74OrNewer()) {
-			try {
-				// Use reflection to access the forUseAtConfigurationTime method as it was removed in Gradle 9.
-				Method method = Provider.class.getMethod("forUseAtConfigurationTime");
-				return (Provider<String>) method.invoke(provider);
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to invoke forUseAtConfigurationTime via reflection", e);
-			}
-		} else {
-			return provider;
-		}
-	}
-
-	static boolean isGradle73OrNewer() {
-		return isGradleNewerThan("7.3");
-	}
-
-	static boolean isGradle74OrNewer() {
-		return isGradleNewerThan("7.4");
-	}
-
-	private static boolean isGradleNewerThan(String version) {
-		return GradleVersion.current().compareTo(GradleVersion.version(version)) >= 0;
 	}
 }

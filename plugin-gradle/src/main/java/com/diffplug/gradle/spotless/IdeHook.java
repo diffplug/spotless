@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import javax.annotation.Nullable;
 
 import org.gradle.api.Project;
-import org.gradle.api.provider.ProviderFactory;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.io.ByteStreams;
@@ -37,11 +36,10 @@ final class IdeHook {
 		final boolean useStdOut;
 
 		State(Project project) {
-			ProviderFactory providers = project.getProviders();
-			path = providers.gradleProperty(PROPERTY).getOrNull();
+			path = GradleCompat.findOptionalProperty(project, PROPERTY);
 			if (path != null) {
-				useStdIn = providers.gradleProperty(USE_STD_IN).isPresent();
-				useStdOut = providers.gradleProperty(USE_STD_OUT).isPresent();
+				useStdIn = GradleCompat.isPropertyPresent(project, USE_STD_IN);
+				useStdOut = GradleCompat.isPropertyPresent(project, USE_STD_OUT);
 			} else {
 				useStdIn = false;
 				useStdOut = false;
