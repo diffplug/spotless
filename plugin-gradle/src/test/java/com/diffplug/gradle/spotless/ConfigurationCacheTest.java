@@ -24,7 +24,7 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 	@Override
 	public GradleRunner gradleRunner() throws IOException {
 		setFile("gradle.properties").toContent("org.gradle.unsafe.configuration-cache=true");
-		return super.gradleRunner().withGradleVersion(GradleVersionSupport.MINIMUM.version);
+		return super.gradleRunner();
 	}
 
 	@Test
