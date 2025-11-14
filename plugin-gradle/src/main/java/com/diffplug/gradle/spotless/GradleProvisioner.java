@@ -15,13 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
@@ -29,12 +28,14 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.java.TargetJvmEnvironment;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.initialization.dsl.ScriptHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.collect.ImmutableList;
+import com.diffplug.spotless.LazyFiles;
 import com.diffplug.spotless.Provisioner;
 
 /** Should be package-private. */
@@ -59,16 +60,16 @@ final class GradleProvisioner {
 
 	static class DedupingProvisioner implements Provisioner {
 		private final Provisioner provisioner;
-		private final Map<Request, Set<File>> cache = new HashMap<>();
+		private final Map<Request, LazyFiles> cache = new HashMap<>();
 
 		DedupingProvisioner(Provisioner provisioner) {
 			this.provisioner = provisioner;
 		}
 
 		@Override
-		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
+		public LazyFiles provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates) {
 			Request req = new Request(withTransitives, mavenCoordinates);
-			Set<File> result;
+			LazyFiles result;
 			synchronized (cache) {
 				result = cache.get(req);
 			}
@@ -89,7 +90,7 @@ final class GradleProvisioner {
 		/** A child Provisioner which retries cached elements only. */
 		final Provisioner cachedOnly = (withTransitives, mavenCoordinates) -> {
 			Request req = new Request(withTransitives, mavenCoordinates);
-			Set<File> result;
+			LazyFiles result;
 			synchronized (cache) {
 				result = cache.get(req);
 			}
@@ -113,22 +114,25 @@ final class GradleProvisioner {
 	private static Provisioner forConfigurationContainer(Project project, ConfigurationContainer configurations, DependencyHandler dependencies) {
 		return (withTransitives, mavenCoords) -> {
 			try {
-				Configuration config = configurations.create("spotless"
-						+ new Request(withTransitives, mavenCoords).hashCode());
-				mavenCoords.stream()
-						.map(dependencies::create)
-						.forEach(config.getDependencies()::add);
-				config.setDescription(mavenCoords.toString());
-				config.setTransitive(withTransitives);
-				config.setCanBeConsumed(false);
-				config.setVisible(false);
-				config.attributes(attr -> {
-					attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
-					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
-					// Add this attribute for resolving Guava dependency, see https://github.com/google/guava/issues/6801.
-					attr.attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, project.getObjects().named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM));
-				});
-				return config.resolve();
+				NamedDomainObjectProvider<Configuration> config = configurations.register(
+						"spotless" + new Request(withTransitives, mavenCoords).hashCode(),
+						files -> {
+							mavenCoords.stream()
+									.map(dependencies::create)
+									.forEach(files.getDependencies()::add);
+							files.setDescription(mavenCoords.toString());
+							files.setTransitive(withTransitives);
+							files.setCanBeConsumed(false);
+							files.setVisible(false);
+							files.attributes(attr -> {
+								attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
+								attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+								attr.attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, project.getObjects().named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM));
+							});
+						});
+
+				final FileCollection configFiles = project.files(config);
+				return configFiles::getFiles;
 			} catch (Exception e) {
 				String projName = project.getPath().substring(1).replace(':', '/');
 				if (!projName.isEmpty()) {

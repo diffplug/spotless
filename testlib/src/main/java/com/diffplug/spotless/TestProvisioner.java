@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -77,22 +78,24 @@ public class TestProvisioner {
 				// Add this attribute for resolving Guava dependency, see https://github.com/google/guava/issues/6801.
 				attr.attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, project.getObjects().named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM));
 			});
-			try {
-				return config.resolve();
-			} catch (ResolveException e) {
-				/* Provide Maven coordinates in exception message instead of static string 'detachedConfiguration' */
-				throw new RuntimeException("Error resolving configuration: " + config.getDescription(), e);
-			} finally {
-				// delete the temp dir
+			return (LazyFiles) () -> {
 				try {
-					java.nio.file.Files.walk(tempDir.toPath())
-							.sorted(Comparator.reverseOrder())
-							.map(Path::toFile)
-							.forEach(File::delete);
-				} catch (IOException e) {
-					throw Errors.asRuntime(e);
+					return config.resolve();
+				} catch (ResolveException e) {
+					/* Provide Maven coordinates in exception message instead of static string 'detachedConfiguration' */
+					throw new RuntimeException("Error resolving configuration: " + config.getDescription(), e);
+				} finally {
+					// delete the temp dir
+					try {
+						java.nio.file.Files.walk(tempDir.toPath())
+								.sorted(Comparator.reverseOrder())
+								.map(Path::toFile)
+								.forEach(File::delete);
+					} catch (IOException e) {
+						throw Errors.asRuntime(e);
+					}
 				}
-			}
+			};
 		};
 	}
 
@@ -125,7 +128,7 @@ public class TestProvisioner {
 				// double-check that depcache pruning hasn't removed them since our cache cached them
 				boolean needsToBeSet = result == null || !result.stream().allMatch(file -> file.exists() && file.isFile() && file.length() > 0);
 				if (needsToBeSet) {
-					result = ImmutableSet.copyOf(input.get().provisionWithTransitives(withTransitives, mavenCoords));
+					result = ImmutableSet.copyOf(input.get().provisionWithTransitives(withTransitives, mavenCoords).files());
 					cached.put(mavenCoords, result);
 					try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.asByteSink(cacheFile).openBufferedStream())) {
 						outputStream.writeObject(cached);
@@ -133,7 +136,7 @@ public class TestProvisioner {
 						throw Errors.asRuntime(e);
 					}
 				}
-				return result;
+				return LazyFiles.of(result);
 			}
 		};
 	}

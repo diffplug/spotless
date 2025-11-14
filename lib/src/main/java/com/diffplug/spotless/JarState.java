@@ -129,7 +129,7 @@ public final class JarState implements Serializable {
 	private static JarState provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates, Provisioner provisioner) throws IOException {
 		Objects.requireNonNull(mavenCoordinates, "mavenCoordinates");
 		Objects.requireNonNull(provisioner, "provisioner");
-		Set<File> jars = provisioner.provisionWithTransitives(withTransitives, mavenCoordinates);
+		Set<File> jars = provisioner.provisionWithTransitives(withTransitives, mavenCoordinates).files();
 		if (jars.isEmpty()) {
 			throw new NoSuchElementException("Resolved to an empty result: " + String.join(", ", mavenCoordinates));
 		}
