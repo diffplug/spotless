@@ -630,8 +630,7 @@ public class FormatExtension {
 
 		FormatterStep createStep() {
 			return builder.withYearModeLazy(() -> {
-				if ("true".equals(spotless.project
-						.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
+				if (Boolean.parseBoolean(GradleCompat.findOptionalProperty(spotless.project, LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
 					return YearMode.SET_FROM_GIT;
 				} else {
 					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
