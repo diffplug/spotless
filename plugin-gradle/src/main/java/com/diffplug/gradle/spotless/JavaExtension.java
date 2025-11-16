@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,12 +31,15 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.java.EclipseJdtFormatterStep;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.java.CleanthatJavaStep;
+import com.diffplug.spotless.java.ExpandWildcardImportsStep;
 import com.diffplug.spotless.java.ForbidModuleImportsStep;
 import com.diffplug.spotless.java.ForbidWildcardImportsStep;
 import com.diffplug.spotless.java.FormatAnnotationsStep;
@@ -165,6 +169,13 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public void forbidModuleImports() {
 		addStep(ForbidModuleImportsStep.create());
+	}
+
+	public void expandWildcardImports() {
+		SourceSetContainer sourceSets = getSourceSets(getProject(), "expansion of wildcards requires the 'java' plugin to be applied");
+		Set<File> typeSolverClasspath = sourceSets.stream().flatMap(s -> s.getAllJava().getSrcDirs().stream()).collect(toSet());
+		getProject().getConfigurations().stream().filter(Configuration::isCanBeResolved).flatMap(c -> c.getFiles().stream()).forEach(typeSolverClasspath::add);
+		addStep(ExpandWildcardImportsStep.create(typeSolverClasspath, provisioner()));
 	}
 
 	/** Uses the <a href="https://github.com/google/google-java-format">google-java-format</a> jar to format source code. */

@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.junit.jupiter.api.Test;
 
@@ -119,6 +120,39 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 		setFile("test.java").toResource("java/forbidmoduleimports/JavaCodeModuleImportsUnformatted.test");
 		gradleRunner().withArguments("spotlessApply").buildAndFail();
 		assertFile("test.java").sameAsResource("java/forbidmoduleimports/JavaCodeModuleImportsFormatted.test");
+	}
+
+	@Test
+	void expandWildCardImports() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"",
+				"repositories {",
+				"    mavenCentral()",
+				"    flatDir{dirs('libs')}",
+				"}",
+				"",
+				"dependencies {",
+				"    implementation(':example-lib:1.0.0')",
+				"}",
+				"",
+				"spotless {",
+				"    java {",
+				"        target file('src/main/java/foo/bar/JavaCodeWildcardsUnformatted.java')",
+				"        expandWildcardImports()",
+				"    }",
+				"}");
+
+		newFile("libs").mkdirs();
+		Files.write(newFile("libs/example-lib-1.0.0.jar").toPath(), getClass().getResourceAsStream("/java/expandwildcardimports/example-lib.jar").readAllBytes());
+		setFile("src/main/java/foo/bar/AnotherClassInSamePackage.java").toResource("java/expandwildcardimports/AnotherClassInSamePackage.test");
+		setFile("src/main/java/foo/bar/baz/AnotherImportedClass.java").toResource("java/expandwildcardimports/AnotherImportedClass.test");
+		setFile("src/main/java/foo/bar/JavaCodeWildcardsUnformatted.java").toResource("java/expandwildcardimports/JavaClassWithWildcardsUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/java/foo/bar/JavaCodeWildcardsUnformatted.java").sameAsResource("java/expandwildcardimports/JavaClassWithWildcardsFormatted.test");
 	}
 
 	/**
