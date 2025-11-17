@@ -11,7 +11,7 @@ tags:
 recipeList:
   - org.openrewrite.gradle.EnableGradleBuildCache
   - org.openrewrite.gradle.EnableGradleParallelExecution
-  # - org.openrewrite.gradle.GradleBestPractices https://github.com/openrewrite/rewrite/issues/6237
+  - org.openrewrite.gradle.GradleBestPractices
   - org.openrewrite.java.RemoveUnusedImports
   - org.openrewrite.java.format.NormalizeFormat
   - org.openrewrite.java.format.NormalizeLineBreaks
