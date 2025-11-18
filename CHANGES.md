@@ -19,6 +19,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 * palantirJavaFormat is no longer arbitrarily set to outdated versions on Java 17, latest available version is always used ([#2686](https://github.com/diffplug/spotless/pull/2686) fixes [#2685](https://github.com/diffplug/spotless/issues/2685))
 * Use Provider API for Gradle properties. ([#2718](https://github.com/diffplug/spotless/pull/2718)
+### Added
+* new options to customize Flexmark, e.g. to allow YAML front matter ([#2616](https://github.com/diffplug/spotless/issues/2616))
 ### Removed
 * **BREAKING** Drop support for older Ktlint versions. ([#2711](https://github.com/diffplug/spotless/pull/2711))
 
