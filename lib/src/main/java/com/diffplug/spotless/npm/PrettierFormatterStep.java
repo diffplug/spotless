@@ -36,7 +36,7 @@ import com.diffplug.spotless.ThrowingEx;
 
 public final class PrettierFormatterStep {
 
-	private static final Logger logger = LoggerFactory.getLogger(PrettierFormatterStep.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PrettierFormatterStep.class);
 
 	public static final String NAME = "prettier-format";
 
@@ -86,7 +86,7 @@ public final class PrettierFormatterStep {
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
 			try {
-				logger.info("creating formatter function (starting server)");
+				LOGGER.info("creating formatter function (starting server)");
 				ServerProcessInfo prettierRestServer = toRuntime().npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
@@ -97,11 +97,11 @@ public final class PrettierFormatterStep {
 		}
 
 		private void endServer(PrettierRestService restService, ServerProcessInfo restServer) throws Exception {
-			logger.info("Closing formatting function (ending server).");
+			LOGGER.info("Closing formatting function (ending server).");
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {
-				logger.info("Failed to request shutdown of rest service via api. Trying via process.", t);
+				LOGGER.info("Failed to request shutdown of rest service via api. Trying via process.", t);
 			}
 			restServer.close();
 		}

@@ -1,30 +1,50 @@
-import static java.lang.System.getenv
-
 apply plugin: 'net.ltgt.errorprone'
 
 dependencies {
 	errorprone('com.google.errorprone:error_prone_core:2.42.0')
-	errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.25.0')
-	constraints {
-		errorprone('com.google.guava:guava') {
-			version {
-				require('33.4.8-jre')
-			}
-			because('Older versions use deprecated methods in sun.misc.Unsafe')
-			// https://github.com/junit-team/junit-framework/pull/5039#discussion_r2414490581
-		}
-	}
+	errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.26.0')
 }
 
 tasks.withType(JavaCompile).configureEach {
 	options.errorprone {
-		disableAllChecks = true // consider removal to avoid error prone error´s, following convention over configuration.
-		error('RedundantStringConversion')
-		if (!getenv().containsKey('CI') && getenv('IN_PLACE')?.toBoolean()) {
-			errorproneArgs.addAll(
-					'-XepPatchLocation:IN_PLACE',
-					'-XepPatchChecks:RedundantStringConversion'
-					)
-		}
+		disable( // consider fix, or reasoning.
+				'FunctionalInterfaceMethodChanged',
+				'JavaxInjectOnAbstractMethod',
+				'OverridesJavaxInjectableMethod',
+				)
+		error(
+				'AmbiguousJsonCreator',
+				'AssertJNullnessAssertion',
+				'AutowiredConstructor',
+				'CanonicalAnnotationSyntax',
+				'CollectorMutability',
+				'ConstantNaming',
+				'DirectReturn',
+				'EmptyMethod',
+				'ExplicitArgumentEnumeration',
+				'ExplicitEnumOrdering',
+				'IdentityConversion',
+				'ImmutablesSortedSetComparator',
+				'IsInstanceLambdaUsage',
+				'MockitoMockClassReference',
+				'MockitoStubbing',
+				'NestedOptionals',
+				'PrimitiveComparison',
+				'RedundantStringConversion',
+				'RedundantStringEscape',
+				'ReturnValueIgnored',
+				'SelfAssignment',
+				'StringJoin',
+				'StringJoining',
+				'UnnecessarilyFullyQualified',
+				'UnnecessaryLambda',
+				)
+		// bug: this only happens when the file is dirty.
+		// might be an up2date (caching) issue, as file is currently in corrupt state.
+		// ForbidGradleInternal(import org.gradle.api.internal.project.ProjectInternal;)
+		errorproneArgs.add('-XepExcludedPaths:' +
+				'.*/SelfTest.java|' +
+				'.*/GradleIntegrationHarness.java'
+				)
 	}
 }

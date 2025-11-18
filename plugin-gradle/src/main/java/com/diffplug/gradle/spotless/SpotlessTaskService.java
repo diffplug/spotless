@@ -38,6 +38,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.tooling.events.FinishEvent;
 import org.gradle.tooling.events.OperationCompletionListener;
 
@@ -125,12 +126,12 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		@Inject
 		protected abstract ObjectFactory getConfigCacheWorkaround();
 
-		void init(SpotlessTaskImpl impl) {
-			usesServiceTolerateTestFailure(this, impl.getTaskServiceProvider());
-			getSpotlessCleanDirectory().set(impl.getCleanDirectory());
-			getSpotlessLintsDirectory().set(impl.getLintsDirectory());
-			getTaskService().set(impl.getTaskService());
-			getProjectDir().set(impl.getProjectDir());
+		void init(TaskProvider<SpotlessTaskImpl> impl) {
+			usesServiceTolerateTestFailure(this, impl.flatMap(SpotlessTaskImpl::getTaskServiceProvider));
+			getSpotlessCleanDirectory().set(impl.map(SpotlessTask::getCleanDirectory));
+			getSpotlessLintsDirectory().set(impl.map(SpotlessTask::getLintsDirectory));
+			getTaskService().set(impl.flatMap(SpotlessTask::getTaskService));
+			getProjectDir().set(impl.flatMap(SpotlessTask::getProjectDir));
 		}
 
 		String sourceTaskPath() {

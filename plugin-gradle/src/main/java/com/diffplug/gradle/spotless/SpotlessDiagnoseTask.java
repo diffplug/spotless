@@ -24,6 +24,7 @@ import java.util.Locale;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.UntrackedTask;
 
 import com.diffplug.spotless.Formatter;
@@ -33,10 +34,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @UntrackedTask(because = "undeclared inputs/outputs")
 public class SpotlessDiagnoseTask extends DefaultTask {
-	SpotlessTask source;
+	TaskProvider<? extends SpotlessTask> source;
 
 	@Internal
-	public SpotlessTask getSource() {
+	public TaskProvider<? extends SpotlessTask> getSource() {
 		return source;
 	}
 
@@ -45,10 +46,10 @@ public class SpotlessDiagnoseTask extends DefaultTask {
 	public void performAction() throws IOException {
 		Path srcRoot = getProject().getProjectDir().toPath();
 		Path diagnoseRoot = getProject().getLayout().getBuildDirectory().getAsFile().get()
-				.toPath().resolve("spotless-diagnose-" + source.formatName());
+				.toPath().resolve("spotless-diagnose-" + source.get().formatName());
 		getProject().delete(diagnoseRoot.toFile());
-		try (Formatter formatter = source.buildFormatter()) {
-			for (File file : source.target) {
+		try (Formatter formatter = source.get().buildFormatter()) {
+			for (File file : source.get().target) {
 				getLogger().debug("Running padded cell check on " + file);
 				PaddedCell padded = PaddedCell.check(formatter, file);
 				if (!padded.misbehaved()) {

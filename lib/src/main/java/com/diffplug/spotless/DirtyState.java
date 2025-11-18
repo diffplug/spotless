@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,19 +31,18 @@ import javax.annotation.Nullable;
  * then you can call {@link #writeCanonicalTo(OutputStream)} to get the canonical form of the given file.
  */
 public class DirtyState {
-	@Nullable
-	private final byte[] canonicalBytes;
+	@Nullable private final byte[] canonicalBytes;
 
 	DirtyState(@Nullable byte[] canonicalBytes) {
 		this.canonicalBytes = canonicalBytes;
 	}
 
 	public boolean isClean() {
-		return this == isClean;
+		return this == IS_CLEAN;
 	}
 
 	public boolean didNotConverge() {
-		return this == didNotConverge;
+		return this == DID_NOT_CONVERGE;
 	}
 
 	byte[] canonicalBytes() {
@@ -63,11 +62,11 @@ public class DirtyState {
 
 	/** Returns the DirtyState which corresponds to {@code isClean()}. */
 	public static DirtyState clean() {
-		return isClean;
+		return IS_CLEAN;
 	}
 
-	static final DirtyState didNotConverge = new DirtyState(null);
-	static final DirtyState isClean = new DirtyState(null);
+	static final DirtyState DID_NOT_CONVERGE = new DirtyState(null);
+	static final DirtyState IS_CLEAN = new DirtyState(null);
 
 	public static DirtyState of(Formatter formatter, File file) throws IOException {
 		return of(formatter, file, Files.readAllBytes(file.toPath()));
@@ -101,7 +100,7 @@ public class DirtyState {
 		// if F(input) == input, then the formatter is well-behaving and the input is clean
 		byte[] formattedBytes = formatted.getBytes(formatter.getEncoding());
 		if (Arrays.equals(rawBytes, formattedBytes)) {
-			return isClean;
+			return IS_CLEAN;
 		}
 
 		// F(input) != input, so we'll do a padded check
@@ -113,7 +112,7 @@ public class DirtyState {
 
 		PaddedCell cell = PaddedCell.check(formatter, file, rawUnix, exceptionPerStep);
 		if (!cell.isResolvable()) {
-			return didNotConverge;
+			return DID_NOT_CONVERGE;
 		}
 
 		// get the canonical bytes
@@ -124,7 +123,7 @@ public class DirtyState {
 			// and write them to disk if needed
 			return new DirtyState(canonicalBytes);
 		} else {
-			return isClean;
+			return IS_CLEAN;
 		}
 	}
 }

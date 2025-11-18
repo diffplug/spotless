@@ -26,6 +26,7 @@ import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildServiceParameters;
+import org.gradle.api.tasks.TaskProvider;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
@@ -48,34 +49,30 @@ class DiffMessageFormatterTest extends ResourceHarness {
 		});
 
 		File file;
-		SpotlessTaskImpl task;
-		SpotlessCheck check;
+		TaskProvider<SpotlessTaskImpl> task;
+		TaskProvider<SpotlessCheck> check;
 
 		Bundle(String name) throws IOException {
 			file = setFile("src/test." + name).toContent("CCC");
-			task = createFormatTask(name);
-			check = createCheckTask(name, task);
-			createApplyTask(name, task);
+			task = registerFormatTask(name);
+			check = registerCheckTask(name, task);
+			registerApplyTask(name, task);
 		}
 
-		private SpotlessTaskImpl createFormatTask(String name) {
-			SpotlessTaskImpl task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class);
-			task.init(taskService);
-			task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
-			task.setTarget(Collections.singletonList(file));
-			return task;
+		private TaskProvider<SpotlessTaskImpl> registerFormatTask(String name) {
+			return project.getTasks().register("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class, task -> {
+				task.init(taskService);
+				task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
+				task.setTarget(Collections.singletonList(file));
+			});
 		}
 
-		private SpotlessCheck createCheckTask(String name, SpotlessTaskImpl source) {
-			SpotlessCheck task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class);
-			task.init(source);
-			return task;
+		private TaskProvider<SpotlessCheck> registerCheckTask(String name, TaskProvider<SpotlessTaskImpl> source) {
+			return project.getTasks().register("spotless" + SpotlessPlugin.capitalize(name) + "Check", SpotlessCheck.class, task -> task.init(source));
 		}
 
-		private SpotlessApply createApplyTask(String name, SpotlessTaskImpl source) {
-			SpotlessApply task = project.getTasks().create("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class);
-			task.init(source);
-			return task;
+		private TaskProvider<SpotlessApply> registerApplyTask(String name, TaskProvider<SpotlessTaskImpl> source) {
+			return project.getTasks().register("spotless" + SpotlessPlugin.capitalize(name) + "Apply", SpotlessApply.class, task -> task.init(source));
 		}
 
 		String checkFailureMsg() {
@@ -88,8 +85,8 @@ class DiffMessageFormatterTest extends ResourceHarness {
 		}
 
 		void check() throws Exception {
-			Tasks.execute(task);
-			check.performActionTest();
+			Tasks.execute(task.get());
+			check.get().performActionTest();
 		}
 	}
 
@@ -99,8 +96,8 @@ class DiffMessageFormatterTest extends ResourceHarness {
 
 	private Bundle create(List<File> files) throws IOException {
 		Bundle bundle = new Bundle("underTest");
-		bundle.task.setLineEndingsPolicy(bundle.project.provider(LineEnding.UNIX::createPolicy));
-		bundle.task.setTarget(files);
+		bundle.task.get().setLineEndingsPolicy(bundle.project.provider(LineEnding.UNIX::createPolicy));
+		bundle.task.get().setTarget(files);
 		return bundle;
 	}
 
@@ -138,7 +135,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 	void customRunToFixMessage() throws Exception {
 		Bundle task = create(setFile("testFile").toContent("A\r\nB\r\nC\r\n"));
 		String customMessage = "Formatting issues detected, please read automatic-code-formatting.txt and correct.";
-		task.check.getRunToFixMessage().set(customMessage);
+		task.check.get().getRunToFixMessage().set(customMessage);
 
 		String msg = task.checkFailureMsg();
 
@@ -150,7 +147,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 	@Test
 	void whitespaceProblem() throws Exception {
 		Bundle spotless = create(setFile("testFile").toContent("A \nB\t\nC  \n"));
-		spotless.task.setSteps(List.of(TrimTrailingWhitespaceStep.create()));
+		spotless.task.get().setSteps(List.of(TrimTrailingWhitespaceStep.create()));
 		assertCheckFailure(spotless,
 				"    testFile",
 				"        @@ -1,3 +1,3 @@",

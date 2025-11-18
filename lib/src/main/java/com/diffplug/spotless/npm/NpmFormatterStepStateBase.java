@@ -39,9 +39,9 @@ import com.diffplug.spotless.ThrowingEx;
 
 abstract class NpmFormatterStepStateBase implements Serializable {
 
-	private static final Logger logger = LoggerFactory.getLogger(NpmFormatterStepStateBase.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(NpmFormatterStepStateBase.class);
 
-	private static final TimedLogger timedLogger = TimedLogger.forLogger(logger);
+	private static final TimedLogger TIMED_LOGGER = TimedLogger.forLogger(LOGGER);
 
 	@Serial
 	private static final long serialVersionUID = 1460749955865959948L;
@@ -132,11 +132,11 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 						if (server.isAlive()) {
 							server.destroyForcibly();
 							ProcessRunner.Result result = server.result();
-							logger.info("Launching npm server process failed. Process result:\n{}", result);
+							LOGGER.info("Launching npm server process failed. Process result:\n{}", result);
 						}
 					} catch (Throwable t) {
 						ProcessRunner.Result result = ThrowingEx.get(server::result);
-						logger.debug("Unable to forcibly end the server process. Process result:\n{}", result, t);
+						LOGGER.debug("Unable to forcibly end the server process. Process result:\n{}", result, t);
 					}
 					throw timeoutException;
 				}
@@ -194,15 +194,15 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 		@Override
 		public void close() throws Exception {
 			try {
-				logger.trace("Closing npm server in directory <{}> and port <{}>",
+				LOGGER.trace("Closing npm server in directory <{}> and port <{}>",
 						serverPortFile.getParent(), serverPort);
 
 				if (server.isAlive()) {
 					boolean ended = server.waitFor(5, TimeUnit.SECONDS);
 					if (!ended) {
-						logger.info("Force-Closing npm server in directory <{}> and port <{}>", serverPortFile.getParent(), serverPort);
+						LOGGER.info("Force-Closing npm server in directory <{}> and port <{}>", serverPortFile.getParent(), serverPort);
 						server.destroyForcibly().waitFor();
-						logger.trace("Force-Closing npm server in directory <{}> and port <{}> -- Finished", serverPortFile.getParent(), serverPort);
+						LOGGER.trace("Force-Closing npm server in directory <{}> and port <{}> -- Finished", serverPortFile.getParent(), serverPort);
 					}
 				}
 			} finally {

@@ -10,10 +10,19 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changes
+* Bump default `ktfmt` version to latest `0.58` -> `0.59`. ([#2681](https://github.com/diffplug/spotless/pull/2681)
+* Use Task Providers for task initialization. [#2719](https://github.com/diffplug/spotless/pull/2719)
+* **BREAKING** Bump minimum supported Gradle version from 7.3 to 8.1. [#2719](https://github.com/diffplug/spotless/pull/2719)
+* Bump default `jackson` version to latest `2.20.0` -> `2.20.1`. ([#2730](https://github.com/diffplug/spotless/pull/2730))
+* Bump default `cleanthat` version to latest `2.23` -> `2.24`. ([#2620](https://github.com/diffplug/spotless/pull/2620))
 ### Fixed
-- palantirJavaFormat is no longer arbitrarily set to outdated versions on Java 17, latest available version is always used ([#2686](https://github.com/diffplug/spotless/pull/2686) fixes [#2685](https://github.com/diffplug/spotless/issues/2685))
+* palantirJavaFormat is no longer arbitrarily set to outdated versions on Java 17, latest available version is always used ([#2686](https://github.com/diffplug/spotless/pull/2686) fixes [#2685](https://github.com/diffplug/spotless/issues/2685))
 ### Added
-- Add a `forbidModuleImports` API for java ([#2679](https://github.com/diffplug/spotless/issues/2679))
+* Add a `forbidModuleImports` API for java ([#2679](https://github.com/diffplug/spotless/issues/2679))
+* new options to customize Flexmark, e.g. to allow YAML front matter ([#2616](https://github.com/diffplug/spotless/issues/2616))
+### Removed
+* **BREAKING** Drop support for older Ktlint versions. ([#2711](https://github.com/diffplug/spotless/pull/2711))
 
 ## [4.0.0] - 2025-09-24
 ### Changes

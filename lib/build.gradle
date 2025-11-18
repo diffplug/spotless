@@ -47,9 +47,6 @@ versionCompatibility {
 			// we will support no more than 2 breaking changes at a time = 3 incompatible versions
 			// we will try to drop down to only one version if a stable API can be maintained for a full year
 			versions = [
-				'0.48.0',
-				'0.49.0',
-				'0.50.0',
 				'1.0.0',
 			]
 			targetSourceSetName = 'ktlint'
@@ -83,7 +80,7 @@ dependencies {
 
 	// GLUE CODE (alphabetic order please)
 	// cleanthat
-	String VER_CLEANTHAT='2.23'
+	String VER_CLEANTHAT='2.24'
 	cleanthatCompileOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	compatCleanthat2Dot1CompileAndTestOnly "io.github.solven-eu.cleanthat:java:$VER_CLEANTHAT"
 	// diktat old supported version 1.x
@@ -100,28 +97,16 @@ dependencies {
 	// gson
 	gsonCompileOnly 'com.google.code.gson:gson:2.13.2'
 	// jackson
-	String VER_JACKSON='2.20.0'
+	String VER_JACKSON='2.20.1'
 	jacksonCompileOnly "com.fasterxml.jackson.core:jackson-databind:$VER_JACKSON"
 	jacksonCompileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$VER_JACKSON"
 	// ktfmt
-	ktfmtCompileOnly "com.facebook:ktfmt:0.58"
+	ktfmtCompileOnly "com.facebook:ktfmt:0.59"
 	ktfmtCompileOnly("com.google.googlejavaformat:google-java-format") {
 		version {
 			strictly '1.7' // for JDK 8 compatibility
 		}
 	}
-	// ktlint oldest supported version
-	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-core:0.48.0'
-	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-experimental:0.48.0'
-	compatKtLint0Dot48Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.48.0'
-	// ktlint previous supported version
-	compatKtLint0Dot49Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:0.49.0'
-	compatKtLint0Dot49Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.49.0'
-	compatKtLint0Dot49Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.17'
-	// ktlint previous supported version
-	compatKtLint0Dot50Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:0.50.0'
-	compatKtLint0Dot50Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:0.50.0'
-	compatKtLint0Dot50Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.17'
 	// ktlint latest supported version
 	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:1.0.0'
 	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:1.0.0'
@@ -146,15 +131,9 @@ spotbugs {
 
 apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
-	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
-		// https://docs.gradle.org/7.5/userguide/upgrading_version_7.html#removes_implicit_add_opens_for_test_workers
-		jvmArgs "--add-opens=java.base/java.lang=ALL-UNNAMED"
-	}
+	jvmArgs "--add-opens=java.base/java.lang=ALL-UNNAMED"
 
-	if (GradleVersion.current() >= GradleVersion.version('9.0')) {
-		// https://github.com/gradle/gradle/issues/33619
-		failOnNoDiscoveredTests = false
-	}
+	failOnNoDiscoveredTests = false
 }
 
 jar {

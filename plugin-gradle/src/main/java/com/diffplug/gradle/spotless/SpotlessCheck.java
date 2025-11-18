@@ -32,6 +32,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.work.DisableCachingByDefault;
 import org.jetbrains.annotations.NotNull;
 
@@ -133,10 +134,10 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	abstract Property<String> getProjectPath();
 
 	@Override
-	void init(SpotlessTaskImpl impl) {
+	void init(TaskProvider<SpotlessTaskImpl> impl) {
 		super.init(impl);
 		getProjectPath().set(getProject().getPath());
-		getEncoding().set(impl.getEncoding());
+		getEncoding().set(impl.map(SpotlessTask::getEncoding));
 		getRunToFixMessage().convention(
 				"Run '" + calculateGradleCommand() + " spotlessApply' to fix all violations.");
 	}

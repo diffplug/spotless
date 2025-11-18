@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class Ktlint implements FormatterStepFactory {
-	private static final File defaultEditorConfig = new File(".editorconfig");
+	private static final File DEFAULT_EDITOR_CONFIG = new File(".editorconfig");
 
 	@Parameter
 	private String version;
@@ -46,8 +46,8 @@ public class Ktlint implements FormatterStepFactory {
 	public FormatterStep newFormatterStep(final FormatterStepConfig stepConfig) {
 		String ktlintVersion = version != null ? version : KtLintStep.defaultVersion();
 		FileSignature configPath = null;
-		if (editorConfigPath == null && defaultEditorConfig.exists()) {
-			editorConfigPath = defaultEditorConfig.getPath();
+		if (editorConfigPath == null && DEFAULT_EDITOR_CONFIG.exists()) {
+			editorConfigPath = DEFAULT_EDITOR_CONFIG.getPath();
 		}
 		if (editorConfigPath != null) {
 			configPath = ThrowingEx.get(() -> FileSignature.signAsList(stepConfig.getFileLocator().locateFile(editorConfigPath)));

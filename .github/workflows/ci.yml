@@ -97,9 +97,25 @@ jobs:
           cd ..
           ./gradlew testIdea
       - name: junit result
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@v6
         if: always() # always run even if the previous step fails
         with:
           check_name: JUnit ${{ matrix.kind }} ${{ matrix.jre }} ${{ matrix.os }}
           report_paths: '*/build/test-results/*/TEST-*.xml'
           check_retries: true
+
+  # Status check that is required in branch protection rules.
+  final-status:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check
+        run: |
+          results=$(tr -d '\n' <<< '${{ toJSON(needs.*.result) }}')
+          if ! grep -q -v -E '(failure|cancelled)' <<< "$results"; then
+            echo "One or more required jobs failed"
+            exit 1
+          fi
+          echo "All required jobs completed successfully."

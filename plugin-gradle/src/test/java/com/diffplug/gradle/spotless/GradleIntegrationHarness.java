@@ -44,12 +44,9 @@ import com.diffplug.spotless.ResourceHarness;
 
 public class GradleIntegrationHarness extends ResourceHarness {
 	public enum GradleVersionSupport {
-		MINIMUM(SpotlessPlugin.VER_GRADLE_min),
+		MINIMUM(SpotlessPlugin.VER_GRADLE_MIN),
 
-		// https://docs.gradle.org/7.5/userguide/configuration_cache.html#config_cache:stable
-		STABLE_CONFIGURATION_CACHE("7.5"),
-
-		CUSTOM_STEPS(SpotlessPlugin.VER_GRADLE_minVersionForCustom),
+		CUSTOM_STEPS(SpotlessPlugin.VER_GRADLE_MIN_VERSION_FOR_CUSTOM),
 
 		;
 
@@ -58,8 +55,12 @@ public class GradleIntegrationHarness extends ResourceHarness {
 		GradleVersionSupport(String version) {
 			String minVersionForRunningJRE;
 			switch (Jvm.version()) {
+			case 26:
+				throw new IllegalStateException("Gradle does not yet support running on Java 26. " +
+						"You need to update the case ref to https://docs.gradle.org/current/userguide/compatibility.html.");
 			case 25:
-				// TODO: https://docs.gradle.org/current/userguide/compatibility.html
+				minVersionForRunningJRE = "9.1.0";
+				break;
 			case 24:
 				minVersionForRunningJRE = "8.14";
 				break;
@@ -74,12 +75,6 @@ public class GradleIntegrationHarness extends ResourceHarness {
 				break;
 			case 20:
 				minVersionForRunningJRE = "8.3";
-				break;
-			case 19:
-				minVersionForRunningJRE = "7.6";
-				break;
-			case 18:
-				minVersionForRunningJRE = "7.5";
 				break;
 			default:
 				minVersionForRunningJRE = null;

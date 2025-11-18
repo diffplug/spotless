@@ -38,7 +38,7 @@ import com.diffplug.spotless.ThrowingEx;
 
 public final class TsFmtFormatterStep {
 
-	private static final Logger logger = LoggerFactory.getLogger(TsFmtFormatterStep.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TsFmtFormatterStep.class);
 
 	public static final String NAME = "tsfmt-format";
 
@@ -121,7 +121,7 @@ public final class TsFmtFormatterStep {
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {
-				logger.info("Failed to request shutdown of rest service via api. Trying via process.", t);
+				LOGGER.info("Failed to request shutdown of rest service via api. Trying via process.", t);
 			}
 			restServer.close();
 		}
