@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [4.1.0] - 2025-11-18
 ### Changes
 - Bump default `ktfmt` version to latest `0.58` -> `0.59`. ([#2681](https://github.com/diffplug/spotless/pull/2681)
 - Bump default `jackson` version to latest `2.20.0` -> `2.20.1`. ([#2730](https://github.com/diffplug/spotless/pull/2730))
