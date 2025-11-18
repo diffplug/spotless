@@ -93,7 +93,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Dependency resolution modes](#dependency-resolution-modes)
   - [How do I preview what `spotlessApply` will do?](#how-do-i-preview-what-spotlessapply-will-do)
   - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
-  - [Sharing Spotless Configuration](#sharing-configuration)
+  - [How to centralize Spotless configuration](#central-configuration)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
 
 ***Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.***
@@ -1914,8 +1914,6 @@ If you use this feature, you will get an error if you use a formatter in a subpr
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
 
-<a name="examples"></a>
-
 ## Can I apply Spotless to specific files?
 
 You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
@@ -1926,25 +1924,30 @@ cmd> gradle spotlessApply -PspotlessFiles=my/file/pattern.java,more/generic/.*-p
 
 The patterns are matched using `String#matches(String)` against the absolute file path.
 
-## Sharing Configuration
+<a name="central-configuration"></a>
 
-Rather than copying the formatter files across many projects, it is possible to define a common configuration that is deployed as a standard artifact so that it can be then be reused by each project; for example:
+## How to centralize Spotless configuration
+
+If you want to centralize your Spotless configuration for use across many projects, you might want to consider the [Blowdryer](https://github.com/diffplug/blowdryer) plugin.
+
+If you are content with only centralizing configuration files, it is possible to define a common configuration that is deployed as a standard artifact so that it can be then be reused by each project. For example:
 
 ```kotlin
-    val spotlessConfig by configurations.creating
-    dependencies {
-        spotlessConfig("org.mycompany:code-configuration:1.0.0")
-    }
-    spotless {
-        java {
-            removeUnusedImports()
-            importOrder(resources.text.fromArchiveEntry(spotlessConfig, "java-import-order.txt").asString())
-            eclipse().configXml(resources.text.fromArchiveEntry(spotlessConfig, "java-formatter.xml").asString())
-        }
-    }
+val spotlessConfig by configurations.creating
+dependencies {
+  // the files `java-import-order.txt` and `java-formatter.xml` should be at the root of the deployed `org.mycompany:code-configuration:1.0.0` jar.
+  spotlessConfig("org.mycompany:code-configuration:1.0.0")
+}
+spotless {
+  java {
+    removeUnusedImports()
+    importOrder(resources.text.fromArchiveEntry(spotlessConfig, "java-import-order.txt").asString())
+    eclipse().configXml(resources.text.fromArchiveEntry(spotlessConfig, "java-formatter.xml").asString())
+  }
+}
 ```
 
-In this example, the files `java-import-order.txt` and `java-formatter.xml` should be at the root of the deployed `org.mycompany:code-configuration:1.0.0` jar.
+<a name="examples"></a>
 
 ## Example configurations (from real-world projects)
 

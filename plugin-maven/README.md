@@ -72,7 +72,7 @@ user@machine repo % mvn spotless:check
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `mvn spotless:apply` will do?](#how-do-i-preview-what-mvn-spotlessapply-will-do)
   - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
-  - [Sharing Spotless Configuration](#sharing-configuration)
+  - [How to centralize Spotless configuration](#central-configuration)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
 
 ***Contributions are welcome, see [the contributing guide](../CONTRIBUTING.md) for development info.***
@@ -2069,13 +2069,13 @@ You can adjust this with
 
 Note that for Incremental build support the goals have to be bound to a phase prior to `test`.
 
-<a name="examples"></a>
+<a name="central-configuration"></a>
 
-## Sharing Configuration
+## How to centralize Spotless configuration
 
 Rather than copying the formatter files across many projects, it is possible to define a common configuration that is deployed as a standard artifact so that it can be then be reused by each project; for example:
 
-```
+```xml
 <plugin>
   <groupId>com.diffplug.spotless</groupId>
   <artifactId>spotless-maven-plugin</artifactId>
