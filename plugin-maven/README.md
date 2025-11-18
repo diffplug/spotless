@@ -231,6 +231,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
     <removeUnusedImports /> <!-- self-explanatory -->
     <forbidWildcardImports /> <!-- yell if any import ends with '*' -->
+    <forbidModuleImports /> <!-- yell if any module imports are found (Java 25+) -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
@@ -253,6 +254,12 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <forbidWildcardImports/>
+```
+
+### forbidModuleImports
+
+```xml
+<forbidModuleImports/>
 ```
 
 ### google-java-format
