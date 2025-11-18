@@ -2,7 +2,7 @@ apply plugin: 'net.ltgt.errorprone'
 
 dependencies {
 	errorprone('com.google.errorprone:error_prone_core:2.42.0')
-	errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.25.0')
+	errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.26.0')
 }
 
 tasks.withType(JavaCompile).configureEach {
