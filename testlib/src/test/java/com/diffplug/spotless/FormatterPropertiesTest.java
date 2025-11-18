@@ -196,7 +196,7 @@ class FormatterPropertiesTest extends ResourceHarness {
 
 		/** Check that the values form all valid files are part of the settings properties. */
 		public FormatterSettingsAssert containsSpecificValuesOf(Collection<File> files) {
-			files.forEach(file -> containsSpecificValuesOf(file));
+			files.forEach(this::containsSpecificValuesOf);
 			return this;
 		}
 
@@ -208,13 +208,13 @@ class FormatterPropertiesTest extends ResourceHarness {
 			Properties settingsProps = actual.getProperties();
 			for (String expectedValue : VALID_VALUES) {
 				// A parsable (valid) file contains keys of the following format
-				String validValueName = (null == expectedValue) ? "null" : expectedValue;
+				String validValueName = expectedValue == null ? "null" : expectedValue;
 				String key = "%s.%s".formatted(fileName, validValueName);
 				if (!settingsProps.containsKey(key)) {
 					failWithMessage("Key <%s> not part of formatter settings.", key);
 				}
 				String value = settingsProps.getProperty(key);
-				if ((null != expectedValue) && (!expectedValue.equals(value))) {
+				if ((expectedValue != null) && (!expectedValue.equals(value))) {
 					failWithMessage("Value of key <%s> is '%s' and not '%s' as expected.", key, value, expectedValue);
 				}
 			}

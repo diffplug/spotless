@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,46 +25,6 @@ import com.diffplug.spotless.TestProvisioner;
 
 class KtLintStepTest extends ResourceHarness {
 	@Test
-	void works0_48_0() {
-		FormatterStep step = KtLintStep.create("0.48.0", TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic-old.clean")
-				.expectLintsOfResource("kotlin/ktlint/unsolvable.dirty").toBe("L1 ktlint(no-wildcard-imports) Wildcard import");
-	}
-
-	@Test
-	void works0_48_1() {
-		FormatterStep step = KtLintStep.create("0.48.1", TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic-old.clean")
-				.expectLintsOfResource("kotlin/ktlint/unsolvable.dirty").toBe("L1 ktlint(no-wildcard-imports) Wildcard import");
-	}
-
-	@Test
-	void works0_49_0() {
-		FormatterStep step = KtLintStep.create("0.49.0", TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic-old.clean")
-				.expectLintsOfResource("kotlin/ktlint/unsolvable.dirty").toBe("L1 ktlint(standard:no-wildcard-imports) Wildcard import");
-	}
-
-	@Test
-	void works0_49_1() {
-		FormatterStep step = KtLintStep.create("0.49.1", TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic-old.clean")
-				.expectLintsOfResource("kotlin/ktlint/unsolvable.dirty").toBe("L1 ktlint(standard:no-wildcard-imports) Wildcard import");
-	}
-
-	@Test
-	void works0_50_0() {
-		FormatterStep step = KtLintStep.create("0.50.0", TestProvisioner.mavenCentral());
-		StepHarnessWithFile.forStep(this, step)
-				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
-				.expectLintsOfResource("kotlin/ktlint/unsolvable.dirty").toBe("L1 ktlint(standard:no-wildcard-imports) Wildcard import");
-	}
-
-	@Test
 	void works1_0_0() {
 		FormatterStep step = KtLintStep.create("1.0.0", TestProvisioner.mavenCentral());
 		StepHarnessWithFile.forStep(this, step)
@@ -83,14 +43,14 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void equality() {
 		new SerializableEqualityTester() {
-			String version = "0.48.0";
+			String version = "1.0.0";
 
 			@Override
 			protected void setupTest(API api) {
 				// same version == same
 				api.areDifferentThan();
 				// change the version, and it's different
-				version = "0.48.1";
+				version = "1.0.1";
 				api.areDifferentThan();
 			}
 

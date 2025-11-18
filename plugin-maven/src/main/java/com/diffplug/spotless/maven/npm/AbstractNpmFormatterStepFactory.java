@@ -19,7 +19,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -49,18 +49,15 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 	private String npmInstallCache;
 
 	protected File npm(FormatterStepConfig stepConfig) {
-		File npm = npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
-		return npm;
+		return npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;
 	}
 
 	protected File node(FormatterStepConfig stepConfig) {
-		File node = nodeExecutable != null ? stepConfig.getFileLocator().locateFile(nodeExecutable) : null;
-		return node;
+		return nodeExecutable != null ? stepConfig.getFileLocator().locateFile(nodeExecutable) : null;
 	}
 
 	protected File npmrc(FormatterStepConfig stepConfig) {
-		File npmrc = this.npmrc != null ? stepConfig.getFileLocator().locateFile(this.npmrc) : null;
-		return npmrc;
+		return this.npmrc != null ? stepConfig.getFileLocator().locateFile(this.npmrc) : null;
 	}
 
 	protected File buildDir(FormatterStepConfig stepConfig) {
@@ -82,7 +79,7 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 	}
 
 	protected NpmPathResolver npmPathResolver(FormatterStepConfig stepConfig) {
-		return new NpmPathResolver(npm(stepConfig), node(stepConfig), npmrc(stepConfig), Collections.singletonList(baseDir(stepConfig)));
+		return new NpmPathResolver(npm(stepConfig), node(stepConfig), npmrc(stepConfig), List.of(baseDir(stepConfig)));
 	}
 
 	protected boolean moreThanOneNonNull(Object... objects) {

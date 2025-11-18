@@ -25,8 +25,12 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.ProcessRunner;
 
 class IdeHookTest extends MavenIntegrationHarness {
-	private String output, error;
-	private File dirty, clean, diverge, outofbounds;
+	private String output;
+	private String error;
+	private File dirty;
+	private File clean;
+	private File diverge;
+	private File outofbounds;
 
 	@BeforeEach
 	void before() throws IOException {
@@ -44,7 +48,6 @@ class IdeHookTest extends MavenIntegrationHarness {
 		dirty = setFile("DIRTY.md").toContent("World");
 		clean = setFile("CLEAN.md").toContent("Mars");
 		outofbounds = setFile("OUTOFBOUNDS.md").toContent("Mars");
-		;
 	}
 
 	private void runWith(String... arguments) throws IOException, InterruptedException {

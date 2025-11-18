@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ class GitAttributesTest extends ResourceHarness {
 		setFile(".gitattributes").toContent(StringPrinter.buildStringFromLines(
 				"* eol=lf",
 				"*.MF eol=crlf"));
-		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(rootFolder(), () -> testFiles());
+		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(rootFolder(), this::testFiles);
 		Assertions.assertThat(policy.getEndingFor(newFile("someFile"))).isEqualTo("\n");
 		Assertions.assertThat(policy.getEndingFor(newFile("subfolder/someFile"))).isEqualTo("\n");
 		Assertions.assertThat(policy.getEndingFor(newFile("MANIFEST.MF"))).isEqualTo("\r\n");
@@ -100,7 +100,7 @@ class GitAttributesTest extends ResourceHarness {
 				"[core]",
 				"autocrlf=true",
 				"eol=lf"));
-		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(rootFolder(), () -> testFiles());
+		LineEnding.Policy policy = LineEnding.GIT_ATTRIBUTES.createPolicy(rootFolder(), this::testFiles);
 		Assertions.assertThat(policy.getEndingFor(newFile("someFile"))).isEqualTo("\r\n");
 	}
 

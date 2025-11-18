@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,9 @@ import java.util.Map;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Lint;
-import com.diffplug.spotless.glue.ktlint.compat.*;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat1Dot0Dot0Adapter;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompatAdapter;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompatReporting;
 
 public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 	private final KtLintCompatAdapter adapter;
@@ -35,26 +37,10 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 			Map<String, Object> editorConfigOverrideMap) {
 		String[] versions = version.split("\\.");
 		int majorVersion = Integer.parseInt(versions[0]);
-		int minorVersion = Integer.parseInt(versions[1]);
 		if (majorVersion == 1) {
 			this.adapter = new KtLintCompat1Dot0Dot0Adapter();
 		} else {
-			if (minorVersion >= 50) {
-				// Fixed `RuleId` and `RuleSetId` issues
-				// New argument to `EditorConfigDefaults.Companion.load(...)` for custom property type parsing
-				// New argument to `new KtLintRuleEngine(...)` to fail on usage of `treeCopyHandler` extension point
-				this.adapter = new KtLintCompat0Dot50Dot0Adapter();
-			} else if (minorVersion == 49) {
-				// Packages and modules moved around (`ktlint-core` -> `ktlint-rule-engine`)
-				// Experimental ruleset was replaced by implementing `Rule.Experimental` and checking the `ktlint_experimental` `.editorconfig` property
-				// `RuleId` and `RuleSetId` became inline classes (mangled to be unrepresentable in Java source code, so reflection is needed), tracked here: https://github.com/pinterest/ktlint/issues/2041
-				this.adapter = new KtLintCompat0Dot49Dot0Adapter();
-			} else if (minorVersion == 48) {
-				// ExperimentalParams lost two constructor arguments, EditorConfigProperty moved to its own class
-				this.adapter = new KtLintCompat0Dot48Dot0Adapter();
-			} else {
-				throw new IllegalStateException("Ktlint versions < 0.48.0 not supported!");
-			}
+			throw new IllegalStateException("Ktlint versions < 1.0.0 not supported!");
 		}
 		this.editorConfigPath = editorConfigPath;
 		this.editorConfigOverrideMap = editorConfigOverrideMap;

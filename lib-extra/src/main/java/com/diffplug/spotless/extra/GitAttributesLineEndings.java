@@ -146,7 +146,7 @@ public final class GitAttributesLineEndings {
 		private static final long serialVersionUID = -2534772773057900619L;
 
 		/** this is transient, to simulate PathSensitive.RELATIVE */
-		transient final String rootDir;
+		final transient String rootDir;
 		/** the line ending used for most files */
 		final String defaultEnding;
 		/** any exceptions to that default, in terms of relative path from rootDir */
@@ -154,7 +154,7 @@ public final class GitAttributesLineEndings {
 
 		CachedEndings(File projectDir, Runtime runtime, Iterable<File> toFormat) {
 			String rootPath = FileSignature.pathNativeToUnix(projectDir.getAbsolutePath());
-			rootDir = rootPath.equals("/") ? rootPath : rootPath + "/";
+			rootDir = "/".equals(rootPath) ? rootPath : rootPath + "/";
 			defaultEnding = runtime.defaultEnding;
 			for (File file : toFormat) {
 				String ending = runtime.getEndingFor(file);
@@ -177,13 +177,15 @@ public final class GitAttributesLineEndings {
 
 	static class RuntimeInit {
 		/** /etc/gitconfig (system-global), ~/.gitconfig (each might-not exist). */
-		final FileBasedConfig systemConfig, userConfig;
+		final FileBasedConfig systemConfig;
+		final FileBasedConfig userConfig;
 
 		/** Repository specific config, can be $GIT_COMMON_DIR/config, project/.git/config or .git/worktrees/<id>/config.worktree if enabled by extension */
 		final Config repoConfig;
 
 		/** Global .gitattributes file pointed at by systemConfig or userConfig, and the file in the repo. */
-		final @Nullable File globalAttributesFile, repoAttributesFile;
+		final @Nullable File globalAttributesFile;
+		final @Nullable File repoAttributesFile;
 
 		/** git worktree root, might not exist if we're not in a git repo. */
 		final @Nullable File workTree;
@@ -235,7 +237,7 @@ public final class GitAttributesLineEndings {
 	}
 
 	/** https://github.com/git/git/blob/1fe8f2cf461179c41f64efbd1dc0a9fb3b7a0fb1/Documentation/gitattributes.txt */
-	static class Runtime {
+	static final class Runtime {
 		/** .git/info/attributes (and the worktree with that file) */
 		final List<AttributesRule> infoRules;
 

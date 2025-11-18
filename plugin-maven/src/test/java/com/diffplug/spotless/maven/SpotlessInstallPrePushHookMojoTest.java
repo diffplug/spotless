@@ -102,9 +102,9 @@ class SpotlessInstallPrePushHookMojoTest extends MavenIntegrationHarness {
 
 	private String getHookContent(String resourceFile) {
 		final var executorFile = executorWrapperFile();
-		final var executorPath = executorFile.exists() ? executorFile.getName() : "mvn";
+		final var executorPath = executorFile.exists() ? executorFile.getAbsolutePath().replace("\\", "/") : "mvn";
 		return getTestResource(resourceFile)
-				.replace("${executor}", "./" + executorPath)
+				.replace("${executor}", executorPath)
 				.replace("${checkCommand}", "spotless:check")
 				.replace("${applyCommand}", "spotless:apply");
 	}
@@ -143,7 +143,7 @@ class SpotlessInstallPrePushHookMojoTest extends MavenIntegrationHarness {
 					throw new RuntimeException("Could not find git bash executable");
 				}
 
-				executor = bashPath.get();
+				executor = bashPath.orElseThrow();
 			}
 
 			return runner.exec(rootFolder(), Map.of("JAVA_HOME", System.getProperty("java.home")), null, List.of(executor, hookFile));

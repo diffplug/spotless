@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.tooling.events.FinishEvent;
 import org.gradle.tooling.events.OperationCompletionListener;
 
@@ -57,8 +58,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 
-	@Nullable
-	GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
+	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 
 	Provisioner provisionerFor(SpotlessExtension spotless) {
 		if (spotless instanceof SpotlessExtensionPredeclare) {
@@ -110,7 +110,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		}
 	}
 
-	static abstract class ClientTask extends DefaultTask {
+	abstract static class ClientTask extends DefaultTask {
 		@Internal
 		abstract Property<File> getSpotlessCleanDirectory();
 
@@ -126,12 +126,12 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		@Inject
 		protected abstract ObjectFactory getConfigCacheWorkaround();
 
-		void init(SpotlessTaskImpl impl) {
-			usesServiceTolerateTestFailure(this, impl.getTaskServiceProvider());
-			getSpotlessCleanDirectory().set(impl.getCleanDirectory());
-			getSpotlessLintsDirectory().set(impl.getLintsDirectory());
-			getTaskService().set(impl.getTaskService());
-			getProjectDir().set(impl.getProjectDir());
+		void init(TaskProvider<SpotlessTaskImpl> impl) {
+			usesServiceTolerateTestFailure(this, impl.flatMap(SpotlessTaskImpl::getTaskServiceProvider));
+			getSpotlessCleanDirectory().set(impl.map(SpotlessTask::getCleanDirectory));
+			getSpotlessLintsDirectory().set(impl.map(SpotlessTask::getLintsDirectory));
+			getTaskService().set(impl.flatMap(SpotlessTask::getTaskService));
+			getProjectDir().set(impl.flatMap(SpotlessTask::getProjectDir));
 		}
 
 		String sourceTaskPath() {
@@ -186,7 +186,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 				}
 			});
 			StringBuilder builder = new StringBuilder();
-			builder.append("There were " + total.get() + " lint error(s), they must be fixed or suppressed.\n");
+			builder.append("There were ").append(total.get()).append(" lint error(s), they must be fixed or suppressed.\n");
 			for (Map.Entry<String, LinkedHashMap<String, List<Lint>>> lintsPerFile : allLints.entrySet()) {
 				for (Map.Entry<String, List<Lint>> stepLints : lintsPerFile.getValue().entrySet()) {
 					String stepName = stepLints.getKey();

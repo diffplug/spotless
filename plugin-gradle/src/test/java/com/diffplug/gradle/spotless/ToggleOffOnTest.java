@@ -21,7 +21,7 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
 abstract class ToggleOffOnTest extends GradleIntegrationHarness {
-	private boolean useConfigCache;
+	private final boolean useConfigCache;
 
 	ToggleOffOnTest(boolean useConfigCache) {
 		this.useConfigCache = useConfigCache;
@@ -44,7 +44,7 @@ abstract class ToggleOffOnTest extends GradleIntegrationHarness {
 		if (useConfigCache) {
 			setFile("gradle.properties").toLines("org.gradle.unsafe.configuration-cache=true",
 					"org.gradle.configuration-cache=true");
-			return super.gradleRunner().withGradleVersion(GradleVersionSupport.STABLE_CONFIGURATION_CACHE.version);
+			return super.gradleRunner();
 		} else {
 			return super.gradleRunner();
 		}

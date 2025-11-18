@@ -28,7 +28,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-class SimpleRestClient {
+final class SimpleRestClient {
 	private final String baseUrl;
 
 	private SimpleRestClient(String baseUrl) {
@@ -72,8 +72,7 @@ class SimpleRestClient {
 				throw new SimpleRestResponseException(status, readError(con), "Unexpected response status code at " + endpoint);
 			}
 
-			String response = readResponse(con);
-			return response;
+			return readResponse(con);
 		} catch (IOException e) {
 			throw new SimpleRestIOException(e);
 		}
@@ -93,12 +92,12 @@ class SimpleRestClient {
 		}
 	}
 
-	static abstract class SimpleRestException extends RuntimeException {
+	abstract static class SimpleRestException extends RuntimeException {
 		private static final long serialVersionUID = -8260821395756603787L;
 
-		public SimpleRestException() {}
+		protected SimpleRestException() {}
 
-		public SimpleRestException(Throwable cause) {
+		protected SimpleRestException(Throwable cause) {
 			super(cause);
 		}
 	}

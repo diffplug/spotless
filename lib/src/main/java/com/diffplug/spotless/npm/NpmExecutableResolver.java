@@ -35,7 +35,7 @@ import java.util.function.Function;
  *     	</ol>
  * </ol>
  */
-class NpmExecutableResolver {
+final class NpmExecutableResolver {
 
 	private static final FileFinder NPM_EXECUTABLE_FINDER = FileFinder.finderForExecutableFilename(npmExecutableName())
 			.candidateSystemProperty("npm.exec")
@@ -65,7 +65,7 @@ class NpmExecutableResolver {
 
 		@Override
 		public File apply(File file) {
-			if (file != null && file.isDirectory() && file.getName().equalsIgnoreCase("node_modules")) {
+			if (file != null && file.isDirectory() && "node_modules".equalsIgnoreCase(file.getName())) {
 				return file.getParentFile();
 			}
 			return file;

@@ -232,6 +232,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
     <removeUnusedImports /> <!-- self-explanatory -->
     <forbidWildcardImports /> <!-- yell if any import ends with '*' -->
+    <forbidModuleImports /> <!-- yell if any module imports are found (Java 25+) -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
@@ -254,6 +255,12 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <forbidWildcardImports/>
+```
+
+### forbidModuleImports
+
+```xml
+<forbidModuleImports/>
 ```
 
 ### google-java-format
@@ -801,7 +808,18 @@ All configuration settings are optional, they are described in detail [here](htt
 
 [homepage](https://github.com/vsch/flexmark-java). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/markdown/Flexmark.java). Flexmark is a flexible Commonmark/Markdown parser that can be used to format Markdown files. It supports different [flavors of Markdown](https://github.com/vsch/flexmark-java#markdown-processor-emulation) and [many formatting options](https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options).
 
-Currently, none of the available options can be configured yet. It uses only the default options together with `COMMONMARK` as `FORMATTER_EMULATION_PROFILE`.
+The default configuration uses a pegdown compatible parser with `COMMONMARK` as `FORMATTER_EMULATION_PROFILE`.
+You can change the `emulationProfile` to one of the other [supported profiles](https://github.com/vsch/flexmark-java/blob/master/flexmark/src/main/java/com/vladsch/flexmark/parser/ParserEmulationProfile.java).
+The `pegdownExtensions` can be configured as a comma-seperated list of [constants](https://github.com/vsch/flexmark-java/blob/master/flexmark/src/main/java/com/vladsch/flexmark/parser/PegdownExtensions.java) or as a custom bitset as an integer.
+Any other `extension` can be configured using either the simple name as shown in the example or using a full-qualified class name.
+
+```xml
+<flexmark>
+  <emulationProfile>COMMONMARK</emulationProfile>
+  <pegdownExtensions>ALL,TOC</pegdownExtensions>
+  <extensions>YamlFrontMatter,Emoji</extensions>
+</flexmark>
+```
 
 <a name="applying-to-typescript-source"></a>
 
@@ -1031,7 +1049,7 @@ Uses Google Gson to also allow sorting by keys besides custom indentation - usef
 <gson>
   <indentSpaces>4</indentSpaces>        <!-- optional: specify the number of spaces to use -->
   <sortByKeys>false</sortByKeys>        <!-- optional: sort JSON by its keys -->
-  <escapeHtml>false</indentSpaces>      <!-- optional: escape HTML in values -->
+  <escapeHtml>false</escapeHtml>      <!-- optional: escape HTML in values -->
   <version>2.8.1</version>              <!-- optional: specify version -->
 </gson>
 ```

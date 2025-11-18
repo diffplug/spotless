@@ -23,7 +23,10 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
 public class SpotlessExtensionImpl extends SpotlessExtension {
-	final TaskProvider<?> rootCheckTask, rootApplyTask, rootDiagnoseTask, rootInstallPreHook;
+	final TaskProvider<?> rootCheckTask;
+	final TaskProvider<?> rootApplyTask;
+	final TaskProvider<?> rootDiagnoseTask;
+	final TaskProvider<?> rootInstallPreHook;
 
 	public SpotlessExtensionImpl(Project project) {
 		super(project);
@@ -35,9 +38,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.setGroup(TASK_GROUP);
 			task.setDescription(APPLY_DESCRIPTION);
 		});
-		rootDiagnoseTask = project.getTasks().register(EXTENSION + DIAGNOSE, task -> {
-			task.setGroup(TASK_GROUP); // no description on purpose
-		});
+		rootDiagnoseTask = project.getTasks().register(EXTENSION + DIAGNOSE, task -> task.setGroup(TASK_GROUP));
 		rootInstallPreHook = project.getTasks().register(EXTENSION + INSTALL_GIT_PRE_PUSH_HOOK, SpotlessInstallPrePushHookTask.class, task -> {
 			task.setGroup(BUILD_SETUP_TASK_GROUP);
 			task.setDescription(INSTALL_GIT_PRE_PUSH_HOOK_DESCRIPTION);
@@ -66,34 +67,29 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});
-		project.afterEvaluate(unused -> {
-			spotlessTask.configure(task -> {
-				// now that the task is being configured, we execute our actions
-				for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
-					lazyAction.execute(formatExtension);
-				}
-				// and now we'll setup the task
-				formatExtension.setupTask(task);
-			});
-		});
+		project.afterEvaluate(unused -> spotlessTask.configure(task -> {
+			// now that the task is being configured, we execute our actions
+			for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
+				lazyAction.execute(formatExtension);
+			}
+			// and now we'll setup the task
+			formatExtension.setupTask(task);
+		}));
 
 		// create the check and apply control tasks
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
-			task.init(spotlessTask.get());
+			task.init(spotlessTask);
 			task.setGroup(TASK_GROUP);
 			task.setEnabled(ideHook.path == null);
 			task.dependsOn(spotlessTask);
 		});
-		rootApplyTask.configure(task -> {
-			task.dependsOn(ideHook.path == null ? applyTask : spotlessTask);
-		});
+		rootApplyTask.configure(task -> task.dependsOn(ideHook.path == null ? applyTask : spotlessTask));
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
-			SpotlessTaskImpl source = spotlessTask.get();
 			task.setGroup(TASK_GROUP);
-			task.init(source);
+			task.init(spotlessTask);
 			task.setEnabled(ideHook.path == null);
-			task.dependsOn(source);
+			task.dependsOn(spotlessTask);
 
 			// if the user runs both, make sure that apply happens first,
 			task.mustRunAfter(applyTask);
@@ -102,7 +98,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 
 		// create the diagnose task
 		TaskProvider<SpotlessDiagnoseTask> diagnoseTask = tasks.register(taskName + DIAGNOSE, SpotlessDiagnoseTask.class, task -> {
-			task.source = spotlessTask.get();
+			task.source = spotlessTask;
 			task.setGroup(TASK_GROUP);
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 		});

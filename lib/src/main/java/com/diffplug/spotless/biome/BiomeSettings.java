@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
  * Settings and constants for Biome to use.
  */
 public final class BiomeSettings {
-	private static final Logger logger = LoggerFactory.getLogger(BiomeSettings.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BiomeSettings.class);
 
-	private final static String CONFIG_NAME = "biome.json";
-	private final static String DEFAULT_VERSION = "1.2.0";
-	private final static String DOWNLOAD_FILE_PATTERN = "biome-%s-%s-%s";
-	private final static String SHORT_NAME = "biome";
-	private final static String URL_PATTERN_1X = "https://github.com/biomejs/biome/releases/download/cli%%2Fv%s/biome-%s";
-	private final static String URL_PATTERN_2X = "https://github.com/biomejs/biome/releases/download/%%40biomejs%%2Fbiome%%40%s/biome-%s";
+	private static final String CONFIG_NAME = "biome.json";
+	private static final String DEFAULT_VERSION = "1.2.0";
+	private static final String DOWNLOAD_FILE_PATTERN = "biome-%s-%s-%s";
+	private static final String SHORT_NAME = "biome";
+	private static final String URL_PATTERN_1X = "https://github.com/biomejs/biome/releases/download/cli%%2Fv%s/biome-%s";
+	private static final String URL_PATTERN_2X = "https://github.com/biomejs/biome/releases/download/%%40biomejs%%2Fbiome%%40%s/biome-%s";
 
 	private BiomeSettings() {}
 
@@ -106,7 +106,7 @@ public final class BiomeSettings {
 			}
 			return actualMajor == major && actualMinor == minor && actualPatch == patch;
 		} catch (final Exception e) {
-			logger.warn("Failed to parse biome version string '{}'. Expected format is 'major.minor.patch'.", version, e);
+			LOGGER.warn("Failed to parse biome version string '{}'. Expected format is 'major.minor.patch'.", version, e);
 			return false;
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.diffplug.spotless.FormatterProperties;
 import com.diffplug.spotless.FormatterStep;
 
 /** SQL formatter step which wraps up DBeaver's SqlTokenizedFormatter implementation. */
-public class DBeaverSQLFormatterStep {
+public final class DBeaverSQLFormatterStep {
 
 	private static final String NAME = "dbeaverSql";
 

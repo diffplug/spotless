@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * <a href="https://github.com/biomejs/biome">https://github.com/biomejs/biome</a>.
  */
 final class BiomeExecutableDownloader {
-	private static final Logger logger = LoggerFactory.getLogger(BiomeExecutableDownloader.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BiomeExecutableDownloader.class);
 
 	/**
 	 * The checksum algorithm to use for checking the integrity of downloaded files.
@@ -106,7 +106,7 @@ final class BiomeExecutableDownloader {
 		if (executableDir != null) {
 			Files.createDirectories(executableDir);
 		}
-		logger.info("Attempting to download Biome from '{}' to '{}'", url, executablePath);
+		LOGGER.info("Attempting to download Biome from '{}' to '{}'", url, executablePath);
 		var request = HttpRequest.newBuilder(URI.create(url)).GET().build();
 		var handler = BodyHandlers.ofFile(executablePath, WRITE_OPTIONS);
 		var response = HttpClient.newBuilder().followRedirects(Redirect.NORMAL).build().send(request, handler);
@@ -118,7 +118,7 @@ final class BiomeExecutableDownloader {
 			throw new IOException("Failed to download file from " + url + ", file is empty or does not exist");
 		}
 		writeChecksumFile(downloadedFile, checksumPath);
-		logger.debug("Biome was downloaded successfully to '{}'", downloadedFile);
+		LOGGER.debug("Biome was downloaded successfully to '{}'", downloadedFile);
 		return downloadedFile;
 	}
 
@@ -142,13 +142,13 @@ final class BiomeExecutableDownloader {
 	 */
 	public Path ensureDownloaded(String version) throws IOException, InterruptedException {
 		var platform = Platform.guess();
-		logger.debug("Ensuring that Biome for platform '{}' is downloaded", platform);
+		LOGGER.debug("Ensuring that Biome for platform '{}' is downloaded", platform);
 		var existing = findDownloaded(version);
 		if (existing.isPresent()) {
-			logger.debug("Biome was already downloaded, using executable at '{}'", existing.get());
-			return existing.get();
+			LOGGER.debug("Biome was already downloaded, using executable at '{}'", existing.orElseThrow());
+			return existing.orElseThrow();
 		} else {
-			logger.debug("Biome was not yet downloaded, attempting to download executable");
+			LOGGER.debug("Biome was not yet downloaded, attempting to download executable");
 			return download(version);
 		}
 	}
@@ -169,7 +169,7 @@ final class BiomeExecutableDownloader {
 	public Optional<Path> findDownloaded(String version) throws IOException {
 		var platform = Platform.guess();
 		var executablePath = getExecutablePath(version, platform);
-		logger.debug("Checking Biome executable at {}", executablePath);
+		LOGGER.debug("Checking Biome executable at {}", executablePath);
 		return checkFileWithChecksum(executablePath) ? Optional.ofNullable(executablePath) : Optional.empty();
 	}
 
@@ -183,26 +183,26 @@ final class BiomeExecutableDownloader {
 	 */
 	private boolean checkFileWithChecksum(Path filePath) {
 		if (!Files.exists(filePath)) {
-			logger.debug("File '{}' does not exist yet", filePath);
+			LOGGER.debug("File '{}' does not exist yet", filePath);
 			return false;
 		}
 		if (Files.isDirectory(filePath)) {
-			logger.debug("File '{}' exists, but is a directory", filePath);
+			LOGGER.debug("File '{}' exists, but is a directory", filePath);
 			return false;
 		}
 		var checksumPath = getChecksumPath(filePath);
 		if (!Files.exists(checksumPath)) {
-			logger.debug("File '{}' exists, but checksum file '{}' does not", filePath, checksumPath);
+			LOGGER.debug("File '{}' exists, but checksum file '{}' does not", filePath, checksumPath);
 			return false;
 		}
 		if (Files.isDirectory(checksumPath)) {
-			logger.debug("Checksum file '{}' exists, but is a directory", checksumPath);
+			LOGGER.debug("Checksum file '{}' exists, but is a directory", checksumPath);
 			return false;
 		}
 		try {
 			var actualChecksum = computeChecksum(filePath, CHECKSUM_ALGORITHM);
 			var expectedChecksum = readTextFile(checksumPath, StandardCharsets.ISO_8859_1);
-			logger.debug("Expected checksum: {}, actual checksum: {}", expectedChecksum, actualChecksum);
+			LOGGER.debug("Expected checksum: {}, actual checksum: {}", expectedChecksum, actualChecksum);
 			return Objects.equals(expectedChecksum, actualChecksum);
 		} catch (final IOException ignored) {
 			return false;
@@ -261,7 +261,7 @@ final class BiomeExecutableDownloader {
 		var parent = file.getParent();
 		var base = parent != null ? parent : file;
 		var fileName = file.getFileName();
-		var checksumName = fileName != null ? fileName.toString() + ".sha256" : "checksum.sha256";
+		var checksumName = fileName != null ? fileName + ".sha256" : "checksum.sha256";
 		return base.resolve(checksumName);
 	}
 

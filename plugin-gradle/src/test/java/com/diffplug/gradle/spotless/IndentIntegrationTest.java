@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,8 +83,7 @@ class IndentIntegrationTest extends GradleIntegrationHarness {
 				"  }",
 				"}");
 		setFile("test.txt").toResource(resourceFile);
-		BuildResult result = gradleRunner().withArguments("spotlessApply").build();
-		return result;
+		return gradleRunner().withArguments("spotlessApply").build();
 	}
 
 }

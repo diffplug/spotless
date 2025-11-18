@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ package com.diffplug.spotless.sql.dbeaver;
  * Based on SQLConstants from https://github.com/serge-rider/dbeaver,
  * which itself is licensed under the Apache 2.0 license.
  */
-class SQLConstants {
+final class SQLConstants {
 
 	static final String ML_COMMENT_START = "/*";
 	static final String ML_COMMENT_END = "*/";
@@ -567,6 +567,8 @@ class SQLConstants {
 			"BLOB",
 	};
 
-	static final char STRUCT_SEPARATOR = '.'; //$NON-NLS-1$
+	static final char STRUCT_SEPARATOR = '.';
+
+	private SQLConstants() {} //$NON-NLS-1$
 
 }

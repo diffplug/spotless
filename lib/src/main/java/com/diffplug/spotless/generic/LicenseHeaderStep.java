@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,8 +174,7 @@ public final class LicenseHeaderStep {
 		return DEFAULT_NAME_PREFIX + "-" + name;
 	}
 
-	@Nullable
-	private String sanitizePattern(@Nullable String pattern) {
+	@Nullable private String sanitizePattern(@Nullable String pattern) {
 		if (pattern == null) {
 			return pattern;
 		}
@@ -204,13 +203,13 @@ public final class LicenseHeaderStep {
 		return UNSUPPORTED_JVM_FILES_FILTER;
 	}
 
-	public static final String spotlessSetLicenseHeaderYearsFromGitHistory = "spotlessSetLicenseHeaderYearsFromGitHistory";
+	public static final String SPOTLESS_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY = "spotlessSetLicenseHeaderYearsFromGitHistory";
 
-	public static final String FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY() {
-		return spotlessSetLicenseHeaderYearsFromGitHistory;
+	public static String FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY() {
+		return SPOTLESS_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY;
 	}
 
-	private static class Runtime implements Serializable {
+	private static final class Runtime implements Serializable {
 		private static final long serialVersionUID = 1475199492829130965L;
 
 		private final Pattern delimiterPattern;
@@ -242,9 +241,9 @@ public final class LicenseHeaderStep {
 			Optional<String> yearToken = getYearToken(licenseHeader);
 			if (yearToken.isPresent()) {
 				this.yearToday = String.valueOf(YearMonth.now().getYear());
-				int yearTokenIndex = licenseHeader.indexOf(yearToken.get());
+				int yearTokenIndex = licenseHeader.indexOf(yearToken.orElseThrow());
 				this.beforeYear = licenseHeader.substring(0, yearTokenIndex);
-				this.afterYear = licenseHeader.substring(yearTokenIndex + yearToken.get().length());
+				this.afterYear = licenseHeader.substring(yearTokenIndex + yearToken.orElseThrow().length());
 				this.yearSepOrFull = yearSeparator;
 				this.updateYearWithLatest = updateYearWithLatest;
 
@@ -305,8 +304,7 @@ public final class LicenseHeaderStep {
 
 		private String addOrUpdateLicenseHeader(String raw, File file) {
 			raw = replaceYear(raw);
-			raw = replaceFileName(raw, file);
-			return raw;
+			return replaceFileName(raw, file);
 		}
 
 		private String replaceYear(String raw) {

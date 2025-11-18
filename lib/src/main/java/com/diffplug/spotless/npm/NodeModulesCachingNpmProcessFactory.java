@@ -27,11 +27,11 @@ import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.ProcessRunner.Result;
 
-public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
+public final class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 
-	private static final Logger logger = LoggerFactory.getLogger(NodeModulesCachingNpmProcessFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(NodeModulesCachingNpmProcessFactory.class);
 
-	private static final TimedLogger timedLogger = TimedLogger.forLogger(logger);
+	private static final TimedLogger TIMED_LOGGER = TimedLogger.forLogger(LOGGER);
 
 	private final File cacheDir;
 
@@ -84,11 +84,11 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 		public Result waitFor() {
 			String entryName = entryName();
 			if (shadowCopy.entryExists(entryName, NodeServerLayout.NODE_MODULES)) {
-				timedLogger.withInfo("Using cached node_modules for {} from {}", entryName, cacheDir)
+				TIMED_LOGGER.withInfo("Using cached node_modules for {} from {}", entryName, cacheDir)
 						.run(() -> shadowCopy.copyEntryInto(entryName(), NodeServerLayout.NODE_MODULES, nodeServerLayout.nodeModulesDir()));
 				return new CachedResult();
 			} else {
-				Result result = timedLogger.withInfo("calling actual npm install {}", actualNpmInstallProcess.describe())
+				Result result = TIMED_LOGGER.withInfo("calling actual npm install {}", actualNpmInstallProcess.describe())
 						.call(actualNpmInstallProcess::waitFor);
 				assert result.exitCode() == 0;
 				storeShadowCopy(entryName);
@@ -97,7 +97,7 @@ public class NodeModulesCachingNpmProcessFactory implements NpmProcessFactory {
 		}
 
 		private void storeShadowCopy(String entryName) {
-			timedLogger.withInfo("Caching node_modules for {} in {}", entryName, cacheDir)
+			TIMED_LOGGER.withInfo("Caching node_modules for {} in {}", entryName, cacheDir)
 					.run(() -> shadowCopy.addEntry(entryName(), new File(nodeServerLayout.nodeModulesDir(), NodeServerLayout.NODE_MODULES)));
 		}
 

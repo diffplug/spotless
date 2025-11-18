@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,9 +38,9 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 import com.diffplug.spotless.npm.EslintRestService.FormatOption;
 
-public class EslintFormatterStep {
+public final class EslintFormatterStep {
 
-	private static final Logger logger = LoggerFactory.getLogger(EslintFormatterStep.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EslintFormatterStep.class);
 
 	public static final String NAME = "eslint-format";
 
@@ -65,7 +64,7 @@ public class EslintFormatterStep {
 	}
 
 	public static Map<String, String> defaultDevDependenciesWithEslint(String version) {
-		return Collections.singletonMap("eslint", version);
+		return Map.of("eslint", version);
 	}
 
 	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) {
@@ -110,7 +109,7 @@ public class EslintFormatterStep {
 				// If any config files are provided, we need to make sure they are at the same location as the node modules
 				// as eslint will try to resolve plugin/config names relatively to the config file location and some
 				// eslint configs contain relative paths to additional config files (such as tsconfig.json e.g.)
-				logger.debug("Copying config file <{}> to <{}> and using the copy", origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
+				LOGGER.debug("Copying config file <{}> to <{}> and using the copy", origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
 				File configFileCopy = NpmResourceHelper.copyFileToDir(origEslintConfig.getEslintConfigPath(), nodeServerLayout.nodeModulesDir());
 				this.eslintConfigInUse = this.origEslintConfig.withEslintConfigPath(configFileCopy).verify();
 			}
@@ -120,7 +119,7 @@ public class EslintFormatterStep {
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
 			try {
-				logger.info("Creating formatter function (starting server)");
+				LOGGER.info("Creating formatter function (starting server)");
 				Runtime runtime = toRuntime();
 				ServerProcessInfo eslintRestServer = runtime.npmRunServer();
 				EslintRestService restService = new EslintRestService(eslintRestServer.getBaseUrl());
@@ -131,11 +130,11 @@ public class EslintFormatterStep {
 		}
 
 		private void endServer(BaseNpmRestService restService, ServerProcessInfo restServer) throws Exception {
-			logger.info("Closing formatting function (ending server).");
+			LOGGER.info("Closing formatting function (ending server).");
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {
-				logger.info("Failed to request shutdown of rest service via api. Trying via process.", t);
+				LOGGER.info("Failed to request shutdown of rest service via api. Trying via process.", t);
 			}
 			restServer.close();
 		}
@@ -182,4 +181,6 @@ public class EslintFormatterStep {
 			}
 		}
 	}
+
+	private EslintFormatterStep() {}
 }

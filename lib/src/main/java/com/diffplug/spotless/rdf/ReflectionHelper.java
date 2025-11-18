@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class ReflectionHelper {
-	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	private final RdfFormatterStep.State state;
 	private final ClassLoader classLoader;
 	private final Class<?> JenaRdfDataMgrClass;
@@ -76,8 +76,8 @@ class ReflectionHelper {
 	private final Method getGraph;
 	private final Method tripleGetObject;
 
-	private Object turtleFormatter = null;
-	private Object jenaModelInstance = null;
+	private Object turtleFormatter;
+	private final Object jenaModelInstance;
 
 	public ReflectionHelper(RdfFormatterStep.State state)
 			throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -100,13 +100,13 @@ class ReflectionHelper {
 		this.TurtleFormatFormattingStyleClass = classLoader.loadClass("de.atextor.turtle.formatter.FormattingStyle");
 		Class<?>[] innerClasses = TurtleFormatFormattingStyleClass.getDeclaredClasses();
 		this.TurtleFormatFormattingStyleBuilderClass = Arrays.stream(innerClasses)
-				.filter(c -> c.getSimpleName().equals("FormattingStyleBuilder")).findFirst().get();
-		this.TurtleFormatKnownPrefix = Arrays.stream(innerClasses).filter(c -> c.getSimpleName().equals("KnownPrefix")).findFirst().get();
+				.filter(c -> "FormattingStyleBuilder".equals(c.getSimpleName())).findFirst().orElseThrow();
+		this.TurtleFormatKnownPrefix = Arrays.stream(innerClasses).filter(c -> "KnownPrefix".equals(c.getSimpleName())).findFirst().orElseThrow();
 		this.getSubject = JenaStatementClass.getMethod("getSubject");
 		this.getPredicate = JenaStatementClass.getMethod("getPredicate");
 		this.getObject = JenaStatementClass.getMethod("getObject");
 		this.isAnon = JenaRDFNodeClass.getMethod("isAnon");
-		this.getGraph = JenaModelClass.getMethod(("getGraph"));
+		this.getGraph = JenaModelClass.getMethod("getGraph");
 		this.JenaGraphClass = classLoader.loadClass("org.apache.jena.graph.Graph");
 		this.JenaTriple = classLoader.loadClass("org.apache.jena.graph.Triple");
 		this.graphFindTriple = JenaGraphClass.getMethod("find", JenaTriple);
@@ -201,11 +201,11 @@ class ReflectionHelper {
 			long line = (long) args[1];
 			long col = (long) args[2];
 			String severity = method.getName();
-			if (severity.equals("warning") && !state.getConfig().isFailOnWarning()) {
-				logger.warn("{}({},{}): {}", this.filePath, line, col, message);
+			if ("warning".equals(severity) && !state.getConfig().isFailOnWarning()) {
+				LOGGER.warn("{}({},{}): {}", this.filePath, line, col, message);
 			} else {
-				if (severity.equals("warning")) {
-					logger.error("Formatter fails because of a parser warning. To make the formatter succeed in"
+				if ("warning".equals(severity)) {
+					LOGGER.error("Formatter fails because of a parser warning. To make the formatter succeed in"
 							+ "the presence of warnings, set the configuration parameter 'failOnWarning' to 'false' (default: 'true')");
 				}
 				throw new RuntimeException(
@@ -271,8 +271,7 @@ class ReflectionHelper {
 			Method method = getBuilderMethod(optionName);
 			callBuilderMethod(builder, method, state.getTurtleFormatterStyle().get(optionName));
 		}
-		Object style = TurtleFormatFormattingStyleBuilderClass.getMethod("build").invoke(builder);
-		return style;
+		return TurtleFormatFormattingStyleBuilderClass.getMethod("build").invoke(builder);
 	}
 
 	public String formatWithTurtleFormatter(String ttlContent)
@@ -284,9 +283,8 @@ class ReflectionHelper {
 
 	private Object newTurtleFormatter(Object style)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		Object formatter = TurtleFormatFormatterClass.getConstructor(TurtleFormatFormattingStyleClass)
+		return TurtleFormatFormatterClass.getConstructor(TurtleFormatFormattingStyleClass)
 				.newInstance(style);
-		return formatter;
 	}
 
 	private void callBuilderMethod(Object builder, Method method, String parameterValueAsString)
@@ -346,14 +344,13 @@ class ReflectionHelper {
 
 	private Object makeListOf(Type type, String parameterValueAsString) {
 		String[] entries = split(parameterValueAsString);
-		List<Object> ret = Arrays.stream(entries).map(e -> {
+		return Arrays.stream(entries).map(e -> {
 			try {
 				return instantiate(type, e);
 			} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 		}).collect(Collectors.toList());
-		return ret;
 	}
 
 	private Object makeSetOf(Type type, String parameterValueAsString) {
@@ -503,7 +500,7 @@ class ReflectionHelper {
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			if (method.getName().equals("listSubjects") && method.getParameterCount() == 0) {
+			if ("listSubjects".equals(method.getName()) && method.getParameterCount() == 0) {
 				Object resIterator = method.invoke(jenaModel);
 				List<Object> resources = new ArrayList<>();
 				while (hasNext(resIterator)) {

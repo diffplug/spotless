@@ -86,7 +86,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		return new Formatter.Builder();
 	}
 
-	public static class Builder {
+	public static final class Builder {
 		// required parameters
 		private LineEnding.Policy lineEndingsPolicy;
 		private Charset encoding;
@@ -140,16 +140,16 @@ public final class Formatter implements Serializable, AutoCloseable {
 	}
 
 	static void legacyErrorBehavior(Formatter formatter, File file, ValuePerStep<Throwable> exceptionPerStep) {
-		for (int i = 0; i < formatter.getSteps().size(); ++i) {
+		for (int i = 0; i < formatter.getSteps().size(); i++) {
 			Throwable exception = exceptionPerStep.get(i);
 			if (exception != null && exception != LintState.formatStepCausedNoChange()) {
-				logger.error("Step '{}' found problem in '{}':\n{}", formatter.getSteps().get(i).getName(), file.getName(), exception.getMessage(), exception);
+				LOGGER.error("Step '{}' found problem in '{}':\n{}", formatter.getSteps().get(i).getName(), file.getName(), exception.getMessage(), exception);
 				throw ThrowingEx.asRuntimeRethrowError(exception);
 			}
 		}
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(Formatter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Formatter.class);
 
 	/**
 	 * Returns the result of calling all of the FormatterSteps, while also
@@ -165,7 +165,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		Objects.requireNonNull(unix, "unix");
 		Objects.requireNonNull(file, "file");
 
-		for (int i = 0; i < steps.size(); ++i) {
+		for (int i = 0; i < steps.size(); i++) {
 			FormatterStep step = steps.get(i);
 			Throwable storeForStep;
 			try {
@@ -200,8 +200,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 		int result = 1;
 		result = prime * result + encoding.hashCode();
 		result = prime * result + lineEndingsPolicy.hashCode();
-		result = prime * result + steps.hashCode();
-		return result;
+		return prime * result + steps.hashCode();
 	}
 
 	@Override
@@ -216,9 +215,9 @@ public final class Formatter implements Serializable, AutoCloseable {
 			return false;
 		}
 		Formatter other = (Formatter) obj;
-		return encoding.equals(other.encoding) &&
-				lineEndingsPolicy.equals(other.lineEndingsPolicy) &&
-				steps.equals(other.steps);
+		return encoding.equals(other.encoding)
+				&& lineEndingsPolicy.equals(other.lineEndingsPolicy)
+				&& steps.equals(other.steps);
 	}
 
 	@SuppressWarnings("rawtypes")

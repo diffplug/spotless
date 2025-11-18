@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -59,7 +58,7 @@ public class KtLintCompat1Dot0Dot0AdapterTest {
 		try (InputStream is = KtLintCompat1Dot0Dot0AdapterTest.class.getResourceAsStream("/" + name)) {
 			Files.copy(is, path.resolve(name));
 		}
-		return new String(Files.readAllBytes(path.resolve(name)), StandardCharsets.UTF_8);
+		return Files.readString(path.resolve(name));
 	}
 
 }

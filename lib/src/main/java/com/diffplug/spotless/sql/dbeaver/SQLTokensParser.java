@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,29 +31,30 @@ import java.util.Set;
  */
 class SQLTokensParser {
 
-	private static final String[] twoCharacterSymbol = {"<>", "<=", ">=", "||", "()", "!=", ":=", ".*"};
-	private static final SQLDialect sqlDialect = SQLDialect.INSTANCE;
+	private static final String[] TWO_CHARACTER_SYMBOL = {"<>", "<=", ">=", "||", "()", "!=", ":=", ".*"};
+	private static final SQLDialect SQL_DIALECT = SQLDialect.INSTANCE;
 
 	private final String[][] quoteStrings;
-	private String fBefore = null;
+	private final char structSeparator;
+	private final String catalogSeparator;
+	private final Set<String> commands = new HashSet<>();
+	private final String[] singleLineComments;
+	private final char[] singleLineCommentStart;
+	private String fBefore = "";
 	private int fPos;
-	private char structSeparator;
-	private String catalogSeparator;
-	private Set<String> commands = new HashSet<>();
-	private String[] singleLineComments;
-	private char[] singleLineCommentStart;
 
 	SQLTokensParser() {
-		this.structSeparator = sqlDialect.getStructSeparator();
-		this.catalogSeparator = sqlDialect.getCatalogSeparator();
-		this.quoteStrings = sqlDialect.getIdentifierQuoteStrings();
-		this.singleLineComments = sqlDialect.getSingleLineComments();
+		this.structSeparator = SQL_DIALECT.getStructSeparator();
+		this.catalogSeparator = SQL_DIALECT.getCatalogSeparator();
+		this.quoteStrings = SQL_DIALECT.getIdentifierQuoteStrings();
+		this.singleLineComments = SQL_DIALECT.getSingleLineComments();
 		this.singleLineCommentStart = new char[this.singleLineComments.length];
 		for (int i = 0; i < singleLineComments.length; i++) {
-			if (singleLineComments[i].isEmpty())
+			if (singleLineComments[i].isEmpty()) {
 				singleLineCommentStart[i] = 0;
-			else
+			} else {
 				singleLineCommentStart[i] = singleLineComments[i].charAt(0);
+			}
 		}
 	}
 
@@ -185,9 +186,9 @@ class SQLTokensParser {
 						s.append(fChar);
 					}
 				}
-				return new FormatterToken(TokenType.COMMAND, word + s.toString(), start_pos);
+				return new FormatterToken(TokenType.COMMAND, word + s, start_pos);
 			}
-			if (sqlDialect.getKeywordType(word) != null) {
+			if (SQL_DIALECT.getKeywordType(word) != null) {
 				return new FormatterToken(TokenType.KEYWORD, word, start_pos);
 			}
 			return new FormatterToken(TokenType.NAME, word, start_pos);
@@ -249,7 +250,7 @@ class SQLTokensParser {
 					return new FormatterToken(TokenType.SYMBOL, s.toString(), start_pos);
 				}
 				char ch2 = fBefore.charAt(fPos);
-				for (String aTwoCharacterSymbol : twoCharacterSymbol) {
+				for (String aTwoCharacterSymbol : TWO_CHARACTER_SYMBOL) {
 					if (aTwoCharacterSymbol.charAt(0) == fChar && aTwoCharacterSymbol.charAt(1) == ch2) {
 						fPos++;
 						s.append(ch2);
@@ -292,11 +293,13 @@ class SQLTokensParser {
 	}
 
 	private static boolean contains(char[] array, char value) {
-		if (array == null || array.length == 0)
+		if (array == null) {
 			return false;
+		}
 		for (char aChar : array) {
-			if (aChar == value)
+			if (aChar == value) {
 				return true;
+			}
 		}
 		return false;
 	}

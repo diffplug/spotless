@@ -92,10 +92,12 @@ public class RdfFormatterConfig implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (!(o instanceof RdfFormatterConfig))
+		}
+		if (!(o instanceof RdfFormatterConfig)) {
 			return false;
+		}
 		RdfFormatterConfig that = (RdfFormatterConfig) o;
 		return isFailOnWarning() == that.isFailOnWarning()
 				&& Objects.equals(turtleFormatterVersion, that.turtleFormatterVersion);

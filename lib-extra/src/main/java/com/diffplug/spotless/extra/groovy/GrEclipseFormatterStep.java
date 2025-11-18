@@ -66,9 +66,7 @@ public final class GrEclipseFormatterStep {
 						"org.codehaus.groovy.eclipse.core",
 						"org.eclipse.jdt.groovy.core",
 						"org.codehaus.groovy"));
-				model.addFilterAndValidate("no-debug", filter -> {
-					filter.exclude("org.eclipse.jdt.debug");
-				});
+				model.addFilterAndValidate("no-debug", filter -> filter.exclude("org.eclipse.jdt.debug"));
 				// work around https://github.com/groovy/groovy-eclipse/issues/1617
 				model.useMavenCentral = false;
 				return model;
@@ -97,8 +95,8 @@ public final class GrEclipseFormatterStep {
 						return (String) method.invoke(formatter, input);
 					} catch (InvocationTargetException exceptionWrapper) {
 						Throwable throwable = exceptionWrapper.getTargetException();
-						Exception exception = (throwable instanceof Exception e) ? e : null;
-						throw (null == exception) ? exceptionWrapper : exception;
+						Exception exception = throwable instanceof Exception e ? e : null;
+						throw exception == null ? exceptionWrapper : exception;
 					}
 				});
 	}

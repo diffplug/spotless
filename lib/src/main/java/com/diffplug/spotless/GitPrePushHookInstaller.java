@@ -39,7 +39,7 @@ public abstract class GitPrePushHookInstaller {
 
 	private static final Object LOCK = new Object();
 
-	private static volatile boolean installing = false;
+	private static volatile boolean installing;
 
 	/**
 	 * Logger for recording informational and error messages during the installation process.
@@ -57,7 +57,7 @@ public abstract class GitPrePushHookInstaller {
 	 * @param logger The logger for recording messages.
 	 * @param root   The root directory of the Git repository.
 	 */
-	public GitPrePushHookInstaller(GitPreHookLogger logger, File root) {
+	protected GitPrePushHookInstaller(GitPreHookLogger logger, File root) {
 		this.logger = requireNonNull(logger, "logger can not be null");
 		this.root = requireNonNull(root, "root file can not be null");
 	}
@@ -172,7 +172,7 @@ public abstract class GitPrePushHookInstaller {
 	 *                  such as file reading or writing errors
 	 */
 	private void uninstall(File gitHookFile) throws Exception {
-		final var hook = Files.readString(gitHookFile.toPath(), UTF_8);
+		final var hook = Files.readString(gitHookFile.toPath());
 		final int hookStart = hook.indexOf(HOOK_HEADER);
 		final int hookEnd = hook.indexOf(HOOK_FOOTER) + HOOK_FOOTER.length(); // hookEnd exclusive, so must be last symbol \n
 
@@ -266,7 +266,7 @@ public abstract class GitPrePushHookInstaller {
 	private String executorPath(Executor executor) {
 		final var wrapper = executorWrapperFile(executor);
 		if (wrapper.exists()) {
-			return "./" + wrapper.getName();
+			return wrapper.getAbsolutePath().replace("\\", "/");
 		}
 
 		logger.info("Local %s wrapper (%s) not found, falling back to global command '%s'",
@@ -323,7 +323,7 @@ public abstract class GitPrePushHookInstaller {
 	 * @throws Exception if an error occurs when reading the file.
 	 */
 	private boolean isGitHookInstalled(File gitHookFile) throws Exception {
-		final var hook = Files.readString(gitHookFile.toPath(), UTF_8);
+		final var hook = Files.readString(gitHookFile.toPath());
 		return hook.contains(HOOK_HEADER) && hook.contains(HOOK_FOOTER);
 	}
 

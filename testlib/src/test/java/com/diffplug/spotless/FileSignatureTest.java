@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,24 +31,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
 class FileSignatureTest extends ResourceHarness {
-	private final static String[] inputPaths = {"A", "C", "C", "A", "B"};
-	private final static String[] expectedPathList = inputPaths;
-	private final static String[] expectedPathSet = {"A", "B", "C"};
+	private static final String[] INPUT_PATHS = {"A", "C", "C", "A", "B"};
+	private static final String[] EXPECTED_PATH_LIST = INPUT_PATHS;
+	private static final String[] EXPECTED_PATH_SET = {"A", "B", "C"};
 
 	@Test
 	void testFromList() throws IOException {
-		Collection<File> inputFiles = getTestFiles(inputPaths);
+		Collection<File> inputFiles = getTestFiles(INPUT_PATHS);
 		FileSignature signature = FileSignature.signAsList(inputFiles);
-		Collection<File> expectedFiles = getTestFiles(expectedPathList);
+		Collection<File> expectedFiles = getTestFiles(EXPECTED_PATH_LIST);
 		Collection<File> outputFiles = signature.files();
 		assertThat(outputFiles).containsExactlyElementsOf(expectedFiles);
 	}
 
 	@Test
 	void testFromSet() throws IOException {
-		Collection<File> inputFiles = getTestFiles(inputPaths);
+		Collection<File> inputFiles = getTestFiles(INPUT_PATHS);
 		FileSignature signature = FileSignature.signAsSet(inputFiles);
-		Collection<File> expectedFiles = getTestFiles(expectedPathSet);
+		Collection<File> expectedFiles = getTestFiles(EXPECTED_PATH_SET);
 		Collection<File> outputFiles = signature.files();
 		assertThat(outputFiles).containsExactlyElementsOf(expectedFiles);
 	}
@@ -63,7 +63,7 @@ class FileSignatureTest extends ResourceHarness {
 	@Test
 	void testFromFilesAndDirectory() throws IOException {
 		File dir = new File(rootFolder(), "dir");
-		List<File> files = getTestFiles(inputPaths);
+		List<File> files = getTestFiles(INPUT_PATHS);
 		files.add(dir);
 		Collections.shuffle(files);
 		assertThatThrownBy(() -> FileSignature.signAsList(files))

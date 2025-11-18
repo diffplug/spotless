@@ -45,7 +45,7 @@ public final class CleanthatJavaStep implements Serializable {
 	/**
 	 * CleanThat changelog is available at <a href="https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD">here</a>.
 	 */
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.23");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "2.24");
 
 	private final JarState.Promised jarState;
 	private final String version;
@@ -174,7 +174,7 @@ public final class CleanthatJavaStep implements Serializable {
 			this.includeDraft = includeDraft;
 		}
 
-		private static class JvmSupportFormatterFunc implements FormatterFunc {
+		private static final class JvmSupportFormatterFunc implements FormatterFunc {
 
 			final Object formatter;
 			final Method formatterMethod;

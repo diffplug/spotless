@@ -17,6 +17,8 @@ package com.diffplug.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serial;
 import java.io.Serializable;
@@ -27,7 +29,6 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -44,15 +45,15 @@ import org.slf4j.LoggerFactory;
  */
 public final class JarState implements Serializable {
 
-	private static final Logger logger = LoggerFactory.getLogger(JarState.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JarState.class);
 
 	// Let the classloader be overridden for tools using different approaches to classloading
-	@Nullable private static ClassLoader forcedClassLoader = null;
+	@Nullable private static ClassLoader forcedClassLoader;
 
 	/** Overrides the classloader used by all JarStates. */
 	public static void setForcedClassLoader(@Nullable ClassLoader forcedClassLoader) {
 		if (!Objects.equals(JarState.forcedClassLoader, forcedClassLoader)) {
-			logger.info("Overriding the forced classloader for JarState from {} to {}", JarState.forcedClassLoader, forcedClassLoader);
+			LOGGER.info("Overriding the forced classloader for JarState from {} to {}", JarState.forcedClassLoader, forcedClassLoader);
 		}
 		JarState.forcedClassLoader = forcedClassLoader;
 	}
@@ -82,13 +83,13 @@ public final class JarState implements Serializable {
 		}
 
 		// override serialize output
-		private void writeObject(java.io.ObjectOutputStream out)
+		private void writeObject(ObjectOutputStream out)
 				throws IOException {
 			get();
 			out.defaultWriteObject();
 		}
 
-		private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 			in.defaultReadObject();
 		}
 
@@ -130,7 +131,7 @@ public final class JarState implements Serializable {
 		Objects.requireNonNull(provisioner, "provisioner");
 		Set<File> jars = provisioner.provisionWithTransitives(withTransitives, mavenCoordinates);
 		if (jars.isEmpty()) {
-			throw new NoSuchElementException("Resolved to an empty result: " + mavenCoordinates.stream().collect(Collectors.joining(", ")));
+			throw new NoSuchElementException("Resolved to an empty result: " + String.join(", ", mavenCoordinates));
 		}
 		FileSignature fileSignature = FileSignature.signAsSet(jars);
 		return new JarState(fileSignature);

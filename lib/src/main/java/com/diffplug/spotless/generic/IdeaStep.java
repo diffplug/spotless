@@ -133,7 +133,7 @@ public final class IdeaStep {
 		}
 	}
 
-	private static class State implements Serializable {
+	private static final class State implements Serializable {
 
 		private static final long serialVersionUID = -1426311255869303398L;
 
@@ -213,7 +213,7 @@ public final class IdeaStep {
 
 		private String format(IdeaStepFormatterCleanupResources ideaStepFormatterCleanupResources, String unix, File file) throws Exception {
 			// since we cannot directly work with the file, we need to write the unix string to a temporary file
-			File tempFile = File.createTempFile("spotless", file.getName());
+			File tempFile = Files.createTempFile("spotless", file.getName()).toFile();
 			try {
 				Files.write(tempFile.toPath(), unix.getBytes(StandardCharsets.UTF_8));
 				List<String> params = getParams(tempFile);
@@ -224,7 +224,7 @@ public final class IdeaStep {
 				LOGGER.debug("command finished with exit code: {}", result.exitCode());
 				LOGGER.debug("command finished with stdout: {}",
 						result.assertExitZero(StandardCharsets.UTF_8));
-				return Files.readString(tempFile.toPath(), StandardCharsets.UTF_8);
+				return Files.readString(tempFile.toPath());
 			} finally {
 				Files.delete(tempFile.toPath());
 			}
@@ -232,9 +232,8 @@ public final class IdeaStep {
 
 		private Map<String, String> createEnv() {
 			File ideaProps = createIdeaPropertiesFile();
-			Map<String, String> env = Map.ofEntries(
+			return Map.ofEntries(
 					Map.entry("IDEA_PROPERTIES", ThrowingEx.get(ideaProps::getCanonicalPath)));
-			return env;
 		}
 
 		private File createIdeaPropertiesFile() {

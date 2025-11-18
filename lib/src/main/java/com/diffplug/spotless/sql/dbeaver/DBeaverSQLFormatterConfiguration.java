@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class DBeaverSQLFormatterConfiguration {
 	}
 
 	private String getIndentString(String indentType, int indentSize) {
-		char indentChar = indentType.equals("space") ? ' ' : '\t';
+		char indentChar = "space".equals(indentType) ? ' ' : '\t';
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < indentSize; i++) {
 			stringBuilder.append(indentChar);

@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -58,15 +57,15 @@ public class JavascriptExtension extends FormatExtension {
 		return eslint;
 	}
 
-	public static abstract class EslintBaseConfig<T extends EslintBaseConfig<?>>
+	public abstract static class EslintBaseConfig<T extends EslintBaseConfig<?>>
 			extends NpmStepConfig<EslintBaseConfig<T>> {
 		Map<String, String> devDependencies = new LinkedHashMap<>();
 
-		@Nullable Object configFilePath = null;
+		@Nullable Object configFilePath;
 
-		@Nullable String configJs = null;
+		@Nullable String configJs;
 
-		public EslintBaseConfig(Project project, Consumer<FormatterStep> replaceStep,
+		protected EslintBaseConfig(Project project, Consumer<FormatterStep> replaceStep,
 				Map<String, String> devDependencies) {
 			super(project, replaceStep);
 			this.devDependencies.putAll(requireNonNull(devDependencies));
@@ -100,6 +99,7 @@ public class JavascriptExtension extends FormatExtension {
 			super(getProject(), JavascriptExtension.this::replaceStep, devDependencies);
 		}
 
+		@Override
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
@@ -140,11 +140,13 @@ public class JavascriptExtension extends FormatExtension {
 	 * offline, you can specify the path to the Biome executable via
 	 * {@code biome().pathToExe(...)}.
 	 */
+	@Override
 	public BiomeJs biome() {
 		return biome(null);
 	}
 
 	/** Downloads the given Biome version from the network. */
+	@Override
 	public BiomeJs biome(String version) {
 		var biomeConfig = new BiomeJs(version);
 		addStep(biomeConfig.createStep());
@@ -197,7 +199,7 @@ public class JavascriptExtension extends FormatExtension {
 
 		private void fixParserToJavascript() {
 			if (this.prettierConfig == null) {
-				this.prettierConfig = Collections.singletonMap("parser", DEFAULT_PRETTIER_JS_PARSER);
+				this.prettierConfig = Map.of("parser", DEFAULT_PRETTIER_JS_PARSER);
 			} else {
 				final Object currentParser = this.prettierConfig.get("parser");
 				if (PRETTIER_JS_PARSERS.contains(String.valueOf(currentParser))) {

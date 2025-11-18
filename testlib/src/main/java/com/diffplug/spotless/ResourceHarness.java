@@ -111,7 +111,7 @@ public class ResourceHarness {
 	}
 
 	public String read(Path path, Charset encoding) throws IOException {
-		return new String(Files.readAllBytes(path), encoding);
+		return Files.readString(path, encoding);
 	}
 
 	public void replace(String path, String toReplace, String replaceWith) throws IOException {
@@ -127,7 +127,7 @@ public class ResourceHarness {
 	public static String getTestResource(String filename) {
 		Optional<URL> resourceUrl = getTestResourceUrl(filename);
 		if (resourceUrl.isPresent()) {
-			return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(resourceUrl.get(), StandardCharsets.UTF_8)));
+			return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(resourceUrl.orElseThrow(), StandardCharsets.UTF_8)));
 		}
 		throw new IllegalArgumentException("No such resource " + filename);
 	}
@@ -178,7 +178,7 @@ public class ResourceHarness {
 		return new ReadAsserter(file);
 	}
 
-	public static class ReadAsserter {
+	public static final class ReadAsserter {
 		private final File file;
 
 		private ReadAsserter(File file) {
@@ -214,7 +214,7 @@ public class ResourceHarness {
 		}
 
 		public void matches(Consumer<AbstractCharSequenceAssert<?, String>> conditions) throws IOException {
-			String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+			String content = Files.readString(file.toPath());
 			conditions.accept(assertThat(content));
 		}
 	}
@@ -223,7 +223,7 @@ public class ResourceHarness {
 		return new WriteAsserter(newFile(path));
 	}
 
-	public static class WriteAsserter {
+	public static final class WriteAsserter {
 		private File file;
 
 		private WriteAsserter(File file) {
@@ -240,16 +240,12 @@ public class ResourceHarness {
 		}
 
 		public File toContent(String content, Charset charset) {
-			ThrowingEx.run(() -> {
-				Files.write(file.toPath(), content.getBytes(charset));
-			});
+			ThrowingEx.run(() -> Files.write(file.toPath(), content.getBytes(charset)));
 			return file;
 		}
 
 		public File toResource(String path) {
-			ThrowingEx.run(() -> {
-				Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8));
-			});
+			ThrowingEx.run(() -> Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8)));
 			return file;
 		}
 

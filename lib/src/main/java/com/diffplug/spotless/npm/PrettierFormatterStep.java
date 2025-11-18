@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -35,20 +34,20 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
-public class PrettierFormatterStep {
+public final class PrettierFormatterStep {
 
-	private static final Logger logger = LoggerFactory.getLogger(PrettierFormatterStep.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PrettierFormatterStep.class);
 
 	public static final String NAME = "prettier-format";
 
 	public static final String DEFAULT_VERSION = "2.8.8";
 
-	public static final Map<String, String> defaultDevDependencies() {
+	public static Map<String, String> defaultDevDependencies() {
 		return defaultDevDependenciesWithPrettier(DEFAULT_VERSION);
 	}
 
-	public static final Map<String, String> defaultDevDependenciesWithPrettier(String version) {
-		return Collections.singletonMap("prettier", version);
+	public static Map<String, String> defaultDevDependenciesWithPrettier(String version) {
+		return Map.of("prettier", version);
 	}
 
 	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, PrettierConfig prettierConfig) {
@@ -87,7 +86,7 @@ public class PrettierFormatterStep {
 		@Nonnull
 		public FormatterFunc createFormatterFunc() {
 			try {
-				logger.info("creating formatter function (starting server)");
+				LOGGER.info("creating formatter function (starting server)");
 				ServerProcessInfo prettierRestServer = toRuntime().npmRunServer();
 				PrettierRestService restService = new PrettierRestService(prettierRestServer.getBaseUrl());
 				String prettierConfigOptions = restService.resolveConfig(this.prettierConfig.getPrettierConfigPath(), this.prettierConfig.getOptions());
@@ -98,11 +97,11 @@ public class PrettierFormatterStep {
 		}
 
 		private void endServer(PrettierRestService restService, ServerProcessInfo restServer) throws Exception {
-			logger.info("Closing formatting function (ending server).");
+			LOGGER.info("Closing formatting function (ending server).");
 			try {
 				restService.shutdown();
 			} catch (Throwable t) {
-				logger.info("Failed to request shutdown of rest service via api. Trying via process.", t);
+				LOGGER.info("Failed to request shutdown of rest service via api. Trying via process.", t);
 			}
 			restServer.close();
 		}
@@ -137,7 +136,7 @@ public class PrettierFormatterStep {
 				return prettierConfigOptions;
 			}
 			// if the file has no name, we  cannot use it
-			if (file.getName().trim().length() == 0) {
+			if (file.getName().isBlank()) {
 				return prettierConfigOptions;
 			}
 			// if it is not there, we add it at the beginning of the Options
@@ -147,5 +146,7 @@ public class PrettierFormatterStep {
 			return "{" + filePathOption + (hasAnyConfigOption ? "," : "") + prettierConfigOptions.substring(startOfConfigOption + 1);
 		}
 	}
+
+	private PrettierFormatterStep() {}
 
 }

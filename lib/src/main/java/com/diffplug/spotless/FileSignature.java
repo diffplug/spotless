@@ -76,7 +76,7 @@ public final class FileSignature implements Serializable {
 			StringBuilder builder = new StringBuilder();
 			builder.append("For these files:\n");
 			for (File file : files) {
-				builder.append("  " + file.getAbsolutePath() + "\n");
+				builder.append("  ").append(file.getAbsolutePath()).append("\n");
 			}
 			builder.append("a caching signature is being generated, which will be based only on their\n");
 			builder.append("names, not their full path (foo.txt, not C:\folder\foo.txt). Unexpectedly,\n");
@@ -93,13 +93,13 @@ public final class FileSignature implements Serializable {
 
 		int i = 0;
 		for (File file : this.files) {
-			signatures[i] = cache.sign(file);
+			signatures[i] = CACHE.sign(file);
 			++i;
 		}
 	}
 
 	/** A view of `FileSignature` which can be safely roundtripped. */
-	public static class Promised implements Serializable {
+	public static final class Promised implements Serializable {
 		@Serial
 		private static final long serialVersionUID = 1L;
 		private final List<File> files;
@@ -146,11 +146,11 @@ public final class FileSignature implements Serializable {
 		}
 	}
 
-	private static boolean machineIsWin = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
+	private static final boolean MACHINE_IS_WIN = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
 
 	/** Returns true if this JVM is running on a windows machine. */
 	public static boolean machineIsWin() {
-		return machineIsWin;
+		return MACHINE_IS_WIN;
 	}
 
 	/** Transforms a native path to a unix one. */
@@ -179,7 +179,7 @@ public final class FileSignature implements Serializable {
 	 * the jars which constitute any given formatter live in a central cache, but will be signed
 	 * over and over.  To save this I/O, we maintain a cache, invalidated by lastModified time.
 	 */
-	static final Cache cache = new Cache();
+	static final Cache CACHE = new Cache();
 
 	private static final class Cache {
 		Map<String, Sig> cache = new HashMap<>();

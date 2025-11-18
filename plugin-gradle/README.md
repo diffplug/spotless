@@ -208,6 +208,7 @@ spotless {
 
     removeUnusedImports()
     forbidWildcardImports()
+    forbidModuleImports()
 
     // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
     cleanthat()          // has its own section below
@@ -254,6 +255,16 @@ spotless {
 spotless {
   java {
     forbidWildcardImports()
+  }
+}
+```
+
+### forbidModuleImports
+
+```
+spotless {
+  java {
+    forbidModuleImports()
   }
 }
 ```
@@ -737,7 +748,10 @@ spotless {
 
 [homepage](https://github.com/vsch/flexmark-java). Flexmark is a flexible Commonmark/Markdown parser that can be used to format Markdown files. It supports different [flavors of Markdown](https://github.com/vsch/flexmark-java#markdown-processor-emulation) and [many formatting options](https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options).
 
-Currently, none of the available options can be configured yet. It uses only the default options together with `COMMONMARK` as `FORMATTER_EMULATION_PROFILE`.
+The default configuration uses a pegdown compatible parser with `COMMONMARK` as `FORMATTER_EMULATION_PROFILE`.
+You can change the `emulationProfile` to one of the other [supported profiles](https://github.com/vsch/flexmark-java/blob/master/flexmark/src/main/java/com/vladsch/flexmark/parser/ParserEmulationProfile.java).
+The `pegdownExtensions` can be configured as a list of [constants](https://github.com/vsch/flexmark-java/blob/master/flexmark/src/main/java/com/vladsch/flexmark/parser/PegdownExtensions.java) or as a custom bitset as an integer.
+Any other `extension` can be configured using either the simple name as shown in the example or using a full-qualified class name.
 
 To apply flexmark to all of the `.md` files in your project, use this snippet:
 
@@ -746,6 +760,9 @@ spotless {
   flexmark {
     target '**/*.md' // you have to set the target manually
     flexmark() // or flexmark('0.64.8') // version is optional
+      .emulationProfile('COMMONMARK') // optional
+      .pegdownExtensions('ALL') // optional
+      .extensions('YamlFrontMatter') // optional
   }
 }
 ```

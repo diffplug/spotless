@@ -30,7 +30,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/cqfn/diKTat">diktat</a> as a FormatterStep. */
-public class DiktatStep implements Serializable {
+public final class DiktatStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private final JarState.Promised jarState;
@@ -109,7 +109,7 @@ public class DiktatStep implements Serializable {
 		}
 
 		FormatterFunc createFormat() throws Exception {
-			final File configFile = (config != null) ? config.getOnlyFile() : null;
+			final File configFile = config != null ? config.getOnlyFile() : null;
 			Class<?> formatterFunc = jar.getClassLoader().loadClass("com.diffplug.spotless.glue.diktat.DiktatFormatterFunc");
 			Constructor<?> constructor = formatterFunc.getConstructor(
 					String.class,

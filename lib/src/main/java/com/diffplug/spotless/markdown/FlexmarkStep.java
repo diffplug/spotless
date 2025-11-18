@@ -26,7 +26,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 /** A step for <a href="https://github.com/vsch/flexmark-java">flexmark-java</a>. */
-public class FlexmarkStep implements Serializable {
+public final class FlexmarkStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_VERSION = "0.64.8";
@@ -34,22 +34,24 @@ public class FlexmarkStep implements Serializable {
 	public static final String NAME = "flexmark-java";
 
 	private final JarState.Promised jarState;
+	private final FlexmarkConfig config;
 
-	private FlexmarkStep(JarState.Promised jarState) {
+	private FlexmarkStep(JarState.Promised jarState, FlexmarkConfig config) {
 		this.jarState = jarState;
+		this.config = config;
 	}
 
 	/** Creates a formatter step for the default version. */
-	public static FormatterStep create(Provisioner provisioner) {
-		return create(defaultVersion(), provisioner);
+	public static FormatterStep create(Provisioner provisioner, FlexmarkConfig config) {
+		return create(defaultVersion(), provisioner, config);
 	}
 
 	/** Creates a formatter step for the given version. */
-	public static FormatterStep create(String version, Provisioner provisioner) {
+	public static FormatterStep create(String version, Provisioner provisioner, FlexmarkConfig config) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.create(NAME,
-				new FlexmarkStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner))),
+				new FlexmarkStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner)), config),
 				FlexmarkStep::equalityState,
 				State::createFormat);
 	}
@@ -59,7 +61,7 @@ public class FlexmarkStep implements Serializable {
 	}
 
 	private State equalityState() {
-		return new State(jarState.get());
+		return new State(jarState.get(), config);
 	}
 
 	private static class State implements Serializable {
@@ -67,16 +69,18 @@ public class FlexmarkStep implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private final JarState jarState;
+		private final FlexmarkConfig config;
 
-		State(JarState jarState) {
+		State(JarState jarState, FlexmarkConfig config) {
 			this.jarState = jarState;
+			this.config = config;
 		}
 
 		FormatterFunc createFormat() throws Exception {
 			final ClassLoader classLoader = jarState.getClassLoader();
 			final Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.markdown.FlexmarkFormatterFunc");
-			final Constructor<?> constructor = formatterFunc.getConstructor();
-			return (FormatterFunc) constructor.newInstance();
+			final Constructor<?> constructor = formatterFunc.getConstructor(FlexmarkConfig.class);
+			return (FormatterFunc) constructor.newInstance(config);
 		}
 	}
 }

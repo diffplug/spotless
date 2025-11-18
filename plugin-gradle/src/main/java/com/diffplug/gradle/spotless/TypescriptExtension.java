@@ -74,7 +74,7 @@ public class TypescriptExtension extends FormatExtension {
 
 		@Nullable TsConfigFileType configFileType = null;
 
-		@Nullable Object configFilePath = null;
+		@Nullable Object configFilePath;
 
 		private final Map<String, String> devDependencies;
 
@@ -112,6 +112,7 @@ public class TypescriptExtension extends FormatExtension {
 			return this;
 		}
 
+		@Override
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
@@ -168,7 +169,7 @@ public class TypescriptExtension extends FormatExtension {
 
 		private void fixParserToTypescript() {
 			if (this.prettierConfig == null) {
-				this.prettierConfig = new TreeMap<>(Collections.singletonMap("parser", "typescript"));
+				this.prettierConfig = new TreeMap<>(Map.of("parser", "typescript"));
 			} else {
 				final Object replaced = this.prettierConfig.put("parser", "typescript");
 				if (replaced != null) {
@@ -195,7 +196,7 @@ public class TypescriptExtension extends FormatExtension {
 
 	public class TypescriptEslintConfig extends EslintBaseConfig<TypescriptEslintConfig> {
 
-		@Nullable Object typescriptConfigFilePath = null;
+		@Nullable Object typescriptConfigFilePath;
 
 		public TypescriptEslintConfig(Map<String, String> devDependencies) {
 			super(getProject(), TypescriptExtension.this::replaceStep, devDependencies);
@@ -207,6 +208,7 @@ public class TypescriptExtension extends FormatExtension {
 			return this;
 		}
 
+		@Override
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
@@ -228,11 +230,13 @@ public class TypescriptExtension extends FormatExtension {
 	 * offline, you can specify the path to the Biome executable via
 	 * {@code biome().pathToExe(...)}.
 	 */
+	@Override
 	public BiomeTs biome() {
 		return biome(null);
 	}
 
 	/** Downloads the given Biome version from the network. */
+	@Override
 	public BiomeTs biome(String version) {
 		var biomeConfig = new BiomeTs(version);
 		addStep(biomeConfig.createStep());

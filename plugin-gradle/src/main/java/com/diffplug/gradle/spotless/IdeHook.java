@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,17 +29,17 @@ import com.diffplug.spotless.DirtyState;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.NoLambda;
 
-class IdeHook {
+final class IdeHook {
 	static class State extends NoLambda.EqualityBasedOnSerialization {
 		final @Nullable String path;
 		final boolean useStdIn;
 		final boolean useStdOut;
 
 		State(Project project) {
-			path = (String) project.findProperty(PROPERTY);
+			path = GradleCompat.findOptionalProperty(project, PROPERTY);
 			if (path != null) {
-				useStdIn = project.hasProperty(USE_STD_IN);
-				useStdOut = project.hasProperty(USE_STD_OUT);
+				useStdIn = GradleCompat.isPropertyPresent(project, USE_STD_IN);
+				useStdOut = GradleCompat.isPropertyPresent(project, USE_STD_OUT);
 			} else {
 				useStdIn = false;
 				useStdOut = false;
@@ -47,9 +47,9 @@ class IdeHook {
 		}
 	}
 
-	final static String PROPERTY = "spotlessIdeHook";
-	final static String USE_STD_IN = "spotlessIdeHookUseStdIn";
-	final static String USE_STD_OUT = "spotlessIdeHookUseStdOut";
+	static final String PROPERTY = "spotlessIdeHook";
+	static final String USE_STD_IN = "spotlessIdeHookUseStdIn";
+	static final String USE_STD_OUT = "spotlessIdeHookUseStdOut";
 
 	private static void dumpIsClean() {
 		System.err.println("IS CLEAN");
@@ -99,4 +99,6 @@ class IdeHook {
 			}
 		}
 	}
+
+	private IdeHook() {}
 }

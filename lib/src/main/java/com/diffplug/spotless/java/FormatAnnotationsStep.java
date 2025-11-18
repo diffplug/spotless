@@ -47,7 +47,7 @@ public final class FormatAnnotationsStep implements Serializable {
 	 * A type annotation is an annotation that is meta-annotated with @Target({ElementType.TYPE_USE}).
 	 * A type annotation should be formatted on the same line as the type it qualifies.
 	 */
-	private static final List<String> defaultTypeAnnotations =
+	private static final List<String> DEFAULT_TYPE_ANNOTATIONS =
 			// Use simple names because Spotless has no access to the
 			// fully-qualified names or the definitions of the type qualifiers.
 			Arrays.asList(
@@ -431,22 +431,21 @@ public final class FormatAnnotationsStep implements Serializable {
 		@Serial
 		private static final long serialVersionUID = 1L;
 
-		private final Set<String> typeAnnotations = new HashSet<>(defaultTypeAnnotations);
+		private final Set<String> typeAnnotations = new HashSet<>(DEFAULT_TYPE_ANNOTATIONS);
 
 		// group 1 is the basename of the annotation.
-		private static final String annoNoArgRegex = "@(?:[A-Za-z_][A-Za-z0-9_.]*\\.)?([A-Za-z_][A-Za-z0-9_]*)";
-		private static final Pattern annoNoArgPattern = Pattern.compile(annoNoArgRegex);
+		private static final String ANNO_NO_ARG_REGEX = "@(?:[A-Za-z_][A-Za-z0-9_.]*\\.)?([A-Za-z_][A-Za-z0-9_]*)";
 		// 3 non-empty cases:  ()  (".*")  (.*)
-		private static final String annoArgRegex = "(?:\\(\\)|\\(\"[^\"]*\"\\)|\\([^\")][^)]*\\))?";
+		private static final String ANNO_ARG_REGEX = "(?:\\(\\)|\\(\"[^\"]*\"\\)|\\([^\")][^)]*\\))?";
 		// group 1 is the basename of the annotation.
-		private static final String annoRegex = annoNoArgRegex + annoArgRegex;
-		private static final String trailingAnnoRegex = annoRegex + "$";
-		private static final Pattern trailingAnnoPattern = Pattern.compile(trailingAnnoRegex);
+		private static final String ANNO_REGEX = ANNO_NO_ARG_REGEX + ANNO_ARG_REGEX;
+		private static final String TRAILING_ANNO_REGEX = ANNO_REGEX + "$";
+		private static final Pattern TRAILING_ANNO_PATTERN = Pattern.compile(TRAILING_ANNO_REGEX);
 
 		// Heuristic: matches if the line might be within a //, /*, or Javadoc comment.
-		private static final Pattern withinCommentPattern = Pattern.compile("//|/\\*(?!.*/*/)|^[ \t]*\\*[ \t]");
+		private static final Pattern WITHIN_COMMENT_PATTERN = Pattern.compile("//|/\\*(?!.*/*/)|^[ \t]*\\*[ \t]");
 		// Don't move an annotation to the start of a comment line.
-		private static final Pattern startsWithCommentPattern = Pattern.compile("^[ \t]*(//|/\\*$|/\\*|void\\b)");
+		private static final Pattern STARTS_WITH_COMMENT_PATTERN = Pattern.compile("^[ \t]*(//|/\\*$|/\\*|void\\b)");
 
 		/**
 		 * @param addedTypeAnnotations simple names to add to Spotless's default list
@@ -474,7 +473,7 @@ public final class FormatAnnotationsStep implements Serializable {
 				String line = lines[i];
 				if (endsWithTypeAnnotation(line)) {
 					String nextLine = lines[i + 1];
-					if (startsWithCommentPattern.matcher(nextLine).find()) {
+					if (STARTS_WITH_COMMENT_PATTERN.matcher(nextLine).find()) {
 						continue;
 					}
 					lines[i] = "";
@@ -491,14 +490,14 @@ public final class FormatAnnotationsStep implements Serializable {
 		boolean endsWithTypeAnnotation(String unixLine) {
 			// Remove trailing newline.
 			String line = unixLine.replaceAll("\\s+$", "");
-			Matcher m = trailingAnnoPattern.matcher(line);
+			Matcher m = TRAILING_ANNO_PATTERN.matcher(line);
 			if (!m.find()) {
 				return false;
 			}
 			String preceding = line.substring(0, m.start());
 			String basename = m.group(1);
 
-			if (withinCommentPattern.matcher(preceding).find()) {
+			if (WITHIN_COMMENT_PATTERN.matcher(preceding).find()) {
 				return false;
 			}
 

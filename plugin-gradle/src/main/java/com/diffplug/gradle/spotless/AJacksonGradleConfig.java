@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Collections;
+import java.util.Map;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.json.JacksonConfig;
@@ -29,14 +29,14 @@ public abstract class AJacksonGradleConfig<T extends AJacksonGradleConfig> {
 	protected String version = JacksonJsonStep.defaultVersion();
 
 	// Make sure to call 'formatExtension.addStep(createStep());' in the extented constructors
-	public AJacksonGradleConfig(JacksonConfig jacksonConfig, FormatExtension formatExtension) {
+	protected AJacksonGradleConfig(JacksonConfig jacksonConfig, FormatExtension formatExtension) {
 		this.formatExtension = formatExtension;
 
 		this.jacksonConfig = jacksonConfig;
 	}
 
 	public T feature(String feature, boolean toggle) {
-		this.jacksonConfig.appendFeatureToToggle(Collections.singletonMap(feature, toggle));
+		this.jacksonConfig.appendFeatureToToggle(Map.of(feature, toggle));
 		formatExtension.replaceStep(createStep());
 		return self();
 	}

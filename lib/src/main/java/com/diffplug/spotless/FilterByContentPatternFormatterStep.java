@@ -64,9 +64,9 @@ final class FilterByContentPatternFormatterStep extends DelegateFormatterStep {
 			return false;
 		}
 		FilterByContentPatternFormatterStep that = (FilterByContentPatternFormatterStep) o;
-		return Objects.equals(delegateStep, that.delegateStep) &&
-				Objects.equals(onMatch, that.onMatch) &&
-				Objects.equals(contentPattern.pattern(), that.contentPattern.pattern());
+		return Objects.equals(delegateStep, that.delegateStep)
+				&& onMatch == that.onMatch
+				&& Objects.equals(contentPattern.pattern(), that.contentPattern.pattern());
 	}
 
 	@Override

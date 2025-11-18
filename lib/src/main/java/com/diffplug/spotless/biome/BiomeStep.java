@@ -24,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 
 import org.slf4j.Logger;
@@ -42,8 +41,8 @@ import com.diffplug.spotless.ProcessRunner;
  * It delegates to the Biome executable. The Biome executable is downloaded from
  * the network when no executable path is provided explicitly.
  */
-public class BiomeStep {
-	private static final Logger logger = LoggerFactory.getLogger(BiomeStep.class);
+public final class BiomeStep {
+	private static final Logger LOGGER = LoggerFactory.getLogger(BiomeStep.class);
 
 	/**
 	 * Path to the directory with the {@code biome.json} config file, can be
@@ -136,7 +135,7 @@ public class BiomeStep {
 			newPermissions.add(permission);
 			Files.setPosixFilePermissions(file, newPermissions);
 		} catch (final Exception ignore) {
-			logger.debug("Unable to add POSIX permission '{}' to file '{}'", permission, file);
+			LOGGER.debug("Unable to add POSIX permission '{}' to file '{}'", permission, file);
 		}
 	}
 
@@ -298,8 +297,8 @@ public class BiomeStep {
 		var resolvedPathToExe = resolveExe();
 		validateBiomeExecutable(resolvedPathToExe);
 		validateBiomeConfigPath(configPath, version);
-		logger.debug("Using Biome executable located at  '{}'", resolvedPathToExe);
-		var exeSignature = FileSignature.signAsList(Collections.singleton(new File(resolvedPathToExe)));
+		LOGGER.debug("Using Biome executable located at  '{}'", resolvedPathToExe);
+		var exeSignature = FileSignature.signAsList(new File(resolvedPathToExe));
 		makeExecutable(resolvedPathToExe);
 		return new State(resolvedPathToExe, exeSignature, configPath, language);
 	}
@@ -345,7 +344,7 @@ public class BiomeStep {
 	 * caching purposes. Spotless keeps a cache of which files need to be formatted.
 	 * The cache is busted when the serialized form of a state instance changes.
 	 */
-	private static class State implements Serializable {
+	private static final class State implements Serializable {
 		private static final long serialVersionUID = 6846790911054484379L;
 
 		/** Path to the exe file */
@@ -421,13 +420,13 @@ public class BiomeStep {
 		private String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
 			var stdin = input.getBytes(StandardCharsets.UTF_8);
 			var args = buildBiomeCommand(file);
-			if (logger.isDebugEnabled()) {
-				logger.debug("Running Biome command to format code: '{}'", String.join(", ", args));
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Running Biome command to format code: '{}'", String.join(", ", args));
 			}
 			var runnerResult = runner.exec(stdin, args);
 			var stdErr = runnerResult.stdErrUtf8();
 			if (!stdErr.isEmpty()) {
-				logger.warn("Biome stderr ouptut for file '{}'\n{}", file, stdErr.trim());
+				LOGGER.warn("Biome stderr ouptut for file '{}'\n{}", file, stdErr.trim());
 			}
 			var formatted = runnerResult.assertExitZero(StandardCharsets.UTF_8);
 			// When biome encounters an ignored file, it does not output any formatted code

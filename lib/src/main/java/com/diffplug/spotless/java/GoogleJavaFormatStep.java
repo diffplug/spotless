@@ -27,7 +27,7 @@ import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 
 /** Wraps up <a href="https://github.com/google/google-java-format">google-java-format</a> as a FormatterStep. */
-public class GoogleJavaFormatStep implements Serializable {
+public final class GoogleJavaFormatStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_STYLE = "GOOGLE";

@@ -24,7 +24,7 @@ import org.gradle.api.tasks.GroovySourceDirectorySet;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 
 public class GroovyExtension extends BaseGroovyExtension implements HasBuiltinDelimiterForLicense, JvmLang {
-	private boolean excludeJava = false;
+	private boolean excludeJava;
 	static final String NAME = "groovy";
 
 	@Inject
@@ -62,9 +62,7 @@ public class GroovyExtension extends BaseGroovyExtension implements HasBuiltinDe
 			}
 			target = getSources(getProject(),
 					message,
-					sourceSet -> {
-						return sourceSet.getExtensions().getByType(GroovySourceDirectorySet.class);
-					},
+					sourceSet -> sourceSet.getExtensions().getByType(GroovySourceDirectorySet.class),
 					file -> {
 						final String name = file.getName();
 						if (excludeJava) {

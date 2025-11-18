@@ -84,7 +84,7 @@ public enum LineEnding {
 	/** Should use {@link #createPolicy(File, Supplier)} instead, but this will work iff its a path-independent LineEnding policy. */
 	public Policy createPolicy() {
 		switch (this) {
-		case PLATFORM_NATIVE:	return _platformNativePolicy;
+		case PLATFORM_NATIVE:	return _PLATFORM_NATIVE_POLICY;
 		case WINDOWS:			return WINDOWS_POLICY;
 		case UNIX:				return UNIX_POLICY;
 		case MAC_CLASSIC:		return MAC_CLASSIC_POLICY;
@@ -126,7 +126,7 @@ public enum LineEnding {
             char currentCharacter = 0;
             int readResult;
             while ((readResult = reader.read()) != -1) {
-                currentCharacter = (char)readResult;
+                currentCharacter = (char) readResult;
                 if (currentCharacter == '\n') {
                     if (previousCharacter == '\r') {
                         return WINDOWS.str();
@@ -152,9 +152,9 @@ public enum LineEnding {
 	private static final Policy UNIX_POLICY = new ConstantLineEndingPolicy(UNIX.str());
     private static final Policy MAC_CLASSIC_POLICY = new ConstantLineEndingPolicy(MAC_CLASSIC.str());
     private static final Policy PRESERVE_POLICY = new PreserveLineEndingPolicy();
-	private static final String _platformNative = System.getProperty("line.separator");
-	private static final Policy _platformNativePolicy = new ConstantLineEndingPolicy(_platformNative);
-	private static final boolean nativeIsWin = _platformNative.equals(WINDOWS.str());
+	private static final String _PLATFORM_NATIVE = System.getProperty("line.separator");
+	private static final Policy _PLATFORM_NATIVE_POLICY = new ConstantLineEndingPolicy(_PLATFORM_NATIVE);
+	private static final boolean NATIVE_IS_WIN = _PLATFORM_NATIVE.equals(WINDOWS.str());
 
 	/**
 	 * @deprecated Using the system-native line endings to detect the windows operating system has turned out
@@ -164,13 +164,13 @@ public enum LineEnding {
 	 */
 	@Deprecated
 	public static boolean nativeIsWin() {
-		return nativeIsWin;
+		return NATIVE_IS_WIN;
 	}
 
 	/** Returns the standard line ending for this policy. */
 	public String str() {
 		switch (this) {
-		case PLATFORM_NATIVE:	return _platformNative;
+		case PLATFORM_NATIVE:	return _PLATFORM_NATIVE;
 		case WINDOWS:			return "\r\n";
 		case UNIX:				return "\n";
 		case MAC_CLASSIC:		return "\r";

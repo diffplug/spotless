@@ -30,7 +30,7 @@ class LintSuppressionTest extends MavenIntegrationHarness {
 		writePomWithJavaSteps("<forbidWildcardImports/>");
 
 		String path = "src/main/java/TestFile.java";
-		setFile(path).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
+		setFile(path).toResource("java/forbidwildcardimports/JavaCodeWildcardsUnformatted.test");
 
 		expectSelfieErrorMsg(mavenRunner().withArguments("spotless:check").runHasError()).toBe("""
 				Failed to execute goal com.diffplug.spotless:spotless-maven-plugin:VERSION:check (default-cli) on project spotless-maven-plugin-tests: Unable to format file ${PROJECT_DIR}/src/main/java/TestFile.java
@@ -58,8 +58,8 @@ class LintSuppressionTest extends MavenIntegrationHarness {
 		String suppressedFile = "src/main/java/TestFile1.java";
 		String unsuppressedFile = "src/main/java/TestFile2.java";
 
-		setFile(suppressedFile).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
-		setFile(unsuppressedFile).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
+		setFile(suppressedFile).toResource("java/forbidwildcardimports/JavaCodeWildcardsUnformatted.test");
+		setFile(unsuppressedFile).toResource("java/forbidwildcardimports/JavaCodeWildcardsUnformatted.test");
 
 		var result = mavenRunner().withArguments("spotless:check").runHasError();
 		assertThat(result.stdOutUtf8()).contains("TestFile2.java");
@@ -79,7 +79,7 @@ class LintSuppressionTest extends MavenIntegrationHarness {
 				"</lintSuppressions>");
 
 		String path = "src/main/java/TestFile.java";
-		setFile(path).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
+		setFile(path).toResource("java/forbidwildcardimports/JavaCodeWildcardsUnformatted.test");
 
 		// Should succeed because we suppressed the entire step
 		mavenRunner().withArguments("spotless:check").runNoError();
@@ -99,7 +99,7 @@ class LintSuppressionTest extends MavenIntegrationHarness {
 				"</lintSuppressions>");
 
 		String path = "src/main/java/TestFile.java";
-		setFile(path).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
+		setFile(path).toResource("java/forbidwildcardimports/JavaCodeWildcardsUnformatted.test");
 
 		// Should succeed because we suppressed all error codes
 		mavenRunner().withArguments("spotless:check").runNoError();
@@ -126,9 +126,9 @@ class LintSuppressionTest extends MavenIntegrationHarness {
 		String file2 = "src/main/java/TestFile2.java";
 		String file3 = "src/main/java/TestFile3.java";
 
-		setFile(file1).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
-		setFile(file2).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
-		setFile(file3).toResource("java/removewildcardimports/JavaCodeWildcardsUnformatted.test");
+		setFile(file1).toResource("java/forbidwildcardimports/JavaCodeWildcardsUnformatted.test");
+		setFile(file2).toResource("java/forbidwildcardimports/JavaCodeWildcardsUnformatted.test");
+		setFile(file3).toResource("java/forbidwildcardimports/JavaCodeWildcardsUnformatted.test");
 
 		var result = mavenRunner().withArguments("spotless:check").runHasError();
 		assertThat(result.stdOutUtf8()).contains("TestFile3.java");
@@ -161,8 +161,8 @@ class LintSuppressionTest extends MavenIntegrationHarness {
 		}
 
 		// Create the configuration
-		String javaGroup = "<java>" + javaSteps.toString() + "</java>";
-		String fullConfiguration = javaGroup + globalConfig.toString();
+		String javaGroup = "<java>" + javaSteps + "</java>";
+		String fullConfiguration = javaGroup + globalConfig;
 
 		writePom(fullConfiguration);
 	}

@@ -21,6 +21,9 @@ import static com.diffplug.gradle.spotless.SpotlessPluginRedirect.badSemverOfGra
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -80,7 +83,7 @@ import groovy.lang.Closure;
 /** Adds a {@code spotless{Name}Check} and {@code spotless{Name}Apply} task. */
 public class FormatExtension {
 
-	private static final Logger logger = LoggerFactory.getLogger(FormatExtension.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FormatExtension.class);
 
 	final SpotlessExtension spotless;
 	final List<Action<FormatExtension>> lazyActions = new ArrayList<>();
@@ -214,19 +217,15 @@ public class FormatExtension {
 	}
 
 	/** The files to be formatted = (target - targetExclude). */
-	protected FileCollection target, targetExclude;
+	protected FileCollection target;
+	protected FileCollection targetExclude;
 
 	/** The value from which files will be excluded if their content contain it. */
-	@Nullable protected String targetExcludeContentPattern = null;
+	@Nullable protected String targetExcludeContentPattern;
 
 	protected boolean isLicenseHeaderStep(FormatterStep formatterStep) {
 		String formatterStepName = formatterStep.getName();
-
-		if (formatterStepName.startsWith(LicenseHeaderStep.class.getName())) {
-			return true;
-		}
-
-		return false;
+		return formatterStepName.startsWith(LicenseHeaderStep.class.getName());
 	}
 
 	/**
@@ -378,7 +377,7 @@ public class FormatExtension {
 	 * step exists.
 	 */
 	protected int getExistingStepIdx(String stepName) {
-		for (int i = 0; i < steps.size(); ++i) {
+		for (int i = 0; i < steps.size(); i++) {
 			if (steps.get(i).getName().equals(stepName)) {
 				return i;
 			}
@@ -455,11 +454,11 @@ public class FormatExtension {
 			return closure.call(unixNewlines);
 		}
 
-		private void writeObject(java.io.ObjectOutputStream stream) throws java.io.IOException {
+		private void writeObject(ObjectOutputStream stream) throws IOException {
 			stream.writeObject(closure.dehydrate());
 		}
 
-		private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
+		private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
 			this.closure = (Closure<String>) stream.readObject();
 		}
 	}
@@ -470,9 +469,9 @@ public class FormatExtension {
 	 */
 	public void custom(String name, FormatterFunc formatter) {
 		requireNonNull(formatter, "formatter");
-		if (badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_minVersionForCustom)) {
+		if (badSemverOfGradle() < badSemver(SpotlessPlugin.VER_GRADLE_MIN_VERSION_FOR_CUSTOM)) {
 			throw new GradleException("The 'custom' method is only available if you are using Gradle "
-					+ SpotlessPlugin.VER_GRADLE_minVersionForCustom
+					+ SpotlessPlugin.VER_GRADLE_MIN_VERSION_FOR_CUSTOM
 					+ " or newer, this is "
 					+ GradleVersion.current().getVersion());
 		}
@@ -549,7 +548,7 @@ public class FormatExtension {
 	}
 
 	private static void logDeprecation(String methodName, String replacement) {
-		logger.warn("'{}' is deprecated, use '{}' in your gradle build script instead.", methodName, replacement);
+		LOGGER.warn("'{}' is deprecated, use '{}' in your gradle build script instead.", methodName, replacement);
 	}
 
 	/** Ensures formatting of files via native binary. */
@@ -566,7 +565,7 @@ public class FormatExtension {
 	 */
 	public class LicenseHeaderConfig {
 		LicenseHeaderStep builder;
-		Boolean updateYearWithLatest = null;
+		Boolean updateYearWithLatest;
 
 		public LicenseHeaderConfig named(String name) {
 			String existingStepName = builder.getName();
@@ -631,8 +630,7 @@ public class FormatExtension {
 
 		FormatterStep createStep() {
 			return builder.withYearModeLazy(() -> {
-				if ("true".equals(spotless.project
-						.findProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
+				if (Boolean.parseBoolean(GradleCompat.findOptionalProperty(spotless.project, LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
 					return YearMode.SET_FROM_GIT;
 				} else {
 					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
@@ -686,7 +684,7 @@ public class FormatExtension {
 
 		private Consumer<FormatterStep> replaceStep;
 
-		public NpmStepConfig(Project project, Consumer<FormatterStep> replaceStep) {
+		protected NpmStepConfig(Project project, Consumer<FormatterStep> replaceStep) {
 			this.project = requireNonNull(project);
 			this.replaceStep = requireNonNull(replaceStep);
 		}
@@ -748,7 +746,7 @@ public class FormatExtension {
 			replaceStep.accept(createStep());
 		}
 
-		abstract protected FormatterStep createStep();
+		protected abstract FormatterStep createStep();
 
 	}
 
@@ -1137,12 +1135,11 @@ public class FormatExtension {
 					task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
 				});
 		// create the apply task
-		TaskProvider<SpotlessApply> applyTask = spotless.project.getTasks().register(taskName, SpotlessApply.class,
+		return spotless.project.getTasks().register(taskName, SpotlessApply.class,
 				task -> {
 					task.dependsOn(spotlessTask);
-					task.init(spotlessTask.get());
+					task.init(spotlessTask);
 				});
-		return applyTask;
 	}
 
 	protected GradleException noDefaultTargetException() {

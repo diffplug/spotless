@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import com.diffplug.spotless.annotations.Internal;
 public class SQLTokenizedFormatter {
 
 	private static final String[] JOIN_BEGIN = {"LEFT", "RIGHT", "INNER", "OUTER", "JOIN"};
-	private static final SQLDialect sqlDialect = SQLDialect.INSTANCE;
+	private static final SQLDialect SQL_DIALECT = SQLDialect.INSTANCE;
 	private DBeaverSQLFormatterConfiguration formatterCfg;
 	private List<Boolean> functionBracket = new ArrayList<>();
 	private List<String> statementDelimiters = new ArrayList<>(2);
@@ -124,8 +124,8 @@ public class SQLTokenizedFormatter {
 			String token2String = t2.getString().toUpperCase(Locale.ENGLISH);
 			// Concatenate tokens
 			if (t0.getType() == TokenType.KEYWORD && t1.getType() == TokenType.SPACE && t2.getType() == TokenType.KEYWORD) {
-				if (((tokenString.equals("ORDER") || tokenString.equals("GROUP") || tokenString.equals("CONNECT")) && token2String.equals("BY")) ||
-						((tokenString.equals("START")) && token2String.equals("WITH"))) {
+				if ((("ORDER".equals(tokenString) || "GROUP".equals(tokenString) || "CONNECT".equals(tokenString)) && "BY".equals(token2String))
+						|| (("START".equals(tokenString)) && "WITH".equals(token2String))) {
 					t0.setString(t0.getString() + " " + t2.getString());
 					argList.remove(index + 1);
 					argList.remove(index + 1);
@@ -133,14 +133,14 @@ public class SQLTokenizedFormatter {
 			}
 
 			// Oracle style joins
-			if (tokenString.equals("(") && t1.getString().equals("+") && token2String.equals(")")) {  //$NON-NLS-2$ //$NON-NLS-3$
+			if ("(".equals(tokenString) && "+".equals(t1.getString()) && ")".equals(token2String)) {  //$NON-NLS-2$ //$NON-NLS-3$
 				t0.setString("(+)");
 				argList.remove(index + 1);
 				argList.remove(index + 1);
 			}
 
 			// JDBI bind list
-			if (tokenString.equals("<") && t1.getType() == TokenType.NAME && token2String.equals(">")) {
+			if ("<".equals(tokenString) && t1.getType() == TokenType.NAME && ">".equals(token2String)) {
 				t0.setString(t0.getString() + t1.getString() + t2.getString());
 				argList.remove(index + 1);
 				argList.remove(index + 1);
@@ -155,16 +155,16 @@ public class SQLTokenizedFormatter {
 			token = argList.get(index);
 			String tokenString = token.getString().toUpperCase(Locale.ENGLISH);
 			if (token.getType() == TokenType.SYMBOL) {
-				if (tokenString.equals("(")) {
+				if ("(".equals(tokenString)) {
 					functionBracket.add(isFunction(prev.getString()) ? Boolean.TRUE : Boolean.FALSE);
 					bracketIndent.add(indent);
 					indent++;
 					index += insertReturnAndIndent(argList, index + 1, indent);
-				} else if (tokenString.equals(")") && !bracketIndent.isEmpty() && !functionBracket.isEmpty()) {
+				} else if (")".equals(tokenString) && !bracketIndent.isEmpty() && !functionBracket.isEmpty()) {
 					indent = bracketIndent.remove(bracketIndent.size() - 1);
 					index += insertReturnAndIndent(argList, index, indent);
 					functionBracket.remove(functionBracket.size() - 1);
-				} else if (tokenString.equals(",")) {
+				} else if (",".equals(tokenString)) {
 					index += insertReturnAndIndent(argList, index + 1, indent);
 				} else if (statementDelimiters.contains(tokenString)) {
 					indent = 0;
@@ -251,7 +251,7 @@ public class SQLTokenizedFormatter {
 				}
 			} else if (token.getType() == TokenType.COMMENT) {
 				boolean isComment = false;
-				String[] slComments = sqlDialect.getSingleLineComments();
+				String[] slComments = SQL_DIALECT.getSingleLineComments();
 				for (String slc : slComments) {
 					if (token.getString().startsWith(slc)) {
 						isComment = true;
@@ -259,7 +259,7 @@ public class SQLTokenizedFormatter {
 					}
 				}
 				if (!isComment) {
-					Pair<String, String> mlComments = sqlDialect.getMultiLineComments();
+					Pair<String, String> mlComments = SQL_DIALECT.getMultiLineComments();
 					if (token.getString().startsWith(mlComments.getFirst())) {
 						index += insertReturnAndIndent(argList, index + 1, indent);
 					}
@@ -292,10 +292,10 @@ public class SQLTokenizedFormatter {
 			FormatterToken t3 = argList.get(index - 3);
 			FormatterToken t4 = argList.get(index - 4);
 
-			if (t4.getString().equals("(")
-					&& t3.getString().trim().isEmpty()
-					&& t1.getString().trim().isEmpty()
-					&& t0.getString().equalsIgnoreCase(")")) {
+			if ("(".equals(t4.getString())
+					&& t3.getString().isBlank()
+					&& t1.getString().isBlank()
+					&& ")".equalsIgnoreCase(t0.getString())) {
 				t4.setString(t4.getString() + t2.getString() + t0.getString());
 				argList.remove(index);
 				argList.remove(index - 1);
@@ -308,22 +308,22 @@ public class SQLTokenizedFormatter {
 			prev = argList.get(index - 1);
 			token = argList.get(index);
 
-			if (prev.getType() != TokenType.SPACE &&
-					token.getType() != TokenType.SPACE &&
-					!token.getString().startsWith("(")) {
-				if (token.getString().equals(",") || statementDelimiters.contains(token.getString())) {
+			if (prev.getType() != TokenType.SPACE
+					&& token.getType() != TokenType.SPACE
+					&& !token.getString().startsWith("(")) {
+				if (",".equals(token.getString()) || statementDelimiters.contains(token.getString())) {
 					continue;
 				}
 				if (isFunction(prev.getString())
-						&& token.getString().equals("(")) {
+						&& "(".equals(token.getString())) {
 					continue;
 				}
 				if (token.getType() == TokenType.VALUE && prev.getType() == TokenType.NAME) {
 					// Do not add space between name and value [JDBC:MSSQL]
 					continue;
 				}
-				if (token.getType() == TokenType.SYMBOL && isEmbeddedToken(token) ||
-						prev.getType() == TokenType.SYMBOL && isEmbeddedToken(prev)) {
+				if (token.getType() == TokenType.SYMBOL && isEmbeddedToken(token)
+						|| prev.getType() == TokenType.SYMBOL && isEmbeddedToken(prev)) {
 					// Do not insert spaces around colons
 					continue;
 				}
@@ -373,7 +373,7 @@ public class SQLTokenizedFormatter {
 			if (token.getType() == TokenType.SPACE) {
 				continue;
 			}
-			if (token.getString().equals("JOIN")) {
+			if ("JOIN".equals(token.getString())) {
 				return true;
 			}
 			if (!contains(JOIN_BEGIN, token.getString())) {
@@ -385,7 +385,7 @@ public class SQLTokenizedFormatter {
 	}
 
 	private boolean isFunction(String name) {
-		return sqlDialect.getKeywordType(name) == DBPKeywordType.FUNCTION;
+		return SQL_DIALECT.getKeywordType(name) == DBPKeywordType.FUNCTION;
 	}
 
 	private static String getDefaultLineSeparator() {
@@ -393,8 +393,9 @@ public class SQLTokenizedFormatter {
 	}
 
 	private int insertReturnAndIndent(final List<FormatterToken> argList, final int argIndex, final int argIndent) {
-		if (functionBracket.contains(Boolean.TRUE))
+		if (functionBracket.contains(Boolean.TRUE)) {
 			return 0;
+		}
 		try {
 			final String defaultLineSeparator = getDefaultLineSeparator();
 			StringBuilder s = new StringBuilder(defaultLineSeparator);
@@ -404,9 +405,9 @@ public class SQLTokenizedFormatter {
 			if (argIndex > 0) {
 				final FormatterToken token = argList.get(argIndex);
 				final FormatterToken prevToken = argList.get(argIndex - 1);
-				if (token.getType() == TokenType.COMMENT &&
-						isCommentLine(sqlDialect, token.getString()) &&
-						prevToken.getType() != TokenType.END) {
+				if (token.getType() == TokenType.COMMENT
+						&& isCommentLine(SQL_DIALECT, token.getString())
+						&& prevToken.getType() != TokenType.END) {
 					s.setCharAt(0, ' ');
 					s.setLength(1);
 
@@ -456,11 +457,13 @@ public class SQLTokenizedFormatter {
 	}
 
 	private static <OBJECT_TYPE> boolean contains(OBJECT_TYPE[] array, OBJECT_TYPE value) {
-		if (array == null || array.length == 0)
+		if (array == null || array.length == 0) {
 			return false;
+		}
 		for (OBJECT_TYPE anArray : array) {
-			if (Objects.equals(value, anArray))
+			if (Objects.equals(value, anArray)) {
 				return true;
+			}
 		}
 		return false;
 	}
