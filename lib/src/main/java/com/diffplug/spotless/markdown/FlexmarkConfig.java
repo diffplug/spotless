@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FlexmarkConfig implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The emulation profile is used by both the parser and the formatter and generally determines the markdown flavor.
