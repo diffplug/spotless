@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.SoftAssertions;
@@ -42,7 +43,10 @@ class JarStateTest {
 
 	File b;
 
-	Provisioner provisioner = (withTransitives, deps) -> deps.stream().map(name -> name.equals("a") ? a : b).collect(Collectors.toSet());
+	Provisioner provisioner = (withTransitives, deps) -> {
+		Set<File> files = deps.stream().map(name -> name.equals("a") ? a : b).collect(Collectors.toSet());
+		return LazyFiles.of(files);
+	};
 
 	@BeforeEach
 	void setUp() throws IOException {
