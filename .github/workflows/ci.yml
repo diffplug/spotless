@@ -107,6 +107,7 @@ jobs:
   # Status check that is required in branch protection rules.
   final-status:
     needs:
+      - sanityCheck
       - build
     runs-on: ubuntu-latest
     if: always()
