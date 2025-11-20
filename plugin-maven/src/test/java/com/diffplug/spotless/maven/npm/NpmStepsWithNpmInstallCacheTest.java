@@ -165,7 +165,7 @@ public class NpmStepsWithNpmInstallCacheTest extends MavenIntegrationHarness {
 
 		@Override
 		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-			if (exclusionDirectory != null && dir.toFile().getName().equals(exclusionDirectory)) {
+			if (dir.toFile().getName().equals(exclusionDirectory)) {
 				return FileVisitResult.SKIP_SUBTREE;
 			}
 			return super.preVisitDirectory(dir, attrs);
