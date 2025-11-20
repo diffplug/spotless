@@ -18,17 +18,6 @@ allprojects {
 }
 apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
-spotless {
-	groovyGradle {
-		target '*.gradle', 'gradle/*.gradle'
-	}
-	format 'dotfiles', {
-		target '.gitignore', '.gitattributes', '.editorconfig'
-		leadingTabsToSpaces(2)
-		trimTrailingWhitespace()
-		endWithNewline()
-	}
-}
 
 dependencies {
 	rewrite(platform('org.openrewrite.recipe:rewrite-recipe-bom:3.18.0'))
