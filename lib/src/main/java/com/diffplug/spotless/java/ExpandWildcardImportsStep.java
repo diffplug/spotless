@@ -16,6 +16,7 @@
 package com.diffplug.spotless.java;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +29,8 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
-public class ExpandWildcardImportsStep implements Serializable {
+public final class ExpandWildcardImportsStep implements Serializable {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Java-Parser; maybe you set an incompatible version?";
@@ -57,6 +59,7 @@ public class ExpandWildcardImportsStep implements Serializable {
 	}
 
 	private static class State implements Serializable {
+		@Serial
 		private static final long serialVersionUID = 1L;
 
 		private final Collection<File> typeSolverClasspath;

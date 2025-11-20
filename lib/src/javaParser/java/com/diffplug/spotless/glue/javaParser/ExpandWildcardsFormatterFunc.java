@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.diffplug.spotless.glue.javaParser;
+package com.diffplug.spotless.glue.javaparser;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
@@ -60,7 +60,7 @@ import com.diffplug.spotless.Lint;
 
 public class ExpandWildcardsFormatterFunc implements FormatterFunc.NeedsFile {
 
-	private JavaParser parser;
+	private final JavaParser parser;
 	static {
 		// If ClassPool is allowed to cache class files, it does not free the file-lock
 		ClassPool.cacheOpenedJarFile = false;
@@ -86,7 +86,7 @@ public class ExpandWildcardsFormatterFunc implements FormatterFunc.NeedsFile {
 	@Override
 	public String applyWithFile(String rawUnix, File file) throws Exception {
 		Optional<CompilationUnit> parseResult = parser.parse(rawUnix).getResult();
-		if (!parseResult.isPresent()) {
+		if (parseResult.isEmpty()) {
 			return rawUnix;
 		}
 		CompilationUnit cu = parseResult.get();
