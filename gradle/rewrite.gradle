@@ -26,5 +26,5 @@ dependencies {
 	rewrite('org.openrewrite.recipe:rewrite-java-security:3.22.0')
 	rewrite('org.openrewrite.recipe:rewrite-rewrite:0.14.1')
 	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.22.0')
-	rewrite('org.openrewrite.recipe:rewrite-third-party:0.31.1')
+	rewrite('org.openrewrite.recipe:rewrite-third-party:0.31.2')
 }
