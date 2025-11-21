@@ -78,17 +78,17 @@ public class SQLTokenizedFormatter {
 			return argList;
 		}
 
-		FormatterToken token = argList.get(0);
+		FormatterToken token = argList.getFirst();
 		if (token.getType() == TokenType.SPACE) {
-			argList.remove(0);
+			argList.removeFirst();
 			if (argList.isEmpty()) {
 				return argList;
 			}
 		}
 
-		token = argList.get(argList.size() - 1);
+		token = argList.getLast();
 		if (token.getType() == TokenType.SPACE) {
-			argList.remove(argList.size() - 1);
+			argList.removeLast();
 			if (argList.isEmpty()) {
 				return argList;
 			}
@@ -161,9 +161,9 @@ public class SQLTokenizedFormatter {
 					indent++;
 					index += insertReturnAndIndent(argList, index + 1, indent);
 				} else if (")".equals(tokenString) && !bracketIndent.isEmpty() && !functionBracket.isEmpty()) {
-					indent = bracketIndent.remove(bracketIndent.size() - 1);
+					indent = bracketIndent.removeLast();
 					index += insertReturnAndIndent(argList, index, indent);
-					functionBracket.remove(functionBracket.size() - 1);
+					functionBracket.removeLast();
 				} else if (",".equals(tokenString)) {
 					index += insertReturnAndIndent(argList, index + 1, indent);
 				} else if (statementDelimiters.contains(tokenString)) {
