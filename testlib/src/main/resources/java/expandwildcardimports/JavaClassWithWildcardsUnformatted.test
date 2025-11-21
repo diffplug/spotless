@@ -1,0 +1,32 @@
+package foo.bar;
+
+import java.util.*;
+import foo.bar.baz.*;
+import org.example.*;
+import java.io.*;
+
+import static java.util.stream.Collectors.*;
+
+@SomeAnnotation
+public class JavaClassWithWildcards {
+
+    private List<String> prop; // This is a comment that should not be removed
+
+    public JavaClassWithWildcards(Map<String, Date> param) {
+        // Another comment
+        Collection<Date> localVariable = param.values();
+        localVariable.stream().collect(toList());
+    }
+
+
+
+    /**
+     * Some JavaDoc
+     */
+    public Optional<Integer> testMethod() {
+        AnotherClassInSamePackage test1 = null;
+        AnotherImportedClass test2 = null;
+        return Optional.empty();
+    }
+
+}
