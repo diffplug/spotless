@@ -22,9 +22,9 @@ rewrite {
 }
 dependencies {
 	rewrite(platform('org.openrewrite.recipe:rewrite-recipe-bom:3.18.0'))
-	rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.20.0')
+	rewrite('org.openrewrite.recipe:rewrite-migrate-java')
 	rewrite('org.openrewrite.recipe:rewrite-java-security:3.22.0')
-	rewrite('org.openrewrite.recipe:rewrite-rewrite:0.14.1')
-	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.22.0')
-	rewrite('org.openrewrite.recipe:rewrite-third-party:0.31.2')
+	rewrite('org.openrewrite.recipe:rewrite-rewrite')
+	rewrite('org.openrewrite.recipe:rewrite-static-analysis')
+	rewrite('org.openrewrite.recipe:rewrite-third-party')
 }
