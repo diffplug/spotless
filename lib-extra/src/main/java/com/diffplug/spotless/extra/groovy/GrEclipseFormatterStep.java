@@ -33,7 +33,7 @@ public final class GrEclipseFormatterStep {
 	private GrEclipseFormatterStep() {}
 
 	private static final String NAME = "eclipse groovy formatter";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(11, "4.26").add(17, "4.35");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(17, "4.35");
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
