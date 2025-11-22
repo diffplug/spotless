@@ -112,7 +112,7 @@ public class ForeignExe implements Serializable {
 				throw cantFind("Unable to parse version with /" + versionRegex + "/", cmdVersion);
 			}
 			String versionFound = versionMatcher.group(1);
-			if (!versionFound.equals(VERSION_WILDCARD) && !versionFound.equals(version)) {
+			if (!VERSION_WILDCARD.equals(versionFound) && !versionFound.equals(version)) {
 				throw wrongVersion("You specified version " + version + ", but Spotless found " + versionFound, cmdVersion, versionFound);
 			}
 			return exeAbsPath;
