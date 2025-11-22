@@ -3,13 +3,12 @@
 	"extends": [
 		"config:recommended",
 	],
-	"packageRules": [
+	packageRules: [
 		{
-			"groupName": "Ktlint",
-			"enabled": false,
-			"matchPackageNames": [
-				"/com.pinterest.ktlint:*/",
-			]
-		}
+			groupName: 'OpenRewrite',
+			matchPackageNames: [
+				'org.openrewrite.recipe:.*',
+			],
+		},
 	]
 }
