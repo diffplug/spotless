@@ -5,9 +5,15 @@
 	],
 	packageRules: [
 		{
+			groupName: 'Ktlint',
+			matchPackageNames: [
+				'com.pinterest.ktlint:*',
+			]
+		},
+		{
 			groupName: 'OpenRewrite',
 			matchPackageNames: [
-				'org.openrewrite.recipe:.*',
+				'org.openrewrite.recipe:*',
 			],
 		},
 	]
