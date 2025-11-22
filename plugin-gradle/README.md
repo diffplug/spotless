@@ -674,7 +674,7 @@ spotless {
 [homepage](https://github.com/psf/black). [changelog](https://github.com/psf/black/blob/master/CHANGES.md).
 
 ```gradle
-black('19.10b0') // version is optional
+black('19.10b0') // version is optional. Explicitly allow "any found version" with '*'.
 
 // if black is not on your path, you must specify its location manually
 black().pathToExe('C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe')
@@ -1211,7 +1211,7 @@ When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.edit
 Refer to the `shfmt` [man page](https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd) for `.editorconfig` settings. 
 
 ```gradle
-shfmt('3.8.0') // version is optional
+shfmt('3.8.0') // version is optional. Explicitly allow "any found version" with '*'.
 
 // if shfmt is not on your path, you must specify its location manually
 shfmt().pathToExe('/opt/homebrew/bin/shfmt')
@@ -1402,7 +1402,7 @@ spotless {
     // you have to set the target manually
     target 'src/**/*.cs'
 
-    clangFormat('10.0.1') // version is optional
+    clangFormat('10.0.1') // version is optional. Explicitly allow "any found version" with '*'.
 
     // can also specify a code style
     clangFormat().style('LLVM') // or Google, Chromium, Mozilla, WebKit
