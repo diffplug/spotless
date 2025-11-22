@@ -108,8 +108,8 @@ dependencies {
 		}
 	}
 	// ktlint latest supported version
-	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:1.0.0'
-	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:1.0.0'
+	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:1.8.0'
+	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:1.8.0'
 	compatKtLint1Dot0Dot0CompileAndTestOnly 'org.slf4j:slf4j-api:2.0.17'
 	// palantirJavaFormat
 	palantirJavaFormatCompileOnly 'com.palantir.javaformat:palantir-java-format:1.1.0' 	// this version needs to stay compilable against Java 8 for CI Job testNpm
