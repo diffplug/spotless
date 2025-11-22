@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add the ability to specify a wildcard version (`*`) for external formatter executables. ([#2757](https://github.com/diffplug/spotless/issues/2757))
 
 ## [4.1.0] - 2025-11-18
 ### Changes
