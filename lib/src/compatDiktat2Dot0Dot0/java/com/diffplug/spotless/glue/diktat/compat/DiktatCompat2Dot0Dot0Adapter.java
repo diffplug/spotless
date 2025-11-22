@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  */
 package com.diffplug.spotless.glue.diktat.compat;
 
+import static java.util.Collections.emptyList;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -85,7 +86,7 @@ public class DiktatCompat2Dot0Dot0Adapter implements DiktatCompatAdapter {
 
 	private static List<DiktatRuleConfig> readRuleConfigs(File configFile) {
 		if (configFile == null) {
-			return Collections.emptyList();
+			return emptyList();
 		}
 		try (final InputStream configInputStream = new FileInputStream(configFile)) {
 			return DiktatFactoriesKt.getDiktatRuleConfigReader().invoke(configInputStream);

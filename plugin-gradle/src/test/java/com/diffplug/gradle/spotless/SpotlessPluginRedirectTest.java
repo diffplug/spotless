@@ -15,9 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
@@ -29,7 +30,7 @@ class SpotlessPluginRedirectTest extends GradleIntegrationHarness {
 				"plugins {",
 				"    id 'com.diffplug.gradle.spotless'",
 				"}");
-		Assertions.assertThat(gradleRunner().buildAndFail().getOutput().replace("\r", ""))
+		assertThat(gradleRunner().buildAndFail().getOutput().replace("\r", ""))
 				.contains(StringPrinter.buildStringFromLines(
 						"   > We have moved from 'com.diffplug.gradle.spotless'",
 						"                     to 'com.diffplug.spotless'",

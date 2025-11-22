@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
 package com.diffplug.spotless.kotlin;
 
 import static com.diffplug.spotless.FileSignature.signAsList;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FileSignature;
@@ -49,12 +51,12 @@ class DiktatStepTest extends ResourceHarness {
 
 	@Test
 	void notSupportedVersion() {
-		final IllegalStateException notSupportedException = Assertions.assertThrows(IllegalStateException.class,
+		final IllegalStateException notSupportedException = assertThrows(IllegalStateException.class,
 				() -> DiktatStep.create("1.1.0", TestProvisioner.mavenCentral()));
-		Assertions.assertTrue(
+		assertTrue(
 				notSupportedException.getMessage().contains("Minimum required Diktat version is 1.2.1, you tried 1.1.0 which is too old"));
 
-		Assertions.assertDoesNotThrow(() -> DiktatStep.create("1.2.1", TestProvisioner.mavenCentral()));
-		Assertions.assertDoesNotThrow(() -> DiktatStep.create("2.0.0", TestProvisioner.mavenCentral()));
+		assertDoesNotThrow(() -> DiktatStep.create("1.2.1", TestProvisioner.mavenCentral()));
+		assertDoesNotThrow(() -> DiktatStep.create("2.0.0", TestProvisioner.mavenCentral()));
 	}
 }

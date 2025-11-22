@@ -17,6 +17,7 @@ package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -25,7 +26,6 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Objects;
 
 import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceCreationException;
@@ -42,9 +42,9 @@ public class FileLocator {
 	private final File dataDir;
 
 	public FileLocator(ResourceManager resourceManager, File baseDir, File buildDir) {
-		this.resourceManager = Objects.requireNonNull(resourceManager);
-		this.baseDir = Objects.requireNonNull(baseDir);
-		this.buildDir = Objects.requireNonNull(buildDir);
+		this.resourceManager = requireNonNull(resourceManager);
+		this.baseDir = requireNonNull(baseDir);
+		this.buildDir = requireNonNull(buildDir);
 		this.dataDir = findDataDir();
 	}
 

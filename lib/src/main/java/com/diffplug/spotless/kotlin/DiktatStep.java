@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless.kotlin;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -74,8 +75,8 @@ public final class DiktatStep implements Serializable {
 		if (BadSemver.version(versionDiktat) < BadSemver.version(MIN_SUPPORTED_VERSION)) {
 			throw new IllegalStateException("Minimum required Diktat version is " + MIN_SUPPORTED_VERSION + ", you tried " + versionDiktat + " which is too old");
 		}
-		Objects.requireNonNull(versionDiktat, "versionDiktat");
-		Objects.requireNonNull(provisioner, "provisioner");
+		requireNonNull(versionDiktat, "versionDiktat");
+		requireNonNull(provisioner, "provisioner");
 		final String diktatCoordinate;
 		if (BadSemver.version(versionDiktat) >= BadSemver.version(PACKAGE_RELOCATED_VERSION)) {
 			diktatCoordinate = MAVEN_COORDINATE + versionDiktat;

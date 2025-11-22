@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.extra.glue.cdt;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.cdt.core.ToolFactory;
@@ -33,7 +34,7 @@ public class EclipseCdtFormatterStepImpl {
 
 	public EclipseCdtFormatterStepImpl(Properties settings) throws Exception {
 		Stream<Entry<Object, Object>> stream = settings.entrySet().stream();
-		Map<String, String> settingsMap = stream.collect(Collectors.toMap(
+		Map<String, String> settingsMap = stream.collect(toMap(
 				e -> String.valueOf(e.getKey()),
 				e -> String.valueOf(e.getValue())));
 		codeFormatter = ToolFactory.createDefaultCodeFormatter(settingsMap);

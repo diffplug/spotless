@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 package com.diffplug.spotless.maven.incremental;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.model.Model;
@@ -126,7 +126,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		spotlessPlugin.setVersion("1.2.3");
 		project.getBuild().addPlugin(spotlessPlugin);
 
-		PluginFingerprint fingerprint = PluginFingerprint.from(project, Collections.emptyList());
+		PluginFingerprint fingerprint = PluginFingerprint.from(project, emptyList());
 
 		assertThat(fingerprint).isNotNull();
 	}
@@ -143,7 +143,7 @@ class PluginFingerprintTest extends MavenIntegrationHarness {
 		pluginManagement.addPlugin(spotlessPlugin);
 		project.getBuild().setPluginManagement(pluginManagement);
 
-		PluginFingerprint fingerprint = PluginFingerprint.from(project, Collections.emptyList());
+		PluginFingerprint fingerprint = PluginFingerprint.from(project, emptyList());
 
 		assertThat(fingerprint).isNotNull();
 	}

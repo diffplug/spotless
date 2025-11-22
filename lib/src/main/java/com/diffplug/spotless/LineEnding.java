@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,8 +25,6 @@ import java.io.Reader;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -61,8 +62,8 @@ public enum LineEnding {
 
 	/** Returns a {@link Policy} appropriate for files which are contained within the given rootFolder. */
 	public Policy createPolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
-		Objects.requireNonNull(projectDir, "projectDir");
-		Objects.requireNonNull(toFormat, "toFormat");
+		requireNonNull(projectDir, "projectDir");
+		requireNonNull(toFormat, "toFormat");
 		String gitAttributesMethod;
 		if (this == GIT_ATTRIBUTES) {
 			gitAttributesMethod = "create";
@@ -114,7 +115,7 @@ public enum LineEnding {
         @Override
         public String getEndingFor(File file) {
             // assume US-ASCII encoding (only line ending characters need to be decoded anyways)
-            try (Reader reader = new FileReader(file, StandardCharsets.US_ASCII)) {
+            try (Reader reader = new FileReader(file, US_ASCII)) {
                 return getEndingFor(reader);
             } catch (IOException e) {
                 throw new IllegalArgumentException("Could not determine line ending of file: " + file, e);
@@ -186,7 +187,7 @@ public enum LineEnding {
 
 		/** Returns true iff this file has unix line endings. */
 		public default boolean isUnix(File file) {
-			Objects.requireNonNull(file);
+			requireNonNull(file);
 			String ending = getEndingFor(file);
 			return ending.equals(UNIX.str());
 		}

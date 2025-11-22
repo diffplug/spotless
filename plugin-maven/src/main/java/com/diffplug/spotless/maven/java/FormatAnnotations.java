@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 DiffPlug
+ * Copyright 2022-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.maven.java;
 
-import java.util.Collections;
+import static java.util.Collections.emptyList;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.java.FormatAnnotationsStep;
@@ -27,6 +27,6 @@ public class FormatAnnotations implements FormatterStepFactory {
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		// TODO: Permit customization in Maven build files.
-		return FormatAnnotationsStep.create(Collections.emptyList(), Collections.emptyList());
+		return FormatAnnotationsStep.create(emptyList(), emptyList());
 	}
 }

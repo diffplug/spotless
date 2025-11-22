@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
@@ -42,7 +43,7 @@ class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 
 		setFile("gradle.properties").toLines();
 		String newestSupported = gradleRunner().withArguments("spotlessCheck").build().getOutput();
-		Assertions.assertThat(newestSupported.replace("\r", ""))
+		assertThat(newestSupported.replace("\r", ""))
 				.startsWith(
 						"> Task :spotlessInternalRegisterDependencies\n")
 				.contains(

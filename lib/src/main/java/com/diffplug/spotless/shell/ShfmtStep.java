@@ -15,14 +15,15 @@
  */
 package com.diffplug.spotless.shell;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -111,7 +112,7 @@ public final class ShfmtStep {
 
 		EqualityState(String version, ForeignExe pathToExe) {
 			this.version = version;
-			this.exe = Objects.requireNonNull(pathToExe);
+			this.exe = requireNonNull(pathToExe);
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
@@ -123,9 +124,9 @@ public final class ShfmtStep {
 
 			// This will ensure that the next file name is retrieved on every format
 			final List<String> finalArgs = Stream.concat(args.stream(), Stream.of(file.getAbsolutePath()))
-					.collect(Collectors.toList());
+					.collect(toList());
 
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), finalArgs).assertExitZero(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(UTF_8), finalArgs).assertExitZero(UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {

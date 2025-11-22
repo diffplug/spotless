@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
  */
 package com.diffplug.spotless;
 
-import java.util.Objects;
-
-import org.assertj.core.api.Assertions;
+import static java.util.Objects.requireNonNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class StepHarnessBase implements AutoCloseable {
 	enum RoundTrip {
@@ -28,12 +27,12 @@ class StepHarnessBase implements AutoCloseable {
 
 	protected StepHarnessBase(Formatter formatter, RoundTrip roundTrip) {
 		if (roundTrip == RoundTrip.DONT_ROUNDTRIP) {
-			this.formatter = Objects.requireNonNull(formatter);
+			this.formatter = requireNonNull(formatter);
 			return;
 		}
 		Formatter roundTripped = SerializableEqualityTester.reserialize(formatter);
 		if (roundTrip == RoundTrip.ASSERT_EQUAL) {
-			Assertions.assertThat(roundTripped).isEqualTo(formatter);
+			assertThat(roundTripped).isEqualTo(formatter);
 		}
 		this.formatter = roundTripped;
 	}

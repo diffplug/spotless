@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 final class PluginGradlePreconditions {
 	// prevent direct instantiation
@@ -23,17 +23,17 @@ final class PluginGradlePreconditions {
 
 	@SafeVarargs
 	static <T> T[] requireElementsNonNull(T... elements) {
-		Objects.requireNonNull(elements);
+		requireNonNull(elements);
 		for (T element : elements) {
-			Objects.requireNonNull(element);
+			requireNonNull(element);
 		}
 		return elements;
 	}
 
 	static <T, I extends Iterable<T>> I requireElementsNonNull(I elements) {
-		Objects.requireNonNull(elements);
+		requireNonNull(elements);
 		for (Object element : elements) {
-			Objects.requireNonNull(element);
+			requireNonNull(element);
 		}
 		return elements;
 	}

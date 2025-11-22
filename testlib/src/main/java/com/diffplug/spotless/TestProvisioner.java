@@ -15,12 +15,13 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Comparator.reverseOrder;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -86,7 +87,7 @@ public class TestProvisioner {
 				// delete the temp dir
 				try {
 					java.nio.file.Files.walk(tempDir.toPath())
-							.sorted(Comparator.reverseOrder())
+							.sorted(reverseOrder())
 							.map(Path::toFile)
 							.forEach(File::delete);
 				} catch (IOException e) {

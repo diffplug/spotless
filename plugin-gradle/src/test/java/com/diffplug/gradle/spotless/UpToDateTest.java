@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Test;
@@ -88,8 +89,8 @@ class UpToDateTest extends GradleIntegrationHarness {
 		// the format task is UP-TO-DATE (same inputs), but the apply tasks will run again
 		pauseForFilesystem();
 		BuildResult buildResult = gradleRunner().withArguments("spotlessApply").build();
-		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.UP_TO_DATE)).containsExactly(":spotlessInternalRegisterDependencies", ":spotlessMisc");
-		Assertions.assertThat(buildResult.taskPaths(TaskOutcome.SUCCESS)).containsExactly(":spotlessMiscApply", ":spotlessApply");
+		assertThat(buildResult.taskPaths(TaskOutcome.UP_TO_DATE)).containsExactly(":spotlessInternalRegisterDependencies", ":spotlessMisc");
+		assertThat(buildResult.taskPaths(TaskOutcome.SUCCESS)).containsExactly(":spotlessMiscApply", ":spotlessApply");
 		assertFile("README.md").hasContent("abc");
 
 		// and it'll take two more runs to get to fully UP-TO-DATE

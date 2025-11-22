@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package com.diffplug.spotless.glue.java;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 
 import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorer;
@@ -23,6 +24,6 @@ import eu.solven.cleanthat.engine.java.refactorer.JavaRefactorer;
 public class JavaCleanthatRefactorerFuncTest {
 	@Test
 	public void testMutatorsDetection() {
-		Assertions.assertThat(JavaRefactorer.getAllIncluded()).isNotEmpty();
+		assertThat(JavaRefactorer.getAllIncluded()).isNotEmpty();
 	}
 }

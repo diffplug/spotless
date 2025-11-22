@@ -15,12 +15,13 @@
  */
 package com.diffplug.spotless.json;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -46,7 +47,7 @@ public final class JsonSimpleStep implements Serializable {
 	}
 
 	public static FormatterStep create(int indent, Provisioner provisioner) {
-		Objects.requireNonNull(provisioner, "provisioner cannot be null");
+		requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.create(NAME,
 				new JsonSimpleStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + DEFAULT_VERSION, provisioner)), indent),
 				JsonSimpleStep::equalityState,

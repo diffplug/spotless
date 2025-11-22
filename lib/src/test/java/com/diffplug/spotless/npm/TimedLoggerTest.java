@@ -18,12 +18,13 @@ package com.diffplug.spotless.npm;
 import static com.diffplug.spotless.npm.TimedLogger.MESSAGE_PREFIX_BEGIN;
 import static com.diffplug.spotless.npm.TimedLogger.MESSAGE_PREFIX_END;
 import static com.diffplug.spotless.npm.TimedLogger.MESSAGE_SUFFIX_TOOK;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -115,14 +116,14 @@ class TimedLoggerTest {
 
 	@Test
 	void itThrowsExceptionsInChecked() {
-		Assertions.assertThatThrownBy(() -> timedLogger.withInfo("This should be logged").runChecked(() -> {
+		assertThatThrownBy(() -> timedLogger.withInfo("This should be logged").runChecked(() -> {
 			throw new Exception("This is an exception");
 		})).isInstanceOf(Exception.class).hasMessage("This is an exception");
 	}
 
 	@Test
 	void itLogsEvenWhenExceptionsAreThrown() {
-		Assertions.assertThatThrownBy(() -> timedLogger.withInfo("This should be logged").run(() -> {
+		assertThatThrownBy(() -> timedLogger.withInfo("This should be logged").run(() -> {
 			testTicker.tickMillis(2);
 			throw new Exception("This is an exception");
 		})).isInstanceOf(RuntimeException.class)
@@ -141,7 +142,7 @@ class TimedLoggerTest {
 			return "This is the result";
 		});
 
-		Assertions.assertThat(result).isEqualTo("This is the result");
+		assertThat(result).isEqualTo("This is the result");
 
 		testLogger.assertEvents(2);
 		testLogger.assertHasEventWithMessageAndArguments(MESSAGE_PREFIX_BEGIN);
@@ -192,16 +193,16 @@ class TimedLoggerTest {
 		}
 
 		public void assertNoEvents() {
-			Assertions.assertThat(getEvents()).isEmpty();
+			assertThat(getEvents()).isEmpty();
 		}
 
 		public void assertEvents(int eventCount) {
-			Assertions.assertThat(getEvents()).hasSize(eventCount);
+			assertThat(getEvents()).hasSize(eventCount);
 		}
 
 		public void assertHasEventWithMessageAndArguments(String message, Object... arguments) {
 
-			Assertions.assertThat(getEvents()).haveAtLeastOne(new Condition<>(event -> {
+			assertThat(getEvents()).haveAtLeastOne(new Condition<>(event -> {
 				if (!event.msg().contains(message)) {
 					return false;
 				}

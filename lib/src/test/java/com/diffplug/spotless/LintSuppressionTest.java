@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 package com.diffplug.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -39,7 +39,7 @@ public class LintSuppressionTest {
 	private Formatter formatter() {
 		return Formatter.builder()
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.encoding(StandardCharsets.UTF_8)
+				.encoding(UTF_8)
 				.steps(List.of(EndWithNewlineStep.create()))
 				.build();
 	}

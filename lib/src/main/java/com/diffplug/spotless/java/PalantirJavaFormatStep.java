@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.java;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -77,9 +78,9 @@ public final class PalantirJavaFormatStep implements Serializable {
 	 * format style.
 	 */
 	public static FormatterStep create(String version, String style, boolean formatJavadoc, Provisioner provisioner) {
-		Objects.requireNonNull(version, "version");
-		Objects.requireNonNull(style, "style");
-		Objects.requireNonNull(provisioner, "provisioner");
+		requireNonNull(version, "version");
+		requireNonNull(style, "style");
+		requireNonNull(provisioner, "provisioner");
 
 		return FormatterStep.create(NAME,
 				new PalantirJavaFormatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner)), version, style, formatJavadoc),

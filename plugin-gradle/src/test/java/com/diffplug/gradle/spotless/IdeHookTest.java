@@ -15,13 +15,14 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -57,13 +58,13 @@ class IdeHookTest extends GradleIntegrationHarness {
 				"  }",
 				"}");
 		dirty = new File(rootFolder(), "DIRTY.md");
-		Files.write("ABC".getBytes(StandardCharsets.UTF_8), dirty);
+		Files.write("ABC".getBytes(UTF_8), dirty);
 		clean = new File(rootFolder(), "CLEAN.md");
-		Files.write("abc".getBytes(StandardCharsets.UTF_8), clean);
+		Files.write("abc".getBytes(UTF_8), clean);
 		diverge = new File(rootFolder(), "DIVERGE.md");
-		Files.write("ABC".getBytes(StandardCharsets.UTF_8), diverge);
+		Files.write("ABC".getBytes(UTF_8), diverge);
 		outofbounds = new File(rootFolder(), "OUTOFBOUNDS.md");
-		Files.write("ABC".getBytes(StandardCharsets.UTF_8), outofbounds);
+		Files.write("ABC".getBytes(UTF_8), outofbounds);
 	}
 
 	private static Stream<Boolean> configurationCacheProvider() {
@@ -106,39 +107,39 @@ class IdeHookTest extends GradleIntegrationHarness {
 	@MethodSource("configurationCacheProvider")
 	void dirty(boolean configurationCache) throws IOException {
 		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + dirty.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
-		Assertions.assertThat(output).isEqualTo("abc");
-		Assertions.assertThat(error).startsWith("IS DIRTY");
+		assertThat(output).isEqualTo("abc");
+		assertThat(error).startsWith("IS DIRTY");
 	}
 
 	@ParameterizedTest
 	@MethodSource("configurationCacheProvider")
 	void clean(boolean configurationCache) throws IOException {
 		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + clean.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
-		Assertions.assertThat(output).isEmpty();
-		Assertions.assertThat(error).startsWith("IS CLEAN");
+		assertThat(output).isEmpty();
+		assertThat(error).startsWith("IS CLEAN");
 	}
 
 	@ParameterizedTest
 	@MethodSource("configurationCacheProvider")
 	void diverge(boolean configurationCache) throws IOException {
 		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + diverge.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
-		Assertions.assertThat(output).isEmpty();
-		Assertions.assertThat(error).startsWith("DID NOT CONVERGE");
+		assertThat(output).isEmpty();
+		assertThat(error).startsWith("DID NOT CONVERGE");
 	}
 
 	@ParameterizedTest
 	@MethodSource("configurationCacheProvider")
 	void outofbounds(boolean configurationCache) throws IOException {
 		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + outofbounds.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
-		Assertions.assertThat(output).isEmpty();
-		Assertions.assertThat(error).isEmpty();
+		assertThat(output).isEmpty();
+		assertThat(error).isEmpty();
 	}
 
 	@ParameterizedTest
 	@MethodSource("configurationCacheProvider")
 	void notAbsolute(boolean configurationCache) throws IOException {
 		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=build.gradle", "-PspotlessIdeHookUseStdOut");
-		Assertions.assertThat(output).isEmpty();
-		Assertions.assertThat(error).contains("Argument passed to spotlessIdeHook must be an absolute path");
+		assertThat(output).isEmpty();
+		assertThat(error).contains("Argument passed to spotlessIdeHook must be an absolute path");
 	}
 }

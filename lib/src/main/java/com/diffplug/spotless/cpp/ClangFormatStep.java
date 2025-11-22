@@ -15,13 +15,14 @@
  */
 package com.diffplug.spotless.cpp;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -116,7 +117,7 @@ public final class ClangFormatStep {
 		EqualityState(String version, @Nullable String style, ForeignExe pathToExe) {
 			this.version = version;
 			this.style = style;
-			this.exe = Objects.requireNonNull(pathToExe);
+			this.exe = requireNonNull(pathToExe);
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
@@ -130,7 +131,7 @@ public final class ClangFormatStep {
 			}
 			final String[] processArgs = args.toArray(new String[args.size() + 1]);
 			processArgs[processArgs.length - 1] = "--assume-filename=" + file.getName();
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), processArgs).assertExitZero(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(UTF_8), processArgs).assertExitZero(UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {

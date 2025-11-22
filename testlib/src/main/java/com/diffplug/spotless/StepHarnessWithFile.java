@@ -15,13 +15,13 @@
  */
 package com.diffplug.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Objects;
 
 import com.diffplug.selfie.StringSelfie;
 
@@ -31,15 +31,15 @@ public final class StepHarnessWithFile extends StepHarnessBase {
 
 	private StepHarnessWithFile(ResourceHarness harness, Formatter formatter, RoundTrip roundTrip) {
 		super(formatter, roundTrip);
-		this.harness = Objects.requireNonNull(harness);
+		this.harness = requireNonNull(harness);
 	}
 
 	/** Creates a harness for testing steps which do depend on the file. */
 	public static StepHarnessWithFile forStep(ResourceHarness harness, FormatterStep step) {
 		return forFormatter(harness, Formatter.builder()
-				.encoding(StandardCharsets.UTF_8)
+				.encoding(UTF_8)
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.steps(Collections.singletonList(step))
+				.steps(singletonList(step))
 				.build());
 	}
 

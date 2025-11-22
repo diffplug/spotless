@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,7 +26,6 @@ import java.io.ObjectStreamException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -73,7 +74,7 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 	// override serialize input
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		state = (T) Objects.requireNonNull(in.readObject());
+		state = (T) requireNonNull(in.readObject());
 	}
 
 	// override serialize input

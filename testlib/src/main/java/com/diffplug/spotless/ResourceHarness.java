@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedReader;
@@ -24,7 +25,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -92,7 +92,7 @@ public class ResourceHarness {
 					throw new RuntimeException("Resource not found in classpath: '%s' - did you mean '/%1$s'?".formatted(path));
 				}
 			}
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8))) {
 				String resource;
 				while ((resource = br.readLine()) != null) {
 					filenames.add(resource);
@@ -107,7 +107,7 @@ public class ResourceHarness {
 	}
 
 	public String read(String path) throws IOException {
-		return read(newFile(path).toPath(), StandardCharsets.UTF_8);
+		return read(newFile(path).toPath(), UTF_8);
 	}
 
 	public String read(Path path, Charset encoding) throws IOException {
@@ -127,7 +127,7 @@ public class ResourceHarness {
 	public static String getTestResource(String filename) {
 		Optional<URL> resourceUrl = getTestResourceUrl(filename);
 		if (resourceUrl.isPresent()) {
-			return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(resourceUrl.orElseThrow(), StandardCharsets.UTF_8)));
+			return ThrowingEx.get(() -> LineEnding.toUnix(Resources.toString(resourceUrl.orElseThrow(), UTF_8)));
 		}
 		throw new IllegalArgumentException("No such resource " + filename);
 	}
@@ -164,7 +164,7 @@ public class ResourceHarness {
 		String name = lastSlash >= 0 ? filename.substring(lastSlash) : filename;
 		File file = newFile(name);
 		file.getParentFile().mkdirs();
-		ThrowingEx.run(() -> Files.write(file.toPath(), fileContentsProcessor.apply(getTestResource(filename)).getBytes(StandardCharsets.UTF_8)));
+		ThrowingEx.run(() -> Files.write(file.toPath(), fileContentsProcessor.apply(getTestResource(filename)).getBytes(UTF_8)));
 		return file;
 	}
 
@@ -186,11 +186,11 @@ public class ResourceHarness {
 		}
 
 		public void hasContent(String expected) {
-			hasContent(expected, StandardCharsets.UTF_8);
+			hasContent(expected, UTF_8);
 		}
 
 		public void hasDifferentContent(String expected) {
-			hasDifferentContent(expected, StandardCharsets.UTF_8);
+			hasDifferentContent(expected, UTF_8);
 		}
 
 		public void hasContent(String expected, Charset charset) {
@@ -236,7 +236,7 @@ public class ResourceHarness {
 		}
 
 		public File toContent(String content) {
-			return toContent(content, StandardCharsets.UTF_8);
+			return toContent(content, UTF_8);
 		}
 
 		public File toContent(String content, Charset charset) {
@@ -245,7 +245,7 @@ public class ResourceHarness {
 		}
 
 		public File toResource(String path) {
-			ThrowingEx.run(() -> Files.write(file.toPath(), getTestResource(path).getBytes(StandardCharsets.UTF_8)));
+			ThrowingEx.run(() -> Files.write(file.toPath(), getTestResource(path).getBytes(UTF_8)));
 			return file;
 		}
 

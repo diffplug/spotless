@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,23 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class ProvisionerTest {
 	@Test
 	void testManipulation() {
-		Provisioner provisioner = (withTransitives, deps) -> deps.stream().map(File::new).collect(Collectors.toSet());
-		Assertions.assertThat(provisioner.provisionWithTransitives(true, "a"))
+		Provisioner provisioner = (withTransitives, deps) -> deps.stream().map(File::new).collect(toSet());
+		assertThat(provisioner.provisionWithTransitives(true, "a"))
 				.containsExactlyInAnyOrder(new File("a"));
-		Assertions.assertThat(provisioner.provisionWithTransitives(true, "a", "a"))
+		assertThat(provisioner.provisionWithTransitives(true, "a", "a"))
 				.containsExactlyInAnyOrder(new File("a"));
-		Assertions.assertThat(provisioner.provisionWithTransitives(true, Arrays.asList("a", "a")))
+		assertThat(provisioner.provisionWithTransitives(true, Arrays.asList("a", "a")))
 				.containsExactlyInAnyOrder(new File("a"));
 	}
 }

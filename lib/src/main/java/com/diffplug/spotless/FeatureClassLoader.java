@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +24,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.security.ProtectionDomain;
-import java.util.Objects;
 
 /**
  * This class loader is used to load classes of Spotless features from a search
@@ -56,7 +57,7 @@ class FeatureClassLoader extends URLClassLoader {
 	 */
 	FeatureClassLoader(URL[] urls, ClassLoader buildToolClassLoader) {
 		super(urls, getParentClassLoader());
-		Objects.requireNonNull(buildToolClassLoader);
+		requireNonNull(buildToolClassLoader);
 		this.buildToolClassLoader = buildToolClassLoader;
 	}
 

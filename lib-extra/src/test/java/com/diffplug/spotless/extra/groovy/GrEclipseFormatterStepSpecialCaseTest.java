@@ -15,7 +15,8 @@
  */
 package com.diffplug.spotless.extra.groovy;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.StepHarness;
@@ -30,7 +31,7 @@ public class GrEclipseFormatterStepSpecialCaseTest {
 	 */
 	@Test
 	public void issue_1657() {
-		Assertions.assertThrows(RuntimeException.class, () -> StepHarness.forStep(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()).build())
+		assertThrows(RuntimeException.class, () -> StepHarness.forStep(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()).build())
 				.testResourceUnaffected("groovy/greclipse/format/SomeClass.test"));
 	}
 

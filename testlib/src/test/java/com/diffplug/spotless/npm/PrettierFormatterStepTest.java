@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,9 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.util.Collections.emptyMap;
+
 import java.io.File;
-import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Nested;
@@ -118,7 +119,7 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 					buildDir(),
 					null,
 					npmPathResolver(),
-					new PrettierConfig(null, Collections.emptyMap()));
+					new PrettierConfig(null, emptyMap()));
 
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
 				stepHarness.testResource("test.json", dirtyFile, cleanFile);

@@ -15,13 +15,16 @@
  */
 package com.diffplug.spotless.glue.ktlint.compat;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toUnmodifiableSet;
+
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -91,7 +94,7 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 		Set<RuleProvider> allRuleProviders = ServiceLoader.load(RuleSetProviderV3.class, RuleSetProviderV3.class.getClassLoader())
 				.stream()
 				.flatMap(loader -> loader.get().getRuleProviders().stream())
-				.collect(Collectors.toUnmodifiableSet());
+				.collect(toUnmodifiableSet());
 
 		EditorConfigDefaults editorConfig = EditorConfigDefaults.Companion.load(editorConfigPath, RuleProviderKt.propertyTypes(allRuleProviders));
 		EditorConfigOverride editorConfigOverride;
@@ -100,7 +103,7 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 		} else {
 			editorConfigOverride = createEditorConfigOverride(
 					editorConfig,
-					allRuleProviders.stream().map(RuleProvider::createNewRuleInstance).collect(Collectors.toList()),
+					allRuleProviders.stream().map(RuleProvider::createNewRuleInstance).collect(toList()),
 					editorConfigOverrideMap);
 		}
 
@@ -128,7 +131,7 @@ public class KtLintCompat1Dot0Dot0Adapter implements KtLintCompatAdapter {
 		Map<String, EditorConfigProperty<?>> supportedProperties = Stream
 				.concat(ruleProperties, DEFAULT_EDITOR_CONFIG_PROPERTIES.stream())
 				.distinct()
-				.collect(Collectors.toMap(EditorConfigProperty::getName, property -> property));
+				.collect(toMap(EditorConfigProperty::getName, property -> property));
 
 		// The default style had been changed from intellij_idea to ktlint_official in version 1.0.0
 		boolean isCodeStyleDefinedInEditorConfig = editorConfig.getValue().getSections().stream()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package com.diffplug.spotless.maven.gherkin;
 
-import java.util.Collections;
+import static java.util.Collections.emptySet;
+
 import java.util.Set;
 
 import org.apache.maven.project.MavenProject;
@@ -28,7 +29,7 @@ import com.diffplug.spotless.maven.FormatterFactory;
 public class Gherkin extends FormatterFactory {
 	@Override
 	public Set<String> defaultIncludes(MavenProject project) {
-		return Collections.emptySet();
+		return emptySet();
 	}
 
 	@Override

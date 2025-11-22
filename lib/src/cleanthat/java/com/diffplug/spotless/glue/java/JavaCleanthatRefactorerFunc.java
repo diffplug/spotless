@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.glue.java;
 
+import static java.util.Collections.emptyList;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -48,8 +49,8 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc.NeedsFile {
 
 	public JavaCleanthatRefactorerFunc(String jdkVersion, List<String> included, List<String> excluded, boolean includeDraft) {
 		this.jdkVersion = jdkVersion == null ? IJdkVersionConstants.JDK_8 : jdkVersion;
-		this.included = included == null ? Collections.emptyList() : included;
-		this.excluded = excluded == null ? Collections.emptyList() : excluded;
+		this.included = included == null ? emptyList() : included;
+		this.excluded = excluded == null ? emptyList() : excluded;
 		this.includeDraft = includeDraft;
 	}
 

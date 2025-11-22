@@ -15,8 +15,9 @@
  */
 package com.diffplug.spotless.cpp;
 
+import static java.util.stream.Collectors.joining;
+
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /** Common utilities for C/C++ */
 public final class CppDefaults {
@@ -37,6 +38,6 @@ public final class CppDefaults {
 			"int8_t", "int16_t", "int32_t", "int64_t",
 			"__int8_t", "__int16_t", "__int32_t", "__int64_t",
 			"uint8_t", "uint16_t", "uint32_t", "uint64_t")
-			.stream().map(s -> "(?<![0-9a-zA-Z]+)" + s.replaceAll("#", "\\\\#").replaceAll(" ", "[\\\\n\\\\s]+") + "[\\*\\s\\n]+").collect(Collectors.joining("|"));
+			.stream().map(s -> "(?<![0-9a-zA-Z]+)" + s.replaceAll("#", "\\\\#").replaceAll(" ", "[\\\\n\\\\s]+") + "[\\*\\s\\n]+").collect(joining("|"));
 
 }

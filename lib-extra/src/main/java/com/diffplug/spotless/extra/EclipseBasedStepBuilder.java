@@ -15,15 +15,16 @@
  */
 package com.diffplug.spotless.extra;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 
 import com.diffplug.common.base.Errors;
@@ -69,10 +70,10 @@ public class EclipseBasedStepBuilder {
 
 	/** Initialize valid default configuration, taking latest version */
 	public EclipseBasedStepBuilder(String formatterName, String formatterStepExt, Provisioner jarProvisioner, SerializedFunction<State, FormatterFunc> stateToFormatter) {
-		this.formatterName = Objects.requireNonNull(formatterName, "formatterName");
-		this.formatterStepExt = Objects.requireNonNull(formatterStepExt, "formatterStepExt");
-		this.jarProvisioner = Objects.requireNonNull(jarProvisioner, "jarProvisioner");
-		this.stateToFormatter = Objects.requireNonNull(stateToFormatter, "stateToFormatter");
+		this.formatterName = requireNonNull(formatterName, "formatterName");
+		this.formatterStepExt = requireNonNull(formatterStepExt, "formatterStepExt");
+		this.jarProvisioner = requireNonNull(jarProvisioner, "jarProvisioner");
+		this.stateToFormatter = requireNonNull(stateToFormatter, "stateToFormatter");
 		formatterVersion = "No version set"; //Will fail creation
 	}
 
@@ -91,7 +92,7 @@ public class EclipseBasedStepBuilder {
 			throw new IllegalArgumentException("No such version " + version + ", expected at " + url);
 		}
 		byte[] content = toByteArray(depsFile);
-		String allLines = new String(content, StandardCharsets.UTF_8);
+		String allLines = new String(content, UTF_8);
 		String[] lines = allLines.split("\n");
 		dependencies.clear();
 		for (String line : lines) {

@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless.gherkin;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -47,7 +48,7 @@ public final class GherkinUtilsStep implements Serializable {
 
 	public static FormatterStep create(GherkinUtilsConfig gherkinSimpleConfig,
 			String formatterVersion, Provisioner provisioner) {
-		Objects.requireNonNull(provisioner, "provisioner cannot be null");
+		requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.create(NAME,
 				new GherkinUtilsStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + formatterVersion, provisioner)), gherkinSimpleConfig),
 				GherkinUtilsStep::equalityState,

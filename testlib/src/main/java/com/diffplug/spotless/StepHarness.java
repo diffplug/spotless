@@ -15,10 +15,10 @@
  */
 package com.diffplug.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import com.diffplug.selfie.Selfie;
@@ -40,7 +40,7 @@ public final class StepHarness extends StepHarnessBase {
 		return forFormatter(Formatter.builder()
 				.steps(Arrays.asList(steps))
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.encoding(StandardCharsets.UTF_8)
+				.encoding(UTF_8)
 				.build());
 	}
 
@@ -53,7 +53,7 @@ public final class StepHarness extends StepHarnessBase {
 		return new StepHarness(Formatter.builder()
 				.steps(Arrays.asList(step))
 				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
-				.encoding(StandardCharsets.UTF_8)
+				.encoding(UTF_8)
 				.build(), RoundTrip.DONT_ROUNDTRIP);
 	}
 

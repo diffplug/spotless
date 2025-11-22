@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.glue.java;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nonnull;
 
@@ -47,8 +47,8 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 	private final boolean reorderImports;
 
 	public GoogleJavaFormatFormatterFunc(@Nonnull String version, @Nonnull String style, boolean reflowStrings, boolean reorderImports, boolean formatJavadoc) {
-		this.version = Objects.requireNonNull(version);
-		this.formatterStyle = Style.valueOf(Objects.requireNonNull(style));
+		this.version = requireNonNull(version);
+		this.formatterStyle = Style.valueOf(requireNonNull(style));
 		this.reflowStrings = reflowStrings;
 		this.reorderImports = reorderImports;
 

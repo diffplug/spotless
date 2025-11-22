@@ -15,13 +15,14 @@
  */
 package com.diffplug.spotless.generic;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
@@ -33,8 +34,8 @@ public final class NativeCmdStep {
 	private NativeCmdStep() {}
 
 	public static FormatterStep create(String name, File pathToExe, List<String> arguments) {
-		Objects.requireNonNull(name, "name");
-		Objects.requireNonNull(pathToExe, "pathToExe");
+		requireNonNull(name, "name");
+		requireNonNull(pathToExe, "pathToExe");
 		return FormatterStep.createLazy(name, () -> new State(FileSignature.promise(pathToExe), arguments), State::toRuntime, Runtime::toFunc);
 	}
 
@@ -69,7 +70,7 @@ public final class NativeCmdStep {
 			if (arguments != null) {
 				argumentsWithPathToExe.addAll(arguments);
 			}
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), argumentsWithPathToExe).assertExitZero(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(UTF_8), argumentsWithPathToExe).assertExitZero(UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {

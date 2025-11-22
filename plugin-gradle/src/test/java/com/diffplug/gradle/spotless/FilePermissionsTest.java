@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 DiffPlug
+ * Copyright 2020-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.IOException;
@@ -23,7 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 
 import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 
@@ -55,6 +55,6 @@ class FilePermissionsTest extends GradleIntegrationHarness {
 	}
 
 	private AbstractStringAssert<?> assertPermissions(Path path) throws IOException {
-		return Assertions.assertThat(PosixFilePermissions.toString(Files.getPosixFilePermissions(path)));
+		return assertThat(PosixFilePermissions.toString(Files.getPosixFilePermissions(path)));
 	}
 }

@@ -16,6 +16,7 @@
 package com.diffplug.spotless.npm;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.UUID.randomUUID;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,7 +116,7 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 			assertNodeServerDirReady();
 			LongRunningProcess server = null;
 			try {
-				final UUID nodeServerInstanceId = UUID.randomUUID();
+				final UUID nodeServerInstanceId = randomUUID();
 				// The npm process will output the randomly selected port of the http server process to 'server-<id>.port' file
 				// so in order to be safe, remove such a file if it exists before starting.
 				final File serverPortFile = new File(this.nodeServerLayout.nodeModulesDir(), "server-%s.port".formatted(nodeServerInstanceId));

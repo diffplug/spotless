@@ -15,12 +15,13 @@
  */
 package com.diffplug.spotless.extra.glue.groovy;
 
+import static java.util.Collections.synchronizedList;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -111,7 +112,7 @@ public class GrEclipseFormatterStepImpl {
 			 * We need a synchronized list here, in case multiple instantiations
 			 * run in parallel.
 			 */
-			errors = Collections.synchronizedList(new ArrayList<>());
+			errors = synchronizedList(new ArrayList<>());
 			ILog groovyLogger = GroovyCoreActivator.getDefault().getLog();
 			groovyLogger.addLogListener(this);
 			synchronized (GroovyLogManager.manager) {

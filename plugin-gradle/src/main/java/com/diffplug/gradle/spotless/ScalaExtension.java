@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
-import java.util.Objects;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -44,24 +45,22 @@ public class ScalaExtension extends FormatExtension implements JvmLang {
 
 	public class ScalaFmtConfig {
 		final String version;
-		@Nullable
-		String scalaMajorVersion;
-		@Nullable
-		Object configFile;
+		@Nullable String scalaMajorVersion;
+		@Nullable Object configFile;
 
 		ScalaFmtConfig(String version) {
-			this.version = Objects.requireNonNull(version);
+			this.version = requireNonNull(version);
 			addStep(createStep());
 		}
 
 		public ScalaFmtConfig configFile(Object configFile) {
-			this.configFile = Objects.requireNonNull(configFile);
+			this.configFile = requireNonNull(configFile);
 			replaceStep(createStep());
 			return this;
 		}
 
 		public ScalaFmtConfig scalaMajorVersion(String scalaMajorVersion) {
-			this.scalaMajorVersion = Objects.requireNonNull(scalaMajorVersion);
+			this.scalaMajorVersion = requireNonNull(scalaMajorVersion);
 			replaceStep(createStep());
 			return this;
 		}

@@ -15,6 +15,10 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -27,9 +31,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.diffplug.spotless.ThrowingEx;
@@ -43,11 +45,11 @@ final class NpmResourceHelper {
 	}
 
 	static void writeUtf8StringToFile(File file, String stringToWrite) throws IOException {
-		Files.write(file.toPath(), stringToWrite.getBytes(StandardCharsets.UTF_8));
+		Files.write(file.toPath(), stringToWrite.getBytes(UTF_8));
 	}
 
 	static void writeUtf8StringToOutputStream(String stringToWrite, OutputStream outputStream) throws IOException {
-		final byte[] bytes = stringToWrite.getBytes(StandardCharsets.UTF_8);
+		final byte[] bytes = stringToWrite.getBytes(UTF_8);
 		outputStream.write(bytes);
 	}
 
@@ -62,7 +64,7 @@ final class NpmResourceHelper {
 	static String readUtf8StringFromClasspath(Class<?> clazz, String... resourceNames) {
 		return Arrays.stream(resourceNames)
 				.map(resourceName -> readUtf8StringFromClasspath(clazz, resourceName))
-				.collect(Collectors.joining("\n"));
+				.collect(joining("\n"));
 	}
 
 	static String readUtf8StringFromClasspath(Class<?> clazz, String resourceName) {
@@ -130,7 +132,7 @@ final class NpmResourceHelper {
 	}
 
 	static File copyFileToDirAtSubpath(File file, File targetDir, String relativePath) {
-		Objects.requireNonNull(relativePath);
+		requireNonNull(relativePath);
 		try {
 			// create file pointing to relativePath in targetDir
 			final Path relativeTargetFile = Path.of(targetDir.getAbsolutePath(), relativePath);
@@ -148,13 +150,13 @@ final class NpmResourceHelper {
 	}
 
 	static String md5(String fileContent, String... additionalFileContents) {
-		Objects.requireNonNull(fileContent, "fileContent must not be null");
+		requireNonNull(fileContent, "fileContent must not be null");
 		Stream<String> additionalFileContentStream = Stream.concat(
 				Stream.of(fileContent),
 				Stream.of(additionalFileContents));
 		MessageDigest md = ThrowingEx.get(() -> MessageDigest.getInstance("MD5"));
-		String stringToHash = additionalFileContentStream.collect(Collectors.joining(MD5_STRING_DELIMITER));
-		md.update(stringToHash.getBytes(StandardCharsets.UTF_8));
+		String stringToHash = additionalFileContentStream.collect(joining(MD5_STRING_DELIMITER));
+		md.update(stringToHash.getBytes(UTF_8));
 
 		byte[] digest = md.digest();
 		// convert byte array digest to hex string

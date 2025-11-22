@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.markdown;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -48,8 +49,8 @@ public final class FlexmarkStep implements Serializable {
 
 	/** Creates a formatter step for the given version. */
 	public static FormatterStep create(String version, Provisioner provisioner, FlexmarkConfig config) {
-		Objects.requireNonNull(version, "version");
-		Objects.requireNonNull(provisioner, "provisioner");
+		requireNonNull(version, "version");
+		requireNonNull(provisioner, "provisioner");
 		return FormatterStep.create(NAME,
 				new FlexmarkStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner)), config),
 				FlexmarkStep::equalityState,

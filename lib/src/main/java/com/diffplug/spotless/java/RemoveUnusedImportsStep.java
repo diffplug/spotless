@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.java;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.Provisioner;
@@ -48,7 +49,7 @@ public final class RemoveUnusedImportsStep implements Serializable {
 	}
 
 	public static FormatterStep create(String unusedImportRemover, Provisioner provisioner) {
-		Objects.requireNonNull(provisioner, "provisioner");
+		requireNonNull(provisioner, "provisioner");
 		switch (unusedImportRemover) {
 		case GJF:
 			return GoogleJavaFormatStep.createRemoveUnusedImportsOnly(provisioner);

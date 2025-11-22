@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 
 import javax.inject.Inject;
@@ -42,7 +42,7 @@ public class FreshMarkExtension extends FormatExtension {
 	}
 
 	public void properties(Action<Map<String, Object>> action) {
-		propertyActions.add(Objects.requireNonNull(action));
+		propertyActions.add(requireNonNull(action));
 	}
 
 	public void propertiesFile(Object... files) {

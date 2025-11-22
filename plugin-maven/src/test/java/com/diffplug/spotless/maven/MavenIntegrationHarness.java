@@ -16,7 +16,9 @@
 package com.diffplug.spotless.maven;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -25,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -33,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -272,7 +272,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 
 	protected String createPomXmlContent(String pomTemplate, Map<String, Object> params) throws IOException {
 		URL url = MavenIntegrationHarness.class.getResource(pomTemplate);
-		try (BufferedReader reader = Resources.asCharSource(url, StandardCharsets.UTF_8).openBufferedStream()) {
+		try (BufferedReader reader = Resources.asCharSource(url, UTF_8).openBufferedStream()) {
 			Mustache mustache = mustacheFactory.compile(reader, "pom");
 			StringWriter writer = new StringWriter();
 			mustache.execute(writer, params);
@@ -361,7 +361,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		String concatenatedError = result.stdOutUtf8().lines()
 				.map(line -> line.startsWith(ERROR_PREFIX) ? line.substring(ERROR_PREFIX.length()) : null)
 				.filter(Objects::nonNull)
-				.collect(Collectors.joining("\n"));
+				.collect(joining("\n"));
 
 		String sanitizedVersion = concatenatedError.replaceFirst("com\\.diffplug\\.spotless:spotless-maven-plugin:([^:]+):", "com.diffplug.spotless:spotless-maven-plugin:VERSION:");
 

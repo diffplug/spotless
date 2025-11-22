@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.maven.npm;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.AbstractMap;
@@ -24,7 +26,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -93,6 +94,6 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 		return devDependencyProperties.stringPropertyNames()
 				.stream()
 				.map(name -> new AbstractMap.SimpleEntry<>(name, devDependencyProperties.getProperty(name)))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+				.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 }

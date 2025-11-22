@@ -1,16 +1,32 @@
-apply plugin: 'net.ltgt.errorprone'
+import static java.lang.System.getenv
 
-dependencies {
-	errorprone('com.google.errorprone:error_prone_core:2.42.0')
-	errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.26.0')
-}
+apply plugin: 'net.ltgt.errorprone'
 
 tasks.withType(JavaCompile).configureEach {
 	options.errorprone {
-		disable( // consider fix, or reasoning.
+		disableAllWarnings = true // https://github.com/diffplug/spotless/issues/2745 https://github.com/google/error-prone/issues/5365
+		disable(
+				// consider fix, or reasoning.
+				'AnnotateFormatMethod', // We don`t want to use ErrorProne's annotations.
+				'CheckReturnValue', // We don`t want to use ErrorProne's annotations.
+				'CollectorMutability', // for freedom global exclude, might whitelist. https://github.com/diffplug/spotless/pull/2744#discussion_r2553042130
+				'DoNotCallSuggester', // We don`t want to use ErrorProne's annotations.
 				'FunctionalInterfaceMethodChanged',
+				'ImmutableEnumChecker', // We don`t want to use ErrorProne's annotations.
+				'InlineMeSuggester', // We don`t want to use ErrorProne's annotations.
+				'JUnitClassModifiers',
 				'JavaxInjectOnAbstractMethod',
+				'LexicographicalAnnotationAttributeListing',
+				'NonStaticImport',
+				'StaticImport',
+				'LexicographicalAnnotationListing',
 				'OverridesJavaxInjectableMethod',
+				'ReturnValueIgnored', // We don`t want to use ErrorProne's annotations.
+				// bug
+				'FieldMissingNullable',
+				'Slf4jLogStatement',
+				'Slf4jLoggerDeclaration',
+				'Var'
 				)
 		error(
 				'AmbiguousJsonCreator',
@@ -26,14 +42,17 @@ tasks.withType(JavaCompile).configureEach {
 				'IdentityConversion',
 				'ImmutablesSortedSetComparator',
 				'IsInstanceLambdaUsage',
+				'MissingOverride',
 				'MockitoMockClassReference',
 				'MockitoStubbing',
 				'NestedOptionals',
+				'NonStaticImport',
 				'PrimitiveComparison',
 				'RedundantStringConversion',
 				'RedundantStringEscape',
 				'ReturnValueIgnored',
 				'SelfAssignment',
+				'StaticImport',
 				'StringJoin',
 				'StringJoining',
 				'UnnecessarilyFullyQualified',
@@ -41,10 +60,24 @@ tasks.withType(JavaCompile).configureEach {
 				)
 		// bug: this only happens when the file is dirty.
 		// might be an up2date (caching) issue, as file is currently in corrupt state.
-		// ForbidGradleInternal(import org.gradle.api.internal.project.ProjectInternal;)
-		errorproneArgs.add('-XepExcludedPaths:' +
-				'.*/SelfTest.java|' +
-				'.*/GradleIntegrationHarness.java'
+		// ForbidGradleInternal(import
+		excludedPaths.set(
+				'.*/GradleIntegrationHarness.java|'+
+				'.*/SelfTest.java'
 				)
+		if (!getenv().containsKey('CI') && getenv('IN_PLACE')?.toBoolean()) {
+			errorproneArgs.addAll(
+					'-XepPatchLocation:IN_PLACE', // how to prevent/ignore? @CanIgnoreReturnValue
+					'-XepPatchChecks:' +
+					'MissingOverride,' +
+					'NonStaticImport,' +
+					'StaticImport'
+					)
+		}
 	}
+}
+
+dependencies {
+	errorprone('com.google.errorprone:error_prone_core:2.42.0')
+	errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.26.0')
 }

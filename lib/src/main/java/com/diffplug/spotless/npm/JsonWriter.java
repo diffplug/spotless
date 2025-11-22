@@ -16,14 +16,14 @@
 package com.diffplug.spotless.npm;
 
 import static com.diffplug.spotless.npm.JsonEscaper.jsonEscape;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.joining;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.diffplug.spotless.ThrowingEx;
 
@@ -74,7 +74,7 @@ class JsonWriter {
 		final String valueString = valueMap.entrySet()
 				.stream()
 				.map(entry -> "    " + jsonEscape(entry.getKey()) + ": " + jsonEscape(entry.getValue()))
-				.collect(Collectors.joining(",\n"));
+				.collect(joining(",\n"));
 		return "{\n" + valueString + "\n}";
 	}
 
@@ -89,7 +89,7 @@ class JsonWriter {
 			}
 		}
 		try {
-			Files.write(file.toPath(), toJsonString().getBytes(StandardCharsets.UTF_8));
+			Files.write(file.toPath(), toJsonString().getBytes(UTF_8));
 		} catch (IOException e) {
 			throw ThrowingEx.asRuntime(e);
 		}

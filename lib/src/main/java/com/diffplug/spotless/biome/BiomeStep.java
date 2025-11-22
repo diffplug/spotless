@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless.biome;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
@@ -418,7 +419,7 @@ public final class BiomeStep {
 		 *                              for Biome to finish formatting.
 		 */
 		private String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
-			var stdin = input.getBytes(StandardCharsets.UTF_8);
+			var stdin = input.getBytes(UTF_8);
 			var args = buildBiomeCommand(file);
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Running Biome command to format code: '{}'", String.join(", ", args));
@@ -428,7 +429,7 @@ public final class BiomeStep {
 			if (!stdErr.isEmpty()) {
 				LOGGER.warn("Biome stderr ouptut for file '{}'\n{}", file, stdErr.trim());
 			}
-			var formatted = runnerResult.assertExitZero(StandardCharsets.UTF_8);
+			var formatted = runnerResult.assertExitZero(UTF_8);
 			// When biome encounters an ignored file, it does not output any formatted code
 			// Ignored files come from (a) the biome.json configuration file and (b) from
 			// a list of hard-coded file names, such as package.json or tsconfig.json.

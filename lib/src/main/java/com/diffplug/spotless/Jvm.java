@@ -15,17 +15,18 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -88,7 +89,7 @@ public final class Jvm {
 		 * @return this
 		 */
 		public Support<V> add(int minimumJvmVersion, V maxFormatterVersion) {
-			Objects.requireNonNull(maxFormatterVersion);
+			requireNonNull(maxFormatterVersion);
 			if (jvm2fmtMaxVersion.put(minimumJvmVersion, maxFormatterVersion) != null) {
 				throw new IllegalArgumentException("Added duplicate entry for JVM %d+.".formatted(minimumJvmVersion));
 			}
@@ -100,7 +101,7 @@ public final class Jvm {
 		}
 
 		public Support<V> addMin(int minimumJvmVersion, V minFormatterVersion) {
-			Objects.requireNonNull(minFormatterVersion);
+			requireNonNull(minFormatterVersion);
 			if (jvm2fmtMinVersion.put(minimumJvmVersion, minFormatterVersion) != null) {
 				throw new IllegalArgumentException("Added duplicate entry for JVM %d+.".formatted(minimumJvmVersion));
 			}
@@ -136,7 +137,7 @@ public final class Jvm {
 		 * @throws IllegalArgumentException if {@code formatterVersion} not supported
 		 */
 		public void assertFormatterSupported(V formatterVersion) {
-			Objects.requireNonNull(formatterVersion);
+			requireNonNull(formatterVersion);
 			String error = buildUnsupportedFormatterMessage(formatterVersion);
 			if (!error.isEmpty()) {
 				throw Lint.atUndefinedLine(LINT_CODE, error).shortcut();
@@ -195,8 +196,8 @@ public final class Jvm {
 		 * @return Wrapped formatter function. Adding hint about later versions to exceptions.
 		 */
 		public FormatterFunc suggestLaterVersionOnError(V formatterVersion, FormatterFunc originalFunc) {
-			Objects.requireNonNull(formatterVersion);
-			Objects.requireNonNull(originalFunc);
+			requireNonNull(formatterVersion);
+			requireNonNull(originalFunc);
 			final String hintUnsupportedProblem = buildUnsupportedFormatterMessage(formatterVersion);
 			final String proposeDifferentFormatter = hintUnsupportedProblem.isEmpty() ? buildUpgradeFormatterMessage(formatterVersion) : hintUnsupportedProblem;
 			return proposeDifferentFormatter.isEmpty() ? originalFunc : new FormatterFunc() {
@@ -253,7 +254,7 @@ public final class Jvm {
 		public String toString() {
 			return "%s alternatives:%n".formatted(fmtName)
 					+ jvm2fmtMaxVersion.entrySet().stream().map(
-							e -> "- Version %s requires JVM %d+".formatted(e.getValue(), e.getKey())).collect(Collectors.joining(System.lineSeparator()));
+							e -> "- Version %s requires JVM %d+".formatted(e.getValue(), e.getKey())).collect(joining(System.lineSeparator()));
 		}
 
 		@SuppressFBWarnings("SE_COMPARATOR_SHOULD_BE_SERIALIZABLE")
@@ -261,8 +262,8 @@ public final class Jvm {
 
 			@Override
 			public int compare(V version0, V version1) {
-				Objects.requireNonNull(version0);
-				Objects.requireNonNull(version1);
+				requireNonNull(version0);
+				requireNonNull(version1);
 				int[] version0Items = convert(version0);
 				int[] version1Items = convert(version1);
 				int numberOfElements = version0Items.length > version1Items.length ? version0Items.length : version1Items.length;
@@ -299,7 +300,7 @@ public final class Jvm {
 	 * @return Empty map of supported formatters
 	 */
 	public static <V> Support<V> support(String formatterName) {
-		Objects.requireNonNull(formatterName);
+		requireNonNull(formatterName);
 		return new Support<>(formatterName);
 	}
 

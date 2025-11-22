@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Objects;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -122,7 +123,7 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 		}
 
 		public FormatterStep rehydrate() {
-			return original != null ? original : Objects.requireNonNull(cleaned, "how is clean null if this has been serialized?");
+			return original != null ? original : requireNonNull(cleaned, "how is clean null if this has been serialized?");
 		}
 
 		@Override

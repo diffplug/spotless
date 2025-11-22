@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Collections.shuffle;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.condition.OS.WINDOWS;
@@ -23,10 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
@@ -65,7 +64,7 @@ class FileSignatureTest extends ResourceHarness {
 		File dir = new File(rootFolder(), "dir");
 		List<File> files = getTestFiles(INPUT_PATHS);
 		files.add(dir);
-		Collections.shuffle(files);
+		shuffle(files);
 		assertThatThrownBy(() -> FileSignature.signAsList(files))
 				.isInstanceOf(IllegalArgumentException.class);
 	}
@@ -87,6 +86,6 @@ class FileSignatureTest extends ResourceHarness {
 	@EnabledOnOs(WINDOWS)
 	void windowsRoot() {
 		String subpath = FileSignature.subpath("S://", "S:/build.gradle");
-		Assertions.assertThat(subpath).isEqualTo("build.gradle");
+		assertThat(subpath).isEqualTo("build.gradle");
 	}
 }

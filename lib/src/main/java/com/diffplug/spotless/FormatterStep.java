@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -44,8 +45,7 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	 *         if the formatter step doesn't have any changes to make
 	 * @throws Exception if the formatter step experiences a problem
 	 */
-	@Nullable
-	String format(String rawUnix, File file) throws Exception;
+	@Nullable String format(String rawUnix, File file) throws Exception;
 
 	/**
 	 * Returns a list of lints against the given file content
@@ -58,8 +58,7 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 	 * @return a list of lints
 	 * @throws Exception if the formatter step experiences a problem
 	 */
-	@Nullable
-	default List<Lint> lint(String content, File file) throws Exception {
+	@Nullable default List<Lint> lint(String content, File file) throws Exception {
 		return List.of();
 	}
 
@@ -164,7 +163,7 @@ public interface FormatterStep extends Serializable, AutoCloseable {
 			String name,
 			State state,
 			SerializedFunction<State, FormatterFunc> stateToFormatter) {
-		Objects.requireNonNull(state, "state");
+		requireNonNull(state, "state");
 		return createLazy(name, () -> state, stateToFormatter);
 	}
 }

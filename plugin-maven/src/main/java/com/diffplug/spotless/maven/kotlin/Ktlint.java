@@ -15,8 +15,9 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
+import static java.util.Collections.emptyList;
+
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class Ktlint implements FormatterStepFactory {
 			editorConfigOverride = new HashMap<>();
 		}
 		if (customRuleSets == null) {
-			customRuleSets = Collections.emptyList();
+			customRuleSets = emptyList();
 		}
 		return KtLintStep.create(
 				ktlintVersion,

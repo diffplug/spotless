@@ -16,6 +16,10 @@
 package com.diffplug.spotless;
 
 import static com.diffplug.spotless.MoreIterables.toNullHostileList;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toCollection;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -23,14 +27,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.xml.XMLConstants;
@@ -61,7 +62,7 @@ public final class FormatterProperties {
 	 *            In case the import of a file fails
 	 */
 	public static FormatterProperties from(File... files) throws IllegalArgumentException {
-		Objects.requireNonNull(files);
+		requireNonNull(files);
 		return from(Arrays.asList(files));
 	}
 
@@ -84,7 +85,7 @@ public final class FormatterProperties {
 		List<String> nonNullElements = toNullHostileList(content);
 		FormatterProperties properties = new FormatterProperties();
 		nonNullElements.forEach(contentElement -> {
-			try (InputStream is = new ByteArrayInputStream(contentElement.getBytes(StandardCharsets.UTF_8))) {
+			try (InputStream is = new ByteArrayInputStream(contentElement.getBytes(UTF_8))) {
 				properties.properties.load(is);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Unable to load properties: " + contentElement);
@@ -128,7 +129,7 @@ public final class FormatterProperties {
 	 *            In case the import of the file fails
 	 */
 	private void add(final File settingsFile) throws IllegalArgumentException {
-		Objects.requireNonNull(settingsFile);
+		requireNonNull(settingsFile);
 		if (!(settingsFile.isFile() && settingsFile.canRead())) {
 			String msg = "Settings file '%s' does not exist or can not be read.".formatted(settingsFile);
 			throw new IllegalArgumentException(msg);
@@ -182,7 +183,7 @@ public final class FormatterProperties {
 
 			@Override
 			protected Properties executeXmlContent(String content) throws IOException, IllegalArgumentException {
-				return executeWithSupplier(() -> new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+				return executeWithSupplier(() -> new ByteArrayInputStream(content.getBytes(UTF_8)));
 			}
 
 			private Properties executeWithSupplier(Supplier<InputStream> isSupplier) throws IOException, IllegalArgumentException {
@@ -313,7 +314,7 @@ public final class FormatterProperties {
 				}
 				if (profiles.size() > 1) {
 					String message = "Formatter configuration file contains multiple profiles: [";
-					message += profiles.stream().map(XmlParser::getProfileName).collect(Collectors.joining("; "));
+					message += profiles.stream().map(XmlParser::getProfileName).collect(joining("; "));
 					message += "]%n The formatter can only cope with a single profile per configuration file. Please remove the other profiles.";
 					throw new IllegalArgumentException(message);
 				}
@@ -325,7 +326,7 @@ public final class FormatterProperties {
 				return IntStream.range(0, children.getLength())
 						.mapToObj(children::item)
 						.filter(child -> child.getNodeName().equals(nodeName))
-						.collect(Collectors.toCollection(LinkedList::new));
+						.collect(toCollection(LinkedList::new));
 			}
 
 		};

@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -34,7 +35,7 @@ class RingBufferByteArrayOutputStreamTest {
 	void toStringBehavesNormallyWithinLimit(String name, ByteWriteStrategy writeStrategy) {
 		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(12, 1);
 		writeStrategy.write(stream, bytes);
-		Assertions.assertThat(stream.toString()).isEqualTo("0123456789");
+		assertThat(stream.toString()).isEqualTo("0123456789");
 	}
 
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
@@ -42,8 +43,8 @@ class RingBufferByteArrayOutputStreamTest {
 	void toStringBehavesOverwritingOverLimit(String name, ByteWriteStrategy writeStrategy) {
 		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(4, 1);
 		writeStrategy.write(stream, bytes);
-		Assertions.assertThat(stream.toString()).hasSize(4);
-		Assertions.assertThat(stream.toString()).isEqualTo("6789");
+		assertThat(stream.toString()).hasSize(4);
+		assertThat(stream.toString()).isEqualTo("6789");
 	}
 
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
@@ -51,7 +52,7 @@ class RingBufferByteArrayOutputStreamTest {
 	void toStringBehavesNormallyAtExactlyLimit(String name, ByteWriteStrategy writeStrategy) {
 		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(bytes.length, 1);
 		writeStrategy.write(stream, bytes);
-		Assertions.assertThat(stream.toString()).isEqualTo("0123456789");
+		assertThat(stream.toString()).isEqualTo("0123456789");
 	}
 
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
@@ -59,7 +60,7 @@ class RingBufferByteArrayOutputStreamTest {
 	void toByteArrayBehavesNormallyWithinLimit(String name, ByteWriteStrategy writeStrategy) {
 		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(12, 1);
 		writeStrategy.write(stream, bytes);
-		Assertions.assertThat(stream.toByteArray()).isEqualTo(bytes);
+		assertThat(stream.toByteArray()).isEqualTo(bytes);
 	}
 
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
@@ -67,8 +68,8 @@ class RingBufferByteArrayOutputStreamTest {
 	void toByteArrayBehavesOverwritingOverLimit(String name, ByteWriteStrategy writeStrategy) {
 		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(4, 1);
 		writeStrategy.write(stream, bytes);
-		Assertions.assertThat(stream.toByteArray()).hasSize(4);
-		Assertions.assertThat(stream.toByteArray()).isEqualTo(new byte[]{'6', '7', '8', '9'});
+		assertThat(stream.toByteArray()).hasSize(4);
+		assertThat(stream.toByteArray()).isEqualTo(new byte[]{'6', '7', '8', '9'});
 	}
 
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
@@ -76,7 +77,7 @@ class RingBufferByteArrayOutputStreamTest {
 	void toByteArrayBehavesOverwritingAtExactlyLimit(String name, ByteWriteStrategy writeStrategy) {
 		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(bytes.length, 1);
 		writeStrategy.write(stream, bytes);
-		Assertions.assertThat(stream.toByteArray()).isEqualTo(bytes);
+		assertThat(stream.toByteArray()).isEqualTo(bytes);
 	}
 
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
@@ -86,7 +87,7 @@ class RingBufferByteArrayOutputStreamTest {
 		writeStrategy.write(stream, bytes);
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		stream.writeTo(target);
-		Assertions.assertThat(target.toByteArray()).isEqualTo(bytes);
+		assertThat(target.toByteArray()).isEqualTo(bytes);
 	}
 
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
@@ -96,8 +97,8 @@ class RingBufferByteArrayOutputStreamTest {
 		writeStrategy.write(stream, bytes);
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		stream.writeTo(target);
-		Assertions.assertThat(target.toByteArray()).hasSize(4);
-		Assertions.assertThat(target.toByteArray()).isEqualTo(new byte[]{'6', '7', '8', '9'});
+		assertThat(target.toByteArray()).hasSize(4);
+		assertThat(target.toByteArray()).isEqualTo(new byte[]{'6', '7', '8', '9'});
 	}
 
 	@ParameterizedTest(name = "{index} writeStrategy: {0}")
@@ -107,7 +108,7 @@ class RingBufferByteArrayOutputStreamTest {
 		writeStrategy.write(stream, bytes);
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		stream.writeTo(target);
-		Assertions.assertThat(target.toByteArray()).isEqualTo(bytes);
+		assertThat(target.toByteArray()).isEqualTo(bytes);
 	}
 
 	@Test
@@ -116,8 +117,8 @@ class RingBufferByteArrayOutputStreamTest {
 		RingBufferByteArrayOutputStream stream = new RingBufferByteArrayOutputStream(2, 1);
 		stream.write('0');
 		stream.write(new byte[]{'1', '2'}, 0, 2);
-		Assertions.assertThat(stream.toString()).hasSize(2);
-		Assertions.assertThat(stream.toString()).isEqualTo("12");
+		assertThat(stream.toString()).hasSize(2);
+		assertThat(stream.toString()).isEqualTo("12");
 	}
 
 	private static Stream<Arguments> writeStrategies() {

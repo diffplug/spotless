@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -25,7 +28,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
@@ -113,7 +115,7 @@ public final class JarState implements Serializable {
 
 	/** Provisions the given maven coordinate and its transitive dependencies. */
 	public static JarState from(String mavenCoordinate, Provisioner provisioner) throws IOException {
-		return from(Collections.singletonList(mavenCoordinate), provisioner);
+		return from(singletonList(mavenCoordinate), provisioner);
 	}
 
 	/** Provisions the given maven coordinates and their transitive dependencies. */
@@ -127,8 +129,8 @@ public final class JarState implements Serializable {
 	}
 
 	private static JarState provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoordinates, Provisioner provisioner) throws IOException {
-		Objects.requireNonNull(mavenCoordinates, "mavenCoordinates");
-		Objects.requireNonNull(provisioner, "provisioner");
+		requireNonNull(mavenCoordinates, "mavenCoordinates");
+		requireNonNull(provisioner, "provisioner");
 		Set<File> jars = provisioner.provisionWithTransitives(withTransitives, mavenCoordinates);
 		if (jars.isEmpty()) {
 			throw new NoSuchElementException("Resolved to an empty result: " + String.join(", ", mavenCoordinates));

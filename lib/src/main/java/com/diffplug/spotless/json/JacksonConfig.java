@@ -15,9 +15,10 @@
  */
 package com.diffplug.spotless.json;
 
+import static java.util.Collections.unmodifiableMap;
+
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -42,7 +43,7 @@ public class JacksonConfig implements Serializable {
 	protected Map<String, Boolean> featureToToggle = new TreeMap<>(DEFAULT_FEATURE_TOGGLES);
 
 	public Map<String, Boolean> getFeatureToToggle() {
-		return Collections.unmodifiableMap(featureToToggle);
+		return unmodifiableMap(featureToToggle);
 	}
 
 	public void setFeatureToToggle(Map<String, Boolean> featureToToggle) {

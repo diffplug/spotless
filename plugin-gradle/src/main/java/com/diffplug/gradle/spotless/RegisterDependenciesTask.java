@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +89,7 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 	@TaskAction
 	public void trivialFunction() throws IOException {
 		Files.createParentDirs(unitOutput);
-		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
+		Files.write(Integer.toString(1), unitOutput, UTF_8);
 	}
 
 	// this field is stupid, but we need it, see https://github.com/diffplug/spotless/issues/1260

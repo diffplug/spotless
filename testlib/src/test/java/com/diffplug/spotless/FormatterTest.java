@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,14 @@
  */
 package com.diffplug.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_16;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.generic.EndWithNewlineStep;
@@ -28,9 +30,9 @@ import com.diffplug.spotless.generic.EndWithNewlineStep;
 class FormatterTest {
 	@Test
 	void toUnix() {
-		Assertions.assertEquals("1\n2\n3", LineEnding.toUnix("1\n2\n3"));
-		Assertions.assertEquals("1\n2\n3", LineEnding.toUnix("1\r2\r3"));
-		Assertions.assertEquals("1\n2\n3", LineEnding.toUnix("1\r\n2\r\n3"));
+		assertEquals("1\n2\n3", LineEnding.toUnix("1\n2\n3"));
+		assertEquals("1\n2\n3", LineEnding.toUnix("1\r2\r3"));
+		assertEquals("1\n2\n3", LineEnding.toUnix("1\r\n2\r\n3"));
 	}
 
 	// Formatter normally needs to be closed, but no resources will be leaked in this special case
@@ -38,7 +40,7 @@ class FormatterTest {
 	void equality() {
 		new SerializableEqualityTester() {
 			private LineEnding.Policy lineEndingsPolicy = LineEnding.UNIX.createPolicy();
-			private Charset encoding = StandardCharsets.UTF_8;
+			private Charset encoding = UTF_8;
 			private List<FormatterStep> steps = new ArrayList<>();
 
 			@Override
@@ -48,7 +50,7 @@ class FormatterTest {
 				lineEndingsPolicy = LineEnding.WINDOWS.createPolicy();
 				api.areDifferentThan();
 
-				encoding = StandardCharsets.UTF_16;
+				encoding = UTF_16;
 				api.areDifferentThan();
 
 				steps.add(EndWithNewlineStep.create());

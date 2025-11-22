@@ -15,8 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -55,7 +56,7 @@ public class FlexmarkExtension extends FormatExtension {
 		private final FlexmarkConfig config = new FlexmarkConfig();
 
 		FlexmarkFormatterConfig(String version) {
-			this.version = Objects.requireNonNull(version);
+			this.version = requireNonNull(version);
 			addStep(createStep());
 		}
 

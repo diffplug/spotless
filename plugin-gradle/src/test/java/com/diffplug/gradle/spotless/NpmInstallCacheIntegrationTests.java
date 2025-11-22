@@ -16,12 +16,12 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.FormatExtension.NpmStepConfig.SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -51,7 +51,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		File dir1 = newFolder("npm-prettier-1");
 		File cacheDir = DEFAULT_DIR_FOR_NPM_INSTALL_CACHE_DO_NEVER_WRITE_TO_THIS;
 		BuildResult result = runPhpPrettierOnDir(dir1, cacheDir);
-		Assertions.assertThat(result.getOutput())
+		assertThat(result.getOutput())
 				.doesNotContain("Using cached node_modules for")
 				.contains("Caching node_modules for ")
 				.contains(Path.of(dir1.getAbsolutePath(), "build", SPOTLESS_NPM_INSTALL_CACHE_DEFAULT_NAME).toString());
@@ -63,17 +63,17 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		File dir1 = newFolder("npm-prettier-1");
 		File cacheDir = newFolder("npm-prettier-cache");
 		BuildResult result = runPhpPrettierOnDir(dir1, cacheDir);
-		Assertions.assertThat(result.getOutput()).doesNotContainPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
+		assertThat(result.getOutput()).doesNotContainPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
 		File dir2 = newFolder("npm-prettier-2");
 		BuildResult result2 = runPhpPrettierOnDir(dir2, cacheDir);
-		Assertions.assertThat(result2.getOutput()).containsPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
+		assertThat(result2.getOutput()).containsPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
 	}
 
 	@Test
 	void prettierDoesNotCacheNodeModulesIfNotExplicitlyEnabled() throws IOException {
 		File dir2 = newFolder("npm-prettier-1");
 		BuildResult result = runPhpPrettierOnDir(dir2, null);
-		Assertions.assertThat(result.getOutput())
+		assertThat(result.getOutput())
 				.doesNotContainPattern("Using cached node_modules for .*")
 				.doesNotContainPattern("Caching node_modules for .*");
 	}
@@ -84,7 +84,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		File dir1 = newFolder("npm-prettier-global-1");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runPhpPrettierOnDir(dir1, cacheDir);
-		Assertions.assertThat(result.getOutput())
+		assertThat(result.getOutput())
 				.doesNotContainPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E")
 				.containsPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
 	}
@@ -95,7 +95,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		File dir2 = newFolder("npm-prettier-global-2");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runPhpPrettierOnDir(dir2, cacheDir);
-		Assertions.assertThat(result.getOutput())
+		assertThat(result.getOutput())
 				.containsPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E")
 				.doesNotContainPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
 	}
@@ -122,7 +122,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 				"}");
 		setFile(baseDir + "/php-example.php").toResource("npm/prettier/plugins/php.dirty");
 		final BuildResult spotlessApply = gradleRunner().withProjectDir(projDir).withArguments("--stacktrace", "--info", "spotlessApply").build();
-		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile(baseDir + "/php-example.php").sameAsResource("npm/prettier/plugins/php.clean");
 		return spotlessApply;
 	}
@@ -133,7 +133,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		File dir1 = newFolder("npm-tsfmt-global-1");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runTsfmtOnDir(dir1, cacheDir);
-		Assertions.assertThat(result.getOutput())
+		assertThat(result.getOutput())
 				.doesNotContainPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E")
 				.containsPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
 	}
@@ -144,7 +144,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		File dir2 = newFolder("npm-tsfmt-global-2");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runTsfmtOnDir(dir2, cacheDir);
-		Assertions.assertThat(result.getOutput())
+		assertThat(result.getOutput())
 				.containsPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E")
 				.doesNotContainPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
 	}
@@ -153,7 +153,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 	void tsfmtDoesNotCacheNodeModulesIfNotExplicitlyEnabled() throws IOException {
 		File dir2 = newFolder("npm-tsfmt-1");
 		BuildResult result = runTsfmtOnDir(dir2, null);
-		Assertions.assertThat(result.getOutput())
+		assertThat(result.getOutput())
 				.doesNotContainPattern("Using cached node_modules for .*")
 				.doesNotContainPattern("Caching node_modules for .*");
 	}
@@ -187,7 +187,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		File dir1 = newFolder("npm-eslint-global-1");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runEslintOnDir(dir1, cacheDir);
-		Assertions.assertThat(result.getOutput())
+		assertThat(result.getOutput())
 				.doesNotContainPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E")
 				.containsPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
 	}
@@ -198,7 +198,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		File dir2 = newFolder("npm-eslint-global-2");
 		File cacheDir = pertainingCacheDir;
 		BuildResult result = runEslintOnDir(dir2, cacheDir);
-		Assertions.assertThat(result.getOutput())
+		assertThat(result.getOutput())
 				.containsPattern("Using cached node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E")
 				.doesNotContainPattern("Caching node_modules for .*\\Q" + cacheDir.getAbsolutePath() + "\\E");
 	}
@@ -208,7 +208,7 @@ class NpmInstallCacheIntegrationTests extends GradleIntegrationHarness {
 		File dir2 = newFolder("npm-eslint-1");
 		File cacheDir = null;
 		BuildResult result = runEslintOnDir(dir2, cacheDir);
-		Assertions.assertThat(result.getOutput())
+		assertThat(result.getOutput())
 				.doesNotContainPattern("Using cached node_modules for .*")
 				.doesNotContainPattern("Caching node_modules for .*");
 	}

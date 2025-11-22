@@ -15,19 +15,20 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.gradle.api.Project;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildServiceParameters;
 import org.gradle.api.tasks.TaskProvider;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
@@ -70,7 +71,7 @@ class PaddedCellTaskTest extends ResourceHarness {
 				task.init(taskService);
 				task.setSteps(List.of(step));
 				task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
-				task.setTarget(Collections.singletonList(file));
+				task.setTarget(singletonList(file));
 			});
 		}
 
@@ -203,9 +204,9 @@ class PaddedCellTaskTest extends ResourceHarness {
 
 	private void assertFolderContents(String subfolderName, String... files) throws IOException {
 		File subfolder = new File(rootFolder(), subfolderName);
-		Assertions.assertTrue(subfolder.isDirectory());
+		assertTrue(subfolder.isDirectory());
 		String asList = String.join("\n", Arrays.asList(files));
-		Assertions.assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
+		assertEquals(StringPrinter.buildStringFromLines(files).trim(), asList);
 	}
 
 	@Test
@@ -232,6 +233,6 @@ class PaddedCellTaskTest extends ResourceHarness {
 	private void assertFailureMessage(Bundle bundle, String... expectedOutput) {
 		String msg = bundle.checkFailureMsg();
 		String expected = StringPrinter.buildStringFromLines(expectedOutput).trim();
-		Assertions.assertEquals(expected, msg);
+		assertEquals(expected, msg);
 	}
 }

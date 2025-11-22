@@ -15,12 +15,13 @@
  */
 package com.diffplug.spotless.generic;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +54,7 @@ public final class FenceStep {
 	Pattern regex;
 
 	private FenceStep(String name) {
-		this.name = Objects.requireNonNull(name);
+		this.name = requireNonNull(name);
 	}
 
 	/** Defines the opening and closing markers. */
@@ -68,12 +69,12 @@ public final class FenceStep {
 
 	/** Defines the pipe via regex. Must have *exactly one* capturing group. */
 	public FenceStep regex(Pattern regex) {
-		this.regex = Objects.requireNonNull(regex);
+		this.regex = requireNonNull(regex);
 		return this;
 	}
 
 	private void assertRegexSet() {
-		Objects.requireNonNull(regex, "must call regex() or openClose()");
+		requireNonNull(regex, "must call regex() or openClose()");
 	}
 
 	/** Returns a step which will apply the given steps but preserve the content selected by the regex / openClose pair. */
@@ -159,7 +160,7 @@ public final class FenceStep {
 
 		protected Formatter buildFormatter() {
 			return Formatter.builder()
-					.encoding(StandardCharsets.UTF_8) // can be any UTF, doesn't matter
+					.encoding(UTF_8) // can be any UTF, doesn't matter
 					.lineEndingsPolicy(LineEnding.UNIX.createPolicy()) // just internal, won't conflict with user
 					.steps(steps)
 					.build();

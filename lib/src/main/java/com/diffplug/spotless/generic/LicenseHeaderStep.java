@@ -15,6 +15,10 @@
  */
 package com.diffplug.spotless.generic;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.regex.Pattern.MULTILINE;
+import static java.util.regex.Pattern.UNIX_LINES;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -73,10 +77,10 @@ public final class LicenseHeaderStep {
 	private LicenseHeaderStep(@Nullable String name, @Nullable String contentPattern, ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode, @Nullable String skipLinesMatching) {
 		this.name = sanitizeName(name);
 		this.contentPattern = sanitizePattern(contentPattern);
-		this.headerLazy = Objects.requireNonNull(headerLazy);
-		this.delimiter = Objects.requireNonNull(delimiter);
-		this.yearSeparator = Objects.requireNonNull(yearSeparator);
-		this.yearMode = Objects.requireNonNull(yearMode);
+		this.headerLazy = requireNonNull(headerLazy);
+		this.delimiter = requireNonNull(delimiter);
+		this.yearSeparator = requireNonNull(yearSeparator);
+		this.yearMode = requireNonNull(yearMode);
 		this.skipLinesMatching = sanitizePattern(skipLinesMatching);
 	}
 
@@ -234,7 +238,7 @@ public final class LicenseHeaderStep {
 			if (!licenseHeader.isEmpty() && !licenseHeader.endsWith("\n")) {
 				licenseHeader = licenseHeader + "\n";
 			}
-			this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
+			this.delimiterPattern = Pattern.compile('^' + delimiter, UNIX_LINES | MULTILINE);
 			this.skipLinesMatching = skipLinesMatching == null ? null : Pattern.compile(skipLinesMatching);
 			this.hasFileToken = FILENAME_PATTERN.matcher(licenseHeader).find();
 

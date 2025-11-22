@@ -15,10 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -73,7 +73,7 @@ public abstract class SpotlessExtension {
 		this.lineEndings = requireNonNull(lineEndings);
 	}
 
-	Charset encoding = StandardCharsets.UTF_8;
+	Charset encoding = UTF_8;
 
 	/** Returns the encoding to use. */
 	public Charset getEncoding() {

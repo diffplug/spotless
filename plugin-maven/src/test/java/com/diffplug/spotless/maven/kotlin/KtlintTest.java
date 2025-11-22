@@ -15,7 +15,8 @@
  */
 package com.diffplug.spotless.maven.kotlin;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.ProcessRunner;
@@ -92,7 +93,7 @@ class KtlintTest extends MavenIntegrationHarness {
 				</ktlint>""");
 		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/listScreen.dirty");
 		ProcessRunner.Result result = mavenRunner().withArguments("spotless:check").runHasError();
-		Assertions.assertThat(result.toString()).contains("Composable functions that return Unit should start with an uppercase letter.");
+		assertThat(result.toString()).contains("Composable functions that return Unit should start with an uppercase letter.");
 	}
 
 	private void checkKtlintOfficialStyle() throws Exception {

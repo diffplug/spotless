@@ -15,8 +15,9 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Collections.synchronizedMap;
+
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,9 +55,9 @@ import com.diffplug.spotless.Provisioner;
  * apply already did).
  */
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
-	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
-	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
-	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, SpotlessApply> apply = synchronizedMap(new HashMap<>());
+	private final Map<String, SpotlessTask> source = synchronizedMap(new HashMap<>());
+	private final Map<String, Provisioner> provisioner = synchronizedMap(new HashMap<>());
 
 	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 

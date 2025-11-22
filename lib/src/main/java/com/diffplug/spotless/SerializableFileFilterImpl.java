@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 package com.diffplug.spotless;
 
 import static com.diffplug.spotless.MoreIterables.toSortedSet;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 class SerializableFileFilterImpl {
 	static class SkipFilesNamed extends NoLambda.EqualityBasedOnSerialization implements SerializableFileFilter {
@@ -29,7 +29,7 @@ class SerializableFileFilterImpl {
 		private final String[] namesToSkip;
 
 		SkipFilesNamed(String... namesToSkip) {
-			Objects.requireNonNull(namesToSkip);
+			requireNonNull(namesToSkip);
 			List<String> sorted = toSortedSet(Arrays.asList(namesToSkip));
 			this.namesToSkip = sorted.toArray(new String[sorted.size()]);
 		}

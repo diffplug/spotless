@@ -16,6 +16,9 @@
 package com.diffplug.spotless.java;
 
 import static com.diffplug.spotless.java.LibJavaPreconditions.requireElementsNonNull;
+import static java.util.Map.Entry.comparingByKey;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toCollection;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,11 +31,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -82,7 +83,7 @@ public final class ImportOrderStep implements Serializable {
 
 	public FormatterStep createFrom(boolean wildcardsLast, boolean semanticSort, Set<String> treatAsPackage,
 			Set<String> treatAsClass, File importsFile) {
-		Objects.requireNonNull(importsFile);
+		requireNonNull(importsFile);
 		return createFrom(wildcardsLast, semanticSort, treatAsPackage, treatAsClass, () -> getImportOrder(importsFile));
 	}
 
@@ -99,9 +100,9 @@ public final class ImportOrderStep implements Serializable {
 			return lines.filter(line -> !line.startsWith("#"))
 					// parse 0=input
 					.map(ImportOrderStep::splitIntoIndexAndName)
-					.sorted(Map.Entry.comparingByKey())
+					.sorted(comparingByKey())
 					.map(Map.Entry::getValue)
-					.collect(Collectors.toCollection(ArrayList::new));
+					.collect(toCollection(ArrayList::new));
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}

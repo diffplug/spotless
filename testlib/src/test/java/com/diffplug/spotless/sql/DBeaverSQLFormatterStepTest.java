@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,9 @@
  */
 package com.diffplug.spotless.sql;
 
+import static java.util.Collections.emptySet;
+
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ class DBeaverSQLFormatterStepTest extends ResourceHarness {
 
 	@Test
 	void behavior() {
-		FormatterStep step = DBeaverSQLFormatterStep.create(Collections.emptySet());
+		FormatterStep step = DBeaverSQLFormatterStep.create(emptySet());
 		StepHarness.forStep(step)
 				.testResource("sql/dbeaver/full.dirty", "sql/dbeaver/full.clean")
 				.testResource("sql/dbeaver/V1_initial.sql.dirty", "sql/dbeaver/V1_initial.sql.clean")

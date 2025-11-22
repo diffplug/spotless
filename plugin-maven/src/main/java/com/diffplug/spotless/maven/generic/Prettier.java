@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.maven.generic;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.io.File;
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -22,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -97,7 +98,7 @@ public class Prettier extends AbstractNpmFormatterStepFactory {
 						}
 						return entry;
 					})
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
+					.collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));
 		} else {
 			configInline = null;
 		}

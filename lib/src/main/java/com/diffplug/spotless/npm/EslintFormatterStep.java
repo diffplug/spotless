@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
@@ -55,7 +54,7 @@ public final class EslintFormatterStep {
 		dependencies.put("@typescript-eslint/eslint-plugin", "^6.1.0");
 		dependencies.put("@typescript-eslint/parser", "^6.1.0");
 		dependencies.put("typescript", "^5.1.6");
-		dependencies.put("eslint", Objects.requireNonNull(eslintVersion));
+		dependencies.put("eslint", requireNonNull(eslintVersion));
 		return dependencies;
 	}
 

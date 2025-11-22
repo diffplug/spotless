@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import static com.diffplug.spotless.MoreIterables.toNullHostileList;
 import static com.diffplug.spotless.MoreIterables.toSortedSet;
+import static java.util.Collections.unmodifiableList;
 import static java.util.Comparator.comparing;
 
 import java.io.File;
@@ -28,7 +29,6 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -134,7 +134,7 @@ public final class FileSignature implements Serializable {
 
 	/** Returns all of the files in this signature, throwing an exception if there are more or less than 1 file. */
 	public Collection<File> files() {
-		return Collections.unmodifiableList(files);
+		return unmodifiableList(files);
 	}
 
 	/** Returns the only file in this signature, throwing an exception if there are more or less than 1 file. */

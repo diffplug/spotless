@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,9 +28,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Collectors;
 
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ class JarStateTest {
 
 	File b;
 
-	Provisioner provisioner = (withTransitives, deps) -> deps.stream().map(name -> name.equals("a") ? a : b).collect(Collectors.toSet());
+	Provisioner provisioner = (withTransitives, deps) -> deps.stream().map(name -> name.equals("a") ? a : b).collect(toSet());
 
 	@BeforeEach
 	void setUp() throws IOException {
@@ -62,7 +63,7 @@ class JarStateTest {
 		JarState state1 = JarState.from(a.getName(), provisioner);
 		JarState state2 = JarState.from(b.getName(), provisioner);
 
-		SoftAssertions.assertSoftly(softly -> {
+		assertSoftly(softly -> {
 			softly.assertThat(state1.getClassLoader()).isNotNull();
 			softly.assertThat(state2.getClassLoader()).isNotNull();
 		});
@@ -75,7 +76,7 @@ class JarStateTest {
 		JarState.setForcedClassLoader(forcedClassLoader);
 		JarState stateB = JarState.from(b.getName(), provisioner);
 
-		SoftAssertions.assertSoftly(softly -> {
+		assertSoftly(softly -> {
 			softly.assertThat(stateA.getClassLoader()).isSameAs(forcedClassLoader);
 			softly.assertThat(stateB.getClassLoader()).isSameAs(forcedClassLoader);
 		});
@@ -91,7 +92,7 @@ class JarStateTest {
 		JarState stateARoundtripSerialized = roundtripSerialize(stateA);
 		JarState stateBRoundtripSerialized = roundtripSerialize(stateB);
 
-		SoftAssertions.assertSoftly(softly -> {
+		assertSoftly(softly -> {
 			softly.assertThat(stateARoundtripSerialized.getClassLoader()).isSameAs(forcedClassLoader);
 			softly.assertThat(stateBRoundtripSerialized.getClassLoader()).isSameAs(forcedClassLoader);
 		});

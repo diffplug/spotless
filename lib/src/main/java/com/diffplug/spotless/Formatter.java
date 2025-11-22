@@ -16,6 +16,7 @@
 package com.diffplug.spotless;
 
 import static com.diffplug.spotless.LibPreconditions.requireElementsNonNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +28,6 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +44,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 	private List<FormatterStep> steps;
 
 	private Formatter(LineEnding.Policy lineEndingsPolicy, Charset encoding, List<FormatterStep> steps) {
-		this.lineEndingsPolicy = Objects.requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
-		this.encoding = Objects.requireNonNull(encoding, "encoding");
+		this.lineEndingsPolicy = requireNonNull(lineEndingsPolicy, "lineEndingsPolicy");
+		this.encoding = requireNonNull(encoding, "encoding");
 		this.steps = requireElementsNonNull(new ArrayList<>(steps));
 	}
 
@@ -116,8 +116,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 
 	/** Applies the appropriate line endings to the given unix content. */
 	public String computeLineEndings(String unix, File file) {
-		Objects.requireNonNull(unix, "unix");
-		Objects.requireNonNull(file, "file");
+		requireNonNull(unix, "unix");
+		requireNonNull(file, "file");
 
 		String ending = lineEndingsPolicy.getEndingFor(file);
 		if (!ending.equals(LineEnding.UNIX.str())) {
@@ -162,8 +162,8 @@ public final class Formatter implements Serializable, AutoCloseable {
 	 * when the method returns.
 	 */
 	String computeWithLint(String unix, File file, ValuePerStep<Throwable> exceptionPerStep) {
-		Objects.requireNonNull(unix, "unix");
-		Objects.requireNonNull(file, "file");
+		requireNonNull(unix, "unix");
+		requireNonNull(file, "file");
 
 		for (int i = 0; i < steps.size(); i++) {
 			FormatterStep step = steps.get(i);

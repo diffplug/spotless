@@ -15,6 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
@@ -25,7 +26,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.Errors;
@@ -130,7 +130,7 @@ class GradleIncrementalResolutionTest extends GradleIntegrationHarness {
 
 	private AbstractStringAssert<?> checkRanAgainstNoneButError() throws IOException {
 		String console = taskRanAgainst("spotlessCheck");
-		return Assertions.assertThat(console);
+		return assertThat(console);
 	}
 
 	private String taskRanAgainst(String task, String... ranAgainst) throws IOException {

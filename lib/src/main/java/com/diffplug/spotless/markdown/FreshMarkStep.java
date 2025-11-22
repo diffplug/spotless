@@ -16,6 +16,7 @@
 package com.diffplug.spotless.markdown;
 
 import static com.diffplug.spotless.markdown.LibMarkdownPreconditions.requireKeysAndValuesNonNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
@@ -67,9 +67,9 @@ public final class FreshMarkStep implements Serializable {
 
 	/** Creates a formatter step for the given version and settings file. */
 	public static FormatterStep create(String version, Map<String, ?> properties, Provisioner provisioner) {
-		Objects.requireNonNull(version, "version");
-		Objects.requireNonNull(properties, "properties");
-		Objects.requireNonNull(provisioner, "provisioner");
+		requireNonNull(version, "version");
+		requireNonNull(properties, "properties");
+		requireNonNull(provisioner, "provisioner");
 
 		List<String> mavenCoordinates = new ArrayList<>();
 		mavenCoordinates.add(MAVEN_COORDINATE + version);

@@ -15,9 +15,10 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.util.stream.Collectors.joining;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -110,13 +111,13 @@ public enum EslintStyleGuide {
 	public String asGradleMapStringMergedWith(Map<String, String> devDependencies) {
 		return mergedWith(devDependencies).entrySet().stream()
 				.map(entry -> "'" + entry.getKey() + "': '" + entry.getValue() + "'")
-				.collect(Collectors.joining(", ", "[", "]"));
+				.collect(joining(", ", "[", "]"));
 	}
 
 	public String asMavenXmlStringMergedWith(Map<String, String> devDependencies) {
 		return mergedWith(devDependencies).entrySet().stream()
 				.map(entry -> "<property><name>%s</name><value>%s</value></property>".formatted(entry.getKey(), entry.getValue()))
-				.collect(Collectors.joining("", "<devDependencyProperties>", "</devDependencyProperties>"));
+				.collect(joining("", "<devDependencyProperties>", "</devDependencyProperties>"));
 	}
 
 }

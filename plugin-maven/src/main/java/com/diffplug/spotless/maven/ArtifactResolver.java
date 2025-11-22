@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.maven;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -22,7 +23,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.maven.plugin.logging.Log;
@@ -50,10 +50,10 @@ public class ArtifactResolver {
 
 	public ArtifactResolver(RepositorySystem repositorySystem, RepositorySystemSession session,
 			List<RemoteRepository> repositories, Log log) {
-		this.repositorySystem = Objects.requireNonNull(repositorySystem);
-		this.session = Objects.requireNonNull(session);
-		this.repositories = Objects.requireNonNull(repositories);
-		this.log = Objects.requireNonNull(log);
+		this.repositorySystem = requireNonNull(repositorySystem);
+		this.session = requireNonNull(session);
+		this.repositories = requireNonNull(repositories);
+		this.log = requireNonNull(log);
 	}
 
 	/**

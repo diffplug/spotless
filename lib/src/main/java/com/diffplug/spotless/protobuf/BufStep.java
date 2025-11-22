@@ -15,12 +15,13 @@
  */
 package com.diffplug.spotless.protobuf;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -98,7 +99,7 @@ public final class BufStep {
 
 		State(String version, ForeignExe exeAbsPath) {
 			this.version = version;
-			this.exe = Objects.requireNonNull(exeAbsPath);
+			this.exe = requireNonNull(exeAbsPath);
 		}
 
 		String format(ProcessRunner runner, String input, File file) throws IOException, InterruptedException {
@@ -106,7 +107,7 @@ public final class BufStep {
 				exeAbsPath = exe.confirmVersionAndGetAbsolutePath();
 			}
 			List<String> args = List.of(exeAbsPath, "format", file.getAbsolutePath());
-			return runner.exec(input.getBytes(StandardCharsets.UTF_8), args).assertExitZero(StandardCharsets.UTF_8);
+			return runner.exec(input.getBytes(UTF_8), args).assertExitZero(UTF_8);
 		}
 
 		FormatterFunc.Closeable toFunc() {

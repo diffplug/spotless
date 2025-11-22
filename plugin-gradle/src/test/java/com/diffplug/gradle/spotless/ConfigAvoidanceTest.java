@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class ConfigAvoidanceTest extends GradleIntegrationHarness {
@@ -52,8 +53,8 @@ class ConfigAvoidanceTest extends GradleIntegrationHarness {
 		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
 		String help = gradleRunner().withArguments("help").build().getOutput();
-		Assertions.assertThat(help).doesNotContain("Canary was configured");
+		assertThat(help).doesNotContain("Canary was configured");
 		String check = gradleRunner().withArguments("check").buildAndFail().getOutput();
-		Assertions.assertThat(check).contains("Canary was configured", "Canary ran", "Execution failed for task ':spotlessJavaCheck'");
+		assertThat(check).contains("Canary was configured", "Canary ran", "Execution failed for task ':spotlessJavaCheck'");
 	}
 }

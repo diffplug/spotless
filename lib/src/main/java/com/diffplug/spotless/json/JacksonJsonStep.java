@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless.json;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -56,7 +57,7 @@ public final class JacksonJsonStep implements Serializable {
 	public static FormatterStep create(JacksonJsonConfig jacksonConfig,
 			String jacksonVersion,
 			Provisioner provisioner) {
-		Objects.requireNonNull(provisioner, "provisioner cannot be null");
+		requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.create(NAME,
 				new JacksonJsonStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + jacksonVersion, provisioner)), jacksonConfig),
 				JacksonJsonStep::equalityState,

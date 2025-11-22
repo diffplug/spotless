@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package com.diffplug.spotless.maven.json;
 
-import java.util.Collections;
+import static java.util.Collections.emptyMap;
+
 import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
@@ -39,10 +40,10 @@ public class JacksonJson implements FormatterStepFactory {
 	private boolean spaceBeforeSeparator = new JacksonJsonConfig().isSpaceBeforeSeparator();
 
 	@Parameter
-	private Map<String, Boolean> features = Collections.emptyMap();
+	private Map<String, Boolean> features = emptyMap();
 
 	@Parameter
-	private Map<String, Boolean> jsonFeatures = Collections.emptyMap();
+	private Map<String, Boolean> jsonFeatures = emptyMap();
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {

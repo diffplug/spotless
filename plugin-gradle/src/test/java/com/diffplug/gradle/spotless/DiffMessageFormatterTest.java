@@ -15,14 +15,15 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildServiceParameters;
@@ -63,7 +64,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 			return project.getTasks().register("spotless" + SpotlessPlugin.capitalize(name), SpotlessTaskImpl.class, task -> {
 				task.init(taskService);
 				task.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
-				task.setTarget(Collections.singletonList(file));
+				task.setTarget(singletonList(file));
 			});
 		}
 
@@ -106,11 +107,11 @@ class DiffMessageFormatterTest extends ResourceHarness {
 
 		String firstLine = "The following files had format violations:\n";
 		String lastLine = "\n" + EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION;
-		Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
+		assertThat(msg).startsWith(firstLine).endsWith(lastLine);
 
 		String middle = msg.substring(firstLine.length(), msg.length() - lastLine.length());
 		String expectedMessage = StringPrinter.buildStringFromLines(expectedLines);
-		Assertions.assertThat(middle).isEqualTo(expectedMessage.substring(0, expectedMessage.length() - 1));
+		assertThat(middle).isEqualTo(expectedMessage.substring(0, expectedMessage.length() - 1));
 	}
 
 	static final String EXPECTED_RUN_SPOTLESS_APPLY_SUGGESTION = FileSignature.machineIsWin()
@@ -141,7 +142,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 
 		String firstLine = "The following files had format violations:\n";
 		String lastLine = "\n" + customMessage;
-		Assertions.assertThat(msg).startsWith(firstLine).endsWith(lastLine);
+		assertThat(msg).startsWith(firstLine).endsWith(lastLine);
 	}
 
 	@Test

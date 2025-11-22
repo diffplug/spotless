@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.java;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -97,13 +98,13 @@ public final class GoogleJavaFormatStep implements Serializable {
 	}
 
 	private static FormatterStep createInternally(String name, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean removeImports) {
-		Objects.requireNonNull(groupArtifact, "groupArtifact");
+		requireNonNull(groupArtifact, "groupArtifact");
 		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
 			throw new IllegalArgumentException("groupArtifact must be in the form 'groupId:artifactId'");
 		}
-		Objects.requireNonNull(version, "version");
-		Objects.requireNonNull(style, "style");
-		Objects.requireNonNull(provisioner, "provisioner");
+		requireNonNull(version, "version");
+		requireNonNull(style, "style");
+		requireNonNull(provisioner, "provisioner");
 
 		GoogleJavaFormatStep step = new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc);
 		if (removeImports) {
@@ -131,7 +132,7 @@ public final class GoogleJavaFormatStep implements Serializable {
 
 	/** Get default formatter version */
 	public static String defaultVersion() {
-		return Objects.requireNonNull(JVM_SUPPORT.getRecommendedFormatterVersion());
+		return requireNonNull(JVM_SUPPORT.getRecommendedFormatterVersion());
 	}
 
 	public static String defaultStyle() {

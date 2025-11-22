@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,11 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptyMap;
+
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Collections;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class TsFmtFormatterStepTest {
 			// some config options expect to see at least one file in the baseDir, so let's write one there
 			File srcDir = new File(rootFolder(), "src/main/typescript");
 			Files.createDirectories(srcDir.toPath());
-			Files.write(new File(srcDir, configFileNameWithoutExtension + ".ts").toPath(), getTestResource(dirtyFile).getBytes(StandardCharsets.UTF_8));
+			Files.write(new File(srcDir, configFileNameWithoutExtension + ".ts").toPath(), getTestResource(dirtyFile).getBytes(UTF_8));
 
 			final FormatterStep formatterStep = TsFmtFormatterStep.create(
 					TsFmtFormatterStep.defaultDevDependencies(),
@@ -62,7 +63,7 @@ class TsFmtFormatterStepTest {
 					null,
 					npmPathResolver(),
 					TypedTsFmtConfigFile.named(configFileNameWithoutExtension, configFile),
-					Collections.emptyMap());
+					emptyMap());
 
 			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
 				stepHarness.testResource(dirtyFile, cleanFile);

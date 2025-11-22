@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  */
 package com.diffplug.spotless;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A {@code Function<String, String>} which can throw an exception.  Technically, there
@@ -60,8 +61,8 @@ public interface FormatterFunc {
 		 * How the {@code of()} methods below make the correct thing easier to write and safer: https://github.com/diffplug/spotless/commit/18c10f9c93d6f18f753233d0b5f028d5f0961916
 		 */
 		public static Closeable ofDangerous(AutoCloseable closeable, FormatterFunc function) {
-			Objects.requireNonNull(closeable, "closeable");
-			Objects.requireNonNull(function, "function");
+			requireNonNull(closeable, "closeable");
+			requireNonNull(function, "function");
 			return new Closeable() {
 				@Override
 				public void close() {
@@ -95,8 +96,8 @@ public interface FormatterFunc {
 
 		/** Creates a {@link FormatterFunc.Closeable} which uses the given resource to execute the format function. */
 		public static <T extends AutoCloseable> Closeable of(T resource, ResourceFunc<T> function) {
-			Objects.requireNonNull(resource, "resource");
-			Objects.requireNonNull(function, "function");
+			requireNonNull(resource, "resource");
+			requireNonNull(function, "function");
 			return new Closeable() {
 				@Override
 				public void close() {
@@ -126,8 +127,8 @@ public interface FormatterFunc {
 
 		/** Creates a {@link FormatterFunc.Closeable} which uses the given resource to execute the file-dependent format function. */
 		public static <T extends AutoCloseable> Closeable of(T resource, ResourceFuncNeedsFile<T> function) {
-			Objects.requireNonNull(resource, "resource");
-			Objects.requireNonNull(function, "function");
+			requireNonNull(resource, "resource");
+			requireNonNull(function, "function");
 			return new Closeable() {
 				@Override
 				public void close() {

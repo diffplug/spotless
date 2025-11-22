@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 import javax.inject.Inject;
 
@@ -44,7 +44,7 @@ public class Antlr4Extension extends FormatExtension implements HasBuiltinDelimi
 		private final String version;
 
 		Antlr4FormatterConfig(String version) {
-			this.version = Objects.requireNonNull(version);
+			this.version = requireNonNull(version);
 			addStep(createStep());
 		}
 

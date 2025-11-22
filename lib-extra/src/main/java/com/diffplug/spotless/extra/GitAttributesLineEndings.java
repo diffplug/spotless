@@ -15,17 +15,18 @@
  */
 package com.diffplug.spotless.extra;
 
+import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -120,8 +121,8 @@ public final class GitAttributesLineEndings {
 		transient Supplier<Iterable<File>> toFormat;
 
 		RelocatablePolicy(File projectDir, Supplier<Iterable<File>> toFormat) {
-			this.projectDir = Objects.requireNonNull(projectDir, "projectDir");
-			this.toFormat = Objects.requireNonNull(toFormat, "toFormat");
+			this.projectDir = requireNonNull(projectDir, "projectDir");
+			this.toFormat = requireNonNull(toFormat, "toFormat");
 		}
 
 		@Override
@@ -260,10 +261,10 @@ public final class GitAttributesLineEndings {
 		final String defaultEnding;
 
 		private Runtime(List<AttributesRule> infoRules, @Nullable File workTree, Config config, List<AttributesRule> globalRules) {
-			this.infoRules = Objects.requireNonNull(infoRules);
+			this.infoRules = requireNonNull(infoRules);
 			this.workTree = workTree;
 			this.defaultEnding = findDefaultLineEnding(config).str();
-			this.globalRules = Objects.requireNonNull(globalRules);
+			this.globalRules = requireNonNull(globalRules);
 		}
 
 		private static final String KEY_EOL = "eol";
@@ -389,7 +390,7 @@ public final class GitAttributesLineEndings {
 				LOGGER.warn("Problem parsing {}", file.getAbsolutePath(), e);
 			}
 		}
-		return Collections.emptyList();
+		return emptyList();
 	}
 
 	/** Parses an attribute value from a list of rules, returning null if there is no match for the given key. */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  */
 package com.diffplug.spotless.extra.glue.jdt;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.internal.compiler.env.IModule;
@@ -37,7 +38,7 @@ public class EclipseJdtFormatterStepImpl {
 	private final EclipseJdtSortMembers.SortProperties sortProperties;
 
 	public EclipseJdtFormatterStepImpl(Properties formatterSettings, Map<String, String> sortProperties) {
-		Map<String, String> options = formatterSettings.entrySet().stream().collect(Collectors.toMap(
+		Map<String, String> options = formatterSettings.entrySet().stream().collect(toMap(
 				e -> String.valueOf(e.getKey()),
 				e -> String.valueOf(e.getValue()),
 				(prev, next) -> next,

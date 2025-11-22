@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -126,7 +127,7 @@ class JavascriptExtensionTest extends GradleIntegrationHarness {
 					"}");
 			setFile("test.js").toResource("npm/eslint/javascript/styleguide/standard/javascript-es6.dirty");
 			BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
-			Assertions.assertThat(spotlessApply.getOutput()).contains("ESLint must be configured");
+			assertThat(spotlessApply.getOutput()).contains("ESLint must be configured");
 		}
 
 		@Test

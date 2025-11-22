@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 package com.diffplug.spotless.glue.diktat.compat;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
+
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -41,7 +43,7 @@ public class DiktatCompat1Dot2Dot5Adapter implements DiktatCompatAdapter {
 		if (configFile != null) {
 			System.setProperty("diktat.config.path", configFile.getAbsolutePath());
 		}
-		this.ruleSets = Collections.singletonList(new DiktatRuleSetProvider().get());
+		this.ruleSets = singletonList(new DiktatRuleSetProvider().get());
 		this.formatterCallback = new FormatterCallback(errors);
 	}
 
@@ -70,7 +72,7 @@ public class DiktatCompat1Dot2Dot5Adapter implements DiktatCompatAdapter {
 				file.getAbsolutePath(),
 				content,
 				ruleSets,
-				Collections.emptyMap(),
+				emptyMap(),
 				formatterCallback,
 				isScript,
 				null,

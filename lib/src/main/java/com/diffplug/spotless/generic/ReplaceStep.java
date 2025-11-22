@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,9 @@
  */
 package com.diffplug.spotless.generic;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serializable;
-import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
@@ -26,9 +27,9 @@ public final class ReplaceStep {
 	private ReplaceStep() {}
 
 	public static FormatterStep create(String name, CharSequence target, CharSequence replacement) {
-		Objects.requireNonNull(name, "name");
-		Objects.requireNonNull(target, "target");
-		Objects.requireNonNull(replacement, "replacement");
+		requireNonNull(name, "name");
+		requireNonNull(target, "target");
+		requireNonNull(replacement, "replacement");
 		return FormatterStep.createLazy(name,
 				() -> new State(target, replacement),
 				State::toFormatter);

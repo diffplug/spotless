@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 import javax.inject.Inject;
 
@@ -46,7 +46,7 @@ public class PomExtension extends FormatExtension {
 	}
 
 	public SortPomGradleConfig sortPom(String version) {
-		Objects.requireNonNull(version);
+		requireNonNull(version);
 		return new SortPomGradleConfig(version);
 	}
 
@@ -59,7 +59,7 @@ public class PomExtension extends FormatExtension {
 
 		SortPomGradleConfig(String version) {
 			this();
-			cfg.version = Objects.requireNonNull(version);
+			cfg.version = requireNonNull(version);
 		}
 
 		public SortPomGradleConfig encoding(String encoding) {

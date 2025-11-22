@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,18 @@
  */
 package com.diffplug.spotless.npm;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +53,7 @@ class ShadowCopyTest extends ResourceHarness {
 		File folderWithRandomFile = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 		File shadowCopyFile = shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
-		Assertions.assertThat(shadowCopyFile.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
+		assertThat(shadowCopyFile.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
 		assertAllFilesAreEqualButNotSameAbsolutePath(folderWithRandomFile, shadowCopyFile);
 	}
 
@@ -64,8 +65,8 @@ class ShadowCopyTest extends ResourceHarness {
 		shadowCopy.addEntry("someOtherEntry", folderWithRandomFile2);
 		File shadowCopyFile = shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
 		File shadowCopyFile2 = shadowCopy.getEntry("someOtherEntry", folderWithRandomFile2.getName());
-		Assertions.assertThat(shadowCopyFile.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
-		Assertions.assertThat(shadowCopyFile2.listFiles()).hasSize(folderWithRandomFile2.listFiles().length);
+		assertThat(shadowCopyFile.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
+		assertThat(shadowCopyFile2.listFiles()).hasSize(folderWithRandomFile2.listFiles().length);
 		assertAllFilesAreEqualButNotSameAbsolutePath(folderWithRandomFile, shadowCopyFile);
 		assertAllFilesAreEqualButNotSameAbsolutePath(folderWithRandomFile2, shadowCopyFile2);
 	}
@@ -76,7 +77,7 @@ class ShadowCopyTest extends ResourceHarness {
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
 		File shadowCopyFile = shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
-		Assertions.assertThat(shadowCopyFile.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
+		assertThat(shadowCopyFile.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
 		assertAllFilesAreEqualButNotSameAbsolutePath(folderWithRandomFile, shadowCopyFile);
 	}
 
@@ -92,8 +93,8 @@ class ShadowCopyTest extends ResourceHarness {
 
 		// now check that they are different
 		File shadowCopy = this.shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
-		Assertions.assertThat(shadowCopy.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
-		Assertions.assertThat(shadowCopy.listFiles()[0].getName()).isNotEqualTo(folderWithRandomFile.listFiles()[0].getName());
+		assertThat(shadowCopy.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
+		assertThat(shadowCopy.listFiles()[0].getName()).isNotEqualTo(folderWithRandomFile.listFiles()[0].getName());
 	}
 
 	@Test
@@ -103,7 +104,7 @@ class ShadowCopyTest extends ResourceHarness {
 		File copiedFolder = newFolder("copyDest");
 		File copiedEntry = shadowCopy.copyEntryInto("someEntry", folderWithRandomFile.getName(), copiedFolder);
 
-		Assertions.assertThat(copiedEntry.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
+		assertThat(copiedEntry.listFiles()).hasSize(folderWithRandomFile.listFiles().length);
 		assertAllFilesAreEqualButNotSameAbsolutePath(folderWithRandomFile, copiedEntry);
 	}
 
@@ -115,7 +116,7 @@ class ShadowCopyTest extends ResourceHarness {
 		File copiedEntry = shadowCopy.copyEntryInto("someEntry", folderWithRandomFile.getName(), copiedFolder);
 
 		File shadowCopyFile = shadowCopy.getEntry("someEntry", folderWithRandomFile.getName());
-		Assertions.assertThat(shadowCopyFile.listFiles()).hasSize(copiedEntry.listFiles().length);
+		assertThat(shadowCopyFile.listFiles()).hasSize(copiedEntry.listFiles().length);
 		assertAllFilesAreEqualButNotSameAbsolutePath(copiedEntry, shadowCopyFile);
 	}
 
@@ -123,13 +124,13 @@ class ShadowCopyTest extends ResourceHarness {
 	void anAddedEntryExistsAfterAdding() throws IOException {
 		File folderWithRandomFile = newFolderWithRandomFile();
 		shadowCopy.addEntry("someEntry", folderWithRandomFile);
-		Assertions.assertThat(shadowCopy.entryExists("someEntry", folderWithRandomFile.getName())).isTrue();
+		assertThat(shadowCopy.entryExists("someEntry", folderWithRandomFile.getName())).isTrue();
 	}
 
 	@Test
 	void aEntryThatHasNotBeenAddedDoesNotExist() throws IOException {
 		File folderWithRandomFile = newFolderWithRandomFile();
-		Assertions.assertThat(shadowCopy.entryExists("someEntry", folderWithRandomFile.getName())).isFalse();
+		assertThat(shadowCopy.entryExists("someEntry", folderWithRandomFile.getName())).isFalse();
 	}
 
 	private void assertAllFilesAreEqualButNotSameAbsolutePath(File expected, File actual) {
@@ -141,8 +142,8 @@ class ShadowCopyTest extends ResourceHarness {
 	}
 
 	private void assertDirectoryIsEqualButNotSameAbsolutePath(File expected, File actual) {
-		Assertions.assertThat(actual.getAbsolutePath()).as("absolute path should be different").isNotEqualTo(expected.getAbsolutePath());
-		Assertions.assertThat(actual.listFiles()).as("folder should have same amount of files").hasSize(expected.listFiles().length);
+		assertThat(actual.getAbsolutePath()).as("absolute path should be different").isNotEqualTo(expected.getAbsolutePath());
+		assertThat(actual.listFiles()).as("folder should have same amount of files").hasSize(expected.listFiles().length);
 		List<File> actualContent = filesInAlphabeticalOrder(actual);
 		List<File> expectedContent = filesInAlphabeticalOrder(expected);
 
@@ -156,14 +157,14 @@ class ShadowCopyTest extends ResourceHarness {
 			throw new IllegalArgumentException("folder must be a directory");
 		}
 		return Arrays.stream(folder.listFiles())
-				.sorted(Comparator.comparing(File::getName).thenComparing(File::getAbsolutePath))
-				.collect(Collectors.toList());
+				.sorted(comparing(File::getName).thenComparing(File::getAbsolutePath))
+				.collect(toList());
 	}
 
 	private void assertFileIsEqualButNotSameAbsolutePath(File expected, File actual) {
-		Assertions.assertThat(actual).as("Files have same name").hasName(expected.getName());
-		Assertions.assertThat(actual.getAbsolutePath()).as("absolute path is different").isNotEqualTo(expected.getAbsolutePath());
-		Assertions.assertThat(actual).as("files have same content").hasSameTextualContentAs(expected, StandardCharsets.UTF_8);
+		assertThat(actual).as("Files have same name").hasName(expected.getName());
+		assertThat(actual.getAbsolutePath()).as("absolute path is different").isNotEqualTo(expected.getAbsolutePath());
+		assertThat(actual).as("files have same content").hasSameTextualContentAs(expected, UTF_8);
 	}
 
 	private File newFolderWithRandomFile() throws IOException {
@@ -174,7 +175,7 @@ class ShadowCopyTest extends ResourceHarness {
 	}
 
 	private void writeRandomStringOfLengthToFile(File file, int length) throws IOException {
-		Files.write(file.toPath(), randomStringOfLength(length).getBytes(StandardCharsets.UTF_8));
+		Files.write(file.toPath(), randomStringOfLength(length).getBytes(UTF_8));
 	}
 
 	private String randomStringOfLength(int length) {

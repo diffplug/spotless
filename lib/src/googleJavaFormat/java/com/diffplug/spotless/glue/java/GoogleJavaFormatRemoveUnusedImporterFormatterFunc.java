@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.diffplug.spotless.glue.java;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nonnull;
 
@@ -29,7 +29,7 @@ public class GoogleJavaFormatRemoveUnusedImporterFormatterFunc implements Format
 	private final String version;
 
 	public GoogleJavaFormatRemoveUnusedImporterFormatterFunc(@Nonnull String version) {
-		this.version = Objects.requireNonNull(version);
+		this.version = requireNonNull(version);
 	}
 
 	@Override
