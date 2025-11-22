@@ -606,7 +606,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <clangFormat>
-  <version>14.0.0-1ubuntu1.1</version> <!-- optional version of clang-format -->
+  <version>14.0.0-1ubuntu1.1</version> <!-- optional version of clang-format. Explicitly allow "any found version" with '*'. -->
   <pathToExe>/path/to/buf</pathToExe>  <!-- optional: if clang-format isn't in your path -->
   <style>LLVM</style>  <!-- optional: can be LLVM, Google, Chromium, Mozilla, WebKit -->
 </clangFormat>
@@ -635,7 +635,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <black>
-  <version>19.10b0</version> <!-- optional -->
+  <version>19.10b0</version> <!-- optional. Explicitly allow "any found version" with '*'. -->
   <!-- if black is not on your path, you must specify its location manually -->
   <pathToExe>C:/myuser/.pyenv/versions/3.8.0/scripts/black.exe</pathToExe>
   <!--
@@ -1161,7 +1161,7 @@ When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.edit
 
 ```xml
 <shfmt>
-  <version>3.8.0</version>                         <!-- optional: Custom version of 'mvdan/sh' -->
+  <version>3.8.0</version>                         <!-- optional: Custom version of 'mvdan/sh'. Explicitly allow "any found version" with '*'. -->
   <pathToExe>/opt/homebrew/bin/shfmt</pathToExe>   <!-- optional: if shfmt is not on your path, you must specify its location manually -->
 </shfmt>
 ```
@@ -1216,7 +1216,7 @@ Standard Go formatter, part of Go distribution.
 
 ```xml
 <gofmt>
-  <version>go1.25.1</version>
+  <version>go1.25.1</version>                 <!-- Explicitly allow "any found version" with '*'. -->
   <goExecutablePath>/opt/sdks/go1.25.1/bin/go</goExecutablePath>
 </gofmt>
 ```
@@ -1303,7 +1303,7 @@ RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version t
 [homepage](https://buf.build/) [buf repo](https://github.com/bufbuild/buf).
 ```xml
  <buf>
-    <version>1.44.0</version>    <!-- optional -->
+    <version>1.44.0</version>    <!-- optional. Explicitly allow "any found version" with '*'. -->
     <pathToExe>/path/to/buf</pathToExe>  <!-- optional: if buf isn't in your path -->
  </buf>        
 ```
