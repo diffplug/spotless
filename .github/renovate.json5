@@ -3,4 +3,12 @@
 	"extends": [
 		"config:recommended",
 	],
+	packageRules: [
+		{
+			groupName: 'OpenRewrite',
+			matchPackageNames: [
+				'org.openrewrite.recipe:.*',
+			],
+		},
+	]
 }
