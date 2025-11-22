@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import foo.bar.baz.AnotherImportedClass;
 import org.example.SomeAnnotation;
 
@@ -26,7 +27,7 @@ public class JavaClassWithWildcards {
     /**
      * Some JavaDoc
      */
-    public Optional<Integer> testMethod() {
+    public Optional<Integer> testMethod(Callable callable) {
         AnotherClassInSamePackage test1 = null;
         AnotherImportedClass test2 = null;
         return Optional.empty();

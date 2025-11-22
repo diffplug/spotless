@@ -1,6 +1,7 @@
 package foo.bar;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import foo.bar.baz.*;
 import org.example.*;
 import java.io.*;
@@ -23,7 +24,7 @@ public class JavaClassWithWildcards {
     /**
      * Some JavaDoc
      */
-    public Optional<Integer> testMethod() {
+    public Optional<Integer> testMethod(Callable callable) {
         AnotherClassInSamePackage test1 = null;
         AnotherImportedClass test2 = null;
         return Optional.empty();

@@ -135,9 +135,15 @@ public class ExpandWildcardsFormatterFunc implements FormatterFunc.NeedsFile {
 
 		private void matchTypeName(Map<ImportDeclaration, Set<ImportDeclaration>> importMap, String qualifiedName,
 				boolean isStatic) {
+			int lastDot = qualifiedName.lastIndexOf('.');
+			if (lastDot < 0) {
+				return;
+			}
+
+			String packageName = qualifiedName.substring(0, lastDot);
 			for (var entry : importMap.entrySet()) {
 				if (entry.getKey().isStatic() == isStatic
-						&& qualifiedName.startsWith(entry.getKey().getName().asString())) {
+						&& packageName.equals(entry.getKey().getName().asString())) {
 					entry.getValue().add(new ImportDeclaration(qualifiedName, isStatic, false));
 					break;
 				}

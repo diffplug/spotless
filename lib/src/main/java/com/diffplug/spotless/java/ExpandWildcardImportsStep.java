@@ -73,7 +73,7 @@ public final class ExpandWildcardImportsStep implements Serializable {
 		FormatterFunc toFormatter() {
 			try {
 				Class<?> formatterFunc = jarState.getClassLoader()
-						.loadClass("com.diffplug.spotless.glue.javaParser.ExpandWildcardsFormatterFunc");
+						.loadClass("com.diffplug.spotless.glue.javaparser.ExpandWildcardsFormatterFunc");
 				Constructor<?> constructor = formatterFunc.getConstructor(Collection.class);
 				return (FormatterFunc) constructor.newInstance(typeSolverClasspath);
 			} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
