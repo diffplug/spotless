@@ -12,7 +12,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  sanityCheck:
+  sanity-check:
+    name: SanityCheck
     runs-on: ubuntu-latest
     env:
       buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
@@ -35,7 +36,7 @@ jobs:
       - name: assemble testClasses
         run: ./gradlew assemble testClasses
   build:
-    needs: sanityCheck
+    needs: sanity-check
     strategy:
       fail-fast: false
       matrix:
@@ -107,7 +108,7 @@ jobs:
   # Status check that is required in branch protection rules.
   final-status:
     needs:
-      - sanityCheck
+      - sanity-check
       - build
     runs-on: ubuntu-latest
     if: always()

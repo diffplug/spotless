@@ -98,64 +98,84 @@ public final class EclipseJdtSortMembers {
 			this.contents = contents;
 		}
 
+		@Override
 		public void addBufferChangedListener(IBufferChangedListener listener) {}
 
+		@Override
 		public void append(char[] text) {}
 
+		@Override
 		public void append(String text) {}
 
+		@Override
 		public void close() {}
 
+		@Override
 		public char getChar(int position) {
 			return '\u0000';
 		}
 
+		@Override
 		public char[] getCharacters() {
 			return contents.toCharArray();
 		}
 
+		@Override
 		public String getContents() {
 			return contents;
 		}
 
+		@Override
 		public int getLength() {
 			return 0;
 		}
 
+		@Override
 		public IOpenable getOwner() {
 			return null;
 		}
 
+		@Override
 		public String getText(int offset, int length) {
 			return null;
 		}
 
+		@Override
 		public IResource getUnderlyingResource() {
 			return null;
 		}
 
+		@Override
 		public boolean hasUnsavedChanges() {
 			return false;
 		}
 
+		@Override
 		public boolean isClosed() {
 			return false;
 		}
 
+		@Override
 		public boolean isReadOnly() {
 			return true;
 		}
 
+		@Override
 		public void removeBufferChangedListener(IBufferChangedListener listener) {}
 
+		@Override
 		public void replace(int position, int length, char[] text) {}
 
+		@Override
 		public void replace(int position, int length, String text) {}
 
+		@Override
 		public void save(IProgressMonitor progress, boolean force) {}
 
+		@Override
 		public void setContents(char[] contents) {}
 
+		@Override
 		public void setContents(String contents) {
 			this.contents = contents;
 		}

@@ -1,50 +1,45 @@
-apply plugin: 'net.ltgt.errorprone'
+import static java.lang.System.getenv
 
-dependencies {
-	errorprone('com.google.errorprone:error_prone_core:2.42.0')
-	errorprone('tech.picnic.error-prone-support:error-prone-contrib:0.26.0')
-}
+apply plugin: 'net.ltgt.errorprone'
 
 tasks.withType(JavaCompile).configureEach {
 	options.errorprone {
-		disable( // consider fix, or reasoning.
+		disableAllWarnings = true // https://github.com/diffplug/spotless/issues/2745 https://github.com/google/error-prone/issues/5365
+		disable(
+				// consider fix, or reasoning.
+				'AnnotateFormatMethod', // We don`t want to use ErrorProne's annotations.
+				'DoNotCallSuggester', // We don`t want to use ErrorProne's annotations.
 				'FunctionalInterfaceMethodChanged',
+				'ImmutableEnumChecker', // We don`t want to use ErrorProne's annotations.
+				'InlineMeSuggester', // We don`t want to use ErrorProne's annotations.
 				'JavaxInjectOnAbstractMethod',
 				'OverridesJavaxInjectableMethod',
+				'ReturnValueIgnored', // We don`t want to use ErrorProne's annotations.
 				)
 		error(
-				'AmbiguousJsonCreator',
-				'AssertJNullnessAssertion',
-				'AutowiredConstructor',
-				'CanonicalAnnotationSyntax',
-				'CollectorMutability',
-				'ConstantNaming',
-				'DirectReturn',
-				'EmptyMethod',
-				'ExplicitArgumentEnumeration',
-				'ExplicitEnumOrdering',
-				'IdentityConversion',
-				'ImmutablesSortedSetComparator',
-				'IsInstanceLambdaUsage',
-				'MockitoMockClassReference',
-				'MockitoStubbing',
-				'NestedOptionals',
-				'PrimitiveComparison',
-				'RedundantStringConversion',
-				'RedundantStringEscape',
 				'ReturnValueIgnored',
 				'SelfAssignment',
 				'StringJoin',
-				'StringJoining',
 				'UnnecessarilyFullyQualified',
 				'UnnecessaryLambda',
 				)
 		// bug: this only happens when the file is dirty.
 		// might be an up2date (caching) issue, as file is currently in corrupt state.
-		// ForbidGradleInternal(import org.gradle.api.internal.project.ProjectInternal;)
-		errorproneArgs.add('-XepExcludedPaths:' +
-				'.*/SelfTest.java|' +
-				'.*/GradleIntegrationHarness.java'
+		// ForbidGradleInternal(import
+		excludedPaths.set(
+				'.*/GradleIntegrationHarness.java|'+
+				'.*/SelfTest.java'
 				)
+		if (!getenv().containsKey('CI') && getenv('IN_PLACE')?.toBoolean()) {
+			errorproneArgs.addAll(
+					'-XepPatchLocation:IN_PLACE',
+					'-XepPatchChecks:' +
+					'MissingOverride'
+					)
+		}
 	}
+}
+
+dependencies {
+	errorprone('com.google.errorprone:error_prone_core:2.42.0')
 }
