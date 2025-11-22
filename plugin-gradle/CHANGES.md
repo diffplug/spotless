@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changes
+* Bump default `ktlint` version to latest `1.7.1` -> `1.8.0`. ([2763](https://github.com/diffplug/spotless/pull/2763))
 
 ## [8.1.0] - 2025-11-18
 ### Changes
