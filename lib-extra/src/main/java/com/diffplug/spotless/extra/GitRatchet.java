@@ -97,7 +97,13 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 				WorkingTreeIterator workingTreeIterator = treeWalk.getTree(WORKDIR, WorkingTreeIterator.class);
 
 				boolean hasTree = treeIterator != null;
+				boolean hasWorkingTree = workingTreeIterator != null;
 				boolean hasDirCache = dirCacheIterator != null;
+
+				if (!hasWorkingTree) {
+					// Null check for issue 911
+					return true;
+				}
 
 				if (!hasTree) {
 					// it's not in the tree, so it was added
