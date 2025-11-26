@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.extra;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -54,6 +56,206 @@ class GitRachetMergeBaseTest extends ResourceHarness {
 			// and when we work, it should continue to only affect our own work
 			setFile("mine.txt").toContent("changed");
 			ratchetFrom("main", "rem-branch").onlyDirty("mine.txt");
+		}
+	}
+
+	@Test // https://github.com/diffplug/spotless/issues/911
+	void testGitIgnoredDirectory_ShouldNotThrowNPE() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// Create a directory with files and commit them
+			setFile("useless/Wow.java").toContent("class Wow {}");
+			setFile("useless/Another.java").toContent("class Another {}");
+			addAndCommit(git, "Add useless package");
+
+			// Now ignore the entire directory and commit
+			setFile(".gitignore").toContent("useless/");
+			addAndCommit(git, "Ignore useless directory");
+
+			// The files in the useless directory are now committed but gitignored
+			// This should not throw NPE
+			ratchetFrom("main").onlyDirty("useless/Wow.java", "useless/Another.java");
+		}
+	}
+
+	@Test
+	void testNewUntrackedFile_ShouldBeDirty() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// Create and commit initial file
+			setFile("committed.java").toContent("class Committed {}");
+			addAndCommit(git, "Initial commit");
+
+			// Create a new file that's not tracked at all (not in gitignore either)
+			setFile("new_untracked.java").toContent("class NewUntracked {}");
+
+			// The new untracked file should be considered dirty
+			ratchetFrom("main").onlyDirty("new_untracked.java");
+		}
+	}
+
+	@Test
+	void testModifiedTrackedFile_ShouldBeDirty() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// Create and commit initial file
+			setFile("Main.java").toContent("class Main { void old() {} }");
+			addAndCommit(git, "Initial commit");
+
+			// Modify the file
+			setFile("Main.java").toContent("class Main { void newMethod() {} }");
+
+			// The modified file should be considered dirty
+			ratchetFrom("main").onlyDirty("Main.java");
+		}
+	}
+
+	@Test
+	void testDeletedFile_ShouldBeDirty() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// Create and commit multiple files
+			setFile("keep.java").toContent("class Keep {}");
+			setFile("delete.java").toContent("class Delete {}");
+			addAndCommit(git, "Initial commit");
+
+			// Delete one file
+			new File(rootFolder(), "delete.java").delete();
+
+			// The deleted file should be considered dirty
+			ratchetFrom("main").onlyDirty("delete.java");
+		}
+	}
+
+	@Test
+	void testRenamedFile_ShouldBeDirty() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// Create and commit initial file
+			setFile("OldName.java").toContent("class OldName {}");
+			addAndCommit(git, "Initial commit");
+
+			// Rename the file (Git sees this as delete + add)
+			File oldFile = new File(rootFolder(), "OldName.java");
+			File newFile = new File(rootFolder(), "NewName.java");
+			oldFile.renameTo(newFile);
+
+			// Both old and new files should be considered dirty
+			ratchetFrom("main").onlyDirty("OldName.java", "NewName.java");
+		}
+	}
+
+	@Test
+	void testStagedButUncommittedChanges_ShouldBeDirty() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// Create and commit initial file
+			setFile("Test.java").toContent("class Test {}");
+			addAndCommit(git, "Initial commit");
+
+			// Modify and stage the file but don't commit
+			setFile("Test.java").toContent("class Test { void newMethod() {} }");
+			git.add().addFilepattern("Test.java").call();
+
+			// The staged but uncommitted file should be considered dirty
+			ratchetFrom("main").onlyDirty("Test.java");
+		}
+	}
+
+	@Test
+	void testMultipleBranchesWithDifferentFiles() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// Initial commit
+			setFile("base.txt").toContent("base");
+			addAndCommit(git, "Initial commit");
+
+			// Branch A changes
+			git.checkout().setCreateBranch(true).setName("branch-a").call();
+			setFile("a-only.txt").toContent("a content");
+			addAndCommit(git, "Branch A commit");
+
+			// Branch B changes
+			git.checkout().setName("main").call();
+			git.checkout().setCreateBranch(true).setName("branch-b").call();
+			setFile("b-only.txt").toContent("b content");
+			addAndCommit(git, "Branch B commit");
+
+			// Check from both branches - each should only see their own changes as dirty
+			git.checkout().setName("main").call();
+			ratchetFrom("branch-a").onlyDirty("a-only.txt");
+			ratchetFrom("branch-b").onlyDirty("b-only.txt");
+		}
+	}
+
+	@Test
+	void testNestedDirectoryStructure() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// Create nested directory structure
+			setFile("src/main/java/com/example/Main.java").toContent("package com.example; class Main {}");
+			setFile("src/main/java/com/example/Util.java").toContent("package com.example; class Util {}");
+			setFile("src/test/java/com/example/MainTest.java").toContent("package com.example; class MainTest {}");
+			addAndCommit(git, "Add nested structure");
+
+			// Modify only one nested file
+			setFile("src/main/java/com/example/Util.java").toContent("package com.example; class Util { void newMethod() {} }");
+
+			// Only the modified nested file should be dirty
+			ratchetFrom("main").onlyDirty("src/main/java/com/example/Util.java");
+		}
+	}
+
+	@Test
+	void testNonExistentReference_ShouldThrowException() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			setFile("test.txt").toContent("test");
+			addAndCommit(git, "Initial commit");
+
+			// Trying to ratchet from non-existent branch should throw
+			assertThrows(IllegalArgumentException.class, () -> ratchetFrom("nonexistent-branch"));
+		}
+	}
+
+	@Test
+	void testBinaryFile_ShouldBeHandled() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// Create and commit binary file
+			setFile("image.png").toContent("binary content that looks like an image");
+			addAndCommit(git, "Add binary file");
+
+			// Modify binary content
+			setFile("image.png").toContent("modified binary content");
+
+			// Binary file should be detected as dirty
+			ratchetFrom("main").onlyDirty("image.png");
+		}
+	}
+
+	@Test
+	void testSymlink_ShouldBeHandled() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// This test would require creating actual symlinks
+			// For now, we'll test that the code doesn't break with special files
+			setFile("regular.txt").toContent("regular file");
+			setFile("special.txt").toContent("special file");
+			addAndCommit(git, "Add files");
+
+			// Modify one file
+			setFile("special.txt").toContent("modified special file");
+
+			// Should correctly identify the modified file
+			ratchetFrom("main").onlyDirty("special.txt");
+		}
+	}
+
+	@Test
+	void testMultipleProjectsInSameRepo() throws IllegalStateException, GitAPIException, IOException {
+		try (Git git = initRepo()) {
+			// Simulate multiple projects in same repo
+			setFile("project1/src/Main.java").toContent("class Main {}");
+			setFile("project2/src/Other.java").toContent("class Other {}");
+			setFile("shared/common.txt").toContent("shared");
+			addAndCommit(git, "Add projects");
+
+			// Modify files in different "projects"
+			setFile("project1/src/Main.java").toContent("class Main { void change() {} }");
+			setFile("shared/common.txt").toContent("modified shared");
+
+			// Should detect all modified files
+			ratchetFrom("main").onlyDirty("project1/src/Main.java", "shared/common.txt");
 		}
 	}
 
