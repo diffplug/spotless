@@ -15,7 +15,6 @@
  */
 package com.diffplug.spotless.java;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_15;
 import static org.junit.jupiter.api.condition.JRE.JAVA_20;
 import static org.junit.jupiter.api.condition.JRE.JAVA_21;
 
@@ -39,9 +38,8 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(max = JAVA_15) // google-java-format requires JRE 11+
 	void behavior18() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create("1.8", TestProvisioner.mavenCentral());
+		FormatterStep step = GoogleJavaFormatStep.create(TestProvisioner.mavenCentral());
 		StepHarness.forStep(step)
 				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted18.test")
 				.testResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test", "java/googlejavaformat/JavaCodeWithLicenseFormatted.test")

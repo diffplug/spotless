@@ -30,7 +30,7 @@ public final class GherkinUtilsStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "io.cucumber:gherkin-utils:";
-	private static final String DEFAULT_VERSION = "9.2.0";
+	private static final String DEFAULT_VERSION = "10.0.0";
 	public static final String NAME = "gherkinUtils";
 
 	private final JarState.Promised jarState;
