@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 - Add the ability to specify a wildcard version (`*`) for external formatter executables. ([#2757](https://github.com/diffplug/spotless/issues/2757))
+- Add support for passing multiple file paths using the -PspotlessIdeHook option. ([#2774](https://github.com/diffplug/spotless/pull/2774))
 ### Fixed
 - [fix] `NPE` due to workingTreeIterator being null for git ignored files. #911 ([#2771](https://github.com/diffplug/spotless/issues/2771))
 ### Changes
