@@ -18,6 +18,9 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -31,18 +34,23 @@ import com.diffplug.spotless.NoLambda;
 
 final class IdeHook {
 	static class State extends NoLambda.EqualityBasedOnSerialization {
-		final @Nullable String path;
+		final @Nullable List<String> paths;
 		final boolean useStdIn;
 		final boolean useStdOut;
 
 		State(Project project) {
-			path = GradleCompat.findOptionalProperty(project, PROPERTY);
-			if (path != null) {
+			var pathsString = GradleCompat.findOptionalProperty(project, PROPERTY);
+			if (pathsString != null) {
 				useStdIn = GradleCompat.isPropertyPresent(project, USE_STD_IN);
 				useStdOut = GradleCompat.isPropertyPresent(project, USE_STD_OUT);
+				paths = Arrays.stream(pathsString.split(","))
+					.map(String::trim)
+					.filter(s -> !s.isEmpty())
+					.collect(Collectors.toList());
 			} else {
 				useStdIn = false;
 				useStdOut = false;
+				paths = null;
 			}
 		}
 	}
@@ -56,18 +64,29 @@ final class IdeHook {
 	}
 
 	static void performHook(SpotlessTaskImpl spotlessTask, IdeHook.State state) {
-		File file = new File(state.path);
-		if (!file.isAbsolute()) {
-			System.err.println("Argument passed to " + PROPERTY + " must be an absolute path");
+		if (state.paths == null) {
 			return;
 		}
-		if (spotlessTask.getTarget().contains(file)) {
+		if (state.paths.size() > 1 && (state.useStdIn || state.useStdOut)) {
+			System.err.println("Using " + USE_STD_IN + " or " + USE_STD_OUT + " with multiple files is not supported");
+			return;
+		}
+		List<File> files = state.paths.stream().map(File::new).toList();
+		for (File file : files) {
+			if (!file.isAbsolute()) {
+				System.err.println("Argument passed to " + PROPERTY + " must be one or multiple absolute paths");
+				return;
+			}
+		}
+
+		var matchedFiles = files.stream().filter(file -> spotlessTask.getTarget().contains(file)).toList();
+		for (File file : matchedFiles) {
 			GitRatchetGradle ratchet = spotlessTask.getRatchet();
 			try (Formatter formatter = spotlessTask.buildFormatter()) {
 				if (ratchet != null) {
 					if (ratchet.isClean(spotlessTask.getProjectDir().get().getAsFile(), spotlessTask.getRootTreeSha(), file)) {
 						dumpIsClean();
-						return;
+						continue;
 					}
 				}
 				byte[] bytes;
@@ -100,5 +119,6 @@ final class IdeHook {
 		}
 	}
 
-	private IdeHook() {}
+	private IdeHook() {
+	}
 }

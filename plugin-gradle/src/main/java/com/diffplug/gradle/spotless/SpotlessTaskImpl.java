@@ -79,7 +79,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
 		IdeHook.State ideHook = getIdeHookState().getOrNull();
-		if (ideHook != null && ideHook.path != null) {
+		if (ideHook != null && ideHook.paths != null) {
 			IdeHook.performHook(this, ideHook);
 			return;
 		}
