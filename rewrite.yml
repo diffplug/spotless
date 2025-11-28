@@ -1,7 +1,7 @@
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: com.diffplug.spotless.openrewrite.SanityCheck
-displayName: Apply all Java & Gradle best practices
+displayName: Apply all best practices
 description: Comprehensive code quality recipe combining modernization, security, and best practices.
 tags:
   - java
@@ -9,6 +9,11 @@ tags:
   - static-analysis
   - cleanup
 recipeList:
+  - org.openrewrite.codemods.ESLint
+  - org.openrewrite.codemods.UI5
+  - org.openrewrite.codemods.cleanup.javascript.EmptyBraceSpaces
+  - org.openrewrite.codemods.cleanup.javascript.PreferModule
+  - org.openrewrite.codemods.ecmascript.5to6.ECMAScript6BestPractices
   - org.openrewrite.gradle.EnableGradleBuildCache
   - org.openrewrite.gradle.EnableGradleParallelExecution
   - org.openrewrite.gradle.GradleBestPractices

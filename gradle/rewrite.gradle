@@ -5,6 +5,7 @@ rewrite {
 			'**.dirty.java',
 			'**FormatterProperties.java',
 			'**_gradle_node_plugin_example_**',
+			'**common-serve.js',
 			'**gradle/changelog.gradle',
 			'**gradle/java-publish.gradle',
 			'**idea/full.clean.java',
@@ -15,14 +16,16 @@ rewrite {
 			'**plugin-maven/build.gradle',
 			'**settings.gradle',
 			'**special-tests.gradle',
-			'**testlib/src/main/resources**'
+			'**testlib/src/main/resources**',
+			'**tsfmt-serve.js',
 			)
 	exportDatatables = true
 	failOnDryRunResults = true
 }
 dependencies {
-	rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.22.0')
+	rewrite('org.openrewrite.recipe:rewrite-codemods:0.22.0')
 	rewrite('org.openrewrite.recipe:rewrite-java-security:3.22.0')
+	rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.22.0')
 	rewrite('org.openrewrite.recipe:rewrite-rewrite:0.16.0')
 	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.22.0')
 	rewrite('org.openrewrite.recipe:rewrite-third-party:0.31.2')
