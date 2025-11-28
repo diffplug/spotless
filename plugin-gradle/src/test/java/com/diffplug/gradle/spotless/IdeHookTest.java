@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
@@ -67,12 +66,12 @@ class IdeHookTest extends GradleIntegrationHarness {
 		StringBuilder output = new StringBuilder();
 		StringBuilder error = new StringBuilder();
 		try (Writer outputWriter = new StringPrinter(output::append).toWriter();
-			 Writer errorWriter = new StringPrinter(error::append).toWriter()) {
+				Writer errorWriter = new StringPrinter(error::append).toWriter()) {
 			gradleRunner(configurationCache)
-				.withArguments(arguments)
-				.forwardStdOutput(outputWriter)
-				.forwardStdError(errorWriter)
-				.build();
+					.withArguments(arguments)
+					.forwardStdOutput(outputWriter)
+					.forwardStdError(errorWriter)
+					.build();
 		}
 		this.output = output.toString();
 		this.error = error.toString();
@@ -80,19 +79,19 @@ class IdeHookTest extends GradleIntegrationHarness {
 
 	private void initPluginConfig(String miscTargets, String divergeTargets) throws IOException {
 		setFile("build.gradle").toLines(
-			"plugins {",
-			"  id 'com.diffplug.spotless'",
-			"}",
-			"spotless {",
-			"  format 'misc', {",
-			"    target " + miscTargets,
-			"    addStep com.diffplug.spotless.TestingOnly.lowercase()",
-			"  }",
-			"  format 'diverge', {",
-			"    target " + divergeTargets,
-			"    addStep com.diffplug.spotless.TestingOnly.diverge()",
-			"  }",
-			"}");
+				"plugins {",
+				"  id 'com.diffplug.spotless'",
+				"}",
+				"spotless {",
+				"  format 'misc', {",
+				"    target " + miscTargets,
+				"    addStep com.diffplug.spotless.TestingOnly.lowercase()",
+				"  }",
+				"  format 'diverge', {",
+				"    target " + divergeTargets,
+				"    addStep com.diffplug.spotless.TestingOnly.diverge()",
+				"  }",
+				"}");
 	}
 
 	protected GradleRunner gradleRunner(boolean configurationCache) throws IOException {
@@ -226,7 +225,8 @@ class IdeHookTest extends GradleIntegrationHarness {
 		for (int i = 0; i < fileCount; i++) {
 			File f = new File(rootFolder(), "file_" + i + ".md");
 			Files.write(("Some content " + i).getBytes(StandardCharsets.UTF_8), f);
-			if (i > 0) paths.append(",");
+			if (i > 0)
+				paths.append(",");
 			paths.append(f.getAbsolutePath());
 		}
 		initPluginConfig("'file_*.md'", "'DIVERGE.md'");

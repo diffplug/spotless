@@ -44,9 +44,9 @@ final class IdeHook {
 				useStdIn = GradleCompat.isPropertyPresent(project, USE_STD_IN);
 				useStdOut = GradleCompat.isPropertyPresent(project, USE_STD_OUT);
 				paths = Arrays.stream(pathsString.split(","))
-					.map(String::trim)
-					.filter(s -> !s.isEmpty())
-					.collect(Collectors.toList());
+						.map(String::trim)
+						.filter(s -> !s.isEmpty())
+						.collect(Collectors.toList());
 			} else {
 				useStdIn = false;
 				useStdOut = false;
@@ -119,6 +119,5 @@ final class IdeHook {
 		}
 	}
 
-	private IdeHook() {
-	}
+	private IdeHook() {}
 }
