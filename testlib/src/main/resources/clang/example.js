@@ -1,4 +1,4 @@
-var numbers=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
+const numbers=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
 ];
 
 const p = {
@@ -10,9 +10,9 @@ const p = {
 const str = "Hello, world!"
 ;
 
-var str2=str.charAt(3)+str[0];
+const str2=str.charAt(3)+str[0];
 
-var multilinestr = "Hello \
+const multilinestr = "Hello \
 World"
 ;
 

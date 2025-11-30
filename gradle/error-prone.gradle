@@ -17,7 +17,6 @@ tasks.withType(JavaCompile).configureEach {
 				'ReturnValueIgnored', // We don`t want to use ErrorProne's annotations.
 				)
 		error(
-				'ReturnValueIgnored',
 				'SelfAssignment',
 				'StringJoin',
 				'UnnecessarilyFullyQualified',
