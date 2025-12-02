@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 public class NpmTestsWithDynamicallyInstalledNpmInstallationTest extends MavenIntegrationHarness {
 
+	public static final String TS = "typescript";
+
 	@Test
 	void useDownloadedNpmInstallation() throws Exception {
 		writePomWithPrettierSteps(
@@ -34,15 +36,11 @@ public class NpmTestsWithDynamicallyInstalledNpmInstallationTest extends MavenIn
 				"    <npmExecutable>" + installedNpmPath() + "</npmExecutable>",
 				"</prettier>");
 
-		String kind = "typescript";
-		String suffix = "ts";
-		String configPath = ".prettierrc.yml";
-		setFile(configPath).toResource("npm/prettier/filetypes/" + kind + "/" + ".prettierrc.yml");
-		String path = "src/main/" + kind + "/test." + suffix;
-		setFile(path).toResource("npm/prettier/filetypes/" + kind + "/" + kind + ".dirty");
-
+		String path = "src/main/" + TS + "/test.ts";
+		setFile(path).toResource("npm/prettier/filetypes/" + TS + "/" + TS + ".dirty");
+		setFile(".prettierrc.yml").toResource("npm/prettier/filetypes/" + TS + "/" + ".prettierrc.yml");
 		mavenRunner().withArguments(installNpmMavenGoal(), "spotless:apply").runNoError();
-		assertFile(path).sameAsResource("npm/prettier/filetypes/" + kind + "/" + kind + ".clean");
+		assertFile(path).sameAsResource("npm/prettier/filetypes/" + TS + "/" + TS + ".clean");
 	}
 
 }
