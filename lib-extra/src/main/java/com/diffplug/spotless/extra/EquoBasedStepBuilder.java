@@ -139,7 +139,7 @@ public abstract class EquoBasedStepBuilder {
 			mavenDeps.add("dev.equo.ide:solstice:1.8.1");
 			mavenDeps.add("com.diffplug.durian:durian-swt.os:4.3.1");
 			mavenDeps.addAll(query.getJarsOnMavenCentral());
-			classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
+			classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps).files());
 			classpath.addAll(query.getJarsNotOnMavenCentral());
 			for (var nested : NestedJars.inFiles(query.getJarsNotOnMavenCentral()).extractAllNestedJars()) {
 				classpath.add(nested.getValue());
