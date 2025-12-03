@@ -33,7 +33,7 @@ jobs:
       - name: Assemble TestClasses ⚙️
         run: ./gradlew assemble testClasses
   build:
-    name: Build 🏗️
+    name: Build 🏗 ${{ matrix.kind }}️, Java ☕️ ${{ matrix.jre }}, OS 💿 ${{ matrix.os }}
     needs: sanity-check
     strategy:
       fail-fast: false
