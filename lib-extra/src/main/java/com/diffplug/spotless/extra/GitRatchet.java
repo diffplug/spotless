@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless.extra;
 
+import static com.diffplug.spotless.FileSignature.pathNativeToUnix;
+import static org.eclipse.jgit.treewalk.TreeWalk.forPath;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -45,7 +48,6 @@ import org.eclipse.jgit.util.FS;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.collect.HashBasedTable;
 import com.diffplug.common.collect.Table;
-import com.diffplug.spotless.FileSignature;
 
 /**
  * How to use:
@@ -57,9 +59,7 @@ import com.diffplug.spotless.FileSignature;
 public abstract class GitRatchet<Project> implements AutoCloseable {
 
 	public boolean isClean(Project project, ObjectId treeSha, File file) throws IOException {
-		Repository repo = repositoryFor(project);
-		String relativePath = FileSignature.pathNativeToUnix(repo.getWorkTree().toPath().relativize(file.toPath()).toString());
-		return isClean(project, treeSha, relativePath);
+		return isClean(project, treeSha, pathNativeToUnix(repositoryFor(project).getWorkTree().toPath().relativize(file.toPath()).toString()));
 	}
 
 	private final Map<Repository, DirCache> dirCaches = new HashMap<>();
@@ -210,8 +210,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 				if (repo.getWorkTree().equals(directory)) {
 					subtreeSha = rootTreeSha;
 				} else {
-					String subpath = FileSignature.pathNativeToUnix(repo.getWorkTree().toPath().relativize(directory.toPath()).toString());
-					TreeWalk treeWalk = TreeWalk.forPath(repo, subpath, rootTreeSha);
+					TreeWalk treeWalk = forPath(repo, pathNativeToUnix(repo.getWorkTree().toPath().relativize(directory.toPath()).toString()), rootTreeSha);
 					subtreeSha = treeWalk == null ? ObjectId.zeroId() : treeWalk.getObjectId(0);
 				}
 				subtreeShaCache.put(project, subtreeSha.copy());

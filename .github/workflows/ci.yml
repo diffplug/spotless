@@ -1,51 +1,47 @@
-# BUILDCACHE_USER
-# BUILDCACHE_PASS
-#   - rw access to buildcache.diffplug.com
-
+name: CI ♻️
 on:
   pull_request:
   push:
     branches: [main, release]
   workflow_dispatch:
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   sanity-check:
-    name: SanityCheck
+    name: SanityCheck 🕊️
     runs-on: ubuntu-latest
     env:
       buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
       buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
     steps:
-      - name: Checkout
+      - name: Checkout 📥
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@v5
+      - name: Setup Java ☕️
+        uses: actions/setup-java@v5
         with:
           distribution: "temurin"
           java-version: 21
-      - name: gradle caching
+      - name: Gradle Caching 💾
         uses: gradle/actions/setup-gradle@v5
-      - name: spotlessCheck
+      - name: Spotless Check ✨
         run: ./gradlew spotlessCheck
-      - name: rewriteDryRun
+      - name: Rewrite Dry Run 🌀
         run: ./gradlew rewriteDryRun
-      - name: assemble testClasses
+      - name: Assemble TestClasses ⚙️
         run: ./gradlew assemble testClasses
   build:
+    name: Build 🏗️
     needs: sanity-check
     strategy:
       fail-fast: false
       matrix:
         kind: [maven, gradle]
-        # Test on the latest Java version once Gradle & Maven support it.
-        jre: [17, 21, 24]
+        jre: [17, 21, 24] # Test on the latest Java version once Gradle & Maven support it.
         os: [ubuntu-latest, windows-latest]
-        include:
-          # npm on linux only (crazy slow on windows)
+        include: # npm on linux only (crazy slow on windows)
           - kind: npm
             jre: 17
             os: ubuntu-latest
@@ -58,36 +54,37 @@ jobs:
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
+      - name: Checkout 📥
         uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
+      - name: Setup Java ☕️
+        uses: actions/setup-java@v5
         with:
           distribution: "temurin"
           java-version: ${{ matrix.jre }}
-      - name: gradle caching
+      - name: Gradle Caching 💾
         uses: gradle/actions/setup-gradle@v5
-      - name: build (maven-only)
+      - name: Build (Maven) 🏗️
         if: matrix.kind == 'maven'
         run: ./gradlew :plugin-maven:build -x spotlessCheck -x rewriteDryRun
-      - name: build (everything-but-maven)
+      - name: Build (Gradle) 🏗️
         if: matrix.kind == 'gradle'
         run: ./gradlew build -x spotlessCheck -x rewriteDryRun -PSPOTLESS_EXCLUDE_MAVEN=true
-      - name: test npm
+      - name: Test NPM 🧪
         if: matrix.kind == 'npm'
         run: ./gradlew testNpm
-      - name: Setup go
+      - name: Setup Go 🦫
         if: matrix.kind == 'shfmt'
         uses: actions/setup-go@v6
         with:
           go-version: 'stable'
-      - name: Install shfmt
+      - name: Install shfmt 🔧
         if: matrix.kind == 'shfmt'
         run: |
           go install mvdan.cc/sh/v3/cmd/shfmt@${{ matrix.shfmt-version }}
-      - name: Test shfmt
+      - name: Test shfmt 🧪
         if: matrix.kind == 'shfmt'
         run: ./gradlew testShfmt
-      - name: Test idea
+      - name: Test IntelliJ IDEA 🧪
         if: matrix.kind == 'idea'
         run: |
           download_link=$(curl https://data.services.jetbrains.com/products/releases\?code\=IIC\&latest\=true\&type\=release | jq -r '.IIC[0].downloads.linux.link')
@@ -97,27 +94,26 @@ jobs:
           export PATH=${PATH}:$(pwd)/bin
           cd ..
           ./gradlew testIdea
-      - name: junit result
+      - name: Test Results 📊
         uses: mikepenz/action-junit-report@v6
         if: always() # always run even if the previous step fails
         with:
-          check_name: JUnit ${{ matrix.kind }} ${{ matrix.jre }} ${{ matrix.os }}
+          check_name: JUnit (Build 🏗 ${{ matrix.kind }}️, Java ☕️ ${{ matrix.jre }}, OS 💿 ${{ matrix.os }})
           report_paths: '*/build/test-results/*/TEST-*.xml'
           check_retries: true
-
-  # Status check that is required in branch protection rules.
-  final-status:
+  final-status: # Status check that is required in branch protection rules.
+    name: Final Status 🎯
     needs:
       - sanity-check
       - build
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Check
+      - name: Check All Jobs ✅
         run: |
           results=$(tr -d '\n' <<< '${{ toJSON(needs.*.result) }}')
           if ! grep -q -v -E '(failure|cancelled)' <<< "$results"; then
-            echo "One or more required jobs failed"
+            echo "One or more required jobs failed ❌"
             exit 1
           fi
-          echo "All required jobs completed successfully."
+          echo "All required jobs completed successfully. ✅"
