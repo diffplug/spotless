@@ -1,0 +1,36 @@
+package foo.bar;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import foo.bar.baz.AnotherImportedClass;
+import org.example.SomeAnnotation;
+
+import static java.util.stream.Collectors.toList;
+
+@SomeAnnotation
+public class JavaClassWithWildcards {
+
+    private List<String> prop; // This is a comment that should not be removed
+
+    public JavaClassWithWildcards(Map<String, Date> param) {
+        // Another comment
+        Collection<Date> localVariable = param.values();
+        localVariable.stream().collect(toList());
+    }
+
+
+
+    /**
+     * Some JavaDoc
+     */
+    public Optional<Integer> testMethod(Callable callable) {
+        AnotherClassInSamePackage test1 = null;
+        AnotherImportedClass test2 = null;
+        return Optional.empty();
+    }
+
+}
