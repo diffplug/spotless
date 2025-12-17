@@ -1,0 +1,6 @@
+println("Hello")
+def x = 5
+return x
+// This comment has a semicolon;
+/* Multi-line comment;
+   with semicolons; */
