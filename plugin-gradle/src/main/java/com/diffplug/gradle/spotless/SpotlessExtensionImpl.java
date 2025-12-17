@@ -80,15 +80,15 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		TaskProvider<SpotlessApply> applyTask = tasks.register(taskName + APPLY, SpotlessApply.class, task -> {
 			task.init(spotlessTask);
 			task.setGroup(TASK_GROUP);
-			task.setEnabled(ideHook.path == null);
+			task.setEnabled(ideHook.paths == null);
 			task.dependsOn(spotlessTask);
 		});
-		rootApplyTask.configure(task -> task.dependsOn(ideHook.path == null ? applyTask : spotlessTask));
+		rootApplyTask.configure(task -> task.dependsOn(ideHook.paths == null ? applyTask : spotlessTask));
 
 		TaskProvider<SpotlessCheck> checkTask = tasks.register(taskName + CHECK, SpotlessCheck.class, task -> {
 			task.setGroup(TASK_GROUP);
 			task.init(spotlessTask);
-			task.setEnabled(ideHook.path == null);
+			task.setEnabled(ideHook.paths == null);
 			task.dependsOn(spotlessTask);
 
 			// if the user runs both, make sure that apply happens first,
