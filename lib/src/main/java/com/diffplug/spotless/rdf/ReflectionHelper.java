@@ -317,7 +317,7 @@ class ReflectionHelper {
 						"Found more than 1 enum value for name %s, that should never happen".formatted(
 								parameterValueAsString));
 			}
-			method.invoke(builder, selectedEnumValueList.get(0));
+			method.invoke(builder, selectedEnumValueList.getFirst());
 		} else if (param.equals(NumberFormat.class)) {
 			method.invoke(builder, new DecimalFormat(parameterValueAsString, DecimalFormatSymbols.getInstance(Locale.US)));
 		} else if (param.equals(Boolean.class) || param.equals(Boolean.TYPE)) {
@@ -455,7 +455,7 @@ class ReflectionHelper {
 					"More than one builder method found for configuration parameter name: %s".formatted(
 							optionName));
 		}
-		Method method = methods.get(0);
+		Method method = methods.getFirst();
 		if (method.getParameterCount() != 1) {
 			throw new RuntimeException(
 					"Method with unexpected parameter count %s found for configuration parameter name: %s".formatted(

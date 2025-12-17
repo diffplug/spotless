@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   sanity-check:
-    name: SanityCheck
+    name: Sanity Check 🦢️
     runs-on: ubuntu-latest
     env:
       buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
@@ -27,13 +27,13 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 21
-      - name: gradle caching
+      - name: Gradle setup 🐘
         uses: gradle/actions/setup-gradle@v5
-      - name: spotlessCheck
+      - name: Spotless ✨
         run: ./gradlew spotlessCheck
-      - name: rewriteDryRun
+      - name: Rewrite 🦉
         run: ./gradlew rewriteDryRun
-      - name: assemble testClasses
+      - name: Assemble Test Classes 📦
         run: ./gradlew assemble testClasses
   build:
     needs: sanity-check

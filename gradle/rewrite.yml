@@ -3,11 +3,6 @@ type: specs.openrewrite.org/v1beta/recipe
 name: com.diffplug.spotless.openrewrite.SanityCheck
 displayName: Apply all Java & Gradle best practices
 description: Comprehensive code quality recipe combining modernization, security, and best practices.
-tags:
-  - java
-  - gradle
-  - static-analysis
-  - cleanup
 recipeList:
   - org.openrewrite.gradle.EnableGradleBuildCache
   - org.openrewrite.gradle.EnableGradleParallelExecution
@@ -39,7 +34,6 @@ recipeList:
   - org.openrewrite.staticanalysis.RemoveUnusedLocalVariables
   - org.openrewrite.staticanalysis.RemoveUnusedPrivateFields
   - org.openrewrite.staticanalysis.RemoveUnusedPrivateMethods
-  - org.openrewrite.staticanalysis.ReplaceApacheCommonsLang3ValidateNotNullWithObjectsRequireNonNull
   - org.openrewrite.staticanalysis.SimplifyTernaryRecipes
   - org.openrewrite.staticanalysis.URLEqualsHashCodeRecipes
   - org.openrewrite.staticanalysis.UnnecessaryCloseInTryWithResources
@@ -64,5 +58,4 @@ recipeList:
   - tech.picnic.errorprone.refasterrules.StreamRulesRecipes
   - tech.picnic.errorprone.refasterrules.StringRulesRecipes
   - tech.picnic.errorprone.refasterrules.TimeRulesRecipes
-  # - org.openrewrite.java.migrate.lang.FindVirtualThreadOpportunities # don't want to use: https://github.com/diffplug/spotless/pull/2684#discussion_r2433831887
 ---

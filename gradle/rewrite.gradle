@@ -1,6 +1,7 @@
 apply plugin: 'org.openrewrite.rewrite'
 rewrite {
 	activeRecipe('com.diffplug.spotless.openrewrite.SanityCheck')
+	configFile = project.getRootProject().file("${rootDir}/gradle/rewrite.yml")
 	exclusions.addAll(
 			'**.dirty.java',
 			'**FormatterProperties.java',
@@ -21,9 +22,9 @@ rewrite {
 	failOnDryRunResults = true
 }
 dependencies {
-	rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.22.0')
-	rewrite('org.openrewrite.recipe:rewrite-java-security:3.22.0')
-	rewrite('org.openrewrite.recipe:rewrite-rewrite:0.16.0')
-	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.22.0')
-	rewrite('org.openrewrite.recipe:rewrite-third-party:0.31.2')
+	rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.24.0')
+	rewrite('org.openrewrite.recipe:rewrite-java-security:3.24.0')
+	rewrite('org.openrewrite.recipe:rewrite-rewrite:0.17.0')
+	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.24.0')
+	rewrite('org.openrewrite.recipe:rewrite-third-party:0.32.1')
 }
