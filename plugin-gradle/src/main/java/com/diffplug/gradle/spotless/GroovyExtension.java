@@ -60,12 +60,13 @@ public class GroovyExtension extends BaseGroovyExtension implements HasBuiltinDe
 			if (!getProject().getPlugins().hasPlugin(GroovyBasePlugin.class)) {
 				throw new GradleException(message);
 			}
+			final boolean excludeJavaValue = excludeJava;
 			target = getSources(getProject(),
 					message,
 					sourceSet -> sourceSet.getExtensions().getByType(GroovySourceDirectorySet.class),
 					file -> {
 						final String name = file.getName();
-						if (excludeJava) {
+						if (excludeJavaValue) {
 							return name.endsWith(".groovy");
 						} else {
 							return name.endsWith(".groovy") || name.endsWith(".java");
