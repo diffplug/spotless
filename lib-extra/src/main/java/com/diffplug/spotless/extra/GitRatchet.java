@@ -96,7 +96,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 				DirCacheIterator dirCacheIterator = treeWalk.getTree(INDEX, DirCacheIterator.class);
 				WorkingTreeIterator workingTreeIterator = treeWalk.getTree(WORKDIR, WorkingTreeIterator.class);
 
-				boolean hasTree = treeIterator != null;
+				boolean hasTree = treeIterator != null && workingTreeIterator != null;
 				boolean hasDirCache = dirCacheIterator != null;
 
 				if (!hasTree) {

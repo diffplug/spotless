@@ -11,14 +11,14 @@ plugins {
 	id 'com.adarshr.test-logger' version '4.0.0' apply false // https://github.com/radarsh/gradle-test-logger-plugin/blob/develop/CHANGELOG.md
 	id 'com.diffplug.spotless' version '8.1.0' apply false
 	id 'com.diffplug.spotless-changelog' version '3.1.2' apply false // https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
-	id 'com.github.spotbugs' version '6.4.6' apply false // https://github.com/spotbugs/spotbugs-gradle-plugin/releases
-	id 'com.gradle.develocity' version '4.2.2' // https://plugins.gradle.org/plugin/com.gradle.develocity
+	id 'com.github.spotbugs' version '6.4.8' apply false // https://github.com/spotbugs/spotbugs-gradle-plugin/releases
+	id 'com.gradle.develocity' version '4.3' // https://plugins.gradle.org/plugin/com.gradle.develocity
 	id 'com.gradle.plugin-publish' version '2.0.0' apply false // https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'dev.equo.ide' version '1.7.8' apply false // https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
 	id 'io.github.davidburstrom.version-compatibility' version '0.5.0' apply false // https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
 	id 'io.github.gradle-nexus.publish-plugin' version '2.0.0' apply false // https://github.com/gradle-nexus/publish-plugin/releases
 	id 'net.ltgt.errorprone' version '4.3.0' apply false
-	id 'org.openrewrite.rewrite' version '7.21.0' apply false
+	id 'org.openrewrite.rewrite' version '7.23.0' apply false
 }
 
 dependencyResolutionManagement {
