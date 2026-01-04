@@ -18,7 +18,6 @@ package com.diffplug.spotless.java;
 import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Objects;
@@ -72,10 +71,11 @@ public final class ExpandWildcardImportsStep implements Serializable {
 
 		FormatterFunc toFormatter() {
 			try {
-				Class<?> formatterFunc = jarState.getClassLoader()
-						.loadClass("com.diffplug.spotless.glue.javaparser.ExpandWildcardsFormatterFunc");
-				Constructor<?> constructor = formatterFunc.getConstructor(Collection.class);
-				return (FormatterFunc) constructor.newInstance(typeSolverClasspath);
+				return (FormatterFunc) jarState
+						.getClassLoader()
+						.loadClass("com.diffplug.spotless.glue.javaparser.ExpandWildcardsFormatterFunc")
+						.getConstructor(Collection.class)
+						.newInstance(typeSolverClasspath);
 			} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
 					| InstantiationException | IllegalAccessException | NoClassDefFoundError cause) {
 				throw new IllegalStateException(INCOMPATIBLE_ERROR_MESSAGE, cause);
