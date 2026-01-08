@@ -445,7 +445,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    json {",
 				"        target '**/*.json'",
-				"        biome('1.5.0')",
+				"        biome('1.8.0')",
 				"    }",
 				"}");
 		setFile("package.json").toResource("biome/json/packageBefore.json");
