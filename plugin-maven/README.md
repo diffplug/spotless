@@ -1709,7 +1709,7 @@ you can force a certain language like this:
       </includes>
 
       <biome>
-        <version>1.2.0</version>
+        <version>2.3.11</version>
         <language>json</language>
       </biome>
     </format>
