@@ -58,7 +58,7 @@ public final class BiomeSettings {
 	}
 
 	/**
-	 * @param version The biome version for which to get the URL pattern, e.g. 1.2.0 or 2.0.6.
+	 * @param version The biome version for which to get the URL pattern, e.g. 1.8.3 or 2.3.11.
 	 * @return The pattern for {@link String#formatted(Object...)
 	 *         String.format()} for the URL where the executables can be downloaded.
 	 *         The first parameter is the version, the second parameter is the OS /

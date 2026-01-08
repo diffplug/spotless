@@ -95,7 +95,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        biome('1.2.0')",
+				"        biome('2.3.11')",
 				"    }",
 				"}");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
@@ -120,7 +120,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    javascript {",
 				"        target '**/*.js'",
-				"        biome('1.2.0')",
+				"        biome('2.3.11')",
 				"    }",
 				"}");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
@@ -145,7 +145,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    json {",
 				"        target '**/*.json'",
-				"        biome('1.2.0')",
+				"        biome('2.3.11')",
 				"    }",
 				"}");
 		setFile("biome_test.json").toResource("biome/json/fileBefore.json");
@@ -170,7 +170,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    typescript {",
 				"        target '**/*.ts'",
-				"        biome('1.2.0')",
+				"        biome('2.3.11')",
 				"    }",
 				"}");
 		setFile("biome_test.ts").toResource("biome/ts/fileBefore.ts");
@@ -195,7 +195,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mybiome', {",
 				"        target '**/*.nosj'",
-				"        biome('1.2.0').language('json')",
+				"        biome('2.3.11').language('json')",
 				"    }",
 				"}");
 		setFile("biome_test.nosj").toResource("biome/json/fileBefore.json");
@@ -221,7 +221,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        biome('1.2.0').configPath('" + Encode.forJava(path) + "')",
+				"        biome('2.3.11').configPath('" + Encode.forJava(path) + "')",
 				"    }",
 				"}");
 		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
@@ -276,7 +276,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        biome('1.2.0').configPath('configs')",
+				"        biome('2.3.11').configPath('configs')",
 				"    }",
 				"}");
 		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
@@ -303,7 +303,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        biome('1.2.0').configPath('configs')",
+				"        biome('2.3.11').configPath('configs')",
 				"    }",
 				"}");
 		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
@@ -330,7 +330,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        biome('1.2.0').downloadDir('" + Encode.forJava(path) + "')",
+				"        biome('2.3.11').downloadDir('" + Encode.forJava(path) + "')",
 				"    }",
 				"}");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
@@ -358,7 +358,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        biome('1.2.0').downloadDir('target/bin/biome')",
+				"        biome('2.3.11').downloadDir('target/bin/biome')",
 				"    }",
 				"}");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
@@ -385,7 +385,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        biome('1.2.0').pathToExe('biome/is/missing')",
+				"        biome('2.3.11').pathToExe('biome/is/missing')",
 				"    }",
 				"}");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
@@ -412,7 +412,7 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    format 'mybiome', {",
 				"        target '**/*.js'",
-				"        biome('1.2.0').language('json')",
+				"        biome('2.3.11').language('json')",
 				"    }",
 				"}");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");

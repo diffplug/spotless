@@ -55,7 +55,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testAutoDetectCjs() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/fileBefore.cjs", "biome/js/fileAfter.cjs");
 		}
@@ -66,7 +66,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testAutoDetectCts() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/ts/fileBefore.cts", "biome/ts/fileAfter.cts");
 		}
@@ -100,7 +100,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testAutoDetectJs() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/fileBefore.js", "biome/js/fileAfter.js");
 		}
@@ -111,7 +111,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testAutoDetectJson() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/json/fileBefore.json", "biome/json/fileAfter.json");
 		}
@@ -122,7 +122,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testAutoDetectJsonc() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/jsonc/fileBefore.jsonc", "biome/jsonc/fileAfter.jsonc");
 		}
@@ -133,7 +133,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testAutoDetectJsx() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/fileBefore.jsx", "biome/js/fileAfter.jsx");
 		}
@@ -144,7 +144,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testAutoDetectMjs() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/fileBefore.mjs", "biome/js/fileAfter.mjs");
 		}
@@ -155,7 +155,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testAutoDetectMts() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/ts/fileBefore.mts", "biome/ts/fileAfter.mts");
 		}
@@ -166,7 +166,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testAutoDetectTs() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/ts/fileBefore.ts", "biome/ts/fileAfter.ts");
 		}
@@ -177,7 +177,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testAutoDetectTsx() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/ts/fileBefore.tsx", "biome/ts/fileAfter.tsx");
 		}
@@ -206,7 +206,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void test1x() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/fileBefore.cjs", "biome/js/fileAfter.cjs");
 		}
@@ -230,7 +230,7 @@ class BiomeStepTest extends ResourceHarness {
 		@Test
 		void testLineWidth120() {
 			var path = createBiomeConfig("biome/config/line-width-120.json");
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withConfigPath(path.toString()).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withConfigPath(path.toString()).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/longLineBefore.js", "biome/js/longLineAfter120.js");
 		}
@@ -241,7 +241,7 @@ class BiomeStepTest extends ResourceHarness {
 		@Test
 		void testLineWidth80() {
 			var path = createBiomeConfig("biome/config/line-width-80.json");
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withConfigPath(path.toString()).create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withConfigPath(path.toString()).create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/longLineBefore.js", "biome/js/longLineAfter80.js");
 		}
@@ -284,7 +284,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testSetLanguageCjs() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withLanguage("js").create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withLanguage("js").create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/fileBefore.cjs", "biome/js/fileAfter.cjs");
 		}
@@ -318,7 +318,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testSetLanguageCts() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withLanguage("ts").create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withLanguage("ts").create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/ts/fileBefore.cts", "biome/ts/fileAfter.cts");
 		}
@@ -329,7 +329,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testSetLanguageJs() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withLanguage("js").create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withLanguage("js").create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/fileBefore.js", "biome/js/fileAfter.js");
 		}
@@ -340,7 +340,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testSetLanguageJson() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withLanguage("json").create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withLanguage("json").create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/json/fileBefore.json", "biome/json/fileAfter.json");
 		}
@@ -351,7 +351,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testSetLanguageJsonc() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withLanguage("jsonc").create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withLanguage("jsonc").create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/jsonc/fileBefore.jsonc", "biome/jsonc/fileAfter.jsonc");
 		}
@@ -362,7 +362,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testSetLanguageJsx() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withLanguage("jsx").create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withLanguage("jsx").create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/fileBefore.jsx", "biome/js/fileAfter.jsx");
 		}
@@ -373,7 +373,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testSetLanguageMjs() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withLanguage("js").create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withLanguage("js").create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/js/fileBefore.mjs", "biome/js/fileAfter.mjs");
 		}
@@ -384,7 +384,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testSetLanguageMts() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withLanguage("ts").create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withLanguage("ts").create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/ts/fileBefore.mts", "biome/ts/fileAfter.mts");
 		}
@@ -395,7 +395,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testSetLanguageTs() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withLanguage("ts").create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withLanguage("ts").create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/ts/fileBefore.ts", "biome/ts/fileAfter.ts");
 		}
@@ -406,7 +406,7 @@ class BiomeStepTest extends ResourceHarness {
 		 */
 		@Test
 		void testSetLanguageTsx() {
-			var step = BiomeStep.withExeDownload("1.2.0", downloadDir).withLanguage("tsx").create();
+			var step = BiomeStep.withExeDownload("1.8.0", downloadDir).withLanguage("tsx").create();
 			var stepHarness = StepHarnessWithFile.forStep(BiomeStepTest.this, step);
 			stepHarness.testResource("biome/ts/fileBefore.tsx", "biome/ts/fileAfter.tsx");
 		}
