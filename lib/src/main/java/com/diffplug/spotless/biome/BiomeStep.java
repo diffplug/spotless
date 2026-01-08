@@ -395,12 +395,7 @@ public final class BiomeStep {
 			argList.add(pathToExe);
 			argList.add("check");
 			argList.add("--write");
-			argList.add("--javascript-linter-enabled=false");
-			argList.add("--json-linter-enabled=false");
-			argList.add("--css-linter-enabled=false");
-			argList.add("--graphql-linter-enabled=false");
-			argList.add("--grit-linter-enabled=false");
-			argList.add("--html-linter-enabled=false");
+			argList.add("--linter-enabled=false");
 			argList.add("--stdin-file-path");
 			argList.add(fileName);
 			if (configPath != null) {
