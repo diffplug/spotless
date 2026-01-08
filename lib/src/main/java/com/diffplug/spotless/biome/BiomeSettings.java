@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ public final class BiomeSettings {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BiomeSettings.class);
 
 	private static final String CONFIG_NAME = "biome.json";
-	private static final String DEFAULT_VERSION = "1.2.0";
+	private static final String DEFAULT_VERSION = "2.3.11";
 	private static final String DOWNLOAD_FILE_PATTERN = "biome-%s-%s-%s";
 	private static final String SHORT_NAME = "biome";
 	private static final String URL_PATTERN_1X = "https://github.com/biomejs/biome/releases/download/cli%%2Fv%s/biome-%s";
