@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -393,7 +393,9 @@ public final class BiomeStep {
 			var fileName = resolveFileName(file);
 			var argList = new ArrayList<String>();
 			argList.add(pathToExe);
-			argList.add("format");
+			argList.add("check");
+			argList.add("--write");
+			argList.add("--javascript-linter-enabled=false");
 			argList.add("--stdin-file-path");
 			argList.add(fileName);
 			if (configPath != null) {
