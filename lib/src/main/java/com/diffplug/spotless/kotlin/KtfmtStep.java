@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import com.diffplug.spotless.ThrowingEx;
 public final class KtfmtStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = "0.59";
+	private static final String DEFAULT_VERSION = "0.61";
 	private static final String NAME = "ktfmt";
 	private static final String MAVEN_COORDINATE = "com.facebook:ktfmt:";
 
