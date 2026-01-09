@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,7 @@ import org.eclipse.jgit.treewalk.FileTreeIterator;
 import com.diffplug.spotless.extra.GitRatchet;
 
 final class GitRatchetMaven extends GitRatchet<File> {
+
 	private GitRatchetMaven() {}
 
 	@Override
@@ -55,7 +57,7 @@ final class GitRatchetMaven extends GitRatchet<File> {
 		return instance;
 	}
 
-	Iterable<String> getDirtyFiles(File baseDir, String ratchetFrom) throws IOException {
+	List<String> getDirtyFiles(File baseDir, String ratchetFrom) throws IOException {
 		Repository repository = repositoryFor(baseDir);
 		ObjectId sha = rootTreeShaOf(baseDir, ratchetFrom);
 
