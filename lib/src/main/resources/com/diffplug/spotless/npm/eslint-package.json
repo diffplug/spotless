@@ -1,6 +1,6 @@
 {
 	"name": "spotless-eslint",
-	"version": "4.0.0",
+	"version": "4.0.1",
 	"description": "Spotless formatter step for running eslint as a rest service.",
 	"repository": "https://github.com/diffplug/spotless",
 	"license": "Apache-2.0",
