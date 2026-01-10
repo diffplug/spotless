@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+- Add a `expandWildcardImports` API for java ([#2777](https://github.com/diffplug/spotless/issues/2594)) #2744
 - Add the ability to specify a wildcard version (`*`) for external formatter executables. ([#2757](https://github.com/diffplug/spotless/issues/2757))
 ### Fixed
 - [fix] `NPE` due to workingTreeIterator being null for git ignored files. #911 ([#2771](https://github.com/diffplug/spotless/issues/2771))
