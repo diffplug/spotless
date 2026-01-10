@@ -82,8 +82,7 @@ jobs:
           go-version: 'stable'
       - name: Install shfmt
         if: matrix.kind == 'shfmt'
-        run: |
-          go install mvdan.cc/sh/v3/cmd/shfmt@${{ matrix.shfmt-version }}
+        run: go install mvdan.cc/sh/v3/cmd/shfmt@${{ matrix.shfmt-version }}
       - name: Test shfmt
         if: matrix.kind == 'shfmt'
         run: ./gradlew testShfmt
