@@ -62,7 +62,8 @@ public final class TestProvisioner {
 
 	private static final String MAVEN_CENTRAL_CACHE = "build/tmp/testprovisioner.mavenCentral.cache";
 	private static final String TEST_LIB = "testlib";
-	private static final Provisioner PROVISIONER = memoize(() -> caching(() -> createWithRepositories(RepositoryHandler::mavenCentral))).get();
+	private static final Provisioner PROVISIONER = memoize(
+			() -> caching(() -> createWithRepositories(RepositoryHandler::mavenCentral))).get();
 
 	private TestProvisioner() {}
 
