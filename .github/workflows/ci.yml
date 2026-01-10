@@ -64,12 +64,14 @@ jobs:
           java-version: ${{ matrix.jre }}
       - name: gradle caching
         uses: gradle/actions/setup-gradle@v5
+      - name: clean
+        run: ./gradlew clean
       - name: build (maven-only)
         if: matrix.kind == 'maven'
-        run: ./gradlew clean :plugin-maven:build
+        run: ./gradlew :plugin-maven:build
       - name: build (everything-but-maven)
         if: matrix.kind == 'gradle'
-        run: ./gradlew clean build -PSPOTLESS_EXCLUDE_MAVEN=true
+        run: ./gradlew build -PSPOTLESS_EXCLUDE_MAVEN=true
       - name: test npm
         if: matrix.kind == 'npm'
         run: ./gradlew testNpm
