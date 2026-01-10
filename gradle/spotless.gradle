@@ -3,16 +3,17 @@ spotless {
 	if (project != rootProject) {
 		// the rootProject doesn't have any java
 		java {
-			ratchetFrom 'origin/main'
 			bumpThisNumberIfACustomStepChanges(1)
-			licenseHeaderFile rootProject.file('gradle/spotless.license')
-			importOrderFile   rootProject.file('gradle/spotless.importorder')
 			eclipse().configFile rootProject.file('gradle/spotless.eclipseformat.xml')
-			trimTrailingWhitespace()
-			removeUnusedImports()
-			formatAnnotations()
+			// expandWildcardImports() todo: use after release
 			forbidWildcardImports()
 			forbidRegex('ForbidGradleInternal', 'import org\\.gradle\\.api\\.internal\\.(.*)', "Don't use Gradle's internal API")
+			formatAnnotations()
+			importOrderFile   rootProject.file('gradle/spotless.importorder')
+			licenseHeaderFile rootProject.file('gradle/spotless.license')
+			ratchetFrom 'origin/main'
+			removeUnusedImports()
+			trimTrailingWhitespace()
 		}
 	}
 	groovyGradle {
