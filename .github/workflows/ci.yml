@@ -66,10 +66,10 @@ jobs:
           java-version: ${{ matrix.jre }}
       - name: Setup Gradle 🐘
         uses: gradle/actions/setup-gradle@v5
-      - name: Build 📦 Maven 🪶
+      - name: Build 🏗️ Maven 🪶
         if: matrix.kind == maven
         run: ./gradlew :plugin-maven:build
-      - name: Build 📦 Gradle 🐘
+      - name: Build 🏗️ Gradle 🐘
         if: matrix.kind == gradle
         run: ./gradlew build -PSPOTLESS_EXCLUDE_MAVEN=true
       - name: Test npm
