@@ -63,7 +63,7 @@ public final class TestProvisioner {
 	private static final String MAVEN_CENTRAL_CACHE = "build/tmp/testprovisioner.mavenCentral.cache";
 	private static final String TEST_LIB = "testlib";
 	private static final Provisioner PROVISIONER = memoize(
-			() -> caching(() -> createWithRepositories(RepositoryHandler::mavenCentral))).get();
+			() -> resolveAndCache(() -> createWithRepositories(RepositoryHandler::mavenCentral))).get();
 
 	private TestProvisioner() {}
 
@@ -84,7 +84,7 @@ public final class TestProvisioner {
 	/**
 	 * Creates a Provisioner which will cache the result of previous calls.
 	 */
-	private static Provisioner caching(Supplier<Provisioner> delegate) {
+	private static Provisioner resolveAndCache(Supplier<Provisioner> delegate) {
 		var cacheFile = new File(new File(new File(requireNonNull(USER_DIR.value())).getParentFile(), TEST_LIB), MAVEN_CENTRAL_CACHE);
 		return (withTransitives, rawCoords) -> resolveAndCache(
 				delegate,
