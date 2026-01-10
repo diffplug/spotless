@@ -30,12 +30,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
       - name: Spotless ✨
         run: ./gradlew clean spotlessCheck
-      - name: Rewrite ♻️
-        run: ./gradlew clean rewriteDryRun
       - name: Error Prone 🚧
         run: ./gradlew clean assemble
-      - name: Assemble Test Classes ⚙️
-        run: ./gradlew clean assemble testClasses
+      - name: Test Classes ⚙️
+        run: ./gradlew clean testClasses
+      - name: Rewrite ♻️
+        run: ./gradlew clean rewriteDryRun
   build:
     name: Build 🏗️
     needs: sanity-check
