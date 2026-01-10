@@ -66,10 +66,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
       - name: clean
         run: ./gradlew clean
-      - name: build (maven-only)
+      - name: Build 📦 Maven 🪶
         if: matrix.kind == 'maven'
         run: ./gradlew :plugin-maven:build
-      - name: build (everything-but-maven)
+      - name: Build 📦 Gradle 🐘
         if: matrix.kind == 'gradle'
         run: ./gradlew build -PSPOTLESS_EXCLUDE_MAVEN=true
       - name: test npm
