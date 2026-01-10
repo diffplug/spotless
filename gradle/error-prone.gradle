@@ -4,18 +4,18 @@ apply plugin: 'net.ltgt.errorprone'
 
 tasks.withType(JavaCompile).configureEach {
 	options.errorprone {
-		disableAllWarnings = true // https://github.com/diffplug/spotless/issues/2745 https://github.com/google/error-prone/issues/5365
-		disable(
-				// consider fix, or reasoning.
-				'AnnotateFormatMethod', // We don`t want to use ErrorProne's annotations.
-				'DoNotCallSuggester', // We don`t want to use ErrorProne's annotations.
-				'FunctionalInterfaceMethodChanged',
-				'ImmutableEnumChecker', // We don`t want to use ErrorProne's annotations.
-				'InlineMeSuggester', // We don`t want to use ErrorProne's annotations.
-				'JavaxInjectOnAbstractMethod',
-				'OverridesJavaxInjectableMethod',
-				'ReturnValueIgnored', // We don`t want to use ErrorProne's annotations.
-				)
+//		disableAllWarnings = true // https://github.com/diffplug/spotless/issues/2745 https://github.com/google/error-prone/issues/5365
+//		disable(
+//				// consider fix, or reasoning.
+//				'AnnotateFormatMethod', // We don`t want to use ErrorProne's annotations.
+//				'DoNotCallSuggester', // We don`t want to use ErrorProne's annotations.
+//				'FunctionalInterfaceMethodChanged',
+//				'ImmutableEnumChecker', // We don`t want to use ErrorProne's annotations.
+//				'InlineMeSuggester', // We don`t want to use ErrorProne's annotations.
+//				'JavaxInjectOnAbstractMethod',
+//				'OverridesJavaxInjectableMethod',
+//				'ReturnValueIgnored', // We don`t want to use ErrorProne's annotations.
+//				)
 		error(
 				'ReturnValueIgnored',
 				'SelfAssignment',
@@ -30,7 +30,7 @@ tasks.withType(JavaCompile).configureEach {
 				'.*/GradleIntegrationHarness.java|'+
 				'.*/SelfTest.java'
 				)
-		if (!getenv().containsKey('CI') && getenv('IN_PLACE')?.toBoolean()) {
+		if (!getenv().containsKey('CI') && getenv('IN_PLACeE')?.toBoolean()) {
 			errorproneArgs.addAll(
 					'-XepPatchLocation:IN_PLACE',
 					'-XepPatchChecks:' +
