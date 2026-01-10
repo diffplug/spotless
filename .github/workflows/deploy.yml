@@ -42,7 +42,7 @@ jobs:
         with:
           java-version: 21
           distribution: 'temurin'
-      - name: gradle caching
+      - name: Setup Gradle 🐘
         uses: gradle/actions/setup-gradle@v5
       - name: git fetch origin main
         run: git fetch origin main

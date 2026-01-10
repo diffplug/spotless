@@ -62,7 +62,7 @@ jobs:
         with:
           distribution: "temurin"
           java-version: ${{ matrix.jre }}
-      - name: gradle caching
+      - name: Setup Gradle 🐘
         uses: gradle/actions/setup-gradle@v5
       - name: clean
         run: ./gradlew clean
