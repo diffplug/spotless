@@ -7,7 +7,6 @@ on:
   push:
     branches: [main, release]
   workflow_dispatch:
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -19,7 +18,7 @@ jobs:
       buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
       buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
     steps:
-      - name: Checkout
+      - name: Checkout Code 📥
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
@@ -27,26 +26,25 @@ jobs:
         with:
           distribution: "temurin"
           java-version: 21
-      - name: gradle caching
+      - name: Setup Gradle 🐘
         uses: gradle/actions/setup-gradle@v5
       - name: Spotless ✨
-        run: ./gradlew spotlessCheck
+        run: ./gradlew clean spotlessCheck
       - name: Rewrite ♻️
-        run: ./gradlew rewriteDryRun
-      - name: assemble testClasses
-        run: ./gradlew assemble testClasses
+        run: ./gradlew clean rewriteDryRun
+      - name: Assemble Test Classes ⚙️
+        run: ./gradlew clean assemble testClasses
   build:
+    name: Build 🏗️
     needs: sanity-check
     strategy:
       fail-fast: false
       matrix:
         kind: [maven, gradle]
-        # Test on the latest Java version once Gradle & Maven support it.
-        jre: [17, 21, 24]
+        jre: [17, 21, 24] # test on the latest Java version once Gradle & Maven support it.
         os: [ubuntu-latest, windows-latest]
         include:
-          # npm on linux only (crazy slow on windows)
-          - kind: npm
+          - kind: npm # npm on linux only (crazy slow on windows).
             jre: 17
             os: ubuntu-latest
           - kind: shfmt
@@ -99,14 +97,13 @@ jobs:
           ./gradlew testIdea
       - name: junit result
         uses: mikepenz/action-junit-report@v6
-        if: always() # always run even if the previous step fails
+        if: always() # always run even if the previous step fails.
         with:
           check_name: JUnit ${{ matrix.kind }} ${{ matrix.jre }} ${{ matrix.os }}
           report_paths: '*/build/test-results/*/TEST-*.xml'
           check_retries: true
-
-  # Status check that is required in branch protection rules.
-  final-status:
+  complete: # this check is required in branch protection rules.
+    name: Complete ✅
     needs:
       - sanity-check
       - build
@@ -117,7 +114,7 @@ jobs:
         run: |
           results=$(tr -d '\n' <<< '${{ toJSON(needs.*.result) }}')
           if ! grep -q -v -E '(failure|cancelled)' <<< "$results"; then
-            echo "One or more required jobs failed"
+            echo ❌ One or more required jobs failed.
             exit 1
           fi
-          echo "All required jobs completed successfully."
+          echo ✅ All required jobs completed successfully.
