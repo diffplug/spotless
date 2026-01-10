@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew clean spotlessCheck
       - name: Error Prone 🚧
         run: ./gradlew clean assemble
-      - name: Test 📊 Classes ⚙️
+      - name: Test Classes ⚙️
         run: ./gradlew clean testClasses
       - name: Rewrite ♻️
         run: ./gradlew clean rewriteDryRun
