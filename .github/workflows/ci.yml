@@ -1,7 +1,7 @@
 # BUILDCACHE_USER
 # BUILDCACHE_PASS
 #   - rw access to buildcache.diffplug.com
-
+name: CI 🏭
 on:
   pull_request:
   push:
@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   sanity-check:
-    name: SanityCheck
+    name: Sanity Check 🦢
     runs-on: ubuntu-latest
     env:
       buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
@@ -29,9 +29,9 @@ jobs:
           java-version: 21
       - name: gradle caching
         uses: gradle/actions/setup-gradle@v5
-      - name: spotlessCheck
+      - name: Spotless ✨
         run: ./gradlew spotlessCheck
-      - name: rewriteDryRun
+      - name: Rewrite ♻️
         run: ./gradlew rewriteDryRun
       - name: assemble testClasses
         run: ./gradlew assemble testClasses
