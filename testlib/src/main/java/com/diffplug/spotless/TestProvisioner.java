@@ -102,12 +102,9 @@ public final class TestProvisioner {
 		synchronized (TestProvisioner.class) {
 			var cachedFiles = artifactCache.get(mavenCoords);
 			var cacheValid = cachedFiles != null &&
-					cachedFiles.stream().allMatch(
-							f -> f.exists() && f.isFile() && f.length() > 0);
+				cachedFiles.stream().allMatch(f -> f.exists() && f.isFile() && f.length() > 0);
 			if (!cacheValid) {
-				cachedFiles = copyOf(
-						delegate.get()
-								.provisionWithTransitives(withTransitives, mavenCoords));
+				cachedFiles = copyOf(delegate.get().provisionWithTransitives(withTransitives, mavenCoords));
 				artifactCache.put(mavenCoords, cachedFiles);
 				try (var out = new ObjectOutputStream(asByteSink(cacheFile).openBufferedStream())) {
 					out.writeObject(artifactCache);
