@@ -66,10 +66,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
       - name: build (maven-only)
         if: matrix.kind == 'maven'
-        run: ./gradlew :plugin-maven:build -x spotlessCheck -x rewriteDryRun
+        run: ./gradlew clean :plugin-maven:build
       - name: build (everything-but-maven)
         if: matrix.kind == 'gradle'
-        run: ./gradlew build -x spotlessCheck -x rewriteDryRun -PSPOTLESS_EXCLUDE_MAVEN=true
+        run: ./gradlew clean build -PSPOTLESS_EXCLUDE_MAVEN=true
       - name: test npm
         if: matrix.kind == 'npm'
         run: ./gradlew testNpm
