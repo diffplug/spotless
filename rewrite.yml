@@ -7,6 +7,7 @@ recipeList:
   - org.openrewrite.gradle.EnableGradleBuildCache
   - org.openrewrite.gradle.EnableGradleParallelExecution
   - org.openrewrite.gradle.GradleBestPractices
+  - org.openrewrite.hcl.format.RemoveTrailingWhitespace
   - org.openrewrite.java.RemoveUnusedImports
   - org.openrewrite.java.ShortenFullyQualifiedTypeReferences
   - org.openrewrite.java.SimplifySingleElementAnnotation
