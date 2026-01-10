@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew clean spotlessCheck
       - name: Error Prone 🚧
         run: ./gradlew clean assemble
-      - name: Test Classes ⚙️
+      - name: Test 📊 Classes ⚙️
         run: ./gradlew clean testClasses
       - name: Rewrite ♻️
         run: ./gradlew clean rewriteDryRun
@@ -66,13 +66,13 @@ jobs:
           java-version: ${{ matrix.jre }}
       - name: Setup Gradle 🐘
         uses: gradle/actions/setup-gradle@v5
-      - name: Build 🏗️ Maven 🪶
+      - name: Build Maven 🪶
         if: matrix.kind == maven
         run: ./gradlew :plugin-maven:build
-      - name: Build 🏗️ Gradle 🐘
+      - name: Build Gradle 🐘
         if: matrix.kind == gradle
         run: ./gradlew build -PSPOTLESS_EXCLUDE_MAVEN=true
-      - name: Test npm
+      - name: Test npm 📊
         if: matrix.kind == npm
         run: ./gradlew testNpm
       - name: Setup Go
@@ -80,13 +80,13 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: stable
-      - name: Install shfmt
+      - name: Install shfmt 📥
         if: matrix.kind == shfmt
         run: go install mvdan.cc/sh/v3/cmd/shfmt@${{ matrix.shfmt-version }}
-      - name: Test shfmt
+      - name: Test shfmt 📊
         if: matrix.kind == shfmt
         run: ./gradlew testShfmt
-      - name: Test IDEA
+      - name: Test IDEA 📊
         if: matrix.kind == idea
         run: |
           download_link=$(curl https://data.services.jetbrains.com/products/releases\?code\=IIC\&latest\=true\&type\=release | jq -r '.IIC[0].downloads.linux.link')
@@ -96,7 +96,7 @@ jobs:
           export PATH=${PATH}:$(pwd)/bin
           cd ..
           ./gradlew testIdea
-      - name: Junit Report
+      - name: Junit Report 📋
         uses: mikepenz/action-junit-report@v6
         if: always() # always run even if the previous step fails.
         with:
