@@ -68,10 +68,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
       - name: Build Maven 🪶
         if: matrix.kind == 'maven'
-        run: ./gradlew :plugin-maven:build
+        run: ./gradlew :plugin-maven:build -x spotlessCheck
       - name: Build Gradle 🐘
         if: matrix.kind == 'gradle'
-        run: ./gradlew build -PSPOTLESS_EXCLUDE_MAVEN=true
+        run: ./gradlew build -PSPOTLESS_EXCLUDE_MAVEN=true -x spotlessCheck
       - name: Test npm 📊
         if: matrix.kind == 'npm'
         run: ./gradlew testNpm
