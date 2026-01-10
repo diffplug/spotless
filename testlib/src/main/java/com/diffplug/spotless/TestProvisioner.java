@@ -47,6 +47,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.diffplug.common.base.Suppliers;
+
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
@@ -62,6 +64,7 @@ public final class TestProvisioner {
 
 	private static final String MAVEN_CENTRAL_CACHE = "build/tmp/testprovisioner.mavenCentral.cache";
 	private static final String TEST_LIB = "testlib";
+	private static final Provisioner PROVISIONER = memoize(() -> caching(() -> createWithRepositories(RepositoryHandler::mavenCentral))).get();
 
 	private TestProvisioner() {}
 
@@ -76,7 +79,7 @@ public final class TestProvisioner {
 	 * Creates a Provisioner for the mavenCentral repo.
 	 */
 	public static Provisioner mavenCentral() {
-		return memoize(() -> caching(() -> createWithRepositories(RepositoryHandler::mavenCentral))).get();
+		return PROVISIONER;
 	}
 
 	/**
