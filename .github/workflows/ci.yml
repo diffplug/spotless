@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-java@v5
         with:
-          distribution: "temurin"
+          distribution: temurin
           java-version: 21
       - name: Setup Gradle 🐘
         uses: gradle/actions/setup-gradle@v5
@@ -62,7 +62,7 @@ jobs:
         uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          distribution: "temurin"
+          distribution: temurin
           java-version: ${{ matrix.jre }}
       - name: Setup Gradle 🐘
         uses: gradle/actions/setup-gradle@v5
@@ -90,7 +90,7 @@ jobs:
         if: matrix.kind == 'idea'
         run: |
           download_link=$(curl https://data.services.jetbrains.com/products/releases\?code\=IIC\&latest\=true\&type\=release | jq -r '.IIC[0].downloads.linux.link')
-          curl --location "$download_link" -o idea.tar.gz
+          curl --location $download_link -o idea.tar.gz
           tar -xf idea.tar.gz
           cd idea-IC*
           export PATH=${PATH}:$(pwd)/bin
@@ -111,10 +111,10 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Check
+      - name: Check 🦉
         run: |
           results=$(tr -d '\n' <<< '${{ toJSON(needs.*.result) }}')
-          if ! grep -q -v -E '(failure|cancelled)' <<< "$results"; then
+          if ! grep -q -v -E '(failure|cancelled)' <<< $results; then
             echo ❌ One or more required jobs failed.
             exit 1
           fi
