@@ -67,27 +67,27 @@ jobs:
       - name: Setup Gradle 🐘
         uses: gradle/actions/setup-gradle@v5
       - name: Build 📦 Maven 🪶
-        if: matrix.kind == 'maven'
+        if: matrix.kind == maven
         run: ./gradlew :plugin-maven:build
       - name: Build 📦 Gradle 🐘
-        if: matrix.kind == 'gradle'
+        if: matrix.kind == gradle
         run: ./gradlew build -PSPOTLESS_EXCLUDE_MAVEN=true
       - name: Test npm
-        if: matrix.kind == 'npm'
+        if: matrix.kind == npm
         run: ./gradlew testNpm
       - name: Setup Go
-        if: matrix.kind == 'shfmt'
+        if: matrix.kind == shfmt
         uses: actions/setup-go@v6
         with:
-          go-version: 'stable'
+          go-version: stable
       - name: Install shfmt
-        if: matrix.kind == 'shfmt'
+        if: matrix.kind == shfmt
         run: go install mvdan.cc/sh/v3/cmd/shfmt@${{ matrix.shfmt-version }}
       - name: Test shfmt
-        if: matrix.kind == 'shfmt'
+        if: matrix.kind == shfmt
         run: ./gradlew testShfmt
       - name: Test IDEA
-        if: matrix.kind == 'idea'
+        if: matrix.kind == idea
         run: |
           download_link=$(curl https://data.services.jetbrains.com/products/releases\?code\=IIC\&latest\=true\&type\=release | jq -r '.IIC[0].downloads.linux.link')
           curl --location $download_link -o idea.tar.gz
