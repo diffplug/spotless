@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	 */
 	@Test
 	void asGenericStep() throws Exception {
-		writePomWithBiomeSteps("**/*.js", "<biome><version>1.2.0</version></biome>");
+		writePomWithBiomeSteps("**/*.js", "<biome><version>1.8.0</version></biome>");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
@@ -80,7 +80,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	 */
 	@Test
 	void asJavaScriptStep() throws Exception {
-		writePomWithJavascriptSteps("**/*.js", "<biome><version>1.2.0</version></biome>");
+		writePomWithJavascriptSteps("**/*.js", "<biome><version>1.8.0</version></biome>");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("biome_test.js").sameAsResource("biome/js/fileAfter.js");
@@ -93,7 +93,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	 */
 	@Test
 	void asJsonStep() throws Exception {
-		writePomWithJsonSteps("**/*.json", "<biome><version>1.2.0</version></biome>");
+		writePomWithJsonSteps("**/*.json", "<biome><version>1.8.0</version></biome>");
 		setFile("biome_test.json").toResource("biome/json/fileBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("biome_test.json").sameAsResource("biome/json/fileAfter.json");
@@ -106,7 +106,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	 */
 	@Test
 	void asTypeScriptStep() throws Exception {
-		writePomWithTypescriptSteps("**/*.ts", "<biome><version>1.2.0</version></biome>");
+		writePomWithTypescriptSteps("**/*.ts", "<biome><version>1.8.0</version></biome>");
 		setFile("biome_test.ts").toResource("biome/ts/fileBefore.ts");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("biome_test.ts").sameAsResource("biome/ts/fileAfter.ts");
@@ -119,7 +119,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	 */
 	@Test
 	void canSetLanguageForGenericStep() throws Exception {
-		writePomWithBiomeSteps("**/*.nosj", "<biome><version>1.2.0</version><language>json</language></biome>");
+		writePomWithBiomeSteps("**/*.nosj", "<biome><version>1.8.0</version><language>json</language></biome>");
 		setFile("biome_test.nosj").toResource("biome/json/fileBefore.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("biome_test.nosj").sameAsResource("biome/json/fileAfter.json");
@@ -134,7 +134,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	void configPathAbsolute() throws Exception {
 		var path = newFile("configs").getAbsolutePath();
 		writePomWithBiomeSteps("**/*.js",
-				"<biome><version>1.2.0</version><configPath>" + forXml(path) + "</configPath></biome>");
+				"<biome><version>1.8.0</version><configPath>" + forXml(path) + "</configPath></biome>");
 		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
 		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -166,7 +166,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	 */
 	@Test
 	void configPathLineWidth120() throws Exception {
-		writePomWithBiomeSteps("**/*.js", "<biome><version>1.2.0</version><configPath>configs</configPath></biome>");
+		writePomWithBiomeSteps("**/*.js", "<biome><version>1.8.0</version><configPath>configs</configPath></biome>");
 		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
 		setFile("configs/biome.json").toResource("biome/config/line-width-120.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -181,7 +181,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	 */
 	@Test
 	void configPathLineWidth80() throws Exception {
-		writePomWithBiomeSteps("**/*.js", "<biome><version>1.2.0</version><configPath>configs</configPath></biome>");
+		writePomWithBiomeSteps("**/*.js", "<biome><version>1.8.0</version><configPath>configs</configPath></biome>");
 		setFile("biome_test.js").toResource("biome/js/longLineBefore.js");
 		setFile("configs/biome.json").toResource("biome/config/line-width-80.json");
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -197,7 +197,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	void downloadDirAbsolute() throws Exception {
 		var path = newFile("target/bin/biome").getAbsoluteFile().toString();
 		writePomWithBiomeSteps("**/*.js",
-				"<biome><version>1.2.0</version><downloadDir>" + forXml(path) + "</downloadDir></biome>");
+				"<biome><version>1.8.0</version><downloadDir>" + forXml(path) + "</downloadDir></biome>");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 		assertTrue(!newFile("target/bin/biome").exists() || newFile("target/bin/biome").list().length == 0);
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -214,7 +214,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	@Test
 	void downloadDirRelative() throws Exception {
 		writePomWithBiomeSteps("**/*.js",
-				"<biome><version>1.2.0</version><downloadDir>target/bin/biome</downloadDir></biome>");
+				"<biome><version>1.8.0</version><downloadDir>target/bin/biome</downloadDir></biome>");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 		assertTrue(!newFile("target/bin/biome").exists() || newFile("target/bin/biome").list().length == 0);
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -229,7 +229,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	 */
 	@Test
 	void failureWhenExeNotFound() throws Exception {
-		writePomWithBiomeSteps("**/*.js", "<biome><version>1.2.0</version><pathToExe>biome/is/missing</pathToExe></biome>");
+		writePomWithBiomeSteps("**/*.js", "<biome><version>1.8.0</version><pathToExe>biome/is/missing</pathToExe></biome>");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 		var result = mavenRunner().withArguments("spotless:apply").runHasError();
 		assertFile("biome_test.js").sameAsResource("biome/js/fileBefore.js");
@@ -243,7 +243,7 @@ class BiomeMavenTest extends MavenIntegrationHarness {
 	 */
 	@Test
 	void failureWhenNotParseable() throws Exception {
-		writePomWithBiomeSteps("**/*.js", "<biome><version>1.2.0</version><language>json</language></biome>");
+		writePomWithBiomeSteps("**/*.js", "<biome><version>1.8.0</version><language>json</language></biome>");
 		setFile("biome_test.js").toResource("biome/js/fileBefore.js");
 		var result = mavenRunner().withArguments("spotless:apply").runHasError();
 		assertFile("biome_test.js").sameAsResource("biome/js/fileBefore.js");
