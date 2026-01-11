@@ -20,7 +20,6 @@ recipeList:
   - org.openrewrite.java.migrate.util.SequencedCollection
   - org.openrewrite.java.recipes.JavaRecipeBestPractices
   - org.openrewrite.java.recipes.RecipeTestingBestPractices
-  - org.openrewrite.java.security.JavaSecurityBestPractices
   - org.openrewrite.staticanalysis.BufferedWriterCreationRecipes
   - org.openrewrite.staticanalysis.CommonStaticAnalysis
   - org.openrewrite.staticanalysis.EqualsAvoidsNull
