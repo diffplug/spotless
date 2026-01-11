@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.maven.groovy;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
@@ -41,6 +42,32 @@ class RemoveSemicolonsTest extends MavenIntegrationHarness {
 		setFile(path).toResource("groovy/removeSemicolons/GroovyCodeWithSemicolons.test");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile(path).sameAsResource("groovy/removeSemicolons/GroovyCodeWithSemicolonsFormatted.test");
+	}
+
+	/**
+	 * <a href="https://github.com/diffplug/spotless/issues/2780">`removeSemicolons()` should not be applied to multiline strings in groovy</a>
+	 */
+	@Nested
+	class Issue2780 {
+		@Test
+		void testMultilineStrings() throws Exception {
+			writePomWithGroovySteps("<removeSemicolons/>");
+
+			String path = "src/main/groovy/test.groovy";
+			setFile(path).toResource("groovy/removeSemicolons/Issue2780/MultilineString.test");
+			mavenRunner().withArguments("spotless:apply").runNoError();
+			assertFile(path).sameAsResource("groovy/removeSemicolons/Issue2780/MultilineStringFormatted.test");
+		}
+
+		@Test
+		void testComments() throws Exception {
+			writePomWithGroovySteps("<removeSemicolons/>");
+
+			String path = "src/main/groovy/test.groovy";
+			setFile(path).toResource("groovy/removeSemicolons/Issue2780/Comments.test");
+			mavenRunner().withArguments("spotless:apply").runNoError();
+			assertFile(path).sameAsResource("groovy/removeSemicolons/Issue2780/CommentsFormatted.test");
+		}
 	}
 
 	private void runTest(String sourceContent, String targetContent) throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,14 @@
  */
 package com.diffplug.spotless.groovy;
 
-import java.io.BufferedReader;
 import java.io.Serial;
 import java.io.Serializable;
-import java.io.StringReader;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
 /**
- * Removes all semicolons from the end of lines.
+ * Removes unnecessary semicolons from Groovy code. Preserves semicolons inside strings and comments.
  *
  * @author Jose Luis Badano
  */
@@ -49,32 +47,112 @@ public final class RemoveSemicolonsStep implements Serializable {
 
 		FormatterFunc toFormatter() {
 			return raw -> {
-				try (BufferedReader reader = new BufferedReader(new StringReader(raw))) {
-					StringBuilder result = new StringBuilder();
-					String line;
-					while ((line = reader.readLine()) != null) {
-						result.append(removeSemicolon(line));
-						result.append(System.lineSeparator());
-					}
-					return result.toString();
-				}
-			};
-		}
+				StringBuilder result = new StringBuilder(raw.length());
 
-		/**
-		 * Removes the last semicolon in a line if it exists.
-		 *
-		 * @param line the line to remove the semicolon from
-		 * @return the line without the last semicolon
-		 */
-		private String removeSemicolon(String line) {
-			// Find the last semicolon in a string and remove it.
-			int lastSemicolon = line.lastIndexOf(";");
-			if (lastSemicolon != -1 && lastSemicolon == line.length() - 1) {
-				return line.substring(0, lastSemicolon);
-			} else {
-				return line;
-			}
+				// State tracking
+				boolean inSingleQuoteString = false;
+				boolean inDoubleQuoteString = false;
+				boolean inTripleSingleQuoteString = false;
+				boolean inTripleDoubleQuoteString = false;
+				boolean inSingleLineComment = false;
+				boolean inMultiLineComment = false;
+				boolean escaped = false;
+
+				for (int i = 0; i < raw.length(); i++) {
+					char c = raw.charAt(i);
+
+					// Check for triple quotes first (needs lookahead)
+					if (!inSingleLineComment && !inMultiLineComment && i + 2 < raw.length()) {
+						String triple = raw.substring(i, i + 3);
+						if ("'''".equals(triple) && !inDoubleQuoteString && !inTripleDoubleQuoteString) {
+							inTripleSingleQuoteString = !inTripleSingleQuoteString;
+							result.append(triple);
+							i += 2;
+							continue;
+						} else if ("\"\"\"".equals(triple) && !inSingleQuoteString && !inTripleSingleQuoteString) {
+							inTripleDoubleQuoteString = !inTripleDoubleQuoteString;
+							result.append(triple);
+							i += 2;
+							continue;
+						}
+					}
+
+					// Handle escaping
+					if (c == '\\' && (inSingleQuoteString || inDoubleQuoteString ||
+							inTripleSingleQuoteString || inTripleDoubleQuoteString)) {
+						escaped = !escaped;
+						result.append(c);
+						continue;
+					}
+
+					// Check for comments (only if not in string)
+					if (!inSingleQuoteString && !inDoubleQuoteString &&
+							!inTripleSingleQuoteString && !inTripleDoubleQuoteString && !escaped) {
+
+						// Single line comment
+						if (c == '/' && i + 1 < raw.length() && raw.charAt(i + 1) == '/' && !inMultiLineComment) {
+							inSingleLineComment = true;
+						}
+						// Multi-line comment start
+						else if (c == '/' && i + 1 < raw.length() && raw.charAt(i + 1) == '*' && !inSingleLineComment) {
+							inMultiLineComment = true;
+						}
+						// Multi-line comment end
+						else if (c == '*' && i + 1 < raw.length() && raw.charAt(i + 1) == '/' && inMultiLineComment) {
+							inMultiLineComment = false;
+							result.append(c);
+							if (i + 1 < raw.length()) {
+								result.append(raw.charAt(i + 1));
+								i++;
+							}
+							continue;
+						}
+					}
+
+					// Check for string quotes (only if not in comment and not already in triple quotes)
+					if (!inSingleLineComment && !inMultiLineComment && !escaped) {
+						if (c == '\'' && !inDoubleQuoteString && !inTripleSingleQuoteString && !inTripleDoubleQuoteString) {
+							inSingleQuoteString = !inSingleQuoteString;
+						} else if (c == '"' && !inSingleQuoteString && !inTripleSingleQuoteString && !inTripleDoubleQuoteString) {
+							inDoubleQuoteString = !inDoubleQuoteString;
+						}
+					}
+
+					// End single line comment on newline
+					if ((c == '\n' || c == '\r') && inSingleLineComment) {
+						inSingleLineComment = false;
+					}
+
+					// Check if we should remove this semicolon
+					if (c == ';' && !inSingleQuoteString && !inDoubleQuoteString &&
+							!inTripleSingleQuoteString && !inTripleDoubleQuoteString &&
+							!inSingleLineComment && !inMultiLineComment) {
+
+						// Look ahead to see if this semicolon is at the end of the line
+						boolean isEndOfLine = true;
+						for (int j = i + 1; j < raw.length(); j++) {
+							char next = raw.charAt(j);
+							if (next == '\n' || next == '\r') {
+								break; // End of line
+							} else if (!Character.isWhitespace(next)) {
+								isEndOfLine = false;
+								break;
+							}
+							// If it's whitespace but not newline, continue checking
+						}
+
+						// Only remove if it's at the end of the line
+						if (isEndOfLine) {
+							continue; // Skip this semicolon
+						}
+					}
+
+					result.append(c);
+					escaped = false;
+				}
+
+				return result.toString();
+			};
 		}
 	}
 }
