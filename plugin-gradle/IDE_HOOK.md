@@ -9,6 +9,7 @@ Thanks to `spotlessApply`, it is not necessary for Spotless and your IDE to agre
 ## How to add an IDE
 
 The Spotless plugin for Gradle accepts a command-line argument `-PspotlessIdeHook=${ABSOLUTE_PATH_TO_FILE}`.  In this mode, `spotlessCheck` is disabled, and `spotlessApply` will apply only to that one file.  Because it already knows the absolute path of the only file you are asking about, it is able to run much faster than a normal invocation of `spotlessApply`.
+By passing in a comma separated list of absolute file paths, you can format multiple files in one invocation `-PspotlessIdeHook=${ABSOLUTE_PATH_TO_FILE_A},${ABSOLUTE_PATH_TO_FILE_B}`.
 
 For extra flexibility, you can add `-PspotlessIdeHookUseStdIn`, and Spotless will read the file content from `stdin`.  This allows you to send the content of a dirty editor buffer without writing to a file.  You can also add `-PspotlessIdeHookUseStdOut`, and Spotless will return the formatted content on `stdout` rather than writing it to a file (you should also add `--quiet` to make sure Gradle doesn't dump logging info into `stdout`).
 
