@@ -1,0 +1,14 @@
+println("Hello")
+def x = 5
+return x
+def multilineString = '''
+  function (doc, meta) {
+    if (doc._class == "springdata.Doc") {
+      emit(meta.id, null);
+    }
+  }
+'''.stripIndent()
+def another = """
+  SELECT * FROM users;
+  WHERE active = true;
+"""
