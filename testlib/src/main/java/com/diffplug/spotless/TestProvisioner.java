@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless;
+
+import static com.diffplug.common.base.Suppliers.memoize;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,11 +40,15 @@ import org.gradle.testfixtures.ProjectBuilder;
 
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StandardSystemProperty;
-import com.diffplug.common.base.Suppliers;
 import com.diffplug.common.collect.ImmutableSet;
 import com.diffplug.common.io.Files;
 
-public class TestProvisioner {
+public final class TestProvisioner {
+
+	private static final Supplier<Provisioner> MAVEN_CENTRAL = memoize(() -> caching("mavenCentral", () -> createWithRepositories(RepositoryHandler::mavenCentral)));
+
+	private TestProvisioner() {}
+
 	public static Project gradleProject(File dir) {
 		File userHome = new File(StandardSystemProperty.USER_HOME.value());
 		return ProjectBuilder.builder()
@@ -141,18 +147,6 @@ public class TestProvisioner {
 	/** Creates a Provisioner for the mavenCentral repo. */
 	public static Provisioner mavenCentral() {
 		return MAVEN_CENTRAL.get();
-	}
-
-	private static final Supplier<Provisioner> MAVEN_CENTRAL = Suppliers.memoize(() -> caching("mavenCentral", () -> createWithRepositories(RepositoryHandler::mavenCentral)));
-
-	/** Creates a Provisioner for the local maven repo for development purpose. */
-	public static Provisioner mavenLocal() {
-		return createWithRepositories(RepositoryHandler::mavenLocal);
-	}
-
-	/** Creates a Provisioner for the Sonatype snapshots maven repo for development purpose. */
-	public static Provisioner snapshots() {
-		return createWithRepositories(repo -> repo.maven(setup -> setup.setUrl("https://oss.sonatype.org/content/repositories/snapshots")));
 	}
 
 }
