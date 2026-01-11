@@ -7,6 +7,7 @@ on:
   push:
     branches: [main, release]
   workflow_dispatch:
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -18,35 +19,34 @@ jobs:
       buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
       buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
     steps:
-      - name: Checkout Code 📥
+      - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: actions/setup-java@v5
         with:
-          distribution: temurin
+          distribution: "temurin"
           java-version: 21
-      - name: Setup Gradle 🐘
+      - name: gradle caching
         uses: gradle/actions/setup-gradle@v5
       - name: Spotless ✨
-        run: ./gradlew clean spotlessCheck
-      - name: Error Prone 🚧
-        run: ./gradlew clean assemble
-      - name: Test Classes ⚙️
-        run: ./gradlew clean testClasses
+        run: ./gradlew spotlessCheck
       - name: Rewrite ♻️
-        run: ./gradlew clean rewriteDryRun
+        run: ./gradlew rewriteDryRun
+      - name: assemble testClasses
+        run: ./gradlew assemble testClasses
   build:
-    name: Build 🏗️
     needs: sanity-check
     strategy:
       fail-fast: false
       matrix:
         kind: [maven, gradle]
-        jre: [17, 21, 24] # test on the latest Java version once Gradle & Maven support it.
+        # Test on the latest Java version once Gradle & Maven support it.
+        jre: [17, 21, 24]
         os: [ubuntu-latest, windows-latest]
         include:
-          - kind: npm # npm on linux only (crazy slow on windows).
+          # npm on linux only (crazy slow on windows)
+          - kind: npm
             jre: 17
             os: ubuntu-latest
           - kind: shfmt
@@ -58,64 +58,66 @@ jobs:
             os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout Code 📥
+      - name: Checkout
         uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          distribution: temurin
+          distribution: "temurin"
           java-version: ${{ matrix.jre }}
-      - name: Setup Gradle 🐘
+      - name: gradle caching
         uses: gradle/actions/setup-gradle@v5
-      - name: Build Maven 🪶
+      - name: build (maven-only)
         if: matrix.kind == 'maven'
-        run: ./gradlew :plugin-maven:build -x spotlessCheck
-      - name: Build Gradle 🐘
+        run: ./gradlew :plugin-maven:build -x spotlessCheck -x rewriteDryRun
+      - name: build (everything-but-maven)
         if: matrix.kind == 'gradle'
-        run: ./gradlew build -PSPOTLESS_EXCLUDE_MAVEN=true -x spotlessCheck
-      - name: Test npm 📊
+        run: ./gradlew build -x spotlessCheck -x rewriteDryRun -PSPOTLESS_EXCLUDE_MAVEN=true
+      - name: test npm
         if: matrix.kind == 'npm'
         run: ./gradlew testNpm
-      - name: Setup Go
+      - name: Setup go
         if: matrix.kind == 'shfmt'
         uses: actions/setup-go@v6
         with:
-          go-version: stable
-      - name: Install shfmt 📥
+          go-version: 'stable'
+      - name: Install shfmt
         if: matrix.kind == 'shfmt'
-        run: go install mvdan.cc/sh/v3/cmd/shfmt@${{ matrix.shfmt-version }}
-      - name: Test shfmt 📊
+        run: |
+          go install mvdan.cc/sh/v3/cmd/shfmt@${{ matrix.shfmt-version }}
+      - name: Test shfmt
         if: matrix.kind == 'shfmt'
         run: ./gradlew testShfmt
-      - name: Test IDEA 📊
+      - name: Test idea
         if: matrix.kind == 'idea'
         run: |
           download_link=$(curl https://data.services.jetbrains.com/products/releases\?code\=IIC\&latest\=true\&type\=release | jq -r '.IIC[0].downloads.linux.link')
-          curl --location $download_link -o idea.tar.gz
+          curl --location "$download_link" -o idea.tar.gz
           tar -xf idea.tar.gz
           cd idea-IC*
           export PATH=${PATH}:$(pwd)/bin
           cd ..
           ./gradlew testIdea
-      - name: Junit Report 📋
+      - name: junit result
         uses: mikepenz/action-junit-report@v6
-        if: always() # always run even if the previous step fails.
+        if: always() # always run even if the previous step fails
         with:
           check_name: JUnit ${{ matrix.kind }} ${{ matrix.jre }} ${{ matrix.os }}
           report_paths: '*/build/test-results/*/TEST-*.xml'
           check_retries: true
-  complete: # this check is required in branch protection rules.
-    name: Complete ✅
+
+  # Status check that is required in branch protection rules.
+  final-status:
     needs:
       - sanity-check
       - build
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Check 🦉
+      - name: Check
         run: |
           results=$(tr -d '\n' <<< '${{ toJSON(needs.*.result) }}')
-          if ! grep -q -v -E '(failure|cancelled)' <<< $results; then
-            echo ❌ One or more required jobs failed.
+          if ! grep -q -v -E '(failure|cancelled)' <<< "$results"; then
+            echo "One or more required jobs failed"
             exit 1
           fi
-          echo ✅ All required jobs completed successfully.
+          echo "All required jobs completed successfully."

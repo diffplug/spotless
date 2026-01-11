@@ -8,7 +8,7 @@ Spotless can format &lt;antlr | c | c# | c++ | css | flow | graphql | groovy | h
 
 You probably want one of the links below:
 
-## [✨️ Spotless for Gradle](plugin-gradle) (with integrations for [VS Code](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle) and [IntelliJ](https://plugins.jetbrains.com/plugin/18321-spotless-gradle))
+## [❇️ Spotless for Gradle](plugin-gradle) (with integrations for [VS Code](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle) and [IntelliJ](https://plugins.jetbrains.com/plugin/18321-spotless-gradle))
 
 ```console
 user@machine repo % ./gradlew build
@@ -25,7 +25,7 @@ user@machine repo % ./gradlew build
 BUILD SUCCESSFUL
 ```
 
-## [✨️ Spotless for Maven](plugin-maven)
+## [❇️ Spotless for Maven](plugin-maven)
 
 ```console
 user@machine repo % mvn spotless:check
@@ -40,7 +40,7 @@ user@machine repo % mvn spotless:check
 [INFO] BUILD SUCCESS
 ```
 
-## [✨️ Spotless for SBT (external for now)](https://github.com/moznion/sbt-spotless)
+## [❇️ Spotless for SBT (external for now)](https://github.com/moznion/sbt-spotless)
 ## [Other build systems](CONTRIBUTING.md#how-to-add-a-new-plugin-for-a-build-system)
 
 ## How it works (for potential contributors)
