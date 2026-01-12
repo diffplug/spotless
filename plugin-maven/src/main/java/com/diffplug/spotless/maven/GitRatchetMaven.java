@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,8 @@ final class GitRatchetMaven extends GitRatchet<File> {
 
 		@Override
 		public boolean equals(Object o) {
-			if (o == null || getClass() != o.getClass()) return false;
+			if (o == null || getClass() != o.getClass())
+				return false;
 			Key key = (Key) o;
 			return Objects.equals(identifier, key.identifier) && Objects.equals(ratchetFrom, key.ratchetFrom);
 		}
