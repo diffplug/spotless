@@ -335,7 +335,13 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		MatchPatterns excludePatterns = MatchPatterns.from(
 				withNormalizedFileSeparators(getExcludes(formatterFactory)));
 
-		Iterable<String> dirtyFiles = DirtyFilesCache.instance().getDirtyFiles(baseDir, ratchetFrom);
+		Iterable<String> dirtyFiles;
+		try {
+			dirtyFiles = GitRatchetMaven
+				.instance().getDirtyFiles(baseDir, ratchetFrom);
+		} catch (IOException e) {
+			throw new PluginException("Unable to scan file tree rooted at " + baseDir, e);
+		}
 
 		List<File> result = new ArrayList<>();
 		for (String file : withNormalizedFileSeparators(dirtyFiles)) {
