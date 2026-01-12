@@ -338,7 +338,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		Iterable<String> dirtyFiles;
 		try {
 			dirtyFiles = GitRatchetMaven
-				.instance().getDirtyFiles(baseDir, ratchetFrom);
+					.instance().getDirtyFiles(baseDir, ratchetFrom);
 		} catch (IOException e) {
 			throw new PluginException("Unable to scan file tree rooted at " + baseDir, e);
 		}
