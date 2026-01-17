@@ -1543,7 +1543,7 @@ To download the Biome binary from the network, just specify a version:
 spotless {
   format 'biome', {
     target '**/*.js','**/*.ts','**/*.json'
-    biome('1.2.0')
+    biome('2.3.11')
   }
 }
 ```
@@ -1558,7 +1558,7 @@ spotless {
   format 'biome', {
     target '**/*.js','**/*.ts','**/*.json'
      // Relative paths are resolved against the project's base directory
-    biome('1.2.0').downloadDir("${project.gradle.gradleUserHomeDir}/biome")
+    biome('2.3.11').downloadDir("${project.gradle.gradleUserHomeDir}/biome")
   }
 }
 ```
@@ -1639,7 +1639,7 @@ you can force a certain language like this:
 spotless {
   format 'biome', {
     target 'src/**/typescript/**/*.mjson'
-    biome('1.2.0').language('json')
+    biome('2.3.11').language('json')
   }
 }
 ```
