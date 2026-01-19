@@ -97,7 +97,7 @@ dependencies {
 	// gson
 	gsonCompileOnly 'com.google.code.gson:gson:2.13.2'
 	// jackson
-	String VER_JACKSON='2.20.1'
+	String VER_JACKSON='2.21.0'
 	jacksonCompileOnly "com.fasterxml.jackson.core:jackson-databind:$VER_JACKSON"
 	jacksonCompileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$VER_JACKSON"
 	// ktfmt
