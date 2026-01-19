@@ -18,6 +18,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * Bump default `ktfmt` version to latest `0.59` -> `0.61`. ([2804](https://github.com/diffplug/spotless/pull/2804))
 * Bump default `ktlint` version to latest `1.7.1` -> `1.8.0`. ([2763](https://github.com/diffplug/spotless/pull/2763))
 * Bump default `gherkin-utils` version to latest `9.2.0` -> `10.0.0`. ([#2619](https://github.com/diffplug/spotless/pull/2619))
+* Bump default `jackson` version to latest `2.20.1` -> `2.21.0`. ([#2819](https://github.com/diffplug/spotless/pull/2819))
 
 ## [4.1.0] - 2025-11-18
 ### Changes
