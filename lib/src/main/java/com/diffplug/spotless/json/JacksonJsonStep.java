@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public final class JacksonJsonStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.core:jackson-databind:";
-	private static final String DEFAULT_VERSION = "2.20.1";
+	private static final String DEFAULT_VERSION = "2.21.0";
 	public static final String NAME = "jacksonJson";
 
 	private final JarState.Promised jarState;
