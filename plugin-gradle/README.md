@@ -1947,7 +1947,9 @@ If you want to centralize your Spotless configuration for use across many projec
 If you are content with only centralizing configuration files, it is possible to define a common configuration that is deployed as a standard artifact so that it can be then be reused by each project. For example:
 
 ```kotlin
-val spotlessConfig by configurations.creating
+configurations {
+  spotlessConfig
+}
 dependencies {
   // the files `java-import-order.txt` and `java-formatter.xml` should be at the root of the deployed `org.mycompany:code-configuration:1.0.0` jar.
   spotlessConfig("org.mycompany:code-configuration:1.0.0")
@@ -1955,7 +1957,7 @@ dependencies {
 spotless {
   java {
     removeUnusedImports()
-    importOrder(resources.text.fromArchiveEntry(spotlessConfig, "java-import-order.txt").asString())
+    importOrder(resources.text.fromArchiveEntry(configurations.spotlessConfig, "java-import-order.txt").asString())
     eclipse().configXml(resources.text.fromArchiveEntry(spotlessConfig, "java-formatter.xml").asString())
   }
 }
