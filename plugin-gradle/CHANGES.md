@@ -4,13 +4,17 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+- Add a `expandWildcardImports` API for java ([#2679](https://github.com/diffplug/spotless/issues/2594))
 - Add the ability to specify a wildcard version (`*`) for external formatter executables. ([#2757](https://github.com/diffplug/spotless/issues/2757))
 - Add support for passing multiple file paths using the -PspotlessIdeHook option. ([#2774](https://github.com/diffplug/spotless/pull/2774))
 ### Fixed
+- configuration cache for groovy. ([#2797](https://github.com/diffplug/spotless/pull/2797))
 - [fix] `NPE` due to workingTreeIterator being null for git ignored files. #911 ([#2771](https://github.com/diffplug/spotless/issues/2771))
+- Prevent race conditions when multiple npm-based formatters launch the server process simultaneously while sharing the same `node_modules` directory. ([#2786](https://github.com/diffplug/spotless/pull/2786))
 ### Changes
-* Bump default `ktlint` version to latest `1.7.1` -> `1.8.0`. ([2763](https://github.com/diffplug/spotless/pull/2763))
-* Bump default `gherkin-utils` version to latest `9.2.0` -> `10.0.0`. ([#2619](https://github.com/diffplug/spotless/pull/2619))
+- Bump default `ktfmt` version to latest `0.59` -> `0.61`. ([2804](https://github.com/diffplug/spotless/pull/2804))
+- Bump default `ktlint` version to latest `1.7.1` -> `1.8.0`. ([2763](https://github.com/diffplug/spotless/pull/2763))
+- Bump default `gherkin-utils` version to latest `9.2.0` -> `10.0.0`. ([#2619](https://github.com/diffplug/spotless/pull/2619))
 
 ## [8.1.0] - 2025-11-18
 ### Changes

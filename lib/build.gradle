@@ -18,6 +18,7 @@ def NEEDS_GLUE = [
 	'googleJavaFormat',
 	'gson',
 	'jackson',
+	'javaParser',
 	'ktfmt',
 	'ktlint',
 	'palantirJavaFormat',
@@ -100,13 +101,16 @@ dependencies {
 	String VER_JACKSON='2.20.1'
 	jacksonCompileOnly "com.fasterxml.jackson.core:jackson-databind:$VER_JACKSON"
 	jacksonCompileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$VER_JACKSON"
+	// javaParser
+	javaParserCompileOnly "com.github.javaparser:javaparser-symbol-solver-core:3.27.1"
 	// ktfmt
-	ktfmtCompileOnly "com.facebook:ktfmt:0.59"
+	ktfmtCompileOnly "com.facebook:ktfmt:0.61"
 	ktfmtCompileOnly("com.google.googlejavaformat:google-java-format") {
 		version {
 			strictly '1.7' // for JDK 8 compatibility
 		}
 	}
+	ktfmtCompileOnly "com.google.code.findbugs:jsr305:${VER_JSR_305}"
 	// ktlint latest supported version
 	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-rule-engine:1.8.0'
 	compatKtLint1Dot0Dot0CompileAndTestOnly 'com.pinterest.ktlint:ktlint-ruleset-standard:1.8.0'
