@@ -128,8 +128,9 @@ final class GitRatchetMaven extends GitRatchet<File> {
 
 		@Override
 		public boolean equals(Object o) {
-			if (o == null || getClass() != o.getClass())
+			if (o == null || getClass() != o.getClass()) {
 				return false;
+			}
 			Key key = (Key) o;
 			return Objects.equals(identifier, key.identifier) && Objects.equals(ratchetFrom, key.ratchetFrom);
 		}
