@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,29 +37,21 @@ class IdeHookTest extends GradleIntegrationHarness {
 	private String error;
 	private File dirty;
 	private File clean;
+	private File clean2;
 	private File diverge;
 	private File outofbounds;
 
 	@BeforeEach
 	void before() throws IOException {
-		setFile("build.gradle").toLines(
-				"plugins {",
-				"  id 'com.diffplug.spotless'",
-				"}",
-				"spotless {",
-				"  format 'misc', {",
-				"    target 'DIRTY.md', 'CLEAN.md'",
-				"    addStep com.diffplug.spotless.TestingOnly.lowercase()",
-				"  }",
-				"  format 'diverge', {",
-				"    target 'DIVERGE.md'",
-				"    addStep com.diffplug.spotless.TestingOnly.diverge()",
-				"  }",
-				"}");
+		var miscTargets = "'DIRTY.md', 'CLEAN.md', 'CLEAN2.md'";
+		var divergeTargets = "'DIVERGE.md'";
+		initPluginConfig(miscTargets, divergeTargets);
 		dirty = new File(rootFolder(), "DIRTY.md");
 		Files.write("ABC".getBytes(StandardCharsets.UTF_8), dirty);
 		clean = new File(rootFolder(), "CLEAN.md");
 		Files.write("abc".getBytes(StandardCharsets.UTF_8), clean);
+		clean2 = new File(rootFolder(), "CLEAN2.md");
+		Files.write("def".getBytes(StandardCharsets.UTF_8), clean2);
 		diverge = new File(rootFolder(), "DIVERGE.md");
 		Files.write("ABC".getBytes(StandardCharsets.UTF_8), diverge);
 		outofbounds = new File(rootFolder(), "OUTOFBOUNDS.md");
@@ -83,6 +75,23 @@ class IdeHookTest extends GradleIntegrationHarness {
 		}
 		this.output = output.toString();
 		this.error = error.toString();
+	}
+
+	private void initPluginConfig(String miscTargets, String divergeTargets) throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"  id 'com.diffplug.spotless'",
+				"}",
+				"spotless {",
+				"  format 'misc', {",
+				"    target " + miscTargets,
+				"    addStep com.diffplug.spotless.TestingOnly.lowercase()",
+				"  }",
+				"  format 'diverge', {",
+				"    target " + divergeTargets,
+				"    addStep com.diffplug.spotless.TestingOnly.diverge()",
+				"  }",
+				"}");
 	}
 
 	protected GradleRunner gradleRunner(boolean configurationCache) throws IOException {
@@ -139,6 +148,91 @@ class IdeHookTest extends GradleIntegrationHarness {
 	void notAbsolute(boolean configurationCache) throws IOException {
 		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=build.gradle", "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEmpty();
-		Assertions.assertThat(error).contains("Argument passed to spotlessIdeHook must be an absolute path");
+		Assertions.assertThat(error).contains("Argument passed to spotlessIdeHook must be one or multiple absolute paths");
+	}
+
+	@ParameterizedTest
+	@MethodSource("configurationCacheProvider")
+	void multipleFilesBothDirty(boolean configurationCache) throws IOException {
+		String paths = dirty.getAbsolutePath() + "," + diverge.getAbsolutePath();
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + paths);
+		Assertions.assertThat(output).isEmpty();
+		Assertions.assertThat(error).contains("IS DIRTY");
+		Assertions.assertThat(error).contains("DID NOT CONVERGE");
+	}
+
+	@ParameterizedTest
+	@MethodSource("configurationCacheProvider")
+	void multipleFilesBothClean(boolean configurationCache) throws IOException {
+		String paths = clean.getAbsolutePath() + "," + clean2.getAbsolutePath();
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + paths);
+		Assertions.assertThat(output).isEmpty();
+		Assertions.assertThat(error).contains("IS CLEAN");
+	}
+
+	@ParameterizedTest
+	@MethodSource("configurationCacheProvider")
+	void multipleFilesMixed(boolean configurationCache) throws IOException {
+		String paths = clean.getAbsolutePath() + "," + dirty.getAbsolutePath();
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + paths);
+		Assertions.assertThat(output).isEmpty();
+		Assertions.assertThat(error).contains("IS CLEAN");
+		Assertions.assertThat(error).contains("IS DIRTY");
+	}
+
+	@ParameterizedTest
+	@MethodSource("configurationCacheProvider")
+	void multipleFilesWithSpaces(boolean configurationCache) throws IOException {
+		String paths = clean.getAbsolutePath() + " , " + dirty.getAbsolutePath();
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + paths);
+		Assertions.assertThat(output).isEmpty();
+		Assertions.assertThat(error).contains("IS CLEAN");
+		Assertions.assertThat(error).contains("IS DIRTY");
+	}
+
+	@ParameterizedTest
+	@MethodSource("configurationCacheProvider")
+	void multipleFilesWithOutOfBounds(boolean configurationCache) throws IOException {
+		String paths = dirty.getAbsolutePath() + "," + outofbounds.getAbsolutePath();
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + paths);
+		Assertions.assertThat(output).isEmpty();
+		Assertions.assertThat(error).contains("IS DIRTY");
+	}
+
+	@ParameterizedTest
+	@MethodSource("configurationCacheProvider")
+	void multipleFilesStdOutThrowsException(boolean configurationCache) throws IOException {
+		String paths = dirty.getAbsolutePath() + "," + clean.getAbsolutePath();
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + paths, "-PspotlessIdeHookUseStdOut");
+		Assertions.assertThat(output).isEmpty();
+		Assertions.assertThat(error).contains("Using spotlessIdeHookUseStdIn or spotlessIdeHookUseStdOut with multiple files is not supported");
+	}
+
+	@ParameterizedTest
+	@MethodSource("configurationCacheProvider")
+	void multipleFilesStdInThrowsException(boolean configurationCache) throws IOException {
+		String paths = dirty.getAbsolutePath() + "," + clean.getAbsolutePath();
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + paths, "-PspotlessIdeHookUseStdIn");
+		Assertions.assertThat(output).isEmpty();
+		Assertions.assertThat(error).contains("Using spotlessIdeHookUseStdIn or spotlessIdeHookUseStdOut with multiple files is not supported");
+	}
+
+	@ParameterizedTest
+	@MethodSource("configurationCacheProvider")
+	void multipleFilesLargeScale(boolean configurationCache) throws IOException {
+		int fileCount = 500;
+		StringBuilder paths = new StringBuilder();
+		for (int i = 0; i < fileCount; i++) {
+			File f = new File(rootFolder(), "file_" + i + ".md");
+			Files.write(("Some content " + i).getBytes(StandardCharsets.UTF_8), f);
+			if (i > 0) {
+				paths.append(",");
+			}
+			paths.append(f.getAbsolutePath());
+		}
+		initPluginConfig("'file_*.md'", "'DIVERGE.md'");
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + paths);
+		Assertions.assertThat(output).isEmpty();
+		Assertions.assertThat(error).contains("IS DIRTY");
 	}
 }
