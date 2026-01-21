@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 - Add the ability to specify a wildcard version (`*`) for external formatter executables. ([#2757](https://github.com/diffplug/spotless/issues/2757))
+### Changes
+- Dramatic (~100x) performance improvement when using git `ratchetFrom`. ([#2805](https://github.com/diffplug/spotless/pull/2805))
 ### Fixed
 - [fix] `NPE` due to workingTreeIterator being null for git ignored files. #911 ([#2771](https://github.com/diffplug/spotless/issues/2771))
 - Prevent race conditions when multiple npm-based formatters launch the server process simultaneously while sharing the same `node_modules` directory. ([#2786](https://github.com/diffplug/spotless/pull/2786))
