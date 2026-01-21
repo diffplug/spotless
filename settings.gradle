@@ -18,7 +18,7 @@ plugins {
 	id 'io.github.davidburstrom.version-compatibility' version '0.5.0' apply false // https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
 	id 'io.github.gradle-nexus.publish-plugin' version '2.0.0' apply false // https://github.com/gradle-nexus/publish-plugin/releases
 	id 'net.ltgt.errorprone' version '4.4.0' apply false
-	id 'org.openrewrite.rewrite' version '7.24.0' apply false
+	id 'org.openrewrite.rewrite' version '7.25.0' apply false
 }
 
 dependencyResolutionManagement {
@@ -60,7 +60,7 @@ develocity {
 		termsOfUseUrl = "https://gradle.com/terms-of-service"
 		termsOfUseAgree = "yes"
 		publishing {
-			onlyIf { providers.environmentVariable('CI').present }
+			onlyIf { getenv('CI') != null }
 		}
 	}
 }

@@ -18,6 +18,7 @@ def NEEDS_GLUE = [
 	'googleJavaFormat',
 	'gson',
 	'jackson',
+	'javaParser',
 	'ktfmt',
 	'ktlint',
 	'palantirJavaFormat',
@@ -100,6 +101,8 @@ dependencies {
 	String VER_JACKSON='2.20.1'
 	jacksonCompileOnly "com.fasterxml.jackson.core:jackson-databind:$VER_JACKSON"
 	jacksonCompileOnly "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$VER_JACKSON"
+	// javaParser
+	javaParserCompileOnly "com.github.javaparser:javaparser-symbol-solver-core:3.27.1"
 	// ktfmt
 	ktfmtCompileOnly "com.facebook:ktfmt:0.61"
 	ktfmtCompileOnly("com.google.googlejavaformat:google-java-format") {
