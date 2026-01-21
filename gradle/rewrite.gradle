@@ -1,3 +1,6 @@
+if (!project.hasProperty('rewrite')) {
+	return
+}
 apply plugin: 'org.openrewrite.rewrite'
 rewrite {
 	activeRecipe('com.diffplug.spotless.openrewrite.SanityCheck')
