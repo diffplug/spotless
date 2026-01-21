@@ -84,7 +84,7 @@ class FeatureClassLoader extends URLClassLoader {
 			} catch (IOException e) {
 				throw new ClassNotFoundException(name, e);
 			}
-		} else if (name.equals("lombok.core.FieldAugment")) {
+		} else if ("lombok.core.FieldAugment".equals(name)) {
 			return new ByteBuddy()
 					.subclass(Object.class)
 					.name(name)
@@ -108,7 +108,7 @@ class FeatureClassLoader extends URLClassLoader {
 					.make()
 					.load(this, ClassLoadingStrategy.Default.INJECTION)
 					.getLoaded();
-		} else if (name.equals("lombok.eclipse.EcjAugments")) {
+		} else if ("lombok.eclipse.EcjAugments".equals(name)) {
 			Class<?> fieldAugmentClass = loadClass("lombok.core.FieldAugment");
 			Class<?> ecjAugmentsClass = new ByteBuddy()
 					.subclass(Object.class)
@@ -147,7 +147,7 @@ class FeatureClassLoader extends URLClassLoader {
 				} catch (NoSuchMethodException e1) {
 					throw new IllegalArgumentException(e1);
 				}
-				Class<? extends Object> c = new ByteBuddy()
+				return new ByteBuddy()
 						.subclass(Object.class)
 						.name(name)
 						.defineMethod("parserClinit", void.class, Visibility.PUBLIC, Ownership.STATIC)
@@ -218,7 +218,6 @@ class FeatureClassLoader extends URLClassLoader {
 						.make()
 						.load(this, ClassLoadingStrategy.Default.INJECTION)
 						.getLoaded();
-				return c;
 			}
 		} else if (useBuildToolClassLoader(name)) {
 			return buildToolClassLoader.loadClass(name);
