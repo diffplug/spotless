@@ -225,8 +225,9 @@ class IdeHookTest extends GradleIntegrationHarness {
 		for (int i = 0; i < fileCount; i++) {
 			File f = new File(rootFolder(), "file_" + i + ".md");
 			Files.write(("Some content " + i).getBytes(StandardCharsets.UTF_8), f);
-			if (i > 0)
+			if (i > 0) {
 				paths.append(",");
+			}
 			paths.append(f.getAbsolutePath());
 		}
 		initPluginConfig("'file_*.md'", "'DIVERGE.md'");
