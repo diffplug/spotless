@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Add a `expandWildcardImports` API for java ([#2679](https://github.com/diffplug/spotless/issues/2594))
 - Add the ability to specify a wildcard version (`*`) for external formatter executables. ([#2757](https://github.com/diffplug/spotless/issues/2757))
 ### Fixed
+- configuration cache for groovy. ([#2797](https://github.com/diffplug/spotless/pull/2797))
 - [fix] `NPE` due to workingTreeIterator being null for git ignored files. #911 ([#2771](https://github.com/diffplug/spotless/issues/2771))
 - Prevent race conditions when multiple npm-based formatters launch the server process simultaneously while sharing the same `node_modules` directory. ([#2786](https://github.com/diffplug/spotless/pull/2786))
 ### Changes
