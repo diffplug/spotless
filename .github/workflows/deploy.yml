@@ -38,6 +38,8 @@ jobs:
       ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.GPG_KEY64 }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Configure git credentials for JGit
         run: |
           git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${{ secrets.GITHUB_TOKEN }} | base64)"
