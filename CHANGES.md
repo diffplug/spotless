@@ -11,6 +11,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-01-22
+
 ### Added
 - Add a `expandWildcardImports` API for java ([#2679](https://github.com/diffplug/spotless/issues/2594))
 - Add the ability to specify a wildcard version (`*`) for external formatter executables. ([#2757](https://github.com/diffplug/spotless/issues/2757))
