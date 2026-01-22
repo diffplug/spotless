@@ -155,8 +155,14 @@ class GitRatchetMavenTest extends MavenIntegrationHarness {
 
 	@Test
 	void worktreeSupport() throws Exception {
-		// Set up main repository
+		// Set up main repository with explicit 'main' branch
+		// (Git.init() uses system default which may be 'master' on some systems)
 		Git mainGit = Git.init().setDirectory(rootFolder()).call();
+		RefDatabase refDB = mainGit.getRepository().getRefDatabase();
+		refDB.newUpdate(Constants.R_HEADS + "main", false).setNewObjectId(ObjectId.zeroId());
+		refDB.newUpdate(Constants.HEAD, false).link(Constants.R_HEADS + "main");
+		refDB.newUpdate(Constants.R_HEADS + Constants.MASTER, false).delete();
+
 		setFile(TEST_PATH).toContent("HELLO");
 		mainGit.add().addFilepattern(TEST_PATH).call();
 		mainGit.commit().setMessage("Initial commit").call();
