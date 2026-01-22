@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,9 @@
  */
 package com.diffplug.spotless.maven;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -149,5 +151,82 @@ class GitRatchetMavenTest extends MavenIntegrationHarness {
 
 	private void assertDirty() throws Exception {
 		mavenRunner().withArguments("spotless:check").runHasError();
+	}
+
+	@Test
+	void worktreeSupport() throws Exception {
+		// Set up main repository with explicit 'main' branch
+		// (Git.init() uses system default which may be 'master' on some systems)
+		Git mainGit = Git.init().setDirectory(rootFolder()).call();
+		RefDatabase refDB = mainGit.getRepository().getRefDatabase();
+		refDB.newUpdate(Constants.R_HEADS + "main", false).setNewObjectId(ObjectId.zeroId());
+		refDB.newUpdate(Constants.HEAD, false).link(Constants.R_HEADS + "main");
+		refDB.newUpdate(Constants.R_HEADS + Constants.MASTER, false).delete();
+
+		setFile(TEST_PATH).toContent("HELLO");
+		mainGit.add().addFilepattern(TEST_PATH).call();
+		mainGit.commit().setMessage("Initial commit").call();
+		mainGit.tag().setName("baseline").call();
+
+		// Set up a worktree manually (JGit doesn't support worktrees)
+		File worktreeDir = newFolder("worktree");
+		File mainGitDir = new File(rootFolder(), ".git");
+		File worktreeGitDir = new File(rootFolder(), ".git/worktrees/worktree");
+
+		// Create worktree structure
+		setFile(".git/worktrees/worktree/gitdir").toContent(worktreeDir.getAbsolutePath() + "/.git");
+		setFile(".git/worktrees/worktree/commondir").toContent("../..");
+		setFile(".git/worktrees/worktree/HEAD").toContent("ref: refs/heads/main");
+		setFile("worktree/.git").toContent("gitdir: " + worktreeGitDir.getAbsolutePath());
+
+		// Copy the test file to worktree (same as baseline so ratchet considers it clean)
+		setFile("worktree/" + TEST_PATH).toContent("HELLO");
+
+		// Copy Maven wrapper files to worktree
+		setFile("worktree/.gitattributes").toContent("* text eol=lf");
+		Files.copy(new File(rootFolder(), "mvnw").toPath(), new File(worktreeDir, "mvnw").toPath());
+		new File(worktreeDir, "mvnw").setExecutable(true);
+		Files.copy(new File(rootFolder(), "mvnw.cmd").toPath(), new File(worktreeDir, "mvnw.cmd").toPath());
+		new File(worktreeDir, ".mvn/wrapper").mkdirs();
+		Files.copy(new File(rootFolder(), ".mvn/wrapper/maven-wrapper.jar").toPath(),
+				new File(worktreeDir, ".mvn/wrapper/maven-wrapper.jar").toPath());
+		Files.copy(new File(rootFolder(), ".mvn/wrapper/maven-wrapper.properties").toPath(),
+				new File(worktreeDir, ".mvn/wrapper/maven-wrapper.properties").toPath());
+
+		// Create a pom.xml in the worktree
+		setFile("worktree/pom.xml").toLines(
+				"<project xmlns='http://maven.apache.org/POM/4.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd'>",
+				"  <modelVersion>4.0.0</modelVersion>",
+				"  <groupId>test</groupId>",
+				"  <artifactId>test</artifactId>",
+				"  <version>1.0.0</version>",
+				"  <build>",
+				"    <plugins>",
+				"      <plugin>",
+				"        <groupId>com.diffplug.spotless</groupId>",
+				"        <artifactId>spotless-maven-plugin</artifactId>",
+				"        <version>" + System.getProperty("spotlessMavenPluginVersion") + "</version>",
+				"        <configuration>",
+				"          <formats>",
+				"            <format>",
+				"              <ratchetFrom>baseline</ratchetFrom>",
+				"              <includes>",
+				"                <include>" + TEST_PATH + "</include>",
+				"              </includes>",
+				"              <replace>",
+				"                <name>Lowercase hello</name>",
+				"                <search>HELLO</search>",
+				"                <replacement>hello</replacement>",
+				"              </replace>",
+				"            </format>",
+				"          </formats>",
+				"        </configuration>",
+				"      </plugin>",
+				"    </plugins>",
+				"  </build>",
+				"</project>");
+
+		// Verify that spotless works correctly in a git worktree
+		mavenRunner().withProjectDir(worktreeDir).withArguments("spotless:check").runNoError();
 	}
 }
