@@ -39,7 +39,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Configure git credentials for JGit
-        run: git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${{ secrets.GITHUB_TOKEN }} | base64)"
+        run: |
+          git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${{ secrets.GITHUB_TOKEN }} | base64)"
       - uses: actions/setup-java@v5
         with:
           java-version: 21
