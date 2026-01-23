@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2020 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.nio.charset.Charset;
 import java.util.Optional;
 
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.extra.P2Provisioner;
 
 public class FormatterStepConfig {
 
@@ -26,14 +27,16 @@ public class FormatterStepConfig {
 	private final String licenseHeaderDelimiter;
 	private final Optional<String> ratchetFrom;
 	private final Provisioner provisioner;
+	private final P2Provisioner p2Provisioner;
 	private final FileLocator fileLocator;
 	private final Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory;
 
-	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Optional<String> ratchetFrom, Provisioner provisioner, FileLocator fileLocator, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory) {
+	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Optional<String> ratchetFrom, Provisioner provisioner, P2Provisioner p2Provisioner, FileLocator fileLocator, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory) {
 		this.encoding = encoding;
 		this.licenseHeaderDelimiter = licenseHeaderDelimiter;
 		this.ratchetFrom = ratchetFrom;
 		this.provisioner = provisioner;
+		this.p2Provisioner = p2Provisioner;
 		this.fileLocator = fileLocator;
 		this.spotlessSetLicenseHeaderYearsFromGitHistory = spotlessSetLicenseHeaderYearsFromGitHistory;
 	}
@@ -52,6 +55,10 @@ public class FormatterStepConfig {
 
 	public Provisioner getProvisioner() {
 		return provisioner;
+	}
+
+	public P2Provisioner getP2Provisioner() {
+		return p2Provisioner;
 	}
 
 	public FileLocator getFileLocator() {

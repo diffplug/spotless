@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class GrEclipse implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		EquoBasedStepBuilder grEclipseConfig = GrEclipseFormatterStep.createBuilder(stepConfig.getProvisioner());
+		EquoBasedStepBuilder grEclipseConfig = GrEclipseFormatterStep.createBuilder(stepConfig.getProvisioner(), stepConfig.getP2Provisioner());
 		grEclipseConfig.setVersion(version == null ? GrEclipseFormatterStep.defaultVersion() : version);
 		if (file != null) {
 			File settingsFile = stepConfig.getFileLocator().locateFile(file);

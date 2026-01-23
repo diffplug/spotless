@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Optional;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.extra.P2Provisioner;
 
 public class FormatterConfig {
 
@@ -31,17 +32,19 @@ public class FormatterConfig {
 	private final LineEnding lineEndings;
 	private final Optional<String> ratchetFrom;
 	private final Provisioner provisioner;
+	private final P2Provisioner p2Provisioner;
 	private final FileLocator fileLocator;
 	private final List<FormatterStepFactory> globalStepFactories;
 	private final Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory;
 	private final List<LintSuppression> lintSuppressions;
 
 	public FormatterConfig(File baseDir, String encoding, LineEnding lineEndings, Optional<String> ratchetFrom, Provisioner provisioner,
-			FileLocator fileLocator, List<FormatterStepFactory> globalStepFactories, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory, List<LintSuppression> lintSuppressions) {
+			P2Provisioner p2Provisioner, FileLocator fileLocator, List<FormatterStepFactory> globalStepFactories, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory, List<LintSuppression> lintSuppressions) {
 		this.encoding = encoding;
 		this.lineEndings = lineEndings;
 		this.ratchetFrom = ratchetFrom;
 		this.provisioner = provisioner;
+		this.p2Provisioner = p2Provisioner;
 		this.fileLocator = fileLocator;
 		this.globalStepFactories = globalStepFactories;
 		this.spotlessSetLicenseHeaderYearsFromGitHistory = spotlessSetLicenseHeaderYearsFromGitHistory;
@@ -62,6 +65,10 @@ public class FormatterConfig {
 
 	public Provisioner getProvisioner() {
 		return provisioner;
+	}
+
+	public P2Provisioner getP2Provisioner() {
+		return p2Provisioner;
 	}
 
 	public List<FormatterStepFactory> getGlobalStepFactories() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.maven.antlr4.Antlr4;
 import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.css.Css;
@@ -393,11 +394,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private FormatterConfig getFormatterConfig() {
 		ArtifactResolver resolver = new ArtifactResolver(repositorySystem, repositorySystemSession, repositories, getLog());
 		Provisioner provisioner = MavenProvisioner.create(resolver);
+		P2Provisioner p2Provisioner = P2Provisioner.createDefault();
 		List<FormatterStepFactory> formatterStepFactories = getFormatterStepFactories();
 		FileLocator fileLocator = getFileLocator();
 		final Optional<String> optionalRatchetFrom = Optional.ofNullable(this.ratchetFrom)
 				.filter(ratchet -> !RATCHETFROM_NONE.equals(ratchet));
-		return new FormatterConfig(baseDir, encoding, lineEndings, optionalRatchetFrom, provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory), lintSuppressions);
+		return new FormatterConfig(baseDir, encoding, lineEndings, optionalRatchetFrom, provisioner, p2Provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory), lintSuppressions);
 	}
 
 	private FileLocator getFileLocator() {

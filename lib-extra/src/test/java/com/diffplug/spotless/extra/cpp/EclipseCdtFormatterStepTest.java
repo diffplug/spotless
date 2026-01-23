@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.diffplug.spotless.TestProvisioner;
+import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 class EclipseCdtFormatterStepTest extends EquoResourceHarness {
 	public EclipseCdtFormatterStepTest() {
-		super(EclipseCdtFormatterStep.createBuilder(TestProvisioner.mavenCentral()));
+		super(EclipseCdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), P2Provisioner.createDefault()));
 	}
 
 	@ParameterizedTest

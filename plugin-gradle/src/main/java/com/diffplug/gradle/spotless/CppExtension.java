@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 		private final EquoBasedStepBuilder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseCdtFormatterStep.createBuilder(provisioner());
+			builder = EclipseCdtFormatterStep.createBuilder(provisioner(), p2Provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}
