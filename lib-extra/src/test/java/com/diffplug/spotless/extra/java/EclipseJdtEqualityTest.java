@@ -28,9 +28,9 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestP2Provisioner;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.ThrowingEx;
-import com.diffplug.spotless.extra.P2Provisioner;
 
 public class EclipseJdtEqualityTest extends ResourceHarness {
 	@Test
@@ -49,7 +49,7 @@ public class EclipseJdtEqualityTest extends ResourceHarness {
 	}
 
 	private static FormatterStep withSettingsFile(File settingsFile) {
-		var builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), P2Provisioner.createDefault());
+		var builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());
 		builder.setPreferences(List.of(settingsFile));
 		return builder.build();
 	}

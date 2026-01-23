@@ -20,8 +20,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.diffplug.spotless.TestP2Provisioner;
 import com.diffplug.spotless.TestProvisioner;
-import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 public class GrEclipseFormatterStepTest extends EquoResourceHarness {
@@ -29,7 +29,7 @@ public class GrEclipseFormatterStepTest extends EquoResourceHarness {
 	private static final String EXPECTED = "class F{\n\tdef m(){}\n}";
 
 	public GrEclipseFormatterStepTest() {
-		super(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral(), P2Provisioner.createDefault()));
+		super(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner()));
 	}
 
 	@ParameterizedTest

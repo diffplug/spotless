@@ -22,14 +22,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.diffplug.spotless.TestP2Provisioner;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
-import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 class EclipseJdtFormatterStepTest extends EquoResourceHarness {
 	private static EquoBasedStepBuilder createBuilder() {
-		return EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), P2Provisioner.createDefault());
+		return EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());
 	}
 
 	public EclipseJdtFormatterStepTest() {

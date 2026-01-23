@@ -25,6 +25,8 @@ dependencies {
 
 	// testing
 	testImplementation projects.testlib
+	testImplementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	testImplementation "com.google.code.findbugs:jsr305:${VER_JSR_305}"
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
