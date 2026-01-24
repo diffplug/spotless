@@ -240,6 +240,47 @@ class GradleProvisionerTest {
 			assertThat(callCount.get()).as("Only called once").isEqualTo(1);
 		}
 
+		@Test
+		void cachedOnlyCacheHitReturnsResult() throws IOException {
+			P2Provisioner underlying = mockP2Provisioner(new AtomicInteger(0));
+			GradleProvisioner.DedupingP2Provisioner deduping = new GradleProvisioner.DedupingP2Provisioner(underlying);
+
+			P2ModelWrapper model = createMockModel(
+					List.of("https://download.eclipse.org/eclipse/updates/4.26/"),
+					List.of("org.eclipse.jdt.core"),
+					Set.of(),
+					List.of(),
+					true,
+					null);
+
+			// Populate cache
+			deduping.provisionP2Dependencies(model, mockProvisioner(), null);
+
+			// cachedOnly should return cached result
+			List<File> result = deduping.cachedOnly.provisionP2Dependencies(model, mockProvisioner(), null);
+
+			assertThat(result).isNotEmpty();
+		}
+
+		@Test
+		void cachedOnlyCacheMissThrowsException() {
+			P2Provisioner underlying = mockP2Provisioner(new AtomicInteger(0));
+			GradleProvisioner.DedupingP2Provisioner deduping = new GradleProvisioner.DedupingP2Provisioner(underlying);
+
+			P2ModelWrapper model = createMockModel(
+					List.of("https://download.eclipse.org/eclipse/updates/4.26/"),
+					List.of("org.eclipse.jdt.core"),
+					Set.of(),
+					List.of(),
+					true,
+					null);
+
+			// cachedOnly should throw when not cached
+			assertThatThrownBy(() -> deduping.cachedOnly.provisionP2Dependencies(model, mockProvisioner(), null))
+					.isInstanceOf(GradleException.class)
+					.hasMessageContaining("spotlessPredeclare");
+		}
+
 		private P2Provisioner mockP2Provisioner(AtomicInteger callCount) {
 			return (modelWrapper, mavenProvisioner, cacheDirectory) -> {
 				callCount.incrementAndGet();

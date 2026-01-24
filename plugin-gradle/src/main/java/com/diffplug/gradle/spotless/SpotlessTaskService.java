@@ -80,7 +80,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			return predeclaredP2Provisioner;
 		} else {
 			if (predeclaredP2Provisioner != null) {
-				return predeclaredP2Provisioner; // P2 doesn't have a cachedOnly variant
+				return predeclaredP2Provisioner.cachedOnly;
 			} else {
 				return p2Provisioner.computeIfAbsent(spotless.project.getPath(),
 						unused -> new GradleProvisioner.DedupingP2Provisioner(P2Provisioner.createDefault()));

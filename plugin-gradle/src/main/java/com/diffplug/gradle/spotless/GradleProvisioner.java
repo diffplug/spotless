@@ -51,15 +51,18 @@ final class GradleProvisioner {
 		INDEPENDENT, ROOT_PROJECT, ROOT_BUILDSCRIPT;
 
 		public DedupingProvisioner dedupingProvisioner(Project project) {
-			switch (this) {
-			case ROOT_PROJECT:
-				return new DedupingProvisioner(forProject(project));
-			case ROOT_BUILDSCRIPT:
-				return new DedupingProvisioner(forRootProjectBuildscript(project));
-			case INDEPENDENT:
-			default:
-				throw Unhandled.enumException(this);
-			}
+			return switch (this) {
+				case ROOT_PROJECT -> new DedupingProvisioner(forProject(project));
+				case ROOT_BUILDSCRIPT -> new DedupingProvisioner(forRootProjectBuildscript(project));
+				default -> throw Unhandled.enumException(this);
+			};
+		}
+
+		public DedupingP2Provisioner dedupingP2Provisioner(Project project) {
+			return switch (this) {
+				case ROOT_PROJECT, ROOT_BUILDSCRIPT -> new DedupingP2Provisioner(P2Provisioner.createDefault());
+				default -> throw Unhandled.enumException(this);
+			};
 		}
 	}
 
@@ -221,6 +224,25 @@ final class GradleProvisioner {
 			cache.put(req, List.copyOf(result));
 			return result;
 		}
+
+		/** A child P2Provisioner which retrieves cached elements only. */
+		final P2Provisioner cachedOnly = (modelWrapper, mavenProvisioner, cacheDirectory) -> {
+			P2Request req = new P2Request(
+					List.copyOf(modelWrapper.getP2Repos()),
+					List.copyOf(modelWrapper.getInstallList()),
+					Set.copyOf(modelWrapper.getFilterNames()),
+					List.copyOf(modelWrapper.getPureMaven()),
+					modelWrapper.isUseMavenCentral(),
+					cacheDirectory);
+			List<File> result;
+			synchronized (cache) {
+				result = cache.get(req);
+			}
+			if (result != null) {
+				return result;
+			}
+			throw new GradleException("P2 dependencies not predeclared. Add Eclipse formatter configuration to the `spotlessPredeclare` block in the root project.");
+		};
 
 		/**
 		 * Cache key capturing all P2Model state that affects query results.
