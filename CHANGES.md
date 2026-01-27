@@ -12,9 +12,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 - Add `P2Provisioner` interface in lib-extra to enable build-tool-specific caching strategies for Eclipse P2 dependencies, fixing OutOfMemoryError in large multi-project builds. ([#2788](https://github.com/diffplug/spotless/issues/2788))
+### Fixed
+- `removeSemicolons()` should not be applied to multiline strings in groovy #2780 ([#2792](https://github.com/diffplug/spotless/issues/2792))
 
 ## [4.2.0] - 2026-01-22
-
 ### Added
 - Add a `expandWildcardImports` API for java ([#2679](https://github.com/diffplug/spotless/issues/2594))
 - Add the ability to specify a wildcard version (`*`) for external formatter executables. ([#2757](https://github.com/diffplug/spotless/issues/2757))
