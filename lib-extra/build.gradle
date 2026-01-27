@@ -7,7 +7,6 @@ version = rootProject.spotlessChangelog.versionNext
 apply from: rootProject.file('gradle/java-setup.gradle')
 apply from: rootProject.file('gradle/java-publish.gradle')
 
-String VER_SOLSTICE = '1.8.1'
 dependencies {
 	api projects.lib
 	// misc useful utilities
@@ -25,6 +24,8 @@ dependencies {
 
 	// testing
 	testImplementation projects.testlib
+	testImplementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
+	testImplementation "com.google.code.findbugs:jsr305:${VER_JSR_305}"
 	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"

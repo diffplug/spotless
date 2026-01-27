@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class Eclipse implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
-		EclipseJdtFormatterStep.Builder eclipseConfig = EclipseJdtFormatterStep.createBuilder(stepConfig.getProvisioner());
+		EclipseJdtFormatterStep.Builder eclipseConfig = EclipseJdtFormatterStep.createBuilder(stepConfig.getProvisioner(), stepConfig.getP2Provisioner());
 		eclipseConfig.setVersion(version == null ? EclipseJdtFormatterStep.defaultVersion() : version);
 		if (file != null) {
 			File settingsFile = stepConfig.getFileLocator().locateFile(file);

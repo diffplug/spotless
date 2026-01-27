@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.extra.P2Provisioner;
 
 /**
  * Allows the check and apply tasks to coordinate
@@ -57,8 +58,10 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, P2Provisioner> p2Provisioner = Collections.synchronizedMap(new HashMap<>());
 
 	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
+	@Nullable GradleProvisioner.DedupingP2Provisioner predeclaredP2Provisioner;
 
 	Provisioner provisionerFor(SpotlessExtension spotless) {
 		if (spotless instanceof SpotlessExtensionPredeclare) {
@@ -68,6 +71,19 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 				return predeclaredProvisioner.cachedOnly;
 			} else {
 				return provisioner.computeIfAbsent(spotless.project.getPath(), unused -> new GradleProvisioner.DedupingProvisioner(GradleProvisioner.forProject(spotless.project)));
+			}
+		}
+	}
+
+	P2Provisioner p2ProvisionerFor(SpotlessExtension spotless) {
+		if (spotless instanceof SpotlessExtensionPredeclare) {
+			return predeclaredP2Provisioner;
+		} else {
+			if (predeclaredP2Provisioner != null) {
+				return predeclaredP2Provisioner.cachedOnly;
+			} else {
+				return p2Provisioner.computeIfAbsent(spotless.project.getPath(),
+						unused -> new GradleProvisioner.DedupingP2Provisioner(P2Provisioner.createDefault()));
 			}
 		}
 	}

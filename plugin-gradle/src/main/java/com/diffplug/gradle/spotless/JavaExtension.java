@@ -319,7 +319,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		private final EclipseJdtFormatterStep.Builder builder;
 
 		EclipseConfig(String version) {
-			builder = EclipseJdtFormatterStep.createBuilder(provisioner());
+			builder = EclipseJdtFormatterStep.createBuilder(provisioner(), p2Provisioner());
 			builder.setVersion(version);
 			addStep(builder.build());
 		}

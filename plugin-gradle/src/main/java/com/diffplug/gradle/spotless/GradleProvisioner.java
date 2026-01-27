@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,14 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -36,6 +40,8 @@ import org.slf4j.LoggerFactory;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.extra.P2ModelWrapper;
+import com.diffplug.spotless.extra.P2Provisioner;
 
 /** Should be package-private. */
 final class GradleProvisioner {
@@ -45,15 +51,18 @@ final class GradleProvisioner {
 		INDEPENDENT, ROOT_PROJECT, ROOT_BUILDSCRIPT;
 
 		public DedupingProvisioner dedupingProvisioner(Project project) {
-			switch (this) {
-			case ROOT_PROJECT:
-				return new DedupingProvisioner(forProject(project));
-			case ROOT_BUILDSCRIPT:
-				return new DedupingProvisioner(forRootProjectBuildscript(project));
-			case INDEPENDENT:
-			default:
-				throw Unhandled.enumException(this);
-			}
+			return switch (this) {
+				case ROOT_PROJECT -> new DedupingProvisioner(forProject(project));
+				case ROOT_BUILDSCRIPT -> new DedupingProvisioner(forRootProjectBuildscript(project));
+				default -> throw Unhandled.enumException(this);
+			};
+		}
+
+		public DedupingP2Provisioner dedupingP2Provisioner(Project project) {
+			return switch (this) {
+				case ROOT_PROJECT, ROOT_BUILDSCRIPT -> new DedupingP2Provisioner(P2Provisioner.createDefault());
+				default -> throw Unhandled.enumException(this);
+			};
 		}
 	}
 
@@ -182,5 +191,74 @@ final class GradleProvisioner {
 			}
 			return builder.toString();
 		}
+	}
+
+	static class DedupingP2Provisioner implements P2Provisioner {
+		private final Map<P2Request, List<File>> cache = new HashMap<>();
+		private final P2Provisioner p2Provisioner;
+
+		public DedupingP2Provisioner(P2Provisioner p2Provisioner) {
+			this.p2Provisioner = p2Provisioner;
+		}
+
+		@Override
+		public synchronized List<File> provisionP2Dependencies(
+				P2ModelWrapper modelWrapper,
+				Provisioner mavenProvisioner,
+				@Nullable File cacheDirectory) throws IOException {
+
+			P2Request req = new P2Request(
+					List.copyOf(modelWrapper.getP2Repos()),
+					List.copyOf(modelWrapper.getInstallList()),
+					Set.copyOf(modelWrapper.getFilterNames()),
+					List.copyOf(modelWrapper.getPureMaven()),
+					modelWrapper.isUseMavenCentral(),
+					cacheDirectory);
+
+			List<File> result = cache.get(req);
+			if (result != null) {
+				return result;
+			}
+
+			result = p2Provisioner.provisionP2Dependencies(modelWrapper, mavenProvisioner, cacheDirectory);
+			cache.put(req, List.copyOf(result));
+			return result;
+		}
+
+		/** A child P2Provisioner which retrieves cached elements only. */
+		final P2Provisioner cachedOnly = (modelWrapper, mavenProvisioner, cacheDirectory) -> {
+			P2Request req = new P2Request(
+					List.copyOf(modelWrapper.getP2Repos()),
+					List.copyOf(modelWrapper.getInstallList()),
+					Set.copyOf(modelWrapper.getFilterNames()),
+					List.copyOf(modelWrapper.getPureMaven()),
+					modelWrapper.isUseMavenCentral(),
+					cacheDirectory);
+			List<File> result;
+			synchronized (cache) {
+				result = cache.get(req);
+			}
+			if (result != null) {
+				return result;
+			}
+			throw new GradleException("P2 dependencies not predeclared. Add Eclipse formatter configuration to the `spotlessPredeclare` block in the root project.");
+		};
+
+		/**
+		 * Cache key capturing all P2Model state that affects query results.
+		 * Based on P2Model fields from equo-ide:
+		 * - p2repo (TreeSet<String>): P2 repository URLs
+		 * - install (TreeSet<String>): Installation targets
+		 * - filters (TreeMap<String, Filter>): Named filter configurations
+		 * - pureMaven (TreeSet<String>): Pure Maven dependencies
+		 * - useMavenCentral (boolean): Controls whether Maven Central is used
+		 */
+		private record P2Request(
+				List<String> p2Repos,
+				List<String> installList,
+				java.util.Set<String> filterNames, // Filter names (Filter objects aren't easily comparable)
+				List<String> pureMaven,
+				boolean useMavenCentral,
+				@Nullable File cacheDirectory) {}
 	}
 }

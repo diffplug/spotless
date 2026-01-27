@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.StepHarness;
+import com.diffplug.spotless.TestP2Provisioner;
 import com.diffplug.spotless.TestProvisioner;
 
 public class GrEclipseFormatterStepSpecialCaseTest {
@@ -30,13 +31,13 @@ public class GrEclipseFormatterStepSpecialCaseTest {
 	 */
 	@Test
 	public void issue_1657() {
-		Assertions.assertThrows(RuntimeException.class, () -> StepHarness.forStep(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()).build())
+		Assertions.assertThrows(RuntimeException.class, () -> StepHarness.forStep(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner()).build())
 				.testResourceUnaffected("groovy/greclipse/format/SomeClass.test"));
 	}
 
 	@Test
 	public void issue_1657_fixed() {
-		StepHarness.forStep(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral()).build())
+		StepHarness.forStep(GrEclipseFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner()).build())
 				.testResourceUnaffected("groovy/greclipse/format/SomeClass.fixed");
 	}
 }

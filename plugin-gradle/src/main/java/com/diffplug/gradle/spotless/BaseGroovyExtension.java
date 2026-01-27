@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public abstract class BaseGroovyExtension extends FormatExtension {
 
 		private GrEclipseConfig(String version, FormatExtension extension) {
 			this.extension = extension;
-			builder = GrEclipseFormatterStep.createBuilder(extension.provisioner());
+			builder = GrEclipseFormatterStep.createBuilder(extension.provisioner(), extension.p2Provisioner());
 			builder.setVersion(version);
 			extension.addStep(builder.build());
 		}

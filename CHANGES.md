@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `P2Provisioner` interface in lib-extra to enable build-tool-specific caching strategies for Eclipse P2 dependencies, fixing OutOfMemoryError in large multi-project builds. ([#2788](https://github.com/diffplug/spotless/issues/2788))
 
 ## [4.2.0] - 2026-01-22
 

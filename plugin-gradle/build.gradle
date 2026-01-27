@@ -26,6 +26,7 @@ dependencies {
 	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
 	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
 	testImplementation 'org.owasp.encoder:encoder:1.4.0'
+	testImplementation "dev.equo.ide:solstice:${VER_SOLSTICE}"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 

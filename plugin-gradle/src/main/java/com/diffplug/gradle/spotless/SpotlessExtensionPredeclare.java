@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ public class SpotlessExtensionPredeclare extends SpotlessExtension {
 	public SpotlessExtensionPredeclare(Project project, GradleProvisioner.Policy policy) {
 		super(project);
 		getRegisterDependenciesTask().getTaskService().get().predeclaredProvisioner = policy.dedupingProvisioner(project);
+		getRegisterDependenciesTask().getTaskService().get().predeclaredP2Provisioner = policy.dedupingP2Provisioner(project);
 		project.afterEvaluate(unused -> toSetup.forEach((name, formatExtension) -> {
 			for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
 				lazyAction.execute(formatExtension);
