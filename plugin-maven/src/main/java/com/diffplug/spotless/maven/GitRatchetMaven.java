@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,11 @@ package com.diffplug.spotless.maven;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,6 +34,9 @@ import org.eclipse.jgit.treewalk.FileTreeIterator;
 import com.diffplug.spotless.extra.GitRatchet;
 
 final class GitRatchetMaven extends GitRatchet<File> {
+
+	Map<Key, Set<String>> cache = new HashMap<>();
+
 	private GitRatchetMaven() {}
 
 	@Override
@@ -55,15 +62,31 @@ final class GitRatchetMaven extends GitRatchet<File> {
 		return instance;
 	}
 
-	Iterable<String> getDirtyFiles(File baseDir, String ratchetFrom) throws IOException {
+	List<String> getDirtyFiles(File baseDir, String ratchetFrom) throws IOException {
 		Repository repository = repositoryFor(baseDir);
-		ObjectId sha = rootTreeShaOf(baseDir, ratchetFrom);
+		Set<String> dirtyPaths = null;
+		Key key = new Key(repository.getIdentifier(), ratchetFrom);
+		synchronized (this) {
+			if (cache.containsKey(key)) {
+				dirtyPaths = cache.get(key);
+			} else {
+				dirtyPaths = getDirtyFilesInternal(repository, baseDir, ratchetFrom);
+				cache.put(key, dirtyPaths);
+			}
+		}
 
+		Path baseDirPath = Path.of(baseDir.getPath());
+		String workTreePath = repository.getWorkTree().getPath();
+
+		return dirtyPaths.stream()
+				.map(path -> baseDirPath.relativize(Path.of(workTreePath, path)).toString())
+				.collect(Collectors.toList());
+	}
+
+	Set<String> getDirtyFilesInternal(Repository repository, File baseDir, String ratchetFrom) throws IOException {
+		ObjectId sha = rootTreeShaOf(baseDir, ratchetFrom);
 		IndexDiff indexDiff = new IndexDiff(repository, sha, new FileTreeIterator(repository));
 		indexDiff.diff();
-
-		String workTreePath = repository.getWorkTree().getPath();
-		Path baseDirPath = Path.of(baseDir.getPath());
 
 		Set<String> dirtyPaths = new HashSet<>(indexDiff.getChanged());
 		dirtyPaths.addAll(indexDiff.getAdded());
@@ -91,8 +114,30 @@ final class GitRatchetMaven extends GitRatchet<File> {
 		// A file can be modified in the index but removed in the tree
 		dirtyPaths.removeAll(indexDiff.getMissing());
 
-		return dirtyPaths.stream()
-				.map(path -> baseDirPath.relativize(Path.of(workTreePath, path)).toString())
-				.collect(Collectors.toList());
+		return dirtyPaths;
+	}
+
+	private static final class Key {
+		private final String identifier;
+		private final String ratchetFrom;
+
+		private Key(String identifier, String ratchetFrom) {
+			this.identifier = identifier;
+			this.ratchetFrom = ratchetFrom;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+			Key key = (Key) o;
+			return Objects.equals(identifier, key.identifier) && Objects.equals(ratchetFrom, key.ratchetFrom);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(identifier, ratchetFrom);
+		}
 	}
 }

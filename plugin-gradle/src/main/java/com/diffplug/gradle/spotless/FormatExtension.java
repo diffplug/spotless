@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,6 +95,10 @@ public class FormatExtension {
 
 	protected final Provisioner provisioner() {
 		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless);
+	}
+
+	protected final com.diffplug.spotless.extra.P2Provisioner p2Provisioner() {
+		return spotless.getRegisterDependenciesTask().getTaskService().get().p2ProvisionerFor(spotless);
 	}
 
 	private String formatName() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
+import com.diffplug.spotless.extra.P2Provisioner;
 
 import dev.equo.solstice.p2.P2Model;
 
@@ -40,8 +41,8 @@ public final class EclipseJdtFormatterStep {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
-	public static EclipseJdtFormatterStep.Builder createBuilder(Provisioner provisioner) {
-		return new EclipseJdtFormatterStep.Builder(NAME, provisioner, defaultVersion(), EclipseJdtFormatterStep::apply, ImmutableMap.builder());
+	public static EclipseJdtFormatterStep.Builder createBuilder(Provisioner provisioner, P2Provisioner p2Provisioner) {
+		return new EclipseJdtFormatterStep.Builder(NAME, provisioner, p2Provisioner, defaultVersion(), EclipseJdtFormatterStep::apply, ImmutableMap.builder());
 	}
 
 	private static FormatterFunc apply(EquoBasedStepBuilder.State state) throws Exception {
@@ -59,10 +60,11 @@ public final class EclipseJdtFormatterStep {
 		Builder(
 				String formatterName,
 				Provisioner mavenProvisioner,
+				P2Provisioner p2Provisioner,
 				String defaultVersion,
 				SerializedFunction<State, FormatterFunc> stateToFormatter,
 				ImmutableMap.Builder<String, String> stepProperties) {
-			super(formatterName, mavenProvisioner, defaultVersion, stateToFormatter, stepProperties);
+			super(formatterName, mavenProvisioner, p2Provisioner, defaultVersion, stateToFormatter, stepProperties);
 			this.stepProperties = stepProperties;
 		}
 

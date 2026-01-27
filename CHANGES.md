@@ -11,13 +11,21 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+- Add `P2Provisioner` interface in lib-extra to enable build-tool-specific caching strategies for Eclipse P2 dependencies, fixing OutOfMemoryError in large multi-project builds. ([#2788](https://github.com/diffplug/spotless/issues/2788))
+
+## [4.2.0] - 2026-01-22
+
+### Added
+- Add a `expandWildcardImports` API for java ([#2679](https://github.com/diffplug/spotless/issues/2594))
 - Add the ability to specify a wildcard version (`*`) for external formatter executables. ([#2757](https://github.com/diffplug/spotless/issues/2757))
 ### Fixed
 - Prevent race conditions when multiple npm-based formatters launch the server process simultaneously while sharing the same `node_modules` directory. ([#2786](https://github.com/diffplug/spotless/pull/2786))
+- Git ratchet no longer throws an error with Git worktrees. ([#2779](https://github.com/diffplug/spotless/issues/2779))
 ### Changes
-* Bump default `ktfmt` version to latest `0.59` -> `0.61`. ([2804](https://github.com/diffplug/spotless/pull/2804))
-* Bump default `ktlint` version to latest `1.7.1` -> `1.8.0`. ([2763](https://github.com/diffplug/spotless/pull/2763))
-* Bump default `gherkin-utils` version to latest `9.2.0` -> `10.0.0`. ([#2619](https://github.com/diffplug/spotless/pull/2619))
+- Bump default `ktfmt` version to latest `0.59` -> `0.61`. ([2804](https://github.com/diffplug/spotless/pull/2804))
+- Bump default `ktlint` version to latest `1.7.1` -> `1.8.0`. ([2763](https://github.com/diffplug/spotless/pull/2763))
+- Bump default `gherkin-utils` version to latest `9.2.0` -> `10.0.0`. ([#2619](https://github.com/diffplug/spotless/pull/2619))
+
 
 ## [4.1.0] - 2025-11-18
 ### Changes
@@ -137,7 +145,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changed
 * **BREAKING** Moved `PaddedCell.DirtyState` to its own top-level class with new methods. ([#2148](https://github.com/diffplug/spotless/pull/2148))
   * **BREAKING** Removed `isClean`, `applyTo`, and `applyToAndReturnResultIfDirty` from `Formatter` because users should instead use `DirtyState`.
-* `FenceStep` now uses `ConfigurationCacheHack`. ([#2378](https://github.com/diffplug/spotless/pull/2378) fixes [#2317](https://github.com/diffplug/spotless/issues/2317))  
+* `FenceStep` now uses `ConfigurationCacheHack`. ([#2378](https://github.com/diffplug/spotless/pull/2378) fixes [#2317](https://github.com/diffplug/spotless/issues/2317))
 ### Fixed
 * `ktlint` steps now read from the `string` instead of the `file` so they don't clobber earlier steps. (fixes [#1599](https://github.com/diffplug/spotless/issues/1599))
 
@@ -148,7 +156,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 * `ConfigurationCacheHack` so we can support Gradle's configuration cache and remote build cache at the same time. ([#2298](https://github.com/diffplug/spotless/pull/2298) fixes [#2168](https://github.com/diffplug/spotless/issues/2168))
 ### Changed
 * Support configuring the Equo P2 cache. ([#2238](https://github.com/diffplug/spotless/pull/2238))
-* Add explicit support for JSONC / CSS via biome, via the file extensions `.css` and `.jsonc`. 
+* Add explicit support for JSONC / CSS via biome, via the file extensions `.css` and `.jsonc`.
   ([#2259](https://github.com/diffplug/spotless/pull/2259))
 * Bump default `buf` version to latest `1.24.0` -> `1.44.0`. ([#2291](https://github.com/diffplug/spotless/pull/2291))
 * Bump default `google-java-format` version to latest `1.23.0` -> `1.24.0`. ([#2294](https://github.com/diffplug/spotless/pull/2294))

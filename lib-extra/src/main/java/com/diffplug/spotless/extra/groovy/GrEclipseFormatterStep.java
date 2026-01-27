@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
+import com.diffplug.spotless.extra.P2Provisioner;
 
 import dev.equo.solstice.p2.P2Model;
 
@@ -39,8 +40,8 @@ public final class GrEclipseFormatterStep {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
 	}
 
-	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner) {
-		return new EquoBasedStepBuilder(NAME, provisioner, defaultVersion(), GrEclipseFormatterStep::apply, ImmutableMap.builder()) {
+	public static EquoBasedStepBuilder createBuilder(Provisioner provisioner, P2Provisioner p2Provisioner) {
+		return new EquoBasedStepBuilder(NAME, provisioner, p2Provisioner, defaultVersion(), GrEclipseFormatterStep::apply, ImmutableMap.builder()) {
 			@Override
 			protected P2Model model(String version) {
 				if (!version.startsWith("4.")) {

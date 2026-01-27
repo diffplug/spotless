@@ -1,3 +1,6 @@
+if (!project.hasProperty('rewrite')) {
+	return
+}
 apply plugin: 'org.openrewrite.rewrite'
 rewrite {
 	activeRecipe('com.diffplug.spotless.openrewrite.SanityCheck')
@@ -21,7 +24,6 @@ rewrite {
 	failOnDryRunResults = true
 }
 dependencies {
-	rewrite('org.openrewrite.recipe:rewrite-java-security:3.22.0')
 	rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.22.0')
 	rewrite('org.openrewrite.recipe:rewrite-rewrite:0.16.0')
 	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.22.0')

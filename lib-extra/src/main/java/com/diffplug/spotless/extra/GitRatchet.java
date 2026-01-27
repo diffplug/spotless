@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,7 +147,7 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 	 */
 	protected Repository repositoryFor(Project project) throws IOException {
 		File projectGitDir = GitWorkarounds.getDotGitDir(getDir(project));
-		if (projectGitDir == null || !RepositoryCache.FileKey.isGitRepository(projectGitDir, FS.DETECTED)) {
+		if (projectGitDir == null || !isGitRepository(projectGitDir)) {
 			throw new IllegalArgumentException("Cannot find git repository in any parent directory");
 		}
 		Repository repo = gitRoots.get(projectGitDir);
@@ -156,6 +156,28 @@ public abstract class GitRatchet<Project> implements AutoCloseable {
 			gitRoots.put(projectGitDir, repo);
 		}
 		return repo;
+	}
+
+	/**
+	 * Checks if the given directory is a valid git repository, including worktree repositories.
+	 * This is more lenient than {@link RepositoryCache.FileKey#isGitRepository} which doesn't
+	 * properly handle worktrees where some files are in the common directory.
+	 */
+	private static boolean isGitRepository(File gitDir) {
+		if (!gitDir.isDirectory()) {
+			return false;
+		}
+		// For worktrees, HEAD and commondir must exist (objects, refs, etc. are in commondir)
+		// For regular repos, HEAD and objects must exist
+		File headFile = new File(gitDir, Constants.HEAD);
+		File commonDirFile = new File(gitDir, "commondir");
+		if (commonDirFile.exists()) {
+			// This is a worktree - just check for HEAD and commondir
+			return headFile.exists();
+		} else {
+			// This is a regular repository - use standard check
+			return RepositoryCache.FileKey.isGitRepository(gitDir, FS.DETECTED);
+		}
 	}
 
 	protected abstract File getDir(Project project);

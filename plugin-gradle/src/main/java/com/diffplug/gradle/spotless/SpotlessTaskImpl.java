@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ public abstract class SpotlessTaskImpl extends SpotlessTask {
 	@TaskAction
 	public void performAction(InputChanges inputs) throws Exception {
 		IdeHook.State ideHook = getIdeHookState().getOrNull();
-		if (ideHook != null && ideHook.path != null) {
+		if (ideHook != null && ideHook.paths != null) {
 			IdeHook.performHook(this, ideHook);
 			return;
 		}

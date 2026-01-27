@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.TestP2Provisioner;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.ThrowingEx;
 
@@ -48,7 +49,7 @@ public class EclipseJdtEqualityTest extends ResourceHarness {
 	}
 
 	private static FormatterStep withSettingsFile(File settingsFile) {
-		var builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral());
+		var builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());
 		builder.setPreferences(List.of(settingsFile));
 		return builder.build();
 	}

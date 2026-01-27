@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,13 @@ public class GroovyExtension extends BaseGroovyExtension implements HasBuiltinDe
 			if (!getProject().getPlugins().hasPlugin(GroovyBasePlugin.class)) {
 				throw new GradleException(message);
 			}
+			final boolean excludeJavaValue = excludeJava;
 			target = getSources(getProject(),
 					message,
 					sourceSet -> sourceSet.getExtensions().getByType(GroovySourceDirectorySet.class),
 					file -> {
 						final String name = file.getName();
-						if (excludeJava) {
+						if (excludeJavaValue) {
 							return name.endsWith(".groovy");
 						} else {
 							return name.endsWith(".groovy") || name.endsWith(".java");
