@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [3.2.1] - 2026-01-27
 ### Fixed
 - `removeSemicolons()` should not be applied to multiline strings in groovy #2780 ([#2792](https://github.com/diffplug/spotless/issues/2792))
 
