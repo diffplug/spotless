@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- `removeSemicolons()` should not be applied to multiline strings in groovy #2780 ([#2792](https://github.com/diffplug/spotless/issues/2792))
 
 ## [3.2.0] - 2026-01-22
 ### Added
@@ -12,7 +14,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 - [fix] `NPE` due to workingTreeIterator being null for git ignored files. #911 ([#2771](https://github.com/diffplug/spotless/issues/2771))
 - Prevent race conditions when multiple npm-based formatters launch the server process simultaneously while sharing the same `node_modules` directory. ([#2786](https://github.com/diffplug/spotless/pull/2786))
-- [fix] `removeSemicolons()` should not be applied to multiline strings in groovy #2780 ([#2792](https://github.com/diffplug/spotless/issues/2792))
 
 ### Changes
 * Bump default `ktfmt` version to latest `0.59` -> `0.61`. ([2804](https://github.com/diffplug/spotless/pull/2804))
