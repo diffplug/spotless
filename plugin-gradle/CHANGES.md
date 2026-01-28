@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [8.2.1] - 2026-01-27
 ### Fixed
 - Fix OutOfMemoryError and slow configuration phase in large multi-project builds when using Eclipse-based formatters (Eclipse JDT, GrEclipse, Eclipse CDT) by implementing P2 dependency caching. ([#2788](https://github.com/diffplug/spotless/issues/2788))
 
