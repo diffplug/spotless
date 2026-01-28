@@ -68,6 +68,7 @@ tasks.named("check").configure {
 }
 
 dependencies {
+	implementation 'net.bytebuddy:byte-buddy:1.18.3'
 	compileOnly 'org.slf4j:slf4j-api:2.0.17'
 	testCommonImplementation 'org.slf4j:slf4j-api:2.0.17'
 
