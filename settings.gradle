@@ -12,7 +12,7 @@ plugins {
 	id 'com.diffplug.spotless' version '8.2.1' apply false
 	id 'com.diffplug.spotless-changelog' version '3.1.2' apply false // https://github.com/diffplug/spotless-changelog/blob/main/CHANGELOG.md
 	id 'com.github.spotbugs' version '6.4.8' apply false // https://github.com/spotbugs/spotbugs-gradle-plugin/releases
-	id 'com.gradle.develocity' version '4.3.1' // https://plugins.gradle.org/plugin/com.gradle.develocity
+	id 'com.gradle.develocity' version '4.3.2' // https://plugins.gradle.org/plugin/com.gradle.develocity
 	id 'com.gradle.plugin-publish' version '2.0.0' apply false // https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 	id 'dev.equo.ide' version '1.7.8' apply false // https://github.com/equodev/equo-ide/blob/main/plugin-gradle/CHANGELOG.md
 	id 'io.github.davidburstrom.version-compatibility' version '0.5.0' apply false // https://github.com/davidburstrom/version-compatibility-gradle-plugin/tags
