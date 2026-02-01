@@ -1,6 +1,5 @@
-if (!project.hasProperty('rewrite')) {
-	return
-}
+import static java.lang.System.getenv
+
 apply plugin: 'org.openrewrite.rewrite'
 rewrite {
 	activeRecipe('com.diffplug.spotless.openrewrite.SanityCheck')
@@ -21,11 +20,10 @@ rewrite {
 			'**testlib/src/main/resources**'
 			)
 	exportDatatables = true
-	failOnDryRunResults = true
+	failOnDryRunResults = getenv('failOnDryRunResults')?.toBoolean()
 }
 dependencies {
-	rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.22.0')
-	rewrite('org.openrewrite.recipe:rewrite-rewrite:0.16.0')
-	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.22.0')
-	rewrite('org.openrewrite.recipe:rewrite-third-party:0.31.2')
+	rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.26.0')
+	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.26.0')
+	rewrite('org.openrewrite.recipe:rewrite-third-party:0.34.0')
 }

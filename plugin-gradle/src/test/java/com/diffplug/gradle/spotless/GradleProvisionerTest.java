@@ -172,35 +172,35 @@ class GradleProvisionerTest {
 
 		static Stream<Arguments> cacheMissScenarios() {
 			return Stream.of(
-					Arguments.of("different P2 repo", (Function<P2ModelWrapper, P2ModelWrapper>) (m) -> createMockModel(
+					Arguments.of("different P2 repo", (Function<P2ModelWrapper, P2ModelWrapper>) m -> createMockModel(
 							List.of("https://download.eclipse.org/eclipse/updates/4.27/"),
 							List.of("org.eclipse.jdt.core"),
 							Set.of(),
 							List.of(),
 							true,
 							null), null),
-					Arguments.of("different install list", (Function<P2ModelWrapper, P2ModelWrapper>) (m) -> createMockModel(
+					Arguments.of("different install list", (Function<P2ModelWrapper, P2ModelWrapper>) m -> createMockModel(
 							List.of("https://download.eclipse.org/eclipse/updates/4.26/"),
 							List.of("org.eclipse.jdt.core", "org.eclipse.jdt.ui"),
 							Set.of(),
 							List.of(),
 							true,
 							null), null),
-					Arguments.of("different filters", (Function<P2ModelWrapper, P2ModelWrapper>) (m) -> createMockModel(
+					Arguments.of("different filters", (Function<P2ModelWrapper, P2ModelWrapper>) m -> createMockModel(
 							List.of("https://download.eclipse.org/eclipse/updates/4.26/"),
 							List.of("org.eclipse.jdt.core"),
 							Set.of("osgiFilter1"),
 							List.of(),
 							true,
 							null), null),
-					Arguments.of("different pure maven", (Function<P2ModelWrapper, P2ModelWrapper>) (m) -> createMockModel(
+					Arguments.of("different pure maven", (Function<P2ModelWrapper, P2ModelWrapper>) m -> createMockModel(
 							List.of("https://download.eclipse.org/eclipse/updates/4.26/"),
 							List.of("org.eclipse.jdt.core"),
 							Set.of(),
 							List.of("com.google:guava:32.0.0-jre"),
 							true,
 							null), null),
-					Arguments.of("different useMavenCentral", (Function<P2ModelWrapper, P2ModelWrapper>) (m) -> createMockModel(
+					Arguments.of("different useMavenCentral", (Function<P2ModelWrapper, P2ModelWrapper>) m -> createMockModel(
 							List.of("https://download.eclipse.org/eclipse/updates/4.26/"),
 							List.of("org.eclipse.jdt.core"),
 							Set.of(),
