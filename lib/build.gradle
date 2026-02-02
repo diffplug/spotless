@@ -91,7 +91,7 @@ dependencies {
 	// flexmark
 	flexmarkCompileOnly 'com.vladsch.flexmark:flexmark-all:0.64.8'
 	// gherkin
-	gherkinCompileOnly 'io.cucumber:gherkin-utils:10.0.0'
+	gherkinCompileOnly 'io.cucumber:gherkin-utils:11.0.0'
 	gherkinCompileOnly 'org.slf4j:slf4j-api:2.0.17'
 	// googleJavaFormat
 	googleJavaFormatCompileOnly 'com.google.googlejavaformat:google-java-format:1.28.0'
