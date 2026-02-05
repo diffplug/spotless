@@ -41,5 +41,5 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 dependencies {
-	errorprone('com.google.errorprone:error_prone_core:2.42.0')
+	errorprone('com.google.errorprone:error_prone_core:2.47.0')
 }
