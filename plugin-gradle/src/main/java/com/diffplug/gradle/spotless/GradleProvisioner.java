@@ -256,7 +256,7 @@ final class GradleProvisioner {
 		private record P2Request(
 				List<String> p2Repos,
 				List<String> installList,
-				java.util.Set<String> filterNames, // Filter names (Filter objects aren't easily comparable)
+				Set<String> filterNames, // Filter names (Filter objects aren't easily comparable)
 				List<String> pureMaven,
 				boolean useMavenCentral,
 				@Nullable File cacheDirectory) {}
