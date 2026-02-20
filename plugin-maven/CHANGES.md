@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- Fix the ability to specify a wildcard version (`*`) for external formatter executables, which did not work. ([#2848](https://github.com/diffplug/spotless/pull/2848))
 
 ## [3.2.1] - 2026-01-27
 ### Fixed
