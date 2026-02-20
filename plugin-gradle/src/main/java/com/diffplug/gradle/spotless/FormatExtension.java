@@ -64,6 +64,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.FenceStep;
@@ -97,7 +98,7 @@ public class FormatExtension {
 		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless);
 	}
 
-	protected final com.diffplug.spotless.extra.P2Provisioner p2Provisioner() {
+	protected final P2Provisioner p2Provisioner() {
 		return spotless.getRegisterDependenciesTask().getTaskService().get().p2ProvisionerFor(spotless);
 	}
 
