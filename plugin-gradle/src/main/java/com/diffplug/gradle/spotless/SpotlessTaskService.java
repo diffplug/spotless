@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileVisitDetails;
@@ -55,6 +56,7 @@ import com.diffplug.spotless.extra.P2Provisioner;
  * apply already did).
  */
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
+	protected boolean isUsingPredeclared = false;
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
@@ -124,6 +126,21 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			// https://github.com/diffplug/spotless/pull/1570/commits/c45e1f2322c78f272689feb35753bbc633422bfa
 			// it's fine to swallow these exceptions
 		}
+	}
+
+	public void hookSubprojectTask(Project project, SpotlessTask task) {
+		// This check allows isolated projects support by not accessing the root project tasks unless really needed
+		if (!isUsingPredeclared)
+			return;
+
+		project.getRootProject().getTasks().withType(RegisterDependenciesTask.class, (registerTask) -> {
+			registerTask.hookSubprojectTask(task);
+		});
+	}
+
+	public static Provider<SpotlessTaskService> registerIfAbsent(Project project, String suffix) {
+		return project.getGradle().getSharedServices()
+				.registerIfAbsent("SpotlessTaskService" + suffix, SpotlessTaskService.class, spec -> {});
 	}
 
 	abstract static class ClientTask extends DefaultTask {
