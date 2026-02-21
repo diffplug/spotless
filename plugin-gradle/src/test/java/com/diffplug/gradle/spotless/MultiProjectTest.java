@@ -185,6 +185,6 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"}");
 		createNSubprojects();
 		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
-				.contains("Cannot access project");
+				.containsAnyOf("Cannot access project", "cannot access 'Project.tasks'");
 	}
 }
