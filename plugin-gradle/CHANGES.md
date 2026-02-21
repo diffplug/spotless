@@ -9,6 +9,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [8.2.1] - 2026-01-27
 ### Fixed
 - Fix OutOfMemoryError and slow configuration phase in large multi-project builds when using Eclipse-based formatters (Eclipse JDT, GrEclipse, Eclipse CDT) by implementing P2 dependency caching. ([#2788](https://github.com/diffplug/spotless/issues/2788))
+- `removeSemicolons()` should not be applied to multiline strings in groovy #2780 ([#2792](https://github.com/diffplug/spotless/issues/2792))
+- [fix] `ConcurrentModificationException` in `expandWildcardImports` ([#2830](https://github.com/diffplug/spotless/issues/2830))
 
 ## [8.2.0] - 2026-01-22
 ### Added
