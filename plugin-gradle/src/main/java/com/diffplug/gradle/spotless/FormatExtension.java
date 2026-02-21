@@ -95,11 +95,11 @@ public class FormatExtension {
 	}
 
 	protected final Provisioner provisioner() {
-		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless);
+		return spotless.getSpotlessTaskService().get().provisionerFor(spotless);
 	}
 
 	protected final P2Provisioner p2Provisioner() {
-		return spotless.getRegisterDependenciesTask().getTaskService().get().p2ProvisionerFor(spotless);
+		return spotless.getSpotlessTaskService().get().p2ProvisionerFor(spotless);
 	}
 
 	private String formatName() {
@@ -635,7 +635,8 @@ public class FormatExtension {
 
 		FormatterStep createStep() {
 			return builder.withYearModeLazy(() -> {
-				if (Boolean.parseBoolean(GradleCompat.findOptionalProperty(spotless.project, LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()))) {
+				String yearProperty = spotless.project.getProviders().gradleProperty(LicenseHeaderStep.FLAG_SET_LICENSE_HEADER_YEARS_FROM_GIT_HISTORY()).getOrNull();
+				if (Boolean.parseBoolean(yearProperty)) {
 					return YearMode.SET_FROM_GIT;
 				} else {
 					boolean updateYear = updateYearWithLatest == null ? getRatchetFrom() != null : updateYearWithLatest;
@@ -1098,7 +1099,7 @@ public class FormatExtension {
 		LineEnding lineEndings = getLineEndings();
 		task.setLineEndingsPolicy(
 				getProject().provider(() -> lineEndings.createPolicy(projectDir.getAsFile(), () -> totalTarget)));
-		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
+		spotless.getSpotlessTaskService().get().hookSubprojectTask(getProject(), task);
 		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
 	}
 
@@ -1134,7 +1135,7 @@ public class FormatExtension {
 				"Task name must not end with " + SpotlessExtension.APPLY);
 		TaskProvider<SpotlessTaskImpl> spotlessTask = spotless.project.getTasks()
 				.register(taskName + SpotlessTaskService.INDEPENDENT_HELPER, SpotlessTaskImpl.class, task -> {
-					task.init(spotless.getRegisterDependenciesTask().getTaskService());
+					task.init(spotless.getSpotlessTaskService());
 					setupTask(task);
 					// clean removes the SpotlessCache, so we have to run after clean
 					task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);

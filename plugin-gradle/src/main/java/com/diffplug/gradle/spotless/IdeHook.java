@@ -39,10 +39,10 @@ final class IdeHook {
 		final boolean useStdOut;
 
 		State(Project project) {
-			var pathsString = GradleCompat.findOptionalProperty(project, PROPERTY);
+			var pathsString = project.getProviders().gradleProperty(PROPERTY).getOrNull();
 			if (pathsString != null) {
-				useStdIn = GradleCompat.isPropertyPresent(project, USE_STD_IN);
-				useStdOut = GradleCompat.isPropertyPresent(project, USE_STD_OUT);
+				useStdIn = project.getProviders().gradleProperty(USE_STD_IN).isPresent();
+				useStdOut = project.getProviders().gradleProperty(USE_STD_OUT).isPresent();
 				paths = Arrays.stream(pathsString.split(","))
 						.map(String::trim)
 						.filter(s -> !s.isEmpty())

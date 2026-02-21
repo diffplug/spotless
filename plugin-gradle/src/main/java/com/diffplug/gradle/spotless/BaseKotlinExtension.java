@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,7 +160,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 				Map<String, Object> editorConfigOverride,
 				List<String> customRuleSets) throws IOException {
 			Objects.requireNonNull(version);
-			File defaultEditorConfig = getProject().getRootProject().file(".editorconfig");
+			File defaultEditorConfig = new File(getProject().getRootDir(), ".editorconfig");
 			FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
 			this.version = version;
 			this.editorConfigPath = editorConfigPath;

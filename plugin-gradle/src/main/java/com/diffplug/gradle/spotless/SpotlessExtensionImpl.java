@@ -61,7 +61,7 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 		// create the SpotlessTask
 		String taskName = EXTENSION + SpotlessPlugin.capitalize(name);
 		TaskProvider<SpotlessTaskImpl> spotlessTask = tasks.register(taskName, SpotlessTaskImpl.class, task -> {
-			task.init(getRegisterDependenciesTask().getTaskService());
+			task.init(getSpotlessTaskService());
 			task.setGroup(TASK_GROUP);
 			task.getIdeHookState().set(ideHook);
 			// clean removes the SpotlessCache, so we have to run after clean

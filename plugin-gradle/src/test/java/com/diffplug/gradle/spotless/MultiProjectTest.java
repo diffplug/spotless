@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,5 +150,41 @@ class MultiProjectTest extends GradleIntegrationHarness {
 		createNSubprojects();
 		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
 				.contains("Could not find method spotlessPredeclare() for arguments");
+	}
+
+	@Test
+	void nonPredeclaredSupportsIsolatedProjects() throws IOException {
+		setFile("gradle.properties").toContent("org.gradle.unsafe.isolated-projects=true");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"    java {",
+				"        target file('test.java')",
+				"        googleJavaFormat('1.17.0')",
+				"    }",
+				"}");
+		createNSubprojects();
+		gradleRunner().withArguments("spotlessApply").build();
+	}
+
+	@Test
+	void predeclaredRequiresNonIsolatedProjects() throws IOException {
+		setFile("gradle.properties").toContent("org.gradle.unsafe.isolated-projects=true");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless { predeclareDeps() }",
+				"spotlessPredeclare {",
+				" java { googleJavaFormat('1.17.0') }",
+				"}");
+		createNSubprojects();
+		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
+				.containsAnyOf("Cannot access project", "cannot access 'Project.tasks'");
 	}
 }

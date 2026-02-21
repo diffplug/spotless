@@ -1918,6 +1918,8 @@ Alternatively, you can also use `predeclareDepsFromBuildscript()` to resolve the
 
 If you use this feature, you will get an error if you use a formatter in a subproject which is not declared in the `spotlessPredeclare` block.
 
+Note that this feature is also incompatible with Isolated projects, because every project must reference the root project.
+
 <a name="preview"></a>
 
 ## How do I preview what `spotlessApply` will do?
