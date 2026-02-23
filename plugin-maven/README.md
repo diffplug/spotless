@@ -40,9 +40,9 @@ user@machine repo % mvn spotless:check
   - [Git hook (optional)](#git-hook)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
-  - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
+  - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
@@ -215,6 +215,8 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <eclipse />          <!-- has its own section below -->
     <prettier />         <!-- has its own section below -->
     <idea />             <!-- has its own section below -->
+
+    <tableTestFormatter /> <!-- has its own section below -->
 
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
@@ -399,6 +401,16 @@ These mechanisms already exist for the Gradle plugin.
 </cleanthat>
 ```
 
+### tabletest-formatter
+
+[homepage](https://github.com/nchaugen/tabletest-formatter). [changelog](https://github.com/nchaugen/tabletest-formatter/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/TableTestFormatter.java). Formats [`@TableTest`](https://github.com/nchaugen/tabletest) tables in Java source files. All configuration is read from `.editorconfig` files.
+
+```xml
+<tableTestFormatter>
+  <version>1.0.1</version> <!-- optional -->
+</tableTestFormatter>
+```
+
 ## Groovy
 
 [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/groovy/Groovy.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/groovy).
@@ -462,6 +474,8 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
     <diktat />   <!-- has its own section below -->
     <prettier /> <!-- has its own section below -->
 
+    <tableTestFormatter /> <!-- has its own section below -->
+
     <licenseHeader>
       <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
     </licenseHeader>
@@ -521,6 +535,16 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
   <version>1.0.1</version> <!-- optional -->
   <configFile>full/path/to/diktat-analysis.yml</configFile> <!-- optional, configuration file path -->
 </diktat>
+```
+
+### tabletest-formatter
+
+[homepage](https://github.com/nchaugen/tabletest-formatter). [changelog](https://github.com/nchaugen/tabletest-formatter/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/TableTestFormatter.java). Formats [`@TableTest`](https://github.com/nchaugen/tabletest) tables in Kotlin source files. All configuration is read from `.editorconfig` files.
+
+```xml
+<tableTestFormatter>
+  <version>1.0.1</version> <!-- optional -->
+</tableTestFormatter>
 ```
 
 <a name="applying-to-scala-source"></a>
