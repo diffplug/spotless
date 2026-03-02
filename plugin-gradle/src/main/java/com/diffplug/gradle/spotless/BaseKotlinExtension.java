@@ -160,7 +160,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 				Map<String, Object> editorConfigOverride,
 				List<String> customRuleSets) throws IOException {
 			Objects.requireNonNull(version);
-			File defaultEditorConfig = getProject().getRootProject().getLayout().getProjectDirectory().file(".editorconfig").getAsFile();
+			File defaultEditorConfig = new File(getProject().getRootProject().getProjectDir(), ".editorconfig");
 			FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
 			this.version = version;
 			this.editorConfigPath = editorConfigPath;
