@@ -20,7 +20,6 @@ import java.io.File;
 import org.tabletest.formatter.config.Config;
 import org.tabletest.formatter.config.EditorConfigProvider;
 import org.tabletest.formatter.core.SourceFileFormatter;
-import org.tabletest.formatter.core.TableTestFormatter;
 
 import com.diffplug.spotless.FormatterFunc;
 
@@ -31,7 +30,6 @@ public class TableTestFormatterFunc implements FormatterFunc.NeedsFile {
 
 	private static final EditorConfigProvider CONFIG_PROVIDER = new EditorConfigProvider();
 
-	private final TableTestFormatter tableFormatter = new TableTestFormatter();
 	private final SourceFileFormatter sourceFormatter = new SourceFileFormatter();
 
 	@Override
