@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [8.3.0] - 2026-03-02
 ### Added
 - Partial support for isolated projects. They work if predeclared dependencies are not used. ([#2854](https://github.com/diffplug/spotless/pull/2854))
 - Add `tabletest-formatter` support for Java and Kotlin. ([#2860](https://github.com/diffplug/spotless/pull/2860))
