@@ -24,9 +24,13 @@ def NEEDS_GLUE = [
 	'palantirJavaFormat',
 	'scalafmt',
 	'sortPom',
-	'tableTestFormatter',
 	'zjsonPatch',
 ]
+// tableTestFormatter requires Java 21+
+if (JavaVersion.current() >= JavaVersion.VERSION_21) {
+	NEEDS_GLUE << 'tableTestFormatter'
+}
+
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
 		compileClasspath += sourceSets.main.output
@@ -123,8 +127,10 @@ dependencies {
 	// sortPom
 	sortPomCompileOnly 'com.github.ekryd.sortpom:sortpom-sorter:4.0.0'
 	sortPomCompileOnly 'org.slf4j:slf4j-api:2.0.17'
-	// tableTestFormatter
-	tableTestFormatterCompileOnly 'org.tabletest:tabletest-formatter-core:1.0.1'
+	// tableTestFormatter (Java 21+ only)
+	if (JavaVersion.current() >= JavaVersion.VERSION_21) {
+		tableTestFormatterCompileOnly 'org.tabletest:tabletest-formatter-core:1.0.1'
+	}
 	// zjsonPatch
 	zjsonPatchCompileOnly 'com.flipkart.zjsonpatch:zjsonpatch:0.4.16'
 }
