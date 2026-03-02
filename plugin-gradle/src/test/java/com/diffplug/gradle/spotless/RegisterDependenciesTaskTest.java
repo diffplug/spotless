@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,6 @@ class RegisterDependenciesTaskTest extends GradleIntegrationHarness {
 		setFile("gradle.properties").toLines();
 		String newestSupported = gradleRunner().withArguments("spotlessCheck").build().getOutput();
 		Assertions.assertThat(newestSupported.replace("\r", ""))
-				.startsWith(
-						"> Task :spotlessInternalRegisterDependencies\n")
 				.contains(
 						"> Task :sub:spotlessJava\n",
 						"> Task :sub:spotlessJavaCheck\n",

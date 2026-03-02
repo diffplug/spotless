@@ -64,6 +64,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
 import com.diffplug.spotless.generic.FenceStep;
@@ -94,11 +95,11 @@ public class FormatExtension {
 	}
 
 	protected final Provisioner provisioner() {
-		return spotless.getRegisterDependenciesTask().getTaskService().get().provisionerFor(spotless);
+		return spotless.getSpotlessTaskService().get().provisionerFor(spotless);
 	}
 
-	protected final com.diffplug.spotless.extra.P2Provisioner p2Provisioner() {
-		return spotless.getRegisterDependenciesTask().getTaskService().get().p2ProvisionerFor(spotless);
+	protected final P2Provisioner p2Provisioner() {
+		return spotless.getSpotlessTaskService().get().p2ProvisionerFor(spotless);
 	}
 
 	private String formatName() {
@@ -1097,7 +1098,7 @@ public class FormatExtension {
 		LineEnding lineEndings = getLineEndings();
 		task.setLineEndingsPolicy(
 				getProject().provider(() -> lineEndings.createPolicy(projectDir.getAsFile(), () -> totalTarget)));
-		spotless.getRegisterDependenciesTask().hookSubprojectTask(task);
+		spotless.getSpotlessTaskService().get().hookSubprojectTask(getProject(), task);
 		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
 	}
 
@@ -1133,7 +1134,7 @@ public class FormatExtension {
 				"Task name must not end with " + SpotlessExtension.APPLY);
 		TaskProvider<SpotlessTaskImpl> spotlessTask = spotless.project.getTasks()
 				.register(taskName + SpotlessTaskService.INDEPENDENT_HELPER, SpotlessTaskImpl.class, task -> {
-					task.init(spotless.getRegisterDependenciesTask().getTaskService());
+					task.init(spotless.getSpotlessTaskService());
 					setupTask(task);
 					// clean removes the SpotlessCache, so we have to run after clean
 					task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);

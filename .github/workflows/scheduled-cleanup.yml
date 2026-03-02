@@ -1,0 +1,29 @@
+name: Scheduled Cleanup 🧹
+on:
+  schedule:
+    - cron: '0 16 * * 3'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  sanity:
+    name: Sanity 🦢
+    runs-on: ubuntu-latest
+    env:
+      buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
+      buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Gradle Setup 🐘
+        uses: gradle/actions/setup-gradle@v5
+      - name: Error Prone 🚧️
+        run: ./gradlew assemble -Derror-prone=true
+      - name: OpenRewrite ☑️ # 4m 55s (2 min compile, 3 min rewrite)
+        run: ./gradlew rewriteDryRun

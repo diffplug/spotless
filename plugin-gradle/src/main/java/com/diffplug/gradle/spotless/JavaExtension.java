@@ -47,6 +47,7 @@ import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import com.diffplug.spotless.java.TableTestFormatterStep;
 
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
 	static final String NAME = "java";
@@ -504,6 +505,30 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 					groupArtifact,
 					version,
 					sourceJdk, mutators, excludedMutators, includeDraft, provisioner());
+		}
+	}
+
+	/** Formats {@code @TableTest} annotation tables using <a href="https://github.com/nchaugen/tabletest-formatter">tabletest-formatter</a>. */
+	public TableTestFormatterConfig tableTestFormatter() {
+		return tableTestFormatter(TableTestFormatterStep.defaultVersion());
+	}
+
+	/** Formats {@code @TableTest} annotation tables using <a href="https://github.com/nchaugen/tabletest-formatter">tabletest-formatter</a>. */
+	public TableTestFormatterConfig tableTestFormatter(String version) {
+		Objects.requireNonNull(version);
+		return new TableTestFormatterConfig(version);
+	}
+
+	public class TableTestFormatterConfig {
+		final String version;
+
+		TableTestFormatterConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			addStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return TableTestFormatterStep.create(version, provisioner());
 		}
 	}
 

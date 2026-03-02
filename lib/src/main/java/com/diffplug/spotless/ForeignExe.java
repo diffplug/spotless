@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ public class ForeignExe implements Serializable {
 				throw cantFind("Unable to parse version with /" + versionRegex + "/", cmdVersion);
 			}
 			String versionFound = versionMatcher.group(1);
-			if (!VERSION_WILDCARD.equals(versionFound) && !versionFound.equals(version)) {
+			if (!VERSION_WILDCARD.equals(version) && !versionFound.equals(version)) {
 				throw wrongVersion("You specified version " + version + ", but Spotless found " + versionFound, cmdVersion, versionFound);
 			}
 			return exeAbsPath;

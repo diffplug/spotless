@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.services.BuildServiceRegistry;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
@@ -64,8 +63,7 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 	void setup() {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
 		String compositeBuildSuffix = getName().substring(TASK_NAME.length()); // see https://github.com/diffplug/spotless/pull/1001
-		BuildServiceRegistry buildServices = getProject().getGradle().getSharedServices();
-		taskService = buildServices.registerIfAbsent("SpotlessTaskService" + compositeBuildSuffix, SpotlessTaskService.class, spec -> {});
+		taskService = SpotlessTaskService.registerIfAbsent(getProject(), compositeBuildSuffix);
 		usesService(taskService);
 		getBuildEventsListenerRegistry().onTaskCompletion(taskService);
 		unitOutput = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(), "tmp/spotless-register-dependencies");

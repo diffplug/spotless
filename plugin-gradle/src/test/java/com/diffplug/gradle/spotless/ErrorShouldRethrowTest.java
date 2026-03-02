@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,10 +136,9 @@ class ErrorShouldRethrowTest extends GradleIntegrationHarness {
 	private StringSelfie expectFailureAndConsoleToBe() throws Exception {
 		BuildResult result = gradleRunner().withArguments("check").buildAndFail();
 		String output = result.getOutput();
-		int register = output.indexOf(":spotlessInternalRegisterDependencies");
-		int firstNewlineAfterThat = output.indexOf('\n', register + 1);
+		int firstTask = output.indexOf("> Task");
 		int firstTry = output.indexOf("\n* Try:");
-		String useThisToMatch = output.substring(firstNewlineAfterThat, firstTry).trim();
+		String useThisToMatch = output.substring(firstTask, firstTry).trim();
 		return Selfie.expectSelfie(useThisToMatch);
 	}
 }
