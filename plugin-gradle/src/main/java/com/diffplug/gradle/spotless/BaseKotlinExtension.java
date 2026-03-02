@@ -25,8 +25,6 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
-import org.gradle.api.file.Directory;
-
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSortedMap;
 import com.diffplug.spotless.FileSignature;
@@ -162,9 +160,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 				Map<String, Object> editorConfigOverride,
 				List<String> customRuleSets) throws IOException {
 			Objects.requireNonNull(version);
-			@SuppressWarnings("UnstableApiUsage")
-			Directory rootProjectDir = getProject().getIsolated().getRootProject().getProjectDirectory();
-			File defaultEditorConfig = rootProjectDir.file(".editorconfig").getAsFile();
+			File defaultEditorConfig = getProject().getRootProject().getLayout().getProjectDirectory().file(".editorconfig").getAsFile();
 			FileSignature editorConfigPath = defaultEditorConfig.exists() ? FileSignature.signAsList(defaultEditorConfig) : null;
 			this.version = version;
 			this.editorConfigPath = editorConfigPath;
