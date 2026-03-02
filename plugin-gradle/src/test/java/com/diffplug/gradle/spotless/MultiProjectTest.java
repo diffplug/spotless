@@ -154,7 +154,6 @@ class MultiProjectTest extends GradleIntegrationHarness {
 
 	@Test
 	void nonPredeclaredSupportsIsolatedProjects() throws IOException {
-		setFile("gradle.properties").toContent("org.gradle.unsafe.isolated-projects=true");
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -168,12 +167,11 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"    }",
 				"}");
 		createNSubprojects();
-		gradleRunner().withArguments("spotlessApply").build();
+		gradleRunner().withArguments("spotlessApply", "-Dorg.gradle.unsafe.isolated-projects=true").build();
 	}
 
 	@Test
 	void predeclaredRequiresNonIsolatedProjects() throws IOException {
-		setFile("gradle.properties").toContent("org.gradle.unsafe.isolated-projects=true");
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -184,7 +182,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				" java { googleJavaFormat('1.17.0') }",
 				"}");
 		createNSubprojects();
-		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
+		Assertions.assertThat(gradleRunner().withArguments("spotlessApply", "-Dorg.gradle.unsafe.isolated-projects=true").buildAndFail().getOutput())
 				.containsAnyOf("Cannot access project", "cannot access 'Project.tasks'");
 	}
 }
