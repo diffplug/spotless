@@ -14,6 +14,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Add `tabletest-formatter` support for Java and Kotlin. ([#2860](https://github.com/diffplug/spotless/pull/2860))
 ### Fixed
 - Fix the ability to specify a wildcard version (`*`) for external formatter executables, which did not work. ([#2848](https://github.com/diffplug/spotless/pull/2848))
+- [fix] `ConcurrentModificationException` in `expandWildcardImports` ([#2830](https://github.com/diffplug/spotless/issues/2830))
 
 ## [4.3.0] - 2026-01-27
 ### Added

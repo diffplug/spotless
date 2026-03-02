@@ -15,12 +15,17 @@
  */
 package com.diffplug.spotless.java;
 
+import static com.diffplug.spotless.JarState.from;
+import static com.diffplug.spotless.JarState.promise;
+import static java.util.List.copyOf;
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -33,22 +38,23 @@ public final class ExpandWildcardImportsStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Java-Parser; maybe you set an incompatible version?";
-	private static final String MAVEN_COORDINATES = "com.github.javaparser:javaparser-symbol-solver-core";
-	public static final String DEFAULT_VERSION = "3.27.1";
+	private static final String MAVEN_COORDINATES = "com.github.javaparser:javaparser-symbol-solver-core:3.27.1";
 
 	private final Collection<File> typeSolverClasspath;
 	private final JarState.Promised jarState;
 
 	private ExpandWildcardImportsStep(Collection<File> typeSolverClasspath, JarState.Promised jarState) {
-		this.typeSolverClasspath = typeSolverClasspath;
+		this.typeSolverClasspath = new ArrayList<>(typeSolverClasspath); // Create defensive copy of the classpath.
 		this.jarState = jarState;
 	}
 
 	public static FormatterStep create(Set<File> typeSolverClasspath, Provisioner provisioner) {
-		Objects.requireNonNull(provisioner, "provisioner cannot be null");
+		requireNonNull(provisioner);
+		requireNonNull(typeSolverClasspath);
 		return FormatterStep.create("expandwildcardimports",
-				new ExpandWildcardImportsStep(typeSolverClasspath,
-						JarState.promise(() -> JarState.from(MAVEN_COORDINATES + ":" + DEFAULT_VERSION, provisioner))),
+				new ExpandWildcardImportsStep(
+						new ArrayList<>(typeSolverClasspath), // Create a defensive copy of the classpath.
+						promise(() -> from(MAVEN_COORDINATES, provisioner))),
 				ExpandWildcardImportsStep::equalityState,
 				State::toFormatter);
 	}
@@ -57,31 +63,26 @@ public final class ExpandWildcardImportsStep implements Serializable {
 		return new State(typeSolverClasspath, jarState.get());
 	}
 
-	private static class State implements Serializable {
-		@Serial
-		private static final long serialVersionUID = 1L;
+	private record State(Collection<File> typeSolverClasspath, JarState jarState) implements Serializable {
 
-		private final Collection<File> typeSolverClasspath;
-		private final JarState jarState;
+	@Serial
+	private static final long serialVersionUID = 1L;
 
-		public State(Collection<File> typeSolverClasspath, JarState jarState) {
-			this.typeSolverClasspath = typeSolverClasspath;
-			this.jarState = jarState;
-		}
-
-		FormatterFunc toFormatter() {
-			try {
-				return (FormatterFunc) jarState
-						.getClassLoader()
-						.loadClass("com.diffplug.spotless.glue.javaparser.ExpandWildcardsFormatterFunc")
-						.getConstructor(Collection.class)
-						.newInstance(typeSolverClasspath);
-			} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
-					| InstantiationException | IllegalAccessException | NoClassDefFoundError cause) {
-				throw new IllegalStateException(INCOMPATIBLE_ERROR_MESSAGE, cause);
+	private State(Collection<File> typeSolverClasspath, JarState jarState) {
+				this.typeSolverClasspath = copyOf(typeSolverClasspath); // Create immutable copy.
+				this.jarState = jarState;
 			}
+
+	FormatterFunc toFormatter() {
+		try {
+			return (FormatterFunc) jarState
+					.getClassLoader()
+					.loadClass("com.diffplug.spotless.glue.javaparser.ExpandWildcardsFormatterFunc")
+					.getConstructor(Collection.class)
+					.newInstance(typeSolverClasspath);
+		} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
+				| InstantiationException | IllegalAccessException | NoClassDefFoundError cause) {
+			throw new IllegalStateException(INCOMPATIBLE_ERROR_MESSAGE, cause);
 		}
-
 	}
-
-}
+}}
