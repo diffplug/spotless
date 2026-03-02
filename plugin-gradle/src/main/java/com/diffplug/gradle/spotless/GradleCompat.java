@@ -24,10 +24,6 @@ public final class GradleCompat {
 	private GradleCompat() {}
 
 	@Nullable public static String findOptionalProperty(Project project, String propertyName) {
-		@Nullable String value = project.getProviders().gradleProperty(propertyName).getOrNull();
-		if (value != null) {
-			return value;
-		}
 		ExtraPropertiesExtension extras = project.getExtensions().getByType(ExtraPropertiesExtension.class);
 		if (extras.has(propertyName)) {
 			@Nullable Object property = extras.get(propertyName);
@@ -39,7 +35,6 @@ public final class GradleCompat {
 	}
 
 	public static boolean isPropertyPresent(Project project, String propertyName) {
-		return project.getProviders().gradleProperty(propertyName).isPresent() ||
-				project.getExtensions().getByType(ExtraPropertiesExtension.class).has(propertyName);
+		return project.getExtensions().getByType(ExtraPropertiesExtension.class).has(propertyName);
 	}
 }
