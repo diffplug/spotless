@@ -56,9 +56,9 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Git hook (optional)](#git-hook)
   - [Linting](#linting)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [IntelliJ IDEA](#intellij-idea))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
-  - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [prettier](#prettier))
+  - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
   - [C/C++](#cc) ([clang-format](#clang-format), [eclipse cdt](#eclipse-cdt))
   - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang-format))
@@ -219,6 +219,8 @@ spotless {
     prettier()           // has its own section below
     clangFormat()        // has its own section below
     idea()               // has its own section below
+
+    tableTestFormatter() // has its own section below
 
     formatAnnotations()  // fixes formatting of type annotations, see below
 
@@ -428,6 +430,17 @@ spotless {
       .includeDraft(false)                                 // You may exclude draft mutators (from Composite ones)
 ```
 
+### tabletest-formatter
+
+[homepage](https://github.com/nchaugen/tabletest-formatter). [changelog](https://github.com/nchaugen/tabletest-formatter/releases). Formats [`@TableTest`](https://github.com/nchaugen/tabletest) tables in Java source files. All configuration is read from `.editorconfig` files.
+
+```gradle
+spotless {
+  java {
+    tableTestFormatter()
+    // optional: you can specify a specific version
+    tableTestFormatter('1.0.1')
+```
 
 <a name="applying-to-groovy-source"></a>
 
@@ -510,6 +523,7 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
     ktlint()   // has its own section below
     diktat()   // has its own section below
     prettier() // has its own section below
+    tableTestFormatter() // has its own section below
     licenseHeader '/* (C)$YEAR */' // or licenseHeaderFile
   }
   kotlinGradle {
@@ -591,6 +605,18 @@ spotless {
   kotlin {
     // version and configFile are both optional
     diktat('1.0.1').configFile("full/path/to/diktat-analysis.yml")
+```
+
+### tabletest-formatter
+
+[homepage](https://github.com/nchaugen/tabletest-formatter). [changelog](https://github.com/nchaugen/tabletest-formatter/releases). Formats [`@TableTest`](https://github.com/nchaugen/tabletest) tables in Kotlin source files. All configuration is read from `.editorconfig` files.
+
+```kotlin
+spotless {
+  kotlin {
+    tableTestFormatter()
+    // optional: you can specify a specific version
+    tableTestFormatter('1.0.1')
 ```
 
 <a name="applying-scalafmt-to-scala-files"></a>

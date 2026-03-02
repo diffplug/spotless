@@ -29,6 +29,7 @@ import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSortedMap;
 import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.java.TableTestFormatterStep;
 import com.diffplug.spotless.kotlin.DiktatStep;
 import com.diffplug.spotless.kotlin.KtLintStep;
 import com.diffplug.spotless.kotlin.KtfmtStep;
@@ -67,6 +68,30 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 	 */
 	public KtfmtConfig ktfmt(String version) {
 		return new KtfmtConfig(version);
+	}
+
+	/** Formats {@code @TableTest} annotation tables using <a href="https://github.com/nchaugen/tabletest-formatter">tabletest-formatter</a>. */
+	public TableTestFormatterConfig tableTestFormatter() {
+		return tableTestFormatter(TableTestFormatterStep.defaultVersion());
+	}
+
+	/** Formats {@code @TableTest} annotation tables using the given version of tabletest-formatter. */
+	public TableTestFormatterConfig tableTestFormatter(String version) {
+		Objects.requireNonNull(version);
+		return new TableTestFormatterConfig(version);
+	}
+
+	public final class TableTestFormatterConfig {
+		final String version;
+
+		TableTestFormatterConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			addStep(createStep());
+		}
+
+		private FormatterStep createStep() {
+			return TableTestFormatterStep.create(version, provisioner());
+		}
 	}
 
 	protected abstract boolean isScript();
