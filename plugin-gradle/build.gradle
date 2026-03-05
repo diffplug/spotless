@@ -68,6 +68,11 @@ gradlePlugin {
 				'black',
 				'clang-format'
 			])
+			compatibility {
+				features {
+					configurationCache = true
+				}
+			}
 		}
 		spotlessPluginLegacy {
 			id = 'com.diffplug.gradle.spotless'
