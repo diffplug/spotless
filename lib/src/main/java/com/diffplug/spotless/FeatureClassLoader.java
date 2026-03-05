@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,22 @@ package com.diffplug.spotless;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.security.ProtectionDomain;
 import java.util.Objects;
+
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.description.modifier.Ownership;
+import net.bytebuddy.description.modifier.Visibility;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.implementation.MethodCall;
+import net.bytebuddy.implementation.StubMethod;
+import net.bytebuddy.implementation.bytecode.assign.Assigner;
 
 /**
  * This class loader is used to load classes of Spotless features from a search
@@ -72,6 +83,141 @@ class FeatureClassLoader extends URLClassLoader {
 				return defineClass(name, urlToByteBuffer(url), (ProtectionDomain) null);
 			} catch (IOException e) {
 				throw new ClassNotFoundException(name, e);
+			}
+		} else if ("lombok.core.FieldAugment".equals(name)) {
+			return new ByteBuddy()
+					.subclass(Object.class)
+					.name(name)
+					.defineMethod("augment", Object.class, Visibility.PUBLIC, Ownership.STATIC)
+					.withParameters(Class.class, Class.class, String.class)
+					.intercept(StubMethod.INSTANCE)
+					.defineMethod("get", Object.class, Visibility.PUBLIC)
+					.withParameters(Object.class).intercept(StubMethod.INSTANCE)
+					.defineMethod("set", void.class, Visibility.PUBLIC)
+					.withParameters(Object.class, Object.class).intercept(StubMethod.INSTANCE)
+					.defineMethod("getAndSet", Object.class, Visibility.PUBLIC)
+					.withParameters(Object.class, Object.class).intercept(StubMethod.INSTANCE)
+					.defineMethod("clear", Object.class, Visibility.PUBLIC)
+					.withParameters(Object.class).intercept(StubMethod.INSTANCE)
+					.defineMethod("compareAndClear", Object.class, Visibility.PUBLIC)
+					.withParameters(Object.class, Object.class).intercept(StubMethod.INSTANCE)
+					.defineMethod("setIfAbsent", Object.class, Visibility.PUBLIC)
+					.withParameters(Object.class, Object.class).intercept(StubMethod.INSTANCE)
+					.defineMethod("compareAndSet", Object.class, Visibility.PUBLIC)
+					.withParameters(Object.class, Object.class, Object.class).intercept(StubMethod.INSTANCE)
+					.make()
+					.load(this, ClassLoadingStrategy.Default.INJECTION)
+					.getLoaded();
+		} else if ("lombok.eclipse.EcjAugments".equals(name)) {
+			Class<?> fieldAugmentClass = loadClass("lombok.core.FieldAugment");
+			Class<?> ecjAugmentsClass = new ByteBuddy()
+					.subclass(Object.class)
+					.name(name)
+					.defineField("ASTNode_generatedBy", fieldAugmentClass, Visibility.PUBLIC, Ownership.STATIC)
+					.defineField("ASTNode_tokens", fieldAugmentClass, Visibility.PUBLIC, Ownership.STATIC)
+					.make()
+					.load(this, ClassLoadingStrategy.Default.INJECTION)
+					.getLoaded();
+
+			try {
+				Object object = fieldAugmentClass.getDeclaredConstructor().newInstance();
+				ecjAugmentsClass.getField("ASTNode_generatedBy").set(null, object);
+				ecjAugmentsClass.getField("ASTNode_tokens").set(null, object);
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e);
+			}
+			return ecjAugmentsClass;
+		} else if (name.startsWith("lombok.")) {
+			try {
+				return super.findClass(name);
+			} catch (ClassNotFoundException e) {
+				Class<?> astNodeClass = loadClass("org.eclipse.jdt.internal.compiler.ast.ASTNode");
+				Class<?> astNodeDomClass = loadClass("org.eclipse.jdt.core.dom.ASTNode");
+				Class<?> astVisitorClass = loadClass("org.eclipse.jdt.core.dom.ASTVisitor");
+				Class<?> rewriteEventClass = loadClass("org.eclipse.jdt.internal.core.dom.rewrite.RewriteEvent");
+				// RewriteEvent[]
+				TypeDescription rewriteEventArrayType = TypeDescription.Generic.Builder
+						.rawType(rewriteEventClass)
+						.asArray()
+						.build()
+						.asErasure();
+				Method nullArray;
+				try {
+					nullArray = Array.class.getMethod("newInstance", Class.class, int.class);
+				} catch (NoSuchMethodException e1) {
+					throw new IllegalArgumentException(e1);
+				}
+				return new ByteBuddy()
+						.subclass(Object.class)
+						.name(name)
+						.defineMethod("parserClinit", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("setLine", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class, int.class, Object.class)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("setRange", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class, int.class, int.class)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("transform_swapped", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class, Object.class)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("transform", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class, Object.class)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("copyInitializationOfLocalDeclaration", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class).intercept(StubMethod.INSTANCE)
+						.defineMethod("copyInitializationOfForEachIterable", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class).intercept(StubMethod.INSTANCE)
+						.defineMethod("addFinalAndValAnnotationToVariableDeclaration", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class).intercept(StubMethod.INSTANCE)
+						.defineMethod("isStatic", boolean.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class).intercept(StubMethod.INSTANCE)
+						.defineMethod("onMethodEnter", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class, Object.class).intercept(StubMethod.INSTANCE)
+						.defineMethod("onMethodExit", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class, Object.class).intercept(StubMethod.INSTANCE)
+						.defineMethod("setSourceRangeCheck", boolean.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class, int.class, int.class)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("isGenerated", boolean.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(astNodeClass)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("isGenerated", boolean.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(astNodeDomClass)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("addFinalAndValAnnotationToVariableDeclarationStatement", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class, Object.class, Object.class)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("isBlockedVisitorAndGenerated", boolean.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(astNodeDomClass, astVisitorClass)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("pop", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("push", void.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(String.class)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("hasSymbol", boolean.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(String.class)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("returnFalse", boolean.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("returnTrue", boolean.class, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(Object.class)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("isEmpty", boolean.class, Visibility.PUBLIC, Ownership.STATIC)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("size", int.class, Visibility.PUBLIC, Ownership.STATIC)
+						.intercept(StubMethod.INSTANCE)
+						.defineMethod("listRewriteHandleGeneratedMethods", rewriteEventArrayType, Visibility.PUBLIC, Ownership.STATIC)
+						.withParameters(rewriteEventClass)
+						.intercept(MethodCall.invoke(nullArray)
+								.with(rewriteEventClass)
+								.with(0)
+								.withAssigner(Assigner.DEFAULT, Assigner.Typing.DYNAMIC))
+						.make()
+						.load(this, ClassLoadingStrategy.Default.INJECTION)
+						.getLoaded();
 			}
 		} else if (useBuildToolClassLoader(name)) {
 			return buildToolClassLoader.loadClass(name);
