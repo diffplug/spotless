@@ -1,12 +1,17 @@
-apply from: rootProject.file('gradle/changelog.gradle')
+plugins {
+	id 'java-library'
+	id 'com.gradle.plugin-publish'
+	id 'java-gradle-plugin'
+	id 'spotless.changelog'
+	id 'spotless.java-setup'
+	id 'spotless.java-publish'
+	id 'spotless.code-format'
+	id 'spotless.special-tests'
+	id 'spotless.errorprone'
+}
+
 ext.artifactId = project.artifactIdGradle
 version = spotlessChangelog.versionNext
-apply plugin: 'java-library'
-apply plugin: 'com.gradle.plugin-publish'
-apply plugin: 'java-gradle-plugin'
-apply from: rootProject.file('gradle/java-setup.gradle')
-apply from: rootProject.file('gradle/spotless-freshmark.gradle')
-
 
 dependencies {
 	if (version.endsWith('-SNAPSHOT') || (rootProject.spotlessChangelog.versionNext == rootProject.spotlessChangelog.versionLast)) {
@@ -30,7 +35,6 @@ dependencies {
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
-apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	testLogging.showStandardStreams = true
 }
@@ -91,4 +95,3 @@ tasks.named("publishPlugins") {
 }
 
 // have to apply java-publish after setting up the pluginBundle
-apply from: rootProject.file('gradle/java-publish.gradle')

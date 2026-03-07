@@ -31,8 +31,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
       - name: Spotless ✨
         run: ./gradlew spotlessCheck
-      - name: assemble testClasses
-        run: ./gradlew assemble testClasses
+      - name: assemble testClasses publishToMavenLocal
+        run: ./gradlew assemble testClasses publishToMavenLocal
   build:
     needs: sanity-check
     strategy:
