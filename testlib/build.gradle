@@ -8,18 +8,18 @@ apply from: rootProject.file('gradle/java-setup.gradle')
 dependencies {
 	api projects.lib
 	api files(project(projects.lib.path).sourceSets.sortPom.output.classesDirs)
-	api "com.diffplug.durian:durian-core:${VER_DURIAN}"
-	api "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
-	api "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
-	api "org.assertj:assertj-core:${VER_ASSERTJ}"
-	api "org.mockito:mockito-core:$VER_MOCKITO"
-	api "com.diffplug.selfie:selfie-lib:${VER_SELFIE}"
-	api "com.diffplug.selfie:selfie-runner-junit5:${VER_SELFIE}"
+	api libs.durian.core
+	api libs.durian.testlib
+	api libs.junit.jupiter
+	api libs.assertj.core
+	api libs.mockito.core
+	api libs.selfie.lib
+	api libs.selfie.runner.junit5
 	runtimeOnly "org.junit.platform:junit-platform-launcher"
 
-	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
-	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
-	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+	implementation libs.durian.io
+	implementation libs.durian.collect
+	implementation libs.jgit
 	implementation gradleTestKit()
 }
 
@@ -42,4 +42,3 @@ javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
 	options.addStringOption('Xwerror', '-quiet')
 }
-
