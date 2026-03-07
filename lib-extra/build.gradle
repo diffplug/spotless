@@ -34,9 +34,7 @@ dependencies {
 
 spotless {
 	java {
-		replaceRegex 'enforceSolsticeVersion', '"dev.equo.ide:solstice:(.*)"', """
-			'${libs.solstice.get().toString()}'
-		""".stripIndent()
+		replaceRegex 'enforceSolsticeVersion', '"dev.equo.ide:solstice:(.*)"', "\"${libs.solstice.get().toString()}\""
 	}
 }
 
