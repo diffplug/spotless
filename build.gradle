@@ -1,4 +1,15 @@
-apply plugin: 'dev.equo.ide'
+plugins {
+	alias(libs.plugins.equo.ide)
+	alias(libs.plugins.test.logger) apply false
+	alias(libs.plugins.spotless.changelog) apply false
+	alias(libs.plugins.plugin.publish) apply false
+	alias(libs.plugins.version.compatibility) apply false
+	alias(libs.plugins.nexus.publish) apply false
+	alias(libs.plugins.errorprone) apply false
+	alias(libs.plugins.rewrite) apply false
+	alias(libs.plugins.maven.plugin.development) apply false
+	alias(libs.plugins.p2deps) apply false
+}
 
 equoIde {
 	branding().title('Spotless').icon(file('_images/spotless_logo.png'))

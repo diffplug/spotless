@@ -64,16 +64,15 @@ rewrite-recipe-third-party = "org.openrewrite.recipe:rewrite-third-party:0.36.0"
 errorprone-core = "com.google.errorprone:error_prone_core:2.42.0"
 
 [plugins]
-test-logger = { id = "com.adarshr.test-logger", version = "4.0.0" }
-spotless = { id = "com.diffplug.spotless", version = "8.3.0" }
-spotless-changelog = { id = "com.diffplug.spotless-changelog", version = "3.1.2" }
-spotbugs = { id = "com.github.spotbugs", version = "6.4.8" }
-develocity = { id = "com.gradle.develocity", version = "4.3.2" }
-plugin-publish = { id = "com.gradle.plugin-publish", version = "2.1.0" }
-equo-ide = { id = "dev.equo.ide", version = "1.7.8" }
-version-compatibility = { id = "io.github.davidburstrom.version-compatibility", version = "0.5.0" }
-p2deps = { id = "dev.equo.p2deps", version = "1.7.8" }
-nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
-errorprone = { id = "net.ltgt.errorprone", version = "5.1.0" }
-rewrite = { id = "org.openrewrite.rewrite", version = "7.25.0" }
-maven-plugin-development = { id = "org.gradlex.maven-plugin-development", version = "1.0.3" }
+test-logger = "com.adarshr.test-logger:4.0.0"
+spotless = "com.diffplug.spotless:8.3.0"
+spotless-changelog = "com.diffplug.spotless-changelog:3.1.2"
+spotbugs = "com.github.spotbugs:6.4.8"
+plugin-publish = "com.gradle.plugin-publish:2.1.0"
+equo-ide = "dev.equo.ide:1.7.8"
+version-compatibility = "io.github.davidburstrom.version-compatibility:0.5.0"
+p2deps = "dev.equo.p2deps:1.7.8"
+nexus-publish = "io.github.gradle-nexus.publish-plugin:2.0.0"
+errorprone = "net.ltgt.errorprone:5.1.0"
+rewrite = "org.openrewrite.rewrite:7.25.0"
+maven-plugin-development = "org.gradlex.maven-plugin-development:1.0.3"
