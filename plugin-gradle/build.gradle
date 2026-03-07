@@ -16,17 +16,17 @@ dependencies {
 		api "com.diffplug.spotless:spotless-lib:${rootProject.spotlessChangelog.versionLast}"
 		api "com.diffplug.spotless:spotless-lib-extra:${rootProject.spotlessChangelog.versionLast}"
 	}
-	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
-	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
-	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
-	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
+	implementation libs.durian.core
+	implementation libs.durian.io
+	implementation libs.durian.collect
+	implementation libs.jgit
 
 	testImplementation projects.testlib
-	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
-	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
-	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
-	testImplementation 'org.owasp.encoder:encoder:1.4.0'
-	testImplementation "dev.equo.ide:solstice:${VER_SOLSTICE}"
+	testImplementation libs.junit.jupiter
+	testImplementation libs.assertj.core
+	testImplementation libs.durian.testlib
+	testImplementation libs.owasp.encoder
+	testImplementation libs.solstice
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 

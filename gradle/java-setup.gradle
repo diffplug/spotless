@@ -6,7 +6,7 @@
 apply plugin: 'java'
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
-	options.release = Integer.parseInt(VER_JAVA)
+	options.release = libs.versions.jdk.release.get().toInteger()
 }
 
 //////////////
@@ -37,7 +37,7 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
 }
 
 dependencies {
-	compileOnly 'net.jcip:jcip-annotations:1.0'
+	compileOnly libs.jcip.annotations
 	compileOnly "com.github.spotbugs:spotbugs-annotations:${spotbugs.toolVersion.get()}"
-	compileOnly "com.google.code.findbugs:jsr305:${VER_JSR_305}"
+	compileOnly libs.jsr305
 }
