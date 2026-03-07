@@ -1,0 +1,33 @@
+plugins {
+	id("org.openrewrite.rewrite")
+}
+
+rewrite {
+	activeRecipe("com.diffplug.spotless.openrewrite.SanityCheck")
+	exclusions.addAll(
+		listOf(
+			"**.dirty.java",
+			"**FormatterProperties.java",
+			"**_gradle_node_plugin_example_**",
+			"**gradle/changelog.gradle",
+			"**gradle/java-publish.gradle",
+			"**idea/full.clean.java",
+			"**java-setup.gradle",
+			"**lib-extra/build.gradle",
+			"**lib/build.gradle",
+			"**package-info.java",
+			"**plugin-maven/build.gradle",
+			"**settings.gradle",
+			"**special-tests.gradle",
+			"**testlib/src/main/resources**"
+		)
+	)
+	isExportDatatables = true
+	failOnDryRunResults = true
+}
+
+dependencies {
+	rewrite(libs.rewrite.recipe.migrate.java)
+	rewrite(libs.rewrite.recipe.static.analysis)
+	rewrite(libs.rewrite.recipe.third.party)
+}
