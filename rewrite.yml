@@ -6,7 +6,7 @@ description: Comprehensive code quality recipe combining modernization, security
 recipeList:
   - org.openrewrite.gradle.EnableGradleBuildCache
   - org.openrewrite.gradle.EnableGradleParallelExecution
-  - org.openrewrite.gradle.GradleBestPractices
+  # - org.openrewrite.gradle.GradleBestPractices # https://github.com/diffplug/spotless/pull/2871
   - org.openrewrite.java.RemoveUnusedImports
   - org.openrewrite.java.format.NormalizeFormat
   - org.openrewrite.java.format.NormalizeLineBreaks

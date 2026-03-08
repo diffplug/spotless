@@ -19,7 +19,6 @@ import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -45,7 +44,7 @@ public class Java extends FormatterFactory {
 		Path projectDir = project.getBasedir().toPath();
 		Build build = project.getBuild();
 		return Stream.of(build.getSourceDirectory(), build.getTestSourceDirectory())
-				.map(Paths::get)
+				.map(Path::of)
 				.map(projectDir::relativize)
 				.map(Java::fileMask)
 				.collect(toSet());
