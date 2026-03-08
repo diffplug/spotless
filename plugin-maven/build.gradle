@@ -4,14 +4,17 @@ import org.gradlex.maven.plugin.development.task.GenerateMavenPluginDescriptorTa
 plugins {
 	// https://github.com/gradlex-org/maven-plugin-development
 	alias libs.plugins.maven.plugin.development
+	id 'spotless.changelog'
+	id 'spotless.java-setup'
+	id 'spotless.code-format'
+	id 'spotless.special-tests'
+	id 'spotless.java-publish'
+	id 'spotless.errorprone'
 }
 
-apply from: rootProject.file('gradle/changelog.gradle')
 ext.artifactId = project.artifactIdMaven
 version = spotlessChangelog.versionNext
 
-apply from: rootProject.file("gradle/java-setup.gradle")
-apply from: rootProject.file('gradle/spotless-freshmark.gradle')
 
 mavenPlugin {
 	name = 'Spotless Maven Plugin'
@@ -51,7 +54,6 @@ dependencies {
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
-apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	systemProperty 'spotlessMavenPluginVersion', project.version
 	systemProperty 'spotlessProjectDir', "${project.rootProject.projectDir}".toString()
@@ -59,5 +61,3 @@ tasks.withType(Test).configureEach {
 	dependsOn ':lib:publishToMavenLocal'
 	dependsOn ':lib-extra:publishToMavenLocal'
 }
-
-apply from: rootProject.file("gradle/java-publish.gradle")
