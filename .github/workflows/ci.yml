@@ -108,7 +108,7 @@ jobs:
     needs:
       - sanity-check
       - build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     if: always()
     steps:
       - name: Check
