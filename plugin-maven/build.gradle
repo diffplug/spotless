@@ -3,7 +3,7 @@ import org.gradlex.maven.plugin.development.task.GenerateMavenPluginDescriptorTa
 
 plugins {
 	// https://github.com/gradlex-org/maven-plugin-development
-	id 'org.gradlex.maven-plugin-development' version '1.0.3'
+	alias libs.plugins.maven.plugin.development
 }
 
 apply from: rootProject.file('gradle/changelog.gradle')
@@ -19,38 +19,35 @@ mavenPlugin {
 	description = project.description
 }
 
-String VER_MAVEN_API = '3.0'
-String VER_ECLIPSE_AETHER = '1.1.0'
-String VER_PLEXUS_RESOURCES = '1.3.1'
 dependencies {
 	implementation projects.lib
 	implementation projects.libExtra
 
-	compileOnly "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
-	compileOnly "org.apache.maven.plugin-tools:maven-plugin-annotations:${VER_MAVEN_API}"
-	compileOnly "org.apache.maven:maven-core:${VER_MAVEN_API}"
-	compileOnly "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
+	compileOnly libs.maven.plugin.api
+	compileOnly libs.maven.plugin.annotations
+	compileOnly libs.maven.core
+	compileOnly libs.aether.api
 
-	compileOnly "jakarta.annotation:jakarta.annotation-api:3.0.0"
+	compileOnly libs.jakarta.annotation.api
 
-	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
-	implementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
-	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
-	implementation("org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}")
-	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
-	implementation 'org.sonatype.plexus:plexus-build-api:0.0.7'
+	implementation libs.durian.core
+	implementation libs.durian.io
+	implementation libs.durian.collect
+	implementation libs.plexus.resources
+	implementation libs.jgit
+	implementation libs.plexus.build.api
 
 	testImplementation project(":testlib")
-	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
-	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
-	testImplementation "org.mockito:mockito-core:${VER_MOCKITO}"
-	testImplementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
-	testImplementation 'com.github.spullara.mustache.java:compiler:0.9.14'
-	testImplementation 'org.owasp.encoder:encoder:1.4.0'
-	testImplementation "org.apache.maven:maven-plugin-api:${VER_MAVEN_API}"
-	testImplementation "org.eclipse.aether:aether-api:${VER_ECLIPSE_AETHER}"
-	testImplementation "org.codehaus.plexus:plexus-resources:${VER_PLEXUS_RESOURCES}"
-	testImplementation "org.apache.maven:maven-core:${VER_MAVEN_API}"
+	testImplementation libs.junit.jupiter
+	testImplementation libs.assertj.core
+	testImplementation libs.mockito.core
+	testImplementation libs.durian.io
+	testImplementation libs.mustache.compiler
+	testImplementation libs.owasp.encoder
+	testImplementation libs.maven.plugin.api
+	testImplementation libs.aether.api
+	testImplementation libs.plexus.resources
+	testImplementation libs.maven.core
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 

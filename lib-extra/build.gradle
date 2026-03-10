@@ -10,30 +10,31 @@ apply from: rootProject.file('gradle/java-publish.gradle')
 dependencies {
 	api projects.lib
 	// misc useful utilities
-	implementation "com.diffplug.durian:durian-core:${VER_DURIAN}"
-	implementation "com.diffplug.durian:durian-collect:${VER_DURIAN}"
+	implementation libs.durian.core
+	implementation libs.durian.collect
 	// needed by GitAttributesLineEndings
-	implementation "org.eclipse.jgit:org.eclipse.jgit:${VER_JGIT}"
-	implementation "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
+	implementation libs.jgit
+	implementation libs.concurrent.trees
 	// for eclipse
-	implementation "dev.equo.ide:solstice:${VER_SOLSTICE}"
+	implementation libs.solstice
 	// the osgi dep is included in solstice, but it has some CVE's against it.
 	// 3.18.500 is the oldest, most-compatible version with no CVE's
 	// https://central.sonatype.com/artifact/org.eclipse.platform/org.eclipse.osgi/versions
-	implementation "org.eclipse.platform:org.eclipse.osgi:3.24.0"
+	implementation libs.osgi
 
 	// testing
 	testImplementation projects.testlib
-	testImplementation "com.diffplug.durian:durian-io:${VER_DURIAN}"
-	testImplementation "com.google.code.findbugs:jsr305:${VER_JSR_305}"
-	testImplementation "org.junit.jupiter:junit-jupiter:${VER_JUNIT}"
-	testImplementation "org.assertj:assertj-core:${VER_ASSERTJ}"
-	testImplementation "com.diffplug.durian:durian-testlib:${VER_DURIAN}"
+	testImplementation libs.durian.io
+	testImplementation libs.jsr305
+	testImplementation libs.junit.jupiter
+	testImplementation libs.assertj.core
+	testImplementation libs.durian.testlib
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
+
 spotless {
 	java {
-		replaceRegex 'enforceSolsticeVersion', '"dev.equo.ide:solstice:(.*)"', '"dev.equo.ide:solstice:' + VER_SOLSTICE + '"'
+		replaceRegex 'enforceSolsticeVersion', '"dev.equo.ide:solstice:(.*)"', "\"${libs.solstice.get().toString()}\""
 	}
 }
 
@@ -56,7 +57,7 @@ for (needsP2 in NEEDS_P2_DEPS) {
 		java {}
 	}
 	dependencies {
-		add("${needsP2}CompileOnly", "dev.equo.ide:solstice:${VER_SOLSTICE}")
+		add("${needsP2}CompileOnly", libs.solstice)
 	}
 }
 

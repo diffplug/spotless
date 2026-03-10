@@ -1,0 +1,78 @@
+[versions]
+jdk-release = "17"
+durian = "1.2.0"
+selfie = "2.5.5"
+jackson = "2.20.1"
+maven-api = "3.0"
+ktlint = "1.8.0"
+
+[libraries]
+durian-core = { module = "com.diffplug.durian:durian-core", version.ref = "durian" }
+durian-io = { module = "com.diffplug.durian:durian-io", version.ref = "durian" }
+durian-collect = { module = "com.diffplug.durian:durian-collect", version.ref = "durian" }
+durian-testlib = { module = "com.diffplug.durian:durian-testlib", version.ref = "durian" }
+
+selfie-lib = { module = "com.diffplug.selfie:selfie-lib", version.ref = "selfie" }
+selfie-runner-junit5 = { module = "com.diffplug.selfie:selfie-runner-junit5", version.ref = "selfie" }
+
+solstice = "dev.equo.ide:solstice:1.8.1"
+
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
+
+maven-plugin-api = { module = "org.apache.maven:maven-plugin-api", version.ref = "maven-api" }
+maven-plugin-annotations = { module = "org.apache.maven.plugin-tools:maven-plugin-annotations", version.ref = "maven-api" }
+maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven-api" }
+
+ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", version.ref = "ktlint" }
+ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standard", version.ref = "ktlint" }
+
+jgit = "org.eclipse.jgit:org.eclipse.jgit:7.5.0.202512021534-r"
+junit-jupiter = "org.junit.jupiter:junit-jupiter:6.0.3"
+assertj-core = "org.assertj:assertj-core:3.27.7"
+mockito-core = "org.mockito:mockito-core:5.22.0"
+osgi = "org.eclipse.platform:org.eclipse.osgi:3.24.0"
+slf4j-api = "org.slf4j:slf4j-api:2.0.17"
+jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
+jcip-annotations = "net.jcip:jcip-annotations:1.0"
+jakarta-annotation-api = "jakarta.annotation:jakarta.annotation-api:3.0.0"
+aether-api = "org.eclipse.aether:aether-api:1.1.0"
+plexus-resources = "org.codehaus.plexus:plexus-resources:1.3.1"
+plexus-build-api = "org.sonatype.plexus:plexus-build-api:0.0.7"
+concurrent-trees = "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
+owasp-encoder = "org.owasp.encoder:encoder:1.4.0"
+mustache-compiler = "com.github.spullara.mustache.java:compiler:0.9.14"
+cleanthat-java = "io.github.solven-eu.cleanthat:java:2.24"
+diktat-rules = "org.cqfn.diktat:diktat-rules:1.2.5"
+diktat-runner = "com.saveourtool.diktat:diktat-runner:2.0.0"
+flexmark-all = "com.vladsch.flexmark:flexmark-all:0.64.8"
+gherkin-utils = "io.cucumber:gherkin-utils:10.0.0"
+google-java-format = "com.google.googlejavaformat:google-java-format:1.28.0"
+gson = "com.google.code.gson:gson:2.13.2"
+javaparser-symbol-solver-core = "com.github.javaparser:javaparser-symbol-solver-core:3.27.1"
+ktfmt = "com.facebook:ktfmt:0.61"
+palantir-java-format = "com.palantir.javaformat:palantir-java-format:1.1.0"
+scalafmt-core = "org.scalameta:scalafmt-core_2.13:3.8.1"
+sortpom-sorter = "com.github.ekryd.sortpom:sortpom-sorter:4.0.0"
+tabletest-formatter-core = "org.tabletest:tabletest-formatter-core:1.0.1"
+zjsonpatch = "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
+
+rewrite-recipe-migrate-java = "org.openrewrite.recipe:rewrite-migrate-java:3.28.0"
+rewrite-recipe-static-analysis = "org.openrewrite.recipe:rewrite-static-analysis:2.28.0"
+rewrite-recipe-third-party = "org.openrewrite.recipe:rewrite-third-party:0.36.0"
+
+errorprone-core = "com.google.errorprone:error_prone_core:2.42.0"
+
+[plugins]
+test-logger = "com.adarshr.test-logger:4.0.0"
+spotless = "com.diffplug.spotless:8.3.0"
+spotless-changelog = "com.diffplug.spotless-changelog:3.1.2"
+spotbugs = "com.github.spotbugs:6.4.8"
+plugin-publish = "com.gradle.plugin-publish:2.1.0"
+equo-ide = "dev.equo.ide:1.7.8"
+version-compatibility = "io.github.davidburstrom.version-compatibility:0.5.0"
+p2deps = "dev.equo.p2deps:1.7.8"
+nexus-publish = "io.github.gradle-nexus.publish-plugin:2.0.0"
+errorprone = "net.ltgt.errorprone:5.1.0"
+rewrite = "org.openrewrite.rewrite:7.25.0"
+maven-plugin-development = "org.gradlex.maven-plugin-development:1.0.3"

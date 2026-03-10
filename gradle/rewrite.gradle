@@ -21,7 +21,7 @@ rewrite {
 	failOnDryRunResults = true
 }
 dependencies {
-	rewrite('org.openrewrite.recipe:rewrite-migrate-java:3.28.0')
-	rewrite('org.openrewrite.recipe:rewrite-static-analysis:2.28.0')
-	rewrite('org.openrewrite.recipe:rewrite-third-party:0.36.0')
+	rewrite libs.rewrite.recipe.migrate.java
+	rewrite libs.rewrite.recipe.static.analysis
+	rewrite libs.rewrite.recipe.third.party
 }
