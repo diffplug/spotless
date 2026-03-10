@@ -19,7 +19,7 @@ val releaseTitle = when (project.name) {
 
 spotlessChangelog {
 	changelogFile(file("CHANGES.md"))
-	// appendDashSnapshotUnless_dashPrelease(true)
+	appendDashSnapshotUnless_dashPrelease(true)
 	branch("release")
 	tagPrefix("${kind}/")
 	commitMessage("Published ${kind}/{{version}}")
