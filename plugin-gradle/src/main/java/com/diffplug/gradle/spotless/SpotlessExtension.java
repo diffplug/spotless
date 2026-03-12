@@ -183,6 +183,12 @@ public abstract class SpotlessExtension {
 		format(JavascriptExtension.NAME, JavascriptExtension.class, closure);
 	}
 
+	/** Configures the special tableTest-specific extension for .table files. */
+	public void tableTest(Action<TableTestExtension> closure) {
+		requireNonNull(closure);
+		format(TableTestExtension.NAME, TableTestExtension.class, closure);
+	}
+
 	/** Configures the special typescript-specific extension for typescript files. */
 	public void typescript(Action<TypescriptExtension> closure) {
 		format(TypescriptExtension.NAME, TypescriptExtension.class, closure);

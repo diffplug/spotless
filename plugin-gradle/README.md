@@ -1265,6 +1265,34 @@ shfmt().pathToExe('/opt/homebrew/bin/shfmt')
 
 <a name="applying-freshmark-to-markdown-files"></a>
 
+## TableTest
+
+- `com.diffplug.gradle.spotless.TableTestExtension` [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/TableTestExtension.java)
+
+```gradle
+spotless {
+  tableTest {
+    target 'src/**/*.table' // you have to set the target manually
+    tableTestFormatter()    // has its own section below
+  }
+}
+```
+
+### tabletest-formatter
+
+[homepage](https://github.com/nchaugen/tabletest-formatter). [changelog](https://github.com/nchaugen/tabletest-formatter/releases). Formats standalone [TableTest](https://github.com/nchaugen/tabletest) `.table` files.
+
+```gradle
+spotless {
+  tableTest {
+    target 'src/**/*.table'
+    tableTestFormatter()
+    // optional: you can specify a specific version
+    tableTestFormatter('1.1.1')
+  }
+}
+```
+
 ## Gherkin
 
 - `com.diffplug.gradle.spotless.GherkinExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/8.3.0/com/diffplug/gradle/spotless/GherkinExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/GherkinExtension.java)

@@ -36,6 +36,14 @@ class TableTestFormatterStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void behaviorTableFile() {
+		FormatterStep step = TableTestFormatterStep.create(VERSION, TestProvisioner.mavenCentral());
+		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, step)) {
+			harness.testResource("example.table", "tableTest/tableFileUnformatted.test", "tableTest/tableFileFormatted.test");
+		}
+	}
+
+	@Test
 	void equality() {
 		new SerializableEqualityTester() {
 			String version = VERSION;

@@ -82,6 +82,7 @@ import com.diffplug.spotless.maven.rdf.Rdf;
 import com.diffplug.spotless.maven.scala.Scala;
 import com.diffplug.spotless.maven.shell.Shell;
 import com.diffplug.spotless.maven.sql.Sql;
+import com.diffplug.spotless.maven.tabletest.TableTest;
 import com.diffplug.spotless.maven.typescript.Typescript;
 import com.diffplug.spotless.maven.yaml.Yaml;
 
@@ -207,6 +208,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Protobuf protobuf;
+
+	@Parameter
+	private TableTest tableTest;
 
 	@Parameter(property = "spotlessFiles")
 	private String filePatterns;
@@ -410,7 +414,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, css, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go, rdf, protobuf))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, css, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go, rdf, protobuf, tableTest))
 				.filter(Objects::nonNull)
 				.map(factory -> factory.init(repositorySystemSession))
 				.collect(toList());
