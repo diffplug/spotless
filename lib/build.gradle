@@ -24,12 +24,9 @@ def NEEDS_GLUE = [
 	'palantirJavaFormat',
 	'scalafmt',
 	'sortPom',
+	'tableTestFormatter',
 	'zjsonPatch',
 ]
-// tableTestFormatter requires Java 21+
-if (JavaVersion.current() >= JavaVersion.VERSION_21) {
-	NEEDS_GLUE << 'tableTestFormatter'
-}
 
 for (glue in NEEDS_GLUE) {
 	sourceSets.register(glue) {
@@ -125,10 +122,8 @@ dependencies {
 	// sortPom
 	sortPomCompileOnly libs.sortpom.sorter
 	sortPomCompileOnly libs.slf4j.api
-	// tableTestFormatter (Java 21+ only)
-	if (JavaVersion.current() >= JavaVersion.VERSION_21) {
-		tableTestFormatterCompileOnly libs.tabletest.formatter.core
-	}
+	// tableTestFormatter
+	tableTestFormatterCompileOnly libs.tabletest.formatter.core
 	// zjsonPatch
 	zjsonPatchCompileOnly libs.zjsonpatch
 }

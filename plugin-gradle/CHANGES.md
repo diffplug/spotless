@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changes
+- Bump default `tabletest-formatter` version `1.0.1` -> `1.1.1`, now works with Java 17+.
 
 ## [8.3.0] - 2026-03-02
 ### Added

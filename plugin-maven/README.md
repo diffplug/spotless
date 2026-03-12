@@ -407,7 +407,7 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <tableTestFormatter>
-  <version>1.0.1</version> <!-- optional -->
+  <version>1.1.1</version> <!-- optional -->
 </tableTestFormatter>
 ```
 
@@ -543,7 +543,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <tableTestFormatter>
-  <version>1.0.1</version> <!-- optional -->
+  <version>1.1.1</version> <!-- optional -->
 </tableTestFormatter>
 ```
 

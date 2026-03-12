@@ -439,7 +439,7 @@ spotless {
   java {
     tableTestFormatter()
     // optional: you can specify a specific version
-    tableTestFormatter('1.0.1')
+    tableTestFormatter('1.1.1')
 ```
 
 <a name="applying-to-groovy-source"></a>
@@ -616,7 +616,7 @@ spotless {
   kotlin {
     tableTestFormatter()
     // optional: you can specify a specific version
-    tableTestFormatter('1.0.1')
+    tableTestFormatter('1.1.1')
 ```
 
 <a name="applying-scalafmt-to-scala-files"></a>
