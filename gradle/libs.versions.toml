@@ -30,7 +30,7 @@ ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standa
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.5.0.202512021534-r"
 junit-jupiter = "org.junit.jupiter:junit-jupiter:6.0.3"
 assertj-core = "org.assertj:assertj-core:3.27.7"
-mockito-core = "org.mockito:mockito-core:5.22.0"
+mockito-core = "org.mockito:mockito-core:5.23.0"
 osgi = "org.eclipse.platform:org.eclipse.osgi:3.24.100"
 slf4j-api = "org.slf4j:slf4j-api:2.0.17"
 jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
