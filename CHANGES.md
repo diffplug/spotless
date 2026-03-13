@@ -10,6 +10,10 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `tableTest` format type for standalone `.table` files.
+### Changes
+- Bump default `tabletest-formatter` version `1.0.1` -> `1.1.1`, now works with Java 17+.
 
 ## [4.4.0] - 2026-03-02
 ### Added

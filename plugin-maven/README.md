@@ -407,7 +407,7 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <tableTestFormatter>
-  <version>1.0.1</version> <!-- optional -->
+  <version>1.1.1</version> <!-- optional -->
 </tableTestFormatter>
 ```
 
@@ -543,7 +543,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <tableTestFormatter>
-  <version>1.0.1</version> <!-- optional -->
+  <version>1.1.1</version> <!-- optional -->
 </tableTestFormatter>
 ```
 
@@ -1189,6 +1189,25 @@ When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.edit
   <pathToExe>/opt/homebrew/bin/shfmt</pathToExe>   <!-- optional: if shfmt is not on your path, you must specify its location manually -->
 </shfmt>
 ```
+
+## TableTest
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/tabletest/TableTest.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/tabletest).
+
+```xml
+<configuration>
+  <tableTest>
+    <includes>
+      <include>src/**/*.table</include>
+    </includes>
+    <tableTestFormatter>
+      <version>1.1.1</version> <!-- optional -->
+    </tableTestFormatter>
+  </tableTest>
+</configuration>
+```
+
+[homepage](https://github.com/nchaugen/tabletest-formatter). [changelog](https://github.com/nchaugen/tabletest-formatter/releases). Formats standalone [TableTest](https://github.com/nchaugen/tabletest) `.table` files.
 
 ## Gherkin
 

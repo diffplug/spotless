@@ -15,10 +15,7 @@
  */
 package com.diffplug.spotless.java;
 
-import static org.junit.jupiter.api.condition.JRE.JAVA_21;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
@@ -28,10 +25,9 @@ import com.diffplug.spotless.TestProvisioner;
 
 class TableTestFormatterStepTest extends ResourceHarness {
 
-	private static final String VERSION = "1.0.1";
+	private static final String VERSION = "1.1.1";
 
 	@Test
-	@EnabledForJreRange(min = JAVA_21)
 	void behavior() {
 		FormatterStep step = TableTestFormatterStep.create(VERSION, TestProvisioner.mavenCentral());
 		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, step)) {
@@ -40,7 +36,14 @@ class TableTestFormatterStepTest extends ResourceHarness {
 	}
 
 	@Test
-	@EnabledForJreRange(min = JAVA_21)
+	void behaviorTableFile() {
+		FormatterStep step = TableTestFormatterStep.create(VERSION, TestProvisioner.mavenCentral());
+		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, step)) {
+			harness.testResource("example.table", "tableTest/tableFileUnformatted.test", "tableTest/tableFileFormatted.test");
+		}
+	}
+
+	@Test
 	void equality() {
 		new SerializableEqualityTester() {
 			String version = VERSION;

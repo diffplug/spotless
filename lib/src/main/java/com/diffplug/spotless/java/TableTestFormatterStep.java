@@ -34,7 +34,7 @@ public final class TableTestFormatterStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "tableTestFormatter";
 	private static final String MAVEN_COORDINATE = "org.tabletest:tabletest-formatter-core:";
-	private static final String DEFAULT_VERSION = "1.0.1";
+	private static final String DEFAULT_VERSION = "1.1.1";
 
 	private final JarState.Promised jarState;
 	private final String version;

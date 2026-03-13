@@ -20,17 +20,19 @@ import java.io.File;
 import org.tabletest.formatter.config.Config;
 import org.tabletest.formatter.config.EditorConfigProvider;
 import org.tabletest.formatter.core.SourceFileFormatter;
+import org.tabletest.formatter.core.TableTestFormatter;
 
 import com.diffplug.spotless.FormatterFunc;
 
 /**
- * Formats {@code @TableTest} annotation tables in Java and Kotlin source files.
+ * Formats {@code @TableTest} annotation tables in Java, Kotlin, and standalone {@code .table} files.
  */
 public class TableTestFormatterFunc implements FormatterFunc.NeedsFile {
 
 	private static final EditorConfigProvider CONFIG_PROVIDER = new EditorConfigProvider();
 
 	private final SourceFileFormatter sourceFormatter = new SourceFileFormatter();
+	private final TableTestFormatter tableFormatter = new TableTestFormatter();
 
 	@Override
 	public String applyWithFile(String unix, File file) throws Exception {
@@ -39,6 +41,11 @@ public class TableTestFormatterFunc implements FormatterFunc.NeedsFile {
 		if (fileName.endsWith(".java") || fileName.endsWith(".kt")) {
 			Config config = CONFIG_PROVIDER.lookupConfig(file.toPath(), Config.SPACES_4);
 			String formatted = sourceFormatter.format(unix, config);
+			return formatted.equals(unix) ? unix : formatted;
+		}
+
+		if (fileName.endsWith(".table")) {
+			String formatted = tableFormatter.format(unix, "", Config.NO_INDENT);
 			return formatted.equals(unix) ? unix : formatted;
 		}
 

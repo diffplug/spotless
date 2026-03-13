@@ -439,7 +439,7 @@ spotless {
   java {
     tableTestFormatter()
     // optional: you can specify a specific version
-    tableTestFormatter('1.0.1')
+    tableTestFormatter('1.1.1')
 ```
 
 <a name="applying-to-groovy-source"></a>
@@ -616,7 +616,7 @@ spotless {
   kotlin {
     tableTestFormatter()
     // optional: you can specify a specific version
-    tableTestFormatter('1.0.1')
+    tableTestFormatter('1.1.1')
 ```
 
 <a name="applying-scalafmt-to-scala-files"></a>
@@ -1264,6 +1264,34 @@ shfmt().pathToExe('/opt/homebrew/bin/shfmt')
 ```
 
 <a name="applying-freshmark-to-markdown-files"></a>
+
+## TableTest
+
+- `com.diffplug.gradle.spotless.TableTestExtension` [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/TableTestExtension.java)
+
+```gradle
+spotless {
+  tableTest {
+    target 'src/**/*.table' // you have to set the target manually
+    tableTestFormatter()    // has its own section below
+  }
+}
+```
+
+### tabletest-formatter
+
+[homepage](https://github.com/nchaugen/tabletest-formatter). [changelog](https://github.com/nchaugen/tabletest-formatter/releases). Formats standalone [TableTest](https://github.com/nchaugen/tabletest) `.table` files.
+
+```gradle
+spotless {
+  tableTest {
+    target 'src/**/*.table'
+    tableTestFormatter()
+    // optional: you can specify a specific version
+    tableTestFormatter('1.1.1')
+  }
+}
+```
 
 ## Gherkin
 
