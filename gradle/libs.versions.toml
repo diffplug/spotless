@@ -1,7 +1,7 @@
 [versions]
 jdk-release = "17"
 durian = "1.2.0"
-selfie = "2.5.5"
+selfie = "3.0.0"
 jackson = "2.20.1"
 maven-api = "3.0"
 ktlint = "1.8.0"
