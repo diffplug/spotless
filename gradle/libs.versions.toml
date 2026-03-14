@@ -61,7 +61,7 @@ rewrite-recipe-migrate-java = "org.openrewrite.recipe:rewrite-migrate-java:3.30.
 rewrite-recipe-static-analysis = "org.openrewrite.recipe:rewrite-static-analysis:2.30.0"
 rewrite-recipe-third-party = "org.openrewrite.recipe:rewrite-third-party:0.36.2"
 
-errorprone-core = "com.google.errorprone:error_prone_core:2.42.0"
+errorprone-core = "com.google.errorprone:error_prone_core:2.48.0"
 
 [plugins]
 test-logger = "com.adarshr.test-logger:4.0.0"
