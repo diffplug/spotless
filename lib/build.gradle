@@ -3,11 +3,16 @@ import org.gradle.util.GradleVersion
 plugins {
 	id 'java-library'
 	id 'io.github.davidburstrom.version-compatibility'
+	id "spotless.java-setup"
+	id "spotless.java-publish"
+	id 'spotless.special-tests'
+	id 'spotless.errorprone'
+	id 'spotless.code-format'
 }
 ext.artifactId = project.artifactIdLib
 version = rootProject.spotlessChangelog.versionNext
-apply from: rootProject.file('gradle/java-setup.gradle')
-apply from: rootProject.file('gradle/java-publish.gradle')
+
+
 
 def NEEDS_GLUE = [
 	// (alphabetic order please)
@@ -135,7 +140,6 @@ spotbugs {
 	excludeFilter = file("spotbugs-exclude.xml")
 }
 
-apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	jvmArgs "--add-opens=java.base/java.lang=ALL-UNNAMED"
 
