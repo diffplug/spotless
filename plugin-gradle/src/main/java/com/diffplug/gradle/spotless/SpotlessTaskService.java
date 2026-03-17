@@ -64,6 +64,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 	@Nullable GradleProvisioner.DedupingP2Provisioner predeclaredP2Provisioner;
+	@Nullable RegisterDependenciesTask registerDependenciesTask;
 
 	Provisioner provisionerFor(SpotlessExtension spotless) {
 		if (spotless instanceof SpotlessExtensionPredeclare) {
@@ -134,7 +135,9 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			return;
 		}
 
-		project.getRootProject().getTasks().withType(RegisterDependenciesTask.class, registerTask -> registerTask.hookSubprojectTask(task));
+		if (registerDependenciesTask != null) {
+			registerDependenciesTask.hookSubprojectTask(task);
+		}
 	}
 
 	public static Provider<SpotlessTaskService> registerIfAbsent(Project project, String suffix) {

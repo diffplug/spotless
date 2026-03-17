@@ -33,6 +33,7 @@ public class SpotlessExtensionPredeclare extends SpotlessExtension {
 		this.registerDependenciesTask = findRegisterDepsTask().get();
 		SpotlessTaskService taskService = getSpotlessTaskService().get();
 		taskService.isUsingPredeclared = true;
+		taskService.registerDependenciesTask = registerDependenciesTask;
 		taskService.predeclaredProvisioner = policy.dedupingProvisioner(project);
 		taskService.predeclaredP2Provisioner = policy.dedupingP2Provisioner(project);
 		project.afterEvaluate(unused -> toSetup.forEach((name, formatExtension) -> {
