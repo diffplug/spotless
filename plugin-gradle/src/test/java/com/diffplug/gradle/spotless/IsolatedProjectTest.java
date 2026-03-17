@@ -17,7 +17,6 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
@@ -85,7 +84,7 @@ class IsolatedProjectTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void predeclaredIsUnsupported() throws IOException {
+	void predeclaredIsSupported() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"    id 'com.diffplug.spotless'",
@@ -96,7 +95,6 @@ class IsolatedProjectTest extends GradleIntegrationHarness {
 				" kotlin { ktlint() }",
 				"}");
 		createNSubprojects();
-		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
-				.containsAnyOf("Cannot access project", "cannot access 'Project.tasks'");
+		gradleRunner().withArguments("spotlessApply").build();
 	}
 }
