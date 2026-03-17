@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,6 +135,36 @@ class MultiProjectTest extends GradleIntegrationHarness {
 		createNSubprojects();
 		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
 				.contains("Could not find method spotlessPredeclare() for arguments");
+	}
+
+	@Test
+	public void predeclaredDepsRegression() throws IOException {
+		setFile("settings.gradle").toContent("include 'sub'");
+		setFile("build.gradle").toLines(
+				"plugins { id 'com.diffplug.spotless' }",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    predeclareDeps()",
+				"    java {",
+				"        target file('test.java')",
+				"        googleJavaFormat('1.17.0')",
+				"    }",
+				"}",
+				"spotlessPredeclare {",
+				"    java { googleJavaFormat('1.17.0') }",
+				"}");
+		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		setFile("sub/build.gradle").toLines(
+				"plugins { id 'com.diffplug.spotless' }",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    java {",
+				"        target file('test.java')",
+				"        googleJavaFormat('1.17.0')",
+				"    }",
+				"}");
+		setFile("sub/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		gradleRunner().withGradleVersion("8.14").withArguments("spotlessApply").build();
 	}
 
 	@Test
