@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 - Add `tableTest` format type for standalone `.table` files.
+### Fixed
+- Fix illegal mutation when using predeclared dependencies.
 ### Changes
 - Bump default `tabletest-formatter` version `1.0.1` -> `1.1.1`, now works with Java 17+.
 
