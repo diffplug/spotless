@@ -56,7 +56,6 @@ import com.diffplug.spotless.extra.P2Provisioner;
  * apply already did).
  */
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
-	protected boolean isUsingPredeclared;
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
@@ -64,6 +63,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 	@Nullable GradleProvisioner.DedupingP2Provisioner predeclaredP2Provisioner;
+	@Nullable RegisterDependenciesTask registerDependenciesTask;
 
 	Provisioner provisionerFor(SpotlessExtension spotless) {
 		if (spotless instanceof SpotlessExtensionPredeclare) {
@@ -129,12 +129,9 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	}
 
 	public void hookSubprojectTask(Project project, SpotlessTask task) {
-		// This check allows isolated projects support by not accessing the root project tasks unless really needed
-		if (!isUsingPredeclared) {
-			return;
+		if (registerDependenciesTask != null) {
+			registerDependenciesTask.hookSubprojectTask(task);
 		}
-
-		project.getRootProject().getTasks().withType(RegisterDependenciesTask.class, registerTask -> registerTask.hookSubprojectTask(task));
 	}
 
 	public static Provider<SpotlessTaskService> registerIfAbsent(Project project, String suffix) {
