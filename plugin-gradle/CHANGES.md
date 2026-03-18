@@ -4,11 +4,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-- Add `tableTest` format type for standalone `.table` files.
+- Add `tableTest` format type for standalone `.table` files. ([#2880](https://github.com/diffplug/spotless/pull/2880))
 ### Fixed
-- Fix illegal mutation when using predeclared dependencies.
+- Fix illegal mutation when using predeclared dependencies. ([#2892](https://github.com/diffplug/spotless/pull/2892))
 ### Changes
-- Bump default `tabletest-formatter` version `1.0.1` -> `1.1.1`, now works with Java 17+.
+- Bump default `tabletest-formatter` version `1.0.1` -> `1.1.1`, now works with Java 17+. ([#2880](https://github.com/diffplug/spotless/pull/2880))
 
 ## [8.3.0] - 2026-03-02
 ### Added
