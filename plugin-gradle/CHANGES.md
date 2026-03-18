@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [8.4.0] - 2026-03-18
 ### Added
 - Add `tableTest` format type for standalone `.table` files. ([#2880](https://github.com/diffplug/spotless/pull/2880))
 ### Fixed
