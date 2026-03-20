@@ -16,6 +16,7 @@
 package com.diffplug.spotless.glue.java;
 
 import java.io.File;
+import java.util.Locale;
 
 import org.tabletest.formatter.config.Config;
 import org.tabletest.formatter.config.EditorConfigProvider;
@@ -57,7 +58,7 @@ public class TableTestFormatterFunc implements FormatterFunc.NeedsFile {
 	 * @param indentSize  indent size (&gt;= 0)
 	 */
 	public TableTestFormatterFunc(String indentStyle, int indentSize) {
-		this.sourceFallbackConfig = new Config(IndentStyle.valueOf(indentStyle.toUpperCase()), indentSize);
+		this.sourceFallbackConfig = new Config(IndentStyle.valueOf(indentStyle.toUpperCase(Locale.ROOT)), indentSize);
 	}
 
 	@Override

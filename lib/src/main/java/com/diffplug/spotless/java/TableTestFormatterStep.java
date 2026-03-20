@@ -18,6 +18,7 @@ package com.diffplug.spotless.java;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -97,7 +98,7 @@ public final class TableTestFormatterStep implements Serializable {
 
 	public static String validateIndentStyle(String indentStyle) {
 		Objects.requireNonNull(indentStyle, "indentStyle");
-		String lower = indentStyle.toLowerCase();
+		String lower = indentStyle.toLowerCase(Locale.ROOT);
 		if (!lower.equals("space") && !lower.equals("tab")) {
 			throw new IllegalArgumentException("indentStyle must be 'space' or 'tab', got: " + indentStyle);
 		}
