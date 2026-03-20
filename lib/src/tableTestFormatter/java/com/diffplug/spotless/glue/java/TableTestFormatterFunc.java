@@ -29,7 +29,7 @@ import com.diffplug.spotless.FormatterFunc;
  */
 public class TableTestFormatterFunc implements FormatterFunc.NeedsFile {
 
-	private static final EditorConfigProvider CONFIG_PROVIDER = new EditorConfigProvider();
+	private final EditorConfigProvider CONFIG_PROVIDER = new EditorConfigProvider();
 
 	private final SourceFileFormatter sourceFormatter = new SourceFileFormatter();
 	private final TableTestFormatter tableFormatter = new TableTestFormatter();

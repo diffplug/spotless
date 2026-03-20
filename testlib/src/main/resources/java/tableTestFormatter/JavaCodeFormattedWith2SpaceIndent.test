@@ -1,0 +1,13 @@
+import org.tabletest.junit.TableTest;
+
+class CalculatorTest {
+
+    @TableTest("""
+      scenario | a  | b  | sum?
+      positive | 1  | 2  | 3
+      negative | -1 | -2 | -3
+      """)
+    void shouldAddNumbers(int a, int b, int sum) {
+        assert a + b == sum;
+    }
+}

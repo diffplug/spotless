@@ -44,6 +44,37 @@ class TableTestFormatterStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void editorConfigChangesAreHonored() {
+		// Verifies that a new FormatterStep picks up .editorconfig changes rather than
+		// returning stale results from a shared cache.
+		//
+		// Two steps with the same version share a classloader (via SpotlessCache's
+		// serialization-based key). If EditorConfigProvider were stored as a static field,
+		// its permanent ec4j cache would survive across FormatterFunc instances, and the
+		// second step would still see the indent_size=4 result cached by the first step.
+		// Making EditorConfigProvider an instance field ensures each FormatterFunc gets a
+		// fresh provider with an empty cache.
+
+		// Step 1: .editorconfig with indent_size=4
+		setFile(".editorconfig").toContent("[*.java]\nindent_size = 4\n");
+		FormatterStep step1 = TableTestFormatterStep.create(VERSION, TestProvisioner.mavenCentral());
+		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, step1)) {
+			harness.testResource("CalculatorTest.java",
+					"java/tableTestFormatter/JavaCodeUnformatted.test",
+					"java/tableTestFormatter/JavaCodeFormatted.test");
+		}
+
+		// Step 2: change .editorconfig to indent_size=2, create a new step
+		setFile(".editorconfig").toContent("[*.java]\nindent_size = 2\n");
+		FormatterStep step2 = TableTestFormatterStep.create(VERSION, TestProvisioner.mavenCentral());
+		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, step2)) {
+			harness.testResource("CalculatorTest.java",
+					"java/tableTestFormatter/JavaCodeUnformatted.test",
+					"java/tableTestFormatter/JavaCodeFormattedWith2SpaceIndent.test");
+		}
+	}
+
+	@Test
 	void equality() {
 		new SerializableEqualityTester() {
 			String version = VERSION;
