@@ -75,23 +75,49 @@ class TableTestFormatterStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void behaviorWithConfiguredFallback() {
+		// When no .editorconfig is present, the configured indentSize is used as the fallback
+		// instead of the built-in default (Config.SPACES_4 = 4 spaces).
+		// Configuring indentSize=2 should produce the same output as when editorconfig sets
+		// indent_size=2.
+		FormatterStep step = TableTestFormatterStep.create(VERSION, TestProvisioner.mavenCentral(), "space", 2);
+		try (StepHarnessWithFile harness = StepHarnessWithFile.forStep(this, step)) {
+			harness.testResource("CalculatorTest.java",
+					"java/tableTestFormatter/JavaCodeUnformatted.test",
+					"java/tableTestFormatter/JavaCodeFormattedWith2SpaceIndent.test");
+		}
+	}
+
+	@Test
 	void equality() {
 		new SerializableEqualityTester() {
 			String version = VERSION;
+			String indentStyle = TableTestFormatterStep.DEFAULT_INDENT_STYLE;
+			int indentSize = TableTestFormatterStep.DEFAULT_INDENT_SIZE;
 
 			@Override
 			protected void setupTest(API api) {
-				// same version == same
+				// same version + defaults == same
 				api.areDifferentThan();
 
-				// change the version, and it's different
+				// change the version
 				version = "1.0.0";
+				api.areDifferentThan();
+
+				// restore version, change indent size
+				version = VERSION;
+				indentSize = 2;
+				api.areDifferentThan();
+
+				// change indent style
+				indentSize = TableTestFormatterStep.DEFAULT_INDENT_SIZE;
+				indentStyle = "tab";
 				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
-				return TableTestFormatterStep.create(version, TestProvisioner.mavenCentral());
+				return TableTestFormatterStep.create(version, TestProvisioner.mavenCentral(), indentStyle, indentSize);
 			}
 		}.testEquals();
 	}
