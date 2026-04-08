@@ -95,9 +95,13 @@ public class SQLTokenizedFormatter {
 		}
 
 		final KeywordCase keywordCase = formatterCfg.getKeywordCase();
-		for (FormatterToken anArgList : argList) {
-			token = anArgList;
+		for (int index = 0; index < argList.size(); index++) {
+			token = argList.get(index);
 			if (token.getType() == TokenType.KEYWORD) {
+				// Do not transform case for JDBI named bind params (e.g. :limit, :offset)
+				if (index > 0 && isEmbeddedToken(argList.get(index - 1))) {
+					continue;
+				}
 				token.setString(keywordCase.transform(token.getString()));
 			}
 		}
@@ -323,8 +327,10 @@ public class SQLTokenizedFormatter {
 					continue;
 				}
 				if (token.getType() == TokenType.SYMBOL && isEmbeddedToken(token)
+						&& (!":".equals(token.getString()) || prev.getType() == TokenType.SYMBOL)
 						|| prev.getType() == TokenType.SYMBOL && isEmbeddedToken(prev)) {
-					// Do not insert spaces around colons
+					// Do not insert spaces around embedded tokens (colons, dots),
+					// except before JDBI named bind params (e.g. :limit) preceded by a keyword or name
 					continue;
 				}
 				if (token.getType() == TokenType.SYMBOL && prev.getType() == TokenType.SYMBOL) {
