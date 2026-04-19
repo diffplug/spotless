@@ -46,14 +46,37 @@ public class TableTestExtension extends FormatExtension {
 
 	public class TableTestFormatterConfig {
 		private final String version;
+		private String indentStyle = TableTestFormatterStep.DEFAULT_INDENT_STYLE;
+		private int indentSize = TableTestFormatterStep.DEFAULT_INDENT_SIZE;
 
 		TableTestFormatterConfig(String version) {
 			this.version = version;
 			addStep(createStep());
 		}
 
+		/**
+		 * Sets the fallback indent style used when no {@code .editorconfig} is found.
+		 * Must be {@code "space"} or {@code "tab"} (case-insensitive).
+		 * Defaults to {@code "space"}.
+		 */
+		public TableTestFormatterConfig withIndentStyle(String indentStyle) {
+			this.indentStyle = TableTestFormatterStep.validateIndentStyle(indentStyle);
+			replaceStep(createStep());
+			return this;
+		}
+
+		/**
+		 * Sets the fallback indent size used when no {@code .editorconfig} is found.
+		 * Must be &gt;= 0. Defaults to {@code 4}.
+		 */
+		public TableTestFormatterConfig withIndentSize(int indentSize) {
+			this.indentSize = TableTestFormatterStep.validateIndentSize(indentSize);
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
-			return TableTestFormatterStep.create(version, provisioner());
+			return TableTestFormatterStep.create(version, provisioner(), indentStyle, indentSize);
 		}
 	}
 }

@@ -23,16 +23,37 @@ import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 /**
- * Formats {@code @TableTest} annotation tables. Configuration is read from {@code .editorconfig} files.
+ * Formats {@code @TableTest} annotation tables. Configuration is read from {@code .editorconfig} files,
+ * falling back to the configured {@code indentStyle} and {@code indentSize} when no editorconfig is found.
  */
 public class TableTestFormatter implements FormatterStepFactory {
 
 	@Parameter
 	private String version;
 
+	/**
+	 * Fallback indent style when no {@code .editorconfig} is found: {@code space} or {@code tab}.
+	 * Defaults to {@code space}.
+	 */
+	@Parameter
+	private String indentStyle;
+
+	/**
+	 * Fallback indent size when no {@code .editorconfig} is found. Must be &gt;= 0.
+	 * Defaults to {@code 4}.
+	 */
+	@Parameter
+	private Integer indentSize;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		String version = this.version != null ? this.version : TableTestFormatterStep.defaultVersion();
-		return TableTestFormatterStep.create(version, config.getProvisioner());
+		String resolvedVersion = this.version != null ? this.version : TableTestFormatterStep.defaultVersion();
+		String resolvedStyle = this.indentStyle != null
+				? TableTestFormatterStep.validateIndentStyle(this.indentStyle)
+				: TableTestFormatterStep.DEFAULT_INDENT_STYLE;
+		int resolvedSize = this.indentSize != null
+				? TableTestFormatterStep.validateIndentSize(this.indentSize)
+				: TableTestFormatterStep.DEFAULT_INDENT_SIZE;
+		return TableTestFormatterStep.create(resolvedVersion, config.getProvisioner(), resolvedStyle, resolvedSize);
 	}
 }
