@@ -5,3 +5,10 @@ FROM
     WHERE
         id IN(<ids>)
         AND user_id =:user_id;
+
+SELECT
+    *
+FROM
+    TABLE
+    WHERE
+        id =:id LIMIT :limit OFFSET :offset;
