@@ -16,7 +16,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `cleanthat` version `2.24` -> `2.25`. ([#2903](https://github.com/diffplug/spotless/pull/2903))
 - Bump `eclipse-jdt` default version from `4.35` to `4.39`. ([#2902](https://github.com/diffplug/spotless/pull/2902))
 
-
 ## [4.5.0] - 2026-03-18
 ### Added
 - Add `tableTest` format type for standalone `.table` files. ([#2880](https://github.com/diffplug/spotless/pull/2880))
