@@ -32,6 +32,8 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
+
 /**
  * Enables CleanThat as a SpotLess step.
  *
@@ -87,6 +89,7 @@ public final class CleanthatJavaStep implements Serializable {
 	/**
 	 * Default JavaParser version: {@code null}, meaning whichever transitive version is brought in by Cleanthat.
 	 */
+	@Nullable
 	public static String defaultJavaparserVersion() {
 		return null;
 	}
