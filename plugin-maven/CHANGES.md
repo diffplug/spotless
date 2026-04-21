@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `<javaparserVersion>` option to `<cleanthat>`, allowing users to override the JavaParser version pulled in transitively by Cleanthat.
+### Changes
+- Bump default `cleanthat` version `2.24` -> `2.25`.
 
 ## [3.4.0] - 2026-03-18
 ### Added

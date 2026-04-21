@@ -422,7 +422,8 @@ spotless {
     // optional: you can specify a specific version and/or config file
     cleanthat()
       .groupArtifact('io.github.solven-eu.cleanthat:java') // Optional. Default is 'io.github.solven-eu.cleanthat:java'
-      .version('2.8')                                      // You may force a custom version of Cleanthat
+      .version('2.25')                                     // You may force a custom version of Cleanthat
+      .javaparserVersion('3.26.4')                         // Advanced: override the JavaParser version transitively pulled by Cleanthat
       .sourceCompatibility('1.7')                          // default is '1.7'
       .addMutator('SafeAndConsensual')                     // Default includes the SafeAndConsensual composite mutator
       .addMutator('your.custom.MagicMutator')              // List of mutators: https://github.com/solven-eu/cleanthat/blob/master/MUTATORS.generated.MD

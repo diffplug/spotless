@@ -386,7 +386,8 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <cleanthat>
-  <version>2.8</version>                          <!-- optional version of Cleanthat -->
+  <version>2.25</version>                         <!-- optional version of Cleanthat -->
+  <javaparserVersion>3.26.4</javaparserVersion>   <!-- optional. Advanced: override the JavaParser version pulled in transitively by Cleanthat -->
   <sourceJdk>${maven.compiler.source}</sourceJdk> <!-- optional. Default to ${maven.compiler.source} else '1.7' -->
   <mutators>
     <mutator>SafeAndConsensual</mutator>          <!-- optional. Default to 'SafeAndConsensual' to include all mutators -->
