@@ -27,7 +27,7 @@ maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven-api"
 ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", version.ref = "ktlint" }
 ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standard", version.ref = "ktlint" }
 
-jgit = "org.eclipse.jgit:org.eclipse.jgit:7.5.0.202512021534-r"
+jgit = "org.eclipse.jgit:org.eclipse.jgit:7.6.0.202603022253-r"
 junit-jupiter = "org.junit.jupiter:junit-jupiter:6.0.3"
 assertj-core = "org.assertj:assertj-core:3.27.7"
 mockito-core = "org.mockito:mockito-core:5.23.0"
