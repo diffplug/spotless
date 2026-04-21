@@ -11,9 +11,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-- Add `javaparserVersion` option to the Cleanthat step, allowing callers to override the JavaParser version pulled in transitively by Cleanthat.
+- Add `javaparserVersion` option to the Cleanthat step, allowing callers to override the JavaParser version pulled in transitively by Cleanthat. ([#2903](https://github.com/diffplug/spotless/pull/2903))
 ### Changes
-- Bump default `cleanthat` version `2.24` -> `2.25`.
+- Bump default `cleanthat` version `2.24` -> `2.25`. ([#2903](https://github.com/diffplug/spotless/pull/2903))
 
 ## [4.5.0] - 2026-03-18
 ### Added
