@@ -89,8 +89,7 @@ public final class CleanthatJavaStep implements Serializable {
 	/**
 	 * Default JavaParser version: {@code null}, meaning whichever transitive version is brought in by Cleanthat.
 	 */
-	@Nullable
-	public static String defaultJavaparserVersion() {
+	@Nullable public static String defaultJavaparserVersion() {
 		return null;
 	}
 
