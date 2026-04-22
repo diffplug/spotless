@@ -87,7 +87,7 @@ public class JavaCleanthatRefactorerFunc implements FormatterFunc.NeedsFile {
 
 		JavaRefactorer refactorer = new JavaRefactorer(engineProperties, refactorerProperties);
 
-		LOGGER.debug("Processing sourceJdk={} included={} excluded={}", jdkVersion, included, excluded, includeDraft);
+		LOGGER.debug("Processing sourceJdk={} included={} excluded={} includeDraft={}", jdkVersion, included, excluded, includeDraft);
 		LOGGER.debug("Available mutators: {}", JavaRefactorer.getAllIncluded());
 
 		PathAndContent pathAndContent = new PathAndContent(file.toPath(), input);

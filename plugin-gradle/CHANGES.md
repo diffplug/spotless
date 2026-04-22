@@ -5,8 +5,11 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 - Add `withIndentStyle` and `withIndentSize` configuration to `tableTestFormatter` for setting the fallback indent when no `.editorconfig` is found. ([#2893](https://github.com/diffplug/spotless/pull/2893))
+- Add `javaparserVersion(...)` to `cleanthat`, allowing users to override the JavaParser version pulled in transitively by Cleanthat. ([#2903](https://github.com/diffplug/spotless/pull/2903))
 ### Fixed
 - Fix `tableTestFormatter` editorconfig cache not honoring `.editorconfig` changes across Gradle daemon runs due to a shared static `EditorConfigProvider`. ([#2893](https://github.com/diffplug/spotless/pull/2893))
+### Changes
+- Bump default `cleanthat` version `2.24` -> `2.25`. ([#2903](https://github.com/diffplug/spotless/pull/2903))
 
 ## [8.4.0] - 2026-03-18
 ### Added

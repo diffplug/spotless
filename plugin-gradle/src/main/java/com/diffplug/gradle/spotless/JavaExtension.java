@@ -433,6 +433,8 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 		private String version = CleanthatJavaStep.defaultVersion();
 
+		private String javaparserVersion = CleanthatJavaStep.defaultJavaparserVersion();
+
 		private String sourceJdk = CleanthatJavaStep.defaultSourceJdk();
 
 		private List<String> mutators = new ArrayList<>(CleanthatJavaStep.defaultMutators());
@@ -455,6 +457,18 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		public CleanthatJavaConfig version(String version) {
 			Objects.requireNonNull(version);
 			this.version = version;
+			replaceStep(createStep());
+			return this;
+		}
+
+		/**
+		 * Advanced: override the version of JavaParser pulled in transitively by Cleanthat. The coordinate
+		 * {@code com.github.javaparser:javaparser-symbol-solver-core:<version>} is appended to the resolved classpath;
+		 * standard dependency resolution rules then apply (newest wins).
+		 */
+		public CleanthatJavaConfig javaparserVersion(String javaparserVersion) {
+			Objects.requireNonNull(javaparserVersion);
+			this.javaparserVersion = javaparserVersion;
 			replaceStep(createStep());
 			return this;
 		}
@@ -504,6 +518,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return CleanthatJavaStep.create(
 					groupArtifact,
 					version,
+					javaparserVersion,
 					sourceJdk, mutators, excludedMutators, includeDraft, provisioner());
 		}
 	}

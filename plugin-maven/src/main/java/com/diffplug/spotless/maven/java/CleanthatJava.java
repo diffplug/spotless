@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,14 @@ public class CleanthatJava implements FormatterStepFactory {
 	@Parameter
 	private String version;
 
+	/**
+	 * Optional: override the version of JavaParser pulled in as a transitive dependency of Cleanthat. Advanced use-case:
+	 * declaring a version here appends {@code com.github.javaparser:javaparser-symbol-solver-core:<javaparserVersion>}
+	 * to the resolved classpath, so standard Maven resolution rules (newest wins) apply. At your own risk.
+	 */
+	@Parameter
+	private String javaparserVersion;
+
 	// https://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html#source
 	@Parameter(property = "maven.compiler.source")
 	private String sourceJdk = CleanthatJavaStep.defaultSourceJdk();
@@ -49,6 +57,6 @@ public class CleanthatJava implements FormatterStepFactory {
 		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : CleanthatJavaStep.defaultGroupArtifact();
 		String version = this.version != null ? this.version : CleanthatJavaStep.defaultVersion();
 
-		return CleanthatJavaStep.create(groupArtifact, version, sourceJdk, mutators, excludedMutators, includeDraft, config.getProvisioner());
+		return CleanthatJavaStep.create(groupArtifact, version, javaparserVersion, sourceJdk, mutators, excludedMutators, includeDraft, config.getProvisioner());
 	}
 }

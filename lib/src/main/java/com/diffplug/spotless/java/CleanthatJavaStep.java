@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +31,8 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
+
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
  * Enables CleanThat as a SpotLess step.
@@ -42,13 +45,15 @@ public final class CleanthatJavaStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "cleanthat";
 	private static final String MAVEN_COORDINATE = "io.github.solven-eu.cleanthat:java";
+	private static final String JAVAPARSER_MAVEN_COORDINATE = "com.github.javaparser:javaparser-symbol-solver-core";
 	/**
 	 * CleanThat changelog is available at <a href="https://github.com/solven-eu/cleanthat/blob/master/CHANGES.MD">here</a>.
 	 */
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(17, "2.24");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(17, "2.25");
 
 	private final JarState.Promised jarState;
 	private final String version;
+	private final String javaparserVersion;
 	private final String sourceJdkVersion;
 	private final List<String> included;
 	private final List<String> excluded;
@@ -56,12 +61,14 @@ public final class CleanthatJavaStep implements Serializable {
 
 	private CleanthatJavaStep(JarState.Promised jarState,
 			String version,
+			String javaparserVersion,
 			String sourceJdkVersion,
 			List<String> included,
 			List<String> excluded,
 			boolean includeDraft) {
 		this.jarState = jarState;
 		this.version = version;
+		this.javaparserVersion = javaparserVersion;
 
 		this.sourceJdkVersion = sourceJdkVersion;
 		this.included = included;
@@ -76,7 +83,14 @@ public final class CleanthatJavaStep implements Serializable {
 
 	/** Creates a step that applies default CleanThat mutators. */
 	public static FormatterStep create(String version, Provisioner provisioner) {
-		return createWithStepName(NAME, MAVEN_COORDINATE, version, defaultSourceJdk(), defaultMutators(), defaultExcludedMutators(), defaultIncludeDraft(), provisioner);
+		return createWithStepName(NAME, MAVEN_COORDINATE, version, defaultJavaparserVersion(), defaultSourceJdk(), defaultMutators(), defaultExcludedMutators(), defaultIncludeDraft(), provisioner);
+	}
+
+	/**
+	 * Default JavaParser version: {@code null}, meaning whichever transitive version is brought in by Cleanthat.
+	 */
+	@Nullable public static String defaultJavaparserVersion() {
+		return null;
 	}
 
 	public static String defaultSourceJdk() {
@@ -106,6 +120,7 @@ public final class CleanthatJavaStep implements Serializable {
 	static FormatterStep createWithStepName(String stepName,
 			String groupArtifact,
 			String version,
+			String javaparserVersion,
 			String sourceJdkVersion,
 			List<String> included,
 			List<String> excluded,
@@ -117,8 +132,14 @@ public final class CleanthatJavaStep implements Serializable {
 		}
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
+		List<String> coordinates = new ArrayList<>();
+		coordinates.add(groupArtifact + ":" + version);
+		if (javaparserVersion != null) {
+			// Added alongside Cleanthat so dependency resolution can upgrade the transitive JavaParser.
+			coordinates.add(JAVAPARSER_MAVEN_COORDINATE + ":" + javaparserVersion);
+		}
 		return FormatterStep.create(stepName,
-				new CleanthatJavaStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, sourceJdkVersion, included, excluded, includeDraft),
+				new CleanthatJavaStep(JarState.promise(() -> JarState.from(coordinates, provisioner)), version, javaparserVersion, sourceJdkVersion, included, excluded, includeDraft),
 				CleanthatJavaStep::equalityState,
 				State::createFormat);
 	}
@@ -131,7 +152,19 @@ public final class CleanthatJavaStep implements Serializable {
 			List<String> excluded,
 			boolean includeDraft,
 			Provisioner provisioner) {
-		return createWithStepName(NAME, groupArtifact, version, sourceJdkVersion, included, excluded, includeDraft, provisioner);
+		return createWithStepName(NAME, groupArtifact, version, defaultJavaparserVersion(), sourceJdkVersion, included, excluded, includeDraft, provisioner);
+	}
+
+	/** Creates a step that applies selected CleanThat mutators, with a custom JavaParser version. */
+	public static FormatterStep create(String groupArtifact,
+			String version,
+			String javaparserVersion,
+			String sourceJdkVersion,
+			List<String> included,
+			List<String> excluded,
+			boolean includeDraft,
+			Provisioner provisioner) {
+		return createWithStepName(NAME, groupArtifact, version, javaparserVersion, sourceJdkVersion, included, excluded, includeDraft, provisioner);
 	}
 
 	/** Get default formatter version */
@@ -144,7 +177,7 @@ public final class CleanthatJavaStep implements Serializable {
 	}
 
 	private State equalityState() {
-		return new State(jarState.get(), version, sourceJdkVersion, included, excluded, includeDraft);
+		return new State(jarState.get(), version, javaparserVersion, sourceJdkVersion, included, excluded, includeDraft);
 	}
 
 	private static final class State implements Serializable {
@@ -153,6 +186,7 @@ public final class CleanthatJavaStep implements Serializable {
 
 		private final JarState jarState;
 		private final String version;
+		private final String javaparserVersion;
 		private final String sourceJdkVersion;
 		private final List<String> included;
 		private final List<String> excluded;
@@ -160,6 +194,7 @@ public final class CleanthatJavaStep implements Serializable {
 
 		State(JarState jarState,
 				String version,
+				String javaparserVersion,
 				String sourceJdkVersion,
 				List<String> included,
 				List<String> excluded,
@@ -168,6 +203,7 @@ public final class CleanthatJavaStep implements Serializable {
 			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = jarState;
 			this.version = version;
+			this.javaparserVersion = javaparserVersion;
 			this.sourceJdkVersion = sourceJdkVersion;
 			this.included = included;
 			this.excluded = excluded;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public final class RemoveUnusedImportsStep implements Serializable {
 		case GJF:
 			return GoogleJavaFormatStep.createRemoveUnusedImportsOnly(provisioner);
 		case CLEANTHAT:
-			return CleanthatJavaStep.createWithStepName(NAME, CleanthatJavaStep.defaultGroupArtifact(), CleanthatJavaStep.defaultVersion(), "99.9", List.of(CLEANTHAT_MUTATOR), List.of(), false, provisioner);
+			return CleanthatJavaStep.createWithStepName(NAME, CleanthatJavaStep.defaultGroupArtifact(), CleanthatJavaStep.defaultVersion(), CleanthatJavaStep.defaultJavaparserVersion(), "99.9", List.of(CLEANTHAT_MUTATOR), List.of(), false, provisioner);
 		default:
 			throw new IllegalArgumentException("Invalid unusedImportRemover: " + unusedImportRemover);
 		}
