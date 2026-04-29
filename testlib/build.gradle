@@ -1,9 +1,12 @@
 plugins {
 	id 'java-library'
+	id 'spotless.java-setup'
+	id 'spotless.special-tests'
+	id 'spotless.errorprone'
+	id 'spotless.code-format'
 }
 ext.artifactId = project.artifactIdTestLib
 version = rootProject.spotlessChangelog.versionNext
-apply from: rootProject.file('gradle/java-setup.gradle')
 
 dependencies {
 	api projects.lib
@@ -29,7 +32,6 @@ spotbugs {
 	reportLevel = com.github.spotbugs.snom.Confidence.valueOf('HIGH')
 }
 
-apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	// for Antlr4FormatterStepTest, KtfmtStepTest, and KtLintStepTest
 	jvmArgs(

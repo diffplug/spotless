@@ -1,27 +1,23 @@
 plugins {
-	alias(libs.plugins.equo.ide)
-	alias(libs.plugins.test.logger) apply false
-	alias(libs.plugins.spotless.changelog) apply false
-	alias(libs.plugins.plugin.publish) apply false
-	alias(libs.plugins.version.compatibility) apply false
-	alias(libs.plugins.nexus.publish) apply false
-	alias(libs.plugins.errorprone) apply false
-	alias(libs.plugins.rewrite) apply false
-	alias(libs.plugins.maven.plugin.development) apply false
-	alias(libs.plugins.p2deps) apply false
+	alias libs.plugins.equo.ide
+	alias libs.plugins.test.logger apply false
+	alias libs.plugins.spotless.changelog apply false
+	alias libs.plugins.plugin.publish apply false
+	alias libs.plugins.version.compatibility apply false
+	alias libs.plugins.nexus.publish apply false
+	alias libs.plugins.errorprone apply false
+	alias libs.plugins.rewrite apply false
+	alias libs.plugins.maven.plugin.development apply false
+	alias libs.plugins.p2deps apply false
+	// Convention plugins
+	id 'spotless.java-publish'
+	id 'spotless.changelog'
+	id 'spotless.rewrite'
+	id 'spotless.code-format'
 }
 
 equoIde {
-	branding().title('Spotless').icon(file('_images/spotless_logo.png'))
-	welcome().openUrl('https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md')
-	gradleBuildship().autoImport('.')
+	branding().title("Spotless").icon(file("_images/spotless_logo.png"))
+	welcome().openUrl("https://github.com/diffplug/spotless/blob/main/CONTRIBUTING.md")
+	gradleBuildship().autoImport(".")
 }
-
-apply from: rootProject.file('gradle/java-publish.gradle')
-apply from: rootProject.file('gradle/changelog.gradle')
-apply from: rootProject.file('gradle/rewrite.gradle')
-allprojects {
-	apply from: rootProject.file('gradle/error-prone.gradle')
-	apply from: rootProject.file('gradle/spotless.gradle')
-}
-apply from: rootProject.file('gradle/spotless-freshmark.gradle')

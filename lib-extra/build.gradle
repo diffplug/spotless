@@ -1,11 +1,15 @@
 plugins {
 	id 'java-library'
 	id 'dev.equo.p2deps'
+	id 'spotless.java-setup'
+	id 'spotless.java-publish'
+	id 'spotless.special-tests'
+	id 'spotless.errorprone'
+	id 'spotless.code-format'
 }
 ext.artifactId = project.artifactIdLibExtra
 version = rootProject.spotlessChangelog.versionNext
-apply from: rootProject.file('gradle/java-setup.gradle')
-apply from: rootProject.file('gradle/java-publish.gradle')
+
 
 dependencies {
 	api projects.lib
@@ -38,7 +42,6 @@ spotless {
 	}
 }
 
-apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	// needed for EclipseCdtFormatterStepTest
 	jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
@@ -72,7 +75,6 @@ tasks.withType(Test).configureEach {
 	classpath += jar.get().outputs.files
 }
 
-apply plugin: 'dev.equo.p2deps'
 p2deps {
 	into 'cdtCompileOnly', {
 		p2repo 'https://download.eclipse.org/eclipse/updates/4.26/'

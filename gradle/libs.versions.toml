@@ -62,12 +62,21 @@ rewrite-recipe-static-analysis = "org.openrewrite.recipe:rewrite-static-analysis
 rewrite-recipe-third-party = "org.openrewrite.recipe:rewrite-third-party:0.36.2"
 
 errorprone-core = "com.google.errorprone:error_prone_core:2.42.0"
+errorprone-plugin = "net.ltgt.gradle:gradle-errorprone-plugin:5.1.0"
+groovy-xml = "org.codehaus.groovy:groovy-xml:3.0.22"
+
+spotless-changelog-lib = "com.diffplug.spotless-changelog:com.diffplug.spotless-changelog.gradle.plugin:3.1.2"
+errorprone-gradle-lib = "net.ltgt.errorprone:net.ltgt.errorprone.gradle.plugin:5.1.0"
+nexus-publish-lib = "io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:2.0.0"
+spotbugs-gradle-lib = "com.github.spotbugs:com.github.spotbugs.gradle.plugin:6.4.8"
+rewrite-gradle-lib = "org.openrewrite.rewrite:org.openrewrite.rewrite.gradle.plugin:7.25.0"
+test-logger-gradle-lib = "com.adarshr.test-logger:com.adarshr.test-logger.gradle.plugin:4.0.0"
+develocity-gradle-lib = "com.gradle.develocity:com.gradle.develocity.gradle.plugin:4.3.2"
+spotless-gradle-lib = "com.diffplug.spotless:com.diffplug.spotless.gradle.plugin:8.3.0"
 
 [plugins]
 test-logger = "com.adarshr.test-logger:4.0.0"
-spotless = "com.diffplug.spotless:8.3.0"
 spotless-changelog = "com.diffplug.spotless-changelog:3.1.2"
-spotbugs = "com.github.spotbugs:6.4.8"
 plugin-publish = "com.gradle.plugin-publish:2.1.0"
 equo-ide = "dev.equo.ide:1.7.8"
 version-compatibility = "io.github.davidburstrom.version-compatibility:0.5.0"
