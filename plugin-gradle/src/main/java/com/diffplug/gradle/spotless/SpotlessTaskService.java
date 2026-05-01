@@ -99,9 +99,12 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	}
 
 	// <GitRatchet>
-	private final GitRatchetGradle ratchet = new GitRatchetGradle();
+	private GitRatchetGradle ratchet;
 
 	GitRatchetGradle getRatchet() {
+		if (ratchet == null) {
+			ratchet = new GitRatchetGradle();
+		}
 		return ratchet;
 	}
 
@@ -112,7 +115,9 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	@Override
 	public void close() throws Exception {
-		ratchet.close();
+		if (ratchet != null) {
+			ratchet.close();
+		}
 	}
 	// </GitRatchet>
 

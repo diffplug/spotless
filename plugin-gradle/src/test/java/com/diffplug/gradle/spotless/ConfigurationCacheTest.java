@@ -15,8 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
+import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
@@ -58,6 +62,52 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 				"}",
 				"tasks.named('spotlessJavaApply').get()");
 		gradleRunner().withArguments("help").build();
+	}
+
+	@Test
+	public void configurationCacheNotInvalidatedByGitconfig() throws IOException {
+		// ~/.gitconfig is read by JGit at class-load time via the SystemReader.
+		// If GitRatchetGradle is loaded eagerly during configuration, Gradle's
+		// configuration cache fingerprints ~/.gitconfig. When its content changes
+		// (e.g. CI workers inject per-build auth tokens), the cache is invalidated.
+		// This test verifies that changing ~/.gitconfig between runs does not
+		// invalidate the configuration cache.
+		Path gitconfig = Path.of(System.getProperty("user.home"), ".gitconfig");
+		boolean existed = Files.exists(gitconfig);
+		String originalContent = existed ? Files.readString(gitconfig) : null;
+		try {
+			Files.writeString(gitconfig, "[user]\n\tname = test\n");
+
+			setFile("build.gradle").toLines(
+					"plugins {",
+					"    id 'com.diffplug.spotless'",
+					"}",
+					"repositories { mavenCentral() }",
+					"apply plugin: 'java'",
+					"spotless {",
+					"    java {",
+					"        googleJavaFormat()",
+					"    }",
+					"}");
+			setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+
+			// first run stores the configuration cache
+			gradleRunner().withArguments("help").build();
+
+			// change ~/.gitconfig content between runs
+			Files.writeString(gitconfig, "[user]\n\tname = test\n[http]\n\textraheader = changed\n");
+
+			// second run must reuse the configuration cache despite the change
+			String output = gradleRunner().withArguments("help").build().getOutput();
+			Assertions.assertThat(output).contains("Reusing configuration cache.");
+		} finally {
+			// restore original ~/.gitconfig
+			if (originalContent != null) {
+				Files.writeString(gitconfig, originalContent);
+			} else if (Files.exists(gitconfig)) {
+				Files.delete(gitconfig);
+			}
+		}
 	}
 
 	@Test
