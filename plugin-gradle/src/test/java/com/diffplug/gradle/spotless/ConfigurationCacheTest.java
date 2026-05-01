@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.diffplug.gradle.spotless;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.GradleRunner;
@@ -66,46 +65,41 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 
 	@Test
 	public void configurationCacheNotInvalidatedByGitconfig() throws IOException {
-		// ~/.gitconfig is read by JGit at class-load time via the SystemReader.
-		// If GitRatchetGradle is loaded eagerly during configuration, Gradle's
-		// configuration cache fingerprints ~/.gitconfig. When its content changes
-		// (e.g. CI workers inject per-build auth tokens), the cache is invalidated.
-		// This test verifies that changing ~/.gitconfig between runs does not
-		// invalidate the configuration cache.
-		Path gitconfig = Path.of(System.getProperty("user.home"), ".gitconfig");
-		boolean existed = Files.exists(gitconfig);
-		String originalContent = existed ? Files.readString(gitconfig) : null;
+		// The default GIT_ATTRIBUTES_FAST_ALLSAME line ending policy reads
+		// ~/.gitconfig via JGit to resolve core.eol / core.autocrlf. This test
+		// verifies that changing ~/.gitconfig between runs does not invalidate
+		// the configuration cache, because the git config reads happen inside a
+		// ValueSource whose file accesses are not tracked as config cache inputs.
+		File gitconfig = new File(System.getProperty("user.home"), ".gitconfig");
+		byte[] originalContent = gitconfig.exists() ? Files.readAllBytes(gitconfig.toPath()) : null;
+
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"apply plugin: 'java'",
+				"spotless {",
+				"    java {",
+				"        googleJavaFormat()",
+				"    }",
+				"}");
+		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeFormatted.test");
+
 		try {
-			Files.writeString(gitconfig, "[user]\n\tname = test\n");
+			Files.writeString(gitconfig.toPath(), "[user]\n\tname = test\n");
+			gradleRunner().withArguments("spotlessCheck").build();
 
-			setFile("build.gradle").toLines(
-					"plugins {",
-					"    id 'com.diffplug.spotless'",
-					"}",
-					"repositories { mavenCentral() }",
-					"apply plugin: 'java'",
-					"spotless {",
-					"    java {",
-					"        googleJavaFormat()",
-					"    }",
-					"}");
-			setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+			// change .gitconfig content between runs (simulates CI auth token injection)
+			Files.writeString(gitconfig.toPath(), "[user]\n\tname = test\n[http]\n\textraheader = changed\n");
 
-			// first run stores the configuration cache
-			gradleRunner().withArguments("help").build();
-
-			// change ~/.gitconfig content between runs
-			Files.writeString(gitconfig, "[user]\n\tname = test\n[http]\n\textraheader = changed\n");
-
-			// second run must reuse the configuration cache despite the change
-			String output = gradleRunner().withArguments("help").build().getOutput();
-			Assertions.assertThat(output).contains("Reusing configuration cache.");
+			String output = gradleRunner().withArguments("spotlessCheck").build().getOutput();
+			Assertions.assertThat(output).contains("Reusing configuration cache");
 		} finally {
-			// restore original ~/.gitconfig
 			if (originalContent != null) {
-				Files.writeString(gitconfig, originalContent);
-			} else if (Files.exists(gitconfig)) {
-				Files.delete(gitconfig);
+				Files.write(gitconfig.toPath(), originalContent);
+			} else {
+				Files.deleteIfExists(gitconfig.toPath());
 			}
 		}
 	}
