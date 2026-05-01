@@ -117,12 +117,24 @@ class ImportOrderStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void doesntThrowIfImportOrderIsntSerializable() {
+	void groovyImportsPreservesBlankLinesBetweenGroups() {
+		FormatterStep step = ImportOrderStep.forGroovy().createFrom();
+		StepHarness.forStep(step).testResourceUnaffected("java/importsorter/GroovyCodeSortedImportsWithBlankLines.test");
+	}
+
+	@Test
+	void groovySortImportsStripsInterleavedBlankLines() {
+		FormatterStep step = ImportOrderStep.forGroovy().createFrom();
+		StepHarness.forStep(step).testResource("java/importsorter/GroovyCodeUnsortedImportsWithBlankLines.test", "java/importsorter/GroovyCodeSortedImportsNoBlankLines.test");
+	}
+
+	@Test
+	void doesntThrowIfImportOrderIsNotSerializable() {
 		ImportOrderStep.forJava().createFrom("java", "javax", "org", "\\#com");
 	}
 
 	@Test
-	void equality() throws Exception {
+	void equality() {
 		new SerializableEqualityTester() {
 			String[] imports = {};
 
