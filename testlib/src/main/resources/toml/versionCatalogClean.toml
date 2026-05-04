@@ -1,0 +1,25 @@
+[versions]
+assertj = "3.27.7"
+junit = "6.0.3"
+testcontainers = "2.0.5"
+
+[libraries]
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+testcontainers-junit-jupiter = {
+  module = "org.testcontainers:testcontainers-junit-jupiter",
+  version.ref = "testcontainers",
+}
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
+
+[bundles]
+junit = [ "junit-jupiter-api", "junit-jupiter-params" ]
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.3.21" }
+sonar = { id = "org.sonarqube", version = "7.3.0.8198" }
+spotless = { id = "com.diffplug.spotless", version = "7.2.1" }
