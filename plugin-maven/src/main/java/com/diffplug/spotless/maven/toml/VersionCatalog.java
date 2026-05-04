@@ -15,14 +15,20 @@
  */
 package com.diffplug.spotless.maven.toml;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 import com.diffplug.spotless.toml.VersionCatalogStep;
 
 public class VersionCatalog implements FormatterStepFactory {
+
+	@Parameter
+	private boolean stripQuotedKeys;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		return VersionCatalogStep.create();
+		return VersionCatalogStep.create(stripQuotedKeys);
 	}
 }

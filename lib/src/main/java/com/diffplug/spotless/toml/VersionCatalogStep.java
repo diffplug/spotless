@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.toml;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
 public final class VersionCatalogStep {
@@ -42,12 +44,16 @@ public final class VersionCatalogStep {
 	private static final Pattern ENTRY_LINE = Pattern.compile("^([^=]+)=(.+)$");
 
 	public static FormatterStep create() {
-		return FormatterStep.create(NAME,
-				VersionCatalogStep.class,
-				unused -> VersionCatalogStep::format);
+		return create(false);
 	}
 
-	static String format(String raw) {
+	public static FormatterStep create(boolean stripQuotedKeys) {
+		return FormatterStep.createLazy(NAME,
+				() -> new State(stripQuotedKeys),
+				State::toFormatter);
+	}
+
+	static String format(String raw, boolean stripQuotedKeys) {
 		if (raw.trim().isEmpty()) {
 			return raw;
 		}
@@ -84,7 +90,7 @@ public final class VersionCatalogStep {
 			result.append(header).append('\n');
 
 			for (Entry entry : entries) {
-				entry.formatted = formatEntry(entry.content);
+				entry.formatted = formatEntry(entry.content, stripQuotedKeys);
 			}
 			Collections.sort(entries, Comparator.comparing(Entry::sortKey));
 
@@ -156,13 +162,19 @@ public final class VersionCatalogStep {
 		return key;
 	}
 
-	static String formatEntry(String entry) {
+	static String formatEntry(String entry, boolean stripQuotedKeys) {
 		Matcher matcher = ENTRY_LINE.matcher(entry);
 		if (!matcher.matches()) {
 			return entry;
 		}
 
 		String key = matcher.group(1).trim();
+		if (stripQuotedKeys && key.startsWith("\"") && key.endsWith("\"")) {
+			String bare = key.substring(1, key.length() - 1);
+			if (isBareKey(bare)) {
+				key = bare;
+			}
+		}
 		String valueAndComment = matcher.group(2).trim();
 
 		String inlineComment = extractInlineComment(valueAndComment);
@@ -285,6 +297,26 @@ public final class VersionCatalogStep {
 		}
 		parts.add(input.substring(start));
 		return parts.toArray(new String[0]);
+	}
+
+	private static final Pattern BARE_KEY = Pattern.compile("^[a-zA-Z0-9_-]+$");
+
+	private static boolean isBareKey(String key) {
+		return BARE_KEY.matcher(key).matches();
+	}
+
+	private static final class State implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		private final boolean stripQuotedKeys;
+
+		State(boolean stripQuotedKeys) {
+			this.stripQuotedKeys = stripQuotedKeys;
+		}
+
+		FormatterFunc toFormatter() {
+			return raw -> format(raw, stripQuotedKeys);
+		}
 	}
 
 	private static final class Entry {

@@ -41,12 +41,20 @@ public class TomlExtension extends FormatExtension {
 	}
 
 	public class VersionCatalogConfig {
+		private boolean stripQuotedKeys;
+
 		public VersionCatalogConfig() {
+			this.stripQuotedKeys = false;
 			addStep(createStep());
 		}
 
+		public void stripQuotedKeys(boolean stripQuotedKeys) {
+			this.stripQuotedKeys = stripQuotedKeys;
+			replaceStep(createStep());
+		}
+
 		private FormatterStep createStep() {
-			return VersionCatalogStep.create();
+			return VersionCatalogStep.create(stripQuotedKeys);
 		}
 	}
 }

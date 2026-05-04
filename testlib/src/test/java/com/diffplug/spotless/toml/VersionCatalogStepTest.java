@@ -115,16 +115,44 @@ class VersionCatalogStepTest {
 	}
 
 	@Test
+	void stripQuotedKeysDisabledByDefault() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		harness.test(
+				"[versions]\n\"foo\" = \"1.0\"\n",
+				"[versions]\n\"foo\" = \"1.0\"\n");
+	}
+
+	@Test
+	void stripQuotedKeysEnabled() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create(true));
+		harness.test(
+				"[versions]\n\"foo\" = \"1.0\"\n",
+				"[versions]\nfoo = \"1.0\"\n");
+	}
+
+	@Test
+	void stripQuotedKeysPreservesNonBareKeys() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create(true));
+		harness.test(
+				"[versions]\n\"foo.bar\" = \"1.0\"\n",
+				"[versions]\n\"foo.bar\" = \"1.0\"\n");
+	}
+
+	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
+			boolean stripQuotedKeys;
+
 			@Override
 			protected void setupTest(API api) {
+				api.areDifferentThan();
+				stripQuotedKeys = true;
 				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
-				return VersionCatalogStep.create();
+				return VersionCatalogStep.create(stripQuotedKeys);
 			}
 		}.testEquals();
 	}
