@@ -8,6 +8,9 @@ Tracked issues found during review against the TOML v1.1.0 spec (https://toml.io
 - [x] Inline comments after values break inline-table/array formatting
 - [x] Blank lines in preamble are dropped
 - [x] Sort uses raw string including quote characters instead of logical key name
+- [x] Multi-line inline tables are not parsed correctly (split across lines and corrupted)
+- [x] Long lines can be split into multi-line inline tables (configurable `maxLineLength`)
+- [x] Short multi-line inline tables are joined into single lines when they fit
 
 ## TODO — TOML spec edge cases
 
@@ -23,9 +26,6 @@ addressed for full TOML spec compliance.
 - [ ] `TABLE_HEADER` regex only matches bare keys — rejects dotted table headers
       (`[section.subsection]`) and quoted table headers (`["quoted.key"]`).
       Their entries are silently dropped.
-- [ ] Multi-line values are not handled — TOML v1.1.0 allows newlines inside inline
-      tables and arrays. A multi-line inline table is split across lines and corrupted.
-
 ### String handling in `splitTopLevel`
 
 - [ ] Single-quoted (literal) strings `'...'` are not recognized — commas or `=` inside

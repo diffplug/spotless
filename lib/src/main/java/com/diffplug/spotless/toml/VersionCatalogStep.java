@@ -33,6 +33,7 @@ public final class VersionCatalogStep {
 	private VersionCatalogStep() {}
 
 	private static final String NAME = "versionCatalog";
+	private static final int DEFAULT_MAX_LINE_LENGTH = 120;
 
 	private static final List<String> TABLE_ORDER = Arrays.asList(
 			"[versions]",
@@ -44,16 +45,20 @@ public final class VersionCatalogStep {
 	private static final Pattern ENTRY_LINE = Pattern.compile("^([^=]+)=(.+)$");
 
 	public static FormatterStep create() {
-		return create(false);
+		return create(false, DEFAULT_MAX_LINE_LENGTH);
 	}
 
 	public static FormatterStep create(boolean stripQuotedKeys) {
+		return create(stripQuotedKeys, DEFAULT_MAX_LINE_LENGTH);
+	}
+
+	public static FormatterStep create(boolean stripQuotedKeys, int maxLineLength) {
 		return FormatterStep.createLazy(NAME,
-				() -> new State(stripQuotedKeys),
+				() -> new State(stripQuotedKeys, maxLineLength),
 				State::toFormatter);
 	}
 
-	static String format(String raw, boolean stripQuotedKeys) {
+	static String format(String raw, boolean stripQuotedKeys, int maxLineLength) {
 		if (raw.trim().isEmpty()) {
 			return raw;
 		}
@@ -90,7 +95,8 @@ public final class VersionCatalogStep {
 			result.append(header).append('\n');
 
 			for (Entry entry : entries) {
-				entry.formatted = formatEntry(entry.content, stripQuotedKeys);
+				String formatted = formatEntry(entry.content, stripQuotedKeys);
+				entry.formatted = applyLineLength(formatted, maxLineLength);
 			}
 			Collections.sort(entries, Comparator.comparing(Entry::sortKey));
 
@@ -124,9 +130,22 @@ public final class VersionCatalogStep {
 		String currentHeader = null;
 		List<Entry> currentEntries = null;
 		List<String> pendingComments = new ArrayList<>();
+		StringBuilder multiLineAccumulator = null;
 
 		for (String line : raw.split("\n", -1)) {
 			String trimmed = line.trim();
+
+			if (multiLineAccumulator != null) {
+				multiLineAccumulator.append(' ').append(trimmed);
+				if (isBalanced(multiLineAccumulator.toString())) {
+					Entry entry = new Entry(multiLineAccumulator.toString(), new ArrayList<>(pendingComments));
+					currentEntries.add(entry);
+					pendingComments.clear();
+					multiLineAccumulator = null;
+				}
+				continue;
+			}
+
 			if (currentHeader == null && !TABLE_HEADER.matcher(trimmed).matches()) {
 				continue;
 			}
@@ -139,6 +158,8 @@ public final class VersionCatalogStep {
 			} else if (currentEntries != null) {
 				if (trimmed.isEmpty() || trimmed.startsWith("#")) {
 					pendingComments.add(trimmed);
+				} else if (!isBalanced(trimmed)) {
+					multiLineAccumulator = new StringBuilder(trimmed);
 				} else {
 					Entry entry = new Entry(trimmed, new ArrayList<>(pendingComments));
 					currentEntries.add(entry);
@@ -150,8 +171,28 @@ public final class VersionCatalogStep {
 		return sections;
 	}
 
+	private static boolean isBalanced(String text) {
+		int depth = 0;
+		boolean inQuote = false;
+
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c == '"' && (i == 0 || text.charAt(i - 1) != '\\')) {
+				inQuote = !inQuote;
+			} else if (!inQuote) {
+				if (c == '{' || c == '[') {
+					depth++;
+				} else if (c == '}' || c == ']') {
+					depth--;
+				}
+			}
+		}
+		return depth == 0;
+	}
+
 	private static String extractKey(String formattedEntry) {
-		Matcher matcher = ENTRY_LINE.matcher(formattedEntry);
+		String firstLine = formattedEntry.contains("\n") ? formattedEntry.substring(0, formattedEntry.indexOf('\n')) : formattedEntry;
+		Matcher matcher = ENTRY_LINE.matcher(firstLine);
 		if (!matcher.matches()) {
 			return formattedEntry;
 		}
@@ -188,6 +229,52 @@ public final class VersionCatalogStep {
 			return key + " = " + value + " " + inlineComment;
 		}
 		return key + " = " + value;
+	}
+
+	private static String applyLineLength(String formattedEntry, int maxLineLength) {
+		if (maxLineLength <= 0) {
+			return formattedEntry;
+		}
+
+		String inlineComment = extractInlineComment(formattedEntry);
+		String entryWithoutComment = inlineComment != null
+				? formattedEntry.substring(0, formattedEntry.length() - inlineComment.length()).trim()
+				: formattedEntry;
+
+		Matcher matcher = ENTRY_LINE.matcher(entryWithoutComment);
+		if (!matcher.matches()) {
+			return formattedEntry;
+		}
+
+		String key = matcher.group(1).trim();
+		String value = matcher.group(2).trim();
+		String commentSuffix = inlineComment != null ? " " + inlineComment : "";
+
+		if (value.startsWith("{") && value.endsWith("}")) {
+			if (formattedEntry.length() > maxLineLength) {
+				return splitInlineTable(key, value, commentSuffix);
+			}
+			return formattedEntry;
+		}
+
+		return formattedEntry;
+	}
+
+	private static String splitInlineTable(String key, String value, String commentSuffix) {
+		String inner = value.substring(1, value.length() - 1).trim();
+		String[] pairs = splitTopLevel(inner, ',');
+
+		StringBuilder result = new StringBuilder();
+		result.append(key).append(" = {").append(commentSuffix).append('\n');
+		for (int i = 0; i < pairs.length; i++) {
+			String pair = pairs[i].trim();
+			if (pair.isEmpty()) {
+				continue;
+			}
+			result.append("  ").append(pair).append(',').append('\n');
+		}
+		result.append('}');
+		return result.toString();
 	}
 
 	private static String extractInlineComment(String valueAndComment) {
@@ -233,11 +320,16 @@ public final class VersionCatalogStep {
 
 		String[] pairs = splitTopLevel(inner, ',');
 		StringBuilder result = new StringBuilder("{ ");
-		for (int i = 0; i < pairs.length; i++) {
-			if (i > 0) {
+		boolean first = true;
+		for (String rawPair : pairs) {
+			String pair = rawPair.trim();
+			if (pair.isEmpty()) {
+				continue;
+			}
+			if (!first) {
 				result.append(", ");
 			}
-			String pair = pairs[i].trim();
+			first = false;
 			Matcher pairMatcher = ENTRY_LINE.matcher(pair);
 			if (pairMatcher.matches()) {
 				String pairKey = pairMatcher.group(1).trim();
@@ -306,16 +398,18 @@ public final class VersionCatalogStep {
 	}
 
 	private static final class State implements Serializable {
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 2L;
 
 		private final boolean stripQuotedKeys;
+		private final int maxLineLength;
 
-		State(boolean stripQuotedKeys) {
+		State(boolean stripQuotedKeys, int maxLineLength) {
 			this.stripQuotedKeys = stripQuotedKeys;
+			this.maxLineLength = maxLineLength;
 		}
 
 		FormatterFunc toFormatter() {
-			return raw -> format(raw, stripQuotedKeys);
+			return raw -> format(raw, stripQuotedKeys, maxLineLength);
 		}
 	}
 

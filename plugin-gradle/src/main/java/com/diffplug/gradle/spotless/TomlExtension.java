@@ -42,6 +42,7 @@ public class TomlExtension extends FormatExtension {
 
 	public class VersionCatalogConfig {
 		private boolean stripQuotedKeys;
+		private int maxLineLength = 120;
 
 		public VersionCatalogConfig() {
 			this.stripQuotedKeys = false;
@@ -53,8 +54,13 @@ public class TomlExtension extends FormatExtension {
 			replaceStep(createStep());
 		}
 
+		public void maxLineLength(int maxLineLength) {
+			this.maxLineLength = maxLineLength;
+			replaceStep(createStep());
+		}
+
 		private FormatterStep createStep() {
-			return VersionCatalogStep.create(stripQuotedKeys);
+			return VersionCatalogStep.create(stripQuotedKeys, maxLineLength);
 		}
 	}
 }
