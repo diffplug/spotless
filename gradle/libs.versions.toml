@@ -57,9 +57,9 @@ sortpom-sorter = "com.github.ekryd.sortpom:sortpom-sorter:4.0.0"
 tabletest-formatter-core = "org.tabletest:tabletest-formatter-core:1.1.1"
 zjsonpatch = "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
 
-rewrite-recipe-migrate-java = "org.openrewrite.recipe:rewrite-migrate-java:3.30.0"
-rewrite-recipe-static-analysis = "org.openrewrite.recipe:rewrite-static-analysis:2.30.0"
-rewrite-recipe-third-party = "org.openrewrite.recipe:rewrite-third-party:0.36.2"
+rewrite-recipe-migrate-java = "org.openrewrite.recipe:rewrite-migrate-java:3.34.0"
+rewrite-recipe-static-analysis = "org.openrewrite.recipe:rewrite-static-analysis:2.34.0"
+rewrite-recipe-third-party = "org.openrewrite.recipe:rewrite-third-party:0.38.1"
 
 errorprone-core = "com.google.errorprone:error_prone_core:2.42.0"
 
