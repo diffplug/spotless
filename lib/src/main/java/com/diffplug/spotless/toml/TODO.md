@@ -26,6 +26,7 @@ addressed for full TOML spec compliance.
 - [ ] `TABLE_HEADER` regex only matches bare keys — rejects dotted table headers
       (`[section.subsection]`) and quoted table headers (`["quoted.key"]`).
       Their entries are silently dropped.
+
 ### String handling in `splitTopLevel`
 
 - [ ] Single-quoted (literal) strings `'...'` are not recognized — commas or `=` inside
