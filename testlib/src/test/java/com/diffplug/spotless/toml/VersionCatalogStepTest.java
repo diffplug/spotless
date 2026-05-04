@@ -75,6 +75,46 @@ class VersionCatalogStepTest {
 	}
 
 	@Test
+	void commentsPreserved() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		harness.test(
+				"[versions]\n# Z library\nzoo = \"1.0\"\n# A library\nalpha = \"2.0\"\n",
+				"[versions]\n# A library\nalpha = \"2.0\"\n# Z library\nzoo = \"1.0\"\n");
+	}
+
+	@Test
+	void inlineCommentsPreserved() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		harness.test(
+				"[versions]\nfoo =\"1.0\" # latest stable\n",
+				"[versions]\nfoo = \"1.0\" # latest stable\n");
+	}
+
+	@Test
+	void inlineCommentOnInlineTable() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		harness.test(
+				"[libraries]\nfoo = {module=\"org:foo\",version.ref=\"bar\"} # important\n",
+				"[libraries]\nfoo = { module = \"org:foo\", version.ref = \"bar\" } # important\n");
+	}
+
+	@Test
+	void preamblePreserved() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		harness.test(
+				"# Catalog header\n\n# Generated\n\n[versions]\nfoo = \"1.0\"\n",
+				"# Catalog header\n\n# Generated\n\n[versions]\nfoo = \"1.0\"\n");
+	}
+
+	@Test
+	void quotedKeySortsByLogicalName() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		harness.test(
+				"[versions]\n\"zoo\" = \"1.0\"\nalpha = \"2.0\"\n",
+				"[versions]\nalpha = \"2.0\"\n\"zoo\" = \"1.0\"\n");
+	}
+
+	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			@Override

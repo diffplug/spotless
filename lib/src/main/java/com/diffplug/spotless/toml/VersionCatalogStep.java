@@ -18,6 +18,7 @@ package com.diffplug.spotless.toml;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public final class VersionCatalogStep {
 			return raw;
 		}
 
-		Map<String, List<String>> sections = parseSections(raw);
+		Map<String, List<Entry>> sections = parseSections(raw);
 		List<String> preambleLines = extractPreamble(raw);
 
 		StringBuilder result = new StringBuilder();
@@ -75,19 +76,23 @@ public final class VersionCatalogStep {
 		}
 
 		for (String header : orderedKeys) {
-			List<String> entries = sections.get(header);
+			List<Entry> entries = sections.get(header);
 			if (!first) {
 				result.append('\n');
 			}
 			first = false;
 			result.append(header).append('\n');
-			List<String> formatted = new ArrayList<>();
-			for (String entry : entries) {
-				formatted.add(formatEntry(entry));
+
+			for (Entry entry : entries) {
+				entry.formatted = formatEntry(entry.content);
 			}
-			Collections.sort(formatted);
-			for (String entry : formatted) {
-				result.append(entry).append('\n');
+			Collections.sort(entries, Comparator.comparing(Entry::sortKey));
+
+			for (Entry entry : entries) {
+				for (String commentLine : entry.leadingComments) {
+					result.append(commentLine).append('\n');
+				}
+				result.append(entry.formatted).append('\n');
 			}
 		}
 
@@ -100,22 +105,23 @@ public final class VersionCatalogStep {
 			if (TABLE_HEADER.matcher(line.trim()).matches()) {
 				break;
 			}
-			String trimmed = line.trim();
-			if (!trimmed.isEmpty()) {
-				preamble.add(trimmed);
-			}
+			preamble.add(line);
+		}
+		while (!preamble.isEmpty() && preamble.get(preamble.size() - 1).trim().isEmpty()) {
+			preamble.remove(preamble.size() - 1);
 		}
 		return preamble;
 	}
 
-	private static Map<String, List<String>> parseSections(String raw) {
-		Map<String, List<String>> sections = new LinkedHashMap<>();
+	private static Map<String, List<Entry>> parseSections(String raw) {
+		Map<String, List<Entry>> sections = new LinkedHashMap<>();
 		String currentHeader = null;
-		List<String> currentEntries = null;
+		List<Entry> currentEntries = null;
+		List<String> pendingComments = new ArrayList<>();
 
 		for (String line : raw.split("\n", -1)) {
 			String trimmed = line.trim();
-			if (trimmed.isEmpty() || (currentHeader == null && !TABLE_HEADER.matcher(trimmed).matches())) {
+			if (currentHeader == null && !TABLE_HEADER.matcher(trimmed).matches()) {
 				continue;
 			}
 			Matcher headerMatcher = TABLE_HEADER.matcher(trimmed);
@@ -123,12 +129,31 @@ public final class VersionCatalogStep {
 				currentHeader = "[" + headerMatcher.group(1) + "]";
 				currentEntries = new ArrayList<>();
 				sections.put(currentHeader, currentEntries);
-			} else if (currentEntries != null && !trimmed.startsWith("#")) {
-				currentEntries.add(trimmed);
+				pendingComments.clear();
+			} else if (currentEntries != null) {
+				if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+					pendingComments.add(trimmed);
+				} else {
+					Entry entry = new Entry(trimmed, new ArrayList<>(pendingComments));
+					currentEntries.add(entry);
+					pendingComments.clear();
+				}
 			}
 		}
 
 		return sections;
+	}
+
+	private static String extractKey(String formattedEntry) {
+		Matcher matcher = ENTRY_LINE.matcher(formattedEntry);
+		if (!matcher.matches()) {
+			return formattedEntry;
+		}
+		String key = matcher.group(1).trim();
+		if (key.startsWith("\"") && key.endsWith("\"")) {
+			return key.substring(1, key.length() - 1);
+		}
+		return key;
 	}
 
 	static String formatEntry(String entry) {
@@ -138,11 +163,40 @@ public final class VersionCatalogStep {
 		}
 
 		String key = matcher.group(1).trim();
-		String value = matcher.group(2).trim();
+		String valueAndComment = matcher.group(2).trim();
+
+		String inlineComment = extractInlineComment(valueAndComment);
+		String value = inlineComment != null
+				? valueAndComment.substring(0, valueAndComment.length() - inlineComment.length()).trim()
+				: valueAndComment;
 
 		value = formatValue(value);
 
+		if (inlineComment != null) {
+			return key + " = " + value + " " + inlineComment;
+		}
 		return key + " = " + value;
+	}
+
+	private static String extractInlineComment(String valueAndComment) {
+		boolean inQuote = false;
+		int depth = 0;
+
+		for (int i = 0; i < valueAndComment.length(); i++) {
+			char c = valueAndComment.charAt(i);
+			if (c == '"' && (i == 0 || valueAndComment.charAt(i - 1) != '\\')) {
+				inQuote = !inQuote;
+			} else if (!inQuote) {
+				if (c == '{' || c == '[') {
+					depth++;
+				} else if (c == '}' || c == ']') {
+					depth--;
+				} else if (c == '#' && depth == 0) {
+					return valueAndComment.substring(i);
+				}
+			}
+		}
+		return null;
 	}
 
 	private static String formatValue(String value) {
@@ -231,5 +285,20 @@ public final class VersionCatalogStep {
 		}
 		parts.add(input.substring(start));
 		return parts.toArray(new String[0]);
+	}
+
+	private static final class Entry {
+		final String content;
+		final List<String> leadingComments;
+		String formatted;
+
+		Entry(String content, List<String> leadingComments) {
+			this.content = content;
+			this.leadingComments = leadingComments;
+		}
+
+		String sortKey() {
+			return extractKey(formatted != null ? formatted : content);
+		}
 	}
 }
