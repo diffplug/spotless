@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Vojtech Krasa
@@ -91,6 +92,15 @@ final class ImportSorter {
 
 		List<String> sortedImports = ImportSorterImpl.sort(imports, importsOrder, wildcardsLast, semanticSort,
 				treatAsPackage, treatAsClass, lineFormat);
+		boolean sortedHasNoBlanks = sortedImports.stream().noneMatch(N::equals);
+		if (sortedHasNoBlanks && firstImportLine > 0) {
+			List<String> originalFormatted = imports.stream()
+					.map(i -> lineFormat.formatted(i) + N)
+					.collect(Collectors.toList());
+			if (sortedImports.equals(originalFormatted)) {
+				return raw;
+			}
+		}
 		return applyImportsToDocument(raw, firstImportLine, lastImportLine, sortedImports);
 	}
 

@@ -1,0 +1,7 @@
+import org.dooda.Didoo
+
+import java.lang.Thread
+import java.lang.Runnable
+
+public class NotDeletedByFormatter {
+}
