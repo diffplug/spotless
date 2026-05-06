@@ -99,7 +99,9 @@ model {
 	publishing {
 		publications {
 			pluginMaven(MavenPublication) {
-				if (project.ext.artifactId != 'spotless-plugin-gradle') {
+				if (isPluginMaven) {
+					from components.mavenPlugin
+				} else if (project.ext.artifactId != 'spotless-plugin-gradle') {
 					from components.java
 				}
 
