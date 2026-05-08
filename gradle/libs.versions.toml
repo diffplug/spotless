@@ -3,7 +3,7 @@ jdk-release = "17"
 durian = "1.2.0"
 selfie = "3.0.0"
 jackson = "2.20.1"
-maven-api = "3.0"
+maven-api = "3.9.15"
 ktlint = "1.8.0"
 
 [libraries]
