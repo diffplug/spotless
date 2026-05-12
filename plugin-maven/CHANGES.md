@@ -36,6 +36,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Use Eclipse JDT's collator-based comparison when sorting Java members to better match Eclipse save actions. ([#2920](https://github.com/diffplug/spotless/pull/2920))
 - Bump default `cleanthat` version `2.24` -> `2.25`. ([#2903](https://github.com/diffplug/spotless/pull/2903))
 - Bump default `eclipse-jdt` version from `4.35` to `4.39`. ([#2912](https://github.com/diffplug/spotless/pull/2912))
+* Bump default `greclipse` version to latest `4.35` -> `4.39`. ([#2924](https://github.com/diffplug/spotless/pull/2924))
 
 ## [3.4.0] - 2026-03-18
 ### Added
