@@ -234,6 +234,11 @@ public abstract class SpotlessExtension {
 		format(GherkinExtension.NAME, GherkinExtension.class, closure);
 	}
 
+	public void toml(Action<TomlExtension> closure) {
+		requireNonNull(closure);
+		format(TomlExtension.NAME, TomlExtension.class, closure);
+	}
+
 	public void go(Action<GoExtension> closure) {
 		requireNonNull(closure);
 		format(GoExtension.NAME, GoExtension.class, closure);
@@ -308,21 +313,46 @@ public abstract class SpotlessExtension {
 
 	protected abstract void createFormatTasks(String name, FormatExtension formatExtension);
 
+	/**
+	 * Enables predeclared dependency resolution using the root project's {@code buildscript} repositories.
+	 *
+	 * @deprecated Configure the repository policy directly in {@code spotlessPredeclare} instead:
+	 *             <pre>{@code
+	 *             spotlessPredeclare {
+	 *                 fromBuildscriptRepositories()
+	 *                 java { googleJavaFormat("1.17.0") }
+	 *             }
+	 *             }</pre>
+	 */
+	@Deprecated
 	public void predeclareDepsFromBuildscript() {
 		if (project.getRootProject() != project) {
 			throw new GradleException("predeclareDepsFromBuildscript can only be called from the root project");
 		}
+		project.getLogger().info("predeclareDepsFromBuildscript() is deprecated, use 'spotlessPredeclare { fromBuildscriptRepositories() }' directly instead.");
 		predeclare(GradleProvisioner.Policy.ROOT_BUILDSCRIPT);
 	}
 
+	/**
+	 * Enables predeclared dependency resolution using the root project's repositories.
+	 *
+	 * @deprecated Declare formats directly in {@code spotlessPredeclare} instead:
+	 *             <pre>{@code
+	 *             spotlessPredeclare {
+	 *                 java { googleJavaFormat("1.17.0") }
+	 *             }
+	 *             }</pre>
+	 */
+	@Deprecated
 	public void predeclareDeps() {
 		if (project.getRootProject() != project) {
 			throw new GradleException("predeclareDeps can only be called from the root project");
 		}
+		project.getLogger().info("predeclareDeps() is deprecated, use 'spotlessPredeclare { ... }' directly instead.");
 		predeclare(GradleProvisioner.Policy.ROOT_PROJECT);
 	}
 
-	protected void predeclare(GradleProvisioner.Policy policy) {
-		project.getExtensions().create(SpotlessExtensionPredeclare.class, EXTENSION_PREDECLARE, SpotlessExtensionPredeclare.class, project, policy);
+	void predeclare(GradleProvisioner.Policy policy) {
+		project.getExtensions().getByType(SpotlessExtensionPredeclare.class).enablePredeclare(policy);
 	}
 }
