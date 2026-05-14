@@ -29,6 +29,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
@@ -122,12 +123,14 @@ final class GradleProvisioner {
 	private static Provisioner forConfigurationContainer(Project project, ConfigurationContainer configurations, DependencyHandler dependencies) {
 		return (withTransitives, mavenCoords) -> {
 			try {
-				Configuration config = configurations.create("spotless"
-						+ new Request(withTransitives, mavenCoords).hashCode());
-				mavenCoords.stream()
+				Request request = new Request(withTransitives, mavenCoords);
+				Dependency[] deps = mavenCoords.stream()
 						.map(dependencies::create)
-						.forEach(config.getDependencies()::add);
-				config.setDescription(mavenCoords.toString());
+						.toArray(Dependency[]::new);
+				// Detached configurations avoid mutating the target configuration container, which Gradle 9 forbids
+				// for the root buildscript container during task execution. See https://github.com/diffplug/spotless/issues/2599.
+				Configuration config = configurations.detachedConfiguration(deps);
+				config.setDescription("Spotless internal dependency resolution for " + request);
 				config.setTransitive(withTransitives);
 				config.setCanBeConsumed(false);
 				config.setVisible(false);

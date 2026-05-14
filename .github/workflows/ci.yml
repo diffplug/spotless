@@ -91,7 +91,7 @@ jobs:
           download_link=$(curl https://data.services.jetbrains.com/products/releases\?code\=IIC\&latest\=true\&type\=release | jq -r '.IIC[0].downloads.linux.link')
           curl --location "$download_link" -o idea.tar.gz
           tar -xf idea.tar.gz
-          cd idea-IC*
+          cd idea-IU*
           export PATH=${PATH}:$(pwd)/bin
           cd ..
           ./gradlew testIdea

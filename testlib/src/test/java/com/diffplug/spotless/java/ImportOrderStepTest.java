@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,12 +117,24 @@ class ImportOrderStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void doesntThrowIfImportOrderIsntSerializable() {
+	void groovyImportsPreservesBlankLinesBetweenGroups() {
+		FormatterStep step = ImportOrderStep.forGroovy().createFrom();
+		StepHarness.forStep(step).testResourceUnaffected("java/importsorter/GroovyCodeSortedImportsWithBlankLines.test");
+	}
+
+	@Test
+	void groovySortImportsStripsInterleavedBlankLines() {
+		FormatterStep step = ImportOrderStep.forGroovy().createFrom();
+		StepHarness.forStep(step).testResource("java/importsorter/GroovyCodeUnsortedImportsWithBlankLines.test", "java/importsorter/GroovyCodeSortedImportsNoBlankLines.test");
+	}
+
+	@Test
+	void doesntThrowIfImportOrderIsNotSerializable() {
 		ImportOrderStep.forJava().createFrom("java", "javax", "org", "\\#com");
 	}
 
 	@Test
-	void equality() throws Exception {
+	void equality() {
 		new SerializableEqualityTester() {
 			String[] imports = {};
 

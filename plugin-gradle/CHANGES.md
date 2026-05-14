@@ -4,12 +4,18 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+- Add `toml` format type with `versionCatalog()` step for formatting and sorting Gradle version catalog files. ([#2916](https://github.com/diffplug/spotless/issues/2916))
 - Add `withIndentStyle` and `withIndentSize` configuration to `tableTestFormatter` for setting the fallback indent when no `.editorconfig` is found. ([#2893](https://github.com/diffplug/spotless/pull/2893))
 - Add `javaparserVersion(...)` to `cleanthat`, allowing users to override the JavaParser version pulled in transitively by Cleanthat. ([#2903](https://github.com/diffplug/spotless/pull/2903))
 ### Fixed
 - Fix `tableTestFormatter` editorconfig cache not honoring `.editorconfig` changes across Gradle daemon runs due to a shared static `EditorConfigProvider`. ([#2893](https://github.com/diffplug/spotless/pull/2893))
+- Fix non-idempotent formatting when `importOrder()` is combined with `greclipse()`: a single catch-all group no longer strips blank lines that `greclipse()` independently inserted between import groups. ([#2914](https://github.com/diffplug/spotless/pull/2914))
+- Fix `predeclareDepsFromBuildscript()` on Gradle 9 by avoiding mutation of the root buildscript configuration container. ([#2929](https://github.com/diffplug/spotless/pull/2929), fixes [#2599](https://github.com/diffplug/spotless/issues/2599))
 ### Changes
 - Bump default `cleanthat` version `2.24` -> `2.25`. ([#2903](https://github.com/diffplug/spotless/pull/2903))
+- Bump default `eclipse-jdt` version from `4.35` to `4.39`. ([#2912](https://github.com/diffplug/spotless/pull/2912))
+- Make `spotlessPredeclare` visible to Gradle Kotlin DSL type-safe accessors. ([#2925](https://github.com/diffplug/spotless/pull/2925))
+- Allow `spotlessPredeclare` to be used directly without enabling it first in spotless extension. ([#2925](https://github.com/diffplug/spotless/pull/2925))
 
 ## [8.4.0] - 2026-03-18
 ### Added
