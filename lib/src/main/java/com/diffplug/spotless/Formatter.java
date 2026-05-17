@@ -182,7 +182,7 @@ public final class Formatter implements Serializable, AutoCloseable {
 						storeForStep = LintState.formatStepCausedNoChange();
 					} else {
 						storeForStep = null;
-						unix = LineEnding.toUnix(formatted);
+						unix = clean;
 					}
 				}
 			} catch (Throwable e) {
