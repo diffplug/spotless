@@ -10,12 +10,12 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changes
+- `Formatter` no longer recomputes line-ending normalization (`LineEnding.toUnix`) a second time for every formatter step that changes content, removing redundant O(n) work from the core formatting loop. ([#2934](https://github.com/diffplug/spotless/pull/2934))
 
 ## [4.6.1] - 2026-05-15
 ### Fixed
 - `LicenseHeaderStep` in `SET_FROM_GIT` year mode no longer invokes `git log` through `bash -c` / `cmd /c`, eliminating a shell-injection vector when processing repositories that contain files whose names include shell metacharacters.
-### Changes
-- `Formatter` no longer recomputes line-ending normalization (`LineEnding.toUnix`) a second time for every formatter step that changes content, removing redundant O(n) work from the core formatting loop. ([#2934](https://github.com/diffplug/spotless/pull/2934))
 
 ## [4.6.0] - 2026-05-14
 ### Added
