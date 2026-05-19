@@ -24,7 +24,7 @@ public final class ForbidWildcardImportsStep {
 	/**
 	 * Matches lines like 'import foo.*;' or 'import static foo.*;'.
 	 */
-	private static final String REGEX = "(?m)^import\\s+(?:static\\s+)?[^;\\n]*\\*;\\R?";
+	private static final String REGEX = "(?m)^[ \\t]*import\\s+(?:static\\s+)?[^;\\n]*\\*;\\R?";
 	private static final String NAME = "forbidWildcardImports";
 	private static final String ERROR = "Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this";
 
