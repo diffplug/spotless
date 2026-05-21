@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `cacheDirectory(...)` to the `eclipse()`, `eclipseCdt()` and `greclipse()` configs, allowing users to override the directory where Equo/Solstice caches the P2 dependencies (defaults to `~/.m2/repository/dev/equo/p2-data`). This makes it possible to place the cache inside the project tree so it can be captured by a CI cache.
 ### Changes
 - Improved formatting performance by eliminating redundant per-step line-ending normalization in the core formatter loop. ([#2934](https://github.com/diffplug/spotless/pull/2934))
 
