@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.eclipse.aether.RepositorySystemSession;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
@@ -40,6 +41,9 @@ public class GrEclipse implements FormatterStepFactory {
 	@Parameter
 	private List<P2Mirror> p2Mirrors = new ArrayList<>();
 
+	@Parameter
+	private File cacheDirectory;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig stepConfig) {
 		EquoBasedStepBuilder grEclipseConfig = GrEclipseFormatterStep.createBuilder(stepConfig.getProvisioner(), stepConfig.getP2Provisioner());
@@ -49,6 +53,16 @@ public class GrEclipse implements FormatterStepFactory {
 			grEclipseConfig.setPreferences(Arrays.asList(settingsFile));
 		}
 		grEclipseConfig.setP2Mirrors(p2Mirrors);
+		if (cacheDirectory != null) {
+			grEclipseConfig.setCacheDirectory(cacheDirectory);
+		}
 		return grEclipseConfig.build();
+	}
+
+	@Override
+	public void init(RepositorySystemSession repositorySystemSession) {
+		if (cacheDirectory == null) {
+			cacheDirectory = FormatterStepFactory.defaultP2CacheDirectory(repositorySystemSession);
+		}
 	}
 }

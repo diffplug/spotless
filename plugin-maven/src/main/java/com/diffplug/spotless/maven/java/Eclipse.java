@@ -55,6 +55,7 @@ public class Eclipse implements FormatterStepFactory {
 	@Parameter
 	private Boolean sortMembersVisibilityOrderEnabled = false;
 
+	@Parameter
 	private File cacheDirectory;
 
 	@Override
@@ -84,14 +85,13 @@ public class Eclipse implements FormatterStepFactory {
 		if (sortMembersVisibilityOrderEnabled != null) {
 			eclipseConfig.sortMembersVisibilityOrderEnabled(sortMembersVisibilityOrderEnabled);
 		}
-		if (cacheDirectory != null) {
-			eclipseConfig.setCacheDirectory(cacheDirectory);
-		}
 		return eclipseConfig.build();
 	}
 
 	@Override
 	public void init(RepositorySystemSession repositorySystemSession) {
-		this.cacheDirectory = repositorySystemSession.getLocalRepository().getBasedir();
+		if (cacheDirectory == null) {
+			cacheDirectory = FormatterStepFactory.defaultP2CacheDirectory(repositorySystemSession);
+		}
 	}
 }

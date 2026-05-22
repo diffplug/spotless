@@ -85,7 +85,7 @@ public class CppExtension extends FormatExtension implements HasBuiltinDelimiter
 
 		/**
 		 * Overrides the directory used to cache the P2 dependencies fetched by
-		 * Equo/Solstice. Defaults to {@code ~/.m2/repository/dev/equo/p2-data}.
+		 * Equo/Solstice. Defaults to {@code $GRADLE_USER_HOME/caches/p2-data}.
 		 *
 		 * <p>Useful when the default location is not writable, or when you want to
 		 * place the cache elsewhere.

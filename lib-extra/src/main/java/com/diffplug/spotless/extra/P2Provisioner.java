@@ -42,7 +42,7 @@ public interface P2Provisioner {
 	 *
 	 * @param modelWrapper wrapper around P2Model describing repositories and plugins to install
 	 * @param mavenProvisioner provisioner for Maven dependencies (some P2 bundles are on Maven Central)
-	 * @param cacheDirectory optional cache directory override
+	 * @param cacheDirectory optional cache directory override passed directly to Solstice
 	 * @return ordered list of JAR files forming the classpath
 	 */
 	List<File> provisionP2Dependencies(
@@ -55,7 +55,7 @@ public interface P2Provisioner {
 		return (modelWrapper, mavenProvisioner, cacheDirectory) -> {
 			try {
 				if (cacheDirectory != null) {
-					CacheLocations.override_p2data = cacheDirectory.toPath().resolve("dev/equo/p2-data").toFile();
+					CacheLocations.override_p2data = cacheDirectory;
 				}
 				P2Model model = modelWrapper.unwrap();
 				P2QueryResult query = model.query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);

@@ -3,8 +3,11 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `<cacheDirectory>` to `<eclipse>`, `<greclipse>`, and `<eclipseCdt>` for the Equo/Solstice P2 cache. ([#2944](https://github.com/diffplug/spotless/pull/2944))
 ### Fixed
 - `spotless:apply` no longer aborts on the first file with lints; it now formats all files and reports a single aggregated lint failure across every file, matching the Gradle plugin's behavior. ([#2937](https://github.com/diffplug/spotless/pull/2937))
+- `<greclipse>` and `<eclipseCdt>` now default P2 data to the Maven local repository. ([#2944](https://github.com/diffplug/spotless/pull/2944))
 ### Changes
 - Improved formatting performance by eliminating redundant per-step line-ending normalization in the core formatter loop. ([#2934](https://github.com/diffplug/spotless/pull/2934))
 
