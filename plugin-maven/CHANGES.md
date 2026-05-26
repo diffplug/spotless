@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- `spotless:apply` no longer aborts on the first file with lints; it now formats all files and reports a single aggregated lint failure across every file, matching the Gradle plugin's behavior. ([#2937](https://github.com/diffplug/spotless/pull/2937))
 ### Changes
 - Improved formatting performance by eliminating redundant per-step line-ending normalization in the core formatter loop. ([#2934](https://github.com/diffplug/spotless/pull/2934))
 

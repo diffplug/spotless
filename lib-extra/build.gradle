@@ -70,6 +70,9 @@ def jar = tasks.named('jar', Jar) {
 tasks.withType(Test).configureEach {
 	dependsOn jar
 	classpath += jar.get().outputs.files
+	// P2 tests use a process-level file lock; parallel forks race for it.
+	// In-JVM synchronization in TestP2Provisioner is enough, so one fork is sufficient.
+	maxParallelForks = 1
 }
 
 apply plugin: 'dev.equo.p2deps'
