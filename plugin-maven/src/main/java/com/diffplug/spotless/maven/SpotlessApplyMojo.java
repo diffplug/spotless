@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,8 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 		}
 
 		ImpactedFilesTracker counter = new ImpactedFilesTracker();
+		int totalLintCount = 0;
+		StringBuilder lintMessage = new StringBuilder();
 
 		for (File file : files) {
 			if (upToDateChecker.isUpToDate(file.toPath())) {
@@ -79,31 +81,36 @@ public class SpotlessApplyMojo extends AbstractSpotlessMojo {
 					counter.checkedButAlreadyClean();
 				}
 
-				// In apply mode, any lints should fail the build (matching Gradle behavior)
+				// In apply mode, any lints should fail the build (matching Gradle behavior).
+				// Collect lints across all files and fail once at the end, so a single
+				// linting file doesn't prevent the remaining files from being formatted.
 				if (hasUnsuppressedLints) {
-					int lintCount = lintState.getLintsByStep(formatter).values().stream()
-							.mapToInt(List::size)
-							.sum();
-					StringBuilder message = new StringBuilder();
-					message.append("There were ").append(lintCount).append(" lint error(s), they must be fixed or suppressed.");
-
 					// Build lint messages in Gradle format (using relative path, not just filename)
 					for (Map.Entry<String, List<Lint>> stepEntry : lintState.getLintsByStep(formatter).entrySet()) {
 						String stepName = stepEntry.getKey();
 						for (Lint lint : stepEntry.getValue()) {
 							String relativePath = LintSuppression.relativizeAsUnix(baseDir, file);
-							message.append("\n  ").append(relativePath).append(":");
-							lint.addWarningMessageTo(message, stepName, true);
+							lintMessage.append("\n  ").append(relativePath).append(":");
+							lint.addWarningMessageTo(lintMessage, stepName, true);
+							totalLintCount++;
 						}
 					}
-					message.append("\n  Resolve these lints or suppress with `<lintSuppressions>`");
-					throw new MojoExecutionException(message.toString());
+					// don't mark a linting file as up-to-date; it must be revisited next run
+					continue;
 				}
 			} catch (IOException | RuntimeException e) {
 				throw new MojoExecutionException("Unable to format file " + file, e);
 			}
 
 			upToDateChecker.setUpToDate(file.toPath());
+		}
+
+		if (totalLintCount > 0) {
+			StringBuilder message = new StringBuilder();
+			message.append("There were ").append(totalLintCount).append(" lint error(s), they must be fixed or suppressed.");
+			message.append(lintMessage);
+			message.append("\n  Resolve these lints or suppress with `<lintSuppressions>`");
+			throw new MojoExecutionException(message.toString());
 		}
 
 		// We print the number of considered files which is useful when ratchetFrom is setup
