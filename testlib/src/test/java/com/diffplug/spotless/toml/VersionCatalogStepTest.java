@@ -155,46 +155,27 @@ class VersionCatalogStepTest {
 	}
 
 	@Test
-	void longLineSplitsInlineTable() throws Exception {
-		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create(false, 40));
-		harness.test(
-				"[libraries]\nfoo = { module = \"org.example:foo-bar\", version.ref = \"fooBar\" }\n",
-				"[libraries]\nfoo = {\n  module = \"org.example:foo-bar\",\n  version.ref = \"fooBar\",\n}\n");
-	}
-
-	@Test
-	void shortLineStaysSingleLine() throws Exception {
-		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create(false, 200));
-		harness.test(
-				"[libraries]\nfoo = {module=\"org:foo\",version.ref=\"bar\"}\n",
-				"[libraries]\nfoo = { module = \"org:foo\", version.ref = \"bar\" }\n");
-	}
-
-	@Test
-	void splitLineIdempotent() throws Exception {
-		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create(false, 40));
+	void longLineStaysSingleLine() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
 		harness.testUnaffected(
-				"[libraries]\nfoo = {\n  module = \"org.example:foo-bar\",\n  version.ref = \"fooBar\",\n}\n");
+				"[libraries]\nfoo = { module = \"org.example:foo-bar-baz-qux\", version.ref = \"fooBarBazQux\" }\n");
 	}
 
 	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {
 			boolean stripQuotedKeys;
-			int maxLineLength = 120;
 
 			@Override
 			protected void setupTest(API api) {
 				api.areDifferentThan();
 				stripQuotedKeys = true;
 				api.areDifferentThan();
-				maxLineLength = 80;
-				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
-				return VersionCatalogStep.create(stripQuotedKeys, maxLineLength);
+				return VersionCatalogStep.create(stripQuotedKeys);
 			}
 		}.testEquals();
 	}

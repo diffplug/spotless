@@ -27,11 +27,8 @@ public class VersionCatalog implements FormatterStepFactory {
 	@Parameter
 	private boolean stripQuotedKeys;
 
-	@Parameter
-	private int maxLineLength = 120;
-
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		return VersionCatalogStep.create(stripQuotedKeys, maxLineLength);
+		return VersionCatalogStep.create(stripQuotedKeys);
 	}
 }
