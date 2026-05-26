@@ -32,12 +32,12 @@ class ExpandWildcardImportsStepTest extends MavenIntegrationHarness {
 
 		// Create supporting classes in source roots so JavaParserTypeSolver can resolve them
 		setFile("src/main/java/foo/bar/AnotherClassInSamePackage.java")
-			.toResource("java/expandwildcardimports/AnotherClassInSamePackage.test");
+				.toResource("java/expandwildcardimports/AnotherClassInSamePackage.test");
 		setFile("src/main/java/foo/bar/baz/AnotherImportedClass.java")
-			.toResource("java/expandwildcardimports/AnotherImportedClass.test");
+				.toResource("java/expandwildcardimports/AnotherImportedClass.test");
 		// Source for the annotation used in the test (resolves via source root, not JAR)
 		setFile("src/main/java/org/example/SomeAnnotation.java")
-			.toContent("""
+				.toContent("""
 						package org.example;
 
 						public @interface SomeAnnotation {}
@@ -70,9 +70,9 @@ class ExpandWildcardImportsStepTest extends MavenIntegrationHarness {
 		writePomWithProjectDeps("<java><expandWildcardImports/></java>", projectDeps);
 
 		setFile("src/main/java/foo/bar/AnotherClassInSamePackage.java")
-			.toResource("java/expandwildcardimports/AnotherClassInSamePackage.test");
+				.toResource("java/expandwildcardimports/AnotherClassInSamePackage.test");
 		setFile("src/main/java/foo/bar/baz/AnotherImportedClass.java")
-			.toResource("java/expandwildcardimports/AnotherImportedClass.test");
+				.toResource("java/expandwildcardimports/AnotherImportedClass.test");
 
 		String path = "src/main/java/foo/bar/JavaClassWithWildcards.java";
 		setFile(path).toResource("java/expandwildcardimports/JavaClassWithWildcardsUnformatted.test");
@@ -103,9 +103,9 @@ class ExpandWildcardImportsStepTest extends MavenIntegrationHarness {
 
 		// Create supporting classes in source roots
 		setFile("src/main/java/foo/bar/AnotherClassInSamePackage.java")
-			.toResource("java/expandwildcardimports/AnotherClassInSamePackage.test");
+				.toResource("java/expandwildcardimports/AnotherClassInSamePackage.test");
 		setFile("src/main/java/foo/bar/baz/AnotherImportedClass.java")
-			.toResource("java/expandwildcardimports/AnotherImportedClass.test");
+				.toResource("java/expandwildcardimports/AnotherImportedClass.test");
 		// SomeAnnotation comes from the JAR (transitively via POM dependency), not from source
 
 		String path = "src/main/java/foo/bar/JavaClassWithWildcards.java";
@@ -173,9 +173,9 @@ class ExpandWildcardImportsStepTest extends MavenIntegrationHarness {
 		writePomWithProjectDeps("<java><expandWildcardImports/></java>", projectDeps);
 
 		setFile("src/main/java/foo/bar/AnotherClassInSamePackage.java")
-			.toResource("java/expandwildcardimports/AnotherClassInSamePackage.test");
+				.toResource("java/expandwildcardimports/AnotherClassInSamePackage.test");
 		setFile("src/main/java/foo/bar/baz/AnotherImportedClass.java")
-			.toResource("java/expandwildcardimports/AnotherImportedClass.test");
+				.toResource("java/expandwildcardimports/AnotherImportedClass.test");
 
 		String path = "src/main/java/foo/bar/JavaClassWithWildcards.java";
 		setFile(path).toResource("java/expandwildcardimports/JavaClassWithWildcardsUnformatted.test");
@@ -228,28 +228,28 @@ class ExpandWildcardImportsStepTest extends MavenIntegrationHarness {
 
 		// Install artifacts into the local Maven repo so transitive resolution works
 		mavenRunner().withArguments(
-			"install:install-file",
-			"-Dfile=test-annotation-lib.jar",
-			"-DgroupId=com.example",
-			"-DartifactId=test-annotation-lib",
-			"-Dversion=1.0.0",
-			"-Dpackaging=jar").runNoError();
+				"install:install-file",
+				"-Dfile=test-annotation-lib.jar",
+				"-DgroupId=com.example",
+				"-DartifactId=test-annotation-lib",
+				"-Dversion=1.0.0",
+				"-Dpackaging=jar").runNoError();
 
 		mavenRunner().withArguments(
-			"install:install-file",
-			"-Dfile=test-model-lib.jar",
-			"-DgroupId=com.example",
-			"-DartifactId=test-model-lib",
-			"-Dversion=1.0.0",
-			"-Dpackaging=jar").runNoError();
+				"install:install-file",
+				"-Dfile=test-model-lib.jar",
+				"-DgroupId=com.example",
+				"-DartifactId=test-model-lib",
+				"-Dversion=1.0.0",
+				"-Dpackaging=jar").runNoError();
 
 		mavenRunner().withArguments(
-			"install:install-file",
-			"-Dfile=test-dependencies-pom.xml",
-			"-DgroupId=com.example",
-			"-DartifactId=test-dependencies",
-			"-Dversion=1.0.0",
-			"-Dpackaging=pom").runNoError();
+				"install:install-file",
+				"-Dfile=test-dependencies-pom.xml",
+				"-DgroupId=com.example",
+				"-DartifactId=test-dependencies",
+				"-Dversion=1.0.0",
+				"-Dpackaging=pom").runNoError();
 	}
 
 	private void writePomWithProjectDeps(String spotlessConfig, String projectDependencies) throws Exception {
