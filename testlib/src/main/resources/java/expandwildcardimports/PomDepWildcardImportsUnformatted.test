@@ -1,0 +1,10 @@
+package foo.bar;
+
+import java.util.*;
+import org.example.model.*;
+
+public class PomDepClass {
+    private List<String> items;
+    private ExampleModel model;
+    private ExampleStatus status;
+}
