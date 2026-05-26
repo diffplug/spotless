@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ public final class ForbidModuleImportsStep {
 	/**
 	 * Matches lines like 'import module java.base;' or 'import module java.sql;'.
 	 */
-	private static final String REGEX = "(?m)^import module[^;\\n]*;\\R?";
+	private static final String REGEX = "(?m)^[ \\t]*import\\s+module\\s+[^;\\n]*;\\R?";
 	private static final String NAME = "forbidModuleImports";
 	private static final String ERROR = "Do not use module imports - replace with specific class imports as 'spotlessApply' cannot auto-fix this";
 

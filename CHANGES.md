@@ -10,9 +10,13 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- `forbidWildcardImports` and `forbidModuleImports` now detect imports that have leading whitespace (indentation/tabs). ([#2939](https://github.com/diffplug/spotless/pull/2939))
+- `versionCatalog` step no longer splits long inline tables across multiple lines — Gradle's TOML 1.0 parser cannot read multi-line inline tables. The `maxLineLength` option has been removed. ([#2948](https://github.com/diffplug/spotless/issues/2948))
 ### Changes
 - `EclipseJdtFormtterStep` now can conditionally set compiler source/compliance options. Allows for better parsing of AST Node for newer language features and more correct sorting; e.g. records or seal classes. ([#2942](https://github.com/diffplug/spotless/pull/2942))
 - `Formatter` no longer recomputes line-ending normalization (`LineEnding.toUnix`) a second time for every formatter step that changes content, removing redundant O(n) work from the core formatting loop. ([#2934](https://github.com/diffplug/spotless/pull/2934))
+- expandWildcardImports support pom type dependency. ([#2839](https://github.com/diffplug/spotless/issues/2839))
 
 ## [4.6.1] - 2026-05-15
 ### Fixed
