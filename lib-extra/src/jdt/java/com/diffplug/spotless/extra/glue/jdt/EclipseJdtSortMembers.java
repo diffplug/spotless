@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.IBufferChangedListener;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IOpenable;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.internal.core.SortElementsOperation;
@@ -220,7 +221,53 @@ public final class EclipseJdtSortMembers {
 
 		@Override
 		public Map<String, String> getOptions(boolean inheritJavaCoreOptions) {
-			return Map.of();
+			String javaVersion = getCompilerSourceAndComplianceVersion();
+			if (javaVersion == null) {
+				return Map.of();
+			}
+
+			return Map.of(
+					JavaCore.COMPILER_SOURCE, javaVersion,
+					JavaCore.COMPILER_COMPLIANCE, javaVersion);
+		}
+
+		/**
+		 * Returns the Java major version. This will format it in a way consistent with the {@link JavaCore}'s version
+		 * constants. 1.8.0_123 -> 1.8 per {@link JavaCore#VERSION_1_8}
+		 */
+		private String extractMajorVersion(String version) {
+			if (version.startsWith("1.")) {
+				// Legacy format: "1.8.0_301" -> "1.8"
+				int secondDot = version.indexOf(".", 2);
+				return secondDot != -1 ? version.substring(0, secondDot) : version;
+			} else {
+				// Modern format: "17.0.1" -> "17"
+				int firstDot = version.indexOf(".");
+				return firstDot != -1 ? version.substring(0, firstDot) : version;
+			}
+		}
+
+		/**
+		 * Use the java runtime version to guess version to use for compiler source & compiler compliance.
+		 *
+		 * @see JavaCore#COMPILER_SOURCE
+		 * @see JavaCore#COMPILER_COMPLIANCE
+		 */
+		private String getCompilerSourceAndComplianceVersion() {
+			String major = extractMajorVersion(System.getProperty("java.version"));
+			if (JavaCore.getAllVersions().contains(major)) {
+				return major;
+			}
+			try {
+				String maxSupported = JavaCore.latestSupportedJavaVersion();
+				if (Double.parseDouble(major) > Double.parseDouble(maxSupported)) {
+					return maxSupported;
+				}
+			} catch (NumberFormatException e) {
+				// fall through
+			}
+			// if we cannot determine version number leave unspecified.
+			return null;
 		}
 	}
 
