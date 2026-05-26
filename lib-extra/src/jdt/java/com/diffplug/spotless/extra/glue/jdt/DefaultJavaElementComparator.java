@@ -190,6 +190,7 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 		}
 		case ASTNode.TYPE_DECLARATION:
 		case ASTNode.ENUM_DECLARATION:
+		case ASTNode.RECORD_DECLARATION:
 		case ASTNode.ANNOTATION_TYPE_DECLARATION:
 			return TYPE_INDEX;
 		case ASTNode.ENUM_CONSTANT_DECLARATION:
@@ -315,6 +316,7 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 		}
 		case ASTNode.TYPE_DECLARATION:
 		case ASTNode.ENUM_DECLARATION:
+		case ASTNode.RECORD_DECLARATION:
 		case ASTNode.ANNOTATION_TYPE_DECLARATION: {
 			AbstractTypeDeclaration type1 = (AbstractTypeDeclaration) bodyDeclaration1;
 			AbstractTypeDeclaration type2 = (AbstractTypeDeclaration) bodyDeclaration2;

@@ -3,6 +3,7 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+- `EclipseJdtFormtterStep` now can conditionally set compiler source/compliance options. Allows for better parsing of AST Node for newer language features and more correct sorting; e.g. records or seal classes. ([#2942](https://github.com/diffplug/spotless/pull/2942))
 ### Fixed
 - `<versionCatalog>` no longer splits long inline tables across multiple lines — Gradle's TOML 1.0 parser cannot read multi-line inline tables. The `maxLineLength` option has been removed. ([#2948](https://github.com/diffplug/spotless/issues/2948))
 - `spotless:apply` no longer aborts on the first file with lints; it now formats all files and reports a single aggregated lint failure across every file, matching the Gradle plugin's behavior. ([#2937](https://github.com/diffplug/spotless/pull/2937))

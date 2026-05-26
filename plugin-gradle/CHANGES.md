@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 - `forbidWildcardImports` and `forbidModuleImports` now detect imports that have leading whitespace (indentation/tabs). ([#2939](https://github.com/diffplug/spotless/pull/2939))
 - `versionCatalog()` no longer splits long inline tables across multiple lines — Gradle's TOML 1.0 parser cannot read multi-line inline tables. The `maxLineLength` option has been removed. ([#2948](https://github.com/diffplug/spotless/issues/2948))
+- `EclipseJdtFormtterStep` now can conditionally set compiler source/compliance options. Allows for better parsing of AST Node for newer language features and more correct sorting; e.g. records or seal classes. ([#2942](https://github.com/diffplug/spotless/pull/2942))
 ### Changes
 - Improved formatting performance by eliminating redundant per-step line-ending normalization in the core formatter loop. ([#2934](https://github.com/diffplug/spotless/pull/2934))
 
