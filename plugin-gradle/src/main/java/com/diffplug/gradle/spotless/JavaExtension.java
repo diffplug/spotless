@@ -385,6 +385,20 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		/**
+		 * Overrides the directory used to cache the P2 dependencies fetched by
+		 * Equo/Solstice. Defaults to {@code $GRADLE_USER_HOME/caches/p2-data}.
+		 *
+		 * <p>Useful when the default location is not writable, or when you want to
+		 * place the cache elsewhere.
+		 */
+		public EclipseConfig cacheDirectory(Object cacheDirectory) {
+			Objects.requireNonNull(cacheDirectory);
+			builder.setCacheDirectory(getProject().file(cacheDirectory));
+			replaceStep(builder.build());
+			return this;
+		}
+
 	}
 
 	/** Removes newlines between type annotations and types. */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.maven;
 
+import java.io.File;
+
 import org.eclipse.aether.RepositorySystemSession;
 
 import com.diffplug.spotless.FormatterStep;
@@ -25,5 +27,9 @@ public interface FormatterStepFactory {
 
 	default void init(RepositorySystemSession repositorySystemSession) {
 		// nothing
+	}
+
+	static File defaultP2CacheDirectory(RepositorySystemSession repositorySystemSession) {
+		return new File(repositorySystemSession.getLocalRepository().getBasedir(), "dev/equo/p2-data");
 	}
 }

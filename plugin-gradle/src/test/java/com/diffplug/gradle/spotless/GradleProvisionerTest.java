@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -260,6 +261,72 @@ class GradleProvisionerTest {
 			List<File> result = deduping.cachedOnly.provisionP2Dependencies(model, mockProvisioner(), null);
 
 			assertThat(result).isNotEmpty();
+		}
+
+		@Test
+		void defaultCacheDirectoryUsedWhenNoOverride() throws IOException {
+			AtomicReference<File> capturedCacheDirectory = new AtomicReference<>();
+			File defaultCacheDirectory = new File("gradle-home/caches/p2-data");
+			P2Provisioner underlying = (modelWrapper, mavenProvisioner, cacheDirectory) -> {
+				capturedCacheDirectory.set(cacheDirectory);
+				return List.of(new File("/mock/p2.jar"));
+			};
+			GradleProvisioner.DedupingP2Provisioner deduping = new GradleProvisioner.DedupingP2Provisioner(underlying, defaultCacheDirectory);
+
+			P2ModelWrapper model = createMockModel(
+					List.of("https://download.eclipse.org/eclipse/updates/4.26/"),
+					List.of("org.eclipse.jdt.core"),
+					Set.of(),
+					List.of(),
+					true,
+					null);
+
+			deduping.provisionP2Dependencies(model, mockProvisioner(), null);
+
+			assertThat(capturedCacheDirectory.get()).isEqualTo(defaultCacheDirectory);
+		}
+
+		@Test
+		void explicitCacheDirectoryOverridesDefault() throws IOException {
+			AtomicReference<File> capturedCacheDirectory = new AtomicReference<>();
+			File defaultCacheDirectory = new File("gradle-home/caches/p2-data");
+			File explicitCacheDirectory = new File("project/.spotless-p2");
+			P2Provisioner underlying = (modelWrapper, mavenProvisioner, cacheDirectory) -> {
+				capturedCacheDirectory.set(cacheDirectory);
+				return List.of(new File("/mock/p2.jar"));
+			};
+			GradleProvisioner.DedupingP2Provisioner deduping = new GradleProvisioner.DedupingP2Provisioner(underlying, defaultCacheDirectory);
+
+			P2ModelWrapper model = createMockModel(
+					List.of("https://download.eclipse.org/eclipse/updates/4.26/"),
+					List.of("org.eclipse.jdt.core"),
+					Set.of(),
+					List.of(),
+					true,
+					null);
+
+			deduping.provisionP2Dependencies(model, mockProvisioner(), explicitCacheDirectory);
+
+			assertThat(capturedCacheDirectory.get()).isEqualTo(explicitCacheDirectory);
+		}
+
+		@Test
+		void cachedOnlyUsesDefaultCacheDirectoryForLookup() throws IOException {
+			File defaultCacheDirectory = new File("gradle-home/caches/p2-data");
+			P2Provisioner underlying = mockP2Provisioner(new AtomicInteger(0));
+			GradleProvisioner.DedupingP2Provisioner deduping = new GradleProvisioner.DedupingP2Provisioner(underlying, defaultCacheDirectory);
+
+			P2ModelWrapper model = createMockModel(
+					List.of("https://download.eclipse.org/eclipse/updates/4.26/"),
+					List.of("org.eclipse.jdt.core"),
+					Set.of(),
+					List.of(),
+					true,
+					null);
+
+			deduping.provisionP2Dependencies(model, mockProvisioner(), null);
+
+			assertThat(deduping.cachedOnly.provisionP2Dependencies(model, mockProvisioner(), null)).isNotEmpty();
 		}
 
 		@Test

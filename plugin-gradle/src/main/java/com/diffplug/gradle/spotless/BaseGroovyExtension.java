@@ -92,5 +92,19 @@ public abstract class BaseGroovyExtension extends FormatExtension {
 			extension.replaceStep(builder.build());
 			return this;
 		}
+
+		/**
+		 * Overrides the directory used to cache the P2 dependencies fetched by
+		 * Equo/Solstice. Defaults to {@code $GRADLE_USER_HOME/caches/p2-data}.
+		 *
+		 * <p>Useful when the default location is not writable, or when you want to
+		 * place the cache elsewhere.
+		 */
+		public GrEclipseConfig cacheDirectory(Object cacheDirectory) {
+			Objects.requireNonNull(cacheDirectory);
+			builder.setCacheDirectory(extension.getProject().file(cacheDirectory));
+			extension.replaceStep(builder.build());
+			return this;
+		}
 	}
 }
