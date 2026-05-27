@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [8.6.0] - 2026-05-27
 ### Added
 - Add `cacheDirectory(...)` to `eclipse()`, `eclipseCdt()`, and `greclipse()`; the default P2 cache is `$GRADLE_USER_HOME/caches/p2-data`. ([#2944](https://github.com/diffplug/spotless/pull/2944))
 ### Fixed
