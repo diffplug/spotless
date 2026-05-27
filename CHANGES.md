@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [4.6.2] - 2026-05-27
 ### Fixed
 - `P2Provisioner` now passes cache directory overrides directly to Solstice. ([#2944](https://github.com/diffplug/spotless/pull/2944))
 - `forbidWildcardImports` and `forbidModuleImports` now detect imports that have leading whitespace (indentation/tabs). ([#2939](https://github.com/diffplug/spotless/pull/2939))
