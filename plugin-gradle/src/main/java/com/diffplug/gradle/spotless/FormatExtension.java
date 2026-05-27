@@ -1096,8 +1096,18 @@ public class FormatExtension {
 		task.setSteps(steps);
 		Directory projectDir = getProject().getLayout().getProjectDirectory();
 		LineEnding lineEndings = getLineEndings();
-		task.setLineEndingsPolicy(
-				getProject().provider(() -> lineEndings.createPolicy(projectDir.getAsFile(), () -> totalTarget)));
+		if (lineEndings == LineEnding.GIT_ATTRIBUTES_FAST_ALLSAME || lineEndings == LineEnding.GIT_ATTRIBUTES) {
+			// Wrap git-aware line ending resolution in a ValueSource so that file reads
+			// (e.g. ~/.gitconfig) are not tracked as configuration cache inputs;
+			// only the resolved line ending string is fingerprinted.
+			task.setLineEndingsPolicy(
+					getProject().getProviders().of(GitConfigLineEndingValueSource.class, spec -> {
+						spec.getParameters().getProjectDir().set(projectDir);
+					}));
+		} else {
+			task.setLineEndingsPolicy(
+					getProject().provider(() -> lineEndings.createPolicy(projectDir.getAsFile(), () -> totalTarget)));
+		}
 		spotless.getSpotlessTaskService().get().hookSubprojectTask(getProject(), task);
 		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
 	}
