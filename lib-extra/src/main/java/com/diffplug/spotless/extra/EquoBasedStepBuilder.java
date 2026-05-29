@@ -125,6 +125,8 @@ public abstract class EquoBasedStepBuilder {
 			P2Model model = createModelWithMirrors();
 			P2ModelWrapper modelWrapper = P2ModelWrapper.wrap(model);
 			List<File> classpath = p2Provisioner.provisionP2Dependencies(modelWrapper, mavenProvisioner, cacheDirectory);
+			// work around https://github.com/equodev/equo-ide/pull/193
+			classpath = classpath.stream().filter(f -> !f.getName().contains("groovy-test")).toList();
 			return JarState.preserveOrder(classpath);
 		}), stepProperties.build());
 		return FormatterStep.create(formatterName, roundtrippableState, EquoStep::state, stateToFormatter);
