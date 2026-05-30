@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,10 +69,11 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		if (initializer == null) {
-			// then this instance was created by Gradle's ConfigurationCacheHackList and the following will hold true
-			if (roundtripStateInternal == null && equalityStateInternal == null) {
-				throw new IllegalStateException("If the initializer was null, then one of roundtripStateInternal or equalityStateInternal should be non-null, and neither was");
-			}
+			// then this instance was created by Gradle's ConfigurationCacheHackList. HackClone populated
+			// exactly one of roundtripStateInternal / equalityStateInternal; it is legitimate for that value
+			// to be null (e.g. a step whose equality state is null), which still serializes deterministically.
+			// An equality-optimized clone is only ever serialized for its cache-key bytes, never rehydrated for
+			// use, so a both-null clone is safe and must not blow up Gradle's input fingerprinting (see #2950).
 		} else {
 			// this was a normal instance, which means we need to encode to roundtripStateInternal (since the initializer might not be serializable)
 			// and there's no reason to keep equalityStateInternal since we can always recompute it

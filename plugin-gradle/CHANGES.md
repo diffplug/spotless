@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+- Fixed `spotlessGroovyGradle`/`greclipse()` (and any `toggleOffOn()`-wrapped step) failing during Gradle's input fingerprinting with "If the initializer was null, then one of roundtripStateInternal or equalityStateInternal should be non-null" — a regression introduced in 8.6.0 that surfaces in clean CI environments. ([#2950](https://github.com/diffplug/spotless/issues/2950))
 
 ## [8.6.0] - 2026-05-27
 ### Added

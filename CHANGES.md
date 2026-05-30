@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- `ConfigurationCacheHackList` no longer throws `IllegalStateException` ("If the initializer was null, then one of roundtripStateInternal or equalityStateInternal should be non-null") during Gradle input fingerprinting when a step's equality state is `null` (e.g. a step wrapped in `toggleOffOn()`/a fence whose state is not yet provisioned). ([#2950](https://github.com/diffplug/spotless/issues/2950))
 
 ## [4.6.2] - 2026-05-27
 ### Fixed
