@@ -74,6 +74,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [YAML](#yaml)
   - [Shell](#shell)
   - [Gherkin](#gherkin)
+  - [AsciiDoc](#asciidoc)
   - Multiple languages
     - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [clang-format](#clang-format)
@@ -1319,6 +1320,41 @@ spotless {
     target 'src/**/*.feature'     // required to be set explicitly
     gherkinUtils()
       .version('9.0.0')           // optional: custom version of 'io.cucumber:gherkin-utils'
+  }
+}
+```
+
+## AsciiDoc
+
+`com.diffplug.gradle.spotless.AsciidocExtension` [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/AsciidocExtension.java)
+
+A formatter for AsciiDoc (`.adoc`) files. All options are boolean flags with sensible defaults — enable or disable only what you need.
+
+```gradle
+spotless {
+  asciidoc {
+    target '**/*.adoc' // you have to set the target manually
+    asciidoc()
+      // Heading style — defaults match the AsciiDoc-recommended ATX (= prefix) style
+      .normalizeSetextHeadings(true)        // convert underline-style (setext) headings to = prefix style (default: true)
+      .removeTrailingHeaderEqualsSign(true) // remove symmetric trailing = signs: == Title == → == Title (default: true)
+      .ensureHeadingBlankLines(true)        // insert blank lines before and after section headings (default: true)
+      .titleCase(false)                     // apply Chicago-style title case to section headings and block titles (default: false)
+
+      // Block structure
+      .normalizeBlockDelimiters(true)       // shorten over-long delimiters: -------- → ---- (default: true)
+      .ensureSourceDelimiters(false)        // wrap bare [source,...] / [listing] blocks with ---- delimiters (default: false)
+
+      // List markers
+      .normalizeListBullets(false)          // convert dash bullets to asterisk: "- item" → "* item" (default: false)
+      .normalizeOrderedListMarkers(false)   // convert numbered markers to dot style: "1. item" → ". item" (default: false)
+
+      // Whitespace
+      .removeTrailingWhitespace(true)       // strip trailing whitespace from every line (default: true)
+      .collapseConsecutiveBlankLines(true)  // collapse multiple consecutive blank lines into one (default: true)
+
+      // Prose
+      .oneSentencePerLine(true)             // reflow paragraph text so each sentence is on its own line (default: true)
   }
 }
 ```

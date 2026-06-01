@@ -63,6 +63,7 @@ import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.maven.antlr4.Antlr4;
+import com.diffplug.spotless.maven.asciidoc.Asciidoc;
 import com.diffplug.spotless.maven.cpp.Cpp;
 import com.diffplug.spotless.maven.css.Css;
 import com.diffplug.spotless.maven.generic.Format;
@@ -202,6 +203,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private Yaml yaml;
+
+	@Parameter
+	private Asciidoc asciidoc;
 
 	@Parameter
 	private Gherkin gherkin;
@@ -453,7 +457,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private List<FormatterFactory> getFormatterFactories() {
-		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, css, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, gherkin, go, rdf, protobuf, tableTest, toml))
+		return Stream.concat(formats.stream(), Stream.of(groovy, java, scala, kotlin, cpp, css, typescript, javascript, antlr4, pom, sql, python, markdown, json, shell, yaml, asciidoc, gherkin, go, rdf, protobuf, tableTest, toml))
 				.filter(Objects::nonNull)
 				.map(factory -> factory.init(repositorySystemSession))
 				.collect(toList());

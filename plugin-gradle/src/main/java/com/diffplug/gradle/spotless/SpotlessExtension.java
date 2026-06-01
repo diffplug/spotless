@@ -228,6 +228,12 @@ public abstract class SpotlessExtension {
 		format(YamlExtension.NAME, YamlExtension.class, closure);
 	}
 
+	/** Configures the special AsciiDoc-specific extension. */
+	public void asciidoc(Action<AsciidocExtension> closure) {
+		requireNonNull(closure);
+		format(AsciidocExtension.NAME, AsciidocExtension.class, closure);
+	}
+
 	/** Configures the special Gherkin-specific extension. */
 	public void gherkin(Action<GherkinExtension> closure) {
 		requireNonNull(closure);

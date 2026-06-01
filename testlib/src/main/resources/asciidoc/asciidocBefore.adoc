@@ -1,0 +1,15 @@
+My Document
+===========
+
+Some text that spans
+multiple lines. Second sentence here.
+
+== First Section ==
+
+Text before block.
+
+--------
+code here
+--------
+
+Text after block.

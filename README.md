@@ -74,6 +74,7 @@ lib('generic.NativeCmdStep')                     +'{{yes}}       | {{yes}}      
 lib('generic.ReplaceRegexStep')                  +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('generic.ReplaceStep')                       +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
+lib('asciidoc.AsciidocFormatterStep')            +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('antlr4.Antlr4FormatterStep')                +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('biome.BiomeStep')                           +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('cpp.ClangFormatStep')                       +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
@@ -133,6 +134,7 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`generic.ReplaceRegexStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceRegexStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`generic.ReplaceStep`](lib/src/main/java/com/diffplug/spotless/generic/ReplaceStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`generic.TrimTrailingWhitespaceStep`](lib/src/main/java/com/diffplug/spotless/generic/TrimTrailingWhitespaceStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
+| [`asciidoc.AsciidocFormatterStep`](lib/src/main/java/com/diffplug/spotless/asciidoc/AsciidocFormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`antlr4.Antlr4FormatterStep`](lib/src/main/java/com/diffplug/spotless/antlr4/Antlr4FormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`biome.BiomeStep`](lib/src/main/java/com/diffplug/spotless/biome/BiomeStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`cpp.ClangFormatStep`](lib/src/main/java/com/diffplug/spotless/cpp/ClangFormatStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |

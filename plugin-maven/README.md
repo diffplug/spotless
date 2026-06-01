@@ -55,6 +55,7 @@ user@machine repo % mvn spotless:check
   - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [Biome](#biome), [jsonPatch](#jsonPatch))
   - [YAML](#yaml)
   - [Gherkin](#gherkin)
+  - [AsciiDoc](#asciidoc)
   - [Go](#go)
   - [RDF](#RDF)
   - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang))
@@ -1236,6 +1237,44 @@ Uses a Gherkin pretty-printer that optionally allows configuring the number of s
 <gherkinUtils>
   <version>9.0.0</version>                 <!-- optional: Custom version of 'io.cucumber:gherkin-utils' -->
 </gherkinUtils>
+```
+
+## AsciiDoc
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/asciidoc/Asciidoc.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/asciidoc).
+
+A formatter for AsciiDoc (`.adoc`) files. All options are boolean flags — set only the ones you want to override.
+
+```xml
+<configuration>
+  <asciidoc>
+    <includes>
+      <include>**/*.adoc</include> <!-- You have to set the target manually -->
+    </includes>
+    <asciidocFormatting>
+      <!-- Heading style -->
+      <normalizeSetextHeadings>false</normalizeSetextHeadings>     <!-- convert underline-style headings to = prefix style (default: false) -->
+      <removeTrailingHeaderEqualsSign>false</removeTrailingHeaderEqualsSign> <!-- remove == Title == trailing signs (default: false) -->
+      <ensureHeadingBlankLines>true</ensureHeadingBlankLines>       <!-- insert blank lines around section headings (default: true) -->
+      <titleCase>false</titleCase>                                   <!-- Chicago-style title case for headings and block titles (default: false) -->
+
+      <!-- Block structure -->
+      <normalizeBlockDelimiters>false</normalizeBlockDelimiters>    <!-- shorten -------- to ---- (default: false) -->
+      <ensureSourceDelimiters>false</ensureSourceDelimiters>        <!-- wrap bare [source,...] / [listing] blocks with ---- (default: false) -->
+
+      <!-- List markers -->
+      <normalizeListBullets>false</normalizeListBullets>            <!-- "- item" → "* item" (default: false) -->
+      <normalizeOrderedListMarkers>false</normalizeOrderedListMarkers> <!-- "1. item" → ". item" (default: false) -->
+
+      <!-- Whitespace -->
+      <removeTrailingWhitespace>true</removeTrailingWhitespace>     <!-- strip trailing whitespace (default: true) -->
+      <collapseConsecutiveBlankLines>true</collapseConsecutiveBlankLines> <!-- collapse multiple blank lines into one (default: true) -->
+
+      <!-- Prose -->
+      <oneSentencePerLine>false</oneSentencePerLine>                <!-- one sentence per line in paragraph text (default: false) -->
+    </asciidocFormatting>
+  </asciidoc>
+</configuration>
 ```
 
 ## Go
