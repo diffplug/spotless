@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `AsciidocFormatterStep` for formatting AsciiDoc (`.adoc`) files. Supports normalizing setext headings, block delimiters, heading whitespace, list markers, trailing whitespace, blank lines around headings, one-sentence-per-line, title case, and auto-adding `----` delimiters to bare source blocks. ([#2955](https://github.com/diffplug/spotless/pull/2955))
 
 ## [4.6.2] - 2026-05-27
 ### Fixed

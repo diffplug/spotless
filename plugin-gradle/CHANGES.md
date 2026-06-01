@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `asciidoc { asciidoc() }` format type for formatting AsciiDoc (`.adoc`) files. ([#2955](https://github.com/diffplug/spotless/pull/2955))
 
 ## [8.6.0] - 2026-05-27
 ### Added
