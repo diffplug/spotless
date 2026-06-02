@@ -54,11 +54,11 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		if (config.isRemoveTrailingWhitespace()) {
 			AsciidocSupport.removeTrailingWhitespace(lines);
 		}
-		if (config.isEnsureSourceDelimiters()) {
-			blockHandler.ensureSourceDelimiters();
-		}
 		if (config.isNormalizeSetextHeadings()) {
 			headingHandler.normalizeSetextHeadings();
+		}
+		if (config.isEnsureSourceDelimiters()) {
+			blockHandler.ensureSourceDelimiters();
 		}
 		if (config.isNormalizeBlockDelimiters()) {
 			blockHandler.normalizeBlockDelimiters();

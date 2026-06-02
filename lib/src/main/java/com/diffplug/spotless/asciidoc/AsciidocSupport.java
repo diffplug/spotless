@@ -131,6 +131,10 @@ final class AsciidocSupport {
 					return true; // Block title (.Title)
 				}
 			}
+			// Treat list items as special lines
+			if (line.length() > 1 && line.charAt(1) == ' ') {
+				return true;
+			}
 			int i = 1;
 			while (i < line.length() && line.charAt(i) == first) {
 				i++;

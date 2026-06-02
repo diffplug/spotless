@@ -39,7 +39,6 @@ final class AsciidocSentenceHandler {
 			"corp", "inc", "ltd", "llc",
 			"jan", "feb", "mar", "apr", "jun", "jul",
 			"aug", "sep", "sept", "oct", "nov", "dec",
-			// German abbreviations
 			"bspw", "bzw", "bzgl", "ca", "evtl", "exkl", "inkl", "sog");
 
 	void applySentencePerLine() {
