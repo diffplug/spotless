@@ -24,15 +24,7 @@ class AsciidocFormattingTest extends MavenIntegrationHarness {
 	private static final String TEST_FILE_PATH = "src/docs/index.adoc";
 
 	@Test
-	void defaultFormattingApply() throws Exception {
-		writePomWithAsciidocSteps("<asciidocFormatting />");
-		setFile(TEST_FILE_PATH).toResource("asciidoc/asciidocMavenDefaultBefore.adoc");
-		mavenRunner().withArguments("spotless:apply").runNoError();
-		assertFile(TEST_FILE_PATH).sameAsResource("asciidoc/asciidocMavenDefaultAfter.adoc");
-	}
-
-	@Test
-	void allNonDefaultOptionsEnabledApply() throws Exception {
+	void formattingApply() throws Exception {
 		writePomWithAsciidocSteps(
 				"<asciidocFormatting>",
 				"  <normalizeSetextHeadings>true</normalizeSetextHeadings>",
