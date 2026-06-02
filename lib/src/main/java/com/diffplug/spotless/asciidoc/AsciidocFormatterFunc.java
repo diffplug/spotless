@@ -39,11 +39,24 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			'^', 3,
 			'+', 4);
 
-	// Standard AsciiDoc block delimiters: ----, ====, ...., ****, ____, ++++, ////
-	private static final Pattern BLOCK_DELIMITER = Pattern.compile("^(-{4,}|={4,}|\\.{4,}|\\*{4,}|_{4,}|\\+{4,}|/{4,})$");
-
-	// The same character set, used to detect over-long delimiters (5+)
+	// Single source of truth for block-delimiter characters; BLOCK_DELIMITER is derived from this.
+	// To add a new delimiter type, append its character here only.
 	private static final String BLOCK_DELIMITER_CHARS = "-=.*_+/";
+
+	// Standard AsciiDoc block delimiters: ----, ====, ...., ****, ____, ++++, ////
+	// Derived from BLOCK_DELIMITER_CHARS — do not edit this pattern directly.
+	private static final Pattern BLOCK_DELIMITER;
+	static {
+		StringBuilder pat = new StringBuilder("^(");
+		boolean first = true;
+		for (char c : BLOCK_DELIMITER_CHARS.toCharArray()) {
+			if (!first) pat.append('|');
+			pat.append(Pattern.quote(String.valueOf(c))).append("{4,}");
+			first = false;
+		}
+		pat.append(")$");
+		BLOCK_DELIMITER = Pattern.compile(pat.toString());
+	}
 
 	// Heading with trailing = signs: == Title == or === Title ===
 	// Captured groups: (1) leading equals, (2) title text (trimmed)
@@ -60,17 +73,18 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			"at", "by", "in", "of", "on", "to", "up", "as", "off", "out", "per", "via");
 
 	// Unordered (* or -) and ordered (. or digits) list item markers followed by space or tab
-	private static final Pattern LIST_ITEM = Pattern.compile("^([*\\-]+ |\\.+ |\\d+\\.[ \\t]).*");
+	private static final Pattern LIST_ITEM = Pattern.compile("^(?:[*\\-]+ |\\.+ |\\d+\\.[ \\t]).*");
 
 	// Explicit numbered ordered list item: "1. text", "1.\ttext", "42. text"
-	private static final Pattern NUMBERED_LIST_ITEM = Pattern.compile("^(\\d+)\\.[ \\t](.*)$");
+	// Group 1: the text after the marker (the number itself is not captured)
+	private static final Pattern NUMBERED_LIST_ITEM = Pattern.compile("^\\d+\\.[ \\t](.*)$");
 
 	// Any ATX heading, used to normalise whitespace (tab → space) after the = signs
 	// Captured groups: (1) leading equals, (2) trimmed title text
 	private static final Pattern ATX_HEADING = Pattern.compile("^(={1,6})\\s+(\\S.*?)\\s*$");
 
-	// Source / listing block attribute lines: [source], [source,java], [listing], [source%linenums,java], etc.
-	private static final Pattern SOURCE_BLOCK_ATTR = Pattern.compile("^\\[(source|listing)[,\\]%].*");
+	// Source / listing block attribute lines: [source], [source,java], [listing], [source%linenums,java], [source#id,java], etc.
+	private static final Pattern SOURCE_BLOCK_ATTR = Pattern.compile("^\\[(source|listing)[,\\]%#].*");
 
 	// Known abbreviations that end with a period but do not end a sentence
 	private static final Set<String> ABBREVIATIONS = Set.of(
@@ -94,6 +108,11 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	public String apply(String input) throws Exception {
 		String[] lines = input.split("\n", -1);
 
+		// Ordering constraints:
+		//   removeTrailingWhitespace  before  collapseConsecutiveBlankLines
+		//     — whitespace-only lines must be emptied before they can be collapsed.
+		//   normalizeSetextHeadings   before  ensureHeadingBlankLines
+		//     — setext headings are converted to ATX first so they receive blank-line padding.
 		if (config.isRemoveTrailingWhitespace()) {
 			lines = removeTrailingWhitespace(lines);
 		}
@@ -136,22 +155,19 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 
 	private String[] normalizeSetextHeadings(String[] lines) {
 		List<String> result = new ArrayList<>(lines.length);
-		String openDelimiterChar = null;
+		BlockTracker bt = new BlockTracker();
 		int i = 0;
 		while (i < lines.length) {
 			String line = lines[i];
-			if (openDelimiterChar != null) {
-				// Inside a delimited block: pass through until the matching closing delimiter.
+			if (bt.isOpen()) {
 				result.add(line);
-				if (isDelimiterOfChar(line, openDelimiterChar)) {
-					openDelimiterChar = null;
-				}
+				bt.tryClose(line);
 				i++;
 				continue;
 			}
-			if (isBlockDelimiter(line) && !line.isEmpty()) {
+			if (isBlockDelimiter(line)) {
 				result.add(line);
-				openDelimiterChar = String.valueOf(line.charAt(0));
+				bt.open(line);
 				i++;
 				continue;
 			}
@@ -224,18 +240,13 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	 */
 	private String[] normalizeBlockDelimiters(String[] lines) {
 		List<String> result = new ArrayList<>(lines.length);
-		// non-null while inside a block; holds the single delimiter character
-		String openDelimiterChar = null;
+		BlockTracker bt = new BlockTracker();
 
 		for (String line : lines) {
-			if (openDelimiterChar != null) {
-				// Inside a block: look for the matching closing delimiter.
-				if (isDelimiterOfChar(line, openDelimiterChar)) {
-					result.add(openDelimiterChar.repeat(4));
-					openDelimiterChar = null;
-				} else {
-					result.add(line);
-				}
+			if (bt.isOpen()) {
+				// Inside a block: normalize the closing delimiter; pass everything else through.
+				String closed = bt.tryClose(line);
+				result.add(closed != null ? closed.repeat(4) : line);
 			} else if (isOverLongBlockDelimiter(line)) {
 				// Outside a block: decide if this is a setext underline or a block delimiter.
 				String prev = result.isEmpty() ? null : result.get(result.size() - 1);
@@ -245,14 +256,13 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 					result.add(line);
 					// Do NOT enter block-tracking state; setext underlines are not block openers.
 				} else {
-					String delimChar = String.valueOf(line.charAt(0));
-					result.add(delimChar.repeat(4));
-					openDelimiterChar = delimChar;
+					result.add(String.valueOf(line.charAt(0)).repeat(4));
+					bt.open(line);
 				}
-			} else if (isBlockDelimiter(line) && !line.isEmpty()) {
+			} else if (isBlockDelimiter(line)) {
 				// A minimal (4-char) delimiter: enter block-tracking state.
 				result.add(line);
-				openDelimiterChar = String.valueOf(line.charAt(0));
+				bt.open(line);
 			} else {
 				result.add(line);
 			}
@@ -337,23 +347,21 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	 */
 	private static String[] ensureSourceDelimiters(String[] lines) {
 		List<String> result = new ArrayList<>(lines.length + 8);
-		String openDelimiterChar = null;
+		BlockTracker bt = new BlockTracker();
 		int i = 0;
 		while (i < lines.length) {
 			String line = lines[i];
 
-			if (openDelimiterChar != null) {
+			if (bt.isOpen()) {
 				result.add(line);
-				if (isDelimiterOfChar(line, openDelimiterChar)) {
-					openDelimiterChar = null;
-				}
+				bt.tryClose(line);
 				i++;
 				continue;
 			}
 
-			if (isBlockDelimiter(line) && !line.isEmpty()) {
+			if (isBlockDelimiter(line)) {
 				result.add(line);
-				openDelimiterChar = String.valueOf(line.charAt(0));
+				bt.open(line);
 				i++;
 				continue;
 			}
@@ -363,10 +371,10 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 				i++;
 				if (i < lines.length) {
 					String next = lines[i];
-					if (isBlockDelimiter(next) && !next.isEmpty()) {
+					if (isBlockDelimiter(next)) {
 						// Already has a delimiter — enter block state normally
 						result.add(next);
-						openDelimiterChar = String.valueOf(next.charAt(0));
+						bt.open(next);
 						i++;
 					} else if (!next.isBlank() && !next.startsWith("[")) {
 						// No delimiter: wrap the following paragraph
@@ -396,21 +404,19 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	 */
 	private static String[] ensureHeadingBlankLines(String[] lines) {
 		List<String> result = new ArrayList<>(lines.length + 8);
-		String openDelimiterChar = null;
+		BlockTracker bt = new BlockTracker();
 
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
 
-			if (openDelimiterChar != null) {
+			if (bt.isOpen()) {
 				result.add(line);
-				if (isDelimiterOfChar(line, openDelimiterChar)) {
-					openDelimiterChar = null;
-				}
+				bt.tryClose(line);
 				continue;
 			}
-			if (isBlockDelimiter(line) && !line.isEmpty()) {
+			if (isBlockDelimiter(line)) {
 				result.add(line);
-				openDelimiterChar = String.valueOf(line.charAt(0));
+				bt.open(line);
 				continue;
 			}
 
@@ -450,17 +456,15 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	 */
 	private static String[] processLinesSkippingBlocks(String[] lines, UnaryOperator<String> transform) {
 		String[] result = new String[lines.length];
-		String openDelimiterChar = null;
+		BlockTracker bt = new BlockTracker();
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
-			if (openDelimiterChar != null) {
+			if (bt.isOpen()) {
 				result[i] = line;
-				if (isDelimiterOfChar(line, openDelimiterChar)) {
-					openDelimiterChar = null;
-				}
-			} else if (isBlockDelimiter(line) && !line.isEmpty()) {
+				bt.tryClose(line);
+			} else if (isBlockDelimiter(line)) {
 				result[i] = line;
-				openDelimiterChar = String.valueOf(line.charAt(0));
+				bt.open(line);
 			} else {
 				result[i] = transform.apply(line);
 			}
@@ -490,7 +494,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	private static String[] normalizeOrderedListMarkers(String[] lines) {
 		return processLinesSkippingBlocks(lines, line -> {
 			Matcher m = NUMBERED_LIST_ITEM.matcher(line);
-			return m.matches() ? ". " + m.group(2) : line;
+			return m.matches() ? ". " + m.group(1) : line;
 		});
 	}
 
@@ -518,7 +522,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	}
 
 	private static String toTitleCase(String text) {
-		String[] words = text.split(" ", -1);
+		String[] words = text.split(" +", -1); // " +" avoids empty tokens from consecutive spaces
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < words.length; i++) {
 			if (i > 0) {
@@ -577,18 +581,15 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	private String[] applySentencePerLine(String[] lines) {
 		List<String> result = new ArrayList<>(lines.length);
 		List<String> paragraphBuffer = new ArrayList<>();
-		// non-null while inside a delimited block; holds the opening delimiter char
-		String openDelimiterChar = null;
+		BlockTracker bt = new BlockTracker();
 
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
 
 			// ── inside a delimited block: pass through until matching closing delimiter
-			if (openDelimiterChar != null) {
+			if (bt.isOpen()) {
 				result.add(line);
-				if (isDelimiterOfChar(line, openDelimiterChar)) {
-					openDelimiterChar = null;
-				}
+				bt.tryClose(line);
 				continue;
 			}
 
@@ -596,7 +597,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			if (isBlockDelimiter(line)) {
 				flushParagraph(paragraphBuffer, result);
 				result.add(line);
-				openDelimiterChar = String.valueOf(line.charAt(0));
+				bt.open(line);
 				continue;
 			}
 
@@ -628,7 +629,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		if (buffer.isEmpty()) {
 			return;
 		}
-		String joined = String.join(" ", buffer).replaceAll(" {2,}", " ").trim();
+		String joined = String.join(" ", buffer).replaceAll("\\s+", " ").trim();
 		result.addAll(splitIntoSentences(joined));
 		buffer.clear();
 	}
@@ -687,7 +688,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 
 	// ── sentence splitting ────────────────────────────────────────────────────
 
-	static List<String> splitIntoSentences(String text) {
+	private static List<String> splitIntoSentences(String text) {
 		if (text.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -781,7 +782,40 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 
 	private static boolean isSentenceClosingChar(char c) {
 		return c == ')' || c == ']' || c == '"' || c == '\''
-				|| c == '’' /* right single quotation mark */
-				|| c == '”' /* right double quotation mark */;
+				|| c == '\u2019' /* right single quotation mark */
+				|| c == '\u201D' /* right double quotation mark */;
+	}
+
+	// ── BlockTracker ──────────────────────────────────────────────────────────
+
+	/**
+	 * Tracks the open/close state of a single AsciiDoc delimited block across a
+	 * line scan.  All block-aware methods share this class instead of each
+	 * maintaining their own {@code openDelimiterChar} variable.
+	 */
+	private static final class BlockTracker {
+		private String delimChar = null;
+
+		boolean isOpen() {
+			return delimChar != null;
+		}
+
+		void open(String line) {
+			delimChar = String.valueOf(line.charAt(0));
+		}
+
+		/**
+		 * Tests whether {@code line} closes the currently open block.
+		 * If so, resets the open state and returns the delimiter character;
+		 * returns {@code null} if the block remains open.
+		 */
+		String tryClose(String line) {
+			if (delimChar != null && isDelimiterOfChar(line, delimChar)) {
+				String closed = delimChar;
+				delimChar = null;
+				return closed;
+			}
+			return null;
+		}
 	}
 }

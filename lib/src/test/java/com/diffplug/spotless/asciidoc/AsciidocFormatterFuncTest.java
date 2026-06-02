@@ -17,197 +17,74 @@ package com.diffplug.spotless.asciidoc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
 
 class AsciidocFormatterFuncTest {
 
 	// ── helpers ───────────────────────────────────────────────────────────────
 
-	/** Config with only oneSentencePerLine toggled; everything else off. */
+	/** Returns a formatter with every feature disabled, then applies {@code customizer}. */
+	private static AsciidocFormatterFunc funcWith(Consumer<AsciidocFormatterConfig> customizer) {
+		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
+		cfg.setNormalizeSetextHeadings(false);
+		cfg.setCollapseConsecutiveBlankLines(false);
+		cfg.setOneSentencePerLine(false);
+		cfg.setNormalizeBlockDelimiters(false);
+		cfg.setRemoveTrailingHeaderEqualsSign(false);
+		cfg.setTitleCase(false);
+		cfg.setRemoveTrailingWhitespace(false);
+		cfg.setNormalizeListBullets(false);
+		cfg.setNormalizeOrderedListMarkers(false);
+		cfg.setEnsureHeadingBlankLines(false);
+		cfg.setEnsureSourceDelimiters(false);
+		customizer.accept(cfg);
+		return new AsciidocFormatterFunc(cfg);
+	}
+
 	private static AsciidocFormatterFunc func(boolean ospl) {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(false);
-		cfg.setCollapseConsecutiveBlankLines(false);
-		cfg.setOneSentencePerLine(ospl);
-		cfg.setNormalizeBlockDelimiters(false);
-		cfg.setRemoveTrailingHeaderEqualsSign(false);
-		cfg.setTitleCase(false);
-		cfg.setRemoveTrailingWhitespace(false);
-		cfg.setNormalizeListBullets(false);
-		cfg.setNormalizeOrderedListMarkers(false);
-		cfg.setEnsureHeadingBlankLines(false);
-		cfg.setEnsureSourceDelimiters(false);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setOneSentencePerLine(ospl));
 	}
 
-	/** Config with only normalizeSetextHeadings enabled. */
 	private static AsciidocFormatterFunc funcSetext() {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(true);
-		cfg.setCollapseConsecutiveBlankLines(false);
-		cfg.setOneSentencePerLine(false);
-		cfg.setNormalizeBlockDelimiters(false);
-		cfg.setRemoveTrailingHeaderEqualsSign(false);
-		cfg.setTitleCase(false);
-		cfg.setRemoveTrailingWhitespace(false);
-		cfg.setNormalizeListBullets(false);
-		cfg.setNormalizeOrderedListMarkers(false);
-		cfg.setEnsureHeadingBlankLines(false);
-		cfg.setEnsureSourceDelimiters(false);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setNormalizeSetextHeadings(true));
 	}
 
-	/** Config with only collapseConsecutiveBlankLines enabled. */
 	private static AsciidocFormatterFunc funcCollapse() {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(false);
-		cfg.setCollapseConsecutiveBlankLines(true);
-		cfg.setOneSentencePerLine(false);
-		cfg.setNormalizeBlockDelimiters(false);
-		cfg.setRemoveTrailingHeaderEqualsSign(false);
-		cfg.setTitleCase(false);
-		cfg.setRemoveTrailingWhitespace(false);
-		cfg.setNormalizeListBullets(false);
-		cfg.setNormalizeOrderedListMarkers(false);
-		cfg.setEnsureHeadingBlankLines(false);
-		cfg.setEnsureSourceDelimiters(false);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setCollapseConsecutiveBlankLines(true));
 	}
 
-	/** Config with only normalizeBlockDelimiters enabled. */
 	private static AsciidocFormatterFunc funcDelimiters() {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(false);
-		cfg.setCollapseConsecutiveBlankLines(false);
-		cfg.setOneSentencePerLine(false);
-		cfg.setNormalizeBlockDelimiters(true);
-		cfg.setRemoveTrailingHeaderEqualsSign(false);
-		cfg.setTitleCase(false);
-		cfg.setRemoveTrailingWhitespace(false);
-		cfg.setNormalizeListBullets(false);
-		cfg.setNormalizeOrderedListMarkers(false);
-		cfg.setEnsureHeadingBlankLines(false);
-		cfg.setEnsureSourceDelimiters(false);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setNormalizeBlockDelimiters(true));
 	}
 
-	/** Config with only removeTrailingHeaderEqualsSign enabled. */
 	private static AsciidocFormatterFunc funcTrailingEquals() {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(false);
-		cfg.setCollapseConsecutiveBlankLines(false);
-		cfg.setOneSentencePerLine(false);
-		cfg.setNormalizeBlockDelimiters(false);
-		cfg.setRemoveTrailingHeaderEqualsSign(true);
-		cfg.setTitleCase(false);
-		cfg.setRemoveTrailingWhitespace(false);
-		cfg.setNormalizeListBullets(false);
-		cfg.setNormalizeOrderedListMarkers(false);
-		cfg.setEnsureHeadingBlankLines(false);
-		cfg.setEnsureSourceDelimiters(false);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setRemoveTrailingHeaderEqualsSign(true));
 	}
 
-	/** Config with only titleCase enabled. */
 	private static AsciidocFormatterFunc funcTitleCase() {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(false);
-		cfg.setCollapseConsecutiveBlankLines(false);
-		cfg.setOneSentencePerLine(false);
-		cfg.setNormalizeBlockDelimiters(false);
-		cfg.setRemoveTrailingHeaderEqualsSign(false);
-		cfg.setTitleCase(true);
-		cfg.setRemoveTrailingWhitespace(false);
-		cfg.setNormalizeListBullets(false);
-		cfg.setNormalizeOrderedListMarkers(false);
-		cfg.setEnsureHeadingBlankLines(false);
-		cfg.setEnsureSourceDelimiters(false);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setTitleCase(true));
 	}
 
-	/** Config with only removeTrailingWhitespace enabled. */
 	private static AsciidocFormatterFunc funcTrailingWhitespace() {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(false);
-		cfg.setCollapseConsecutiveBlankLines(false);
-		cfg.setOneSentencePerLine(false);
-		cfg.setNormalizeBlockDelimiters(false);
-		cfg.setRemoveTrailingHeaderEqualsSign(false);
-		cfg.setTitleCase(false);
-		cfg.setRemoveTrailingWhitespace(true);
-		cfg.setNormalizeListBullets(false);
-		cfg.setNormalizeOrderedListMarkers(false);
-		cfg.setEnsureHeadingBlankLines(false);
-		cfg.setEnsureSourceDelimiters(false);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setRemoveTrailingWhitespace(true));
 	}
 
-	/** Config with only normalizeListBullets enabled. */
 	private static AsciidocFormatterFunc funcListBullets() {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(false);
-		cfg.setCollapseConsecutiveBlankLines(false);
-		cfg.setOneSentencePerLine(false);
-		cfg.setNormalizeBlockDelimiters(false);
-		cfg.setRemoveTrailingHeaderEqualsSign(false);
-		cfg.setTitleCase(false);
-		cfg.setRemoveTrailingWhitespace(false);
-		cfg.setNormalizeListBullets(true);
-		cfg.setNormalizeOrderedListMarkers(false);
-		cfg.setEnsureHeadingBlankLines(false);
-		cfg.setEnsureSourceDelimiters(false);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setNormalizeListBullets(true));
 	}
 
-	/** Config with only normalizeOrderedListMarkers enabled. */
 	private static AsciidocFormatterFunc funcOrderedList() {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(false);
-		cfg.setCollapseConsecutiveBlankLines(false);
-		cfg.setOneSentencePerLine(false);
-		cfg.setNormalizeBlockDelimiters(false);
-		cfg.setRemoveTrailingHeaderEqualsSign(false);
-		cfg.setTitleCase(false);
-		cfg.setRemoveTrailingWhitespace(false);
-		cfg.setNormalizeListBullets(false);
-		cfg.setNormalizeOrderedListMarkers(true);
-		cfg.setEnsureHeadingBlankLines(false);
-		cfg.setEnsureSourceDelimiters(false);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setNormalizeOrderedListMarkers(true));
 	}
 
-	/** Config with only ensureHeadingBlankLines enabled. */
 	private static AsciidocFormatterFunc funcHeadingBlanks() {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(false);
-		cfg.setCollapseConsecutiveBlankLines(false);
-		cfg.setOneSentencePerLine(false);
-		cfg.setNormalizeBlockDelimiters(false);
-		cfg.setRemoveTrailingHeaderEqualsSign(false);
-		cfg.setTitleCase(false);
-		cfg.setRemoveTrailingWhitespace(false);
-		cfg.setNormalizeListBullets(false);
-		cfg.setNormalizeOrderedListMarkers(false);
-		cfg.setEnsureHeadingBlankLines(true);
-		cfg.setEnsureSourceDelimiters(false);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setEnsureHeadingBlankLines(true));
 	}
 
-	/** Config with only ensureSourceDelimiters enabled. */
 	private static AsciidocFormatterFunc funcSourceDelimiters() {
-		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
-		cfg.setNormalizeSetextHeadings(false);
-		cfg.setCollapseConsecutiveBlankLines(false);
-		cfg.setOneSentencePerLine(false);
-		cfg.setNormalizeBlockDelimiters(false);
-		cfg.setRemoveTrailingHeaderEqualsSign(false);
-		cfg.setTitleCase(false);
-		cfg.setRemoveTrailingWhitespace(false);
-		cfg.setNormalizeListBullets(false);
-		cfg.setNormalizeOrderedListMarkers(false);
-		cfg.setEnsureHeadingBlankLines(false);
-		cfg.setEnsureSourceDelimiters(true);
-		return new AsciidocFormatterFunc(cfg);
+		return funcWith(cfg -> cfg.setEnsureSourceDelimiters(true));
 	}
 
 	private static String apply(AsciidocFormatterFunc f, String input) {
@@ -390,7 +267,7 @@ class AsciidocFormatterFuncTest {
 	// ── abbreviation handling ─────────────────────────────────────────────────
 
 	@Test
-	void doesNotSplitAfterDrAbbreviation() {
+	void drAbbreviationIsNotASentenceBoundary() {
 		String input = "Consult Dr. Smith before proceeding. Then continue.";
 		assertThat(apply(func(true), input)).isEqualTo(
 				"Consult Dr. Smith before proceeding.\nThen continue.");
@@ -630,16 +507,13 @@ class AsciidocFormatterFuncTest {
 
 	@Test
 	void singleSentenceReturnedAsIs() {
-		AsciidocFormatterFunc f = func(false);
-		assertThat(f.splitIntoSentences("Just one sentence."))
-				.containsExactly("Just one sentence.");
+		assertThat(apply(func(true), "Just one sentence.")).isEqualTo("Just one sentence.");
 	}
 
 	@Test
 	void lowercaseAfterPeriodIsNotASplit() {
-		AsciidocFormatterFunc f = func(false);
-		assertThat(f.splitIntoSentences("lowercase follows. not a new sentence. no split here."))
-				.containsExactly("lowercase follows. not a new sentence. no split here.");
+		assertThat(apply(func(true), "lowercase follows. not a new sentence. no split here."))
+				.isEqualTo("lowercase follows. not a new sentence. no split here.");
 	}
 
 	// ── titleCase ─────────────────────────────────────────────────────────────
@@ -1046,5 +920,51 @@ class AsciidocFormatterFuncTest {
 		// "--------" (over-long) counts as an existing delimiter — we don't add another ----
 		String input = "[source,java]\n--------\ncode\n--------";
 		assertThat(apply(funcSourceDelimiters(), input)).isEqualTo(input);
+	}
+
+	@Test
+	void sourceBlockWithIdShorthandGetsWrapped() {
+		// [source#id,lang] uses AsciiDoc shorthand — must be recognized and wrapped
+		String input = "[source#intro,java]\npublic void foo() {}";
+		assertThat(apply(funcSourceDelimiters(), input))
+				.isEqualTo("[source#intro,java]\n----\npublic void foo() {}\n----");
+	}
+
+	// ── combined transformations ──────────────────────────────────────────────
+
+	@Test
+	void setextNormalizationThenHeadingBlankLinesThenTitleCase() {
+		// Exercises the three ordering-dependent transformations in sequence:
+		// setext → ATX (normalizeSetextHeadings), then blank-line padding
+		// (ensureHeadingBlankLines), then title-casing (titleCase).
+		AsciidocFormatterFunc f = funcWith(cfg -> {
+			cfg.setNormalizeSetextHeadings(true);
+			cfg.setEnsureHeadingBlankLines(true);
+			cfg.setTitleCase(true);
+		});
+		String input = "some text\nmy cool section\n---------------\nsome body";
+		assertThat(apply(f, input))
+				.isEqualTo("some text\n\n== My Cool Section\n\nsome body");
+	}
+
+	// ── CRLF input normalization ──────────────────────────────────────────────
+
+	@Test
+	void crlfLineEndingsNormalizedToLf() {
+		// removeTrailingWhitespace strips \r, and join("\n") produces LF-only output
+		assertThat(apply(funcTrailingWhitespace(), "line one\r\nline two\r\n"))
+				.isEqualTo("line one\nline two\n");
+	}
+
+	@Test
+	void crlfHeadingRecognizedAfterTrailingWhitespaceRemoval() {
+		// Without removeTrailingWhitespace the \r ends up in the heading text;
+		// verify that the combination produces correct output.
+		AsciidocFormatterFunc f = funcWith(cfg -> {
+			cfg.setRemoveTrailingWhitespace(true);
+			cfg.setRemoveTrailingHeaderEqualsSign(true);
+		});
+		assertThat(apply(f, "== Title\r\n\r\nBody.\r\n"))
+				.isEqualTo("== Title\n\nBody.\n");
 	}
 }
