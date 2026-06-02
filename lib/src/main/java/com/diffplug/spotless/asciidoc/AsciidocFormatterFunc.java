@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
@@ -32,31 +31,9 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 
 	// ── constants ─────────────────────────────────────────────────────────────
 
-	private static final Map<Character, Integer> UNDERLINE_LEVEL = Map.of(
-			'=', 0,
-			'-', 1,
-			'~', 2,
-			'^', 3,
-			'+', 4);
-
-	// Single source of truth for block-delimiter characters; BLOCK_DELIMITER is derived from this.
+	// Single source of truth for block-delimiter characters; isBlockDelimiter is derived from this.
 	// To add a new delimiter type, append its character here only.
 	private static final String BLOCK_DELIMITER_CHARS = "-=.*_+/";
-
-	// Standard AsciiDoc block delimiters: ----, ====, ...., ****, ____, ++++, ////
-	// Derived from BLOCK_DELIMITER_CHARS — do not edit this pattern directly.
-	private static final Pattern BLOCK_DELIMITER;
-	static {
-		StringBuilder pat = new StringBuilder("^(");
-		boolean first = true;
-		for (char c : BLOCK_DELIMITER_CHARS.toCharArray()) {
-			if (!first) pat.append('|');
-			pat.append(Pattern.quote(String.valueOf(c))).append("{4,}");
-			first = false;
-		}
-		pat.append(")$");
-		BLOCK_DELIMITER = Pattern.compile(pat.toString());
-	}
 
 	// Heading with trailing = signs: == Title == or === Title ===
 	// Captured groups: (1) leading equals, (2) title text (trimmed)
@@ -72,13 +49,6 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			"and", "but", "or", "nor", "for", "yet", "so",
 			"at", "by", "in", "of", "on", "to", "up", "as", "off", "out", "per", "via");
 
-	// Unordered (* or -) and ordered (. or digits) list item markers followed by space or tab
-	private static final Pattern LIST_ITEM = Pattern.compile("^(?:[*\\-]+ |\\.+ |\\d+\\.[ \\t]).*");
-
-	// Explicit numbered ordered list item: "1. text", "1.\ttext", "42. text"
-	// Group 1: the text after the marker (the number itself is not captured)
-	private static final Pattern NUMBERED_LIST_ITEM = Pattern.compile("^\\d+\\.[ \\t](.*)$");
-
 	// Any ATX heading, used to normalise whitespace (tab → space) after the = signs
 	// Captured groups: (1) leading equals, (2) trimmed title text
 	private static final Pattern ATX_HEADING = Pattern.compile("^(={1,6})\\s+(\\S.*?)\\s*$");
@@ -86,9 +56,11 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	// Source / listing block attribute lines: [source], [source,java], [listing], [source%linenums,java], [source#id,java], etc.
 	private static final Pattern SOURCE_BLOCK_ATTR = Pattern.compile("^\\[(source|listing)[,\\]%#].*");
 
-	// Block macros (include::, toc::, image::, …) and description-list terms (term::).
-	// Used in isSpecialLine — pre-compiled to avoid allocating a new Pattern on every call.
-	private static final Pattern BLOCK_MACRO = Pattern.compile("\\w+::.*");
+	// ATX heading prefixes for setext→ATX conversion: ATX_PREFIX[n] = "=".repeat(n+1) + " "
+	private static final String[] ATX_PREFIX = {"= ", "== ", "=== ", "==== ", "===== ", "====== "};
+
+	// Pre-compiled whitespace-run pattern used to collapse internal whitespace in flushParagraph.
+	private static final Pattern MULTI_WHITESPACE = Pattern.compile("\\s+");
 
 	// Known abbreviations that end with a period but do not end a sentence
 	private static final Set<String> ABBREVIATIONS = Set.of(
@@ -184,7 +156,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			if (i + 1 < lines.length) {
 				Integer level = detectSetextUnderline(line, lines[i + 1]);
 				if (level != null) {
-					result.add("=".repeat(level + 1) + " " + line);
+					result.add(ATX_PREFIX[level] + line);
 					i += 2;
 					continue;
 				}
@@ -218,8 +190,24 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			return null;
 		}
 		char underlineChar = underlineLine.charAt(0);
-		Integer level = UNDERLINE_LEVEL.get(underlineChar);
-		if (level == null) {
+		int level;
+		switch (underlineChar) {
+		case '=':
+			level = 0;
+			break;
+		case '-':
+			level = 1;
+			break;
+		case '~':
+			level = 2;
+			break;
+		case '^':
+			level = 3;
+			break;
+		case '+':
+			level = 4;
+			break;
+		default:
 			return null;
 		}
 		for (int j = 1; j < underlineLine.length(); j++) {
@@ -290,15 +278,9 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		return true;
 	}
 
-	/** True when {@code line} consists entirely of {@code delimChar} repeated four or more times. */
-	private static boolean isDelimiterOfChar(String line, String delimChar) {
-		return line.length() >= 4 && isAllSameChar(line, delimChar.charAt(0));
-	}
-
 	/** True when the line is a block-delimiter character repeated five or more times. */
 	private static boolean isOverLongBlockDelimiter(String line) {
-		return line.length() > 4 && BLOCK_DELIMITER_CHARS.indexOf(line.charAt(0)) >= 0
-				&& isAllSameChar(line, line.charAt(0));
+		return line.length() > 4 && isBlockDelimiter(line);
 	}
 
 	// ── removeTrailingHeaderEqualsSign ────────────────────────────────────────
@@ -503,8 +485,17 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	 */
 	private static String[] normalizeOrderedListMarkers(String[] lines) {
 		return processLinesSkippingBlocks(lines, line -> {
-			Matcher m = NUMBERED_LIST_ITEM.matcher(line);
-			return m.matches() ? ". " + m.group(1) : line;
+			if (line.isEmpty() || line.charAt(0) < '0' || line.charAt(0) > '9')
+				return line;
+			int i = 1;
+			while (i < line.length() && line.charAt(i) >= '0' && line.charAt(i) <= '9')
+				i++;
+			if (i + 1 >= line.length() || line.charAt(i) != '.')
+				return line;
+			char sep = line.charAt(i + 1);
+			if (sep != ' ' && sep != '\t')
+				return line;
+			return ". " + line.substring(i + 2);
 		});
 	}
 
@@ -638,49 +629,91 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		if (buffer.isEmpty()) {
 			return;
 		}
-		String joined = String.join(" ", buffer).replaceAll("\\s+", " ").trim();
+		String joined = MULTI_WHITESPACE.matcher(String.join(" ", buffer)).replaceAll(" ").trim();
 		result.addAll(splitIntoSentences(joined));
 		buffer.clear();
 	}
 
 	private static boolean isBlockDelimiter(String line) {
-		return BLOCK_DELIMITER.matcher(line).matches();
+		int len = line.length();
+		if (len < 4)
+			return false;
+		char c = line.charAt(0);
+		if (BLOCK_DELIMITER_CHARS.indexOf(c) < 0)
+			return false;
+		for (int i = 1; i < len; i++) {
+			if (line.charAt(i) != c)
+				return false;
+		}
+		return true;
 	}
 
-/**
-	 * Returns true for lines that are structural AsciiDoc syntax and must be
-	 * emitted verbatim rather than accumulated into a paragraph.
-	 */
+	/**
+		 * Returns true for lines that are structural AsciiDoc syntax and must be
+		 * emitted verbatim rather than accumulated into a paragraph.
+		 */
 	private static boolean isSpecialLine(String line) {
-		if (line.isEmpty()) {
+		if (line.isEmpty())
 			return false;
-		}
 		char first = line.charAt(0);
 		if (first == '=')
-			return true;      // headings: = Title, == Section …
+			return true;           // headings: = Title, == Section …
 		if (first == '[')
-			return true;       // block attributes: [source,java]
+			return true;            // block attributes: [source,java]
 		if (line.startsWith("//"))
-			return true; // line or block comments
+			return true;   // line or block comments
 		// attribute entries  :attr: value  (but not :: description-list markers)
 		if (first == ':' && line.length() > 1 && line.charAt(1) != ':')
 			return true;
 		if (first == '|')
-			return true;       // table cells
+			return true;            // table cells
 		if (line.equals("+"))
-			return true;   // list continuation
+			return true;        // list continuation
 		if (first == ' ' || first == '\t')
 			return true; // indented literal paragraph
-		if (LIST_ITEM.matcher(line).matches())
-			return true;
+		// unordered list items: * item, ** item, - item, -- item, …
+		if (first == '*' || first == '-') {
+			int i = 1;
+			while (i < line.length() && line.charAt(i) == first)
+				i++;
+			return i < line.length() && line.charAt(i) == ' ';
+		}
+		// ordered list items (AsciiDoc auto-number): . item, .. item, …
+		if (first == '.') {
+			int i = 1;
+			while (i < line.length() && line.charAt(i) == '.')
+				i++;
+			return i < line.length() && line.charAt(i) == ' ';
+		}
+		// explicit numbered list items: 1. item, 42.\titem
+		if (first >= '0' && first <= '9') {
+			int i = 1;
+			while (i < line.length() && line.charAt(i) >= '0' && line.charAt(i) <= '9')
+				i++;
+			return i + 1 < line.length() && line.charAt(i) == '.'
+					&& (line.charAt(i + 1) == ' ' || line.charAt(i + 1) == '\t');
+		}
 		if (line.startsWith("<<<"))
-			return true; // page break
+			return true;  // page break
 		if (line.equals("'''"))
-			return true; // horizontal rule (thematic break)
+			return true;       // horizontal rule (thematic break)
 		// block macros (include::, toc::, image::, …) and description-list terms (term::)
-		if (BLOCK_MACRO.matcher(line).matches())
-			return true;
-		return false;
+		return isBlockMacroOrTerm(line);
+	}
+
+	/** True when {@code line} is a block-macro call or description-list term ({@code word::…}). */
+	private static boolean isBlockMacroOrTerm(String line) {
+		int len = line.length();
+		int i = 0;
+		while (i < len) {
+			char c = line.charAt(i);
+			if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || (c >= '0' && c <= '9')) {
+				i++;
+			} else {
+				break;
+			}
+		}
+		return i > 0 && i + 1 < len && line.charAt(i) == ':' && line.charAt(i + 1) == ':';
 	}
 
 	// ── sentence splitting ────────────────────────────────────────────────────
@@ -791,14 +824,14 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	 * maintaining their own {@code openDelimiterChar} variable.
 	 */
 	private static final class BlockTracker {
-		private String delimChar = null;
+		private char delimChar = '\0';
 
 		boolean isOpen() {
-			return delimChar != null;
+			return delimChar != '\0';
 		}
 
 		void open(String line) {
-			delimChar = String.valueOf(line.charAt(0));
+			delimChar = line.charAt(0);
 		}
 
 		/**
@@ -807,9 +840,9 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		 * returns {@code null} if the block remains open.
 		 */
 		String tryClose(String line) {
-			if (delimChar != null && isDelimiterOfChar(line, delimChar)) {
-				String closed = delimChar;
-				delimChar = null;
+			if (delimChar != '\0' && line.length() >= 4 && isAllSameChar(line, delimChar)) {
+				String closed = String.valueOf(delimChar);
+				delimChar = '\0';
 				return closed;
 			}
 			return null;
