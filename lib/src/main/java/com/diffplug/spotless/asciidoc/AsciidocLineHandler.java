@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
-/** Handles line-level transformations for Asciidoc (title case, lists). */
+/** Handles line-level transformations for Asciidoc (title case, lists, whitespace). */
 final class AsciidocLineHandler {
 	private static final Pattern MULTIPLE_SPACES = Pattern.compile(" +");
 
@@ -30,6 +30,30 @@ final class AsciidocLineHandler {
 
 	AsciidocLineHandler(List<String> lines) {
 		this.lines = lines;
+	}
+
+	void removeTrailingWhitespace() {
+		lines.replaceAll(String::stripTrailing);
+	}
+
+	void collapseBlankLines() {
+		int writeIdx = 0;
+		int consecutiveBlank = 0;
+		for (int readIdx = 0; readIdx < lines.size(); readIdx++) {
+			String line = lines.get(readIdx);
+			if (line.isBlank()) {
+				consecutiveBlank++;
+				if (consecutiveBlank <= 1) {
+					lines.set(writeIdx++, line);
+				}
+			} else {
+				consecutiveBlank = 0;
+				lines.set(writeIdx++, line);
+			}
+		}
+		if (writeIdx < lines.size()) {
+			lines.subList(writeIdx, lines.size()).clear();
+		}
 	}
 
 	// Words lowercased in title case (articles, conjunctions, short prepositions)
@@ -43,7 +67,7 @@ final class AsciidocLineHandler {
 			String line = lines.get(i);
 			if (bt.isOpen()) {
 				bt.tryClose(line);
-			} else if (AsciidocSupport.isBlockDelimiter(line)) {
+			} else if (AsciidocBlockHandler.isBlockDelimiter(line)) {
 				bt.open(line);
 			} else {
 				if (config.isTitleCase()) {

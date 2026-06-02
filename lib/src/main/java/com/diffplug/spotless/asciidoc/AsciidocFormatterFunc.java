@@ -52,7 +52,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		//   normalizeSetextHeadings   before  ensureHeadingBlankLines
 		//     - setext headings are converted to ATX first so they receive blank-line padding.
 		if (config.isRemoveTrailingWhitespace()) {
-			AsciidocSupport.removeTrailingWhitespace(lines);
+			lineHandler.removeTrailingWhitespace();
 		}
 		if (config.isNormalizeSetextHeadings()) {
 			headingHandler.normalizeSetextHeadings();
@@ -79,7 +79,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			sentenceHandler.applySentencePerLine();
 		}
 		if (config.isCollapseConsecutiveBlankLines()) {
-			AsciidocSupport.collapseBlankLines(lines);
+			lineHandler.collapseBlankLines();
 		}
 
 		return String.join("\n", lines);

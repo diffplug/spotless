@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 /** Handles transformations for Asciidoc blocks (delimiters, source blocks). */
 final class AsciidocBlockHandler {
@@ -28,8 +29,19 @@ final class AsciidocBlockHandler {
 		this.lines = lines;
 	}
 
+	private static final String BLOCK_DELIMITER_CHARS = "-=.*_+/";
+
 	// Source / listing block attribute lines: [source], [source,java], [listing], [source%linenums,java], [source#id,java], etc.
 	private static final Pattern SOURCE_BLOCK_ATTR = Pattern.compile("^\\[(source|listing)[,\\]%#].*");
+
+	static boolean isBlockDelimiter(CharSequence line) {
+		int len = line.length();
+		if (len < 4) {
+			return false;
+		}
+		char c = line.charAt(0);
+		return BLOCK_DELIMITER_CHARS.indexOf(c) >= 0 && IntStream.range(1, len).noneMatch(i -> line.charAt(i) != c);
+	}
 
 	void normalizeBlockDelimiters() {
 		BlockTracker bt = new BlockTracker();
@@ -44,19 +56,19 @@ final class AsciidocBlockHandler {
 			} else if (isOverLongBlockDelimiter(line)) {
 				String prev = i == 0 ? null : lines.get(i - 1);
 				boolean notSetextUnderline = prev == null || prev.isBlank()
-						|| AsciidocSupport.detectSetextUnderline(prev, line) == null;
+						|| AsciidocHeadingHandler.detectSetextUnderline(prev, line) == null;
 				if (notSetextUnderline) {
 					lines.set(i, String.valueOf(line.charAt(0)).repeat(4));
 					bt.open(line);
 				}
-			} else if (AsciidocSupport.isBlockDelimiter(line)) {
+			} else if (isBlockDelimiter(line)) {
 				bt.open(line);
 			}
 		}
 	}
 
 	private static boolean isOverLongBlockDelimiter(CharSequence line) {
-		return line.length() > 4 && AsciidocSupport.isBlockDelimiter(line);
+		return line.length() > 4 && isBlockDelimiter(line);
 	}
 
 	void ensureSourceDelimiters() {
@@ -73,7 +85,7 @@ final class AsciidocBlockHandler {
 				continue;
 			}
 
-			if (AsciidocSupport.isBlockDelimiter(line)) {
+			if (isBlockDelimiter(line)) {
 				result.add(line);
 				bt.open(line);
 				i++;
@@ -85,7 +97,7 @@ final class AsciidocBlockHandler {
 				i++;
 				if (i < lines.size()) {
 					String next = lines.get(i);
-					if (AsciidocSupport.isBlockDelimiter(next)) {
+					if (isBlockDelimiter(next)) {
 						result.add(next);
 						bt.open(next);
 						i++;

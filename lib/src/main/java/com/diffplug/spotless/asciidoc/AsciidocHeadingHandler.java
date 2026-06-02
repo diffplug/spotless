@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
+
 /** Handles transformations for Asciidoc headings. */
 final class AsciidocHeadingHandler {
 	private final List<String> lines;
@@ -39,6 +41,51 @@ final class AsciidocHeadingHandler {
 	// ATX heading prefixes for setext -> ATX conversion: ATX_PREFIX[n] = "=".repeat(n+1) + " "
 	private static final String[] ATX_PREFIX = {"= ", "== ", "=== ", "==== ", "===== ", "====== "};
 
+	@Nullable static Integer detectSetextUnderline(String titleCandidate, CharSequence underlineLine) {
+		if (titleCandidate.isEmpty()) {
+			return null;
+		}
+		char first = titleCandidate.charAt(0);
+		if (first == '=' || first == '[' || first == '.' || first == ':'
+				|| first == '*' || first == '-' || first == '|' || first == '+'
+				|| titleCandidate.startsWith("//")) {
+			return null;
+		}
+		if (underlineLine.isEmpty()) {
+			return null;
+		}
+		char underlineChar = underlineLine.charAt(0);
+		int level;
+		switch (underlineChar) {
+		case '=':
+			level = 0;
+			break;
+		case '-':
+			level = 1;
+			break;
+		case '~':
+			level = 2;
+			break;
+		case '^':
+			level = 3;
+			break;
+		case '+':
+			level = 4;
+			break;
+		default:
+			return null;
+		}
+		for (int j = 1; j < underlineLine.length(); j++) {
+			if (underlineLine.charAt(j) != underlineChar) {
+				return null;
+			}
+		}
+		if (underlineLine.length() < titleCandidate.length()) {
+			return null;
+		}
+		return level;
+	}
+
 	void normalizeSetextHeadings() {
 		BlockTracker bt = new BlockTracker();
 		int readIdx = 0;
@@ -51,14 +98,14 @@ final class AsciidocHeadingHandler {
 				readIdx++;
 				continue;
 			}
-			if (AsciidocSupport.isBlockDelimiter(line)) {
+			if (AsciidocBlockHandler.isBlockDelimiter(line)) {
 				lines.set(writeIdx++, line);
 				bt.open(line);
 				readIdx++;
 				continue;
 			}
 			if (readIdx + 1 < lines.size()) {
-				Integer level = AsciidocSupport.detectSetextUnderline(line, lines.get(readIdx + 1));
+				Integer level = detectSetextUnderline(line, lines.get(readIdx + 1));
 				if (level != null) {
 					lines.set(writeIdx++, ATX_PREFIX[level] + line);
 					readIdx += 2;
@@ -100,7 +147,7 @@ final class AsciidocHeadingHandler {
 				bt.tryClose(line);
 				continue;
 			}
-			if (AsciidocSupport.isBlockDelimiter(line)) {
+			if (AsciidocBlockHandler.isBlockDelimiter(line)) {
 				result.add(line);
 				bt.open(line);
 				continue;

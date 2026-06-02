@@ -21,9 +21,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /** Handles splitting text into one sentence per line. */
 final class AsciidocSentenceHandler {
+	private static final Pattern MULTI_WHITESPACE = Pattern.compile("\\s+");
+
 	private final List<String> lines;
 
 	AsciidocSentenceHandler(List<String> lines) {
@@ -55,14 +58,14 @@ final class AsciidocSentenceHandler {
 				continue;
 			}
 
-			if (AsciidocSupport.isBlockDelimiter(line)) {
+			if (AsciidocBlockHandler.isBlockDelimiter(line)) {
 				flushParagraph(paragraphBuffer, result);
 				result.add(line);
 				bt.open(line);
 				continue;
 			}
 
-			if (i + 1 < lines.size() && AsciidocSupport.detectSetextUnderline(line, lines.get(i + 1)) != null) {
+			if (i + 1 < lines.size() && AsciidocHeadingHandler.detectSetextUnderline(line, lines.get(i + 1)) != null) {
 				flushParagraph(paragraphBuffer, result);
 				result.add(line);
 				result.add(lines.get(i + 1));
@@ -70,7 +73,7 @@ final class AsciidocSentenceHandler {
 				continue;
 			}
 
-			if (line.isBlank() || AsciidocSupport.isSpecialLine(line)) {
+			if (line.isBlank() || isSpecialLine(line)) {
 				flushParagraph(paragraphBuffer, result);
 				result.add(line);
 				continue;
@@ -88,7 +91,7 @@ final class AsciidocSentenceHandler {
 		if (buffer.isEmpty()) {
 			return;
 		}
-		String joined = AsciidocSupport.MULTI_WHITESPACE.matcher(String.join(" ", buffer)).replaceAll(" ").trim();
+		String joined = MULTI_WHITESPACE.matcher(String.join(" ", buffer)).replaceAll(" ").trim();
 		result.addAll(splitIntoSentences(joined));
 		buffer.clear();
 	}
@@ -177,5 +180,60 @@ final class AsciidocSentenceHandler {
 		return c == ')' || c == ']' || c == '"' || c == '\''
 				|| c == '\u2019'
 				|| c == '\u201D';
+	}
+
+	static boolean isSpecialLine(String line) {
+		if (line.isEmpty()) {
+			return false;
+		}
+		char first = line.charAt(0);
+		if (first == '=' || first == '[' || first == '|' || first == ' ' || first == '\t') {
+			return true;
+		}
+		if (line.startsWith("//") || line.startsWith("<<<") || "'''".equals(line) || "+".equals(line)) {
+			return true;
+		}
+		if (first == ':' && line.length() > 1 && line.charAt(1) != ':') {
+			return true;
+		}
+		if (first == '.' || first == '*' || first == '-') {
+			if (line.length() > 1 && line.charAt(1) != first && line.charAt(1) != ' ') {
+				if (first == '.') {
+					return true; // Block title (.Title)
+				}
+			}
+			// Treat list items as special lines
+			if (line.length() > 1 && line.charAt(1) == ' ') {
+				return true;
+			}
+			int i = 1;
+			while (i < line.length() && line.charAt(i) == first) {
+				i++;
+			}
+			return i == line.length() && i >= 3 || i < line.length() && line.charAt(i) == ' '; // Horizontal rule (--- or ***)
+		}
+		if (Character.isDigit(first)) {
+			int i = 1;
+			while (i < line.length() && Character.isDigit(line.charAt(i))) {
+				i++;
+			}
+			return i + 1 < line.length() && line.charAt(i) == '.'
+					&& (line.charAt(i + 1) == ' ' || line.charAt(i + 1) == '\t');
+		}
+		return isBlockMacroOrTerm(line);
+	}
+
+	private static boolean isBlockMacroOrTerm(CharSequence line) {
+		int len = line.length();
+		int i = 0;
+		while (i < len) {
+			char c = line.charAt(i);
+			if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9') {
+				i++;
+			} else {
+				break;
+			}
+		}
+		return i > 0 && i + 1 < len && line.charAt(i) == ':' && line.charAt(i + 1) == ':';
 	}
 }

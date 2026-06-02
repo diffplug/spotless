@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.asciidoc;
 
+import java.util.stream.IntStream;
+
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 class BlockTracker {
@@ -29,11 +31,15 @@ class BlockTracker {
 	}
 
 	@Nullable String tryClose(CharSequence line) {
-		if (delimChar != '\0' && line.length() >= 4 && AsciidocSupport.isAllSameChar(line, delimChar)) {
+		if (delimChar != '\0' && line.length() >= 4 && isAllSameChar(line, delimChar)) {
 			String closed = String.valueOf(delimChar);
 			delimChar = '\0';
 			return closed;
 		}
 		return null;
+	}
+
+	static boolean isAllSameChar(CharSequence line, char c) {
+		return IntStream.range(0, line.length()).noneMatch(i -> line.charAt(i) != c);
 	}
 }
