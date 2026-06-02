@@ -22,7 +22,11 @@ import java.util.regex.Pattern;
 
 /** Handles transformations for Asciidoc headings. */
 final class AsciidocHeadingHandler {
-	private AsciidocHeadingHandler() {}
+	private final List<String> lines;
+
+	AsciidocHeadingHandler(List<String> lines) {
+		this.lines = lines;
+	}
 
 	// Heading with trailing = signs: == Title == or === Title ===
 	// Captured groups: (1) leading equals, (2) title text (trimmed)
@@ -35,7 +39,7 @@ final class AsciidocHeadingHandler {
 	// ATX heading prefixes for setext -> ATX conversion: ATX_PREFIX[n] = "=".repeat(n+1) + " "
 	private static final String[] ATX_PREFIX = {"= ", "== ", "=== ", "==== ", "===== ", "====== "};
 
-	static void normalizeSetextHeadings(List<String> lines) {
+	void normalizeSetextHeadings() {
 		BlockTracker bt = new BlockTracker();
 		int readIdx = 0;
 		int writeIdx = 0;
@@ -69,7 +73,7 @@ final class AsciidocHeadingHandler {
 		}
 	}
 
-	static void removeTrailingHeaderEqualsSign(List<String> lines) {
+	void removeTrailingHeaderEqualsSign() {
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
 			Matcher symmetric = SYMMETRIC_HEADING.matcher(line);
@@ -84,7 +88,7 @@ final class AsciidocHeadingHandler {
 		}
 	}
 
-	static void ensureHeadingBlankLines(List<String> lines) {
+	void ensureHeadingBlankLines() {
 		List<String> result = new ArrayList<>(lines.size() + 8);
 		BlockTracker bt = new BlockTracker();
 

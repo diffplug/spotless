@@ -41,6 +41,11 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		// Use \R to match any line break (LF, CRLF, CR) and avoid multiple replacements
 		List<String> lines = new ArrayList<>(Arrays.asList(Pattern.compile("\\R").split(input, -1)));
 
+		AsciidocBlockHandler blockHandler = new AsciidocBlockHandler(lines);
+		AsciidocHeadingHandler headingHandler = new AsciidocHeadingHandler(lines);
+		AsciidocLineHandler lineHandler = new AsciidocLineHandler(lines);
+		AsciidocSentenceHandler sentenceHandler = new AsciidocSentenceHandler(lines);
+
 		// Ordering constraints:
 		//   removeTrailingWhitespace  before  collapseConsecutiveBlankLines
 		//     - whitespace-only lines must be emptied before they can be collapsed.
@@ -50,28 +55,28 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			AsciidocSupport.removeTrailingWhitespace(lines);
 		}
 		if (config.isEnsureSourceDelimiters()) {
-			AsciidocBlockHandler.ensureSourceDelimiters(lines);
+			blockHandler.ensureSourceDelimiters();
 		}
 		if (config.isNormalizeSetextHeadings()) {
-			AsciidocHeadingHandler.normalizeSetextHeadings(lines);
+			headingHandler.normalizeSetextHeadings();
 		}
 		if (config.isNormalizeBlockDelimiters()) {
-			AsciidocBlockHandler.normalizeBlockDelimiters(lines);
+			blockHandler.normalizeBlockDelimiters();
 		}
 		if (config.isRemoveTrailingHeaderEqualsSign()) {
-			AsciidocHeadingHandler.removeTrailingHeaderEqualsSign(lines);
+			headingHandler.removeTrailingHeaderEqualsSign();
 		}
 
 		// Combine simple line-by-line transforms into a single in-place pass
 		if (config.isTitleCase() || config.isNormalizeListBullets() || config.isNormalizeOrderedListMarkers()) {
-			AsciidocLineHandler.applyLineTransformations(lines, config);
+			lineHandler.applyLineTransformations(config);
 		}
 
 		if (config.isEnsureHeadingBlankLines()) {
-			AsciidocHeadingHandler.ensureHeadingBlankLines(lines);
+			headingHandler.ensureHeadingBlankLines();
 		}
 		if (config.isOneSentencePerLine()) {
-			AsciidocSentenceHandler.applySentencePerLine(lines);
+			sentenceHandler.applySentencePerLine();
 		}
 		if (config.isCollapseConsecutiveBlankLines()) {
 			AsciidocSupport.collapseBlankLines(lines);

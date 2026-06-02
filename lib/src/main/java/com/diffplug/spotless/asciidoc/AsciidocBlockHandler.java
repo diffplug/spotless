@@ -22,12 +22,16 @@ import java.util.regex.Pattern;
 
 /** Handles transformations for Asciidoc blocks (delimiters, source blocks). */
 final class AsciidocBlockHandler {
-	private AsciidocBlockHandler() {}
+	private final List<String> lines;
+
+	AsciidocBlockHandler(List<String> lines) {
+		this.lines = lines;
+	}
 
 	// Source / listing block attribute lines: [source], [source,java], [listing], [source%linenums,java], [source#id,java], etc.
 	private static final Pattern SOURCE_BLOCK_ATTR = Pattern.compile("^\\[(source|listing)[,\\]%#].*");
 
-	static void normalizeBlockDelimiters(List<String> lines) {
+	void normalizeBlockDelimiters() {
 		BlockTracker bt = new BlockTracker();
 
 		for (int i = 0; i < lines.size(); i++) {
@@ -55,7 +59,7 @@ final class AsciidocBlockHandler {
 		return line.length() > 4 && AsciidocSupport.isBlockDelimiter(line);
 	}
 
-	static void ensureSourceDelimiters(List<String> lines) {
+	void ensureSourceDelimiters() {
 		Collection<String> result = new ArrayList<>(lines.size() + 8);
 		BlockTracker bt = new BlockTracker();
 		int i = 0;

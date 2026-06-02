@@ -26,14 +26,18 @@ import java.util.stream.IntStream;
 final class AsciidocLineHandler {
 	private static final Pattern MULTIPLE_SPACES = Pattern.compile(" +");
 
-	private AsciidocLineHandler() {}
+	private final List<String> lines;
+
+	AsciidocLineHandler(List<String> lines) {
+		this.lines = lines;
+	}
 
 	// Words lowercased in title case (articles, conjunctions, short prepositions)
 	private static final Set<String> TITLE_CASE_LOWERCASE = Set.of(
 			"a", "an", "the", "and", "but", "or", "nor", "for", "yet", "so", "at", "by", "in", "of",
 			"on", "to", "up", "as", "off", "out", "per", "via", "from", "with");
 
-	static void applyLineTransformations(List<String> lines, AsciidocFormatterConfig config) {
+	void applyLineTransformations(AsciidocFormatterConfig config) {
 		BlockTracker bt = new BlockTracker();
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);

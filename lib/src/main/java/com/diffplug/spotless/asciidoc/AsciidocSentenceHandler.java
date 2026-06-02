@@ -24,7 +24,11 @@ import java.util.Set;
 
 /** Handles splitting text into one sentence per line. */
 final class AsciidocSentenceHandler {
-	private AsciidocSentenceHandler() {}
+	private final List<String> lines;
+
+	AsciidocSentenceHandler(List<String> lines) {
+		this.lines = lines;
+	}
 
 	// Known abbreviations that end with a period but do not end a sentence
 	private static final Set<String> ABBREVIATIONS = Set.of(
@@ -38,7 +42,7 @@ final class AsciidocSentenceHandler {
 			// German abbreviations
 			"bspw", "bzw", "bzgl", "ca", "evtl", "exkl", "inkl", "sog");
 
-	static void applySentencePerLine(List<String> lines) {
+	void applySentencePerLine() {
 		Collection<String> result = new ArrayList<>(lines.size());
 		Collection<String> paragraphBuffer = new ArrayList<>();
 		BlockTracker bt = new BlockTracker();
