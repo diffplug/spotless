@@ -15,8 +15,6 @@
  */
 package com.diffplug.spotless.asciidoc;
 
-import java.util.stream.IntStream;
-
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 class BlockTracker {
@@ -39,7 +37,12 @@ class BlockTracker {
 		return null;
 	}
 
-	static boolean isAllSameChar(CharSequence line, char c) {
-		return IntStream.range(0, line.length()).noneMatch(i -> line.charAt(i) != c);
+	private static boolean isAllSameChar(CharSequence line, char c) {
+		for (int i = 0; i < line.length(); i++) {
+			if (line.charAt(i) != c) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

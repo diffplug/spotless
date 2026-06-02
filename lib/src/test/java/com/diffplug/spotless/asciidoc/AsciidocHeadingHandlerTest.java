@@ -143,6 +143,30 @@ class AsciidocHeadingHandlerTest {
 	}
 
 	@Test
+	void setextTitleEndingWithEqualsPreservedAfterTrailingEqualsRemoval() {
+		// Regression: removeTrailingHeaderEqualsSign previously ran after
+		// normalizeSetextHeadings, converting "Config =\n========" into "= Config ="
+		// and then stripping the trailing '=' as if it were symmetric decoration.
+		// The fix moves removeTrailingHeaderEqualsSign before normalizeSetextHeadings.
+		AsciidocFormatterFunc f = funcWith(cfg -> {
+			cfg.setNormalizeSetextHeadings(true);
+			cfg.setRemoveTrailingHeaderEqualsSign(true);
+		});
+		assertThat(apply(f, "Config =\n========")).isEqualTo("= Config =");
+	}
+
+	@Test
+	void symmetricAtxHeadingStillStrippedWhenBothEnabled() {
+		// When both features are on, a directly-written symmetric ATX heading
+		// must still have its trailing decoration removed.
+		AsciidocFormatterFunc f = funcWith(cfg -> {
+			cfg.setNormalizeSetextHeadings(true);
+			cfg.setRemoveTrailingHeaderEqualsSign(true);
+		});
+		assertThat(apply(f, "== Version ==")).isEqualTo("== Version");
+	}
+
+	@Test
 	void setextNormalizationIsIdempotent() throws Exception {
 		String input = "My Title\n========\n\nA Section\n---------";
 		String once = apply(funcSetext(), input);

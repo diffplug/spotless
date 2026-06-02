@@ -114,6 +114,22 @@ class AsciidocSentenceHandlerTest {
 	}
 
 	@Test
+	void exclamationSplitsBeforeLowercaseWord() {
+		// Regression: '!' previously required the following word to start with
+		// uppercase, so "Stop! don't move." was never split.
+		assertThat(apply(func(true), "Stop! don't move. Please continue."))
+				.isEqualTo("Stop!\ndon't move.\nPlease continue.");
+	}
+
+	@Test
+	void questionMarkSplitsBeforeLowercaseWord() {
+		// Regression: '?' previously required the following word to start with
+		// uppercase, so "Really? maybe not." was never split.
+		assertThat(apply(func(true), "Really? maybe not. Let's check."))
+				.isEqualTo("Really?\nmaybe not.\nLet's check.");
+	}
+
+	@Test
 	void joinsMultiLineParagraphThenSplits() {
 		String input = "This is a long sentence that\nspans multiple lines. Second sentence.";
 		assertThat(apply(func(true), input)).isEqualTo(

@@ -30,6 +30,8 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  */
 public class AsciidocFormatterFunc implements FormatterFunc {
 
+	private static final Pattern LINE_SPLITTER = Pattern.compile("\\R");
+
 	private final AsciidocFormatterConfig config;
 
 	public AsciidocFormatterFunc(AsciidocFormatterConfig config) {
@@ -38,33 +40,33 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 
 	@NonNull @Override
 	public String apply(@NonNull String input) throws Exception {
-		// Use \R to match any line break (LF, CRLF, CR) and avoid multiple replacements
-		List<String> lines = new ArrayList<>(Arrays.asList(Pattern.compile("\\R").split(input, -1)));
-
-		AsciidocBlockHandler blockHandler = new AsciidocBlockHandler(lines);
-		AsciidocHeadingHandler headingHandler = new AsciidocHeadingHandler(lines);
-		AsciidocLineHandler lineHandler = new AsciidocLineHandler(lines);
-		AsciidocSentenceHandler sentenceHandler = new AsciidocSentenceHandler(lines);
-
+		List<String> lines = new ArrayList<>(Arrays.asList(LINE_SPLITTER.split(input, -1)));
 		// Ordering constraints:
-		//   removeTrailingWhitespace  before  collapseConsecutiveBlankLines
+		//   removeTrailingWhitespace      before  collapseConsecutiveBlankLines
 		//     - whitespace-only lines must be emptied before they can be collapsed.
-		//   normalizeSetextHeadings   before  ensureHeadingBlankLines
+		//   removeTrailingHeaderEqualsSign before  normalizeSetextHeadings
+		//     - symmetric ATX headings must be cleaned before setext conversion so that
+		//       a setext title ending with '=' is not later mistaken for symmetric decoration.
+		//   normalizeSetextHeadings       before  ensureHeadingBlankLines
 		//     - setext headings are converted to ATX first so they receive blank-line padding.
+
+		AsciidocLineHandler lineHandler = new AsciidocLineHandler(lines);
 		if (config.isRemoveTrailingWhitespace()) {
 			lineHandler.removeTrailingWhitespace();
+		}
+		AsciidocHeadingHandler headingHandler = new AsciidocHeadingHandler(lines);
+		if (config.isRemoveTrailingHeaderEqualsSign()) {
+			headingHandler.removeTrailingHeaderEqualsSign();
 		}
 		if (config.isNormalizeSetextHeadings()) {
 			headingHandler.normalizeSetextHeadings();
 		}
+		AsciidocBlockHandler blockHandler = new AsciidocBlockHandler(lines);
 		if (config.isEnsureSourceDelimiters()) {
 			blockHandler.ensureSourceDelimiters();
 		}
 		if (config.isNormalizeBlockDelimiters()) {
 			blockHandler.normalizeBlockDelimiters();
-		}
-		if (config.isRemoveTrailingHeaderEqualsSign()) {
-			headingHandler.removeTrailingHeaderEqualsSign();
 		}
 
 		// Combine simple line-by-line transforms into a single in-place pass
@@ -75,6 +77,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		if (config.isEnsureHeadingBlankLines()) {
 			headingHandler.ensureHeadingBlankLines();
 		}
+		AsciidocSentenceHandler sentenceHandler = new AsciidocSentenceHandler(lines);
 		if (config.isOneSentencePerLine()) {
 			sentenceHandler.applySentencePerLine();
 		}

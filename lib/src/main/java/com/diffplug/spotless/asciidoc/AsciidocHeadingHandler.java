@@ -75,13 +75,13 @@ final class AsciidocHeadingHandler {
 		default:
 			return null;
 		}
+		if (underlineLine.length() < titleCandidate.length()) {
+			return null;
+		}
 		for (int j = 1; j < underlineLine.length(); j++) {
 			if (underlineLine.charAt(j) != underlineChar) {
 				return null;
 			}
-		}
-		if (underlineLine.length() < titleCandidate.length()) {
-			return null;
 		}
 		return level;
 	}

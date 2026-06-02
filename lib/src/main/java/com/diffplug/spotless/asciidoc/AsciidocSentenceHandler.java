@@ -42,7 +42,7 @@ final class AsciidocSentenceHandler {
 			"corp", "inc", "ltd", "llc",
 			"jan", "feb", "mar", "apr", "jun", "jul",
 			"aug", "sep", "sept", "oct", "nov", "dec",
-			"bspw", "bzw", "bzgl", "ca", "evtl", "exkl", "inkl", "sog");
+			"bspw", "bzw", "bzgl", "ca", "evtl", "exkl", "inkl", "sog", "art");
 
 	void applySentencePerLine() {
 		Collection<String> result = new ArrayList<>(lines.size());
@@ -138,7 +138,9 @@ final class AsciidocSentenceHandler {
 					while (k < text.length() && Character.isWhitespace(text.charAt(k))) {
 						k++;
 					}
-					if (k >= text.length() || Character.isUpperCase(text.charAt(k)) || Character.isDigit(text.charAt(k))) {
+					// For '.' require uppercase/digit to avoid splitting on abbreviations.
+					// For '!' and '?' always split — they are unambiguous sentence terminators.
+					if (c != '.' || k >= text.length() || Character.isUpperCase(text.charAt(k)) || Character.isDigit(text.charAt(k))) {
 						String sentence = text.substring(start, j).trim();
 						if (!sentence.isEmpty()) {
 							sentences.add(sentence);

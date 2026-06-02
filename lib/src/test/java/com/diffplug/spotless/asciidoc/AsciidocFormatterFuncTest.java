@@ -17,9 +17,55 @@ package com.diffplug.spotless.asciidoc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
 
 class AsciidocFormatterFuncTest {
+
+	private static AsciidocFormatterFunc funcWith(Consumer<AsciidocFormatterConfig> customizer) {
+		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
+		cfg.setNormalizeSetextHeadings(false);
+		cfg.setCollapseConsecutiveBlankLines(false);
+		cfg.setOneSentencePerLine(false);
+		cfg.setNormalizeBlockDelimiters(false);
+		cfg.setRemoveTrailingHeaderEqualsSign(false);
+		cfg.setTitleCase(false);
+		cfg.setRemoveTrailingWhitespace(false);
+		cfg.setNormalizeListBullets(false);
+		cfg.setNormalizeOrderedListMarkers(false);
+		cfg.setEnsureHeadingBlankLines(false);
+		cfg.setEnsureSourceDelimiters(false);
+		customizer.accept(cfg);
+		return new AsciidocFormatterFunc(cfg);
+	}
+
+	@Test
+	void removeTrailingEqualsRunsBeforeSetextNormalization() throws Exception {
+		// Ordering constraint: removeTrailingHeaderEqualsSign must run before
+		// normalizeSetextHeadings. If the order were reversed, "Config =\n========"
+		// would first become "= Config =" and then have the trailing '=' stripped as
+		// symmetric decoration, yielding "= Config" instead of "= Config =".
+		AsciidocFormatterFunc f = funcWith(cfg -> {
+			cfg.setRemoveTrailingHeaderEqualsSign(true);
+			cfg.setNormalizeSetextHeadings(true);
+		});
+		assertThat(f.apply("Config =\n========")).isEqualTo("= Config =");
+	}
+
+	@Test
+	void setextNormalizationRunsBeforeHeadingBlankLines() throws Exception {
+		// Ordering constraint: normalizeSetextHeadings must run before
+		// ensureHeadingBlankLines. If the order were reversed, ensureHeadingBlankLines
+		// would see a plain paragraph line (the setext title candidate) and add no
+		// padding; the converted ATX heading would then lack its surrounding blank lines.
+		AsciidocFormatterFunc f = funcWith(cfg -> {
+			cfg.setNormalizeSetextHeadings(true);
+			cfg.setEnsureHeadingBlankLines(true);
+		});
+		assertThat(f.apply("Before\nSection Title\n=============\nAfter"))
+				.isEqualTo("Before\n\n= Section Title\n\nAfter");
+	}
 
 	@Test
 	void appliesMultipleFormattingRules() throws Exception {

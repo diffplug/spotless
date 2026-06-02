@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 /** Handles transformations for Asciidoc blocks (delimiters, source blocks). */
 final class AsciidocBlockHandler {
@@ -40,7 +39,15 @@ final class AsciidocBlockHandler {
 			return false;
 		}
 		char c = line.charAt(0);
-		return BLOCK_DELIMITER_CHARS.indexOf(c) >= 0 && IntStream.range(1, len).noneMatch(i -> line.charAt(i) != c);
+		if (BLOCK_DELIMITER_CHARS.indexOf(c) < 0) {
+			return false;
+		}
+		for (int i = 1; i < len; i++) {
+			if (line.charAt(i) != c) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	void normalizeBlockDelimiters() {
@@ -53,22 +60,20 @@ final class AsciidocBlockHandler {
 				if (closed != null) {
 					lines.set(i, closed.repeat(4));
 				}
-			} else if (isOverLongBlockDelimiter(line)) {
-				String prev = i == 0 ? null : lines.get(i - 1);
-				boolean notSetextUnderline = prev == null || prev.isBlank()
-						|| AsciidocHeadingHandler.detectSetextUnderline(prev, line) == null;
-				if (notSetextUnderline) {
-					lines.set(i, String.valueOf(line.charAt(0)).repeat(4));
+			} else if (isBlockDelimiter(line)) {
+				if (line.length() > 4) {
+					String prev = i == 0 ? null : lines.get(i - 1);
+					boolean notSetextUnderline = prev == null || prev.isBlank()
+							|| AsciidocHeadingHandler.detectSetextUnderline(prev, line) == null;
+					if (notSetextUnderline) {
+						lines.set(i, String.valueOf(line.charAt(0)).repeat(4));
+						bt.open(lines.get(i));
+					}
+				} else {
 					bt.open(line);
 				}
-			} else if (isBlockDelimiter(line)) {
-				bt.open(line);
 			}
 		}
-	}
-
-	private static boolean isOverLongBlockDelimiter(CharSequence line) {
-		return line.length() > 4 && isBlockDelimiter(line);
 	}
 
 	void ensureSourceDelimiters() {
