@@ -40,18 +40,14 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	private static final Pattern SYMMETRIC_HEADING = Pattern.compile("^(={1,6})\\s+(.*\\S)\\s+=+\\s*$");
 
 	// Section heading: = Title or == Title, etc.
-	// Captured groups: (1) leading equals, (2) title text
-	private static final Pattern SECTION_HEADING = Pattern.compile("^(={1,6})\\s+(.+)$");
+	// Captured groups: (1) leading equals, (2) trimmed title text
+	private static final Pattern SECTION_HEADING = Pattern.compile("^(={1,6})\\s+(\\S.*?)\\s*$");
 
 	// Words lowercased in title case (articles, conjunctions, short prepositions)
 	private static final Set<String> TITLE_CASE_LOWERCASE = Set.of(
 			"a", "an", "the",
 			"and", "but", "or", "nor", "for", "yet", "so",
-			"at", "by", "in", "of", "on", "to", "up", "as", "off", "out", "per", "via");
-
-	// Any ATX heading, used to normalise whitespace (tab -> space) after the = signs
-	// Captured groups: (1) leading equals, (2) trimmed title text
-	private static final Pattern ATX_HEADING = Pattern.compile("^(={1,6})\\s+(\\S.*?)\\s*$");
+			"at", "by", "in", "of", "on", "to", "up", "as", "off", "out", "per", "via", "from", "with");
 
 	// Source / listing block attribute lines: [source], [source,java], [listing], [source%linenums,java], [source#id,java], etc.
 	private static final Pattern SOURCE_BLOCK_ATTR = Pattern.compile("^\\[(source|listing)[,\\]%#].*");
@@ -256,9 +252,9 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 				lines.set(i, symmetric.group(1) + " " + symmetric.group(2));
 				continue;
 			}
-			Matcher atx = ATX_HEADING.matcher(line);
-			if (atx.matches()) {
-				lines.set(i, atx.group(1) + " " + atx.group(2));
+			Matcher section = SECTION_HEADING.matcher(line);
+			if (section.matches()) {
+				lines.set(i, section.group(1) + " " + section.group(2));
 			}
 		}
 	}
@@ -541,46 +537,42 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	}
 
 	private static boolean isSpecialLine(String line) {
-		if (line.isEmpty())
+		if (line.isEmpty()) {
 			return false;
+		}
 		char first = line.charAt(0);
-		if (first == '=')
+		if (first == '=' || first == '[' || first == '|' || first == ' ' || first == '\t') {
 			return true;
-		if (first == '[')
+		}
+		if (line.startsWith("//") || line.startsWith("<<<") || line.equals("'''") || line.equals("+")) {
 			return true;
-		if (line.startsWith("//"))
+		}
+		if (first == ':' && line.length() > 1 && line.charAt(1) != ':') {
 			return true;
-		if (first == ':' && line.length() > 1 && line.charAt(1) != ':')
-			return true;
-		if (first == '|')
-			return true;
-		if (line.equals("+"))
-			return true;
-		if (first == ' ' || first == '\t')
-			return true;
-		if (first == '*' || first == '-') {
+		}
+		if (first == '.' || first == '*' || first == '-') {
+			if (line.length() > 1 && line.charAt(1) != first && line.charAt(1) != ' ') {
+				if (first == '.') {
+					return true; // Block title (.Title)
+				}
+			}
 			int i = 1;
-			while (i < line.length() && line.charAt(i) == first)
+			while (i < line.length() && line.charAt(i) == first) {
 				i++;
+			}
+			if (i == line.length() && i >= 3) {
+				return true; // Horizontal rule (--- or ***)
+			}
 			return i < line.length() && line.charAt(i) == ' ';
 		}
-		if (first == '.') {
+		if (Character.isDigit(first)) {
 			int i = 1;
-			while (i < line.length() && line.charAt(i) == '.')
+			while (i < line.length() && Character.isDigit(line.charAt(i))) {
 				i++;
-			return i < line.length() && line.charAt(i) == ' ';
-		}
-		if (first >= '0' && first <= '9') {
-			int i = 1;
-			while (i < line.length() && line.charAt(i) >= '0' && line.charAt(i) <= '9')
-				i++;
+			}
 			return i + 1 < line.length() && line.charAt(i) == '.'
 					&& (line.charAt(i + 1) == ' ' || line.charAt(i + 1) == '\t');
 		}
-		if (line.startsWith("<<<"))
-			return true;
-		if (line.equals("'''"))
-			return true;
 		return isBlockMacroOrTerm(line);
 	}
 
@@ -676,8 +668,8 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			return false;
 		}
 		String word = text.substring(wordStart, wordEnd);
-		if (word.length() == 1 && Character.isLowerCase(word.charAt(0))) {
-			return true;
+		if (word.length() == 1) {
+			return true; // Initials (e.g., A. Smith)
 		}
 		return ABBREVIATIONS.contains(word.toLowerCase(Locale.ROOT));
 	}

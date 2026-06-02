@@ -264,6 +264,27 @@ class AsciidocFormatterFuncTest {
 	}
 
 	@Test
+	void initialIsNotASentenceBoundary() {
+		String input = "The author is A. Smith. He is famous.";
+		assertThat(apply(func(true), input)).isEqualTo(
+				"The author is A. Smith.\nHe is famous.");
+	}
+
+	@Test
+	void abbreviationFollowedByCapitalIsNotASentenceBoundary() {
+		String input = "Item etc. And more. Next sentence.";
+		assertThat(apply(func(true), input)).isEqualTo(
+				"Item etc. And more.\nNext sentence.");
+	}
+
+	@Test
+	void blockTitleIsSpecialLine() {
+		String input = ".Block Title\nThis is a sentence. This is another.";
+		assertThat(apply(func(true), input)).isEqualTo(
+				".Block Title\nThis is a sentence.\nThis is another.");
+	}
+
+	@Test
 	void doesNotSplitInsideEgAbbreviation() {
 		String input = "Use a tool (e.g. Spotless) for formatting. It helps.";
 		assertThat(apply(func(true), input)).isEqualTo(
@@ -349,6 +370,18 @@ class AsciidocFormatterFuncTest {
 	void horizontalRulePassedThrough() {
 		assertThat(apply(func(true), "Sentence one.\n'''\nSentence two."))
 				.isEqualTo("Sentence one.\n'''\nSentence two.");
+	}
+
+	@Test
+	void dashHorizontalRulePassedThrough() {
+		assertThat(apply(func(true), "Sentence one.\n---\nSentence two."))
+				.isEqualTo("Sentence one.\n---\nSentence two.");
+	}
+
+	@Test
+	void asteriskHorizontalRulePassedThrough() {
+		assertThat(apply(func(true), "Sentence one.\n***\nSentence two."))
+				.isEqualTo("Sentence one.\n***\nSentence two.");
 	}
 
 	@Test
@@ -494,6 +527,12 @@ class AsciidocFormatterFuncTest {
 	void titleCasesLevel1SectionHeading() {
 		assertThat(apply(funcTitleCase(), "= examples of title case"))
 				.isEqualTo("= Examples of Title Case");
+	}
+
+	@Test
+	void titleCaseHandlesWordsWithPunctuation() {
+		assertThat(apply(funcTitleCase(), "== word, and another"))
+				.isEqualTo("== Word, and Another");
 	}
 
 	@Test
