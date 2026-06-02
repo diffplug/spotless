@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -259,12 +260,8 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		return result.toArray(new String[0]);
 	}
 
-	/** True when {@code line} consists entirely of {@code delimChar} repeated four or more times. */
-	private static boolean isDelimiterOfChar(String line, String delimChar) {
-		if (line.length() < 4) {
-			return false;
-		}
-		char c = delimChar.charAt(0);
+	/** True when every character in {@code line} equals {@code c}. */
+	private static boolean isAllSameChar(String line, char c) {
 		for (int i = 0; i < line.length(); i++) {
 			if (line.charAt(i) != c) {
 				return false;
@@ -273,21 +270,15 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		return true;
 	}
 
+	/** True when {@code line} consists entirely of {@code delimChar} repeated four or more times. */
+	private static boolean isDelimiterOfChar(String line, String delimChar) {
+		return line.length() >= 4 && isAllSameChar(line, delimChar.charAt(0));
+	}
+
 	/** True when the line is a block-delimiter character repeated five or more times. */
 	private static boolean isOverLongBlockDelimiter(String line) {
-		if (line.length() <= 4) {
-			return false;
-		}
-		char c = line.charAt(0);
-		if (BLOCK_DELIMITER_CHARS.indexOf(c) < 0) {
-			return false;
-		}
-		for (int i = 1; i < line.length(); i++) {
-			if (line.charAt(i) != c) {
-				return false;
-			}
-		}
-		return true;
+		return line.length() > 4 && BLOCK_DELIMITER_CHARS.indexOf(line.charAt(0)) >= 0
+				&& isAllSameChar(line, line.charAt(0));
 	}
 
 	// ── removeTrailingHeaderEqualsSign ────────────────────────────────────────
@@ -450,14 +441,14 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		return result;
 	}
 
-	// ── normalizeListBullets ──────────────────────────────────────────────────
+	// ── processLinesSkippingBlocks ────────────────────────────────────────────
 
 	/**
-	 * Converts dash-style unordered list items ({@code - item}) to the standard
-	 * AsciiDoc asterisk style ({@code * item}).  Lines inside delimited blocks
-	 * are passed through unchanged.
+	 * Applies {@code transform} to every line that is outside a delimited block.
+	 * Lines that open or close a block, and all lines between them, are passed
+	 * through unchanged.
 	 */
-	private static String[] normalizeListBullets(String[] lines) {
+	private static String[] processLinesSkippingBlocks(String[] lines, UnaryOperator<String> transform) {
 		String[] result = new String[lines.length];
 		String openDelimiterChar = null;
 		for (int i = 0; i < lines.length; i++) {
@@ -470,13 +461,23 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			} else if (isBlockDelimiter(line) && !line.isEmpty()) {
 				result[i] = line;
 				openDelimiterChar = String.valueOf(line.charAt(0));
-			} else if (line.startsWith("- ")) {
-				result[i] = "* " + line.substring(2);
 			} else {
-				result[i] = line;
+				result[i] = transform.apply(line);
 			}
 		}
 		return result;
+	}
+
+	// ── normalizeListBullets ──────────────────────────────────────────────────
+
+	/**
+	 * Converts dash-style unordered list items ({@code - item}) to the standard
+	 * AsciiDoc asterisk style ({@code * item}).  Lines inside delimited blocks
+	 * are passed through unchanged.
+	 */
+	private static String[] normalizeListBullets(String[] lines) {
+		return processLinesSkippingBlocks(lines,
+				line -> line.startsWith("- ") ? "* " + line.substring(2) : line);
 	}
 
 	// ── normalizeOrderedListMarkers ───────────────────────────────────────────
@@ -487,24 +488,10 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	 * delimited blocks are passed through unchanged.
 	 */
 	private static String[] normalizeOrderedListMarkers(String[] lines) {
-		String[] result = new String[lines.length];
-		String openDelimiterChar = null;
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i];
-			if (openDelimiterChar != null) {
-				result[i] = line;
-				if (isDelimiterOfChar(line, openDelimiterChar)) {
-					openDelimiterChar = null;
-				}
-			} else if (isBlockDelimiter(line) && !line.isEmpty()) {
-				result[i] = line;
-				openDelimiterChar = String.valueOf(line.charAt(0));
-			} else {
-				Matcher m = NUMBERED_LIST_ITEM.matcher(line);
-				result[i] = m.matches() ? ". " + m.group(2) : line;
-			}
-		}
-		return result;
+		return processLinesSkippingBlocks(lines, line -> {
+			Matcher m = NUMBERED_LIST_ITEM.matcher(line);
+			return m.matches() ? ". " + m.group(2) : line;
+		});
 	}
 
 	// ── titleCase ─────────────────────────────────────────────────────────────
@@ -599,8 +586,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			// ── inside a delimited block: pass through until matching closing delimiter
 			if (openDelimiterChar != null) {
 				result.add(line);
-				if (isBlockDelimiter(line) && !line.isEmpty()
-						&& String.valueOf(line.charAt(0)).equals(openDelimiterChar)) {
+				if (isDelimiterOfChar(line, openDelimiterChar)) {
 					openDelimiterChar = null;
 				}
 				continue;
@@ -660,12 +646,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		if (c != '=' && c != '-' && c != '~' && c != '^' && c != '+') {
 			return false;
 		}
-		for (int i = 1; i < line.length(); i++) {
-			if (line.charAt(i) != c) {
-				return false;
-			}
-		}
-		return true;
+		return isAllSameChar(line, c);
 	}
 
 	/**
