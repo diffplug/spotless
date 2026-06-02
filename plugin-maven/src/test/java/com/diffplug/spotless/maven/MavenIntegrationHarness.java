@@ -182,6 +182,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("protobuf", steps));
 	}
 
+	protected void writePomWithAsciidocSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("asciidoc", including("**/*.adoc"), steps));
+	}
+
 	protected void writePomWithMarkdownSteps(String... steps) throws IOException {
 		writePom(groupWithSteps("markdown", including("**/*.md"), steps));
 	}
