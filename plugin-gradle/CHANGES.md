@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Fixed
+- Prevent build caches from interfering when executing under the `-PspotlessIdeHook` mode. ([#2365](https://github.com/diffplug/spotless/issues/2365))
+
 ## [8.6.0] - 2026-05-27
 ### Added
 - Add `cacheDirectory(...)` to `eclipse()`, `eclipseCdt()`, and `greclipse()`; the default P2 cache is `$GRADLE_USER_HOME/caches/p2-data`. ([#2944](https://github.com/diffplug/spotless/pull/2944))
