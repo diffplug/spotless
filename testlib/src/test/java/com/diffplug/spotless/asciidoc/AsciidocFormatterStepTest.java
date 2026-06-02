@@ -18,15 +18,17 @@ package com.diffplug.spotless.asciidoc;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 
-class AsciidocFormatterStepTest {
+class AsciidocFormatterStepTest extends ResourceHarness {
 
 	@Test
 	void behavior() {
-		StepHarness.forStep(AsciidocFormatterStep.create(new AsciidocFormatterConfig()))
-				.testResource("asciidoc/asciidocBefore.adoc", "asciidoc/asciidocAfter.adoc");
+		try (StepHarness step = StepHarness.forStep(AsciidocFormatterStep.create(new AsciidocFormatterConfig()))) {
+			step.testResource("asciidoc/asciidocBefore.adoc", "asciidoc/asciidocAfter.adoc");
+		}
 	}
 
 	@Test
