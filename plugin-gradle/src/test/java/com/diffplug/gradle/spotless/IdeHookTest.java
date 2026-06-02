@@ -121,6 +121,33 @@ class IdeHookTest extends GradleIntegrationHarness {
 
 	@ParameterizedTest
 	@MethodSource("configurationCacheProvider")
+	void dirtyCalledTwiceWithStdOut(boolean configurationCache) throws IOException {
+		// Make sure gradle doesn't cache the output of the first call, since it must be written to stdout again
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + dirty.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
+		Assertions.assertThat(output).isEqualTo("abc");
+		Assertions.assertThat(error).startsWith("IS DIRTY");
+
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + dirty.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
+		Assertions.assertThat(output).isEqualTo("abc");
+		Assertions.assertThat(error).startsWith("IS DIRTY");
+	}
+
+	@ParameterizedTest
+	@MethodSource("configurationCacheProvider")
+	void dirtyCalledTwiceAfterRevert(boolean configurationCache) throws IOException {
+		// Make sure Gradle doesn't skip writing to the file just because it was already dirty in the previous run
+		// - the content may have been reverted in between
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + dirty.getAbsolutePath());
+		Assertions.assertThat(error).startsWith("IS DIRTY");
+
+		Files.write("ABC".getBytes(StandardCharsets.UTF_8), dirty);
+
+		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + dirty.getAbsolutePath());
+		Assertions.assertThat(error).startsWith("IS DIRTY");
+	}
+
+	@ParameterizedTest
+	@MethodSource("configurationCacheProvider")
 	void clean(boolean configurationCache) throws IOException {
 		runWith(configurationCache, "spotlessApply", "--quiet", "-PspotlessIdeHook=" + clean.getAbsolutePath(), "-PspotlessIdeHookUseStdOut");
 		Assertions.assertThat(output).isEmpty();
