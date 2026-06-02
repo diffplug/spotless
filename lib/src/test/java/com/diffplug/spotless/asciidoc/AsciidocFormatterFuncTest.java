@@ -23,8 +23,6 @@ import org.junit.jupiter.api.Test;
 
 class AsciidocFormatterFuncTest {
 
-	// ── helpers ───────────────────────────────────────────────────────────────
-
 	/** Returns a formatter with every feature disabled, then applies {@code customizer}. */
 	private static AsciidocFormatterFunc funcWith(Consumer<AsciidocFormatterConfig> customizer) {
 		AsciidocFormatterConfig cfg = new AsciidocFormatterConfig();
@@ -94,8 +92,6 @@ class AsciidocFormatterFuncTest {
 			throw new RuntimeException(e);
 		}
 	}
-
-	// ── normalizeSetextHeadings ───────────────────────────────────────────────
 
 	@Test
 	void convertsLevel0SetextHeading() {
@@ -187,8 +183,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(twice).isEqualTo(once);
 	}
 
-	// ── collapseConsecutiveBlankLines ─────────────────────────────────────────
-
 	@Test
 	void singleBlankLinePreserved() {
 		assertThat(apply(funcCollapse(), "A\n\nB")).isEqualTo("A\n\nB");
@@ -232,8 +226,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(twice).isEqualTo(once);
 	}
 
-	// ── one sentence per line – basic ─────────────────────────────────────────
-
 	@Test
 	void splitsTwoSentencesOnOneLine() {
 		String input = "First sentence. Second sentence.";
@@ -264,8 +256,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(twice).isEqualTo(once);
 	}
 
-	// ── abbreviation handling ─────────────────────────────────────────────────
-
 	@Test
 	void drAbbreviationIsNotASentenceBoundary() {
 		String input = "Consult Dr. Smith before proceeding. Then continue.";
@@ -294,8 +284,6 @@ class AsciidocFormatterFuncTest {
 				"Well... that is interesting.\nNext point.");
 	}
 
-	// ── structural lines must pass through untouched ─────────────────────────
-
 	@Test
 	void doesNotTouchHeadings() {
 		String input = "== Section Title\n\nParagraph text.";
@@ -320,8 +308,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(apply(func(true), input)).isEqualTo(input);
 	}
 
-	// ── content inside delimited blocks must pass through untouched ──────────
-
 	@Test
 	void doesNotReformatInsideListingBlock() {
 		String input = "----\nFirst sentence. Second sentence.\n----";
@@ -333,8 +319,6 @@ class AsciidocFormatterFuncTest {
 		String input = "====\nFirst sentence. Second sentence.\n====";
 		assertThat(apply(func(true), input)).isEqualTo(input);
 	}
-
-	// ── block macros and page breaks must pass through untouched ────────────
 
 	@Test
 	void pageBreakIsNotJoinedWithAdjacentMacros() {
@@ -367,8 +351,6 @@ class AsciidocFormatterFuncTest {
 				.isEqualTo("Sentence one.\n'''\nSentence two.");
 	}
 
-	// ── blank lines separate paragraphs (no cross-paragraph joining) ─────────
-
 	@Test
 	void blankLineSeparatesParagraphs() {
 		String input = "Paragraph one sentence one. Sentence two.\n\nParagraph two.";
@@ -376,15 +358,11 @@ class AsciidocFormatterFuncTest {
 				"Paragraph one sentence one.\nSentence two.\n\nParagraph two.");
 	}
 
-	// ── setext heading lookahead ──────────────────────────────────────────────
-
 	@Test
 	void doesNotMangleSetextHeading() {
 		String input = "My Section\n----------\n\nParagraph text.";
 		assertThat(apply(func(true), input)).isEqualTo(input);
 	}
-
-	// ── normalizeBlockDelimiters ──────────────────────────────────────────────
 
 	@Test
 	void shortensLongDashDelimiter() {
@@ -457,8 +435,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(twice).isEqualTo(once);
 	}
 
-	// ── removeTrailingHeaderEqualsSign ────────────────────────────────────────
-
 	@Test
 	void removesTrailingEqualsFromH2() {
 		assertThat(apply(funcTrailingEquals(), "== Section Title =="))
@@ -503,8 +479,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(twice).isEqualTo(once);
 	}
 
-	// ── splitIntoSentences unit tests ─────────────────────────────────────────
-
 	@Test
 	void singleSentenceReturnedAsIs() {
 		assertThat(apply(func(true), "Just one sentence.")).isEqualTo("Just one sentence.");
@@ -515,8 +489,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(apply(func(true), "lowercase follows. not a new sentence. no split here."))
 				.isEqualTo("lowercase follows. not a new sentence. no split here.");
 	}
-
-	// ── titleCase ─────────────────────────────────────────────────────────────
 
 	@Test
 	void titleCasesLevel1SectionHeading() {
@@ -628,8 +600,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(apply(funcTitleCase(), input)).isEqualTo(input);
 	}
 
-	// ── removeTrailingWhitespace ──────────────────────────────────────────────
-
 	@Test
 	void trailingSpacesRemovedFromLine() {
 		assertThat(apply(funcTrailingWhitespace(), "line with trailing spaces   "))
@@ -666,8 +636,6 @@ class AsciidocFormatterFuncTest {
 		String twice = apply(funcTrailingWhitespace(), once);
 		assertThat(twice).isEqualTo(once);
 	}
-
-	// ── normalizeListBullets ──────────────────────────────────────────────────
 
 	@Test
 	void dashListItemConvertedToAsterisk() {
@@ -713,8 +681,6 @@ class AsciidocFormatterFuncTest {
 		String twice = apply(funcListBullets(), once);
 		assertThat(twice).isEqualTo(once);
 	}
-
-	// ── normalizeOrderedListMarkers ───────────────────────────────────────────
 
 	@Test
 	void numberedListItemConvertedToAsciiDocStyle() {
@@ -776,8 +742,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(apply(func(true), input)).isEqualTo(input);
 	}
 
-	// ── removeTrailingHeaderEqualsSign – heading whitespace normalization ──────
-
 	@Test
 	void tabAfterHeadingMarkerNormalizedToSpace() {
 		assertThat(apply(funcTrailingEquals(), "===\tNginx"))
@@ -789,8 +753,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(apply(funcTrailingEquals(), "==  Title"))
 				.isEqualTo("== Title");
 	}
-
-	// ── ensureHeadingBlankLines ───────────────────────────────────────────────
 
 	@Test
 	void blankLineAddedAfterHeading() {
@@ -842,8 +804,6 @@ class AsciidocFormatterFuncTest {
 		String twice = apply(funcHeadingBlanks(), once);
 		assertThat(twice).isEqualTo(once);
 	}
-
-	// ── ensureSourceDelimiters ────────────────────────────────────────────────
 
 	@Test
 	void sourceBlockWithoutDelimiterGetsWrapped() {
@@ -930,8 +890,6 @@ class AsciidocFormatterFuncTest {
 				.isEqualTo("[source#intro,java]\n----\npublic void foo() {}\n----");
 	}
 
-	// ── combined transformations ──────────────────────────────────────────────
-
 	@Test
 	void setextNormalizationThenHeadingBlankLinesThenTitleCase() {
 		// Exercises the three ordering-dependent transformations in sequence:
@@ -946,8 +904,6 @@ class AsciidocFormatterFuncTest {
 		assertThat(apply(f, input))
 				.isEqualTo("some text\n\n== My Cool Section\n\nsome body");
 	}
-
-	// ── CRLF input normalization ──────────────────────────────────────────────
 
 	@Test
 	void crlfLineEndingsNormalizedToLf() {

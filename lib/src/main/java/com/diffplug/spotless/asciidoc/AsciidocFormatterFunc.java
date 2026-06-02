@@ -21,15 +21,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterFunc;
 
-public class AsciidocFormatterFunc implements FormatterFunc {
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
-	// ── constants ─────────────────────────────────────────────────────────────
+public class AsciidocFormatterFunc implements FormatterFunc {
 
 	// Single source of truth for block-delimiter characters; isBlockDelimiter is derived from this.
 	// To add a new delimiter type, append its character here only.
@@ -49,14 +49,14 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			"and", "but", "or", "nor", "for", "yet", "so",
 			"at", "by", "in", "of", "on", "to", "up", "as", "off", "out", "per", "via");
 
-	// Any ATX heading, used to normalise whitespace (tab → space) after the = signs
+	// Any ATX heading, used to normalise whitespace (tab -> space) after the = signs
 	// Captured groups: (1) leading equals, (2) trimmed title text
 	private static final Pattern ATX_HEADING = Pattern.compile("^(={1,6})\\s+(\\S.*?)\\s*$");
 
 	// Source / listing block attribute lines: [source], [source,java], [listing], [source%linenums,java], [source#id,java], etc.
 	private static final Pattern SOURCE_BLOCK_ATTR = Pattern.compile("^\\[(source|listing)[,\\]%#].*");
 
-	// ATX heading prefixes for setext→ATX conversion: ATX_PREFIX[n] = "=".repeat(n+1) + " "
+	// ATX heading prefixes for setext -> ATX conversion: ATX_PREFIX[n] = "=".repeat(n+1) + " "
 	private static final String[] ATX_PREFIX = {"= ", "== ", "=== ", "==== ", "===== ", "====== "};
 
 	// Pre-compiled whitespace-run pattern used to collapse internal whitespace in flushParagraph.
@@ -80,106 +80,96 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		this.config = config;
 	}
 
-	// ── entry point ───────────────────────────────────────────────────────────
-
-	@Override
-	public String apply(String input) throws Exception {
-		// Normalize line endings so every downstream method sees only \n.
-		// Without this, CRLF input leaves \r on each line, which breaks regex matches
-		// (e.g. detectSetextUnderline's length check) and embeds \r in heading output.
-		input = input.replace("\r\n", "\n").replace("\r", "\n");
-		String[] lines = input.split("\n", -1);
+	@NonNull @Override
+	public String apply(@NonNull String input) throws Exception {
+		// Use \R to match any line break (LF, CRLF, CR) and avoid multiple replacements
+		List<String> lines = new ArrayList<>(Arrays.asList(Pattern.compile("\\R").split(input, -1)));
 
 		// Ordering constraints:
 		//   removeTrailingWhitespace  before  collapseConsecutiveBlankLines
-		//     — whitespace-only lines must be emptied before they can be collapsed.
+		//     - whitespace-only lines must be emptied before they can be collapsed.
 		//   normalizeSetextHeadings   before  ensureHeadingBlankLines
-		//     — setext headings are converted to ATX first so they receive blank-line padding.
+		//     - setext headings are converted to ATX first so they receive blank-line padding.
 		if (config.isRemoveTrailingWhitespace()) {
-			lines = removeTrailingWhitespace(lines);
+			removeTrailingWhitespace(lines);
 		}
 		if (config.isEnsureSourceDelimiters()) {
-			lines = ensureSourceDelimiters(lines);
+			ensureSourceDelimiters(lines);
 		}
 		if (config.isNormalizeSetextHeadings()) {
-			lines = normalizeSetextHeadings(lines);
+			normalizeSetextHeadings(lines);
 		}
 		if (config.isNormalizeBlockDelimiters()) {
-			lines = normalizeBlockDelimiters(lines);
+			normalizeBlockDelimiters(lines);
 		}
 		if (config.isRemoveTrailingHeaderEqualsSign()) {
-			lines = removeTrailingHeaderEqualsSign(lines);
+			removeTrailingHeaderEqualsSign(lines);
 		}
-		if (config.isTitleCase()) {
-			lines = applyTitleCase(lines);
+
+		// Combine simple line-by-line transforms into a single in-place pass
+		if (config.isTitleCase() || config.isNormalizeListBullets() || config.isNormalizeOrderedListMarkers()) {
+			applyLineTransformations(lines);
 		}
-		if (config.isNormalizeListBullets()) {
-			lines = normalizeListBullets(lines);
-		}
-		if (config.isNormalizeOrderedListMarkers()) {
-			lines = normalizeOrderedListMarkers(lines);
-		}
+
 		if (config.isEnsureHeadingBlankLines()) {
-			lines = ensureHeadingBlankLines(lines);
+			ensureHeadingBlankLines(lines);
 		}
 		if (config.isOneSentencePerLine()) {
-			lines = applySentencePerLine(lines);
+			applySentencePerLine(lines);
+		}
+		if (config.isCollapseConsecutiveBlankLines()) {
+			collapseBlankLines(lines);
 		}
 
-		List<String> result = new ArrayList<>(Arrays.asList(lines));
-		if (config.isCollapseConsecutiveBlankLines()) {
-			result = collapseBlankLines(result);
-		}
-		return String.join("\n", result);
+		return String.join("\n", lines);
 	}
 
-	// ── normalizeSetextHeadings ───────────────────────────────────────────────
-
-	private String[] normalizeSetextHeadings(String[] lines) {
-		List<String> result = new ArrayList<>(lines.length);
+	/**
+	 * Converts setext-style headings to ATX-style headings.
+	 * Performs the transformation in-place on the input list.
+	 */
+	private static void normalizeSetextHeadings(List<String> lines) {
 		BlockTracker bt = new BlockTracker();
-		int i = 0;
-		while (i < lines.length) {
-			String line = lines[i];
+		int readIdx = 0;
+		int writeIdx = 0;
+		while (readIdx < lines.size()) {
+			String line = lines.get(readIdx);
 			if (bt.isOpen()) {
-				result.add(line);
+				lines.set(writeIdx++, line);
 				bt.tryClose(line);
-				i++;
+				readIdx++;
 				continue;
 			}
 			if (isBlockDelimiter(line)) {
-				result.add(line);
+				lines.set(writeIdx++, line);
 				bt.open(line);
-				i++;
+				readIdx++;
 				continue;
 			}
-			if (i + 1 < lines.length) {
-				Integer level = detectSetextUnderline(line, lines[i + 1]);
+			if (readIdx + 1 < lines.size()) {
+				Integer level = detectSetextUnderline(line, lines.get(readIdx + 1));
 				if (level != null) {
-					result.add(ATX_PREFIX[level] + line);
-					i += 2;
+					lines.set(writeIdx++, ATX_PREFIX[level] + line);
+					readIdx += 2;
 					continue;
 				}
 			}
-			result.add(line);
-			i++;
+			lines.set(writeIdx++, line);
+			readIdx++;
 		}
-		return result.toArray(new String[0]);
+		if (writeIdx < lines.size()) {
+			lines.subList(writeIdx, lines.size()).clear();
+		}
 	}
 
 	/**
 	 * Returns the heading level if {@code titleCandidate} + {@code underlineLine}
 	 * form a setext-style heading, or {@code null} otherwise.
-	 *
-	 * <p>Title candidates must be plain prose: lines that begin with structural
-	 * AsciiDoc syntax ({@code =}, {@code [}, {@code //}, {@code .}, {@code :},
-	 * {@code *}, {@code -}, {@code |}, {@code +}) are never heading titles.
 	 */
-	private Integer detectSetextUnderline(String titleCandidate, String underlineLine) {
+	@Nullable private static Integer detectSetextUnderline(String titleCandidate, CharSequence underlineLine) {
 		if (titleCandidate.isEmpty()) {
 			return null;
 		}
-		// Structural AsciiDoc lines are never heading title candidates
 		char first = titleCandidate.charAt(0);
 		if (first == '=' || first == '[' || first == '.' || first == ':'
 				|| first == '*' || first == '-' || first == '|' || first == '+'
@@ -215,60 +205,36 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 				return null;
 			}
 		}
-		// Underline must be at least as long as the title
 		if (underlineLine.length() < titleCandidate.length()) {
 			return null;
 		}
 		return level;
 	}
 
-	// ── normalizeBlockDelimiters ──────────────────────────────────────────────
-
-	/**
-	 * Shortens over-long block delimiter lines to exactly four characters.
-	 *
-	 * <p>A line like {@code --------} (eight dashes) becomes {@code ----}.
-	 * Lines that are already four characters are left unchanged.  Setext
-	 * heading underlines (preceded by a prose title) are also left unchanged.
-	 *
-	 * <p>A state machine tracks open/close pairs so that only the first
-	 * occurrence of a delimiter char on an unmatched line is subject to the
-	 * setext heuristic; once a block is open, its closing delimiter is
-	 * normalised unconditionally.
-	 */
-	private String[] normalizeBlockDelimiters(String[] lines) {
-		List<String> result = new ArrayList<>(lines.length);
+	private static void normalizeBlockDelimiters(List<String> lines) {
 		BlockTracker bt = new BlockTracker();
 
-		for (String line : lines) {
+		for (int i = 0; i < lines.size(); i++) {
+			String line = lines.get(i);
 			if (bt.isOpen()) {
-				// Inside a block: normalize the closing delimiter; pass everything else through.
 				String closed = bt.tryClose(line);
-				result.add(closed != null ? closed.repeat(4) : line);
+				if (closed != null) {
+					lines.set(i, closed.repeat(4));
+				}
 			} else if (isOverLongBlockDelimiter(line)) {
-				// Outside a block: decide if this is a setext underline or a block delimiter.
-				String prev = result.isEmpty() ? null : result.get(result.size() - 1);
+				String prev = i == 0 ? null : lines.get(i - 1);
 				boolean isSetextUnderline = prev != null && !prev.isBlank()
 						&& detectSetextUnderline(prev, line) != null;
-				if (isSetextUnderline) {
-					result.add(line);
-					// Do NOT enter block-tracking state; setext underlines are not block openers.
-				} else {
-					result.add(String.valueOf(line.charAt(0)).repeat(4));
+				if (!isSetextUnderline) {
+					lines.set(i, String.valueOf(line.charAt(0)).repeat(4));
 					bt.open(line);
 				}
 			} else if (isBlockDelimiter(line)) {
-				// A minimal (4-char) delimiter: enter block-tracking state.
-				result.add(line);
 				bt.open(line);
-			} else {
-				result.add(line);
 			}
 		}
-		return result.toArray(new String[0]);
 	}
 
-	/** True when every character in {@code line} equals {@code c}. */
 	private static boolean isAllSameChar(String line, char c) {
 		for (int i = 0; i < line.length(); i++) {
 			if (line.charAt(i) != c) {
@@ -278,71 +244,55 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		return true;
 	}
 
-	/** True when the line is a block-delimiter character repeated five or more times. */
 	private static boolean isOverLongBlockDelimiter(String line) {
 		return line.length() > 4 && isBlockDelimiter(line);
 	}
 
-	// ── removeTrailingHeaderEqualsSign ────────────────────────────────────────
-
-	/**
-	 * Normalises ATX heading syntax: removes symmetric trailing {@code =} signs and
-	 * collapses any whitespace (including tabs) after the leading {@code =} signs to
-	 * a single space.
-	 *
-	 * <p>Examples: {@code == Title ==} → {@code == Title},
-	 * {@code ===\tTitle} → {@code === Title}.
-	 */
-	private static String[] removeTrailingHeaderEqualsSign(String[] lines) {
-		String[] result = new String[lines.length];
-		for (int i = 0; i < lines.length; i++) {
-			Matcher symmetric = SYMMETRIC_HEADING.matcher(lines[i]);
+	private static void removeTrailingHeaderEqualsSign(List<String> lines) {
+		for (int i = 0; i < lines.size(); i++) {
+			String line = lines.get(i);
+			Matcher symmetric = SYMMETRIC_HEADING.matcher(line);
 			if (symmetric.matches()) {
-				result[i] = symmetric.group(1) + " " + symmetric.group(2);
+				lines.set(i, symmetric.group(1) + " " + symmetric.group(2));
 				continue;
 			}
-			// Normalise whitespace (tab → space) in any remaining ATX heading.
-			Matcher atx = ATX_HEADING.matcher(lines[i]);
-			result[i] = atx.matches() ? atx.group(1) + " " + atx.group(2) : lines[i];
+			Matcher atx = ATX_HEADING.matcher(line);
+			if (atx.matches()) {
+				lines.set(i, atx.group(1) + " " + atx.group(2));
+			}
 		}
-		return result;
 	}
 
-	// ── collapseConsecutiveBlankLines ─────────────────────────────────────────
-
-	private static List<String> collapseBlankLines(List<String> lines) {
-		List<String> result = new ArrayList<>(lines.size());
+	/**
+	 * Collapses multiple consecutive blank lines into a single blank line.
+	 * Performs the transformation in-place on the input list.
+	 */
+	private static void collapseBlankLines(List<String> lines) {
+		int writeIdx = 0;
 		int consecutiveBlank = 0;
-		for (String line : lines) {
+		for (int readIdx = 0; readIdx < lines.size(); readIdx++) {
+			String line = lines.get(readIdx);
 			if (line.isBlank()) {
 				consecutiveBlank++;
 				if (consecutiveBlank <= 1) {
-					result.add(line);
+					lines.set(writeIdx++, line);
 				}
 			} else {
 				consecutiveBlank = 0;
-				result.add(line);
+				lines.set(writeIdx++, line);
 			}
 		}
-		return result;
+		if (writeIdx < lines.size()) {
+			lines.subList(writeIdx, lines.size()).clear();
+		}
 	}
 
-	// ── ensureSourceDelimiters ────────────────────────────────────────────────
-
-	/**
-	 * Wraps bare {@code [source,...]} and {@code [listing]} blocks that have no
-	 * {@code ----} delimiter with a {@code ----} / {@code ----} pair.
-	 *
-	 * <p>A block is considered "already delimited" when the line immediately
-	 * following the attribute line is any AsciiDoc block-delimiter line.
-	 * Content is collected until the first blank line or end of file.
-	 */
-	private static String[] ensureSourceDelimiters(String[] lines) {
-		List<String> result = new ArrayList<>(lines.length + 8);
+	private static void ensureSourceDelimiters(List<String> lines) {
+		List<String> result = new ArrayList<>(lines.size() + 8);
 		BlockTracker bt = new BlockTracker();
 		int i = 0;
-		while (i < lines.length) {
-			String line = lines[i];
+		while (i < lines.size()) {
+			String line = lines.get(i);
 
 			if (bt.isOpen()) {
 				result.add(line);
@@ -361,23 +311,20 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			if (SOURCE_BLOCK_ATTR.matcher(line).matches()) {
 				result.add(line);
 				i++;
-				if (i < lines.length) {
-					String next = lines[i];
+				if (i < lines.size()) {
+					String next = lines.get(i);
 					if (isBlockDelimiter(next)) {
-						// Already has a delimiter — enter block state normally
 						result.add(next);
 						bt.open(next);
 						i++;
 					} else if (!next.isBlank() && !next.startsWith("[")) {
-						// No delimiter: wrap the following paragraph
 						result.add("----");
-						while (i < lines.length && !lines[i].isBlank()) {
-							result.add(lines[i]);
+						while (i < lines.size() && !lines.get(i).isBlank()) {
+							result.add(lines.get(i));
 							i++;
 						}
 						result.add("----");
 					}
-					// blank or another attribute line: leave as-is
 				}
 				continue;
 			}
@@ -385,21 +332,16 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			result.add(line);
 			i++;
 		}
-		return result.toArray(new String[0]);
+		lines.clear();
+		lines.addAll(result);
 	}
 
-	// ── ensureHeadingBlankLines ───────────────────────────────────────────────
-
-	/**
-	 * Ensures every ATX section heading is preceded and followed by a blank line.
-	 * Lines inside delimited blocks are not touched.
-	 */
-	private static String[] ensureHeadingBlankLines(String[] lines) {
-		List<String> result = new ArrayList<>(lines.length + 8);
+	private static void ensureHeadingBlankLines(List<String> lines) {
+		List<String> result = new ArrayList<>(lines.size() + 8);
 		BlockTracker bt = new BlockTracker();
 
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i];
+		for (int i = 0; i < lines.size(); i++) {
+			String line = lines.get(i);
 
 			if (bt.isOpen()) {
 				result.add(line);
@@ -413,105 +355,69 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			}
 
 			if (SECTION_HEADING.matcher(line).matches()) {
-				// blank line before (skip if first line or previous is already blank)
 				if (!result.isEmpty() && !result.get(result.size() - 1).isBlank()) {
 					result.add("");
 				}
 				result.add(line);
-				// blank line after (skip if last line or next is already blank)
-				if (i + 1 < lines.length && !lines[i + 1].isBlank()) {
+				if (i + 1 < lines.size() && !lines.get(i + 1).isBlank()) {
 					result.add("");
 				}
 			} else {
 				result.add(line);
 			}
 		}
-		return result.toArray(new String[0]);
+		lines.clear();
+		lines.addAll(result);
 	}
 
-	// ── removeTrailingWhitespace ──────────────────────────────────────────────
-
-	private static String[] removeTrailingWhitespace(String[] lines) {
-		String[] result = new String[lines.length];
-		for (int i = 0; i < lines.length; i++) {
-			result[i] = lines[i].stripTrailing();
+	private static void removeTrailingWhitespace(List<String> lines) {
+		for (int i = 0; i < lines.size(); i++) {
+			lines.set(i, lines.get(i).stripTrailing());
 		}
-		return result;
 	}
 
-	// ── processLinesSkippingBlocks ────────────────────────────────────────────
-
-	/**
-	 * Applies {@code transform} to every line that is outside a delimited block.
-	 * Lines that open or close a block, and all lines between them, are passed
-	 * through unchanged.
-	 */
-	private static String[] processLinesSkippingBlocks(String[] lines, UnaryOperator<String> transform) {
-		String[] result = new String[lines.length];
+	private void applyLineTransformations(List<String> lines) {
 		BlockTracker bt = new BlockTracker();
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i];
+		for (int i = 0; i < lines.size(); i++) {
+			String line = lines.get(i);
 			if (bt.isOpen()) {
-				result[i] = line;
 				bt.tryClose(line);
 			} else if (isBlockDelimiter(line)) {
-				result[i] = line;
 				bt.open(line);
 			} else {
-				result[i] = transform.apply(line);
+				if (config.isTitleCase()) {
+					line = titleCaseLine(line);
+				}
+				if (config.isNormalizeListBullets() && line.startsWith("- ")) {
+					line = "* " + line.substring(2);
+				}
+				if (config.isNormalizeOrderedListMarkers()) {
+					line = normalizeOrderedListMarker(line);
+				}
+				lines.set(i, line);
 			}
 		}
-		return result;
 	}
 
-	// ── normalizeListBullets ──────────────────────────────────────────────────
-
-	/**
-	 * Converts dash-style unordered list items ({@code - item}) to the standard
-	 * AsciiDoc asterisk style ({@code * item}).  Lines inside delimited blocks
-	 * are passed through unchanged.
-	 */
-	private static String[] normalizeListBullets(String[] lines) {
-		return processLinesSkippingBlocks(lines,
-				line -> line.startsWith("- ") ? "* " + line.substring(2) : line);
-	}
-
-	// ── normalizeOrderedListMarkers ───────────────────────────────────────────
-
-	/**
-	 * Converts explicit-number ordered list items ({@code 1. item}) to the
-	 * AsciiDoc auto-numbered dot style ({@code . item}).  Lines inside
-	 * delimited blocks are passed through unchanged.
-	 */
-	private static String[] normalizeOrderedListMarkers(String[] lines) {
-		return processLinesSkippingBlocks(lines, line -> {
-			if (line.isEmpty() || line.charAt(0) < '0' || line.charAt(0) > '9')
-				return line;
-			int i = 1;
-			while (i < line.length() && line.charAt(i) >= '0' && line.charAt(i) <= '9')
-				i++;
-			if (i + 1 >= line.length() || line.charAt(i) != '.')
-				return line;
-			char sep = line.charAt(i + 1);
-			if (sep != ' ' && sep != '\t')
-				return line;
-			return ". " + line.substring(i + 2);
-		});
-	}
-
-	// ── titleCase ─────────────────────────────────────────────────────────────
-
-	private static String[] applyTitleCase(String[] lines) {
-		return processLinesSkippingBlocks(lines, AsciidocFormatterFunc::titleCaseLine);
+	private static String normalizeOrderedListMarker(String line) {
+		if (line.isEmpty() || line.charAt(0) < '0' || line.charAt(0) > '9')
+			return line;
+		int i = 1;
+		while (i < line.length() && line.charAt(i) >= '0' && line.charAt(i) <= '9')
+			i++;
+		if (i + 1 >= line.length() || line.charAt(i) != '.')
+			return line;
+		char sep = line.charAt(i + 1);
+		if (sep != ' ' && sep != '\t')
+			return line;
+		return ". " + line.substring(i + 2);
 	}
 
 	private static String titleCaseLine(String line) {
-		// Section heading: = Title, == Title, ...
 		Matcher m = SECTION_HEADING.matcher(line);
 		if (m.matches()) {
 			return m.group(1) + " " + toTitleCase(m.group(2));
 		}
-		// Block title: .Title (single dot, not .. and not dot-space)
 		if (line.length() > 1 && line.charAt(0) == '.' && line.charAt(1) != '.' && line.charAt(1) != ' ') {
 			return "." + toTitleCase(line.substring(1));
 		}
@@ -519,7 +425,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	}
 
 	private static String toTitleCase(String text) {
-		String[] words = text.split(" +", -1); // " +" avoids empty tokens from consecutive spaces
+		String[] words = text.split(" +", -1);
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < words.length; i++) {
 			if (i > 0) {
@@ -535,16 +441,13 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		if (word.isEmpty()) {
 			return word;
 		}
-		// Skip words containing AsciiDoc special markup (attributes, code spans, block attrs)
 		if (word.contains("{") || word.contains("`") || word.contains("[")) {
 			return word;
 		}
-		// Skip AsciiDoc macros (word:target — colon not at end)
 		int colonIdx = word.indexOf(':');
 		if (colonIdx > 0 && colonIdx < word.length() - 1) {
 			return word;
 		}
-		// Find first letter
 		int firstLetter = -1;
 		for (int i = 0; i < word.length(); i++) {
 			if (Character.isLetter(word.charAt(i))) {
@@ -555,7 +458,6 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		if (firstLetter < 0) {
 			return word;
 		}
-		// Extract only letters from firstLetter onward for lowercase-set membership test
 		StringBuilder coreBuilder = new StringBuilder();
 		for (int i = firstLetter; i < word.length(); i++) {
 			char c = word.charAt(i);
@@ -567,30 +469,25 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		if (!forceCapitalize && TITLE_CASE_LOWERCASE.contains(core)) {
 			return word.toLowerCase(Locale.ROOT);
 		}
-		// Uppercase first letter, leave the rest unchanged (preserves acronyms like API)
 		return word.substring(0, firstLetter)
 				+ Character.toUpperCase(word.charAt(firstLetter))
 				+ word.substring(firstLetter + 1);
 	}
 
-	// ── oneSentencePerLine ────────────────────────────────────────────────────
-
-	private String[] applySentencePerLine(String[] lines) {
-		List<String> result = new ArrayList<>(lines.length);
+	private static void applySentencePerLine(List<String> lines) {
+		List<String> result = new ArrayList<>(lines.size());
 		List<String> paragraphBuffer = new ArrayList<>();
 		BlockTracker bt = new BlockTracker();
 
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i];
+		for (int i = 0; i < lines.size(); i++) {
+			String line = lines.get(i);
 
-			// ── inside a delimited block: pass through until matching closing delimiter
 			if (bt.isOpen()) {
 				result.add(line);
 				bt.tryClose(line);
 				continue;
 			}
 
-			// ── opening delimiter: flush any accumulated paragraph, enter block
 			if (isBlockDelimiter(line)) {
 				flushParagraph(paragraphBuffer, result);
 				result.add(line);
@@ -598,31 +495,26 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 				continue;
 			}
 
-			// ── setext heading pair: lookahead to avoid mangling title + underline.
-			// Use detectSetextUnderline (same logic as normalizeSetextHeadings) so that
-			// structural lines like [source,java] or short dash-lines like -- are not
-			// mistakenly treated as heading pairs.
-			if (i + 1 < lines.length && detectSetextUnderline(line, lines[i + 1]) != null) {
+			if (i + 1 < lines.size() && detectSetextUnderline(line, lines.get(i + 1)) != null) {
 				flushParagraph(paragraphBuffer, result);
 				result.add(line);
-				result.add(lines[i + 1]);
+				result.add(lines.get(i + 1));
 				i++;
 				continue;
 			}
 
-			// ── blank or structurally special line: flush paragraph, pass through
 			if (line.isBlank() || isSpecialLine(line)) {
 				flushParagraph(paragraphBuffer, result);
 				result.add(line);
 				continue;
 			}
 
-			// ── plain paragraph text: accumulate
 			paragraphBuffer.add(line);
 		}
 
 		flushParagraph(paragraphBuffer, result);
-		return result.toArray(new String[0]);
+		lines.clear();
+		lines.addAll(result);
 	}
 
 	private static void flushParagraph(List<String> buffer, List<String> result) {
@@ -648,44 +540,36 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		return true;
 	}
 
-	/**
-		 * Returns true for lines that are structural AsciiDoc syntax and must be
-		 * emitted verbatim rather than accumulated into a paragraph.
-		 */
 	private static boolean isSpecialLine(String line) {
 		if (line.isEmpty())
 			return false;
 		char first = line.charAt(0);
 		if (first == '=')
-			return true;           // headings: = Title, == Section …
+			return true;
 		if (first == '[')
-			return true;            // block attributes: [source,java]
+			return true;
 		if (line.startsWith("//"))
-			return true;   // line or block comments
-		// attribute entries  :attr: value  (but not :: description-list markers)
+			return true;
 		if (first == ':' && line.length() > 1 && line.charAt(1) != ':')
 			return true;
 		if (first == '|')
-			return true;            // table cells
+			return true;
 		if (line.equals("+"))
-			return true;        // list continuation
+			return true;
 		if (first == ' ' || first == '\t')
-			return true; // indented literal paragraph
-		// unordered list items: * item, ** item, - item, -- item, …
+			return true;
 		if (first == '*' || first == '-') {
 			int i = 1;
 			while (i < line.length() && line.charAt(i) == first)
 				i++;
 			return i < line.length() && line.charAt(i) == ' ';
 		}
-		// ordered list items (AsciiDoc auto-number): . item, .. item, …
 		if (first == '.') {
 			int i = 1;
 			while (i < line.length() && line.charAt(i) == '.')
 				i++;
 			return i < line.length() && line.charAt(i) == ' ';
 		}
-		// explicit numbered list items: 1. item, 42.\titem
 		if (first >= '0' && first <= '9') {
 			int i = 1;
 			while (i < line.length() && line.charAt(i) >= '0' && line.charAt(i) <= '9')
@@ -694,14 +578,12 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 					&& (line.charAt(i + 1) == ' ' || line.charAt(i + 1) == '\t');
 		}
 		if (line.startsWith("<<<"))
-			return true;  // page break
+			return true;
 		if (line.equals("'''"))
-			return true;       // horizontal rule (thematic break)
-		// block macros (include::, toc::, image::, …) and description-list terms (term::)
+			return true;
 		return isBlockMacroOrTerm(line);
 	}
 
-	/** True when {@code line} is a block-macro call or description-list term ({@code word::…}). */
 	private static boolean isBlockMacroOrTerm(String line) {
 		int len = line.length();
 		int i = 0;
@@ -715,8 +597,6 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		}
 		return i > 0 && i + 1 < len && line.charAt(i) == ':' && line.charAt(i + 1) == ':';
 	}
-
-	// ── sentence splitting ────────────────────────────────────────────────────
 
 	private static List<String> splitIntoSentences(String text) {
 		if (text.isEmpty()) {
@@ -732,7 +612,6 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 
 			if (c == '.' || c == '!' || c == '?') {
 
-				// Skip ellipsis (two or more consecutive dots)
 				if (c == '.' && i + 1 < text.length() && text.charAt(i + 1) == '.') {
 					i++;
 					while (i < text.length() && text.charAt(i) == '.') {
@@ -741,25 +620,21 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 					continue;
 				}
 
-				// Abbreviations: only relevant for full stops
 				if (c == '.' && isAbbreviationContext(text, i)) {
 					i++;
 					continue;
 				}
 
-				// Skip optional closing characters after the punctuation mark
 				int j = i + 1;
 				while (j < text.length() && isSentenceClosingChar(text.charAt(j))) {
 					j++;
 				}
 
-				// End of string — remaining text collected after the loop
 				if (j >= text.length()) {
 					i = j;
 					continue;
 				}
 
-				// Sentence boundary: whitespace followed by an uppercase letter (or end)
 				if (Character.isWhitespace(text.charAt(j))) {
 					int k = j;
 					while (k < text.length() && Character.isWhitespace(text.charAt(k))) {
@@ -788,11 +663,9 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	}
 
 	private static boolean isAbbreviationContext(String text, int dotPos) {
-		// Digit before dot: decimal numbers and numbered items such as "section 1.2."
 		if (dotPos > 0 && Character.isDigit(text.charAt(dotPos - 1))) {
 			return true;
 		}
-		// Extract the alphabetic word immediately before the dot
 		int wordEnd = dotPos;
 		int wordStart = wordEnd - 1;
 		while (wordStart >= 0 && Character.isLetter(text.charAt(wordStart))) {
@@ -803,7 +676,6 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			return false;
 		}
 		String word = text.substring(wordStart, wordEnd);
-		// Single lowercase letter covers components of e.g., i.e., a.k.a., etc.
 		if (word.length() == 1 && Character.isLowerCase(word.charAt(0))) {
 			return true;
 		}
@@ -812,17 +684,10 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 
 	private static boolean isSentenceClosingChar(char c) {
 		return c == ')' || c == ']' || c == '"' || c == '\''
-				|| c == '\u2019' /* right single quotation mark */
-				|| c == '\u201D' /* right double quotation mark */;
+				|| c == '\u2019'
+				|| c == '\u201D';
 	}
 
-	// ── BlockTracker ──────────────────────────────────────────────────────────
-
-	/**
-	 * Tracks the open/close state of a single AsciiDoc delimited block across a
-	 * line scan.  All block-aware methods share this class instead of each
-	 * maintaining their own {@code openDelimiterChar} variable.
-	 */
 	private static final class BlockTracker {
 		private char delimChar = '\0';
 
@@ -834,12 +699,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			delimChar = line.charAt(0);
 		}
 
-		/**
-		 * Tests whether {@code line} closes the currently open block.
-		 * If so, resets the open state and returns the delimiter character;
-		 * returns {@code null} if the block remains open.
-		 */
-		String tryClose(String line) {
+		@Nullable String tryClose(String line) {
 			if (delimChar != '\0' && line.length() >= 4 && isAllSameChar(line, delimChar)) {
 				String closed = String.valueOf(delimChar);
 				delimChar = '\0';
