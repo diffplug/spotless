@@ -86,6 +86,10 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	// Source / listing block attribute lines: [source], [source,java], [listing], [source%linenums,java], [source#id,java], etc.
 	private static final Pattern SOURCE_BLOCK_ATTR = Pattern.compile("^\\[(source|listing)[,\\]%#].*");
 
+	// Block macros (include::, toc::, image::, …) and description-list terms (term::).
+	// Used in isSpecialLine — pre-compiled to avoid allocating a new Pattern on every call.
+	private static final Pattern BLOCK_MACRO = Pattern.compile("\\w+::.*");
+
 	// Known abbreviations that end with a period but do not end a sentence
 	private static final Set<String> ABBREVIATIONS = Set.of(
 			"mr", "mrs", "ms", "dr", "prof", "sr", "jr",
@@ -94,7 +98,9 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 			"ave", "blvd", "rd", "pp", "al", "ed", "eds",
 			"corp", "inc", "ltd", "llc",
 			"jan", "feb", "mar", "apr", "jun", "jul",
-			"aug", "sep", "oct", "nov", "dec");
+			"aug", "sep", "sept", "oct", "nov", "dec",
+			// German abbreviations
+			"bspw", "bzw", "bzgl", "ca", "evtl", "exkl", "inkl", "sog");
 
 	private final AsciidocFormatterConfig config;
 
@@ -106,6 +112,10 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 
 	@Override
 	public String apply(String input) throws Exception {
+		// Normalize line endings so every downstream method sees only \n.
+		// Without this, CRLF input leaves \r on each line, which breaks regex matches
+		// (e.g. detectSetextUnderline's length check) and embeds \r in heading output.
+		input = input.replace("\r\n", "\n").replace("\r", "\n");
 		String[] lines = input.split("\n", -1);
 
 		// Ordering constraints:
@@ -501,11 +511,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 	// ── titleCase ─────────────────────────────────────────────────────────────
 
 	private static String[] applyTitleCase(String[] lines) {
-		String[] result = new String[lines.length];
-		for (int i = 0; i < lines.length; i++) {
-			result[i] = titleCaseLine(lines[i]);
-		}
-		return result;
+		return processLinesSkippingBlocks(lines, AsciidocFormatterFunc::titleCaseLine);
 	}
 
 	private static String titleCaseLine(String line) {
@@ -601,8 +607,11 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 				continue;
 			}
 
-			// ── setext heading pair: lookahead to avoid mangling title + underline
-			if (i + 1 < lines.length && !line.isBlank() && isSetextUnderline(lines[i + 1])) {
+			// ── setext heading pair: lookahead to avoid mangling title + underline.
+			// Use detectSetextUnderline (same logic as normalizeSetextHeadings) so that
+			// structural lines like [source,java] or short dash-lines like -- are not
+			// mistakenly treated as heading pairs.
+			if (i + 1 < lines.length && detectSetextUnderline(line, lines[i + 1]) != null) {
 				flushParagraph(paragraphBuffer, result);
 				result.add(line);
 				result.add(lines[i + 1]);
@@ -638,19 +647,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		return BLOCK_DELIMITER.matcher(line).matches();
 	}
 
-	/** True when {@code line} consists entirely of a single setext underline character. */
-	private static boolean isSetextUnderline(String line) {
-		if (line.length() < 2) {
-			return false;
-		}
-		char c = line.charAt(0);
-		if (c != '=' && c != '-' && c != '~' && c != '^' && c != '+') {
-			return false;
-		}
-		return isAllSameChar(line, c);
-	}
-
-	/**
+/**
 	 * Returns true for lines that are structural AsciiDoc syntax and must be
 	 * emitted verbatim rather than accumulated into a paragraph.
 	 */
@@ -681,7 +678,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 		if (line.equals("'''"))
 			return true; // horizontal rule (thematic break)
 		// block macros (include::, toc::, image::, …) and description-list terms (term::)
-		if (line.matches("\\w+::.*"))
+		if (BLOCK_MACRO.matcher(line).matches())
 			return true;
 		return false;
 	}
@@ -735,7 +732,7 @@ public class AsciidocFormatterFunc implements FormatterFunc {
 					while (k < text.length() && Character.isWhitespace(text.charAt(k))) {
 						k++;
 					}
-					if (k >= text.length() || Character.isUpperCase(text.charAt(k))) {
+					if (k >= text.length() || Character.isUpperCase(text.charAt(k)) || Character.isDigit(text.charAt(k))) {
 						String sentence = text.substring(start, j).trim();
 						if (!sentence.isEmpty()) {
 							sentences.add(sentence);
