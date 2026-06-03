@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2025 DiffPlug
+ * Copyright 2022-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,18 +61,18 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 			default -> throw new IllegalStateException("Unknown formatting option " + style);
 		};
 
-		if (ktfmtFormattingOptions != null) {
-			formattingOptions = formattingOptions.copy(
-				ktfmtFormattingOptions.getMaxWidth().orElse(formattingOptions.getMaxWidth()),
-				ktfmtFormattingOptions.getBlockIndent().orElse(formattingOptions.getBlockIndent()),
-				ktfmtFormattingOptions.getContinuationIndent().orElse(formattingOptions.getContinuationIndent()),
-				ktfmtFormattingOptions.getTrailingCommaManagementStrategy()
-					.map(KtfmtTrailingCommaManagementStrategy::toFormatterTrailingCommaManagementStrategy)
-					.orElse(formattingOptions.getTrailingCommaManagementStrategy()),
-				ktfmtFormattingOptions.getRemoveUnusedImports().orElse(formattingOptions.getRemoveUnusedImports()),
-				formattingOptions.getDebuggingPrintOpsAfterFormatting());
+		if (ktfmtFormattingOptions == null) {
+			return formattingOptions;
 		}
 
-		return formattingOptions;
+		FormattingOptions.Builder builder = formattingOptions.toBuilder();
+		ktfmtFormattingOptions.getMaxWidth().ifPresent(builder::maxWidth);
+		ktfmtFormattingOptions.getBlockIndent().ifPresent(builder::blockIndent);
+		ktfmtFormattingOptions.getContinuationIndent().ifPresent(builder::continuationIndent);
+		ktfmtFormattingOptions.getTrailingCommaManagementStrategy()
+				.map(KtfmtTrailingCommaManagementStrategy::toFormatterTrailingCommaManagementStrategy)
+				.ifPresent(builder::trailingCommaManagementStrategy);
+		ktfmtFormattingOptions.getRemoveUnusedImports().ifPresent(builder::removeUnusedImports);
+		return builder.build();
 	}
 }
