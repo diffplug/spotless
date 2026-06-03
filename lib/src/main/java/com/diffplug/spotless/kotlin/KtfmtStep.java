@@ -41,7 +41,7 @@ import com.diffplug.spotless.ThrowingEx;
 public final class KtfmtStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = "0.61";
+	private static final String DEFAULT_VERSION = "0.63";
 	private static final String NAME = "ktfmt";
 	private static final String MAVEN_COORDINATE = "com.facebook:ktfmt:";
 
@@ -253,6 +253,10 @@ public final class KtfmtStep implements Serializable {
 				return new KtfmtFormatterFuncCompat(version, style, options, classLoader).getFormatterFunc();
 			}
 
+			if (options != null && BadSemver.version(version) < BadSemver.version(0, 63)) {
+				return new KtfmtFormatterFuncCompat(version, style, options, classLoader).getFormatterFunc();
+			}
+
 			final Class<?> formatterFuncClass = classLoader.loadClass("com.diffplug.spotless.glue.ktfmt.KtfmtFormatterFunc");
 			final Class<?> ktfmtStyleClass = classLoader.loadClass("com.diffplug.spotless.glue.ktfmt.KtfmtStyle");
 			final Class<?> ktfmtFormattingOptionsClass = classLoader.loadClass("com.diffplug.spotless.glue.ktfmt.KtfmtFormattingOptions");
@@ -408,7 +412,7 @@ public final class KtfmtStep implements Serializable {
 							/* continuationIndent = */ Objects.requireNonNullElse(options.continuationIndent, (Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)),
 							/* removeUnusedImports = */ Objects.requireNonNullElse(options.removeUnusedImports, (Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
 							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions));
-				} else if (BadSemver.version(version) < BadSemver.version(0, 57)) {
+				} else if (BadSemver.version(version) < BadSemver.version(0, 51)) {
 					Class<?> styleClass = classLoader.loadClass(formattingOptionsClass.getName() + "$Style");
 					formattingOptions = formattingOptions.getClass().getConstructor(styleClass, int.class, int.class, int.class, boolean.class, boolean.class, boolean.class).newInstance(
 							/* style = */ formattingOptionsClass.getMethod("getStyle").invoke(formattingOptions),
@@ -418,16 +422,26 @@ public final class KtfmtStep implements Serializable {
 							/* removeUnusedImports = */ Objects.requireNonNullElse(options.removeUnusedImports, (Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
 							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions),
 							/* manageTrailingCommas = */ Objects.requireNonNullElse(getManageTrailingCommasFrom(options.trailingCommaManagementStrategy), (Boolean) formattingOptionsClass.getMethod("getManageTrailingCommas").invoke(formattingOptions)));
-				} else {
-					Class<?> styleClass = classLoader.loadClass(formattingOptionsClass.getName() + "$Style");
-					formattingOptions = formattingOptions.getClass().getConstructor(styleClass, int.class, int.class, int.class, boolean.class, boolean.class, TrailingCommaManagementStrategy.class).newInstance(
-							/* style = */ formattingOptionsClass.getMethod("getStyle").invoke(formattingOptions),
+				} else if (BadSemver.version(version) < BadSemver.version(0, 57)) {
+					formattingOptions = formattingOptions.getClass().getConstructor(int.class, int.class, int.class, boolean.class, boolean.class, boolean.class).newInstance(
 							/* maxWidth = */ Objects.requireNonNullElse(options.maxWidth, (Integer) formattingOptionsClass.getMethod("getMaxWidth").invoke(formattingOptions)),
 							/* blockIndent = */ Objects.requireNonNullElse(options.blockIndent, (Integer) formattingOptionsClass.getMethod("getBlockIndent").invoke(formattingOptions)),
 							/* continuationIndent = */ Objects.requireNonNullElse(options.continuationIndent, (Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)),
+							/* manageTrailingCommas = */ Objects.requireNonNullElse(getManageTrailingCommasFrom(options.trailingCommaManagementStrategy), (Boolean) formattingOptionsClass.getMethod("getManageTrailingCommas").invoke(formattingOptions)),
 							/* removeUnusedImports = */ Objects.requireNonNullElse(options.removeUnusedImports, (Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
-							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions),
-							/* trailingCommaManagementStrategy */ Objects.requireNonNullElse(options.trailingCommaManagementStrategy, (TrailingCommaManagementStrategy) formattingOptionsClass.getMethod("getTrailingCommaManagementStrategy").invoke(formattingOptions)));
+							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions));
+				} else {
+					Class<?> trailingCommaManagementStrategyClass = getTrailingCommaManagementStrategyClazz();
+					Object trailingCommaManagementStrategy = options.trailingCommaManagementStrategy == null
+							? formattingOptionsClass.getMethod("getTrailingCommaManagementStrategy").invoke(formattingOptions)
+							: Enum.valueOf((Class<? extends Enum>) trailingCommaManagementStrategyClass, options.trailingCommaManagementStrategy.name());
+					formattingOptions = formattingOptions.getClass().getConstructor(int.class, int.class, int.class, trailingCommaManagementStrategyClass, boolean.class, boolean.class).newInstance(
+							/* maxWidth = */ Objects.requireNonNullElse(options.maxWidth, (Integer) formattingOptionsClass.getMethod("getMaxWidth").invoke(formattingOptions)),
+							/* blockIndent = */ Objects.requireNonNullElse(options.blockIndent, (Integer) formattingOptionsClass.getMethod("getBlockIndent").invoke(formattingOptions)),
+							/* continuationIndent = */ Objects.requireNonNullElse(options.continuationIndent, (Integer) formattingOptionsClass.getMethod("getContinuationIndent").invoke(formattingOptions)),
+							/* trailingCommaManagementStrategy = */ trailingCommaManagementStrategy,
+							/* removeUnusedImports = */ Objects.requireNonNullElse(options.removeUnusedImports, (Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
+							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions));
 				}
 			}
 
@@ -474,6 +488,10 @@ public final class KtfmtStep implements Serializable {
 				formattingOptionsClazz = classLoader.loadClass(PACKAGE + ".FormattingOptions");
 			}
 			return formattingOptionsClazz;
+		}
+
+		private Class<?> getTrailingCommaManagementStrategyClazz() throws Exception {
+			return classLoader.loadClass(PACKAGE + ".format.TrailingCommaManagementStrategy");
 		}
 
 		private @Nullable Boolean getManageTrailingCommasFrom(

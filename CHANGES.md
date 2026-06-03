@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- Support `ktfmt` 0.63 and use its new builder API for formatting options to better avoid future breaking changes.
 
 ## [4.6.2] - 2026-05-27
 ### Fixed
