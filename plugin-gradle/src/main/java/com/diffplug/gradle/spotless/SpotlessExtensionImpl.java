@@ -66,6 +66,13 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.getIdeHookState().set(ideHook);
 			// clean removes the SpotlessCache, so we have to run after clean
 			task.mustRunAfter(BasePlugin.CLEAN_TASK_NAME);
+			if (ideHook.paths != null) {
+				// The IDE hook never writes to the declared outputs so Gradle's UP-TO-DATE check would incorrectly
+				// skip the task when the user reverts a file or when useStdOut is active.
+				task.getOutputs().upToDateWhen(t -> false);
+				// also disable the build cache
+				task.getOutputs().cacheIf("IDE hook always reruns", t -> false);
+			}
 		});
 		project.afterEvaluate(unused -> spotlessTask.configure(task -> {
 			// now that the task is being configured, we execute our actions
