@@ -11,7 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-- Add support for AsciiDoc formatting via `adocfmt`. (#TODO-PR-LINK)
+- Add support for AsciiDoc formatting via `adocfmt`. ([#2960](https://github.com/diffplug/spotless/pull/2960))
 ### Fixed
 - Support `ktfmt` 0.63 and use its new builder API for formatting options to better avoid future breaking changes.
 ### Changes
