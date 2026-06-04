@@ -4,6 +4,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Added
+- Add support for AsciiDoc formatting via `adocfmt`. (#TODO-PR-LINK)
+
 ## [3.6.0] - 2026-05-27
 ### Added
 - Add `<cacheDirectory>` to `<eclipse>`, `<greclipse>`, and `<eclipseCdt>` for the Equo/Solstice P2 cache. ([#2944](https://github.com/diffplug/spotless/pull/2944))

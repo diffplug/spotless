@@ -60,6 +60,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
+  - [Asciidoc](#asciidoc) ([adocfmt](#adocfmt))
   - [C/C++](#cc) ([clang-format](#clang-format), [eclipse cdt](#eclipse-cdt))
   - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
@@ -829,6 +830,40 @@ spotless {
 ```gradle
 antlr4formatter('1.2.1') // version is optional
 ```
+
+## Asciidoc
+
+`com.diffplug.gradle.spotless.AsciidocExtension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/8.6.0/com/diffplug/gradle/spotless/AsciidocExtension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/AsciidocExtension.java)
+
+```gradle
+spotless {
+  asciidoc {
+    target '**/*.adoc', '**/*.asciidoc', '**/*.asc' // default value, you can change if you want
+    adocfmt() // has its own section below
+  }
+}
+```
+
+### adocfmt
+
+[homepage](https://github.com/dheid/adocfmt). [available versions](https://search.maven.org/artifact/org.drjekyll/adocfmt).
+
+```gradle
+adocfmt('0.1.2') // version is optional
+  .normalizeSetextHeadings(false)       // convert === underlines to ATX == (default: false)
+  .collapseConsecutiveBlankLines(true)  // max 1 blank line (default: true)
+  .oneSentencePerLine(false)            // each sentence on its own line (default: false)
+  .normalizeBlockDelimiters(true)       // exactly 4 characters (e.g. ----) (default: true)
+  .removeTrailingHeaderEqualsSign(true) // == Title == -> == Title (default: true)
+  .titleCase(false)                     // Title Case headings (default: false)
+  .removeTrailingWhitespace(true)       // trim end of line (default: true)
+  .normalizeListBullets(false)          // - -> * (default: false)
+  .normalizeOrderedListMarkers(false)   // 1. -> . (default: false)
+  .ensureHeadingBlankLines(true)        // blank line before/after headings (default: true)
+  .ensureSourceDelimiters(false)        // wrap [source] in ---- (default: false)
+```
+
+Options default to `true` or `false` as shown above. This formatter is designed to help you maintain a clean, consistent AsciiDoc structure. Surface-altering options like `oneSentencePerLine` and `normalizeSetextHeadings` default to `false` so that zero-config formatting is conservative; opt in explicitly if you want those transforms.
 
 <a name="sql-dbeaver"></a>
 <a name="applying-dbeaver-to-sql-scripts"></a>
