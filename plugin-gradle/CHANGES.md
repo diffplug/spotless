@@ -6,6 +6,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Fixed
 - Prevent build caches from interfering when executing under the `-PspotlessIdeHook` mode. ([#2365](https://github.com/diffplug/spotless/issues/2365))
+### Changes
+- Bump default `greclipse` version to latest `4.35` -> `4.39`. ([#2924](https://github.com/diffplug/spotless/pull/2924))
 
 ## [8.6.0] - 2026-05-27
 ### Added
@@ -39,7 +41,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `eclipse-jdt` version from `4.35` to `4.39`. ([#2912](https://github.com/diffplug/spotless/pull/2912))
 - Make `spotlessPredeclare` visible to Gradle Kotlin DSL type-safe accessors. ([#2925](https://github.com/diffplug/spotless/pull/2925))
 - Allow `spotlessPredeclare` to be used directly without enabling it first in spotless extension. ([#2925](https://github.com/diffplug/spotless/pull/2925))
-* Bump default `greclipse` version to latest `4.35` -> `4.39`. ([#2924](https://github.com/diffplug/spotless/pull/2924))
 
 ## [8.4.0] - 2026-03-18
 ### Added
