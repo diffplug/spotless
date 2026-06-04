@@ -117,7 +117,7 @@ public class AsciidocExtension extends FormatExtension {
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			target = parseTarget(List.of("**/*.adoc", "**/*.asciidoc", "**/*.asc"));
+			target = parseTarget(List.of("**/*.adoc", "**/*.asciidoc"));
 		}
 		super.setupTask(task);
 	}

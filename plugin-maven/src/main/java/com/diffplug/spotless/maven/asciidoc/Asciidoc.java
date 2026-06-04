@@ -24,7 +24,7 @@ import com.diffplug.spotless.maven.FormatterFactory;
 public class Asciidoc extends FormatterFactory {
 	@Override
 	public Set<String> defaultIncludes(MavenProject project) {
-		return Set.of("**/*.adoc", "**/*.asciidoc", "**/*.asc");
+		return Set.of("**/*.adoc", "**/*.asciidoc");
 	}
 
 	@Override

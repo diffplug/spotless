@@ -716,7 +716,6 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
     <includes>
       <include>**/*.adoc</include>
       <include>**/*.asciidoc</include>
-      <include>**/*.asc</include>
     </includes>
 
     <adocfmt /> <!-- has its own section below -->

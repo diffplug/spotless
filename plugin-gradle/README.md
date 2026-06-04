@@ -838,7 +838,7 @@ antlr4formatter('1.2.1') // version is optional
 ```gradle
 spotless {
   asciidoc {
-    target '**/*.adoc', '**/*.asciidoc', '**/*.asc' // default value, you can change if you want
+    target '**/*.adoc', '**/*.asciidoc' // default value, you can change if you want
     adocfmt() // has its own section below
   }
 }

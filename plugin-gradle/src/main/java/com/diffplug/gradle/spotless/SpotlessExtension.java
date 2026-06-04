@@ -228,7 +228,7 @@ public abstract class SpotlessExtension {
 		format(YamlExtension.NAME, YamlExtension.class, closure);
 	}
 
-	/** Configures the special gherkin-specific extension. */
+	/** Configures the special Gherkin-specific extension. */
 	public void gherkin(Action<GherkinExtension> closure) {
 		requireNonNull(closure);
 		format(GherkinExtension.NAME, GherkinExtension.class, closure);
@@ -241,7 +241,6 @@ public abstract class SpotlessExtension {
 	}
 
 	public void toml(Action<TomlExtension> closure) {
-
 		requireNonNull(closure);
 		format(TomlExtension.NAME, TomlExtension.class, closure);
 	}
