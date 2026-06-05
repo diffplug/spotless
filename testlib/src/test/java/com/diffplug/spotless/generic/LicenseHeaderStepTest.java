@@ -21,9 +21,11 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 
+import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.ClearGitConfig;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.SerializableEqualityTester;
@@ -309,4 +311,28 @@ class LicenseHeaderStepTest extends ResourceHarness {
 		StepHarness.forStep(step)
 				.test(ResourceHarness.getTestResource("license/module-info.test"), header + ResourceHarness.getTestResource("license/module-info.test"));
 	}
+
+	@Test
+	@ClearGitConfig
+	void should_setFromGit_year_when_singleCommit() throws Exception {
+		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
+			// Single commit: added once, so old/new year must be equal.
+ 			setFile("Foo.java").toContent("package foo; // v1\n");
+ 			git.add()
+				.addFilepattern("Foo.java")
+				.call();
+ 			git.commit()
+				.setMessage("add")
+				.setAuthor("Test User", "test@example.com")
+				.setCommitter("Test User", "test@example.com")
+				.call();
+		}
+
+ 		FormatterStep step = LicenseHeaderStep.headerDelimiter(header(HEADER_WITH_$YEAR), PACKAGE_)
+ 				.withYearMode(YearMode.SET_FROM_GIT)
+ 				.build();
+
+ 		StepHarnessWithFile.forStep(this, step)
+				.test("Foo.java", getTestResource(FILE_NO_LICENSE), hasHeaderYear(currentYear()));
+ 	}
 }
