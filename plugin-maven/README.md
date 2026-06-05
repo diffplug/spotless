@@ -712,10 +712,8 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 ```xml
 <configuration>
   <asciidoc>
-    <!-- These are the defaults, you can override if you want -->
-    <includes>
-      <include>**/*.adoc</include>
-      <include>**/*.asciidoc</include>
+    <includes> <!-- You have to set the target manually -->
+      <include>src/docs/**/*.adoc</include>
     </includes>
 
     <adocfmt /> <!-- has its own section below -->
@@ -729,7 +727,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <adocfmt>
-  <version>0.1.2</version> <!-- optional -->
+  <version>0.2.0</version> <!-- optional -->
   <normalizeSetextHeadings>true</normalizeSetextHeadings>       <!-- convert === underlines to ATX == (default: true) -->
   <collapseConsecutiveBlankLines>true</collapseConsecutiveBlankLines> <!-- max 1 blank line (default: true) -->
   <oneSentencePerLine>true</oneSentencePerLine>            <!-- each sentence on its own line (default: true) -->

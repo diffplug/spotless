@@ -30,7 +30,7 @@ import com.diffplug.spotless.ThrowingEx;
 public final class AdocfmtStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = "0.1.2";
+	private static final String DEFAULT_VERSION = "0.2.0";
 	private static final String NAME = "adocfmt";
 	private static final String MAVEN_COORDINATE = "org.drjekyll:adocfmt:";
 

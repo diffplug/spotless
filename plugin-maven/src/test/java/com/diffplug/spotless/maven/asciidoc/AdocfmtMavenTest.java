@@ -15,17 +15,30 @@
  */
 package com.diffplug.spotless.maven.asciidoc;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 public class AdocfmtMavenTest extends MavenIntegrationHarness {
+	@Test
+	public void missingIncludesFails() throws Exception {
+		writePom(groupWithSteps("asciidoc",
+				"<adocfmt>",
+				"  <version>0.2.0</version>",
+				"</adocfmt>"));
+		ProcessRunner.Result result = mavenRunner().withArguments("spotless:apply").runHasError();
+		assertThat(result.stdOutUtf8()).contains("You must specify some files to include");
+	}
+
 	@Test
 	public void testAdocfmt() throws Exception {
 		writePomWithAsciidocSteps(
 				"""
 						<adocfmt>
-						  <version>0.1.2</version> <!-- optional -->
+						  <version>0.2.0</version> <!-- optional -->
 						  <normalizeSetextHeadings>true</normalizeSetextHeadings>
 						  <collapseConsecutiveBlankLines>true</collapseConsecutiveBlankLines>
 						  <oneSentencePerLine>true</oneSentencePerLine>

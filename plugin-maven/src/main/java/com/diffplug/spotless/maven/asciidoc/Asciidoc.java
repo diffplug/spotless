@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.maven.asciidoc;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.maven.project.MavenProject;
@@ -24,7 +25,7 @@ import com.diffplug.spotless.maven.FormatterFactory;
 public class Asciidoc extends FormatterFactory {
 	@Override
 	public Set<String> defaultIncludes(MavenProject project) {
-		return Set.of("**/*.adoc", "**/*.asciidoc");
+		return Collections.emptySet();
 	}
 
 	@Override

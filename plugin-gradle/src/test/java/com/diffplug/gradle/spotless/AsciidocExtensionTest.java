@@ -17,9 +17,29 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class AsciidocExtensionTest extends GradleIntegrationHarness {
+	@Test
+	void missingTargetFails() throws IOException {
+		setFile("build.gradle").toContent(
+				"""
+						plugins {
+						    id 'com.diffplug.spotless'
+						}
+						repositories { mavenCentral() }
+						spotless {
+						    asciidoc {
+						        adocfmt('0.2.0')
+						    }
+						}
+						""");
+		String output = gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput();
+		Assertions.assertThat(output).contains("no target set");
+		Assertions.assertThat(output).contains("asciidoc");
+	}
+
 	@Test
 	void integration() throws IOException {
 		setFile("build.gradle")
@@ -32,7 +52,7 @@ class AsciidocExtensionTest extends GradleIntegrationHarness {
 								spotless {
 								    asciidoc {
 								        target 'test.adoc'
-										adocfmt('0.1.2')
+										adocfmt('0.2.0')
 										  .normalizeSetextHeadings(true)
 										  .collapseConsecutiveBlankLines(true)
 										  .oneSentencePerLine(true)

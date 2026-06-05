@@ -838,7 +838,8 @@ antlr4formatter('1.2.1') // version is optional
 ```gradle
 spotless {
   asciidoc {
-    target '**/*.adoc', '**/*.asciidoc' // default value, you can change if you want
+    target 'src/docs/**/*.adoc' // you have to set the target manually
+
     adocfmt() // has its own section below
   }
 }
@@ -849,7 +850,7 @@ spotless {
 [homepage](https://github.com/dheid/adocfmt). [available versions](https://search.maven.org/artifact/org.drjekyll/adocfmt).
 
 ```gradle
-adocfmt('0.1.2') // version is optional
+adocfmt('0.2.0') // version is optional
   .normalizeSetextHeadings(false)       // convert === underlines to ATX == (default: false)
   .collapseConsecutiveBlankLines(true)  // max 1 blank line (default: true)
   .oneSentencePerLine(false)            // each sentence on its own line (default: false)

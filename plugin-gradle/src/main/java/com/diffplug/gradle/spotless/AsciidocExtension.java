@@ -15,8 +15,6 @@
  */
 package com.diffplug.gradle.spotless;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import com.diffplug.spotless.asciidoc.AdocfmtConfig;
@@ -117,7 +115,7 @@ public class AsciidocExtension extends FormatExtension {
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		if (target == null) {
-			target = parseTarget(List.of("**/*.adoc", "**/*.asciidoc"));
+			throw noDefaultTargetException();
 		}
 		super.setupTask(task);
 	}
