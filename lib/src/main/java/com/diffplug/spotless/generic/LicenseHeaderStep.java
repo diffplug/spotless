@@ -349,8 +349,8 @@ public final class LicenseHeaderStep {
 			}
 		}
 
-		private static final Pattern YYYY = Pattern.compile("[0-9]{4}");
-
+		private static final Pattern YYYY = Pattern.compile("\\d{4}");
+		
 		/** Calculates the year to inject. */
 		private String calculateYearExact(String parsedYear) {
 			if (parsedYear.equals(yearToday)) {
@@ -418,19 +418,27 @@ public final class LicenseHeaderStep {
 				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
 			}
 
-			String oldYear;
-			try {
-				oldYear = parseYear(Arrays.asList("git", "log", "--follow", "--find-renames=40%", "--diff-filter=A"), file);
-			} catch (IllegalArgumentException e) {
-				// Ideally, git log would always find the commit where it was added.
-				// For some reason, that is sometimes not possible - in that case,
-				// we'll settle for just the most recent, even if it was just a modification.
-				oldYear = parseYear(Arrays.asList("git", "log", "--follow", "--find-renames=40%", "--reverse"), file);
-			}
-			String newYear = parseYear(Arrays.asList("git", "log", "--max-count=1"), file);
-			String yearRange;
-			if (oldYear.equals(newYear)) {
-				yearRange = oldYear;
+            String oldYear;
+            try {
+              List<String> cmd = new ArrayList<>(Arrays.asList("git", "log", "--diff-filter=A"));
+              cmd.addAll(GIT_LOG_DEFAULT_OPTIONS);
+              oldYear = parseYear(cmd, file);
+            } catch (IllegalArgumentException e) {
+              // Ideally, git log would always find the commit where it was added.
+              // For some reason, that is sometimes not possible - in that case,
+              // we'll settle for just the most recent, even if it was just a modification.
+              List<String> cmd = new ArrayList<>(Arrays.asList("git", "log", "--reverse"));
+              cmd.addAll(GIT_LOG_DEFAULT_OPTIONS);
+              oldYear = parseYear(cmd, file);
+            }
+
+			List<String> newYearCmd = new ArrayList<>(Arrays.asList("git", "log", "--max-count=1"));
+            newYearCmd.addAll(GIT_LOG_DEFAULT_OPTIONS);
+
+			String newYear = parseYear(newYearCmd, file);
+            String yearRange;
+            if (oldYear.equals(newYear)) {
+              yearRange = oldYear;
 			} else {
 				yearRange = oldYear + yearSepOrFull + newYear;
 			}
@@ -462,7 +470,7 @@ public final class LicenseHeaderStep {
 			if (!error.isEmpty()) {
 				throw new IllegalArgumentException("Error for command '" + fullCmd + "':\n" + error);
 			}
-			Matcher matcher = FIND_YEAR.matcher(output);
+			Matcher matcher = FIND_YEAR.matcher(output.trim());
 			if (matcher.find()) {
 				return matcher.group(1);
 			} else {
@@ -470,7 +478,14 @@ public final class LicenseHeaderStep {
 			}
 		}
 
-		private static final Pattern FIND_YEAR = Pattern.compile("Date:   .* ([0-9]{4}) ");
+        // Default git log options to find the commit year.
+        // --follow             - Continue listing the history of a file beyond renames.
+        // --find-renames=40%   - Detect renames with a similarity threshold of 40%.
+        // --format=%cd         - Output the committer date using the format specified by --date.
+        // --date=format:%Y     - Format the date as a 4-digit year only.
+        private static final List<String> GIT_LOG_DEFAULT_OPTIONS = Arrays.asList("--follow", "--find-renames=40%", "--format=%cd", "--date=format:%Y");
+
+		private static final Pattern FIND_YEAR = Pattern.compile("^(\\d{4})?");
 
 		@SuppressFBWarnings("DM_DEFAULT_ENCODING")
 		private static String drain(InputStream stream) throws IOException {
