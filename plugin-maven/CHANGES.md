@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- Parse standard git year output in LicenseHeaderStep. ([#2940](https://github.com/diffplug/spotless/issues/2940))
 
 ## [3.6.0] - 2026-05-27
 ### Added
