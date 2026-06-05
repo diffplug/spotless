@@ -15,10 +15,14 @@
  */
 package com.diffplug.spotless.markdown;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
@@ -33,6 +37,30 @@ class FlexmarkStepTest {
 				.testResource(
 						"markdown/flexmark/FlexmarkUnformatted.md",
 						"markdown/flexmark/FlexmarkFormatted.md");
+	}
+
+	@Test
+	void flexmarkOptionsRightMargin() {
+		FlexmarkConfig config = new FlexmarkConfig();
+		config.setExtensions(List.of("YamlFrontMatter"));
+		config.setFlexmarkOptions(Map.of("rightMargin", "100"));
+		StepHarness.forStep(FlexmarkStep.create(TestProvisioner.mavenCentral(), config))
+				.testResource(
+						"markdown/flexmark/FlexmarkOptionsUnformatted.md",
+						"markdown/flexmark/FlexmarkOptionsFormatted.md");
+	}
+
+	@Test
+	void flexmarkOptionsUnknownKeyFails() {
+		FlexmarkConfig config = new FlexmarkConfig();
+		config.setFlexmarkOptions(Map.of("nonExistentOption", "value"));
+		assertThatThrownBy(() ->
+				StepHarness.forStep(FlexmarkStep.create(TestProvisioner.mavenCentral(), config))
+						.test("text\n", "text\n"))
+				.hasRootCauseInstanceOf(IllegalArgumentException.class)
+				.hasRootCauseMessage(
+						"Unknown flexmark formatter option 'nonExistentOption': no field Formatter.NON_EXISTENT_OPTION."
+								+ " See https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options");
 	}
 
 	@Test

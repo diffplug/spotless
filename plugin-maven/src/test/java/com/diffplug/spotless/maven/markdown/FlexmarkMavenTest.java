@@ -31,6 +31,15 @@ public class FlexmarkMavenTest extends MavenIntegrationHarness {
 	}
 
 	@Test
+	public void testFlexmarkWithOptions() throws Exception {
+		writePomWithMarkdownSteps("<flexmark><extensions>YamlFrontMatter</extensions><flexmarkOptions><rightMargin>100</rightMargin></flexmarkOptions></flexmark>");
+
+		setFile("markdown_test.md").toResource("markdown/flexmark/FlexmarkOptionsUnformatted.md");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("markdown_test.md").sameAsResource("markdown/flexmark/FlexmarkOptionsFormatted.md");
+	}
+
+	@Test
 	public void testFlexmarkWithComplexConfig() throws Exception {
 		writePomWithMarkdownSteps("<flexmark><emulationProfile>COMMONMARK</emulationProfile><pegdownExtensions>0x0000FFFF</pegdownExtensions><extensions>com.vladsch.flexmark.ext.yaml.front.matter.YamlFrontMatterExtension</extensions></flexmark>");
 
