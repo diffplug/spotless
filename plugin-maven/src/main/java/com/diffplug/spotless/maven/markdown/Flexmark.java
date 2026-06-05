@@ -16,6 +16,7 @@
 package com.diffplug.spotless.maven.markdown;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -36,6 +37,8 @@ public class Flexmark implements FormatterStepFactory {
 	private String pegdownExtensions;
 	@Parameter
 	private String extensions;
+	@Parameter
+	private Map<String, String> flexmarkOptions;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
@@ -49,6 +52,9 @@ public class Flexmark implements FormatterStepFactory {
 		}
 		if (this.extensions != null) {
 			flexmarkConfig.setExtensions(List.of(this.extensions.split(",")));
+		}
+		if (this.flexmarkOptions != null) {
+			flexmarkConfig.setFlexmarkOptions(this.flexmarkOptions);
 		}
 		return FlexmarkStep.create(version, config.getProvisioner(), flexmarkConfig);
 	}

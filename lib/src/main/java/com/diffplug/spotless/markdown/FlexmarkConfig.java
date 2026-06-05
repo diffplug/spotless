@@ -18,7 +18,9 @@ package com.diffplug.spotless.markdown;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FlexmarkConfig implements Serializable {
 	@Serial
@@ -31,6 +33,7 @@ public class FlexmarkConfig implements Serializable {
 	private String emulationProfile = "COMMONMARK";
 	private List<String> pegdownExtensions = List.of("ALL");
 	private List<String> extensions = new ArrayList<>();
+	private Map<String, String> flexmarkOptions = new LinkedHashMap<>();
 
 	public String getEmulationProfile() {
 		return emulationProfile;
@@ -54,6 +57,14 @@ public class FlexmarkConfig implements Serializable {
 
 	public void setExtensions(List<String> extensions) {
 		this.extensions = extensions;
+	}
+
+	public Map<String, String> getFlexmarkOptions() {
+		return flexmarkOptions;
+	}
+
+	public void setFlexmarkOptions(Map<String, String> flexmarkOptions) {
+		this.flexmarkOptions = flexmarkOptions;
 	}
 
 }

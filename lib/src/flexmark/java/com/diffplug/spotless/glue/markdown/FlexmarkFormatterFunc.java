@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.vladsch.flexmark.formatter.Formatter;
@@ -27,6 +28,7 @@ import com.vladsch.flexmark.parser.ParserEmulationProfile;
 import com.vladsch.flexmark.parser.PegdownExtensions;
 import com.vladsch.flexmark.profile.pegdown.PegdownOptionsAdapter;
 import com.vladsch.flexmark.util.ast.Document;
+import com.vladsch.flexmark.util.data.DataKey;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import com.vladsch.flexmark.util.misc.Extension;
@@ -73,7 +75,7 @@ public class FlexmarkFormatterFunc implements FormatterFunc {
 		final ParserEmulationProfile emulationProfile = ParserEmulationProfile.valueOf(config.getEmulationProfile());
 
 		final MutableDataHolder parserOptions = createParserOptions(emulationProfile, config);
-		final MutableDataHolder formatterOptions = createFormatterOptions(parserOptions, emulationProfile);
+		final MutableDataHolder formatterOptions = createFormatterOptions(parserOptions, emulationProfile, config);
 
 		parser = Parser.builder(parserOptions).build();
 		formatter = Formatter.builder(formatterOptions).build();
@@ -145,18 +147,78 @@ public class FlexmarkFormatterFunc implements FormatterFunc {
 
 	/**
 	 * Creates the formatter options, copies the parser extensions and changes defaults that make sense for a formatter.
+	 * Arbitrary flexmark formatter options can be set via {@link FlexmarkConfig#getFlexmarkOptions()}: each key is a
+	 * camelCase name (e.g. {@code rightMargin}) that is converted to SCREAMING_SNAKE_CASE to look up the corresponding
+	 * static {@link DataKey} field on {@link Formatter} via reflection. An unrecognised key fails the build.
 	 * See: https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options
 	 *
 	 * @param parserOptions the options used for the parser
 	 * @param emulationProfile the emulation profile (or flavor of markdown) the formatter should use
+	 * @param config the flexmark config, including any additional formatter options
 	 * @return the created formatter options
 	 */
 	private static MutableDataHolder createFormatterOptions(MutableDataHolder parserOptions,
-			ParserEmulationProfile emulationProfile) {
+			ParserEmulationProfile emulationProfile, FlexmarkConfig config) {
 		final MutableDataHolder formatterOptions = new MutableDataSet();
 		formatterOptions.set(Parser.EXTENSIONS, Parser.EXTENSIONS.get(parserOptions));
 		formatterOptions.set(Formatter.FORMATTER_EMULATION_PROFILE, emulationProfile);
+		applyFlexmarkOptions(formatterOptions, config.getFlexmarkOptions());
 		return formatterOptions;
+	}
+
+	/**
+	 * Applies arbitrary formatter options from the config map to the given data holder.
+	 * Each camelCase key (e.g. {@code rightMargin}) is converted to SCREAMING_SNAKE_CASE and looked up as a static
+	 * {@link DataKey} field on {@link Formatter}. Supported value types are {@link Integer}, {@link Boolean}, and
+	 * {@link String}; the type is inferred from the DataKey's default value. An unknown key or unsupported type
+	 * throws {@link IllegalArgumentException}, which fails the build.
+	 */
+	private static void applyFlexmarkOptions(MutableDataHolder options, Map<String, String> flexmarkOptions) {
+		if (flexmarkOptions.isEmpty()) {
+			return;
+		}
+		MutableDataSet defaults = new MutableDataSet();
+		for (Map.Entry<String, String> entry : flexmarkOptions.entrySet()) {
+			String camelKey = entry.getKey();
+			String rawValue = entry.getValue();
+			String fieldName = camelToScreamingSnake(camelKey);
+			Field field;
+			try {
+				field = Formatter.class.getField(fieldName);
+			} catch (NoSuchFieldException e) {
+				throw new IllegalArgumentException(
+						"Unknown flexmark formatter option '" + camelKey + "': no field Formatter." + fieldName
+								+ ". See https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options");
+			}
+			DataKey<?> dataKey;
+			try {
+				dataKey = (DataKey<?>) field.get(null);
+			} catch (IllegalAccessException e) {
+				throw new IllegalArgumentException("Cannot access field Formatter." + fieldName, e);
+			}
+			setOption(options, dataKey, dataKey.getDefaultValue(defaults), rawValue, camelKey);
+		}
+	}
+
+	/** Converts a camelCase name (e.g. {@code rightMargin}) to SCREAMING_SNAKE_CASE (e.g. {@code RIGHT_MARGIN}). */
+	private static String camelToScreamingSnake(String camel) {
+		return camel.replaceAll("([A-Z])", "_$1").toUpperCase(Locale.ROOT);
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private static void setOption(MutableDataHolder options, DataKey dataKey, Object defaultValue, String rawValue,
+			String camelKey) {
+		if (defaultValue instanceof Integer) {
+			options.set(dataKey, Integer.parseInt(rawValue));
+		} else if (defaultValue instanceof Boolean) {
+			options.set(dataKey, Boolean.parseBoolean(rawValue));
+		} else if (defaultValue instanceof String) {
+			options.set(dataKey, rawValue);
+		} else {
+			throw new IllegalArgumentException("Unsupported type for flexmark option '" + camelKey + "': "
+					+ (defaultValue == null ? "null" : defaultValue.getClass().getName())
+					+ ". Only Integer, Boolean, and String options are supported.");
+		}
 	}
 
 	@Override
