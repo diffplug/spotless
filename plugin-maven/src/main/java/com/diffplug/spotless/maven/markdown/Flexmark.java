@@ -15,7 +15,9 @@
  */
 package com.diffplug.spotless.maven.markdown;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
@@ -38,7 +40,7 @@ public class Flexmark implements FormatterStepFactory {
 	@Parameter
 	private String extensions;
 	@Parameter
-	private Map<String, String> flexmarkOptions;
+	private Map<String, String> formatterOptions;
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
@@ -53,9 +55,17 @@ public class Flexmark implements FormatterStepFactory {
 		if (this.extensions != null) {
 			flexmarkConfig.setExtensions(List.of(this.extensions.split(",")));
 		}
-		if (this.flexmarkOptions != null) {
-			flexmarkConfig.setFlexmarkOptions(this.flexmarkOptions);
+		if (this.formatterOptions != null) {
+			Map<String, String> converted = new LinkedHashMap<>();
+			for (Map.Entry<String, String> entry : this.formatterOptions.entrySet()) {
+				converted.put(camelToScreamingSnake(entry.getKey()), entry.getValue());
+			}
+			flexmarkConfig.setFormatterOptions(converted);
 		}
 		return FlexmarkStep.create(version, config.getProvisioner(), flexmarkConfig);
+	}
+
+	private static String camelToScreamingSnake(String camel) {
+		return camel.replaceAll("([A-Z])", "_$1").toUpperCase(Locale.ROOT);
 	}
 }

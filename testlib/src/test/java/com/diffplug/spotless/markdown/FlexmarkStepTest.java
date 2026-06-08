@@ -43,7 +43,7 @@ class FlexmarkStepTest {
 	void flexmarkOptionsRightMargin() {
 		FlexmarkConfig config = new FlexmarkConfig();
 		config.setExtensions(List.of("YamlFrontMatter"));
-		config.setFlexmarkOptions(Map.of("rightMargin", "100"));
+		config.setFormatterOptions(Map.of("RIGHT_MARGIN", "100"));
 		StepHarness.forStep(FlexmarkStep.create(TestProvisioner.mavenCentral(), config))
 				.testResource(
 						"markdown/flexmark/FlexmarkOptionsUnformatted.md",
@@ -53,13 +53,13 @@ class FlexmarkStepTest {
 	@Test
 	void flexmarkOptionsUnknownKeyFails() {
 		FlexmarkConfig config = new FlexmarkConfig();
-		config.setFlexmarkOptions(Map.of("nonExistentOption", "value"));
+		config.setFormatterOptions(Map.of("NON_EXISTENT_OPTION", "value"));
 		assertThatThrownBy(() ->
 				StepHarness.forStep(FlexmarkStep.create(TestProvisioner.mavenCentral(), config))
 						.test("text\n", "text\n"))
 				.hasRootCauseInstanceOf(IllegalArgumentException.class)
 				.hasRootCauseMessage(
-						"Unknown flexmark formatter option 'nonExistentOption': no field Formatter.NON_EXISTENT_OPTION."
+						"Unknown flexmark formatter option: no field Formatter.NON_EXISTENT_OPTION."
 								+ " See https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options");
 	}
 

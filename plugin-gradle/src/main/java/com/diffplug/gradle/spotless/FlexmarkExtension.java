@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -76,6 +77,11 @@ public class FlexmarkExtension extends FormatExtension {
 
 		public FlexmarkFormatterConfig extensions(String... extensions) {
 			this.config.setExtensions(List.of(extensions));
+			return this;
+		}
+
+		public FlexmarkFormatterConfig formatterOptions(Map<String, String> formatterOptions) {
+			this.config.setFormatterOptions(formatterOptions);
 			return this;
 		}
 

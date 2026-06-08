@@ -878,11 +878,16 @@ You can change the `emulationProfile` to one of the other [supported profiles](h
 The `pegdownExtensions` can be configured as a comma-seperated list of [constants](https://github.com/vsch/flexmark-java/blob/master/flexmark/src/main/java/com/vladsch/flexmark/parser/PegdownExtensions.java) or as a custom bitset as an integer.
 Any other `extension` can be configured using either the simple name as shown in the example or using a full-qualified class name.
 
+Arbitrary formatter options from the [flexmark-java Markdown Formatter](https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options) can be set via `formatterOptions`. Each key is a camelCase version of the corresponding `SCREAMING_SNAKE_CASE` constant on [`com.vladsch.flexmark.formatter.Formatter`](https://github.com/vsch/flexmark-java/blob/master/flexmark/src/main/java/com/vladsch/flexmark/formatter/Formatter.java) (e.g. `rightMargin` maps to `Formatter.RIGHT_MARGIN`). Supported value types are `Integer`, `Boolean`, and `String`.
+
 ```xml
 <flexmark>
   <emulationProfile>COMMONMARK</emulationProfile>
   <pegdownExtensions>ALL,TOC</pegdownExtensions>
   <extensions>YamlFrontMatter,Emoji</extensions>
+  <formatterOptions>
+    <rightMargin>120</rightMargin>
+  </formatterOptions>
 </flexmark>
 ```
 

@@ -44,6 +44,27 @@ class FlexmarkExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
+	void integrationFormatterOptions() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    flexmark {",
+				"        target '*.md'",
+				"        flexmark()",
+				"        	.extensions('YamlFrontMatter')",
+				"        	.formatterOptions(['RIGHT_MARGIN': '100'])",
+				"    }",
+				"}");
+		setFile("markdown_test.md").toResource("markdown/flexmark/FlexmarkOptionsUnformatted.md");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("markdown_test.md").sameAsResource("markdown/flexmark/FlexmarkOptionsFormatted.md");
+	}
+
+	@Test
 	void integrationComplex() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",

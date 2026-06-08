@@ -28,12 +28,13 @@ public class FlexmarkConfig implements Serializable {
 
 	/**
 	 * The emulation profile is used by both the parser and the formatter and generally determines the markdown flavor.
-	 * COMMONMARK is the default defined by flexmark-java.
+	 * COMMONMARK is the default defined by flexmark-java. For convenience, this can also be set via
+	 * {@code formatterOptions} with the key {@code FORMATTER_EMULATION_PROFILE}.
 	 */
 	private String emulationProfile = "COMMONMARK";
 	private List<String> pegdownExtensions = List.of("ALL");
 	private List<String> extensions = new ArrayList<>();
-	private Map<String, String> flexmarkOptions = new LinkedHashMap<>();
+	private Map<String, String> formatterOptions = new LinkedHashMap<>();
 
 	public String getEmulationProfile() {
 		return emulationProfile;
@@ -59,12 +60,12 @@ public class FlexmarkConfig implements Serializable {
 		this.extensions = extensions;
 	}
 
-	public Map<String, String> getFlexmarkOptions() {
-		return flexmarkOptions;
+	public Map<String, String> getFormatterOptions() {
+		return formatterOptions;
 	}
 
-	public void setFlexmarkOptions(Map<String, String> flexmarkOptions) {
-		this.flexmarkOptions = flexmarkOptions;
+	public void setFormatterOptions(Map<String, String> formatterOptions) {
+		this.formatterOptions = formatterOptions;
 	}
 
 }
