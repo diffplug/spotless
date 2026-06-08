@@ -15,7 +15,7 @@ durian-testlib = { module = "com.diffplug.durian:durian-testlib", version.ref = 
 selfie-lib = { module = "com.diffplug.selfie:selfie-lib", version.ref = "selfie" }
 selfie-runner-junit5 = { module = "com.diffplug.selfie:selfie-runner-junit5", version.ref = "selfie" }
 
-solstice = "dev.equo.ide:solstice:1.8.1"
+solstice = "dev.equo.ide:solstice:1.8.2"
 
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
