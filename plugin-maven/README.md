@@ -44,6 +44,7 @@ user@machine repo % mvn spotless:check
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
+  - [Asciidoc](#asciidoc) ([adocfmt](#adocfmt))
   - [C/C++](#cc) ([eclipse cdt](#eclipse-cdt), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
@@ -703,6 +704,45 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
   <version>1.2.1</version> <!-- optional -->
 </antlr4Formatter>
 ```
+
+## Asciidoc
+
+[code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/asciidoc/Asciidoc.java). [available steps](https://github.com/diffplug/spotless/tree/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/asciidoc).
+
+```xml
+<configuration>
+  <asciidoc>
+    <includes> <!-- You have to set the target manually -->
+      <include>src/docs/**/*.adoc</include>
+    </includes>
+
+    <adocfmt /> <!-- has its own section below -->
+  </asciidoc>
+</configuration>
+```
+
+### adocfmt
+
+[homepage](https://github.com/dheid/adocfmt). [available versions](https://search.maven.org/artifact/org.drjekyll/adocfmt). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/asciidoc/Adocfmt.java).
+
+```xml
+<adocfmt>
+  <version>0.2.0</version> <!-- optional -->
+  <normalizeSetextHeadings>true</normalizeSetextHeadings>       <!-- convert === underlines to ATX == (default: true) -->
+  <collapseConsecutiveBlankLines>true</collapseConsecutiveBlankLines> <!-- max 1 blank line (default: true) -->
+  <oneSentencePerLine>true</oneSentencePerLine>            <!-- each sentence on its own line (default: true) -->
+  <normalizeBlockDelimiters>true</normalizeBlockDelimiters>      <!-- exactly 4 characters (e.g. ----) (default: true) -->
+  <removeTrailingHeaderEqualsSign>true</removeTrailingHeaderEqualsSign> <!-- == Title == -> == Title (default: true) -->
+  <titleCase>false</titleCase>                     <!-- Title Case headings (default: false) -->
+  <removeTrailingWhitespace>true</removeTrailingWhitespace>      <!-- trim end of line (default: true) -->
+  <normalizeListBullets>false</normalizeListBullets>          <!-- - -> * (default: false) -->
+  <normalizeOrderedListMarkers>false</normalizeOrderedListMarkers>   <!-- 1. -> . (default: false) -->
+  <ensureHeadingBlankLines>true</ensureHeadingBlankLines>       <!-- blank line before/after headings (default: true) -->
+  <ensureSourceDelimiters>false</ensureSourceDelimiters>        <!-- wrap [source] in ---- (default: false) -->
+</adocfmt>
+```
+
+Options default to `true` or `false` as shown above. This formatter is opinionated and designed to help you maintain a clean, consistent AsciiDoc structure. For example, `<oneSentencePerLine>` is a highly recommended practice in the AsciiDoc community for better version control diffs.
 
 ## SQL
 

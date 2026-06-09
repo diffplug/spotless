@@ -125,6 +125,10 @@ public class MavenIntegrationHarness extends ResourceHarness {
 		writePom(groupWithSteps("antlr4", steps));
 	}
 
+	protected void writePomWithAsciidocSteps(String... steps) throws IOException {
+		writePom(groupWithSteps("asciidoc", including("**/*.adoc"), steps));
+	}
+
 	protected void writePomWithGroovySteps(String... steps) throws IOException {
 		writePom(groupWithSteps("groovy", steps));
 	}

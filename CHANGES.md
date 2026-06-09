@@ -10,7 +10,10 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add support for AsciiDoc formatting via `adocfmt`. ([#2960](https://github.com/diffplug/spotless/pull/2960))
 ### Fixed
+- `FenceStep.preserveWithin` now forwards lints from nested steps while still suppressing lints inside preserved blocks. ([#2962](https://github.com/diffplug/spotless/pull/2962))
 - Support `ktfmt` 0.63 and use its new builder API for formatting options to better avoid future breaking changes.
 - Parse standard git year output in LicenseHeaderStep. ([#2940](https://github.com/diffplug/spotless/issues/2940))
 

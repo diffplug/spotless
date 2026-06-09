@@ -5,6 +5,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 - Parse standard git year output in LicenseHeaderStep. ([#2940](https://github.com/diffplug/spotless/issues/2940))
+- `<toggleOffOn>` no longer disables lint-only steps such as `<forbidWildcardImports>`. ([#2962](https://github.com/diffplug/spotless/pull/2962))
+### Added
+- Add support for AsciiDoc formatting via `adocfmt`. ([#2960](https://github.com/diffplug/spotless/pull/2960))
 
 ## [3.6.0] - 2026-05-27
 ### Added

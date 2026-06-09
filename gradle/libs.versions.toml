@@ -15,7 +15,7 @@ durian-testlib = { module = "com.diffplug.durian:durian-testlib", version.ref = 
 selfie-lib = { module = "com.diffplug.selfie:selfie-lib", version.ref = "selfie" }
 selfie-runner-junit5 = { module = "com.diffplug.selfie:selfie-runner-junit5", version.ref = "selfie" }
 
-solstice = "dev.equo.ide:solstice:1.8.1"
+solstice = "dev.equo.ide:solstice:1.8.2"
 
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
@@ -31,8 +31,8 @@ jgit = "org.eclipse.jgit:org.eclipse.jgit:7.6.0.202603022253-r"
 junit-jupiter = "org.junit.jupiter:junit-jupiter:6.0.3"
 assertj-core = "org.assertj:assertj-core:3.27.7"
 mockito-core = "org.mockito:mockito-core:5.23.0"
-osgi = "org.eclipse.platform:org.eclipse.osgi:3.24.100"
-slf4j-api = "org.slf4j:slf4j-api:2.0.17"
+osgi = "org.eclipse.platform:org.eclipse.osgi:3.24.200"
+slf4j-api = "org.slf4j:slf4j-api:2.0.18"
 jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
 jcip-annotations = "net.jcip:jcip-annotations:1.0"
 jakarta-annotation-api = "jakarta.annotation:jakarta.annotation-api:3.0.0"
@@ -49,7 +49,7 @@ diktat-runner = "com.saveourtool.diktat:diktat-runner:2.0.0"
 flexmark-all = "com.vladsch.flexmark:flexmark-all:0.64.8"
 gherkin-utils = "io.cucumber:gherkin-utils:10.0.0"
 google-java-format = "com.google.googlejavaformat:google-java-format:1.28.0"
-gson = "com.google.code.gson:gson:2.13.2"
+gson = "com.google.code.gson:gson:2.14.0"
 javaparser-symbol-solver-core = "com.github.javaparser:javaparser-symbol-solver-core:3.27.1"
 ktfmt = "com.facebook:ktfmt:0.63"
 palantir-java-format = "com.palantir.javaformat:palantir-java-format:1.1.0"
