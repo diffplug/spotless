@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Added
 - Add support for AsciiDoc formatting via `adocfmt`. ([#2960](https://github.com/diffplug/spotless/pull/2960))
 ### Fixed
+- `toggleOffOn` no longer disables lint-only steps such as `forbidWildcardImports`. ([#2962](https://github.com/diffplug/spotless/pull/2962))
 - Prevent build caches from interfering when executing under the `-PspotlessIdeHook` mode. ([#2365](https://github.com/diffplug/spotless/issues/2365))
 ### Changes
 - Bump default `greclipse` version to latest `4.35` -> `4.39`. ([#2924](https://github.com/diffplug/spotless/pull/2924))

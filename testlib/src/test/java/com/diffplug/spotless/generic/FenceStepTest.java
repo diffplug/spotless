@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
+import com.diffplug.spotless.java.ForbidWildcardImportsStep;
 
 class FenceStepTest extends ResourceHarness {
 	@Test
@@ -92,6 +93,21 @@ class FenceStepTest extends ResourceHarness {
 				"D E F",
 				"spotless:on",
 				"G H I")).toBe("L1-6 fence(fenceRemoved) An intermediate step removed a match of spotless:off spotless:on");
+	}
+
+	@Test
+	void preserveWithinReportsLintsOutsideFence() {
+		FormatterStep fence = FenceStep.named(FenceStep.defaultToggleName())
+				.openClose(FenceStep.defaultToggleOff(), FenceStep.defaultToggleOn())
+				.preserveWithin(Arrays.asList(ForbidWildcardImportsStep.create()));
+		StepHarnessWithFile.forStep(this, fence).expectLintsOfFileAndContent("Test.java", StringPrinter.buildStringFromLines(
+				"import java.util.*;",
+				"// spotless:off",
+				"import java.io.*;",
+				"// spotless:on",
+				"import static java.util.Collections.*;"))
+				.toBe("L1 toggle(import java.util.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this",
+						"L5 toggle(import static java.util.Collections.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this");
 	}
 
 	@Test
