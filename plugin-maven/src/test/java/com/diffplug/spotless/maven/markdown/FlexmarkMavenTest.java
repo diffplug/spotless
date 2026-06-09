@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,15 @@ public class FlexmarkMavenTest extends MavenIntegrationHarness {
 		setFile("markdown_test.md").toResource("markdown/flexmark/FlexmarkUnformatted.md");
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("markdown_test.md").sameAsResource("markdown/flexmark/FlexmarkFormatted.md");
+	}
+
+	@Test
+	public void testFlexmarkWithOptions() throws Exception {
+		writePomWithMarkdownSteps("<flexmark><extensions>YamlFrontMatter</extensions><formatterOptions><rightMargin>100</rightMargin></formatterOptions></flexmark>");
+
+		setFile("markdown_test.md").toResource("markdown/flexmark/FlexmarkOptionsUnformatted.md");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("markdown_test.md").sameAsResource("markdown/flexmark/FlexmarkOptionsFormatted.md");
 	}
 
 	@Test

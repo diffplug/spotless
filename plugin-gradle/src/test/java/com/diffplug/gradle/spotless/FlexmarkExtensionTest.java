@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,27 @@ class FlexmarkExtensionTest extends GradleIntegrationHarness {
 		setFile("markdown_test.md").toResource("markdown/flexmark/FlexmarkUnformatted.md");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("markdown_test.md").sameAsResource("markdown/flexmark/FlexmarkFormatted.md");
+	}
+
+	@Test
+	void integrationFormatterOptions() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    flexmark {",
+				"        target '*.md'",
+				"        flexmark()",
+				"        	.extensions('YamlFrontMatter')",
+				"        	.formatterOptions(['RIGHT_MARGIN': '100'])",
+				"    }",
+				"}");
+		setFile("markdown_test.md").toResource("markdown/flexmark/FlexmarkOptionsUnformatted.md");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("markdown_test.md").sameAsResource("markdown/flexmark/FlexmarkOptionsFormatted.md");
 	}
 
 	@Test
