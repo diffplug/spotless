@@ -231,6 +231,72 @@ public final class FenceStep {
 		}
 
 		@Override
+		public List<Lint> lint(String content, File file) throws Exception {
+			if (kind == Kind.APPLY) {
+				return List.of();
+			}
+			List<LineRange> preservedRanges = preservedLineRanges(content);
+			List<Lint> lints = new ArrayList<>();
+			for (FormatterStep step : steps) {
+				List<Lint> lintsForStep = step.lint(content, file);
+				if (lintsForStep == null) {
+					continue;
+				}
+				for (Lint lint : lintsForStep) {
+					if (!isPreserved(preservedRanges, lint)) {
+						lints.add(lint);
+					}
+				}
+			}
+			return lints;
+		}
+
+		private static boolean isPreserved(List<LineRange> preservedRanges, Lint lint) {
+			for (LineRange range : preservedRanges) {
+				if (range.intersects(lint)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private List<LineRange> preservedLineRanges(String content) {
+			List<LineRange> ranges = new ArrayList<>();
+			Matcher matcher = regex.matcher(content);
+			while (matcher.find()) {
+				int start = matcher.start(1);
+				int endExclusive = matcher.end(1);
+				int end = endExclusive == start ? start : endExclusive - 1;
+				ranges.add(new LineRange(lineAt(content, start), lineAt(content, end)));
+			}
+			return ranges;
+		}
+
+		private static int lineAt(String content, int offset) {
+			int line = 1;
+			for (int i = 0; i < offset; ++i) {
+				if (content.charAt(i) == '\n') {
+					++line;
+				}
+			}
+			return line;
+		}
+
+		private static final class LineRange {
+			private final int start;
+			private final int end;
+
+			private LineRange(int start, int end) {
+				this.start = start;
+				this.end = end;
+			}
+
+			boolean intersects(Lint lint) {
+				return start <= lint.getLineEnd() && lint.getLineStart() <= end;
+			}
+		}
+
+		@Override
 		public void close() {
 			if (formatter != null) {
 				formatter.close();
