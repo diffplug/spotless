@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package com.diffplug.spotless.markdown;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class FlexmarkConfig implements Serializable {
 	@Serial
@@ -34,7 +34,7 @@ public class FlexmarkConfig implements Serializable {
 	private String emulationProfile = "COMMONMARK";
 	private List<String> pegdownExtensions = List.of("ALL");
 	private List<String> extensions = new ArrayList<>();
-	private Map<String, String> formatterOptions = new LinkedHashMap<>();
+	private Map<String, String> formatterOptions = new TreeMap<>();
 
 	public String getEmulationProfile() {
 		return emulationProfile;
@@ -65,7 +65,7 @@ public class FlexmarkConfig implements Serializable {
 	}
 
 	public void setFormatterOptions(Map<String, String> formatterOptions) {
-		this.formatterOptions = formatterOptions;
+		this.formatterOptions = new TreeMap<>(formatterOptions);
 	}
 
 }
