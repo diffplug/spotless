@@ -364,11 +364,11 @@ public final class LicenseHeaderStep {
 							}
 						}
 
-//						final String yearStr = formatYear(newYear);
+						//						final String yearStr = formatYear(newYear);
 						System.out.println("YEARFMT DEBUG: 2: beforeYear: '" + beforeYear + "'");
 						System.out.println("YEARFMT DEBUG: 2: newYear: '" + newYear + "'");
 						System.out.println("YEARFMT DEBUG: 2: afterYear: '" + afterYear + "'");
-//						System.out.println("YEARFMT DEBUG: 2: yearStr: '" + yearStr + "'");
+						//						System.out.println("YEARFMT DEBUG: 2: yearStr: '" + yearStr + "'");
 
 						// return beforeYear + yearStr + afterYear + content;
 						return beforeYear + newYear + afterYear + content;
