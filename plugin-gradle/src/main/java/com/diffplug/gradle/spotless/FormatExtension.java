@@ -614,6 +614,15 @@ public class FormatExtension {
 			return this;
 		}
 
+		/**
+		 * @param yearStrFmt The String format used to format the year part of the license header.
+		 */
+		public LicenseHeaderConfig yearStringFormat(String yearStrFmt) {
+			builder = builder.withYearStingFormat(yearStrFmt);
+			replaceStep(createStep());
+			return this;
+		}
+
 		public LicenseHeaderConfig skipLinesMatching(String skipLinesMatching) {
 			builder = builder.withSkipLinesMatching(skipLinesMatching);
 			replaceStep(createStep());

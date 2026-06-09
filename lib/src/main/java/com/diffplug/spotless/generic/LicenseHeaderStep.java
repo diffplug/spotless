@@ -59,7 +59,7 @@ public final class LicenseHeaderStep {
 	}
 
 	public static LicenseHeaderStep headerDelimiter(ThrowingEx.Supplier<String> headerLazy, String delimiter) {
-		return new LicenseHeaderStep(null, null, headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE, null);
+		return new LicenseHeaderStep(null, null, headerLazy, delimiter, DEFAULT_YEAR_DELIMITER, () -> YearMode.PRESERVE, null, null);
 	}
 
 	final String name;
@@ -67,16 +67,18 @@ public final class LicenseHeaderStep {
 	final ThrowingEx.Supplier<String> headerLazy;
 	final String delimiter;
 	final String yearSeparator;
+	final String yearStrFmt;
 	final Supplier<YearMode> yearMode;
 	final @Nullable String skipLinesMatching;
 
-	private LicenseHeaderStep(@Nullable String name, @Nullable String contentPattern, ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode, @Nullable String skipLinesMatching) {
+	private LicenseHeaderStep(@Nullable String name, @Nullable String contentPattern, ThrowingEx.Supplier<String> headerLazy, String delimiter, String yearSeparator, Supplier<YearMode> yearMode, @Nullable String skipLinesMatching, @Nullable String yearStrFmt) {
 		this.name = sanitizeName(name);
 		this.contentPattern = sanitizePattern(contentPattern);
 		this.headerLazy = Objects.requireNonNull(headerLazy);
 		this.delimiter = Objects.requireNonNull(delimiter);
 		this.yearSeparator = Objects.requireNonNull(yearSeparator);
 		this.yearMode = Objects.requireNonNull(yearMode);
+		this.yearStrFmt = yearStrFmt;
 		this.skipLinesMatching = sanitizePattern(skipLinesMatching);
 	}
 
@@ -85,11 +87,11 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withName(String name) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching, yearStrFmt);
 	}
 
 	public LicenseHeaderStep withContentPattern(String contentPattern) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching, yearStrFmt);
 	}
 
 	public LicenseHeaderStep withHeaderString(String header) {
@@ -97,15 +99,15 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withHeaderLazy(ThrowingEx.Supplier<String> headerLazy) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching, yearStrFmt);
 	}
 
 	public LicenseHeaderStep withDelimiter(String delimiter) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching, yearStrFmt);
 	}
 
 	public LicenseHeaderStep withYearSeparator(String yearSeparator) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching, yearStrFmt);
 	}
 
 	public LicenseHeaderStep withYearMode(YearMode yearMode) {
@@ -113,11 +115,15 @@ public final class LicenseHeaderStep {
 	}
 
 	public LicenseHeaderStep withYearModeLazy(Supplier<YearMode> yearMode) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching, yearStrFmt);
+	}
+
+	public LicenseHeaderStep withYearStingFormat(String yearStrFmt) {
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching, yearStrFmt);
 	}
 
 	public LicenseHeaderStep withSkipLinesMatching(@Nullable String skipLinesMatching) {
-		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching);
+		return new LicenseHeaderStep(name, contentPattern, headerLazy, delimiter, yearSeparator, yearMode, skipLinesMatching, yearStrFmt);
 	}
 
 	private static class SetLicenseHeaderYearsFromGitHistory implements SerializedFunction<Runtime, FormatterFunc> {
@@ -134,7 +140,7 @@ public final class LicenseHeaderStep {
 		if (yearMode.get() == YearMode.SET_FROM_GIT) {
 			formatterStep = FormatterStep.createLazy(name, () -> {
 				boolean updateYear = false; // doesn't matter
-				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
+				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching, yearStrFmt);
 			}, new SetLicenseHeaderYearsFromGitHistory());
 		} else {
 			formatterStep = FormatterStep.createLazy(name, () -> {
@@ -151,7 +157,7 @@ public final class LicenseHeaderStep {
 				default:
 					throw new IllegalStateException(yearMode.toString());
 				}
-				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching);
+				return new Runtime(headerLazy.get(), delimiter, yearSeparator, updateYear, skipLinesMatching, yearStrFmt);
 			}, step -> FormatterFunc.needsFile(step::format));
 		}
 		if (contentPattern == null) {
@@ -214,6 +220,7 @@ public final class LicenseHeaderStep {
 
 		private final Pattern delimiterPattern;
 		private final @Nullable Pattern skipLinesMatching;
+		private final String yearStrFormat;
 		private final String yearSepOrFull;
 		private final @Nullable String yearToday;
 		private final @Nullable String beforeYear;
@@ -225,7 +232,7 @@ public final class LicenseHeaderStep {
 		private static final Pattern FILENAME_PATTERN = Pattern.compile("\\$FILE");
 
 		/** The license that we'd like enforced. */
-		private Runtime(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest, @Nullable String skipLinesMatching) {
+		private Runtime(String licenseHeader, String delimiter, String yearSeparator, boolean updateYearWithLatest, @Nullable String skipLinesMatching, @Nullable String yearStrFormat) {
 			if (delimiter.contains("\n")) {
 				throw new IllegalArgumentException("The delimiter must not contain any newlines.");
 			}
@@ -236,6 +243,7 @@ public final class LicenseHeaderStep {
 			}
 			this.delimiterPattern = Pattern.compile('^' + delimiter, Pattern.UNIX_LINES | Pattern.MULTILINE);
 			this.skipLinesMatching = skipLinesMatching == null ? null : Pattern.compile(skipLinesMatching);
+			this.yearStrFormat = yearStrFormat == null ? "%s" : yearStrFormat;
 			this.hasFileToken = FILENAME_PATTERN.matcher(licenseHeader).find();
 
 			Optional<String> yearToken = getYearToken(licenseHeader);
@@ -303,11 +311,20 @@ public final class LicenseHeaderStep {
 		}
 
 		private String addOrUpdateLicenseHeader(String raw, File file) {
+			System.out.println("YEARFMT DEBUG: addOrUpdateLicenseHeader() start");
+			System.out.println("YEARFMT DEBUG: addOrUpdateLicenseHeader() raw: " + raw);
+			System.out.println("YEARFMT DEBUG: addOrUpdateLicenseHeader() file: " + file.getAbsolutePath());
 			raw = replaceYear(raw);
 			return replaceFileName(raw, file);
 		}
 
+		private String formatYearStr(String year) {
+			return yearStrFormat.formatted(year);
+		}
+
 		private String replaceYear(String raw) {
+			System.out.println("YEARFMT DEBUG: replaceYear() start");
+			System.out.println("YEARFMT DEBUG: replaceYear() raw: " + raw);
 			Matcher contentMatcher = delimiterPattern.matcher(raw);
 			if (!contentMatcher.find()) {
 				throw new IllegalArgumentException("Unable to find delimiter regex " + delimiterPattern);
@@ -318,8 +335,15 @@ public final class LicenseHeaderStep {
 					if (contentMatcher.start() == yearSepOrFull.length() && raw.startsWith(yearSepOrFull)) {
 						// if no change is required, return the raw string without
 						// creating any other new strings for maximum performance
+						System.out.println("YEARFMT DEBUG: 0: raw: '" + raw + "'");
 						return raw;
 					} else {
+						final String yearStr = formatYearStr(yearSepOrFull);
+
+						System.out.println("YEARFMT DEBUG: 1: yearSepOrFull: '" + yearSepOrFull + "'");
+						System.out.println("YEARFMT DEBUG: 1: yearStr: '" + yearStr + "'");
+
+						// return yearStr + content;
 						// otherwise we'll have to add the header
 						return yearSepOrFull + content;
 					}
@@ -339,11 +363,27 @@ public final class LicenseHeaderStep {
 								return raw;
 							}
 						}
+
+//						final String yearStr = formatYear(newYear);
+						System.out.println("YEARFMT DEBUG: 2: beforeYear: '" + beforeYear + "'");
+						System.out.println("YEARFMT DEBUG: 2: newYear: '" + newYear + "'");
+						System.out.println("YEARFMT DEBUG: 2: afterYear: '" + afterYear + "'");
+//						System.out.println("YEARFMT DEBUG: 2: yearStr: '" + yearStr + "'");
+
+						// return beforeYear + yearStr + afterYear + content;
 						return beforeYear + newYear + afterYear + content;
 					} else {
 						String newYear = calculateYearBySearching(raw.substring(0, contentMatcher.start()));
+						final String yearStr = formatYearStr(newYear);
+
+						System.out.println("YEARFMT DEBUG: 3: beforeYear: '" + beforeYear + "'");
+						System.out.println("YEARFMT DEBUG: 3: newYear: '" + newYear + "'");
+						System.out.println("YEARFMT DEBUG: 3: afterYear: '" + afterYear + "'");
+						System.out.println("YEARFMT DEBUG: 3: yearStr: '" + yearStr + "'");
+
 						// at worst, we just say that it was made today
-						return beforeYear + newYear + afterYear + content;
+						return beforeYear + yearStr + afterYear + content;
+						// return beforeYear + newYear + afterYear + content;
 					}
 				}
 			}
@@ -353,26 +393,30 @@ public final class LicenseHeaderStep {
 
 		/** Calculates the year to inject. */
 		private String calculateYearExact(String parsedYear) {
-			if (parsedYear.equals(yearToday)) {
-				return parsedYear;
+			System.out.println("YEARFMT DEBUG: calculateYearExact() start");
+			System.out.println("YEARFMT DEBUG: calculateYearExact() parsedYear: " + parsedYear);
+			if (parsedYear.equals(formatYearStr(yearToday))) {
+				return formatYearStr(parsedYear);
 			} else if (YYYY.matcher(parsedYear).matches()) {
 				if (updateYearWithLatest) {
 					if (licenseHeaderWithRange) {
-						return yearToday;
+						return formatYearStr(yearToday);
 					} else {
-						return parsedYear + yearSepOrFull + yearToday;
+						return formatYearStr(parsedYear + yearSepOrFull + yearToday);
 					}
 				} else {
 					// it's already good as a single year
-					return parsedYear;
+					return formatYearStr(parsedYear);
 				}
 			} else {
-				return calculateYearBySearching(parsedYear);
+				return formatYearStr(calculateYearBySearching(parsedYear));
 			}
 		}
 
 		/** Searches the given string for YYYY, and uses that to determine the year range. */
 		private String calculateYearBySearching(String content) {
+			System.out.println("YEARFMT DEBUG: calculateYearBySearching() start");
+			System.out.println("YEARFMT DEBUG: calculateYearBySearching() content: " + content);
 			Matcher yearMatcher = YYYY.matcher(content);
 			if (yearMatcher.find()) {
 				String firstYear = yearMatcher.group();
