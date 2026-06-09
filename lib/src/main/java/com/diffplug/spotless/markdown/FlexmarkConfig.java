@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class FlexmarkConfig implements Serializable {
 	@Serial
@@ -26,11 +28,13 @@ public class FlexmarkConfig implements Serializable {
 
 	/**
 	 * The emulation profile is used by both the parser and the formatter and generally determines the markdown flavor.
-	 * COMMONMARK is the default defined by flexmark-java.
+	 * COMMONMARK is the default defined by flexmark-java. For convenience, this can also be set via
+	 * {@code formatterOptions} with the key {@code FORMATTER_EMULATION_PROFILE}.
 	 */
 	private String emulationProfile = "COMMONMARK";
 	private List<String> pegdownExtensions = List.of("ALL");
 	private List<String> extensions = new ArrayList<>();
+	private Map<String, String> formatterOptions = new TreeMap<>();
 
 	public String getEmulationProfile() {
 		return emulationProfile;
@@ -54,6 +58,14 @@ public class FlexmarkConfig implements Serializable {
 
 	public void setExtensions(List<String> extensions) {
 		this.extensions = extensions;
+	}
+
+	public Map<String, String> getFormatterOptions() {
+		return formatterOptions;
+	}
+
+	public void setFormatterOptions(Map<String, String> formatterOptions) {
+		this.formatterOptions = new TreeMap<>(formatterOptions);
 	}
 
 }

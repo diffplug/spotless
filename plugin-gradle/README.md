@@ -795,6 +795,8 @@ You can change the `emulationProfile` to one of the other [supported profiles](h
 The `pegdownExtensions` can be configured as a list of [constants](https://github.com/vsch/flexmark-java/blob/master/flexmark/src/main/java/com/vladsch/flexmark/parser/PegdownExtensions.java) or as a custom bitset as an integer.
 Any other `extension` can be configured using either the simple name as shown in the example or using a full-qualified class name.
 
+Arbitrary formatter options from the [flexmark-java Markdown Formatter](https://github.com/vsch/flexmark-java/wiki/Markdown-Formatter#options) can be set via `formatterOptions`. Each key is a `SCREAMING_SNAKE_CASE` constant from [`com.vladsch.flexmark.formatter.Formatter`](https://github.com/vsch/flexmark-java/blob/master/flexmark/src/main/java/com/vladsch/flexmark/formatter/Formatter.java) (e.g. `RIGHT_MARGIN`). Supported value types are `Integer`, `Boolean`, and `String`.
+
 To apply flexmark to all of the `.md` files in your project, use this snippet:
 
 ```gradle
@@ -805,6 +807,7 @@ spotless {
       .emulationProfile('COMMONMARK') // optional
       .pegdownExtensions('ALL') // optional
       .extensions('YamlFrontMatter') // optional
+      .formatterOptions(['RIGHT_MARGIN': '120']) // optional
   }
 }
 ```

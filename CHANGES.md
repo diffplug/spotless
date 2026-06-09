@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 - Add support for AsciiDoc formatting via `adocfmt`. ([#2960](https://github.com/diffplug/spotless/pull/2960))
+- `flexmark` step now supports arbitrary formatter options via a `formatterOptions` map. ([#2968](https://github.com/diffplug/spotless/pull/2968))
 ### Fixed
 - `FenceStep.preserveWithin` now forwards lints from nested steps while still suppressing lints inside preserved blocks. ([#2962](https://github.com/diffplug/spotless/pull/2962))
 - Support `ktfmt` 0.63 and use its new builder API for formatting options to better avoid future breaking changes.

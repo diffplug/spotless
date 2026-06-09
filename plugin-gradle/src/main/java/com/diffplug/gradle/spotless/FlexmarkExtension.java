@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -76,6 +77,11 @@ public class FlexmarkExtension extends FormatExtension {
 
 		public FlexmarkFormatterConfig extensions(String... extensions) {
 			this.config.setExtensions(List.of(extensions));
+			return this;
+		}
+
+		public FlexmarkFormatterConfig formatterOptions(Map<String, String> formatterOptions) {
+			this.config.setFormatterOptions(formatterOptions);
 			return this;
 		}
 
