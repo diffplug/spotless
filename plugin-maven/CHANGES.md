@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- `<toggleOffOn>` no longer disables lint-only steps such as `<forbidWildcardImports>`. ([#2962](https://github.com/diffplug/spotless/pull/2962))
 
 ## [3.6.0] - 2026-05-27
 ### Added
