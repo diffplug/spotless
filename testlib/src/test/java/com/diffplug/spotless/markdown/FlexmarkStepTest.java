@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
@@ -54,9 +53,8 @@ class FlexmarkStepTest {
 	void flexmarkOptionsUnknownKeyFails() {
 		FlexmarkConfig config = new FlexmarkConfig();
 		config.setFormatterOptions(Map.of("NON_EXISTENT_OPTION", "value"));
-		assertThatThrownBy(() ->
-				StepHarness.forStep(FlexmarkStep.create(TestProvisioner.mavenCentral(), config))
-						.test("text\n", "text\n"))
+		assertThatThrownBy(() -> StepHarness.forStep(FlexmarkStep.create(TestProvisioner.mavenCentral(), config))
+				.test("text\n", "text\n"))
 				.hasRootCauseInstanceOf(IllegalArgumentException.class)
 				.hasRootCauseMessage(
 						"Unknown flexmark formatter option: no field Formatter.NON_EXISTENT_OPTION."
