@@ -234,6 +234,12 @@ public abstract class SpotlessExtension {
 		format(GherkinExtension.NAME, GherkinExtension.class, closure);
 	}
 
+	/** Configures the special asciidoc-specific extension. */
+	public void asciidoc(Action<AsciidocExtension> closure) {
+		requireNonNull(closure);
+		format(AsciidocExtension.NAME, AsciidocExtension.class, closure);
+	}
+
 	public void toml(Action<TomlExtension> closure) {
 		requireNonNull(closure);
 		format(TomlExtension.NAME, TomlExtension.class, closure);

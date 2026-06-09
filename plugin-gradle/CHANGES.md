@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 
 ### Added
+- Add support for AsciiDoc formatting via `adocfmt`. ([#2960](https://github.com/diffplug/spotless/pull/2960))
 - Add support for custom string format for license header copyright year via `yearStringFormat()`. ([#2965](https://github.com/diffplug/spotless/pull/2965))
 ### Fixed
 - Prevent build caches from interfering when executing under the `-PspotlessIdeHook` mode. ([#2365](https://github.com/diffplug/spotless/issues/2365))
