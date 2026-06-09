@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 				"}");
 	}
 
-	private void assertUnchanged(String year) throws IOException {
-		assertTransform(year, year);
+	private void assertUnchanged(String yearBefore, String yearAfter) throws IOException {
+		assertTransform(yearBefore, yearAfter);
 	}
 
 	private void assertTransform(String yearBefore, String yearAfter) throws IOException {
@@ -56,13 +56,32 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 	private void testSuiteUpdateWithLatest(boolean update) throws IOException {
 		if (update) {
 			assertTransform("2003", "2003-" + NOW);
+			assertTransform("   2003", "2003-" + NOW);
+			assertTransform("2003   ", "2003-" + NOW);
+			assertTransform("   2003   ", "2003-" + NOW);
+
 			assertTransform("2003-2005", "2003-" + NOW);
+			assertTransform("   2003-2005", "2003-" + NOW);
+			assertTransform("2003-2005   ", "2003-" + NOW);
+			assertTransform("   2003-2005   ", "2003-" + NOW);
 		} else {
-			assertUnchanged("2003");
-			assertUnchanged("2003-2005");
+			assertUnchanged("2003", "2003");
+			assertUnchanged("   2003", "2003"); // MSITARZ This one fails with clean 'main' code
+			assertUnchanged("2003   ", "2003");
+			assertUnchanged("   2003   ", "2003");
+
+			assertUnchanged("2003-2005", "2003-2005");
+			assertUnchanged("   2003-2005", "2003-2005"); // MSITARZ This one fails with clean 'main' code
+			assertUnchanged("2003-2005   ", "2003-2005");
+			assertUnchanged("   2003-2005   ", "2003-2005");
 		}
-		assertUnchanged(NOW);
+		assertUnchanged(NOW, NOW);
+		assertUnchanged("   " + NOW, NOW);
+		assertUnchanged(NOW + "   ", NOW);
+		assertUnchanged("   " + NOW + "   ", NOW);
+
 		assertTransform("", NOW);
+		assertTransform("   ", NOW);
 	}
 
 	@Test
