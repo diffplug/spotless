@@ -66,12 +66,12 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 			assertTransform("   2003-2005   ", "2003-" + NOW);
 		} else {
 			assertUnchanged("2003", "2003");
-			assertUnchanged("   2003", "2003"); // MSITARZ This one fails with clean 'main' code
+			assertUnchanged("   2003", "2003");
 			assertUnchanged("2003   ", "2003");
 			assertUnchanged("   2003   ", "2003");
 
 			assertUnchanged("2003-2005", "2003-2005");
-			assertUnchanged("   2003-2005", "2003-2005"); // MSITARZ This one fails with clean 'main' code
+			assertUnchanged("   2003-2005", "2003-2005");
 			assertUnchanged("2003-2005   ", "2003-2005");
 			assertUnchanged("   2003-2005   ", "2003-2005");
 		}
