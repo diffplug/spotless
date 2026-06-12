@@ -43,8 +43,8 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 				"}");
 	}
 
-	private void assertUnchanged(String yearBefore, String yearAfter) throws IOException {
-		assertTransform(yearBefore, yearAfter);
+	private void assertUnchanged(String year) throws IOException {
+		assertTransform(year, year);
 	}
 
 	private void assertTransform(String yearBefore, String yearAfter) throws IOException {
@@ -65,20 +65,20 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 			assertTransform("2003-2005   ", "2003-" + NOW);
 			assertTransform("   2003-2005   ", "2003-" + NOW);
 		} else {
-			assertUnchanged("2003", "2003");
-			assertUnchanged("   2003", "2003");
-			assertUnchanged("2003   ", "2003");
-			assertUnchanged("   2003   ", "2003");
+			assertUnchanged("2003");
+			assertTransform("   2003", "2003");
+			assertTransform("2003   ", "2003");
+			assertTransform("   2003   ", "2003");
 
-			assertUnchanged("2003-2005", "2003-2005");
-			assertUnchanged("   2003-2005", "2003-2005");
-			assertUnchanged("2003-2005   ", "2003-2005");
-			assertUnchanged("   2003-2005   ", "2003-2005");
+			assertUnchanged("2003-2005");
+			assertTransform("   2003-2005", "2003-2005");
+			assertTransform("2003-2005   ", "2003-2005");
+			assertTransform("   2003-2005   ", "2003-2005");
 		}
-		assertUnchanged(NOW, NOW);
-		assertUnchanged("   " + NOW, NOW);
-		assertUnchanged(NOW + "   ", NOW);
-		assertUnchanged("   " + NOW + "   ", NOW);
+		assertUnchanged(NOW);
+		assertTransform("   " + NOW, NOW);
+		assertTransform(NOW + "   ", NOW);
+		assertTransform("   " + NOW + "   ", NOW);
 
 		assertTransform("", NOW);
 		assertTransform("   ", NOW);
