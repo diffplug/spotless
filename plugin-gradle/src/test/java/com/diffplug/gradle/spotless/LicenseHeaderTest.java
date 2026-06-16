@@ -30,7 +30,7 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 	private static final String TEST_JAVA = "src/main/java/pkg/Test.java";
 	private static final String CONTENT = "package pkg;\npublic class Test {}";
 
-	private void setLicenseStep(String licenseLine) throws IOException {
+	private void setLicenseStep(String licenseLine) {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"  id 'com.diffplug.spotless'",
@@ -43,45 +43,58 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 				"}");
 	}
 
-	private void assertUnchanged(String year) throws IOException {
-		assertTransform(year, year);
+	private String formatYearStr(String yearFmt, String year) {
+		if (yearFmt == null) {
+			yearFmt = "%s";
+		}
+		return yearFmt.formatted(year);
 	}
 
-	private void assertTransform(String yearBefore, String yearAfter) throws IOException {
+	private void assertUnchanged(String yearFmt, String year) throws IOException {
+		assertTransform(yearFmt, year, year);
+	}
+
+	private void assertTransform(String yearFmt, String yearBefore, String yearAfter) throws IOException {
+		final String yearAfterStr = formatYearStr(yearFmt, yearAfter);
+
 		setFile(TEST_JAVA).toContent("/** " + yearBefore + " */\n" + CONTENT);
 		gradleRunner().withArguments("spotlessApply", "--stacktrace").forwardOutput().build();
-		assertFile(TEST_JAVA).hasContent("/** " + yearAfter + " */\n" + CONTENT);
+		assertFile(TEST_JAVA).hasContent("/** " + yearAfterStr + " */\n" + CONTENT);
 	}
 
 	private void testSuiteUpdateWithLatest(boolean update) throws IOException {
+		testSuiteUpdateWithLatest(update, null);
+	}
+
+	private void testSuiteUpdateWithLatest(boolean update, String yearFmt) throws IOException {
 		if (update) {
-			assertTransform("2003", "2003-" + NOW);
-			assertTransform("   2003", "2003-" + NOW);
-			assertTransform("2003   ", "2003-" + NOW);
-			assertTransform("   2003   ", "2003-" + NOW);
+			assertTransform(yearFmt, "2003", "2003-" + NOW);
+			assertTransform(yearFmt, "   2003", "2003-" + NOW);
+			assertTransform(yearFmt, "2003   ", "2003-" + NOW);
+			assertTransform(yearFmt, "   2003   ", "2003-" + NOW);
 
-			assertTransform("2003-2005", "2003-" + NOW);
-			assertTransform("   2003-2005", "2003-" + NOW);
-			assertTransform("2003-2005   ", "2003-" + NOW);
-			assertTransform("   2003-2005   ", "2003-" + NOW);
+			assertTransform(yearFmt, "2003-2005", "2003-" + NOW);
+			assertTransform(yearFmt, "   2003-2005", "2003-" + NOW);
+			assertTransform(yearFmt, "2003-2005   ", "2003-" + NOW);
+			assertTransform(yearFmt, "   2003-2005   ", "2003-" + NOW);
 		} else {
-			assertUnchanged("2003");
-			assertTransform("   2003", "2003");
-			assertTransform("2003   ", "2003");
-			assertTransform("   2003   ", "2003");
+			assertUnchanged(yearFmt, "2003");
+			assertTransform(yearFmt, "   2003", "2003");
+			assertTransform(yearFmt, "2003   ", "2003");
+			assertTransform(yearFmt, "   2003   ", "2003");
 
-			assertUnchanged("2003-2005");
-			assertTransform("   2003-2005", "2003-2005");
-			assertTransform("2003-2005   ", "2003-2005");
-			assertTransform("   2003-2005   ", "2003-2005");
+			assertUnchanged(yearFmt, "2003-2005");
+			assertTransform(yearFmt, "   2003-2005", "2003-2005");
+			assertTransform(yearFmt, "2003-2005   ", "2003-2005");
+			assertTransform(yearFmt, "   2003-2005   ", "2003-2005");
 		}
-		assertUnchanged(NOW);
-		assertTransform("   " + NOW, NOW);
-		assertTransform(NOW + "   ", NOW);
-		assertTransform("   " + NOW + "   ", NOW);
+		assertUnchanged(yearFmt, NOW);
+		assertTransform(yearFmt, "   " + NOW, NOW);
+		assertTransform(yearFmt, NOW + "   ", NOW);
+		assertTransform(yearFmt, "   " + NOW + "   ", NOW);
 
-		assertTransform("", NOW);
-		assertTransform("   ", NOW);
+		assertTransform(yearFmt, "", NOW);
+		assertTransform(yearFmt, "   ", NOW);
 	}
 
 	@Test
@@ -94,6 +107,36 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 	void updateYearWithLatestTrue() throws IOException {
 		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(true)");
 		testSuiteUpdateWithLatest(true);
+	}
+
+	@Test
+	void withYearStringFormat() throws IOException {
+		// default format
+		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%s')");
+		testSuiteUpdateWithLatest(false, "%s");
+
+		// fill with spaces before
+		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%11s')");
+		testSuiteUpdateWithLatest(false, "%11s");
+
+		// fill with spaces after
+		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%-12s')");
+		testSuiteUpdateWithLatest(false, "%-12s");
+	}
+
+	@Test
+	void updateYearWithLatestTrue_withYearStringFormat() throws IOException {
+		// default format
+		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(true).yearStringFormat('%s')");
+		testSuiteUpdateWithLatest(true, "%s");
+
+		// fill with spaces before
+		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(true).yearStringFormat('%10s')");
+		testSuiteUpdateWithLatest(true, "%10s");
+
+		// fill with spaces after
+		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(true).yearStringFormat('%-15s')");
+		testSuiteUpdateWithLatest(true, "%-15s");
 	}
 
 	@Test
@@ -131,8 +174,9 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
 			git.commit().setMessage("First commit").call();
 		}
-		Git.init().setDirectory(rootFolder()).call();
-		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(false)\nratchetFrom 'HEAD'");
-		testSuiteUpdateWithLatest(false);
+		try (Git ignored = Git.init().setDirectory(rootFolder()).call()) {
+			setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(false)\nratchetFrom 'HEAD'");
+			testSuiteUpdateWithLatest(false);
+		}
 	}
 }

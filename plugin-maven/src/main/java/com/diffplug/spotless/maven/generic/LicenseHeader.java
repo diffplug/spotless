@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,9 @@ public class LicenseHeader implements FormatterStepFactory {
 	@Parameter
 	private String skipLinesMatching;
 
+	@Parameter
+	private String yearStrFmt;
+
 	@Override
 	public final FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String delimiterString = delimiter != null ? delimiter : config.getLicenseHeaderDelimiter();
@@ -57,6 +60,7 @@ public class LicenseHeader implements FormatterStepFactory {
 			return LicenseHeaderStep.headerDelimiter(() -> readFileOrContent(config), delimiterString)
 					.withYearMode(yearMode)
 					.withSkipLinesMatching(skipLinesMatching)
+					.withYearStingFormat(yearStrFmt)
 					.build()
 					.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 		} else {
