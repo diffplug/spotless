@@ -174,8 +174,9 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
 			git.commit().setMessage("First commit").call();
 		}
-		Git.init().setDirectory(rootFolder()).call();
-		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(false)\nratchetFrom 'HEAD'");
-		testSuiteUpdateWithLatest(false);
+		try (Git ignored = Git.init().setDirectory(rootFolder()).call()) {
+			setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(false)\nratchetFrom 'HEAD'");
+			testSuiteUpdateWithLatest(false);
+		}
 	}
 }
