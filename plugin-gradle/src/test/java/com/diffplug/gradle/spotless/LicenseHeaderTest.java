@@ -116,8 +116,8 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 		testSuiteUpdateWithLatest(false, "%s");
 
 		// fill with spaces before
-		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%9s')");
-		testSuiteUpdateWithLatest(false, "%9s");
+		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%11s')");
+		testSuiteUpdateWithLatest(false, "%11s");
 
 		// fill with spaces after
 		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%-12s')");
