@@ -50,7 +50,9 @@ jobs:
       - name: gradle caching
         uses: gradle/actions/setup-gradle@v5
       - name: git fetch origin main
-        run: git fetch origin main
+        # force HTTP/1.1 to dodge the "Failed sending HTTP request" HTTP/2 bug
+        # seen on the ubuntu-24.04 runner image (git 2.54)
+        run: git -c http.version=HTTP/1.1 fetch origin main
       - name: publish all
         if: "${{ github.event.inputs.to_publish == 'all' }}"
         run: |
