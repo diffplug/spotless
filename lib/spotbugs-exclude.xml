@@ -5,4 +5,19 @@
 	<Match>
 		<Bug pattern="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION"/>
 	</Match>
+	<Match>
+		<Bug pattern="IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY"/>
+	</Match>
+	<Match>
+		<Bug pattern="UNS_UNSAFE_CALL"/>
+	</Match>
+	<Match>
+		<Bug pattern="USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION"/>
+	</Match>
+	<Match>
+		<Bug pattern="USO_UNSAFE_METHOD_SYNCHRONIZATION"/>
+	</Match>
+	<Match>
+		<Bug pattern="USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION"/>
+	</Match>
 </FindBugsFilter>

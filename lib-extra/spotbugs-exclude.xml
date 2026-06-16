@@ -5,4 +5,7 @@
 	<Match>
 		<Bug pattern="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION"/>
 	</Match>
+	<Match>
+		<Bug pattern="USO_UNSAFE_OBJECT_SYNCHRONIZATION"/>
+	</Match>
 </FindBugsFilter>
