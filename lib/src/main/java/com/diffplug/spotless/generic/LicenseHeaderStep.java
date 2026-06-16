@@ -380,7 +380,7 @@ public final class LicenseHeaderStep {
 				String secondYear = null;
 				if (updateYearWithLatest) {
 					secondYear = firstYear.equals(yearToday) ? null : yearToday;
-				} else {
+				} else if (yearMatcher.end() + 1 < content.length()) {
 					String contentWithSecondYear = content.substring(yearMatcher.end() + 1);
 					int endOfLine = contentWithSecondYear.indexOf('\n');
 					if (endOfLine != -1) {
