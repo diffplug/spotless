@@ -3,13 +3,14 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- Add support for custom string format for license header copyright year via `yearStringFormat()`. ([#2965](https://github.com/diffplug/spotless/pull/2965))
 
 ## [8.7.0] - 2026-06-16
 
 ### Added
 - Add support for AsciiDoc formatting via `adocfmt`. ([#2960](https://github.com/diffplug/spotless/pull/2960))
 - `flexmark()` step now supports arbitrary formatter options via the `formatterOptions` map. ([#2968](https://github.com/diffplug/spotless/pull/2968))
-- Add support for custom string format for license header copyright year via `yearStringFormat()`. ([#2965](https://github.com/diffplug/spotless/pull/2965))
 ### Fixed
 - `toggleOffOn` no longer disables lint-only steps such as `forbidWildcardImports`. ([#2962](https://github.com/diffplug/spotless/pull/2962))
 - Prevent build caches from interfering when executing under the `-PspotlessIdeHook` mode. ([#2365](https://github.com/diffplug/spotless/issues/2365))
