@@ -22,7 +22,7 @@ jobs:
           distribution: temurin
           java-version: 21
       - name: Gradle Setup 🐘
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
       - name: Error Prone 🚧️
         run: ./gradlew assemble -Derror-prone=true
       - name: OpenRewrite ☑️ # 4m 55s (2 min compile, 3 min rewrite)
