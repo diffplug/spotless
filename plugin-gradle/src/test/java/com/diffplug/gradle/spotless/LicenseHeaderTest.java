@@ -30,7 +30,7 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 	private static final String TEST_JAVA = "src/main/java/pkg/Test.java";
 	private static final String CONTENT = "package pkg;\npublic class Test {}";
 
-	private void setLicenseStep(String licenseLine) throws IOException {
+	private void setLicenseStep(String licenseLine) {
 		setFile("build.gradle").toLines(
 				"plugins {",
 				"  id 'com.diffplug.spotless'",
