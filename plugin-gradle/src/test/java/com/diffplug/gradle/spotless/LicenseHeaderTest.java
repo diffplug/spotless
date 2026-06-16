@@ -104,45 +104,39 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void withYearStringFormat_defaultFormat() throws IOException {
-		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%s')");
-		testSuiteUpdateWithLatest(false, "%s");
-	}
-
-	@Test
-	void withYearStringFormat_spacesBefore() throws IOException {
-		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%12s')");
-		testSuiteUpdateWithLatest(false, "%12s");
-	}
-
-	@Test
-	void withYearStringFormat_spacesAfter() throws IOException {
-		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%-12s')");
-		testSuiteUpdateWithLatest(false, "%-12s");
-	}
-
-	@Test
 	void updateYearWithLatestTrue() throws IOException {
 		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(true)");
 		testSuiteUpdateWithLatest(true);
 	}
 
 	@Test
-	void updateYearWithLatestTrueAndWithYearStringFormat_defaultFormat() throws IOException {
+	void withYearStringFormat() throws IOException {
+		// default format
+		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%s')");
+		testSuiteUpdateWithLatest(false, "%s");
+
+		// fill with spaces before
+		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%9s')");
+		testSuiteUpdateWithLatest(false, "%9s");
+
+		// fill with spaces after
+		setLicenseStep("licenseHeader('/** $YEAR */').yearStringFormat('%-12s')");
+		testSuiteUpdateWithLatest(false, "%-12s");
+	}
+
+	@Test
+	void updateYearWithLatestTrue_withYearStringFormat() throws IOException {
+		// default format
 		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(true).yearStringFormat('%s')");
 		testSuiteUpdateWithLatest(true, "%s");
-	}
 
-	@Test
-	void updateYearWithLatestTrueAndWithYearStringFormat_spacesAfter() throws IOException {
+		// fill with spaces before
+		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(true).yearStringFormat('%10s')");
+		testSuiteUpdateWithLatest(true, "%10s");
+
+		// fill with spaces after
 		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(true).yearStringFormat('%-15s')");
 		testSuiteUpdateWithLatest(true, "%-15s");
-	}
-
-	@Test
-	void updateYearWithLatestTrueAndWithYearStringFormat_spacesBefore() throws IOException {
-		setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(true).yearStringFormat('%12s')");
-		testSuiteUpdateWithLatest(true, "%12s");
 	}
 
 	@Test
