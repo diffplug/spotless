@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,13 +56,32 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 	private void testSuiteUpdateWithLatest(boolean update) throws IOException {
 		if (update) {
 			assertTransform("2003", "2003-" + NOW);
+			assertTransform("   2003", "2003-" + NOW);
+			assertTransform("2003   ", "2003-" + NOW);
+			assertTransform("   2003   ", "2003-" + NOW);
+
 			assertTransform("2003-2005", "2003-" + NOW);
+			assertTransform("   2003-2005", "2003-" + NOW);
+			assertTransform("2003-2005   ", "2003-" + NOW);
+			assertTransform("   2003-2005   ", "2003-" + NOW);
 		} else {
 			assertUnchanged("2003");
+			assertTransform("   2003", "2003");
+			assertTransform("2003   ", "2003");
+			assertTransform("   2003   ", "2003");
+
 			assertUnchanged("2003-2005");
+			assertTransform("   2003-2005", "2003-2005");
+			assertTransform("2003-2005   ", "2003-2005");
+			assertTransform("   2003-2005   ", "2003-2005");
 		}
 		assertUnchanged(NOW);
+		assertTransform("   " + NOW, NOW);
+		assertTransform(NOW + "   ", NOW);
+		assertTransform("   " + NOW + "   ", NOW);
+
 		assertTransform("", NOW);
+		assertTransform("   ", NOW);
 	}
 
 	@Test

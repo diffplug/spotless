@@ -33,9 +33,9 @@ apply from: rootProject.file('gradle/special-tests.gradle')
 tasks.withType(Test).configureEach {
 	// for Antlr4FormatterStepTest, KtfmtStepTest, and KtLintStepTest
 	jvmArgs(
-			'--add-opens=java.base/java.lang=ALL-UNNAMED',
-			'--add-opens=java.base/java.util=ALL-UNNAMED',
-			)
+	'--add-opens=java.base/java.lang=ALL-UNNAMED',
+	'--add-opens=java.base/java.util=ALL-UNNAMED',
+	)
 }
 
 javadoc {
