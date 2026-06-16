@@ -17,6 +17,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Changes
 - Bump default `greclipse` version to latest `4.35` -> `4.39`. ([#2924](https://github.com/diffplug/spotless/pull/2924))
+- Bump default `ktfmt` version to latest `0.61` -> `0.63`. ([#2957](https://github.com/diffplug/spotless/pull/2957)
 
 ## [8.6.0] - 2026-05-27
 ### Added
