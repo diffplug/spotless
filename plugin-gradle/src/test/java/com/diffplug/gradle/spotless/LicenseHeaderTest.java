@@ -69,13 +69,32 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 	private void testSuiteUpdateWithLatest(boolean update, String yearFmt) throws IOException {
 		if (update) {
 			assertTransform(yearFmt, "2003", "2003-" + NOW);
+			assertTransform(yearFmt, "   2003", "2003-" + NOW);
+			assertTransform(yearFmt, "2003   ", "2003-" + NOW);
+			assertTransform(yearFmt, "   2003   ", "2003-" + NOW);
+
 			assertTransform(yearFmt, "2003-2005", "2003-" + NOW);
+			assertTransform(yearFmt, "   2003-2005", "2003-" + NOW);
+			assertTransform(yearFmt, "2003-2005   ", "2003-" + NOW);
+			assertTransform(yearFmt, "   2003-2005   ", "2003-" + NOW);
 		} else {
 			assertUnchanged(yearFmt, "2003");
+			assertTransform(yearFmt, "   2003", "2003");
+			assertTransform(yearFmt, "2003   ", "2003");
+			assertTransform(yearFmt, "   2003   ", "2003");
+
 			assertUnchanged(yearFmt, "2003-2005");
+			assertTransform(yearFmt, "   2003-2005", "2003-2005");
+			assertTransform(yearFmt, "2003-2005   ", "2003-2005");
+			assertTransform(yearFmt, "   2003-2005   ", "2003-2005");
 		}
 		assertUnchanged(yearFmt, NOW);
+		assertTransform(yearFmt, "   " + NOW, NOW);
+		assertTransform(yearFmt, NOW + "   ", NOW);
+		assertTransform(yearFmt, "   " + NOW + "   ", NOW);
+
 		assertTransform(yearFmt, "", NOW);
+		assertTransform(yearFmt, "   ", NOW);
 	}
 
 	@Test

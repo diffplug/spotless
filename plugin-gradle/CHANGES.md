@@ -4,6 +4,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## [8.7.0] - 2026-06-16
+
 ### Added
 - Add support for AsciiDoc formatting via `adocfmt`. ([#2960](https://github.com/diffplug/spotless/pull/2960))
 - `flexmark()` step now supports arbitrary formatter options via the `formatterOptions` map. ([#2968](https://github.com/diffplug/spotless/pull/2968))
@@ -12,6 +14,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - `toggleOffOn` no longer disables lint-only steps such as `forbidWildcardImports`. ([#2962](https://github.com/diffplug/spotless/pull/2962))
 - Prevent build caches from interfering when executing under the `-PspotlessIdeHook` mode. ([#2365](https://github.com/diffplug/spotless/issues/2365))
 - Parse standard git year output in LicenseHeaderStep. ([#2940](https://github.com/diffplug/spotless/issues/2940))
+- Fix `StringIndexOutOfBoundsException` in scenarios where copyright year is surrounded by whitespace. ([#2973](https://github.com/diffplug/spotless/pull/2973))
 
 ### Changes
 - Bump default `greclipse` version to latest `4.35` -> `4.39`. ([#2924](https://github.com/diffplug/spotless/pull/2924))

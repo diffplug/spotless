@@ -3,9 +3,13 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [3.7.0] - 2026-06-16
 ### Fixed
 - Parse standard git year output in LicenseHeaderStep. ([#2940](https://github.com/diffplug/spotless/issues/2940))
 - `<toggleOffOn>` no longer disables lint-only steps such as `<forbidWildcardImports>`. ([#2962](https://github.com/diffplug/spotless/pull/2962))
+- Fix `StringIndexOutOfBoundsException` in scenarios where copyright year is surrounded by whitespace. ([#2973](https://github.com/diffplug/spotless/pull/2973))
+
 ### Added
 - Add support for AsciiDoc formatting via `adocfmt`. ([#2960](https://github.com/diffplug/spotless/pull/2960))
 - `<flexmark>` step now supports arbitrary formatter options via `<formatterOptions>`. ([#2968](https://github.com/diffplug/spotless/pull/2968))
