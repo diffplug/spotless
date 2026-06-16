@@ -29,9 +29,9 @@ spotlessChangelog {
 if (project == rootProject) {
 	gradle.taskGraph.whenReady { taskGraph ->
 		def changelogPushTasks = taskGraph.allTasks.stream()
-				.filter { t -> t.name == 'changelogPush' }
-				.map { t -> t.path }
-				.toList()
+		.filter { t -> t.name == 'changelogPush' }
+		.map { t -> t.path }
+		.toList()
 		if (changelogPushTasks.size() > 1) {
 			// make sure only one changelog gets published per tag/commit
 			throw new IllegalArgumentException("Run changelogPush one at a time:\n" + changelogPushTasks.join('\n'))
