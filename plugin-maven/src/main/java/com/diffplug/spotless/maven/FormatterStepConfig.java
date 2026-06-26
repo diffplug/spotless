@@ -19,6 +19,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.extra.P2Provisioner;
@@ -32,9 +33,9 @@ public class FormatterStepConfig {
 	private final P2Provisioner p2Provisioner;
 	private final FileLocator fileLocator;
 	private final Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory;
-	private final Optional<Set<File>> projectClasspath;
+	private final Optional<Supplier<Set<File>>> projectClasspathSupplier;
 
-	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Optional<String> ratchetFrom, Provisioner provisioner, P2Provisioner p2Provisioner, FileLocator fileLocator, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory, Optional<Set<File>> projectClasspath) {
+	public FormatterStepConfig(Charset encoding, String licenseHeaderDelimiter, Optional<String> ratchetFrom, Provisioner provisioner, P2Provisioner p2Provisioner, FileLocator fileLocator, Optional<String> spotlessSetLicenseHeaderYearsFromGitHistory, Optional<Supplier<Set<File>>> projectClasspathSupplier) {
 		this.encoding = encoding;
 		this.licenseHeaderDelimiter = licenseHeaderDelimiter;
 		this.ratchetFrom = ratchetFrom;
@@ -42,7 +43,7 @@ public class FormatterStepConfig {
 		this.p2Provisioner = p2Provisioner;
 		this.fileLocator = fileLocator;
 		this.spotlessSetLicenseHeaderYearsFromGitHistory = spotlessSetLicenseHeaderYearsFromGitHistory;
-		this.projectClasspath = projectClasspath;
+		this.projectClasspathSupplier = projectClasspathSupplier;
 	}
 
 	public Charset getEncoding() {
@@ -73,7 +74,7 @@ public class FormatterStepConfig {
 		return spotlessSetLicenseHeaderYearsFromGitHistory;
 	}
 
-	public Optional<Set<File>> getProjectClasspath() {
-		return projectClasspath;
+	public Optional<Supplier<Set<File>>> getProjectClasspathSupplier() {
+		return projectClasspathSupplier;
 	}
 }

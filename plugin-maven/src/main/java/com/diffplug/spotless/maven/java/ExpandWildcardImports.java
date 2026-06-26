@@ -18,6 +18,7 @@ package com.diffplug.spotless.maven.java;
 import java.io.File;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.java.ExpandWildcardImportsStep;
@@ -27,7 +28,9 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 public class ExpandWildcardImports implements FormatterStepFactory {
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
-		Set<File> classpath = config.getProjectClasspath().orElse(Collections.emptySet());
+		Set<File> classpath = config.getProjectClasspathSupplier()
+				.map(Supplier::get)
+				.orElse(Collections.emptySet());
 		return ExpandWildcardImportsStep.create(classpath, config.getProvisioner());
 	}
 }

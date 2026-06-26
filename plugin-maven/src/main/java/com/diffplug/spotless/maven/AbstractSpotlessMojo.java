@@ -417,11 +417,12 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		final Optional<String> userRatchetFrom = Optional.ofNullable((String) mavenSession.getUserProperties().get("ratchetFrom"));
 		final Optional<String> optionalRatchetFrom = Optional.ofNullable(this.ratchetFrom)
 				.filter(ratchet -> !RATCHETFROM_NONE.equals(ratchet));
-		Optional<Set<File>> projectClasspath = computeTypeSolverClasspath(resolver);
-		return new FormatterConfig(baseDir, encoding, lineEndings, userRatchetFrom, optionalRatchetFrom, provisioner, p2Provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory), lintSuppressions, projectClasspath);
+		// Lazy: only resolve dependencies when the expandWildcardImports step actually requests the classpath.
+		Supplier<Set<File>> projectClasspathSupplier = () -> computeTypeSolverClasspath(resolver);
+		return new FormatterConfig(baseDir, encoding, lineEndings, userRatchetFrom, optionalRatchetFrom, provisioner, p2Provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory), lintSuppressions, Optional.of(projectClasspathSupplier));
 	}
 
-	private Optional<Set<File>> computeTypeSolverClasspath(ArtifactResolver resolver) {
+	private Set<File> computeTypeSolverClasspath(ArtifactResolver resolver) {
 		Set<File> classpath = new LinkedHashSet<>();
 
 		// Add source roots (directories containing .java files for JavaParserTypeSolver)
@@ -446,7 +447,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			getLog().warn("Could not resolve project dependencies for expandWildcardImports: " + e.getMessage());
 		}
 
-		return Optional.of(classpath);
+		return classpath;
 	}
 
 	private FileLocator getFileLocator() {
