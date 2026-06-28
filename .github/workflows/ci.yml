@@ -28,7 +28,7 @@ jobs:
           distribution: "temurin"
           java-version: 21
       - name: gradle caching
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
       - name: Spotless ✨
         run: ./gradlew spotlessCheck
       - name: assemble testClasses
@@ -63,7 +63,7 @@ jobs:
           distribution: "temurin"
           java-version: ${{ matrix.jre }}
       - name: gradle caching
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
       - name: build (maven-only)
         if: matrix.kind == 'maven'
         run: ./gradlew :plugin-maven:build -x spotlessCheck
