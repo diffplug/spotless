@@ -187,7 +187,7 @@ public abstract class FormatterFactory {
 	}
 
 	private FormatterStepConfig stepConfig(Charset encoding, FormatterConfig config) {
-		return new FormatterStepConfig(encoding, licenseHeaderDelimiter(), ratchetFrom(config), config.getProvisioner(), config.getP2Provisioner(), config.getFileLocator(), config.getSpotlessSetLicenseHeaderYearsFromGitHistory(), config.getProjectClasspath());
+		return new FormatterStepConfig(encoding, licenseHeaderDelimiter(), ratchetFrom(config), config.getProvisioner(), config.getP2Provisioner(), config.getFileLocator(), config.getSpotlessSetLicenseHeaderYearsFromGitHistory(), config.getProjectClasspathSupplier());
 	}
 
 	private static List<FormatterStepFactory> gatherStepFactories(List<FormatterStepFactory> allGlobal, List<FormatterStepFactory> allConfigured) {

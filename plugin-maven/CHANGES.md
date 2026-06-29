@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 - Add support for custom string format for license header copyright year via `yearStringFormat()`. ([#2965](https://github.com/diffplug/spotless/pull/2965))
+### Fixed
+- `<expandWildcardImports>` no longer triggers a full transitive dependency resolution on every build. Dependency resolution is now deferred until the step actually runs, so projects that do not use `<expandWildcardImports>` (or that use version ranges) are no longer penalized. ([#2983](https://github.com/diffplug/spotless/issues/2983))
 
 ## [3.7.0] - 2026-06-16
 ### Fixed
