@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
  */
 package com.diffplug.gradle.spotless;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
+import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
@@ -58,6 +61,47 @@ public class ConfigurationCacheTest extends GradleIntegrationHarness {
 				"}",
 				"tasks.named('spotlessJavaApply').get()");
 		gradleRunner().withArguments("help").build();
+	}
+
+	@Test
+	public void configurationCacheNotInvalidatedByGitconfig() throws IOException {
+		// The default GIT_ATTRIBUTES_FAST_ALLSAME line ending policy reads
+		// ~/.gitconfig via JGit to resolve core.eol / core.autocrlf. This test
+		// verifies that changing ~/.gitconfig between runs does not invalidate
+		// the configuration cache, because the git config reads happen inside a
+		// ValueSource whose file accesses are not tracked as config cache inputs.
+		File gitconfig = new File(System.getProperty("user.home"), ".gitconfig");
+		byte[] originalContent = gitconfig.exists() ? Files.readAllBytes(gitconfig.toPath()) : null;
+
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"apply plugin: 'java'",
+				"spotless {",
+				"    java {",
+				"        googleJavaFormat()",
+				"    }",
+				"}");
+		setFile("src/main/java/test.java").toResource("java/googlejavaformat/JavaCodeFormatted.test");
+
+		try {
+			Files.writeString(gitconfig.toPath(), "[user]\n\tname = test\n");
+			gradleRunner().withArguments("spotlessCheck").build();
+
+			// change .gitconfig content between runs (simulates CI auth token injection)
+			Files.writeString(gitconfig.toPath(), "[user]\n\tname = test\n[http]\n\textraheader = changed\n");
+
+			String output = gradleRunner().withArguments("spotlessCheck").build().getOutput();
+			Assertions.assertThat(output).contains("Reusing configuration cache");
+		} finally {
+			if (originalContent != null) {
+				Files.write(gitconfig.toPath(), originalContent);
+			} else {
+				Files.deleteIfExists(gitconfig.toPath());
+			}
+		}
 	}
 
 	@Test
