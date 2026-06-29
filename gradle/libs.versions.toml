@@ -28,7 +28,7 @@ ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", versi
 ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standard", version.ref = "ktlint" }
 
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.7.0.202606012155-r"
-junit-jupiter = "org.junit.jupiter:junit-jupiter:6.1.0"
+junit-jupiter = "org.junit.jupiter:junit-jupiter:6.1.1"
 assertj-core = "org.assertj:assertj-core:3.27.7"
 mockito-core = "org.mockito:mockito-core:5.23.0"
 osgi = "org.eclipse.platform:org.eclipse.osgi:3.24.200"
