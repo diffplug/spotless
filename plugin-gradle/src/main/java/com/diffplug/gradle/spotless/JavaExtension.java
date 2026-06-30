@@ -46,6 +46,7 @@ import com.diffplug.spotless.java.FormatAnnotationsStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
+import com.diffplug.spotless.java.PrinceOfSpaceStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
 import com.diffplug.spotless.java.TableTestFormatterStep;
 
@@ -305,6 +306,73 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 		private FormatterStep createStep() {
 			return PalantirJavaFormatStep.create(version, style, formatJavadoc, provisioner());
+		}
+	}
+
+	/** Uses the <a href="https://github.com/agustafson/prince-of-space">prince-of-space</a> jar to format source code. */
+	public PrinceOfSpaceConfig princeOfSpace() {
+		return princeOfSpace(PrinceOfSpaceStep.defaultVersion());
+	}
+
+	/** Uses the given version of <a href="https://github.com/agustafson/prince-of-space">prince-of-space</a> to format source code. */
+	public PrinceOfSpaceConfig princeOfSpace(String version) {
+		Objects.requireNonNull(version);
+		return new PrinceOfSpaceConfig(version);
+	}
+
+	public class PrinceOfSpaceConfig {
+		final String version;
+		final PrinceOfSpaceStep.Options options = new PrinceOfSpaceStep.Options();
+
+		PrinceOfSpaceConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			addStep(createStep());
+		}
+
+		public PrinceOfSpaceConfig indentStyle(String indentStyle) {
+			options.setIndentStyle(indentStyle);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public PrinceOfSpaceConfig indentSize(int indentSize) {
+			options.setIndentSize(indentSize);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public PrinceOfSpaceConfig lineLength(int lineLength) {
+			options.setLineLength(lineLength);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public PrinceOfSpaceConfig wrapStyle(String wrapStyle) {
+			options.setWrapStyle(wrapStyle);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public PrinceOfSpaceConfig closingParenOnNewLine(boolean closingParenOnNewLine) {
+			options.setClosingParenOnNewLine(closingParenOnNewLine);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public PrinceOfSpaceConfig trailingCommas(boolean trailingCommas) {
+			options.setTrailingCommas(trailingCommas);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public PrinceOfSpaceConfig javaLanguageLevel(int javaLanguageLevel) {
+			options.setJavaLanguageLevel(javaLanguageLevel);
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return PrinceOfSpaceStep.create(version, provisioner(), options);
 		}
 	}
 
