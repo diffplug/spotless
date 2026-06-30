@@ -11,7 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
-- Add support for Java formatting via [`prince-of-space`](https://github.com/agustafson/prince-of-space).
+- Add support for Java formatting via [`prince-of-space`](https://github.com/agustafson/prince-of-space). ([#2991](https://github.com/diffplug/spotless/pull/2991))
 
 ## [4.8.0] - 2026-06-29
 ### Added
