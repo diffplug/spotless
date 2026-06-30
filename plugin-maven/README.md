@@ -40,7 +40,7 @@ user@machine repo % mvn spotless:check
   - [Git hook (optional)](#git-hook)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -291,6 +291,23 @@ any other maven phase (i.e. compile) then it can be configured as below;
   <style>PALANTIR</style>                       <!-- or AOSP/GOOGLE (optional) -->
   <formatJavadoc>false</formatJavadoc>          <!-- defaults to false (optional, requires at least Palantir 2.39.0) -->
 </palantirJavaFormat>
+```
+
+### prince-of-space
+
+[homepage](https://github.com/agustafson/prince-of-space). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/PrinceOfSpace.java). Requires a JDK 17+ host runtime.
+
+```xml
+<princeOfSpace>
+  <version>2.1.2</version>                      <!-- optional -->
+  <indentStyle>SPACES</indentStyle>              <!-- or TABS (optional) -->
+  <indentSize>4</indentSize>                     <!-- optional -->
+  <lineLength>120</lineLength>                   <!-- optional -->
+  <wrapStyle>BALANCED</wrapStyle>                <!-- or WIDE/NARROW (optional) -->
+  <closingParenOnNewLine>true</closingParenOnNewLine>  <!-- optional -->
+  <trailingCommas>false</trailingCommas>         <!-- optional -->
+  <javaLanguageLevel>17</javaLanguageLevel>      <!-- optional -->
+</princeOfSpace>
 ```
 
 ### eclipse jdt

@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add support for Java formatting via [`prince-of-space`](https://github.com/agustafson/prince-of-space) with the new `<princeOfSpace>` step.
 
 ## [3.8.0] - 2026-06-29
 ### Added
