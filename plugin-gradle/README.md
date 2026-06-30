@@ -320,7 +320,7 @@ spotless {
   java {
     princeOfSpace()
     // optional: configure any of the formatter's options
-    princeOfSpace('2.1.2')
+    princeOfSpace('2.2.0')
         .indentStyle('SPACES') // or 'TABS'
         .indentSize(4)
         .lineLength(120)

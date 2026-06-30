@@ -34,7 +34,7 @@ public final class PrinceOfSpaceStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String NAME = "prince-of-space";
 	public static final String MAVEN_COORDINATE = "io.github.agustafson.princeofspace:prince-of-space-core:";
-	public static final String DEFAULT_VERSION = "2.1.2";
+	public static final String DEFAULT_VERSION = "2.2.0";
 
 	/** The jar that contains the formatter. */
 	private final JarState.Promised jarState;

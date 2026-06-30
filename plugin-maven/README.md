@@ -299,7 +299,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <princeOfSpace>
-  <version>2.1.2</version>                      <!-- optional -->
+  <version>2.2.0</version>                      <!-- optional -->
   <indentStyle>SPACES</indentStyle>              <!-- or TABS (optional) -->
   <indentSize>4</indentSize>                     <!-- optional -->
   <lineLength>120</lineLength>                   <!-- optional -->
