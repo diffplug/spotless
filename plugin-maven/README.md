@@ -1328,9 +1328,11 @@ Formatting TTL is done using [Cool RDF Formatter](https://github.com/cool-rdf/co
 which is highly configurable (have a look at the [Style Documentation](https://github.com/cool-rdf/cool-rdf/tree/main/cool-rdf-formatter))
 and will handle blank nodes the way you'd hope.
 
-The style options can be configured via spotless. Wherever the style wants a URI (for example, for the `predicateOrder`, you can 
-use the abbreviated form if it is a known `RdfPrefix` from Cool RDF's `Prefixes` enum
-Error messages will give you hints. To configure the TTL formatting style, pass the configuration parameters under `<turtle>`
+The style options can be configured via spotless. Wherever the style wants a URI (for example, for the `predicateOrder`, you can
+use the abbreviated form if it is a known `RdfPrefix` from Cool RDF's `Prefixes` enum.
+Error messages will give you hints. To configure the TTL formatting style, pass the configuration parameters under `<turtle>`.
+For example, Cool RDF Formatter versions which support `preserveBlankNodeLabelsAndOrdering` (default true) can set it with
+`<preserveBlankNodeLabelsAndOrdering>false</preserveBlankNodeLabelsAndOrdering>`.Set it to `false`, to use Cool RDF's default behavior (stable blank node ordering).
 
 ### Examples
 Minimal:
@@ -1358,6 +1360,7 @@ Configuring some generic and TTL options:
       <turtle>
         <alignPrefixes>RIGHT</alignPrefixes>
         <enableDoubleFormatting>true</enableDoubleFormatting>
+        <preserveBlankNodeLabelsAndOrdering>false</preserveBlankNodeLabelsAndOrdering>
       </turtle>
     </format>
   </rdf>

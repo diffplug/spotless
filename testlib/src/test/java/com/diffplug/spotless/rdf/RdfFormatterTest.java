@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 package com.diffplug.spotless.rdf;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -60,6 +63,39 @@ public class RdfFormatterTest extends ResourceHarness {
 		String inputDir = "/rdf/ttl/input/";
 		String expectedOutputDir = "/rdf/ttl/expected/v2.0.0-style01/";
 		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersionAndStyle("2.0.0", style01())));
+	}
+
+	@Test
+	void blankNodeOrderingIsNotStableInCoolRdfFormatter_2_0_0() throws Exception {
+		FormatterStep step = forTurtleFormatterVersion("2.0.0");
+		File file = new File("blank-node-order.ttl");
+
+		String alphaThenBeta = """
+				@prefix ex: <http://example.com/> .
+
+				ex:root
+					ex:child [
+						ex:id "alpha" ;
+						ex:value "1"
+					], [
+						ex:id "beta" ;
+						ex:value "2"
+					] .
+				""";
+		String betaThenAlpha = """
+				@prefix ex: <http://example.com/> .
+
+				ex:root
+					ex:child [
+						ex:id "beta" ;
+						ex:value "2"
+					], [
+						ex:id "alpha" ;
+						ex:value "1"
+					] .
+				""";
+
+		assertThat(step.format(alphaThenBeta, file)).isNotEqualTo(step.format(betaThenAlpha, file));
 	}
 
 	private static @NotNull Map<String, String> defaultStyle() {

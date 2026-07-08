@@ -11,6 +11,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+## Changes
+- Replace RDF formatter library `de.atextor:turtle-formatter` (discontinued) with `cool.rdf:cool-rdf-formatter` (its new coordinates).  
+
 ## [4.8.0] - 2026-06-29
 ### Added
 - Add support for custom string format for license header copyright year via `yearStringFormat()`. ([#2965](https://github.com/diffplug/spotless/pull/2965))
