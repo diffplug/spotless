@@ -27,11 +27,11 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 public class RdfFormatterStep implements Serializable {
-	public static final String LATEST_TURTLE_FORMATTER_VERSION = "1.2.13";
+	public static final String LATEST_TURTLE_FORMATTER_VERSION = "2.0.0";
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private static final String TURTLE_FORMATTER_COORDINATES = "de.atextor:turtle-formatter";
+	private static final String TURTLE_FORMATTER_COORDINATES = "cool.rdf:cool-rdf-formatter";
 
 	private final JarState.Promised jarState;
 	private final Map<String, String> turtleFormatterStyle;

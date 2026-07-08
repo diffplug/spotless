@@ -49,17 +49,17 @@ public class RdfFormatterTest extends ResourceHarness {
 	public RdfFormatterTest() {}
 
 	@Test
-	void testTurtleFormatter_1_2_12_DefaultStyle() throws IOException, ClassNotFoundException {
+	void testCoolRdfFormatter_2_0_0_DefaultStyle() throws IOException, ClassNotFoundException {
 		String inputDir = "/rdf/ttl/input/";
-		String expectedOutputDir = "/rdf/ttl/expected/v1.2.12-default/";
-		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersion("1.2.12")));
+		String expectedOutputDir = "/rdf/ttl/expected/v2.0.0-default/";
+		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersion("2.0.0")));
 	}
 
 	@Test
-	void testTurtleFormatter_1_2_12_style01() throws IOException, ClassNotFoundException {
+	void testCoolRdfFormatter_2_0_0_style01() throws IOException, ClassNotFoundException {
 		String inputDir = "/rdf/ttl/input/";
-		String expectedOutputDir = "/rdf/ttl/expected/v1.2.12-style01/";
-		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersionAndStyle("1.2.12", style01())));
+		String expectedOutputDir = "/rdf/ttl/expected/v2.0.0-style01/";
+		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersionAndStyle("2.0.0", style01())));
 	}
 
 	private static @NotNull Map<String, String> defaultStyle() {

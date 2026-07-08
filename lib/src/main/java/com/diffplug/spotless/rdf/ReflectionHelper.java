@@ -18,7 +18,6 @@ package com.diffplug.spotless.rdf;
 import java.io.File;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -64,7 +63,8 @@ class ReflectionHelper {
 	private final Class<?> TurtleFormatFormattingStyleClass;
 	private final Class<?> TurtleFormatFormattingStyleBuilderClass;
 	private final Class<?> TurtleFormatFormatterClass;
-	private final Class<?> TurtleFormatKnownPrefix;
+	private final Class<?> CoolRdfPrefixesClass;
+	private final Class<?> CoolRdfPrefixClass;
 
 	private final Method graphStream;
 	private final Method graphFindTriple;
@@ -96,12 +96,13 @@ class ReflectionHelper {
 		this.JenaModelFactoryClass = classLoader.loadClass("org.apache.jena.rdf.model.ModelFactory");
 		this.JenaLangClass = classLoader.loadClass("org.apache.jena.riot.Lang");
 		this.JenaRDFFormatClass = classLoader.loadClass("org.apache.jena.riot.RDFFormat");
-		this.TurtleFormatFormatterClass = classLoader.loadClass("de.atextor.turtle.formatter.TurtleFormatter");
-		this.TurtleFormatFormattingStyleClass = classLoader.loadClass("de.atextor.turtle.formatter.FormattingStyle");
+		this.TurtleFormatFormatterClass = classLoader.loadClass("cool.rdf.formatter.TurtleFormatter");
+		this.TurtleFormatFormattingStyleClass = classLoader.loadClass("cool.rdf.formatter.FormattingStyle");
 		Class<?>[] innerClasses = TurtleFormatFormattingStyleClass.getDeclaredClasses();
 		this.TurtleFormatFormattingStyleBuilderClass = Arrays.stream(innerClasses)
 				.filter(c -> "FormattingStyleBuilder".equals(c.getSimpleName())).findFirst().orElseThrow();
-		this.TurtleFormatKnownPrefix = Arrays.stream(innerClasses).filter(c -> "KnownPrefix".equals(c.getSimpleName())).findFirst().orElseThrow();
+		this.CoolRdfPrefixesClass = classLoader.loadClass("cool.rdf.core.Prefixes");
+		this.CoolRdfPrefixClass = classLoader.loadClass("cool.rdf.core.model.RdfPrefix");
 		this.getSubject = JenaStatementClass.getMethod("getSubject");
 		this.getPredicate = JenaStatementClass.getMethod("getPredicate");
 		this.getObject = JenaStatementClass.getMethod("getObject");
@@ -391,7 +392,7 @@ class ReflectionHelper {
 						.invoke(this.jenaModelInstance, namespace, localname);
 			}
 		}
-		if (type.equals(TurtleFormatKnownPrefix)) {
+		if (type.equals(CoolRdfPrefixClass)) {
 			return getKnownPrefix(stringRepresentation);
 		}
 		throw new IllegalArgumentException("Cannot instantiate class %s from string representation %s".formatted(type, stringRepresentation));
@@ -404,7 +405,7 @@ class ReflectionHelper {
 			//could be a known prefix
 			String prefix = stringRepresentation.substring(0, colonIndex);
 			Object knownPrefix = getKnownPrefix(prefix);
-			String base = this.TurtleFormatKnownPrefix.getMethod("iri").invoke(knownPrefix).toString();
+			String base = this.CoolRdfPrefixClass.getMethod("uri").invoke(knownPrefix).toString();
 			return base + stringRepresentation.substring(colonIndex + 1);
 		}
 		// try to parse a URI - throws an IllegalArgumentException if it is not a URI
@@ -414,20 +415,16 @@ class ReflectionHelper {
 
 	private Object getKnownPrefix(String stringRepresentation)
 			throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-		Field[] fields = TurtleFormatFormattingStyleClass.getDeclaredFields();
 		List<String> options = new ArrayList<>();
-		for (Field field : fields) {
-			if (field.getType().equals(TurtleFormatKnownPrefix)) {
-				Object knownPrefix = field.get(TurtleFormatFormattingStyleClass);
-				String prefix = (String) TurtleFormatKnownPrefix.getMethod("prefix").invoke(knownPrefix);
-				options.add(prefix);
-				if (stringRepresentation.equals(prefix)) {
-					return knownPrefix;
-				}
+		for (Object knownPrefix : CoolRdfPrefixesClass.getEnumConstants()) {
+			String prefix = (String) CoolRdfPrefixClass.getMethod("prefix").invoke(knownPrefix);
+			options.add(prefix);
+			if (stringRepresentation.equals(prefix)) {
+				return knownPrefix;
 			}
 		}
-		throw new IllegalArgumentException("Unable to find FormattingStyle.KnownPrefix for prefix '%s'. Options are: %s".formatted(stringRepresentation, options.stream().collect(
-				Collectors.joining(",\n\t", "\n\t", "\n"))));
+		throw new IllegalArgumentException("Unable to find a known Cool RDF prefix for '%s'. Options are: %s".formatted(stringRepresentation, options.stream().collect(
+				Collectors.joining(", "))));
 	}
 
 	private static String[] split(String parameterValueAsString) {
