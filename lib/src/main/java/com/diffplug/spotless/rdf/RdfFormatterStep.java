@@ -27,7 +27,7 @@ import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Provisioner;
 
 public class RdfFormatterStep implements Serializable {
-	public static final String LATEST_TURTLE_FORMATTER_VERSION = "2.0.0";
+	public static final String LATEST_TURTLE_FORMATTER_VERSION = "2.0.1";
 	@Serial
 	private static final long serialVersionUID = 1L;
 

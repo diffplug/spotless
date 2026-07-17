@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 import org.opentest4j.AssertionFailedError;
@@ -63,6 +64,14 @@ public class RdfFormatterTest extends ResourceHarness {
 		String inputDir = "/rdf/ttl/input/";
 		String expectedOutputDir = "/rdf/ttl/expected/v2.0.0-style01/";
 		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersionAndStyle("2.0.0", style01())));
+	}
+
+	@RepeatedTest(3)
+	void blankNodeOrderingIsStableInCoolRdfFormatter_2_0_1() throws IOException, ClassNotFoundException {
+		String inputDir = "/rdf/ttl/v2.0.1-stable-blank-node-order/input/";
+		String expectedOutputDir = "/rdf/ttl/v2.0.1-stable-blank-node-order/expected/";
+		Map<String, String> style = Map.of("preserveBlankNodeLabelsAndOrdering", "false");
+		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersionAndStyle("2.0.1", style)));
 	}
 
 	@Test

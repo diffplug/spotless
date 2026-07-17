@@ -98,9 +98,7 @@ class ReflectionHelper {
 		this.JenaRDFFormatClass = classLoader.loadClass("org.apache.jena.riot.RDFFormat");
 		this.TurtleFormatFormatterClass = classLoader.loadClass("cool.rdf.formatter.TurtleFormatter");
 		this.TurtleFormatFormattingStyleClass = classLoader.loadClass("cool.rdf.formatter.FormattingStyle");
-		Class<?>[] innerClasses = TurtleFormatFormattingStyleClass.getDeclaredClasses();
-		this.TurtleFormatFormattingStyleBuilderClass = Arrays.stream(innerClasses)
-				.filter(c -> "FormattingStyleBuilder".equals(c.getSimpleName())).findFirst().orElseThrow();
+		this.TurtleFormatFormattingStyleBuilderClass = TurtleFormatFormattingStyleClass.getMethod("builder").getReturnType();
 		this.CoolRdfPrefixesClass = classLoader.loadClass("cool.rdf.core.Prefixes");
 		this.CoolRdfPrefixClass = classLoader.loadClass("cool.rdf.core.model.RdfPrefix");
 		this.getSubject = JenaStatementClass.getMethod("getSubject");
@@ -436,7 +434,7 @@ class ReflectionHelper {
 
 	private Method getBuilderMethod(String optionName) {
 		Method[] allMethods = TurtleFormatFormattingStyleBuilderClass.getDeclaredMethods();
-		List<Method> methods = Arrays.stream(allMethods).filter(m -> m.getName().equals(optionName))
+		List<Method> methods = Arrays.stream(allMethods).filter(m -> m.getName().equals(optionName) && m.getParameterCount() == 1)
 				.collect(
 						Collectors.toList());
 		if (methods.isEmpty()) {
