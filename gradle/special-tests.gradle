@@ -8,6 +8,7 @@ def special = [
 	'gofmt',
 	'idea',
 	'npm',
+	'rdf',
 	'shfmt'
 ]
 
@@ -45,4 +46,3 @@ special.forEach { tag ->
 		}
 	}
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 DiffPlug
+ * Copyright 2024-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 package com.diffplug.spotless.rdf;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -27,7 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 import org.opentest4j.AssertionFailedError;
@@ -37,6 +34,7 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
+@Tag("rdf")
 public class RdfFormatterTest extends ResourceHarness {
 
 	private static FormatterStep forTurtleFormatterVersion(String version) throws ClassNotFoundException {
@@ -53,58 +51,17 @@ public class RdfFormatterTest extends ResourceHarness {
 	public RdfFormatterTest() {}
 
 	@Test
-	void testCoolRdfFormatter_2_0_0_DefaultStyle() throws IOException, ClassNotFoundException {
+	void testTurtleFormatter_1_2_12_DefaultStyle() throws IOException, ClassNotFoundException {
 		String inputDir = "/rdf/ttl/input/";
-		String expectedOutputDir = "/rdf/ttl/expected/v2.0.0-default/";
-		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersion("2.0.0")));
+		String expectedOutputDir = "/rdf/ttl/expected/v1.2.12-default/";
+		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersion("1.2.12")));
 	}
 
 	@Test
-	void testCoolRdfFormatter_2_0_0_style01() throws IOException, ClassNotFoundException {
+	void testTurtleFormatter_1_2_12_style01() throws IOException, ClassNotFoundException {
 		String inputDir = "/rdf/ttl/input/";
-		String expectedOutputDir = "/rdf/ttl/expected/v2.0.0-style01/";
-		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersionAndStyle("2.0.0", style01())));
-	}
-
-	@RepeatedTest(3)
-	void blankNodeOrderingIsStableInCoolRdfFormatter_2_0_1() throws IOException, ClassNotFoundException {
-		String inputDir = "/rdf/ttl/v2.0.1-stable-blank-node-order/input/";
-		String expectedOutputDir = "/rdf/ttl/v2.0.1-stable-blank-node-order/expected/";
-		Map<String, String> style = Map.of("preserveBlankNodeLabelsAndOrdering", "false");
-		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersionAndStyle("2.0.1", style)));
-	}
-
-	@Test
-	void blankNodeOrderingIsNotStableInCoolRdfFormatter_2_0_0() throws Exception {
-		FormatterStep step = forTurtleFormatterVersion("2.0.0");
-		File file = new File("blank-node-order.ttl");
-
-		String alphaThenBeta = """
-				@prefix ex: <http://example.com/> .
-
-				ex:root
-					ex:child [
-						ex:id "alpha" ;
-						ex:value "1"
-					], [
-						ex:id "beta" ;
-						ex:value "2"
-					] .
-				""";
-		String betaThenAlpha = """
-				@prefix ex: <http://example.com/> .
-
-				ex:root
-					ex:child [
-						ex:id "beta" ;
-						ex:value "2"
-					], [
-						ex:id "alpha" ;
-						ex:value "1"
-					] .
-				""";
-
-		assertThat(step.format(alphaThenBeta, file)).isNotEqualTo(step.format(betaThenAlpha, file));
+		String expectedOutputDir = "/rdf/ttl/expected/v1.2.12-style01/";
+		testBeforeAfterFolders(inputDir, expectedOutputDir, StepHarness.forStep(forTurtleFormatterVersionAndStyle("1.2.12", style01())));
 	}
 
 	private static @NotNull Map<String, String> defaultStyle() {
