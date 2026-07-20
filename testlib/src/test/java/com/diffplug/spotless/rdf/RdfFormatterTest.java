@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.diffplug.spotless.rdf;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +37,6 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("rdf")
 public class RdfFormatterTest extends ResourceHarness {
@@ -108,7 +108,6 @@ public class RdfFormatterTest extends ResourceHarness {
 
 		assertThat(step.format(alphaThenBeta, file)).isNotEqualTo(step.format(betaThenAlpha, file));
 	}
-
 
 	private static @NotNull Map<String, String> defaultStyle() {
 		return Map.of();
