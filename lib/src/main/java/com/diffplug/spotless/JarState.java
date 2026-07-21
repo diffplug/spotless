@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,10 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
@@ -141,6 +143,13 @@ public final class JarState implements Serializable {
 	public static JarState preserveOrder(Collection<File> jars) throws IOException {
 		FileSignature fileSignature = FileSignature.signAsList(jars);
 		return new JarState(fileSignature);
+	}
+
+	/** Returns a new state whose classpath also contains the given JARs. */
+	public JarState withAdditionalJars(Iterable<File> additionalJars) throws IOException {
+		List<File> jars = new ArrayList<>(fileSignature.files());
+		additionalJars.forEach(jars::add);
+		return new JarState(FileSignature.signAsList(jars));
 	}
 
 	URL[] jarUrls() {

@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Test;
 
 class KotlinExtensionTest extends GradleIntegrationHarness {
@@ -192,35 +194,84 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	void issue1901CustomRuleSetSupportsProjectDependencySubstitution() throws IOException {
-		setFile("settings.gradle.kts").toContent("include(\"ktlint-rules\")");
-		setFile("ktlint-rules/build.gradle.kts").toContent("plugins { java }");
+	void issue1901CustomRuleSetSupportsProjectDependency() throws IOException {
+		setFile("settings.gradle.kts").toContent("include(\"ktlint-rules\", \"rule-support\")");
+		setFile("rule-support/build.gradle.kts").toContent("plugins { java }");
+		setFile("rule-support/src/main/java/support/Marker.java").toContent("package support; public final class Marker { public static int version() { return 1; } }\n");
+		setFile("ktlint-rules/build.gradle.kts").toContent("""
+				plugins { java }
+				repositories { mavenCentral() }
+				dependencies {
+				    implementation(project(":rule-support"))
+				    compileOnly("com.pinterest.ktlint:ktlint-cli-ruleset-core:1.0.1")
+				    compileOnly("com.pinterest.ktlint:ktlint-rule-engine-core:1.0.1")
+				}
+				""");
+		setFile("ktlint-rules/src/main/java/rules/LocalRuleSetProvider.java").toContent("""
+				package rules;
+
+				import java.nio.file.Files;
+				import java.nio.file.Path;
+				import java.util.Collections;
+				import java.util.Set;
+
+				import com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3;
+				import com.pinterest.ktlint.rule.engine.core.api.RuleProvider;
+				import com.pinterest.ktlint.rule.engine.core.api.RuleSetId;
+				import support.Marker;
+
+				public final class LocalRuleSetProvider extends RuleSetProviderV3 {
+				    public LocalRuleSetProvider() {
+				        super(new RuleSetId("local-project"));
+				        try {
+				            Files.writeString(Path.of(System.getProperty("spotless.test.rule.version")), Integer.toString(Marker.version()));
+				        } catch (Exception e) {
+				            throw new RuntimeException(e);
+				        }
+				    }
+
+				    @Override
+				    public Set<RuleProvider> getRuleProviders() {
+				        return Collections.emptySet();
+				    }
+				}
+				""");
+		setFile("ktlint-rules/src/main/resources/META-INF/services/com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3")
+				.toContent("rules.LocalRuleSetProvider\n");
 		setFile("build.gradle.kts").toContent("""
 				plugins {
 				    id("com.diffplug.spotless")
 				}
 				repositories { mavenCentral() }
-				configurations.all {
-				    resolutionStrategy.dependencySubstitution {
-				        substitute(module("my:ktlint-rules")).using(project(":ktlint-rules"))
-				    }
-				}
-				tasks.withType(com.diffplug.gradle.spotless.SpotlessTask::class) {
-				    dependsOn(":ktlint-rules:jar")
-				}
 				spotless {
 				    kotlin {
 				        target("src/**/*.kt")
-				        ktlint("1.0.1").customRuleSets(listOf("my:ktlint-rules:+"))
+				        ktlint("1.0.1").customRuleSets(project(":ktlint-rules"))
 				    }
 				}
 				""");
 		setFile("src/main/kotlin/Main.kt").toContent("fun main() {}\n");
+		String ruleVersionProperty = "-Dspotless.test.rule.version=" + newFile("rule-version.txt").getAbsolutePath();
 
-		gradleRunner()
+		BuildResult firstRun = gradleRunner()
 				.withGradleVersion("9.5.1")
-				.withArguments("spotlessCheck", "--stacktrace")
+				.withArguments("spotlessCheck", "--configuration-cache", "--stacktrace", ruleVersionProperty)
 				.build();
+		assertThat(firstRun.getOutput()).contains("Configuration cache entry stored.");
+		assertThat(firstRun.task(":ktlint-rules:jar")).isNotNull();
+		assertThat(firstRun.task(":rule-support:jar")).isNotNull();
+		assertThat(firstRun.task(":spotlessKotlin")).isNotNull();
+		assertFile("rule-version.txt").hasContent("1");
+
+		setFile("rule-support/src/main/java/support/Marker.java").toContent("package support; public final class Marker { public static int version() { return 2; } }\n");
+		BuildResult secondRun = gradleRunner()
+				.withGradleVersion("9.5.1")
+				.withArguments("spotlessCheck", "--configuration-cache", "--stacktrace", ruleVersionProperty)
+				.build();
+		assertThat(secondRun.getOutput()).contains("Reusing configuration cache.");
+		assertThat(secondRun.task(":rule-support:jar").getOutcome()).isNotEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(secondRun.task(":spotlessKotlin").getOutcome()).isNotEqualTo(TaskOutcome.UP_TO_DATE);
+		assertFile("rule-version.txt").hasContent("2");
 	}
 
 	@Test

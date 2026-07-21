@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
+
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSortedMap;
@@ -179,6 +184,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 		private FileSignature editorConfigPath;
 		private Map<String, Object> editorConfigOverride;
 		private List<String> customRuleSets;
+		private Configuration customRuleSetProjectClasspath;
 
 		private KtlintConfig(
 				String version,
@@ -216,10 +222,50 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 			return this;
 		}
 
+		/** Uses custom rule sets published at the given Maven coordinates. */
 		public KtlintConfig customRuleSets(List<String> customRuleSets) {
-			this.customRuleSets = ImmutableList.copyOf(customRuleSets);
-			replaceStep(createStep());
+			setCustomRuleSets(customRuleSets, List.of());
 			return this;
+		}
+
+		/**
+		 * Uses custom rule sets from Maven coordinates and/or local Gradle projects.
+		 * Each dependency must be either a {@link String} Maven coordinate or a {@link Project}
+		 * from this build.
+		 */
+		public KtlintConfig customRuleSets(Object... customRuleSets) {
+			Objects.requireNonNull(customRuleSets, "customRuleSets");
+			List<String> mavenCoordinates = new ArrayList<>();
+			List<String> projectPaths = new ArrayList<>();
+			for (Object customRuleSet : customRuleSets) {
+				Objects.requireNonNull(customRuleSet, "customRuleSets must not contain null");
+				if (customRuleSet instanceof String mavenCoordinate) {
+					mavenCoordinates.add(mavenCoordinate);
+				} else if (customRuleSet instanceof Project project) {
+					if (project.getGradle() != getProject().getGradle()) {
+						throw new IllegalArgumentException("Custom ktlint rule-set projects must belong to the same Gradle build.");
+					}
+					projectPaths.add(project.getPath());
+				} else {
+					throw new IllegalArgumentException("Custom ktlint rule-set dependencies must be Maven coordinate strings or Gradle projects, but found " + customRuleSet.getClass().getName() + ".");
+				}
+			}
+			setCustomRuleSets(mavenCoordinates, projectPaths);
+			return this;
+		}
+
+		private void setCustomRuleSets(Collection<String> mavenCoordinates, Collection<String> projectPaths) {
+			this.customRuleSets = ImmutableList.copyOf(mavenCoordinates);
+			if (customRuleSetProjectClasspath != null) {
+				removeFormatterClasspath(customRuleSetProjectClasspath);
+			}
+			if (projectPaths.isEmpty()) {
+				customRuleSetProjectClasspath = null;
+			} else {
+				customRuleSetProjectClasspath = GradleProvisioner.projectDependencies(getProject(), projectPaths);
+				addFormatterClasspath(customRuleSetProjectClasspath);
+			}
+			replaceStep(createStep());
 		}
 
 		private FormatterStep createStep() {
@@ -228,7 +274,8 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 					provisioner(),
 					editorConfigPath,
 					editorConfigOverride,
-					customRuleSets);
+					customRuleSets,
+					customRuleSetProjectClasspath == null ? null : customRuleSetProjectClasspath::resolve);
 		}
 	}
 }

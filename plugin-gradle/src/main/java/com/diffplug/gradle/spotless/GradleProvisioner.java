@@ -53,16 +53,16 @@ final class GradleProvisioner {
 
 		public DedupingProvisioner dedupingProvisioner(Project project) {
 			return switch (this) {
-				case ROOT_PROJECT -> new DedupingProvisioner(forProject(project));
-				case ROOT_BUILDSCRIPT -> new DedupingProvisioner(forRootProjectBuildscript(project));
-				default -> throw Unhandled.enumException(this);
+			case ROOT_PROJECT -> new DedupingProvisioner(forProject(project));
+			case ROOT_BUILDSCRIPT -> new DedupingProvisioner(forRootProjectBuildscript(project));
+			default -> throw Unhandled.enumException(this);
 			};
 		}
 
 		public DedupingP2Provisioner dedupingP2Provisioner(Project project) {
 			return switch (this) {
-				case ROOT_PROJECT, ROOT_BUILDSCRIPT -> new DedupingP2Provisioner(P2Provisioner.createDefault(), defaultP2CacheDirectory(project));
-				default -> throw Unhandled.enumException(this);
+			case ROOT_PROJECT, ROOT_BUILDSCRIPT -> new DedupingP2Provisioner(P2Provisioner.createDefault(), defaultP2CacheDirectory(project));
+			default -> throw Unhandled.enumException(this);
 			};
 		}
 	}
@@ -111,44 +111,24 @@ final class GradleProvisioner {
 	}
 
 	static Provisioner forProject(Project project) {
-		return forConfigurationContainer(project, project.getConfigurations(), project.getDependencies(), false);
+		return forConfigurationContainer(project, project.getConfigurations(), project.getDependencies());
 	}
 
 	static Provisioner forRootProjectBuildscript(Project project) {
 		Project rootProject = project.getRootProject();
 		ScriptHandler buildscript = rootProject.getBuildscript();
-		return forConfigurationContainer(rootProject, buildscript.getConfigurations(), buildscript.getDependencies(), true);
+		return forConfigurationContainer(rootProject, buildscript.getConfigurations(), buildscript.getDependencies());
 	}
 
-	private static Provisioner forConfigurationContainer(Project project, ConfigurationContainer configurations, DependencyHandler dependencies, boolean detached) {
+	private static Provisioner forConfigurationContainer(Project project, ConfigurationContainer configurations, DependencyHandler dependencies) {
 		return (withTransitives, mavenCoords) -> {
 			try {
 				Request request = new Request(withTransitives, mavenCoords);
-				Configuration config;
-				if (detached) {
-					Dependency[] deps = mavenCoords.stream()
-							.map(dependencies::create)
-							.toArray(Dependency[]::new);
-					// Detached configurations avoid mutating the root buildscript configuration container, which Gradle 9
-					// forbids during task execution. See https://github.com/diffplug/spotless/issues/2599.
-					config = configurations.detachedConfiguration(deps);
-				} else {
-					// Named project configurations participate in configurations.all, including dependency substitutions.
-					config = configurations.create("spotless" + request.hashCode());
-					mavenCoords.stream()
-							.map(dependencies::create)
-							.forEach(config.getDependencies()::add);
-				}
-				config.setDescription("Spotless internal dependency resolution for " + request);
-				config.setTransitive(withTransitives);
-				config.setCanBeConsumed(false);
-				config.setVisible(false);
-				config.attributes(attr -> {
-					attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
-					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
-					// Add this attribute for resolving Guava dependency, see https://github.com/google/guava/issues/6801.
-					attr.attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, project.getObjects().named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM));
-				});
+				Dependency[] deps = mavenCoords.stream()
+						.map(dependencies::create)
+						.toArray(Dependency[]::new);
+				Configuration config = configurations.detachedConfiguration(deps);
+				configure(project, config, withTransitives, "Spotless internal dependency resolution for " + request);
 				return config.resolve();
 			} catch (Exception e) {
 				String projName = project.getPath().substring(1).replace(':', '/');
@@ -161,6 +141,30 @@ final class GradleProvisioner {
 						mavenCoords, projName), e);
 			}
 		};
+	}
+
+	static Configuration projectDependencies(Project project, Collection<String> projectPaths) {
+		Dependency[] dependencies = projectPaths.stream()
+				.map(projectPath -> project.getDependencies().project(Map.of("path", projectPath)))
+				.toArray(Dependency[]::new);
+		Configuration config = project.getConfigurations().detachedConfiguration(dependencies);
+		configure(project, config, true, "Spotless internal project dependency resolution for " + projectPaths);
+		return config;
+	}
+
+	private static void configure(Project project, Configuration config, boolean withTransitives, String description) {
+		// Detached configurations avoid mutating configuration containers during task execution, which Gradle 9
+		// forbids for buildscript configurations. See https://github.com/diffplug/spotless/issues/2599.
+		config.setDescription(description);
+		config.setTransitive(withTransitives);
+		config.setCanBeConsumed(false);
+		config.setVisible(false);
+		config.attributes(attr -> {
+			attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
+			attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+			// Add this attribute for resolving Guava dependency, see https://github.com/google/guava/issues/6801.
+			attr.attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, project.getObjects().named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM));
+		});
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradleProvisioner.class);

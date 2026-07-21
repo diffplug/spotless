@@ -358,6 +358,15 @@ public class FormatExtension {
 
 	/** The steps that need to be added. */
 	protected final List<FormatterStep> steps = new ArrayList<>();
+	final List<FileCollection> additionalFormatterClasspath = new ArrayList<>();
+
+	protected final void addFormatterClasspath(FileCollection classpath) {
+		additionalFormatterClasspath.add(requireNonNull(classpath));
+	}
+
+	protected final void removeFormatterClasspath(FileCollection classpath) {
+		additionalFormatterClasspath.remove(classpath);
+	}
 
 	/** Adds a new step. */
 	public void addStep(FormatterStep newStep) {
@@ -403,6 +412,7 @@ public class FormatExtension {
 	/** Clears all of the existing steps. */
 	public void clearSteps() {
 		steps.clear();
+		additionalFormatterClasspath.clear();
 	}
 
 	/**
@@ -1054,6 +1064,7 @@ public class FormatExtension {
 		// create a step which applies all of those steps as sub-steps
 		FormatterStep step = fence.applyWithin(formatExtension.steps);
 		addStep(step);
+		additionalFormatterClasspath.addAll(formatExtension.additionalFormatterClasspath);
 	}
 
 	/**
@@ -1086,6 +1097,7 @@ public class FormatExtension {
 
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
+		task.getAdditionalFormatterClasspath().from(additionalFormatterClasspath);
 		task.setEncoding(getEncoding().name());
 		task.setLintSuppressions(lintSuppressions);
 		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);

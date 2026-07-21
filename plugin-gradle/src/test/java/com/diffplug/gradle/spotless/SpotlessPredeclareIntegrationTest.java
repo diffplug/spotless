@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -510,6 +511,91 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 
 	@Nested
 	class Gradle9Compatibility {
+		@Test
+		void gradle951CanPredeclareKtlintRuleSetProjectFromBuildscript() throws IOException {
+			setFile("settings.gradle.kts").toContent("include(\"ktlint-rules\")");
+			setFile("ktlint-rules/build.gradle.kts").toContent("plugins { java }");
+			setFile("build.gradle.kts").toContent("""
+					buildscript {
+					    repositories { mavenCentral() }
+					}
+					plugins {
+					    id("com.diffplug.spotless")
+					}
+					spotless {
+					    predeclareDepsFromBuildscript()
+					}
+					spotlessPredeclare {
+					    kotlin {
+					        ktlint("1.0.1").customRuleSets(project(":ktlint-rules"))
+					    }
+					}
+					spotless {
+					    kotlin {
+					        target("src/**/*.kt")
+					        ktlint("1.0.1").customRuleSets(project(":ktlint-rules"))
+					    }
+					}
+					""");
+			setFile("src/main/kotlin/Main.kt").toContent("fun main() {}\n");
+
+			BuildResult result = gradleRunner()
+					.withGradleVersion("9.5.1")
+					.withArguments("spotlessCheck", "--configuration-cache", "--stacktrace")
+					.build();
+
+			assertThat(result.getOutput()).contains("Configuration cache entry stored.");
+			assertThat(result.task(":ktlint-rules:jar")).isNotNull();
+			assertThat(result.task(":ktlint-rules:jar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		}
+
+		@Test
+		void predeclaredKtlintProjectIsNotBuiltForUnrelatedFormat() throws IOException {
+			setFile("settings.gradle.kts").toContent("include(\"ktlint-rules\")");
+			setFile("ktlint-rules/build.gradle.kts").toContent("plugins { java }");
+			setFile("build.gradle.kts").toContent("""
+					buildscript {
+					    repositories { mavenCentral() }
+					}
+					plugins {
+					    id("com.diffplug.spotless")
+					}
+					spotless {
+					    predeclareDepsFromBuildscript()
+					}
+					spotlessPredeclare {
+					    kotlin {
+					        ktlint("1.0.1").customRuleSets(project(":ktlint-rules"))
+					    }
+					}
+					spotless {
+					    java {
+					        target("src/**/*.java")
+					        trimTrailingWhitespace()
+					    }
+					}
+					""");
+			setFile("src/main/java/Main.java").toContent("class Main {}\n");
+
+			BuildResult first = gradleRunner()
+					.withGradleVersion("9.5.1")
+					.withArguments("spotlessJavaCheck", "--configuration-cache", "--stacktrace")
+					.build();
+
+			assertThat(first.getOutput()).contains("Configuration cache entry stored.");
+			assertThat(first.task(":spotlessInternalRegisterDependencies")).isNotNull();
+			assertThat(first.task(":ktlint-rules:jar")).isNull();
+
+			BuildResult second = gradleRunner()
+					.withGradleVersion("9.5.1")
+					.withArguments("spotlessJavaCheck", "--configuration-cache", "--stacktrace")
+					.build();
+
+			assertThat(second.getOutput()).contains("Reusing configuration cache.");
+			assertThat(second.task(":spotlessInternalRegisterDependencies")).isNotNull();
+			assertThat(second.task(":ktlint-rules:jar")).isNull();
+		}
+
 		@Test
 		void issue2599_Gradle951_CanUsePredeclareDepsFromBuildscript() throws IOException {
 			setFile("build.gradle.kts").toContent("""
