@@ -111,25 +111,34 @@ final class GradleProvisioner {
 	}
 
 	static Provisioner forProject(Project project) {
-		return forConfigurationContainer(project, project.getConfigurations(), project.getDependencies());
+		return forConfigurationContainer(project, project.getConfigurations(), project.getDependencies(), false);
 	}
 
 	static Provisioner forRootProjectBuildscript(Project project) {
 		Project rootProject = project.getRootProject();
 		ScriptHandler buildscript = rootProject.getBuildscript();
-		return forConfigurationContainer(rootProject, buildscript.getConfigurations(), buildscript.getDependencies());
+		return forConfigurationContainer(rootProject, buildscript.getConfigurations(), buildscript.getDependencies(), true);
 	}
 
-	private static Provisioner forConfigurationContainer(Project project, ConfigurationContainer configurations, DependencyHandler dependencies) {
+	private static Provisioner forConfigurationContainer(Project project, ConfigurationContainer configurations, DependencyHandler dependencies, boolean detached) {
 		return (withTransitives, mavenCoords) -> {
 			try {
 				Request request = new Request(withTransitives, mavenCoords);
-				Dependency[] deps = mavenCoords.stream()
-						.map(dependencies::create)
-						.toArray(Dependency[]::new);
-				// Detached configurations avoid mutating the target configuration container, which Gradle 9 forbids
-				// for the root buildscript container during task execution. See https://github.com/diffplug/spotless/issues/2599.
-				Configuration config = configurations.detachedConfiguration(deps);
+				Configuration config;
+				if (detached) {
+					Dependency[] deps = mavenCoords.stream()
+							.map(dependencies::create)
+							.toArray(Dependency[]::new);
+					// Detached configurations avoid mutating the root buildscript configuration container, which Gradle 9
+					// forbids during task execution. See https://github.com/diffplug/spotless/issues/2599.
+					config = configurations.detachedConfiguration(deps);
+				} else {
+					// Named project configurations participate in configurations.all, including dependency substitutions.
+					config = configurations.create("spotless" + request.hashCode());
+					mavenCoords.stream()
+							.map(dependencies::create)
+							.forEach(config.getDependencies()::add);
+				}
 				config.setDescription("Spotless internal dependency resolution for " + request);
 				config.setTransitive(withTransitives);
 				config.setCanBeConsumed(false);

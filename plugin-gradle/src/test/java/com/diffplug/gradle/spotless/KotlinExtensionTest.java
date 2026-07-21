@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,6 +189,38 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		setFile("src/main/kotlin/Main.kt").toResource("kotlin/ktlint/listScreen.dirty");
 		String buildOutput = gradleRunner().withArguments("spotlessCheck").buildAndFail().getOutput();
 		assertThat(buildOutput).contains("Composable functions that return Unit should start with an uppercase letter.");
+	}
+
+	@Test
+	void issue1901CustomRuleSetSupportsProjectDependencySubstitution() throws IOException {
+		setFile("settings.gradle.kts").toContent("include(\"ktlint-rules\")");
+		setFile("ktlint-rules/build.gradle.kts").toContent("plugins { java }");
+		setFile("build.gradle.kts").toContent("""
+				plugins {
+				    id("com.diffplug.spotless")
+				}
+				repositories { mavenCentral() }
+				configurations.all {
+				    resolutionStrategy.dependencySubstitution {
+				        substitute(module("my:ktlint-rules")).using(project(":ktlint-rules"))
+				    }
+				}
+				tasks.withType(com.diffplug.gradle.spotless.SpotlessTask::class) {
+				    dependsOn(":ktlint-rules:jar")
+				}
+				spotless {
+				    kotlin {
+				        target("src/**/*.kt")
+				        ktlint("1.0.1").customRuleSets(listOf("my:ktlint-rules:+"))
+				    }
+				}
+				""");
+		setFile("src/main/kotlin/Main.kt").toContent("fun main() {}\n");
+
+		gradleRunner()
+				.withGradleVersion("9.5.1")
+				.withArguments("spotlessCheck", "--stacktrace")
+				.build();
 	}
 
 	@Test
