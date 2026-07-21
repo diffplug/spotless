@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changes
+- Replace RDF formatter library `de.atextor:turtle-formatter` (discontinued) with `cool.rdf:cool-rdf-formatter` (its new coordinates).
 
 ## [3.8.0] - 2026-06-29
 ### Added
