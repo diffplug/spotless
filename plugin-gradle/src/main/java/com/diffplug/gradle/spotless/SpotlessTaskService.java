@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
@@ -48,6 +49,7 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.SpotlessCache;
 import com.diffplug.spotless.extra.P2Provisioner;
 
 /**
@@ -61,6 +63,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, GradleProvisioner.DedupingProvisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, P2Provisioner> p2Provisioner = Collections.synchronizedMap(new HashMap<>());
+	private final AtomicBoolean hasProjectDependencies = new AtomicBoolean();
 
 	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 	@Nullable GradleProvisioner.DedupingP2Provisioner predeclaredP2Provisioner;
@@ -83,6 +86,9 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			Collection<String> mavenCoordinates,
 			Collection<String> projectPaths,
 			String strictlyEnforcedCoordinate) {
+		if (!projectPaths.isEmpty()) {
+			hasProjectDependencies.set(true);
+		}
 		if (spotless instanceof SpotlessExtensionPredeclare) {
 			// spotlessPredeclare owns creation of the configuration.
 			// The resulting classpath is cached under the exact request.
@@ -136,7 +142,15 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	@Override
 	public void close() throws Exception {
-		ratchet.close();
+		try {
+			ratchet.close();
+		} finally {
+			if (hasProjectDependencies.get()) {
+				// Project artifacts can live in directories which are deleted immediately after the build.
+				// Release the URLClassLoader file handles first, which is required on Windows.
+				SpotlessCache.clearOnce(null);
+			}
+		}
 	}
 	// </GitRatchet>
 
