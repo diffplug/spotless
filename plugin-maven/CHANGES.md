@@ -5,6 +5,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 - Add support for Java formatting via [`prince-of-space`](https://github.com/agustafson/prince-of-space) with the new `<princeOfSpace>` step. ([#2991](https://github.com/diffplug/spotless/pull/2991))
+### Changes
+- Bump default `greclipse` version to latest `4.39` -> `4.40`. ([#2989](https://github.com/diffplug/spotless/pull/2989))
 
 ## [3.8.0] - 2026-06-29
 ### Added
