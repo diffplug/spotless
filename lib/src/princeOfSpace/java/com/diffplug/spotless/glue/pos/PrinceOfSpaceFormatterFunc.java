@@ -17,13 +17,13 @@ package com.diffplug.spotless.glue.pos;
 
 import java.io.File;
 
+import com.diffplug.spotless.FormatterFunc;
+
 import io.princeofspace.Formatter;
 import io.princeofspace.model.FormatterConfig;
 import io.princeofspace.model.IndentStyle;
 import io.princeofspace.model.JavaLanguageLevel;
 import io.princeofspace.model.WrapStyle;
-
-import com.diffplug.spotless.FormatterFunc;
 
 public class PrinceOfSpaceFormatterFunc implements FormatterFunc.NeedsFile {
 
