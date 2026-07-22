@@ -16,7 +16,7 @@ output = [
 output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/', '/', versionLast)
 -->
 
-Spotless is a general-purpose formatting plugin used by [6,000 projects on GitHub (Jan 2023)](https://github.com/search?l=Maven+POM&q=spotless&type=Code).  It is completely � la carte, but also includes powerful "batteries-included" if you opt-in. Plugin requires a version of Maven higher or equal to 3.1.0.
+Spotless is a general-purpose formatting plugin used by [6,000 projects on GitHub (Jan 2023)](https://github.com/search?l=Maven+POM&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in. Plugin requires a version of Maven higher or equal to 3.1.0.
 
 To people who use your build, it looks like this:
 
