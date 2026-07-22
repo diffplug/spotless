@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 import org.opentest4j.AssertionFailedError;
@@ -38,7 +37,6 @@ import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.TestProvisioner;
 
-@Tag("rdf")
 public class RdfFormatterTest extends ResourceHarness {
 
 	private static FormatterStep forTurtleFormatterVersion(String version) throws ClassNotFoundException {

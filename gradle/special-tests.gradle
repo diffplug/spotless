@@ -8,7 +8,6 @@ def special = [
 	'gofmt',
 	'idea',
 	'npm',
-	'rdf',
 	'shfmt'
 ]
 
