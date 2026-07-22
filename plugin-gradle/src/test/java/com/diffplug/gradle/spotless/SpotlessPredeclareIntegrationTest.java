@@ -547,15 +547,29 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					}
 					""");
 			setFile("src/main/kotlin/Main.kt").toContent("fun main() {}\n");
+			String ruleVersionProperty = "-Dspotless.test.rule.version=" + newFile("rule-version.txt").getAbsolutePath();
 
-			BuildResult result = gradleRunner()
+			BuildResult firstRun = gradleRunner()
 					.withGradleVersion("9.5.1")
-					.withArguments("spotlessCheck", "--configuration-cache", "--stacktrace")
+					.withArguments("spotlessCheck", "--configuration-cache", "--stacktrace", ruleVersionProperty)
 					.build();
 
-			assertThat(result.getOutput()).contains("Configuration cache entry stored.");
-			assertThat(result.task(":ktlint-rules:jar")).isNotNull();
-			assertThat(result.task(":ktlint-rules:jar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+			assertThat(firstRun.getOutput()).contains("Configuration cache entry stored.");
+			assertThat(firstRun.task(":ktlint-rules:jar")).isNotNull();
+			assertThat(firstRun.task(":ktlint-rules:jar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+			assertFile("rule-version.txt").hasContent("1");
+
+			setFile("ktlint-rules/src/main/java/rules/LocalRuleSetProvider.java")
+					.toContent(localRuleSetProvider("2"));
+			BuildResult secondRun = gradleRunner()
+					.withGradleVersion("9.5.1")
+					.withArguments("spotlessCheck", "--configuration-cache", "--stacktrace", ruleVersionProperty)
+					.build();
+
+			assertThat(secondRun.getOutput()).contains("Reusing configuration cache.");
+			assertThat(secondRun.task(":ktlint-rules:jar").getOutcome()).isNotEqualTo(TaskOutcome.UP_TO_DATE);
+			assertThat(secondRun.task(":spotlessKotlin").getOutcome()).isNotEqualTo(TaskOutcome.UP_TO_DATE);
+			assertFile("rule-version.txt").hasContent("2");
 		}
 
 		@Test
@@ -798,5 +812,38 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 			BuildResult result = gradleRunner().withArguments("help").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 		}
+	}
+
+	private static String localRuleSetProvider(String version) {
+		return """
+				package rules;
+
+				import java.nio.file.Files;
+				import java.nio.file.Path;
+				import java.util.Collections;
+				import java.util.Set;
+
+				import com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3;
+				import com.pinterest.ktlint.rule.engine.core.api.RuleProvider;
+				import com.pinterest.ktlint.rule.engine.core.api.RuleSetId;
+
+				public final class LocalRuleSetProvider extends RuleSetProviderV3 {
+				    public LocalRuleSetProvider() {
+				        super(new RuleSetId("local-project"));
+				        try {
+				            Files.writeString(
+				                    Path.of(System.getProperty("spotless.test.rule.version")),
+				                    "%s");
+				        } catch (Exception e) {
+				            throw new RuntimeException(e);
+				        }
+				    }
+
+				    @Override
+				    public Set<RuleProvider> getRuleProviders() {
+				        return Collections.emptySet();
+				    }
+				}
+				""".formatted(version);
 	}
 }
