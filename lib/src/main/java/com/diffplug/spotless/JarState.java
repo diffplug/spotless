@@ -149,6 +149,7 @@ public final class JarState implements Serializable {
 	public JarState withAdditionalJars(Iterable<File> additionalJars) throws IOException {
 		List<File> jars = new ArrayList<>(fileSignature.files());
 		additionalJars.forEach(jars::add);
+		// Local project tasks that produce the requested artifacts have completed and files exist to be signed
 		return new JarState(FileSignature.signAsList(jars));
 	}
 

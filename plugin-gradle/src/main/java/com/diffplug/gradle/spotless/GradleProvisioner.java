@@ -17,10 +17,13 @@ package com.diffplug.gradle.spotless;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -30,11 +33,17 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.artifacts.ExternalDependency;
+import org.gradle.api.artifacts.component.ModuleComponentSelector;
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.artifacts.result.DependencyResult;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.java.TargetJvmEnvironment;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.initialization.dsl.ScriptHandler;
+import org.gradle.api.provider.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,9 +79,56 @@ final class GradleProvisioner {
 	static class DedupingProvisioner implements Provisioner {
 		private final Provisioner provisioner;
 		private final Map<Request, Set<File>> cache = new HashMap<>();
+		private final Map<DependencyClasspathRequest, DependencyClasspath> dependencyClasspathCache = new HashMap<>();
 
 		DedupingProvisioner(Provisioner provisioner) {
 			this.provisioner = provisioner;
+		}
+
+		DependencyClasspath dependencyClasspath(
+				Collection<String> mavenCoordinates,
+				Collection<String> projectPaths,
+				String strictlyEnforcedCoordinate) {
+			ConfigurationProvisioner configurationProvisioner = configurationProvisioner();
+			DependencyClasspathRequest request = new DependencyClasspathRequest(mavenCoordinates, projectPaths, strictlyEnforcedCoordinate);
+			synchronized (dependencyClasspathCache) {
+				// Do not use a concurrent map here: different keys could create detached configurations concurrently,
+				// while calls into Gradle's mutable project model must remain serialized.
+				return dependencyClasspathCache.computeIfAbsent(
+						request,
+						unused -> configurationProvisioner.dependencyClasspath(
+								request.mavenCoordinates, request.projectPaths, request.strictlyEnforcedCoordinate));
+			}
+		}
+
+		DependencyClasspath cachedOnlyDependencyClasspath(
+				Collection<String> mavenCoordinates,
+				Collection<String> projectPaths,
+				String strictlyEnforcedCoordinate) {
+			ConfigurationProvisioner configurationProvisioner = configurationProvisioner();
+			DependencyClasspathRequest request = new DependencyClasspathRequest(mavenCoordinates, projectPaths, strictlyEnforcedCoordinate);
+			Provider<DependencyClasspath> cached = configurationProvisioner.project.getProviders().provider(() -> {
+				synchronized (dependencyClasspathCache) {
+					DependencyClasspath result = dependencyClasspathCache.get(request);
+					if (result != null) {
+						return result;
+					}
+				}
+				throw new GradleException("Add a step with " + request.mavenCoordinates + " and projects " + request.projectPaths
+						+ " into the `spotlessPredeclare` block in the root project.");
+			});
+			Provisioner externalProvisioner = (withTransitives, requestedCoordinates) -> cached.get().externalProvisioner
+					.provisionWithTransitives(withTransitives, requestedCoordinates);
+			FileCollection projectArtifacts = configurationProvisioner.project.getObjects().fileCollection()
+					.from(cached.map(classpath -> classpath.projectArtifacts));
+			return new DependencyClasspath(externalProvisioner, projectArtifacts);
+		}
+
+		private ConfigurationProvisioner configurationProvisioner() {
+			if (provisioner instanceof ConfigurationProvisioner configurationProvisioner) {
+				return configurationProvisioner;
+			}
+			throw new IllegalStateException("Project dependencies require a Gradle configuration-backed provisioner.");
 		}
 
 		@Override
@@ -111,60 +167,197 @@ final class GradleProvisioner {
 	}
 
 	static Provisioner forProject(Project project) {
-		return forConfigurationContainer(project, project.getConfigurations(), project.getDependencies());
+		return new ConfigurationProvisioner(project, project.getConfigurations(), project.getDependencies());
 	}
 
 	static Provisioner forRootProjectBuildscript(Project project) {
 		Project rootProject = project.getRootProject();
 		ScriptHandler buildscript = rootProject.getBuildscript();
-		return forConfigurationContainer(rootProject, buildscript.getConfigurations(), buildscript.getDependencies());
+		return new ConfigurationProvisioner(rootProject, buildscript.getConfigurations(), buildscript.getDependencies());
 	}
 
-	private static Provisioner forConfigurationContainer(Project project, ConfigurationContainer configurations, DependencyHandler dependencies) {
-		return (withTransitives, mavenCoords) -> {
+	/**
+	 * A provisioner bound to a specific Gradle dependency-resolution scope.
+	 * <p>
+	 * Retaining the {@link ConfigurationContainer} and {@link DependencyHandler} is necessary when a formatter uses
+	 * both Maven and project dependencies. It lets both dependency types participate in one detached configuration,
+	 * so Gradle resolves version conflicts before the selected artifacts are separated into external and project
+	 * classpaths. The binding also preserves whether dependencies must resolve from the consuming project's or the
+	 * root buildscript's repositories, when using {@code predeclareDepsFromBuildscript()}.
+	 */
+	private static final class ConfigurationProvisioner implements Provisioner {
+		private final Project project;
+		private final ConfigurationContainer configurations;
+		private final DependencyHandler dependencies;
+
+		private ConfigurationProvisioner(Project project, ConfigurationContainer configurations, DependencyHandler dependencies) {
+			this.project = project;
+			this.configurations = configurations;
+			this.dependencies = dependencies;
+		}
+
+		@Override
+		public Set<File> provisionWithTransitives(boolean withTransitives, Collection<String> mavenCoords) {
 			try {
 				Request request = new Request(withTransitives, mavenCoords);
-				Dependency[] deps = mavenCoords.stream()
-						.map(dependencies::create)
-						.toArray(Dependency[]::new);
-				Configuration config = configurations.detachedConfiguration(deps);
-				configure(project, config, withTransitives, "Spotless internal dependency resolution for " + request);
+				Configuration config = configuration(
+						mavenCoords, List.of(), withTransitives, "Spotless internal dependency resolution for " + request, null);
 				return config.resolve();
 			} catch (Exception e) {
-				String projName = project.getPath().substring(1).replace(':', '/');
-				if (!projName.isEmpty()) {
-					projName = projName + "/";
-				}
-				throw new GradleException(String.format(
-						"You need to add a repository containing the '%s' artifact in '%sbuild.gradle'.%n"
-								+ "E.g.: 'repositories { mavenCentral() }'",
-						mavenCoords, projName), e);
+				throw repositoryException(mavenCoords, e);
 			}
-		};
+		}
+
+		DependencyClasspath dependencyClasspath(
+				Collection<String> mavenCoordinates,
+				Collection<String> projectPaths,
+				String strictlyEnforcedCoordinate) {
+			StrictVersion strictVersion = strictVersion(strictlyEnforcedCoordinate);
+			// Create every dependency before creating the configuration.
+			// This produces one conflict-resolution graph.
+			Configuration config = configuration(
+					mavenCoordinates,
+					projectPaths,
+					true,
+					"Spotless internal dependency resolution for " + mavenCoordinates + " and projects " + projectPaths,
+					strictVersion);
+			// This view contains ktlint and external libraries.
+			FileCollection externalArtifacts = config.getIncoming()
+					.artifactView(view -> view.componentFilter(identifier -> !(identifier instanceof ProjectComponentIdentifier)))
+					.getFiles();
+			// This view contains local project artifacts.
+			FileCollection projectArtifacts = config.getIncoming()
+					.artifactView(view -> view.componentFilter(ProjectComponentIdentifier.class::isInstance))
+					.getFiles();
+			Set<String> expectedCoordinates = Set.copyOf(mavenCoordinates);
+			Provisioner externalProvisioner = new DedupingProvisioner((withTransitives, requestedCoordinates) -> {
+				if (!withTransitives || !expectedCoordinates.equals(new HashSet<>(requestedCoordinates))) {
+					throw new IllegalArgumentException("Unexpected dependency request for unified ktlint classpath: " + requestedCoordinates);
+				}
+				strictVersion.rejectConflicts(config.getIncoming().getResolutionResult().getAllDependencies());
+				return externalArtifacts.getFiles();
+			});
+			return new DependencyClasspath(externalProvisioner, projectArtifacts);
+		}
+
+		private Configuration configuration(
+				Collection<String> mavenCoordinates,
+				Collection<String> projectPaths,
+				boolean withTransitives,
+				String description,
+				@Nullable StrictVersion strictVersion) {
+			List<Dependency> requestedDependencies = new ArrayList<>(mavenCoordinates.size() + projectPaths.size());
+			boolean strictDependencyFound = strictVersion == null;
+			for (String coordinate : mavenCoordinates) {
+				Dependency dependency = dependencies.create(coordinate);
+				if (strictVersion != null && strictVersion.coordinate.equals(coordinate)) {
+					strictVersion.enforce(dependency);
+					strictDependencyFound = true;
+				}
+				requestedDependencies.add(dependency);
+			}
+			if (!strictDependencyFound) {
+				throw new IllegalArgumentException("Strictly enforced dependency is not part of the request: " + strictVersion.coordinate);
+			}
+			projectPaths.stream()
+					.map(projectPath -> project.getDependencies().project(Map.of("path", projectPath)))
+					.forEach(requestedDependencies::add);
+			Configuration config = configurations.detachedConfiguration(requestedDependencies.toArray(Dependency[]::new));
+			configure(config, withTransitives, description);
+			return config;
+		}
+
+		private StrictVersion strictVersion(String coordinate) {
+			Dependency dependency = dependencies.create(coordinate);
+			if (!(dependency instanceof ExternalDependency externalDependency)) {
+				throw new IllegalArgumentException("Cannot strictly enforce non-module dependency " + coordinate);
+			}
+			return new StrictVersion(
+					Objects.requireNonNull(externalDependency.getGroup(), "group"),
+					Objects.requireNonNull(externalDependency.getName(), "name"),
+					Objects.requireNonNull(externalDependency.getVersion(), "version"),
+					coordinate);
+		}
+
+		private void configure(Configuration config, boolean withTransitives, String description) {
+			// Detached configurations avoid mutating configuration containers during task execution, which Gradle 9
+			// forbids for buildscript configurations. See https://github.com/diffplug/spotless/issues/2599.
+			config.setDescription(description);
+			config.setTransitive(withTransitives);
+			config.setCanBeConsumed(false);
+			config.setVisible(false);
+			config.attributes(attr -> {
+				attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
+				attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
+				// Add this attribute for resolving Guava dependency, see https://github.com/google/guava/issues/6801.
+				attr.attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, project.getObjects().named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM));
+			});
+		}
+
+		private GradleException repositoryException(Collection<String> mavenCoordinates, Exception cause) {
+			String projName = project.getPath().substring(1).replace(':', '/');
+			if (!projName.isEmpty()) {
+				projName = projName + "/";
+			}
+			return new GradleException(String.format(
+					"You need to add a repository containing the '%s' artifact in '%sbuild.gradle'.%n"
+							+ "E.g.: 'repositories { mavenCentral() }'",
+					mavenCoordinates, projName), cause);
+		}
 	}
 
-	static Configuration projectDependencies(Project project, Collection<String> projectPaths) {
-		Dependency[] dependencies = projectPaths.stream()
-				.map(projectPath -> project.getDependencies().project(Map.of("path", projectPath)))
-				.toArray(Dependency[]::new);
-		Configuration config = project.getConfigurations().detachedConfiguration(dependencies);
-		configure(project, config, true, "Spotless internal project dependency resolution for " + projectPaths);
-		return config;
+	static final class DependencyClasspath {
+		final Provisioner externalProvisioner;
+		final FileCollection projectArtifacts;
+
+		private DependencyClasspath(Provisioner externalProvisioner, FileCollection projectArtifacts) {
+			this.externalProvisioner = externalProvisioner;
+			this.projectArtifacts = projectArtifacts;
+		}
 	}
 
-	private static void configure(Project project, Configuration config, boolean withTransitives, String description) {
-		// Detached configurations avoid mutating configuration containers during task execution, which Gradle 9
-		// forbids for buildscript configurations. See https://github.com/diffplug/spotless/issues/2599.
-		config.setDescription(description);
-		config.setTransitive(withTransitives);
-		config.setCanBeConsumed(false);
-		config.setVisible(false);
-		config.attributes(attr -> {
-			attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
-			attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
-			// Add this attribute for resolving Guava dependency, see https://github.com/google/guava/issues/6801.
-			attr.attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, project.getObjects().named(TargetJvmEnvironment.class, TargetJvmEnvironment.STANDARD_JVM));
-		});
+	private record DependencyClasspathRequest(
+			ImmutableList<String> mavenCoordinates,
+			ImmutableList<String> projectPaths,
+			String strictlyEnforcedCoordinate) {
+		private DependencyClasspathRequest(
+				Collection<String> mavenCoordinates,
+				Collection<String> projectPaths,
+				String strictlyEnforcedCoordinate) {
+			this(ImmutableList.copyOf(mavenCoordinates), ImmutableList.copyOf(projectPaths), strictlyEnforcedCoordinate);
+		}
+	}
+
+	private record StrictVersion(String group, String name, String version, String coordinate) {
+		private void enforce(Dependency dependency) {
+			if (!(dependency instanceof ExternalDependency externalDependency)
+					|| !group.equals(externalDependency.getGroup())
+					|| !name.equals(externalDependency.getName())
+					|| !version.equals(externalDependency.getVersion())) {
+				throw new IllegalArgumentException("Cannot strictly enforce " + coordinate + " on " + dependency);
+			}
+			externalDependency.version(constraint -> constraint.strictly(version));
+		}
+
+		/**
+		 * Rejects any dependencies that conflict with the strictly enforced version.
+		 *
+		 * <p>Current limitation: ktlint 0.x and 1.x use different modules. Which is not currently handled,
+		 * i.e. it won't be detected / treated as a version conflict.</p>
+		 *
+		 * @param dependencies
+		 */
+		private void rejectConflicts(Collection<? extends DependencyResult> dependencies) {
+			for (DependencyResult dependency : dependencies) {
+				if (dependency.getRequested() instanceof ModuleComponentSelector requested
+						&& group.equals(requested.getGroup())
+						&& name.equals(requested.getModule())
+						&& !version.equals(requested.getVersion())) {
+					throw new GradleException("The dependency graph requests '" + requested + "', but Spotless is configured to use '"
+							+ coordinate + "'. Remove the conflicting ktlint dependency or align it with the version requested by the Spotless DSL.");
+				}
+			}
+		}
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradleProvisioner.class);

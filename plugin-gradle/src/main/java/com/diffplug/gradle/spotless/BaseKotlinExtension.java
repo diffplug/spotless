@@ -28,7 +28,6 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
 
 import com.diffplug.common.collect.ImmutableList;
 import com.diffplug.common.collect.ImmutableSortedMap;
@@ -184,7 +183,7 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 		private FileSignature editorConfigPath;
 		private Map<String, Object> editorConfigOverride;
 		private List<String> customRuleSets;
-		private Configuration customRuleSetProjectClasspath;
+		private GradleProvisioner.DependencyClasspath customRuleSetProjectClasspath;
 
 		private KtlintConfig(
 				String version,
@@ -245,8 +244,10 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 					if (project.getGradle() != getProject().getGradle()) {
 						throw new IllegalArgumentException("Custom ktlint rule-set projects must belong to the same Gradle build.");
 					}
+					// Store the stable project path, not the Project object
 					projectPaths.add(project.getPath());
 				} else {
+					// FileCollection and arbitrary Dependency objects are not supported in this version
 					throw new IllegalArgumentException("Custom ktlint rule-set dependencies must be Maven coordinate strings or Gradle projects, but found " + customRuleSet.getClass().getName() + ".");
 				}
 			}
@@ -256,26 +257,43 @@ public abstract class BaseKotlinExtension extends FormatExtension {
 
 		private void setCustomRuleSets(Collection<String> mavenCoordinates, Collection<String> projectPaths) {
 			this.customRuleSets = ImmutableList.copyOf(mavenCoordinates);
+			// Remove the previous Gradle task input when customRuleSets() is called more than once.
 			if (customRuleSetProjectClasspath != null) {
-				removeFormatterClasspath(customRuleSetProjectClasspath);
+				removeFormatterClasspath(customRuleSetProjectClasspath.projectArtifacts);
 			}
 			if (projectPaths.isEmpty()) {
+				// Preserve the existing, simpler Maven-only path.
 				customRuleSetProjectClasspath = null;
 			} else {
-				customRuleSetProjectClasspath = GradleProvisioner.projectDependencies(getProject(), projectPaths);
-				addFormatterClasspath(customRuleSetProjectClasspath);
+				List<String> allMavenCoordinates = new ArrayList<>(mavenCoordinates);
+				// ktlint, published rule sets, and local rule projects must participate in the same resolution graph.
+				String ktlintCoordinate = KtLintStep.mavenCoordinate(version);
+				allMavenCoordinates.add(ktlintCoordinate);
+
+				customRuleSetProjectClasspath = dependencyClasspath(allMavenCoordinates, projectPaths, ktlintCoordinate);
+
+				// Give Gradle ownership of generated project artifacts
+				addFormatterClasspath(customRuleSetProjectClasspath.projectArtifacts);
 			}
 			replaceStep(createStep());
 		}
 
 		private FormatterStep createStep() {
+			if (customRuleSetProjectClasspath != null) {
+				return KtLintStep.create(
+						version,
+						customRuleSetProjectClasspath.externalProvisioner,
+						editorConfigPath,
+						editorConfigOverride,
+						customRuleSets,
+						customRuleSetProjectClasspath.projectArtifacts::getFiles);
+			}
 			return KtLintStep.create(
 					version,
 					provisioner(),
 					editorConfigPath,
 					editorConfigOverride,
-					customRuleSets,
-					customRuleSetProjectClasspath == null ? null : customRuleSetProjectClasspath::resolve);
+					customRuleSets);
 		}
 	}
 }

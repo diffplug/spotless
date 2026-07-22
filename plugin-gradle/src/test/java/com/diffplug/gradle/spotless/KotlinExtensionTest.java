@@ -23,6 +23,8 @@ import java.io.IOException;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class KotlinExtensionTest extends GradleIntegrationHarness {
 	private static final String HEADER = "// License Header";
@@ -272,6 +274,209 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		assertThat(secondRun.task(":rule-support:jar").getOutcome()).isNotEqualTo(TaskOutcome.UP_TO_DATE);
 		assertThat(secondRun.task(":spotlessKotlin").getOutcome()).isNotEqualTo(TaskOutcome.UP_TO_DATE);
 		assertFile("rule-version.txt").hasContent("2");
+	}
+
+	@Test
+	void ktlintProjectDependenciesShareConflictResolutionWithMavenRuleSets() throws IOException {
+		// The Maven rule graph requests support v1, while the project rule graph requests v2 and calls a v2-only method.
+		setFile("settings.gradle.kts").toContent("include(\"support-v1\", \"support-v2\", \"conflict-anchor\", \"ktlint-rules\")");
+		setFile("support-v1/build.gradle").toContent(publishedSupportBuild("1"));
+		setFile("support-v2/build.gradle").toContent(publishedSupportBuild("2"));
+		setFile("support-v1/src/main/java/support/Api.java").toContent("""
+				package support;
+				public final class Api {
+				    public static String existing() { return "v1"; }
+				}
+				""");
+		setFile("support-v2/src/main/java/support/Api.java").toContent("""
+				package support;
+				public final class Api {
+				    public static String existing() { return "v2"; }
+				    public static String addedInV2() { return "v2"; }
+				}
+				""");
+		setFile("conflict-anchor/build.gradle").toContent("""
+				plugins {
+				    id 'java-library'
+				    id 'maven-publish'
+				}
+				group = 'test'
+				version = '1'
+				dependencies { api 'test:support:1' }
+				publishing {
+				    publications {
+				        mavenJava(MavenPublication) {
+				            from components.java
+				            artifactId = 'conflict-anchor'
+				        }
+				    }
+				    repositories {
+				        maven { url = rootProject.layout.projectDirectory.dir('repo') }
+				    }
+				}
+				""");
+		setFile("ktlint-rules/build.gradle").toContent("""
+				plugins { id 'java-library' }
+				dependencies {
+				    implementation 'test:support:2'
+				    compileOnly 'com.pinterest.ktlint:ktlint-cli-ruleset-core:1.0.1'
+				    compileOnly 'com.pinterest.ktlint:ktlint-rule-engine-core:1.0.1'
+				}
+				""");
+		setFile("ktlint-rules/src/main/java/rules/LocalRuleSetProvider.java").toContent("""
+				package rules;
+
+				import java.nio.file.Files;
+				import java.nio.file.Path;
+				import java.util.Collections;
+				import java.util.Set;
+
+				import com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3;
+				import com.pinterest.ktlint.rule.engine.core.api.RuleProvider;
+				import com.pinterest.ktlint.rule.engine.core.api.RuleSetId;
+				import support.Api;
+
+				public final class LocalRuleSetProvider extends RuleSetProviderV3 {
+				    public LocalRuleSetProvider() {
+				        super(new RuleSetId("local-project"));
+				        try {
+				            Files.writeString(
+				                    Path.of(System.getProperty("spotless.test.rule.version")),
+				                    Api.addedInV2());
+				        } catch (Exception e) {
+				            throw new RuntimeException(e);
+				        }
+				    }
+
+				    @Override
+				    public Set<RuleProvider> getRuleProviders() {
+				        return Collections.emptySet();
+				    }
+				}
+				""");
+		setFile("ktlint-rules/src/main/resources/META-INF/services/com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3")
+				.toContent("rules.LocalRuleSetProvider\n");
+		setFile("build.gradle.kts").toContent("""
+				plugins {
+				    id("com.diffplug.spotless")
+				}
+				allprojects {
+				    repositories {
+				        maven { url = uri(rootProject.layout.projectDirectory.dir("repo")) }
+				        mavenCentral()
+				    }
+				}
+				spotless {
+				    kotlin {
+				        target("src/**/*.kt")
+				        ktlint("1.0.1").customRuleSets(
+				            "test:conflict-anchor:1",
+				            project(":ktlint-rules"))
+				    }
+				}
+				""");
+		setFile("src/main/kotlin/Main.kt").toContent("fun main() {}\n");
+
+		gradleRunner()
+				.withGradleVersion("9.5.1")
+				.withArguments(
+						":support-v1:publishMavenJavaPublicationToMavenRepository",
+						":support-v2:publishMavenJavaPublicationToMavenRepository",
+						":conflict-anchor:publishMavenJavaPublicationToMavenRepository")
+				.build();
+
+		String ruleVersionProperty = "-Dspotless.test.rule.version=" + newFile("rule-version.txt").getAbsolutePath();
+		BuildResult result = gradleRunner()
+				.withGradleVersion("9.5.1")
+				.withArguments("spotlessCheck", "--configuration-cache", "--stacktrace", ruleVersionProperty)
+				.build();
+
+		assertThat(result.getOutput()).contains("Configuration cache entry stored.");
+		assertFile("rule-version.txt").hasContent("v2");
+	}
+
+	@ParameterizedTest(name = "rejects conflicting ktlint {0}")
+	@ValueSource(strings = {"1.0.0", "1.1.0"})
+	void ktlintProjectDependencyCannotOverrideRequestedVersion(String conflictingVersion) throws IOException {
+		setFile("settings.gradle.kts").toContent("include(\"ktlint-rules\")");
+		setFile("ktlint-rules/build.gradle.kts").toContent("""
+				plugins { java }
+				dependencies {
+				    runtimeOnly("com.pinterest.ktlint:ktlint-cli:%s")
+				}
+				""".formatted(conflictingVersion));
+		setFile("build.gradle.kts").toContent("""
+				plugins {
+				    id("com.diffplug.spotless")
+				}
+				repositories { mavenCentral() }
+				spotless {
+				    kotlin {
+				        target("src/**/*.kt")
+				        ktlint("1.0.1").customRuleSets(project(":ktlint-rules"))
+				    }
+				}
+				""");
+		setFile("src/main/kotlin/Main.kt").toContent("fun main() {}\n");
+
+		BuildResult result = gradleRunner()
+				.withGradleVersion("9.5.1")
+				.withArguments("spotlessCheck", "--stacktrace")
+				.buildAndFail();
+
+		assertThat(result.getOutput()).contains(
+				"The dependency graph requests 'com.pinterest.ktlint:ktlint-cli:" + conflictingVersion + "'",
+				"Spotless is configured to use 'com.pinterest.ktlint:ktlint-cli:1.0.1'");
+	}
+
+	@Test
+	void ktlintProjectDependencyPreservesGradleVariantFailure() throws IOException {
+		setFile("settings.gradle.kts").toContent("include(\"ktlint-rules\")");
+		setFile("ktlint-rules/build.gradle.kts").toContent("");
+		setFile("build.gradle.kts").toContent("""
+				plugins {
+				    id("com.diffplug.spotless")
+				}
+				repositories { mavenCentral() }
+				spotless {
+				    kotlin {
+				        target("src/**/*.kt")
+				        ktlint("1.0.1").customRuleSets(project(":ktlint-rules"))
+				    }
+				}
+				""");
+		setFile("src/main/kotlin/Main.kt").toContent("fun main() {}\n");
+
+		BuildResult result = gradleRunner()
+				.withGradleVersion("9.5.1")
+				.withArguments("spotlessCheck", "--stacktrace")
+				.buildAndFail();
+
+		assertThat(result.getOutput())
+				.contains("No matching variant of project :ktlint-rules was found")
+				.doesNotContain("You need to add a repository containing");
+	}
+
+	private static String publishedSupportBuild(String version) {
+		return """
+				plugins {
+				    id 'java-library'
+				    id 'maven-publish'
+				}
+				group = 'test'
+				version = '%s'
+				publishing {
+				    publications {
+				        mavenJava(MavenPublication) {
+				            from components.java
+				            artifactId = 'support'
+				        }
+				    }
+				    repositories {
+				        maven { url = rootProject.layout.projectDirectory.dir('repo') }
+				    }
+				}
+				""".formatted(version);
 	}
 
 	@Test

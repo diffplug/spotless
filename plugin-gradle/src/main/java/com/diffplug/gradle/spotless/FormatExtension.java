@@ -98,6 +98,14 @@ public class FormatExtension {
 		return spotless.getSpotlessTaskService().get().provisionerFor(spotless);
 	}
 
+	final GradleProvisioner.DependencyClasspath dependencyClasspath(
+			Collection<String> mavenCoordinates,
+			Collection<String> projectPaths,
+			String strictlyEnforcedCoordinate) {
+		return spotless.getSpotlessTaskService().get().dependencyClasspathFor(
+				spotless, mavenCoordinates, projectPaths, strictlyEnforcedCoordinate);
+	}
+
 	protected final P2Provisioner p2Provisioner() {
 		return spotless.getSpotlessTaskService().get().p2ProvisionerFor(spotless);
 	}
@@ -358,14 +366,22 @@ public class FormatExtension {
 
 	/** The steps that need to be added. */
 	protected final List<FormatterStep> steps = new ArrayList<>();
-	final List<FileCollection> additionalFormatterClasspath = new ArrayList<>();
+
+	/**
+	 * Individual formatter-owned classpath sources.
+	 *
+	 * FileCollection sources remain separate so a formatter can replace or remove its own classpath
+	 * without disturbing sources registered by other steps. Gradle flattens them into the task's
+	 * {@link org.gradle.api.file.ConfigurableFileCollection}.
+	 */
+	final List<FileCollection> additionalFormatterClasspaths = new ArrayList<>();
 
 	protected final void addFormatterClasspath(FileCollection classpath) {
-		additionalFormatterClasspath.add(requireNonNull(classpath));
+		additionalFormatterClasspaths.add(requireNonNull(classpath));
 	}
 
 	protected final void removeFormatterClasspath(FileCollection classpath) {
-		additionalFormatterClasspath.remove(classpath);
+		additionalFormatterClasspaths.remove(classpath);
 	}
 
 	/** Adds a new step. */
@@ -412,7 +428,7 @@ public class FormatExtension {
 	/** Clears all of the existing steps. */
 	public void clearSteps() {
 		steps.clear();
-		additionalFormatterClasspath.clear();
+		additionalFormatterClasspaths.clear();
 	}
 
 	/**
@@ -1064,7 +1080,7 @@ public class FormatExtension {
 		// create a step which applies all of those steps as sub-steps
 		FormatterStep step = fence.applyWithin(formatExtension.steps);
 		addStep(step);
-		additionalFormatterClasspath.addAll(formatExtension.additionalFormatterClasspath);
+		additionalFormatterClasspaths.addAll(formatExtension.additionalFormatterClasspaths);
 	}
 
 	/**
@@ -1097,7 +1113,7 @@ public class FormatExtension {
 
 	/** Sets up a format task according to the values in this extension. */
 	protected void setupTask(SpotlessTask task) {
-		task.getAdditionalFormatterClasspath().from(additionalFormatterClasspath);
+		task.getAdditionalFormatterClasspath().from(additionalFormatterClasspaths);
 		task.setEncoding(getEncoding().name());
 		task.setLintSuppressions(lintSuppressions);
 		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);

@@ -38,8 +38,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * {@link JarState.Promised} and {@link FileSignature.Promised} represent signed file contents when
  * materialized. That is too early for project artifacts, which might not exist while Gradle serializes
  * formatter state. This promise serializes only the resolved file paths; Gradle tracks their contents as
- * a separate {@code @Classpath} task input, and {@link KtLintStep.State#createFormat()} signs them after the producer
- * tasks have run.
+ * a separate {@code @Classpath} task input, and {@link KtLintStep.State#createFormat()} signs them after
+ * the producer tasks have run.
  * <p>
  * Resolution is synchronized because Gradle can serialize the roundtrip and equality views concurrently.
  */
@@ -54,6 +54,16 @@ final class PromisedClasspath implements Serializable {
 		this.supplier = supplier;
 	}
 
+	/**
+	 * Returns the promised classpath paths, materializing the supplier at most once.
+	 * <p>
+	 * Materialization resolves only paths. The referenced files may not exist yet because their Gradle producer tasks
+	 * can run after formatter-state serialization. File contents are signed later by
+	 * {@link KtLintStep.State#createFormat()}.
+	 * <p>
+	 * After a serialization roundtrip, the serialized path list is reused and the transient supplier is no longer
+	 * required.
+	 */
 	List<File> get() {
 		List<File> result = files;
 		if (result == null) {

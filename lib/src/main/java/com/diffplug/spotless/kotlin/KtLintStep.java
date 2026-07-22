@@ -96,9 +96,8 @@ public final class KtLintStep implements Serializable {
 			@Nullable ThrowingEx.Supplier<? extends Iterable<File>> additionalClasspath) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
-		String ktlintCoordinate = (version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version;
 		Set<String> mavenCoordinates = new HashSet<>(customRuleSets);
-		mavenCoordinates.add(ktlintCoordinate);
+		mavenCoordinates.add(mavenCoordinate(version));
 		return FormatterStep.create(NAME,
 				new KtLintStep(
 						version,
@@ -112,6 +111,12 @@ public final class KtLintStep implements Serializable {
 
 	public static String defaultVersion() {
 		return DEFAULT_VERSION;
+	}
+
+	/** Returns the Maven coordinate used for the specified ktlint version. */
+	public static String mavenCoordinate(String version) {
+		Objects.requireNonNull(version, "version");
+		return (version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version;
 	}
 
 	private State equalityState() {
@@ -150,6 +155,7 @@ public final class KtLintStep implements Serializable {
 			JarState runtimeJarState = additionalClasspath == null || additionalClasspath.isEmpty()
 					? jarState
 					: jarState.withAdditionalJars(additionalClasspath);
+			// At this time, it is possible to sign the generated JAR contents.
 			final ClassLoader classLoader = runtimeJarState.getClassLoader();
 			Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.ktlint.KtlintFormatterFunc");
 			Constructor<?> constructor = formatterFunc.getConstructor(
