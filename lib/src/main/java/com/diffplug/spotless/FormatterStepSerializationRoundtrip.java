@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,12 +111,13 @@ final class FormatterStepSerializationRoundtrip<RoundtripState extends Serializa
 		@SuppressFBWarnings(value = "NP_NONNULL_PARAM_VIOLATION", justification = "HackClone")
 		private void writeObject(ObjectOutputStream out) throws IOException {
 			if (cleaned == null) {
-				cleaned = new FormatterStepSerializationRoundtrip(original.name, null, original.equalityStateExtractor, original.equalityStateToFormatter);
+				FormatterStepSerializationRoundtrip cleanedValue = new FormatterStepSerializationRoundtrip(original.name, null, original.equalityStateExtractor, original.equalityStateToFormatter);
 				if (optimizeForEquality) {
-					cleaned.equalityStateInternal = ThrowingEx.get(original::stateSupplier);
+					cleanedValue.equalityStateInternal = ThrowingEx.get(original::stateSupplier);
 				} else {
-					cleaned.roundtripStateInternal = ThrowingEx.get(original::roundtripStateSupplier);
+					cleanedValue.roundtripStateInternal = ThrowingEx.get(original::roundtripStateSupplier);
 				}
+				cleaned = cleanedValue;
 			}
 			out.defaultWriteObject();
 		}
