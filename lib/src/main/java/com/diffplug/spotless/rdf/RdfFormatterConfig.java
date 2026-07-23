@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,6 +86,9 @@ public class RdfFormatterConfig implements Serializable {
 		}
 
 		public RdfFormatterConfig build() {
+			if (config.turtleFormatterVersion == null) {
+				config.turtleFormatterVersion = RdfFormatterStep.getDefaultFormatterVersion();
+			}
 			return config;
 		}
 	}
@@ -98,7 +101,7 @@ public class RdfFormatterConfig implements Serializable {
 		if (!(o instanceof RdfFormatterConfig)) {
 			return false;
 		}
-		RdfFormatterConfig that = (RdfFormatterConfig) o;
+		var that = (RdfFormatterConfig) o;
 		return isFailOnWarning() == that.isFailOnWarning()
 				&& Objects.equals(turtleFormatterVersion, that.turtleFormatterVersion);
 	}
