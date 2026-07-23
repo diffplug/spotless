@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
@@ -58,12 +57,15 @@ import com.diffplug.spotless.extra.P2Provisioner;
  * duplicated work (e.g. no need for check to run if
  * apply already did).
  */
-public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
+public abstract class SpotlessTaskService implements BuildService<SpotlessTaskService.Parameters>, AutoCloseable, OperationCompletionListener {
+	public interface Parameters extends BuildServiceParameters {
+		Property<Boolean> getHasProjectDependencies();
+	}
+
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, GradleProvisioner.DedupingProvisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, P2Provisioner> p2Provisioner = Collections.synchronizedMap(new HashMap<>());
-	private final AtomicBoolean hasProjectDependencies = new AtomicBoolean();
 
 	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 	@Nullable GradleProvisioner.DedupingP2Provisioner predeclaredP2Provisioner;
@@ -87,7 +89,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			Collection<String> projectPaths,
 			String strictlyEnforcedCoordinate) {
 		if (!projectPaths.isEmpty()) {
-			hasProjectDependencies.set(true);
+			getParameters().getHasProjectDependencies().set(true);
 		}
 		if (spotless instanceof SpotlessExtensionPredeclare) {
 			// spotlessPredeclare owns creation of the configuration.
@@ -145,7 +147,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		try {
 			ratchet.close();
 		} finally {
-			if (hasProjectDependencies.get()) {
+			if (getParameters().getHasProjectDependencies().getOrElse(false)) {
 				// Project artifacts can live in directories which are deleted immediately after the build.
 				// Release the URLClassLoader file handles first, which is required on Windows.
 				SpotlessCache.clearOnce(null);
@@ -174,7 +176,8 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 
 	public static Provider<SpotlessTaskService> registerIfAbsent(Project project, String suffix) {
 		return project.getGradle().getSharedServices()
-				.registerIfAbsent("SpotlessTaskService" + suffix, SpotlessTaskService.class, spec -> {});
+				.registerIfAbsent("SpotlessTaskService" + suffix, SpotlessTaskService.class,
+						spec -> spec.getParameters().getHasProjectDependencies().convention(false));
 	}
 
 	abstract static class ClientTask extends DefaultTask {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.gradle.api.Project;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.services.BuildServiceParameters;
 import org.gradle.api.tasks.TaskProvider;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +42,7 @@ class DiffMessageFormatterTest extends ResourceHarness {
 		Project project = TestProvisioner.gradleProject(rootFolder());
 		Provider<SpotlessTaskService> taskService = GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
 			@Override
-			public BuildServiceParameters.None getParameters() {
+			public Parameters getParameters() {
 				return null;
 			}
 		});
