@@ -57,11 +57,7 @@ import com.diffplug.spotless.extra.P2Provisioner;
  * duplicated work (e.g. no need for check to run if
  * apply already did).
  */
-public abstract class SpotlessTaskService implements BuildService<SpotlessTaskService.Parameters>, AutoCloseable, OperationCompletionListener {
-	public interface Parameters extends BuildServiceParameters {
-		Property<Boolean> getHasProjectDependencies();
-	}
-
+public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, GradleProvisioner.DedupingProvisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
@@ -88,9 +84,6 @@ public abstract class SpotlessTaskService implements BuildService<SpotlessTaskSe
 			Collection<String> mavenCoordinates,
 			Collection<String> projectPaths,
 			String strictlyEnforcedCoordinate) {
-		if (!projectPaths.isEmpty()) {
-			getParameters().getHasProjectDependencies().set(true);
-		}
 		if (spotless instanceof SpotlessExtensionPredeclare) {
 			// spotlessPredeclare owns creation of the configuration.
 			// The resulting classpath is cached under the exact request.
@@ -143,15 +136,11 @@ public abstract class SpotlessTaskService implements BuildService<SpotlessTaskSe
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() {
 		try {
 			ratchet.close();
 		} finally {
-			if (getParameters().getHasProjectDependencies().getOrElse(false)) {
-				// Project artifacts can live in directories which are deleted immediately after the build.
-				// Release the URLClassLoader file handles first, which is required on Windows.
-				SpotlessCache.clearOnce(null);
-			}
+			SpotlessCache.clearOnce(null);
 		}
 	}
 	// </GitRatchet>
@@ -176,8 +165,7 @@ public abstract class SpotlessTaskService implements BuildService<SpotlessTaskSe
 
 	public static Provider<SpotlessTaskService> registerIfAbsent(Project project, String suffix) {
 		return project.getGradle().getSharedServices()
-				.registerIfAbsent("SpotlessTaskService" + suffix, SpotlessTaskService.class,
-						spec -> spec.getParameters().getHasProjectDependencies().convention(false));
+				.registerIfAbsent("SpotlessTaskService" + suffix, SpotlessTaskService.class, spec -> {});
 	}
 
 	abstract static class ClientTask extends DefaultTask {

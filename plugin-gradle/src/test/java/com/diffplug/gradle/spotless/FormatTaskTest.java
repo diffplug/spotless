@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2026 DiffPlug
+ * Copyright 2016-2025 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.gradle.api.Project;
+import org.gradle.api.services.BuildServiceParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +39,7 @@ class FormatTaskTest extends ResourceHarness {
 		spotlessTask.setLineEndingsPolicy(project.provider(LineEnding.UNIX::createPolicy));
 		spotlessTask.init(GradleIntegrationHarness.providerOf(new SpotlessTaskService() {
 			@Override
-			public Parameters getParameters() {
+			public BuildServiceParameters.None getParameters() {
 				return null;
 			}
 		}));
