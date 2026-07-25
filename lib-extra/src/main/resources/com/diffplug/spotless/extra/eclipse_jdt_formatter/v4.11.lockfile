@@ -1,0 +1,2 @@
+# Spotless formatter based on Eclipse-JDT 4.11
+org.eclipse.jdt:org.eclipse.jdt.core:3.17.0

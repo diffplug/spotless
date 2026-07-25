@@ -15,19 +15,27 @@
  */
 package com.diffplug.spotless.extra.java;
 
-import java.util.stream.Stream;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.FieldSource;
 
+import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestP2Provisioner;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.extra.EquoBasedStepBuilder;
+import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 class EclipseJdtFormatterStepTest extends EquoResourceHarness {
+
+	private static final List<String> EMBEDDED_LOCKFILE_VERSIONS = List.of("4.9", "4.11", "4.39", EclipseJdtFormatterStep.defaultVersion());
+
 	private static EquoBasedStepBuilder createBuilder() {
 		return EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());
 	}
@@ -37,15 +45,24 @@ class EclipseJdtFormatterStepTest extends EquoResourceHarness {
 	}
 
 	@ParameterizedTest
-	@MethodSource
+	@FieldSource("EMBEDDED_LOCKFILE_VERSIONS")
 	void formatWithVersion(String version) throws Exception {
 		harnessFor(version).test("test.java",
 				"package p; class C{}",
 				"package p;\nclass C {\n}");
 	}
 
-	private static Stream<String> formatWithVersion() {
-		return Stream.of("4.9", EclipseJdtFormatterStep.defaultVersion());
+	@ParameterizedTest
+	@FieldSource("EMBEDDED_LOCKFILE_VERSIONS")
+	void embeddedLockfileVersionsDoNotUseP2(String version) {
+		P2Provisioner p2Provisioner = mock();
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), p2Provisioner);
+		builder.setVersion(version);
+		StepHarnessWithFile.forStep(this, builder.build()).test(
+				"test.java",
+				"package p; class C{}",
+				"package p;\nclass C {\n}");
+		verifyNoInteractions(p2Provisioner);
 	}
 
 	/** New format interface requires source file information to distinguish module-info from compilation unit */
