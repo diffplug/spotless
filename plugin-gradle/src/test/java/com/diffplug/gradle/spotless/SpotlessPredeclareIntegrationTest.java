@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -511,6 +512,149 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 	@Nested
 	class Gradle9Compatibility {
 		@Test
+		void gradle951CanPredeclareKtlintRuleSetProjectFromBuildscript() throws IOException {
+			setFile("settings.gradle.kts").toContent("include(\"ktlint-rules\")");
+			setFile("ktlint-rules/build.gradle.kts").toContent("""
+					plugins { java }
+					repositories { mavenCentral() }
+					dependencies {
+					    compileOnly("com.pinterest.ktlint:ktlint-cli-ruleset-core:1.0.1")
+					    compileOnly("com.pinterest.ktlint:ktlint-rule-engine-core:1.0.1")
+					}
+					""");
+			setFile("ktlint-rules/src/main/java/rules/LocalRuleSetProvider.java")
+					.toContent(localRuleSetProvider("1"));
+			setFile("ktlint-rules/src/main/resources/META-INF/services/com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3")
+					.toContent("rules.LocalRuleSetProvider\n");
+			setFile("build.gradle.kts").toContent("""
+					buildscript {
+					    repositories { mavenCentral() }
+					}
+					plugins {
+					    id("com.diffplug.spotless")
+					}
+					spotless {
+					    predeclareDepsFromBuildscript()
+					    kotlin {
+					        target("src/**/*.kt")
+					        ktlint("1.0.1").customRuleSets(project(":ktlint-rules"))
+					    }
+					}
+					spotlessPredeclare {
+					    kotlin {
+					        ktlint("1.0.1").customRuleSets(project(":ktlint-rules"))
+					    }
+					}
+					""");
+			setFile("src/main/kotlin/Main.kt").toContent("fun main() {}\n");
+			String ruleVersionProperty = "-Dspotless.test.rule.version=" + newFile("rule-version.txt").getAbsolutePath();
+
+			BuildResult firstRun = gradleRunner()
+					.withGradleVersion("9.5.1")
+					.withArguments("spotlessCheck", "--configuration-cache", "--stacktrace", ruleVersionProperty)
+					.build();
+
+			assertThat(firstRun.getOutput()).contains("Configuration cache entry stored.");
+			assertThat(firstRun.task(":ktlint-rules:jar")).isNotNull();
+			assertThat(firstRun.task(":ktlint-rules:jar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+			assertFile("rule-version.txt").hasContent("1");
+
+			setFile("ktlint-rules/src/main/java/rules/LocalRuleSetProvider.java")
+					.toContent(localRuleSetProvider("2"));
+			BuildResult secondRun = gradleRunner()
+					.withGradleVersion("9.5.1")
+					.withArguments("spotlessCheck", "--configuration-cache", "--stacktrace", ruleVersionProperty)
+					.build();
+
+			assertThat(secondRun.getOutput()).contains("Reusing configuration cache.");
+			assertThat(secondRun.task(":ktlint-rules:jar").getOutcome()).isNotEqualTo(TaskOutcome.UP_TO_DATE);
+			assertThat(secondRun.task(":spotlessKotlin").getOutcome()).isNotEqualTo(TaskOutcome.UP_TO_DATE);
+			assertFile("rule-version.txt").hasContent("2");
+		}
+
+		@Test
+		void mixedKtlintProjectDependenciesMustBePredeclared() throws IOException {
+			setFile("settings.gradle.kts").toContent("include(\"ktlint-rules\")");
+			setFile("ktlint-rules/build.gradle.kts").toContent("plugins { java }");
+			setFile("build.gradle.kts").toContent("""
+					buildscript {
+					    repositories { mavenCentral() }
+					}
+					plugins {
+					    id("com.diffplug.spotless")
+					}
+					spotless {
+					    predeclareDepsFromBuildscript()
+					    kotlin {
+					        target("src/**/*.kt")
+					        ktlint("1.0.1").customRuleSets(project(":ktlint-rules"))
+					    }
+					}
+					spotlessPredeclare {
+					    kotlin {
+					        ktlint("1.0.1")
+					    }
+					}
+					""");
+			setFile("src/main/kotlin/Main.kt").toContent("fun main() {}\n");
+
+			BuildResult result = gradleRunner()
+					.withGradleVersion("9.5.1")
+					.withArguments("spotlessCheck", "--configuration-cache", "--stacktrace")
+					.buildAndFail();
+
+			assertThat(result.getOutput())
+					.contains("Add a step with", "projects [:ktlint-rules]", "spotlessPredeclare");
+		}
+
+		@Test
+		void predeclaredKtlintProjectIsNotBuiltForUnrelatedFormat() throws IOException {
+			setFile("settings.gradle.kts").toContent("include(\"ktlint-rules\")");
+			setFile("ktlint-rules/build.gradle.kts").toContent("plugins { java }");
+			setFile("build.gradle.kts").toContent("""
+					buildscript {
+					    repositories { mavenCentral() }
+					}
+					plugins {
+					    id("com.diffplug.spotless")
+					}
+					spotless {
+					    predeclareDepsFromBuildscript()
+					}
+					spotlessPredeclare {
+					    kotlin {
+					        ktlint("1.0.1").customRuleSets(project(":ktlint-rules"))
+					    }
+					}
+					spotless {
+					    java {
+					        target("src/**/*.java")
+					        trimTrailingWhitespace()
+					    }
+					}
+					""");
+			setFile("src/main/java/Main.java").toContent("class Main {}\n");
+
+			BuildResult first = gradleRunner()
+					.withGradleVersion("9.5.1")
+					.withArguments("spotlessJavaCheck", "--configuration-cache", "--stacktrace")
+					.build();
+
+			assertThat(first.getOutput()).contains("Configuration cache entry stored.");
+			assertThat(first.task(":spotlessInternalRegisterDependencies")).isNotNull();
+			assertThat(first.task(":ktlint-rules:jar")).isNull();
+
+			BuildResult second = gradleRunner()
+					.withGradleVersion("9.5.1")
+					.withArguments("spotlessJavaCheck", "--configuration-cache", "--stacktrace")
+					.build();
+
+			assertThat(second.getOutput()).contains("Reusing configuration cache.");
+			assertThat(second.task(":spotlessInternalRegisterDependencies")).isNotNull();
+			assertThat(second.task(":ktlint-rules:jar")).isNull();
+		}
+
+		@Test
 		void issue2599_Gradle951_CanUsePredeclareDepsFromBuildscript() throws IOException {
 			setFile("build.gradle.kts").toContent("""
 					import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
@@ -668,5 +812,38 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 			BuildResult result = gradleRunner().withArguments("help").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 		}
+	}
+
+	private static String localRuleSetProvider(String version) {
+		return """
+				package rules;
+
+				import java.nio.file.Files;
+				import java.nio.file.Path;
+				import java.util.Collections;
+				import java.util.Set;
+
+				import com.pinterest.ktlint.cli.ruleset.core.api.RuleSetProviderV3;
+				import com.pinterest.ktlint.rule.engine.core.api.RuleProvider;
+				import com.pinterest.ktlint.rule.engine.core.api.RuleSetId;
+
+				public final class LocalRuleSetProvider extends RuleSetProviderV3 {
+				    public LocalRuleSetProvider() {
+				        super(new RuleSetId("local-project"));
+				        try {
+				            Files.writeString(
+				                    Path.of(System.getProperty("spotless.test.rule.version")),
+				                    "%s");
+				        } catch (Exception e) {
+				            throw new RuntimeException(e);
+				        }
+				    }
+
+				    @Override
+				    public Set<RuleProvider> getRuleProviders() {
+				        return Collections.emptySet();
+				    }
+				}
+				""".formatted(version);
 	}
 }

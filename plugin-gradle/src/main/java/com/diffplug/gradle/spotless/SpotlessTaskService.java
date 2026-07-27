@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -47,6 +48,7 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.SpotlessCache;
 import com.diffplug.spotless.extra.P2Provisioner;
 
 /**
@@ -58,7 +60,7 @@ import com.diffplug.spotless.extra.P2Provisioner;
 public abstract class SpotlessTaskService implements BuildService<BuildServiceParameters.None>, AutoCloseable, OperationCompletionListener {
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
-	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
+	private final Map<String, GradleProvisioner.DedupingProvisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, P2Provisioner> p2Provisioner = Collections.synchronizedMap(new HashMap<>());
 
 	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
@@ -74,6 +76,29 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			} else {
 				return provisioner.computeIfAbsent(spotless.project.getPath(), unused -> new GradleProvisioner.DedupingProvisioner(GradleProvisioner.forProject(spotless.project)));
 			}
+		}
+	}
+
+	GradleProvisioner.DependencyClasspath dependencyClasspathFor(
+			SpotlessExtension spotless,
+			Collection<String> mavenCoordinates,
+			Collection<String> projectPaths,
+			String strictlyEnforcedCoordinate) {
+		if (spotless instanceof SpotlessExtensionPredeclare) {
+			// spotlessPredeclare owns creation of the configuration.
+			// The resulting classpath is cached under the exact request.
+			return predeclaredProvisioner.dependencyClasspath(mavenCoordinates, projectPaths, strictlyEnforcedCoordinate);
+		} else if (predeclaredProvisioner != null) {
+			// A concrete formatter may only reuse what spotlessPredeclare created.
+			// It must not silently resolve an omitted dependency itself.
+			return predeclaredProvisioner.cachedOnlyDependencyClasspath(mavenCoordinates, projectPaths, strictlyEnforcedCoordinate);
+		} else {
+			// Without predeclaration, resolve using the consuming project's
+			// configurations, dependencies, and repositories.
+			GradleProvisioner.DedupingProvisioner selectedProvisioner = provisioner.computeIfAbsent(
+					spotless.project.getPath(),
+					unused -> new GradleProvisioner.DedupingProvisioner(GradleProvisioner.forProject(spotless.project)));
+			return selectedProvisioner.dependencyClasspath(mavenCoordinates, projectPaths, strictlyEnforcedCoordinate);
 		}
 	}
 
@@ -111,8 +136,12 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	}
 
 	@Override
-	public void close() throws Exception {
-		ratchet.close();
+	public void close() {
+		try {
+			ratchet.close();
+		} finally {
+			SpotlessCache.clearOnce(null);
+		}
 	}
 	// </GitRatchet>
 

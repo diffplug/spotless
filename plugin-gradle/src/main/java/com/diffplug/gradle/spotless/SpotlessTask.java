@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,12 @@ import java.util.Objects;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
@@ -151,6 +153,9 @@ public abstract class SpotlessTask extends DefaultTask {
 			this.target = getProject().files(target);
 		}
 	}
+
+	@Classpath
+	public abstract ConfigurableFileCollection getAdditionalFormatterClasspath();
 
 	protected File cleanDirectory = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(),
 			"spotless-clean/" + getName());
