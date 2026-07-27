@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add support for Java formatting via [`prince-of-space`](https://github.com/agustafson/prince-of-space) with the new `<princeOfSpace>` step. ([#2991](https://github.com/diffplug/spotless/pull/2991))
 ### Changes
 - Bump default `greclipse` version to latest `4.39` -> `4.40`. ([#2989](https://github.com/diffplug/spotless/pull/2989))
 - Bump default `tabletest-formatter` version `1.1.1` -> `1.1.2`.
