@@ -45,4 +45,3 @@ special.forEach { tag ->
 		}
 	}
 }
-

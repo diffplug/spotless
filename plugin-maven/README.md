@@ -1337,17 +1337,19 @@ List of generic configuration `parameters (type/default)`
 the build fails for any of them. You can ignore warnings using this parameter. They will still be logged in the plugin's 
 output.
 * `verify (boolean/true)`: If `true`, the content before and after formatting is parsed to an RDF model and compared for isomorphicity.   
-* `turtleFormatterVersion (string|RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION)`: the version of turtle-formatter to use (see below).
+* `turtleFormatterVersion (string|RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION)`: the version of Cool RDF Formatter to use (see below).
 
 ### Supported RDF formats: only TTL (at the moment)
 
-Formatting TTL is done using [turtle-formatter](https://github.com/atextor/turtle-formatter),
-which is highly configurable (have a look at the [Style Documentation](https://github.com/atextor/turtle-formatter?tab=readme-ov-file#customizing-the-style)) 
+Formatting TTL is done using [Cool RDF Formatter](https://github.com/cool-rdf/cool-rdf/tree/main/cool-rdf-formatter),
+which is highly configurable (have a look at the [Style Documentation](https://github.com/cool-rdf/cool-rdf/tree/main/cool-rdf-formatter))
 and will handle blank nodes the way you'd hope.
 
-The style options can be configured via spotless. Wherever the style wants a URI (for example, for the `predicateOrder`, you can 
-use the abbreviated form if it is a `FormattingStyle.KnownPrefix` (currently `rdf`, `rdfs`, `xsd`, `owl`, `dcterms`)
-Error messages will give you hints. To configure the TTL formatting style, pass the configuration parameters under `<turtle>`
+The style options can be configured via spotless. Wherever the style wants a URI (for example, for the `predicateOrder`, you can
+use the abbreviated form if it is a known `RdfPrefix` from Cool RDF's `Prefixes` enum.
+Error messages will give you hints. To configure the TTL formatting style, pass the configuration parameters under `<turtle>`.
+For example, Cool RDF Formatter versions which support `preserveBlankNodeLabelsAndOrdering` (default true) can set it with
+`<preserveBlankNodeLabelsAndOrdering>false</preserveBlankNodeLabelsAndOrdering>`.Set it to `false`, to use Cool RDF's default behavior (stable blank node ordering).
 
 ### Examples
 Minimal:
@@ -1371,10 +1373,11 @@ Configuring some generic and TTL options:
     <format>
       <failOnWarning>false</failOnWarning>
       <verify>false</verify>
-      <turtleFormatterVersion>1.2.13</turtleFormatterVersion>
+      <turtleFormatterVersion>2.0.0</turtleFormatterVersion>
       <turtle>
         <alignPrefixes>RIGHT</alignPrefixes>
         <enableDoubleFormatting>true</enableDoubleFormatting>
+        <preserveBlankNodeLabelsAndOrdering>false</preserveBlankNodeLabelsAndOrdering>
       </turtle>
     </format>
   </rdf>
@@ -1383,7 +1386,7 @@ Configuring some generic and TTL options:
 ### Libraries and versions
 
 RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version that
-[turtle-formatter](https://github.com/atextor/turtle-formatter) depends on (not necessarily the latest).
+[Cool RDF Formatter](https://github.com/cool-rdf/cool-rdf/tree/main/cool-rdf-formatter) depends on (not necessarily the latest).
 
 ## Protobuf
 

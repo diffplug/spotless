@@ -1,0 +1,11 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.com/ns#> .
+
+ex:aThing ex:has [
+    ex:value "a" ;
+  ] ;
+  ex:has [
+    ex:value "z" ;
+  ] .
+
+

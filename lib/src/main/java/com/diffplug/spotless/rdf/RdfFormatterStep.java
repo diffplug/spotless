@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,18 @@ import java.util.TreeMap;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 
 public class RdfFormatterStep implements Serializable {
-	public static final String LATEST_TURTLE_FORMATTER_VERSION = "1.2.13";
+	public static final String LATEST_TURTLE_FORMATTER_VERSION = "2.0.1";
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private static final String TURTLE_FORMATTER_COORDINATES = "de.atextor:turtle-formatter";
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("cool-rdf-formatter")
+			.add(25, "2.0.1");
+
+	private static final String TURTLE_FORMATTER_COORDINATES = "cool.rdf:cool-rdf-formatter";
 
 	private final JarState.Promised jarState;
 	private final Map<String, String> turtleFormatterStyle;
@@ -51,7 +55,8 @@ public class RdfFormatterStep implements Serializable {
 
 	public static RdfFormatterFunc formatterFunc(State state)
 			throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		return new RdfFormatterFunc(state);
+		var formatterFunc = new RdfFormatterFunc(state);
+		return (RdfFormatterFunc) JVM_SUPPORT.suggestLaterVersionOnError(state.config.getTurtleFormatterVersion(), formatterFunc);
 	}
 
 	public RdfFormatterStep(JarState.Promised jarState, RdfFormatterConfig config,
@@ -59,6 +64,11 @@ public class RdfFormatterStep implements Serializable {
 		this.jarState = jarState;
 		this.turtleFormatterStyle = turtleFormatterStyle;
 		this.config = config;
+		JVM_SUPPORT.assertFormatterSupported(this.config.getTurtleFormatterVersion());
+	}
+
+	static String getDefaultFormatterVersion() {
+		return JVM_SUPPORT.getMinimumRequiredFormatterVersion();
 	}
 
 	public static class State implements Serializable {
@@ -98,7 +108,7 @@ public class RdfFormatterStep implements Serializable {
 			if (!(o instanceof State)) {
 				return false;
 			}
-			State state = (State) o;
+			var state = (State) o;
 			return Objects.equals(getConfig(), state.getConfig()) && Objects.equals(
 					getTurtleFormatterStyle(), state.getTurtleFormatterStyle())
 					&& Objects.equals(
