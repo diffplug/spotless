@@ -56,7 +56,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Git hook (optional)](#git-hook)
   - [Linting](#linting)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -310,6 +310,24 @@ spotless {
     palantirJavaFormat('2.9.0').style("GOOGLE")
     // optional: you can also format Javadocs, requires at least Palantir 2.39.0
     palantirJavaFormat('2.39.0').formatJavadoc(true)
+```
+
+### prince-of-space
+
+[homepage](https://github.com/agustafson/prince-of-space). Requires a JDK 17+ host runtime.
+```gradle
+spotless {
+  java {
+    princeOfSpace()
+    // optional: configure any of the formatter's options
+    princeOfSpace('2.2.0')
+        .indentStyle('SPACES') // or 'TABS'
+        .indentSize(4)
+        .lineLength(120)
+        .wrapStyle('BALANCED') // or 'WIDE', 'NARROW'
+        .closingParenOnNewLine(true)
+        .trailingCommas(false)
+        .javaLanguageLevel(17)
 ```
 
 ### eclipse jdt
