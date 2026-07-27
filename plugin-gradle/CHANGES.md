@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Prevent parallel Gradle input fingerprinting from failing when `toggleOffOn()` wraps a slow lazy formatter step with no matching target files. ([#2994](https://github.com/diffplug/spotless/pull/2994))
 ### Changes
 - Bump default `greclipse` version to latest `4.39` -> `4.40`. ([#2989](https://github.com/diffplug/spotless/pull/2989))
+- Bump default `tabletest-formatter` version `1.1.1` -> `1.1.2`.
 
 ## [8.8.0] - 2026-06-29
 ### Added
