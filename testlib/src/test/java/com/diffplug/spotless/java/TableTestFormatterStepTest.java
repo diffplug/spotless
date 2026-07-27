@@ -25,7 +25,7 @@ import com.diffplug.spotless.TestProvisioner;
 
 class TableTestFormatterStepTest extends ResourceHarness {
 
-	private static final String VERSION = "1.1.1";
+	private static final String VERSION = "1.1.2";
 
 	@Test
 	void behavior() {

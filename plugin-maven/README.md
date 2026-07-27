@@ -409,7 +409,7 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <tableTestFormatter>
-  <version>1.1.1</version> <!-- optional -->
+  <version>1.1.2</version> <!-- optional -->
 </tableTestFormatter>
 ```
 
@@ -545,7 +545,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <tableTestFormatter>
-  <version>1.1.1</version> <!-- optional -->
+  <version>1.1.2</version> <!-- optional -->
 </tableTestFormatter>
 ```
 
@@ -1247,7 +1247,7 @@ When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.edit
       <include>src/**/*.table</include>
     </includes>
     <tableTestFormatter>
-      <version>1.1.1</version> <!-- optional -->
+      <version>1.1.2</version> <!-- optional -->
     </tableTestFormatter>
   </tableTest>
 </configuration>
