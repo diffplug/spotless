@@ -141,8 +141,7 @@ public abstract class EquoBasedStepBuilder {
 		return FormatterStep.create(formatterName, roundtrippableState, EquoStep::state, stateToFormatter);
 	}
 
-	@Nullable
-	private List<String> readEmbeddedLockfileDependencies(String version) {
+	private @Nullable List<String> readEmbeddedLockfileDependencies(String version) {
 		String lockfileResourcePath = lockfileResourcePath(version);
 		if (lockfileResourcePath == null) {
 			return null;
@@ -186,8 +185,7 @@ public abstract class EquoBasedStepBuilder {
 	 * @return absolute classpath resource path of the embedded lockfile, or {@code null} to use
 	 * P2 provisioning
 	 */
-	@Nullable
-	protected String lockfileResourcePath(String version) {
+	protected @Nullable String lockfileResourcePath(String version) {
 		return null;
 	}
 

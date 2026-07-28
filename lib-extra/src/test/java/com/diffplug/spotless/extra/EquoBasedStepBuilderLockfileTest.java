@@ -28,8 +28,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.collect.ImmutableMap;
-import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.StepHarness;
 
 import dev.equo.solstice.p2.P2Model;
 

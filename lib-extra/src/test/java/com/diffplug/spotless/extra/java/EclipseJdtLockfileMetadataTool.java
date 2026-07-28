@@ -90,8 +90,8 @@ public class EclipseJdtLockfileMetadataTool {
 	private static final int MAX_TRAVERSAL = 200;
 
 	private static final HttpClient HTTP = HttpClient.newBuilder()
-		.followRedirects(Redirect.NORMAL)
-		.build();
+			.followRedirects(Redirect.NORMAL)
+			.build();
 
 	private static void run(boolean update) {
 		Path lockfileDir = lockfileDir();
