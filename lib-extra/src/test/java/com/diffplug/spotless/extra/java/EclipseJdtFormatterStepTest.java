@@ -34,7 +34,17 @@ import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 class EclipseJdtFormatterStepTest extends EquoResourceHarness {
 
-	private static final List<String> EMBEDDED_LOCKFILE_VERSIONS = List.of("4.39", EclipseJdtFormatterStep.defaultVersion());
+	/**
+	 * Embedded lockfile coverage includes both dependency styles:
+	 * <ul>
+	 * <li>Range-based Maven POM dependencies: 4.9, 4.11, and 4.25</li>
+	 * <li>Exact Maven POM dependencies: 4.26, 4.39, and the default version</li>
+	 * </ul>
+	 * The cutoff aligns with
+	 * <a href="https://github.com/eclipse-platform/eclipse.platform.releng/issues/135">eclipse-platform/eclipse.platform.releng#135</a>,
+	 * which switched Maven dependency mapping from OSGi ranges to resolved concrete versions.
+	 */
+	private static final List<String> EMBEDDED_LOCKFILE_VERSIONS = List.of("4.9", "4.11", "4.25", "4.26", "4.39", EclipseJdtFormatterStep.defaultVersion());
 
 	private static EquoBasedStepBuilder createBuilder() {
 		return EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());

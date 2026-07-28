@@ -15,17 +15,26 @@
  */
 package com.diffplug.spotless.extra;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.assertArg;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.Provisioner;
@@ -68,6 +77,25 @@ class EquoBasedStepBuilderLockfileTest {
 				() -> StepHarness.forStep(builder.build()).test("class T {}", "class T {}"));
 		assertTrue(exception.getMessage().contains("No dependencies defined in lockfile"));
 		verifyNoInteractions(p2Provisioner, mavenProvisioner);
+	}
+
+	@Test
+	void embeddedLockfileUsesWithoutTransitivesAndAllCoordinates(@TempDir Path tempDir) throws Exception {
+		P2Provisioner p2Provisioner = mock();
+		Provisioner mavenProvisioner = mock();
+		File dummyJar = tempDir.resolve("spotless-lockfile-test.jar").toFile();
+		assertTrue(dummyJar.createNewFile());
+		when(mavenProvisioner.provisionWithTransitives(eq(false), anyCollection())).thenReturn(Set.of(dummyJar));
+		EquoBasedStepBuilder builder = builderWithLockfilePath("/com/diffplug/spotless/extra/two-deps.lockfile",
+				p2Provisioner, mavenProvisioner);
+
+		StepHarness.forStep(builder.build()).test("class T {}", "class T {}");
+
+		verify(mavenProvisioner).provisionWithTransitives(eq(false), assertArg((Collection<String> coords) -> assertThat(coords)
+				.containsExactlyInAnyOrder(
+						"org.eclipse.jdt:org.eclipse.jdt.core:3.45.0",
+						"org.eclipse.jdt:ecj:3.45.0")));
+		verifyNoInteractions(p2Provisioner);
 	}
 
 	private static EquoBasedStepBuilder builderWithLockfilePath(String lockfilePath, P2Provisioner p2Provisioner, Provisioner mavenProvisioner) {

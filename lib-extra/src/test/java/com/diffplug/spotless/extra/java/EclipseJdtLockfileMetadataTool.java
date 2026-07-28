@@ -15,39 +15,20 @@
  */
 package com.diffplug.spotless.extra.java;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpClient.Redirect;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.StringJoiner;
-import java.util.jar.JarInputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import dev.equo.solstice.p2.P2ClientCache;
+import dev.equo.solstice.p2.P2Model;
+import dev.equo.solstice.p2.P2QueryCache;
+import dev.equo.solstice.p2.P2QueryResult;
 
 /**
  * Executable class for validating or updating embedded JDT lockfiles from Eclipse P2 metadata.
@@ -60,13 +41,9 @@ import org.xml.sax.InputSource;
  */
 public class EclipseJdtLockfileMetadataTool {
 
-	// Lockfiles are only provided for Eclipse versions whose org.eclipse.jdt.core POM on Maven Central
-	// declares exact transitive dependency versions rather than version ranges (e.g. "[3.12.0,4.0.0)").
-	// org.eclipse.jdt.core:3.32.0 is the first version on Maven Central with exact version dependencies;
-	// the likely cause is eclipse-platform/eclipse.platform.releng#135 (issue #128), which updated the
-	// CBI aggregator configuration to map bundle requirements to their resolved versions rather than the
-	// OSGi version ranges from MANIFEST.MF.
-	private static final List<String> TARGET_VERSIONS = List.of("4.39", "4.40");
+	// Full explicit lockfiles can be produced for any target by taking Solstice's P2-resolved Maven
+	// coordinates directly (already fully version-resolved), then writing them as a lockfile.
+	private static final List<String> TARGET_VERSIONS = List.of("4.9", "4.11", "4.25", "4.26", "4.39", "4.40");
 
 	/**
 	 * Verifies the JDT lockfiles at {@link #TARGET_VERSIONS} against Eclipse P2 metadata.
@@ -93,13 +70,10 @@ public class EclipseJdtLockfileMetadataTool {
 	}
 
 	private static final String JDT_ID = "org.eclipse.jdt.core";
-	private static final String JDT_MAVEN_PREFIX = "org.eclipse.jdt:org.eclipse.jdt.core:";
-	private static final Pattern MAJOR_MINOR_PATCH = Pattern.compile("^([0-9]+\\.[0-9]+\\.[0-9]+).*$");
-	private static final int MAX_TRAVERSAL = 200;
-
-	private static final HttpClient HTTP = HttpClient.newBuilder()
-			.followRedirects(Redirect.NORMAL)
-			.build();
+	private static final String JDT_MAVEN_KEY = "org.eclipse.jdt:org.eclipse.jdt.core";
+	private static final List<String> ECLIPSE_UPDATE_BASE_URLS = List.of(
+			"https://download.eclipse.org/eclipse/updates/",
+			"https://archive.eclipse.org/eclipse/updates/");
 
 	private static void run(boolean update) {
 		Path lockfileDir = lockfileDir();
@@ -112,10 +86,9 @@ public class EclipseJdtLockfileMetadataTool {
 			String eclipseVersion = entry.getKey();
 			Path lockfilePath = entry.getValue();
 			try {
-				String bundleVersion = resolveBundleVersion(eclipseVersion);
-				String rootCoordinate = JDT_MAVEN_PREFIX + normalizeToMavenVersion(bundleVersion);
+				List<String> allCoordinates = resolveTransitiveClosure(eclipseVersion);
+				String rootCoordinate = allCoordinates.get(0);
 				if (update) {
-					List<String> allCoordinates = resolveTransitiveClosure(rootCoordinate);
 					Files.writeString(lockfilePath, lockfileContent(eclipseVersion, allCoordinates), StandardCharsets.UTF_8);
 					System.out.println("WROTE   v" + eclipseVersion + " -> " + allCoordinates.size() + " artifact(s), root: " + rootCoordinate);
 				} else {
@@ -124,13 +97,14 @@ public class EclipseJdtLockfileMetadataTool {
 						failures++;
 						continue;
 					}
-					String actualRootCoordinate = lockfileRootCoordinate(lockfilePath);
-					if (!rootCoordinate.equals(actualRootCoordinate)) {
-						System.err.println("MISMATCH v" + eclipseVersion + " -> expected root: " + rootCoordinate + " actual: " + actualRootCoordinate);
+					List<String> actualCoordinates = lockfileCoordinates(lockfilePath);
+					String mismatch = mismatchMessage(eclipseVersion, allCoordinates, actualCoordinates);
+					if (mismatch != null) {
+						System.err.println(mismatch);
 						failures++;
 						continue;
 					}
-					System.out.println("OK      v" + eclipseVersion + " -> " + actualRootCoordinate);
+					System.out.println("OK      v" + eclipseVersion + " -> " + rootCoordinate + " (" + allCoordinates.size() + " coordinates)");
 				}
 			} catch (Exception e) {
 				System.err.println("ERROR   v" + eclipseVersion + " -> " + e.getMessage());
@@ -159,14 +133,27 @@ public class EclipseJdtLockfileMetadataTool {
 		return joiner.toString();
 	}
 
-	private static String lockfileRootCoordinate(Path lockfilePath) throws IOException {
+	private static List<String> lockfileCoordinates(Path lockfilePath) throws IOException {
 		try (var lines = Files.lines(lockfilePath, StandardCharsets.UTF_8)) {
-			return lines.map(String::trim)
+			List<String> coordinates = lines.map(String::trim)
 					.filter(line -> !line.isEmpty())
 					.filter(line -> !line.startsWith("#"))
-					.findFirst()
-					.orElseThrow(() -> new IllegalArgumentException("No dependency coordinate found in " + lockfilePath));
+					.toList();
+			if (coordinates.isEmpty()) {
+				throw new IllegalArgumentException("No dependency coordinate found in " + lockfilePath);
+			}
+			return coordinates;
 		}
+	}
+
+	static String mismatchMessage(String eclipseVersion, List<String> expectedCoordinates, List<String> actualCoordinates) {
+		if (expectedCoordinates.equals(actualCoordinates)) {
+			return null;
+		}
+		String expectedRoot = expectedCoordinates.isEmpty() ? "<empty>" : expectedCoordinates.get(0);
+		String actualRoot = actualCoordinates.isEmpty() ? "<empty>" : actualCoordinates.get(0);
+		return "MISMATCH v" + eclipseVersion + " -> expected root: " + expectedRoot + " (" + expectedCoordinates.size()
+				+ " coordinates), actual: " + actualRoot + " (" + actualCoordinates.size() + " coordinates)";
 	}
 
 	private static Path lockfileDir() {
@@ -182,94 +169,61 @@ public class EclipseJdtLockfileMetadataTool {
 	}
 
 	/**
-	 * Resolves the full Maven transitive closure of the given root coordinate using
-	 * Maven Central POM traversal, with highest-version-wins conflict resolution.
+	 * Resolves full, explicit Maven coordinates from the P2 query result for the given Eclipse version.
 	 * <p>
-	 * Optional dependencies and test/provided/system-scoped dependencies are excluded.
-	 * The root coordinate appears first in the result; remaining entries are sorted.
+	 * This supports both exact and range-based historical metadata because the P2 solver has already
+	 * chosen concrete versions before exposing Maven coordinates.
 	 */
-	private static List<String> resolveTransitiveClosure(String rootCoordinate) throws Exception {
+	private static List<String> resolveTransitiveClosure(String eclipseVersion) throws Exception {
+		P2QueryResult query = queryJdtFromP2(eclipseVersion);
+
 		// "g:a" -> selected version
 		Map<String, String> selected = new LinkedHashMap<>();
-		ArrayDeque<String[]> queue = new ArrayDeque<>();
-		queue.add(rootCoordinate.split(":"));
-
-		while (!queue.isEmpty()) {
-			String[] parts = queue.removeFirst();
+		for (String coordinate : query.getJarsOnMavenCentral()) {
+			String[] parts = coordinate.split(":");
+			if (parts.length != 3) {
+				throw new IllegalStateException("Expected Maven coordinate g:a:v but got: " + coordinate);
+			}
 			String groupId = parts[0], artifactId = parts[1], version = parts[2];
 			String key = groupId + ":" + artifactId;
-
 			String existing = selected.get(key);
-			if (existing != null && compareVersions(existing, version) >= 0) {
-				continue;
-			}
-			selected.put(key, version);
-
-			List<String[]> deps = fetchNonOptionalDepsFromPom(groupId, artifactId, version);
-			for (String[] dep : deps) {
-				String depKey = dep[0] + ":" + dep[1];
-				String existingDepVersion = selected.get(depKey);
-				if (existingDepVersion == null || compareVersions(existingDepVersion, dep[2]) < 0) {
-					queue.add(dep);
-				}
+			if (existing == null || compareVersions(existing, version) < 0) {
+				selected.put(key, version);
 			}
 		}
-
-		String[] rootParts = rootCoordinate.split(":");
-		String rootKey = rootParts[0] + ":" + rootParts[1];
+		String rootVersion = selected.remove(JDT_MAVEN_KEY);
+		if (rootVersion == null) {
+			throw new IllegalStateException("P2 result for Eclipse " + eclipseVersion + " did not contain " + JDT_MAVEN_KEY);
+		}
 		List<String> result = new ArrayList<>();
-		result.add(rootCoordinate);
+		result.add(JDT_MAVEN_KEY + ":" + rootVersion);
 		selected.entrySet().stream()
-				.filter(e -> !e.getKey().equals(rootKey))
 				.map(e -> e.getKey() + ":" + e.getValue())
 				.sorted()
 				.forEach(result::add);
 		return result;
 	}
 
-	private static List<String[]> fetchNonOptionalDepsFromPom(String groupId, String artifactId, String version) throws Exception {
-		String path = groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".pom";
-		Optional<byte[]> bytes = download("https://repo1.maven.org/maven2/" + path);
-		if (bytes.isEmpty()) {
-			System.err.println("WARNING: POM not found on Maven Central: " + groupId + ":" + artifactId + ":" + version);
-			return List.of();
+	private static P2QueryResult queryJdtFromP2(String eclipseVersion) throws Exception {
+		Exception lastError = null;
+		for (String baseUrl : ECLIPSE_UPDATE_BASE_URLS) {
+			try {
+				P2Model model = new P2Model();
+				addPlatformRepo(model, eclipseVersion, baseUrl);
+				model.getInstall().add(JDT_ID);
+				return model.query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
+			} catch (Exception e) {
+				lastError = e;
+			}
 		}
-		return parseNonOptionalDepsFromPom(new String(bytes.get(), StandardCharsets.UTF_8));
+		throw new IllegalStateException("Failed to query Eclipse " + eclipseVersion + " from known update sites", lastError);
 	}
 
-	private static List<String[]> parseNonOptionalDepsFromPom(String pomXml) throws Exception {
-		Document doc = parseXml(pomXml);
-		var xpath = XPathFactory.newInstance().newXPath();
-		NodeList deps = (NodeList) xpath.evaluate("/project/dependencies/dependency", doc, XPathConstants.NODESET);
-		List<String[]> result = new ArrayList<>();
-		for (int i = 0; i < deps.getLength(); i++) {
-			Element dep = (Element) deps.item(i);
-			String g = textContent(dep, "groupId");
-			String a = textContent(dep, "artifactId");
-			String v = textContent(dep, "version");
-			String scope = textContent(dep, "scope");
-			String optional = textContent(dep, "optional");
-			String type = textContent(dep, "type");
-
-			if ("true".equals(optional))
-				continue;
-			if ("test".equals(scope) || "provided".equals(scope) || "system".equals(scope))
-				continue;
-			if ("pom".equals(type))
-				continue;
-			if (v.isEmpty() || v.startsWith("[") || v.startsWith("(") || v.startsWith("$"))
-				continue;
-			if (g.isEmpty() || a.isEmpty())
-				continue;
-
-			result.add(new String[]{g, a, v});
+	private static void addPlatformRepo(P2Model model, String version, String baseUrl) {
+		if (!version.startsWith("4.")) {
+			throw new IllegalArgumentException("Expected 4.x");
 		}
-		return result;
-	}
-
-	private static String textContent(Element parent, String tag) {
-		var nodes = parent.getElementsByTagName(tag);
-		return nodes.getLength() > 0 ? nodes.item(0).getTextContent().trim() : "";
+		model.addP2Repo(baseUrl + version + "/");
 	}
 
 	/** Compares two version strings numerically, segment by segment. Returns positive if v1 &gt; v2. */
@@ -292,112 +246,6 @@ public class EclipseJdtLockfileMetadataTool {
 		} catch (NumberFormatException e) {
 			return 0;
 		}
-	}
-
-	private static String resolveBundleVersion(String eclipseVersion) throws Exception {
-		ArrayDeque<String> queue = new ArrayDeque<>();
-		Set<String> visited = new LinkedHashSet<>();
-		queue.add("https://download.eclipse.org/eclipse/updates/" + eclipseVersion + "/");
-		int traversed = 0;
-		while (!queue.isEmpty()) {
-			String repoUrl = queue.removeFirst();
-			if (!visited.add(repoUrl)) {
-				continue;
-			}
-			traversed++;
-			if (traversed > MAX_TRAVERSAL) {
-				throw new IllegalStateException("Traversal exceeded " + MAX_TRAVERSAL + " repositories while resolving Eclipse " + eclipseVersion);
-			}
-			Optional<String> contentXml = readJarEntry(repoUrl, "content.jar", "content.xml");
-			if (contentXml.isPresent()) {
-				String bundleVersion = extractBundleVersion(contentXml.get());
-				if (bundleVersion != null) {
-					return bundleVersion;
-				}
-			}
-			Optional<String> compositeXml = readJarEntry(repoUrl, "compositeContent.jar", "compositeContent.xml");
-			if (compositeXml.isPresent()) {
-				queue.addAll(compositeChildren(repoUrl, compositeXml.get(), visited));
-			}
-		}
-		throw new IllegalStateException("Unable to resolve " + JDT_ID + " from Eclipse " + eclipseVersion + " update site");
-	}
-
-	private static Optional<String> readJarEntry(String repoUrl, String jarName, String entryName) throws Exception {
-		Optional<byte[]> bytes = download(repoUrl + jarName);
-		if (bytes.isEmpty()) {
-			return Optional.empty();
-		}
-		try (JarInputStream jarInputStream = new JarInputStream(new ByteArrayInputStream(bytes.get()))) {
-			var entry = jarInputStream.getNextJarEntry();
-			while (entry != null) {
-				if (!entry.isDirectory() && entryName.equals(entry.getName())) {
-					return Optional.of(new String(jarInputStream.readAllBytes(), StandardCharsets.UTF_8));
-				}
-				entry = jarInputStream.getNextJarEntry();
-			}
-		}
-		throw new IllegalStateException("Entry " + entryName + " not found in " + repoUrl + jarName);
-	}
-
-	private static Optional<byte[]> download(String url) throws Exception {
-		HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
-		HttpResponse<byte[]> response = HTTP.send(request, HttpResponse.BodyHandlers.ofByteArray());
-		if (response.statusCode() == 200) {
-			return Optional.of(response.body());
-		}
-		if (response.statusCode() == 404) {
-			return Optional.empty();
-		}
-		throw new IOException("Unexpected HTTP status " + response.statusCode() + " from " + url);
-	}
-
-	private static String extractBundleVersion(String contentXml) throws Exception {
-		Document document = parseXml(contentXml);
-		var xpath = XPathFactory.newInstance().newXPath();
-		String value = (String) xpath.evaluate("//unit[@id='" + JDT_ID + "']/@version", document, XPathConstants.STRING);
-		return value.isBlank() ? null : value;
-	}
-
-	private static List<String> compositeChildren(String parentRepoUrl, String compositeXml, Set<String> visited) throws Exception {
-		Document document = parseXml(compositeXml);
-		var xpath = XPathFactory.newInstance().newXPath();
-		var nodes = (NodeList) xpath.evaluate("//child/@location", document, XPathConstants.NODESET);
-		List<String> children = new ArrayList<>(nodes.getLength());
-		for (int i = 0; i < nodes.getLength(); i++) {
-			String location = nodes.item(i).getNodeValue();
-			String childUrl = parentRepoUrl + trimTrailingSlash(location) + "/";
-			if (!visited.contains(childUrl)) {
-				children.add(childUrl);
-			}
-		}
-		return children;
-	}
-
-	private static String trimTrailingSlash(String value) {
-		return value.endsWith("/") ? value.substring(0, value.length() - 1) : value;
-	}
-
-	private static Document parseXml(String xml) throws Exception {
-		var factory = DocumentBuilderFactory.newInstance();
-		// Disable DTDs/external entities and enable secure processing to prevent XXE
-		factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-		factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-		factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-		factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-		factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-		factory.setExpandEntityReferences(false);
-		factory.setNamespaceAware(false);
-		var builder = factory.newDocumentBuilder();
-		return builder.parse(new InputSource(new StringReader(xml)));
-	}
-
-	private static String normalizeToMavenVersion(String bundleVersion) {
-		Matcher matcher = MAJOR_MINOR_PATCH.matcher(bundleVersion);
-		if (!matcher.matches()) {
-			throw new IllegalArgumentException("Unexpected org.eclipse.jdt.core bundle version: " + bundleVersion);
-		}
-		return matcher.group(1);
 	}
 
 }
