@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.jar.JarInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +45,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -58,7 +60,13 @@ import org.xml.sax.InputSource;
  */
 public class EclipseJdtLockfileMetadataTool {
 
-	private static final List<String> TARGET_VERSIONS = List.of("4.9", "4.11", "4.39", "4.40");
+	// Lockfiles are only provided for Eclipse versions whose org.eclipse.jdt.core POM on Maven Central
+	// declares exact transitive dependency versions rather than version ranges (e.g. "[3.12.0,4.0.0)").
+	// org.eclipse.jdt.core:3.32.0 is the first version on Maven Central with exact version dependencies;
+	// the likely cause is eclipse-platform/eclipse.platform.releng#135 (issue #128), which updated the
+	// CBI aggregator configuration to map bundle requirements to their resolved versions rather than the
+	// OSGi version ranges from MANIFEST.MF.
+	private static final List<String> TARGET_VERSIONS = List.of("4.39", "4.40");
 
 	/**
 	 * Verifies the JDT lockfiles at {@link #TARGET_VERSIONS} against Eclipse P2 metadata.
@@ -105,23 +113,24 @@ public class EclipseJdtLockfileMetadataTool {
 			Path lockfilePath = entry.getValue();
 			try {
 				String bundleVersion = resolveBundleVersion(eclipseVersion);
-				String expectedCoordinate = JDT_MAVEN_PREFIX + normalizeToMavenVersion(bundleVersion);
+				String rootCoordinate = JDT_MAVEN_PREFIX + normalizeToMavenVersion(bundleVersion);
 				if (update) {
-					Files.writeString(lockfilePath, lockfileContent(eclipseVersion, expectedCoordinate), StandardCharsets.UTF_8);
-					System.out.println("WROTE   v" + eclipseVersion + " -> " + expectedCoordinate);
+					List<String> allCoordinates = resolveTransitiveClosure(rootCoordinate);
+					Files.writeString(lockfilePath, lockfileContent(eclipseVersion, allCoordinates), StandardCharsets.UTF_8);
+					System.out.println("WROTE   v" + eclipseVersion + " -> " + allCoordinates.size() + " artifact(s), root: " + rootCoordinate);
 				} else {
 					if (!Files.exists(lockfilePath)) {
-						System.err.println("MISSING v" + eclipseVersion + " -> " + lockfilePath + " (expected: " + expectedCoordinate + ")");
+						System.err.println("MISSING v" + eclipseVersion + " -> " + lockfilePath + " (expected root: " + rootCoordinate + ")");
 						failures++;
 						continue;
 					}
-					String actualCoordinate = lockfileCoordinate(lockfilePath);
-					if (!expectedCoordinate.equals(actualCoordinate)) {
-						System.err.println("MISMATCH v" + eclipseVersion + " -> expected: " + expectedCoordinate + " actual: " + actualCoordinate);
+					String actualRootCoordinate = lockfileRootCoordinate(lockfilePath);
+					if (!rootCoordinate.equals(actualRootCoordinate)) {
+						System.err.println("MISMATCH v" + eclipseVersion + " -> expected root: " + rootCoordinate + " actual: " + actualRootCoordinate);
 						failures++;
 						continue;
 					}
-					System.out.println("OK      v" + eclipseVersion + " -> " + actualCoordinate);
+					System.out.println("OK      v" + eclipseVersion + " -> " + actualRootCoordinate);
 				}
 			} catch (Exception e) {
 				System.err.println("ERROR   v" + eclipseVersion + " -> " + e.getMessage());
@@ -143,11 +152,14 @@ public class EclipseJdtLockfileMetadataTool {
 		return targets;
 	}
 
-	private static String lockfileContent(String eclipseVersion, String coordinate) {
-		return "# Spotless formatter based on Eclipse-JDT " + eclipseVersion + "\n" + coordinate + "\n";
+	private static String lockfileContent(String eclipseVersion, List<String> coordinates) {
+		String prefix = "# Spotless formatter based on Eclipse-JDT " + eclipseVersion + "\n";
+		StringJoiner joiner = new StringJoiner("\n", prefix, "\n");
+		coordinates.forEach(joiner::add);
+		return joiner.toString();
 	}
 
-	private static String lockfileCoordinate(Path lockfilePath) throws IOException {
+	private static String lockfileRootCoordinate(Path lockfilePath) throws IOException {
 		try (var lines = Files.lines(lockfilePath, StandardCharsets.UTF_8)) {
 			return lines.map(String::trim)
 					.filter(line -> !line.isEmpty())
@@ -167,6 +179,119 @@ public class EclipseJdtLockfileMetadataTool {
 			return fromLibExtra;
 		}
 		throw new IllegalStateException("Unable to locate eclipse_jdt_formatter resource directory");
+	}
+
+	/**
+	 * Resolves the full Maven transitive closure of the given root coordinate using
+	 * Maven Central POM traversal, with highest-version-wins conflict resolution.
+	 * <p>
+	 * Optional dependencies and test/provided/system-scoped dependencies are excluded.
+	 * The root coordinate appears first in the result; remaining entries are sorted.
+	 */
+	private static List<String> resolveTransitiveClosure(String rootCoordinate) throws Exception {
+		// "g:a" -> selected version
+		Map<String, String> selected = new LinkedHashMap<>();
+		ArrayDeque<String[]> queue = new ArrayDeque<>();
+		queue.add(rootCoordinate.split(":"));
+
+		while (!queue.isEmpty()) {
+			String[] parts = queue.removeFirst();
+			String groupId = parts[0], artifactId = parts[1], version = parts[2];
+			String key = groupId + ":" + artifactId;
+
+			String existing = selected.get(key);
+			if (existing != null && compareVersions(existing, version) >= 0) {
+				continue;
+			}
+			selected.put(key, version);
+
+			List<String[]> deps = fetchNonOptionalDepsFromPom(groupId, artifactId, version);
+			for (String[] dep : deps) {
+				String depKey = dep[0] + ":" + dep[1];
+				String existingDepVersion = selected.get(depKey);
+				if (existingDepVersion == null || compareVersions(existingDepVersion, dep[2]) < 0) {
+					queue.add(dep);
+				}
+			}
+		}
+
+		String[] rootParts = rootCoordinate.split(":");
+		String rootKey = rootParts[0] + ":" + rootParts[1];
+		List<String> result = new ArrayList<>();
+		result.add(rootCoordinate);
+		selected.entrySet().stream()
+				.filter(e -> !e.getKey().equals(rootKey))
+				.map(e -> e.getKey() + ":" + e.getValue())
+				.sorted()
+				.forEach(result::add);
+		return result;
+	}
+
+	private static List<String[]> fetchNonOptionalDepsFromPom(String groupId, String artifactId, String version) throws Exception {
+		String path = groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".pom";
+		Optional<byte[]> bytes = download("https://repo1.maven.org/maven2/" + path);
+		if (bytes.isEmpty()) {
+			System.err.println("WARNING: POM not found on Maven Central: " + groupId + ":" + artifactId + ":" + version);
+			return List.of();
+		}
+		return parseNonOptionalDepsFromPom(new String(bytes.get(), StandardCharsets.UTF_8));
+	}
+
+	private static List<String[]> parseNonOptionalDepsFromPom(String pomXml) throws Exception {
+		Document doc = parseXml(pomXml);
+		var xpath = XPathFactory.newInstance().newXPath();
+		NodeList deps = (NodeList) xpath.evaluate("/project/dependencies/dependency", doc, XPathConstants.NODESET);
+		List<String[]> result = new ArrayList<>();
+		for (int i = 0; i < deps.getLength(); i++) {
+			Element dep = (Element) deps.item(i);
+			String g = textContent(dep, "groupId");
+			String a = textContent(dep, "artifactId");
+			String v = textContent(dep, "version");
+			String scope = textContent(dep, "scope");
+			String optional = textContent(dep, "optional");
+			String type = textContent(dep, "type");
+
+			if ("true".equals(optional))
+				continue;
+			if ("test".equals(scope) || "provided".equals(scope) || "system".equals(scope))
+				continue;
+			if ("pom".equals(type))
+				continue;
+			if (v.isEmpty() || v.startsWith("[") || v.startsWith("(") || v.startsWith("$"))
+				continue;
+			if (g.isEmpty() || a.isEmpty())
+				continue;
+
+			result.add(new String[]{g, a, v});
+		}
+		return result;
+	}
+
+	private static String textContent(Element parent, String tag) {
+		var nodes = parent.getElementsByTagName(tag);
+		return nodes.getLength() > 0 ? nodes.item(0).getTextContent().trim() : "";
+	}
+
+	/** Compares two version strings numerically, segment by segment. Returns positive if v1 &gt; v2. */
+	private static int compareVersions(String v1, String v2) {
+		String[] p1 = v1.split("\\.");
+		String[] p2 = v2.split("\\.");
+		int len = Math.max(p1.length, p2.length);
+		for (int i = 0; i < len; i++) {
+			int n1 = i < p1.length ? parseVersionSegment(p1[i]) : 0;
+			int n2 = i < p2.length ? parseVersionSegment(p2[i]) : 0;
+			if (n1 != n2)
+				return Integer.compare(n1, n2);
+		}
+		return 0;
+	}
+
+	private static int parseVersionSegment(String segment) {
+		try {
+			return Integer.parseInt(segment);
+		} catch (NumberFormatException e) {
+			return 0;
+		}
 	}
 
 	private static String resolveBundleVersion(String eclipseVersion) throws Exception {

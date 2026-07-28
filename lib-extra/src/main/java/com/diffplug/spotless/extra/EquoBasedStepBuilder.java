@@ -128,7 +128,7 @@ public abstract class EquoBasedStepBuilder {
 		var roundtrippableState = new EquoStep(formatterVersion, settingProperties, settingXml, FileSignature.promise(settingsFiles), JarState.promise(() -> {
 			List<String> lockfileDependencies = readEmbeddedLockfileDependencies(formatterVersion);
 			if (lockfileDependencies != null) {
-				return JarState.from(lockfileDependencies, mavenProvisioner);
+				return JarState.withoutTransitives(lockfileDependencies, mavenProvisioner);
 			}
 			P2Model model = createModelWithMirrors();
 			P2ModelWrapper modelWrapper = P2ModelWrapper.wrap(model);

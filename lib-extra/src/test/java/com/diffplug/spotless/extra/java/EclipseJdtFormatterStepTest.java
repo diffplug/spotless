@@ -34,7 +34,7 @@ import com.diffplug.spotless.extra.eclipse.EquoResourceHarness;
 
 class EclipseJdtFormatterStepTest extends EquoResourceHarness {
 
-	private static final List<String> EMBEDDED_LOCKFILE_VERSIONS = List.of("4.9", "4.11", "4.39", EclipseJdtFormatterStep.defaultVersion());
+	private static final List<String> EMBEDDED_LOCKFILE_VERSIONS = List.of("4.39", EclipseJdtFormatterStep.defaultVersion());
 
 	private static EquoBasedStepBuilder createBuilder() {
 		return EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());
