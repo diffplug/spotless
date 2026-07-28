@@ -1,0 +1,8 @@
+@prefix ex: <http://example.com/ns#> .
+
+ex:aThing ex:has [
+    ex:value "z" ;
+  ] ;
+  ex:has [
+    ex:value "a" ;
+  ] .

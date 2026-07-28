@@ -3,11 +3,17 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Changes
+- Add embedded lockfiles to Eclipse JDT (4.9, 4.11, 4.39, 4.40), bump version to latest `4.39` -> `4.40`. ([#1996](https://github.com/diffplug/spotless/issues/1996))
+
+## [8.9.0] - 2026-07-27
+### Added
+- Add support for Java formatting via [`prince-of-space`](https://github.com/agustafson/prince-of-space) with the new `princeOfSpace()` step. ([#2991](https://github.com/diffplug/spotless/pull/2991))
 ### Fixed
 - Prevent parallel Gradle input fingerprinting from failing when `toggleOffOn()` wraps a slow lazy formatter step with no matching target files. ([#2994](https://github.com/diffplug/spotless/pull/2994))
 ### Changes
 - Bump default `greclipse` version to latest `4.39` -> `4.40`. ([#2989](https://github.com/diffplug/spotless/pull/2989))
-- Add embedded lockfiles to Eclipse JDT (4.9, 4.11, 4.39, 4.40), bump version to latest `4.39` -> `4.40`. ([#1996](https://github.com/diffplug/spotless/issues/1996))
+- Bump default `tabletest-formatter` version `1.1.1` -> `1.1.2`.
 
 ## [8.8.0] - 2026-06-29
 ### Added

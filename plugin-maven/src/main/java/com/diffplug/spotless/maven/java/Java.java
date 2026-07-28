@@ -71,6 +71,10 @@ public class Java extends FormatterFactory {
 		addStepFactory(palantirJavaFormat);
 	}
 
+	public void addPrinceOfSpace(PrinceOfSpace princeOfSpace) {
+		addStepFactory(princeOfSpace);
+	}
+
 	public void addRemoveUnusedImports(RemoveUnusedImports removeUnusedImports) {
 		addStepFactory(removeUnusedImports);
 	}

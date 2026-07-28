@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![MavenCentral](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-3.8.0-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/3.8.0/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-3.9.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/3.9.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -40,7 +40,7 @@ user@machine repo % mvn spotless:check
   - [Git hook (optional)](#git-hook)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
+  - [Java](#java) ([google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -293,6 +293,23 @@ any other maven phase (i.e. compile) then it can be configured as below;
 </palantirJavaFormat>
 ```
 
+### prince-of-space
+
+[homepage](https://github.com/agustafson/prince-of-space). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/PrinceOfSpace.java). Requires a JDK 17+ host runtime.
+
+```xml
+<princeOfSpace>
+  <version>2.2.0</version>                      <!-- optional -->
+  <indentStyle>SPACES</indentStyle>              <!-- or TABS (optional) -->
+  <indentSize>4</indentSize>                     <!-- optional -->
+  <lineLength>120</lineLength>                   <!-- optional -->
+  <wrapStyle>BALANCED</wrapStyle>                <!-- or WIDE/NARROW (optional) -->
+  <closingParenOnNewLine>true</closingParenOnNewLine>  <!-- optional -->
+  <trailingCommas>false</trailingCommas>         <!-- optional -->
+  <javaLanguageLevel>17</javaLanguageLevel>      <!-- optional -->
+</princeOfSpace>
+```
+
 ### eclipse jdt
 
 [homepage](https://download.eclipse.org/eclipse/downloads/). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/Eclipse.java). See [here](../ECLIPSE_SCREENSHOTS.md) for screenshots that demonstrate how to get and install the config file mentioned below.
@@ -409,7 +426,7 @@ These mechanisms already exist for the Gradle plugin.
 
 ```xml
 <tableTestFormatter>
-  <version>1.1.1</version> <!-- optional -->
+  <version>1.1.2</version> <!-- optional -->
 </tableTestFormatter>
 ```
 
@@ -545,7 +562,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <tableTestFormatter>
-  <version>1.1.1</version> <!-- optional -->
+  <version>1.1.2</version> <!-- optional -->
 </tableTestFormatter>
 ```
 
@@ -1247,7 +1264,7 @@ When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.edit
       <include>src/**/*.table</include>
     </includes>
     <tableTestFormatter>
-      <version>1.1.1</version> <!-- optional -->
+      <version>1.1.2</version> <!-- optional -->
     </tableTestFormatter>
   </tableTest>
 </configuration>
@@ -1320,17 +1337,19 @@ List of generic configuration `parameters (type/default)`
 the build fails for any of them. You can ignore warnings using this parameter. They will still be logged in the plugin's 
 output.
 * `verify (boolean/true)`: If `true`, the content before and after formatting is parsed to an RDF model and compared for isomorphicity.   
-* `turtleFormatterVersion (string|RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION)`: the version of turtle-formatter to use (see below).
+* `turtleFormatterVersion (string|RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION)`: the version of Cool RDF Formatter to use (see below).
 
 ### Supported RDF formats: only TTL (at the moment)
 
-Formatting TTL is done using [turtle-formatter](https://github.com/atextor/turtle-formatter),
-which is highly configurable (have a look at the [Style Documentation](https://github.com/atextor/turtle-formatter?tab=readme-ov-file#customizing-the-style)) 
+Formatting TTL is done using [Cool RDF Formatter](https://github.com/cool-rdf/cool-rdf/tree/main/cool-rdf-formatter),
+which is highly configurable (have a look at the [Style Documentation](https://github.com/cool-rdf/cool-rdf/tree/main/cool-rdf-formatter))
 and will handle blank nodes the way you'd hope.
 
-The style options can be configured via spotless. Wherever the style wants a URI (for example, for the `predicateOrder`, you can 
-use the abbreviated form if it is a `FormattingStyle.KnownPrefix` (currently `rdf`, `rdfs`, `xsd`, `owl`, `dcterms`)
-Error messages will give you hints. To configure the TTL formatting style, pass the configuration parameters under `<turtle>`
+The style options can be configured via spotless. Wherever the style wants a URI (for example, for the `predicateOrder`, you can
+use the abbreviated form if it is a known `RdfPrefix` from Cool RDF's `Prefixes` enum.
+Error messages will give you hints. To configure the TTL formatting style, pass the configuration parameters under `<turtle>`.
+For example, Cool RDF Formatter versions which support `preserveBlankNodeLabelsAndOrdering` (default true) can set it with
+`<preserveBlankNodeLabelsAndOrdering>false</preserveBlankNodeLabelsAndOrdering>`.Set it to `false`, to use Cool RDF's default behavior (stable blank node ordering).
 
 ### Examples
 Minimal:
@@ -1354,10 +1373,11 @@ Configuring some generic and TTL options:
     <format>
       <failOnWarning>false</failOnWarning>
       <verify>false</verify>
-      <turtleFormatterVersion>1.2.13</turtleFormatterVersion>
+      <turtleFormatterVersion>2.0.0</turtleFormatterVersion>
       <turtle>
         <alignPrefixes>RIGHT</alignPrefixes>
         <enableDoubleFormatting>true</enableDoubleFormatting>
+        <preserveBlankNodeLabelsAndOrdering>false</preserveBlankNodeLabelsAndOrdering>
       </turtle>
     </format>
   </rdf>
@@ -1366,7 +1386,7 @@ Configuring some generic and TTL options:
 ### Libraries and versions
 
 RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version that
-[turtle-formatter](https://github.com/atextor/turtle-formatter) depends on (not necessarily the latest).
+[Cool RDF Formatter](https://github.com/cool-rdf/cool-rdf/tree/main/cool-rdf-formatter) depends on (not necessarily the latest).
 
 ## Protobuf
 
