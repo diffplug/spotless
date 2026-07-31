@@ -103,6 +103,10 @@ public class Java extends FormatterFactory {
 		addStepFactory(tableTestFormatter);
 	}
 
+	public void addShortenFullyQualifiedTypes(ShortenFullyQualifiedTypes shortenFullyQualifiedTypes) {
+		addStepFactory(shortenFullyQualifiedTypes);
+	}
+
 	private static String fileMask(Path path) {
 		String dir = path.toString();
 		if (!dir.endsWith(File.separator)) {
