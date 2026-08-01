@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- Concurrent P2 provisioning (parallel multi-project Gradle fingerprinting of `eclipse()` / `greclipse()` steps) no longer races Solstice's on-disk cache; also `ConfigurationCacheHackList.toString()` no longer evaluates step state (which could re-trigger provisioning while Gradle reports "cannot be serialized"). ([#3004](https://github.com/diffplug/spotless/issues/3004))
 
 ## [4.9.0] - 2026-07-27
 ### Added

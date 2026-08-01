@@ -59,10 +59,11 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
-	private final Map<String, P2Provisioner> p2Provisioner = Collections.synchronizedMap(new HashMap<>());
 
 	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 	@Nullable GradleProvisioner.DedupingP2Provisioner predeclaredP2Provisioner;
+	/** Shared across subprojects so parallel fingerprinting reuses one P2 cache + lock. */
+	@Nullable private volatile GradleProvisioner.DedupingP2Provisioner sharedP2Provisioner;
 	@Nullable RegisterDependenciesTask registerDependenciesTask;
 
 	Provisioner provisionerFor(SpotlessExtension spotless) {
@@ -84,10 +85,29 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 			if (predeclaredP2Provisioner != null) {
 				return predeclaredP2Provisioner.cachedOnly;
 			} else {
-				return p2Provisioner.computeIfAbsent(spotless.project.getPath(),
-						unused -> new GradleProvisioner.DedupingP2Provisioner(P2Provisioner.createDefault(), GradleProvisioner.defaultP2CacheDirectory(spotless.project)));
+				// One DedupingP2Provisioner for the whole build (not per-project). Parallel
+				// multi-project fingerprinting of eclipse()/greclipse() steps otherwise races
+				// on Solstice's on-disk P2 cache — Gradle then reports
+				// "ConfigurationCacheHackList cannot be serialized" (#3004).
+				return sharedP2Provisioner(spotless.project);
 			}
 		}
+	}
+
+	private GradleProvisioner.DedupingP2Provisioner sharedP2Provisioner(Project project) {
+		GradleProvisioner.DedupingP2Provisioner local = sharedP2Provisioner;
+		if (local == null) {
+			synchronized (this) {
+				local = sharedP2Provisioner;
+				if (local == null) {
+					local = new GradleProvisioner.DedupingP2Provisioner(
+							P2Provisioner.createDefault(),
+							GradleProvisioner.defaultP2CacheDirectory(project));
+					sharedP2Provisioner = local;
+				}
+			}
+		}
+		return local;
 	}
 
 	void registerSourceAlreadyRan(SpotlessTask task) {
