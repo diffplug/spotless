@@ -10,6 +10,11 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- `removeUnusedImports` no longer throws on Java `import module` declarations (`JCModuleImport` ClassCastException). ([#2890](https://github.com/diffplug/spotless/issues/2890))
+### Changes
+- Bump default `google-java-format` version `1.28.0` -> `1.30.0` (first release with `import module` support); require at least `1.30.0` on JVM 25+.
+
 
 ## [4.9.0] - 2026-07-27
 ### Added
