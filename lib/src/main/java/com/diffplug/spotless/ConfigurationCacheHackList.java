@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -149,5 +149,19 @@ public final class ConfigurationCacheHackList implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(optimizeForEquality, backingList);
+	}
+
+	/**
+	 * Must not call {@link #hashCode()} — that fingerprints every step and may provision
+	 * P2/Maven deps. Gradle includes this value in "cannot be serialized" messages; a
+	 * side-effecting {@code toString} re-triggers provisioning and masks the real cause
+	 * (see <a href="https://github.com/diffplug/spotless/issues/3004">#3004</a>).
+	 */
+	@Override
+	public String toString() {
+		return getClass().getName()
+				+ "@" + Integer.toHexString(System.identityHashCode(this))
+				+ "[optimizeForEquality=" + optimizeForEquality
+				+ ", size=" + backingList.size() + "]";
 	}
 }
