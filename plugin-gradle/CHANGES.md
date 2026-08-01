@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+- `spotlessCheck` violation message now suggests the correct composite/included-build task path (e.g. `./gradlew :my-utils:spotlessApply`) instead of a bare `spotlessApply` / `:spotlessApply` that does not select included-build tasks. ([#2421](https://github.com/diffplug/spotless/issues/2421))
 
 ## [8.9.0] - 2026-07-27
 ### Added
