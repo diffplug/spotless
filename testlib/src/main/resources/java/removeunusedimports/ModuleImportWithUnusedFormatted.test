@@ -1,0 +1,10 @@
+import module java.base;
+import java.util.ArrayList;
+import java.util.List;
+
+class ModuleImportWithUnused {
+	void test() {
+		UUID.randomUUID();
+		List<String> list = new ArrayList<>();
+	}
+}
