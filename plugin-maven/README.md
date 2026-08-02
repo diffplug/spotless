@@ -2071,12 +2071,23 @@ You can easily set the line endings of different files using [a `.gitattributes`
 
 <a name="enforceCheck"></a>
 
-## Disabling warnings and error messages
+## Disabling Spotless goals
 
-By default, `spotless:check` is bound to the `verify` phase.  You might want to disable this behavior.  We [recommend against this](https://github.com/diffplug/spotless/issues/79#issuecomment-290844602), but it's easy to do if you'd like:
+By default, `spotless:check` is bound to the `verify` phase. You might want to disable Spotless for some builds. We [recommend against this](https://github.com/diffplug/spotless/issues/79#issuecomment-290844602), but the following properties are available:
 
-- set `-Dspotless.check.skip=true` at the command line
-- set `spotless.check.skip` to `true` in the `<properties>` section of the `pom.xml`
+| Property | Scope | Effect |
+| --- | --- | --- |
+| `spotless.skip` | `spotless:check` and `spotless:apply` | Skips both formatting goals |
+| `spotless.check.skip` | `spotless:check` only | Skips only the check goal |
+| `spotless.apply.skip` | `spotless:apply` only | Skips only the apply goal |
+
+You can set them at the command line or in the `<properties>` section of the `pom.xml`:
+
+- `-Dspotless.skip=true` / `<spotless.skip>true</spotless.skip>` — skip both `spotless:check` and `spotless:apply`
+- `-Dspotless.check.skip=true` / `<spotless.check.skip>true</spotless.check.skip>` — skip only `spotless:check` (including when it is bound to `verify`)
+- `-Dspotless.apply.skip=true` / `<spotless.apply.skip>true</spotless.apply.skip>` — skip only `spotless:apply`
+
+`spotless.check.skip` does **not** skip `spotless:apply`, and `spotless.apply.skip` does **not** skip `spotless:check`. Use `spotless.skip` when you want both. These properties do **not** affect `spotless:install-git-pre-push-hook`.
 
 ### Suppressing lint errors
 

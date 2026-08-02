@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,9 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 
 	private static final String INCREMENTAL_MESSAGE_PREFIX = "Spotless Violation: ";
 
+	@Parameter(property = "spotless.check.skip", defaultValue = "false")
+	private boolean checkSkip;
+
 	public enum MessageSeverity {
 		WARNING(BuildContext.SEVERITY_WARNING), ERROR(BuildContext.SEVERITY_ERROR);
 
@@ -62,6 +65,11 @@ public class SpotlessCheckMojo extends AbstractSpotlessMojo {
 	 */
 	@Parameter(defaultValue = "WARNING")
 	private MessageSeverity m2eIncrementalBuildMessageSeverity;
+
+	@Override
+	protected boolean isGoalSpecificSkip() {
+		return checkSkip;
+	}
 
 	@Override
 	protected void process(String name, Iterable<File> files, Formatter formatter, UpToDateChecker upToDateChecker) throws MojoExecutionException {
