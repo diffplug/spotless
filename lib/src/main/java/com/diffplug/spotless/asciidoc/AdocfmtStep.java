@@ -19,6 +19,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -30,7 +31,7 @@ import com.diffplug.spotless.ThrowingEx;
 public final class AdocfmtStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = "0.2.0";
+	private static final String DEFAULT_VERSION = "0.3.1";
 	private static final String NAME = "adocfmt";
 	private static final String MAVEN_COORDINATE = "org.drjekyll:adocfmt:";
 
@@ -101,6 +102,20 @@ public final class AdocfmtStep implements Serializable {
 			builder = builderClass.getMethod("normalizeOrderedListMarkers", boolean.class).invoke(builder, config.normalizeOrderedListMarkers);
 			builder = builderClass.getMethod("ensureHeadingBlankLines", boolean.class).invoke(builder, config.ensureHeadingBlankLines);
 			builder = builderClass.getMethod("ensureSourceDelimiters", boolean.class).invoke(builder, config.ensureSourceDelimiters);
+			builder = builderClass.getMethod("formatTables", boolean.class).invoke(builder, config.formatTables);
+			if (config.tableLayout != null) {
+				final Class<?> tableLayoutClass = classLoader.loadClass("org.drjekyll.adocfmt.TableLayout");
+				@SuppressWarnings({"rawtypes", "unchecked"})
+				final Object layoutEnum = Enum.valueOf((Class<Enum>) tableLayoutClass, config.tableLayout.toUpperCase(Locale.ROOT));
+				builder = builderClass.getMethod("tableLayout", tableLayoutClass).invoke(builder, layoutEnum);
+			}
+			builder = builderClass.getMethod("tableMaxLineWidth", int.class).invoke(builder, config.tableMaxLineWidth);
+			if (config.tableBlankLines != null) {
+				final Class<?> tableBlankLinesClass = classLoader.loadClass("org.drjekyll.adocfmt.TableBlankLines");
+				@SuppressWarnings({"rawtypes", "unchecked"})
+				final Object blankLinesEnum = Enum.valueOf((Class<Enum>) tableBlankLinesClass, config.tableBlankLines.toUpperCase(Locale.ROOT));
+				builder = builderClass.getMethod("tableBlankLines", tableBlankLinesClass).invoke(builder, blankLinesEnum);
+			}
 			final Object adocfmtConfig = builderClass.getMethod("build").invoke(builder);
 
 			final Object formatter = formatterClass.getConstructor(configClass).newInstance(adocfmtConfig);
