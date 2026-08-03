@@ -27,7 +27,7 @@ public class AdocfmtMavenTest extends MavenIntegrationHarness {
 	public void missingIncludesFails() throws Exception {
 		writePom(groupWithSteps("asciidoc",
 				"<adocfmt>",
-				"  <version>0.2.0</version>",
+				"  <version>0.3.1</version>",
 				"</adocfmt>"));
 		ProcessRunner.Result result = mavenRunner().withArguments("spotless:apply").runHasError();
 		assertThat(result.stdOutUtf8()).contains("You must specify some files to include");
@@ -38,7 +38,7 @@ public class AdocfmtMavenTest extends MavenIntegrationHarness {
 		writePomWithAsciidocSteps(
 				"""
 						<adocfmt>
-						  <version>0.2.0</version> <!-- optional -->
+						  <version>0.3.1</version> <!-- optional -->
 						  <normalizeSetextHeadings>true</normalizeSetextHeadings>
 						  <collapseConsecutiveBlankLines>true</collapseConsecutiveBlankLines>
 						  <oneSentencePerLine>true</oneSentencePerLine>
@@ -50,6 +50,10 @@ public class AdocfmtMavenTest extends MavenIntegrationHarness {
 						  <normalizeOrderedListMarkers>true</normalizeOrderedListMarkers>
 						  <ensureHeadingBlankLines>true</ensureHeadingBlankLines>
 						  <ensureSourceDelimiters>true</ensureSourceDelimiters>
+						  <formatTables>true</formatTables>
+						  <tableLayout>AUTO</tableLayout>
+						  <tableMaxLineWidth>120</tableMaxLineWidth>
+						  <tableBlankLines>ALL</tableBlankLines>
 						</adocfmt>
 						""");
 

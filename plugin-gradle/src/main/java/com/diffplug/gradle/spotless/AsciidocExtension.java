@@ -110,6 +110,30 @@ public class AsciidocExtension extends FormatExtension {
 			replaceStep(AdocfmtStep.create(version, provisioner(), config));
 			return this;
 		}
+
+		public AdocfmtFormatterConfig formatTables(boolean formatTables) {
+			config.formatTables = formatTables;
+			replaceStep(AdocfmtStep.create(version, provisioner(), config));
+			return this;
+		}
+
+		public AdocfmtFormatterConfig tableLayout(String tableLayout) {
+			config.tableLayout = tableLayout;
+			replaceStep(AdocfmtStep.create(version, provisioner(), config));
+			return this;
+		}
+
+		public AdocfmtFormatterConfig tableMaxLineWidth(int tableMaxLineWidth) {
+			config.tableMaxLineWidth = tableMaxLineWidth;
+			replaceStep(AdocfmtStep.create(version, provisioner(), config));
+			return this;
+		}
+
+		public AdocfmtFormatterConfig tableBlankLines(String tableBlankLines) {
+			config.tableBlankLines = tableBlankLines;
+			replaceStep(AdocfmtStep.create(version, provisioner(), config));
+			return this;
+		}
 	}
 
 	@Override

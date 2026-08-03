@@ -31,7 +31,7 @@ class AsciidocExtensionTest extends GradleIntegrationHarness {
 						repositories { mavenCentral() }
 						spotless {
 						    asciidoc {
-						        adocfmt('0.2.0')
+						        adocfmt('0.3.1')
 						    }
 						}
 						""");
@@ -52,7 +52,7 @@ class AsciidocExtensionTest extends GradleIntegrationHarness {
 								spotless {
 								    asciidoc {
 								        target 'test.adoc'
-										adocfmt('0.2.0')
+										adocfmt('0.3.1')
 										  .normalizeSetextHeadings(true)
 										  .collapseConsecutiveBlankLines(true)
 										  .oneSentencePerLine(true)
@@ -64,6 +64,10 @@ class AsciidocExtensionTest extends GradleIntegrationHarness {
 										  .normalizeOrderedListMarkers(true)
 										  .ensureHeadingBlankLines(true)
 										  .ensureSourceDelimiters(true)
+										  .formatTables(true)
+										  .tableLayout('AUTO')
+										  .tableMaxLineWidth(120)
+										  .tableBlankLines('ALL')
 								    }
 								}
 								""");

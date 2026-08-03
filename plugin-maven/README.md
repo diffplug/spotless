@@ -744,7 +744,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <adocfmt>
-  <version>0.2.0</version> <!-- optional -->
+  <version>0.3.1</version> <!-- optional -->
   <normalizeSetextHeadings>true</normalizeSetextHeadings>       <!-- convert === underlines to ATX == (default: true) -->
   <collapseConsecutiveBlankLines>true</collapseConsecutiveBlankLines> <!-- max 1 blank line (default: true) -->
   <oneSentencePerLine>true</oneSentencePerLine>            <!-- each sentence on its own line (default: true) -->
@@ -756,6 +756,10 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
   <normalizeOrderedListMarkers>false</normalizeOrderedListMarkers>   <!-- 1. -> . (default: false) -->
   <ensureHeadingBlankLines>true</ensureHeadingBlankLines>       <!-- blank line before/after headings (default: true) -->
   <ensureSourceDelimiters>false</ensureSourceDelimiters>        <!-- wrap [source] in ---- (default: false) -->
+  <formatTables>true</formatTables>                  <!-- format AsciiDoc tables (default: true) -->
+  <tableLayout>AUTO</tableLayout>                   <!-- AUTO, EXPANDED, PRESERVE (default: AUTO) -->
+  <tableMaxLineWidth>120</tableMaxLineWidth>         <!-- max line width for compact table layout (default: 120) -->
+  <tableBlankLines>ALL</tableBlankLines>             <!-- NONE, HEADER, ALL, PRESERVE (default: ALL) -->
 </adocfmt>
 ```
 
