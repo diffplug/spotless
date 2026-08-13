@@ -64,9 +64,9 @@ public class LicenseHeader implements FormatterStepFactory {
 				yearMode = updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
 			}
 			LicenseHeaderStep builder = LicenseHeaderStep.headerDelimiter(() -> readFileOrContent(config), delimiterString)
-				.withYearMode(yearMode)
-				.withSkipLinesMatching(skipLinesMatching)
-				.withYearStingFormat(yearStrFmt);
+					.withYearMode(yearMode)
+					.withSkipLinesMatching(skipLinesMatching)
+					.withYearStingFormat(yearStrFmt);
 			if (name != null) {
 				builder = builder.withName(name);
 			}

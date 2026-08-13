@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,10 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 	@Test
 	void onlyIfContentMatchesAppliesWhenPatternMatches() throws Exception {
 		writePomWithJavaSteps(
-			"<licenseHeader>",
-			"  <content>/** New License Header */</content>",
-			"  <onlyIfContentMatches>.+Test.+</onlyIfContentMatches>",
-			"</licenseHeader>");
+				"<licenseHeader>",
+				"  <content>/** New License Header */</content>",
+				"  <onlyIfContentMatches>.+Test.+</onlyIfContentMatches>",
+				"</licenseHeader>");
 
 		setFile(TEST_JAVA).toContent(CONTENT);
 		mavenRunner().withArguments("spotless:apply").runNoError();
@@ -58,10 +58,10 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 	@Test
 	void onlyIfContentMatchesSkipsWhenPatternDoesNotMatch() throws Exception {
 		writePomWithJavaSteps(
-			"<licenseHeader>",
-			"  <content>/** Should Not Be Applied */</content>",
-			"  <onlyIfContentMatches>missingString</onlyIfContentMatches>",
-			"</licenseHeader>");
+				"<licenseHeader>",
+				"  <content>/** Should Not Be Applied */</content>",
+				"  <onlyIfContentMatches>missingString</onlyIfContentMatches>",
+				"</licenseHeader>");
 
 		String existing = "/** This license header should be preserved */\n" + CONTENT;
 		setFile(TEST_JAVA).toContent(existing);
@@ -77,16 +77,16 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 	@Test
 	void multipleNamedLicenseHeadersSelectByContentPattern() throws Exception {
 		writePomWithJavaSteps(
-			"<licenseHeader>",
-			"  <name>PrimaryHeaderLicense</name>",
-			"  <content>/** Base License Header */</content>",
-			"  <onlyIfContentMatches>Best</onlyIfContentMatches>",
-			"</licenseHeader>",
-			"<licenseHeader>",
-			"  <name>SecondaryHeaderLicense</name>",
-			"  <content>/** Alternate License Header */</content>",
-			"  <onlyIfContentMatches>.*Test.+</onlyIfContentMatches>",
-			"</licenseHeader>");
+				"<licenseHeader>",
+				"  <name>PrimaryHeaderLicense</name>",
+				"  <content>/** Base License Header */</content>",
+				"  <onlyIfContentMatches>Best</onlyIfContentMatches>",
+				"</licenseHeader>",
+				"<licenseHeader>",
+				"  <name>SecondaryHeaderLicense</name>",
+				"  <content>/** Alternate License Header */</content>",
+				"  <onlyIfContentMatches>.*Test.+</onlyIfContentMatches>",
+				"</licenseHeader>");
 
 		setFile(TEST_JAVA).toContent("/** 2003 */\n" + CONTENT);
 		mavenRunner().withArguments("spotless:apply").runNoError();
