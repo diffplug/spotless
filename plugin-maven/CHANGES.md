@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changes
+- Document Maven skip properties `spotless.skip`, `spotless.check.skip`, and `spotless.apply.skip`. Goal-specific skips now live on their own mojos so they no longer leak across goals. ([#3009](https://github.com/diffplug/spotless/pull/3009))
 
 ## [3.9.0] - 2026-07-27
 ### Added
