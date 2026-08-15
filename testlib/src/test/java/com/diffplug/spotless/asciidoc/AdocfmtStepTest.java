@@ -36,6 +36,10 @@ class AdocfmtStepTest extends ResourceHarness {
 		config.normalizeListBullets = true;
 		config.normalizeOrderedListMarkers = true;
 		config.ensureSourceDelimiters = true;
+		config.formatTables = true;
+		config.tableLayout = "AUTO";
+		config.tableMaxLineWidth = 120;
+		config.tableBlankLines = "ALL";
 		FormatterStep step = AdocfmtStep.create(AdocfmtStep.defaultVersion(), TestProvisioner.mavenCentral(), config);
 		StepHarness.forStep(step).testResource("asciidoc/adocfmt/dirty.adoc", "asciidoc/adocfmt/clean_complex.adoc");
 	}
@@ -56,6 +60,8 @@ class AdocfmtStepTest extends ResourceHarness {
 			// fields drive create(); never mutate a config object after passing it to create()
 			boolean titleCase = false;
 			boolean normalizeListBullets = false;
+			boolean formatTables = true;
+			String tableLayout = "AUTO";
 
 			@Override
 			protected void setupTest(API api) {
@@ -68,6 +74,12 @@ class AdocfmtStepTest extends ResourceHarness {
 				titleCase = false;
 				normalizeListBullets = true;
 				api.areDifferentThan();
+				normalizeListBullets = false;
+				formatTables = false;
+				api.areDifferentThan();
+				formatTables = true;
+				tableLayout = "EXPANDED";
+				api.areDifferentThan();
 			}
 
 			@Override
@@ -75,6 +87,8 @@ class AdocfmtStepTest extends ResourceHarness {
 				AdocfmtConfig config = new AdocfmtConfig();
 				config.titleCase = titleCase;
 				config.normalizeListBullets = normalizeListBullets;
+				config.formatTables = formatTables;
+				config.tableLayout = tableLayout;
 				return AdocfmtStep.create(AdocfmtStep.defaultVersion(), TestProvisioner.mavenCentral(), config);
 			}
 		}.testEquals();

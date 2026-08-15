@@ -234,7 +234,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
     </importOrder>
 
     <removeUnusedImports /> <!-- self-explanatory -->
-    <forbidWildcardImports /> <!-- yell if any import ends with '*' -->
+    <forbidWildcardImports /> <!-- yell if any import ends with '*'; or use expandWildcardImports, see below -->
     <forbidModuleImports /> <!-- yell if any module imports are found (Java 25+) -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
@@ -258,6 +258,16 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
 ```xml
 <forbidWildcardImports/>
+```
+
+### expandWildcardImports
+
+This step expands all wildcard imports to single class imports.
+To do this, [JavaParser](https://javaparser.org/) is used to parse the complete sourcecode and resolve the full qualified name of all used classes and static methods from the full classpath.
+This operation can be resource intensive when formatting many source files, so you may want to change to `forbidWildcardImports` when your codebase is cleaned and stable.
+
+```xml
+<expandWildcardImports/>
 ```
 
 ### forbidModuleImports
@@ -744,7 +754,7 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
 
 ```xml
 <adocfmt>
-  <version>0.2.0</version> <!-- optional -->
+  <version>0.3.1</version> <!-- optional -->
   <normalizeSetextHeadings>true</normalizeSetextHeadings>       <!-- convert === underlines to ATX == (default: true) -->
   <collapseConsecutiveBlankLines>true</collapseConsecutiveBlankLines> <!-- max 1 blank line (default: true) -->
   <oneSentencePerLine>true</oneSentencePerLine>            <!-- each sentence on its own line (default: true) -->
@@ -756,6 +766,10 @@ Additionally, `editorConfigOverride` options will override what's supplied in `.
   <normalizeOrderedListMarkers>false</normalizeOrderedListMarkers>   <!-- 1. -> . (default: false) -->
   <ensureHeadingBlankLines>true</ensureHeadingBlankLines>       <!-- blank line before/after headings (default: true) -->
   <ensureSourceDelimiters>false</ensureSourceDelimiters>        <!-- wrap [source] in ---- (default: false) -->
+  <formatTables>true</formatTables>                  <!-- format AsciiDoc tables (default: true) -->
+  <tableLayout>AUTO</tableLayout>                   <!-- AUTO, EXPANDED, PRESERVE (default: AUTO) -->
+  <tableMaxLineWidth>120</tableMaxLineWidth>         <!-- max line width for compact table layout (default: 120) -->
+  <tableBlankLines>ALL</tableBlankLines>             <!-- NONE, HEADER, ALL, PRESERVE (default: ALL) -->
 </adocfmt>
 ```
 
@@ -1952,6 +1966,25 @@ If your project has not been rigorous with copyright headers, and you'd like to 
 Some files have fixed header lines (e.g. `<?xml version="1.0" ...` in XMLs, or `#!/bin/bash` in bash scripts). Comments cannot precede these, so the license header has to come after them, too.
 
 To define what lines to skip at the beginning of such files, fill the `skipLinesMatching` option with a regular expression that matches them (e.g. `<skipLinesMatching>^#!.+?$</skipLinesMatching>` to skip shebangs).
+
+### Skip headers and multiple license headers
+
+Sometimes it may be necessary to disable a license rule for specific files, or to maintain dual licenses.
+
+To define alternate replacements: 
+
+```xml
+<licenseHeader>
+    <name>PrimaryHeaderLicense</name>
+    <content>/** Base License Header */</content>
+    <onlyIfContentMatches>Best</onlyIfContentMatches>
+</licenseHeader>
+<licenseHeader>
+  <name>SecondaryHeaderLicense</name>
+  <content>/** Alternate License Header */</content>
+  <onlyIfContentMatches>.*Test.+</onlyIfContentMatches>
+</licenseHeader>
+```
 
 <a name="invisible"></a>
 
