@@ -76,7 +76,6 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 				.toBe("LINE_UNDEFINED google-java-format(jvm-version) You are running Spotless on JVM 21. This requires google-java-format of at least 1.17.0 (you are using 1.9). (...)");
 	}
 
-
 	@Test
 	@EnabledForJreRange(min = JAVA_25)
 	void versionBelowMinOnJava25IsNotAllowed() throws Exception {
