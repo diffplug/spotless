@@ -3,10 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- Concurrent P2 provisioning no longer races Solstice's on-disk cache (affects Eclipse-based formatters under parallel builds). ([#3004](https://github.com/diffplug/spotless/issues/3004))
 ### Changes
 - Bump default `adocfmt` version `0.2.0` -> `0.3.1`, which adds table formatting support (`<formatTables>`, `<tableLayout>`, `<tableMaxLineWidth>`, `<tableBlankLines>`).
-
-### Changes
 - Add support to apply alternate license header within same format ([#872](https://github.com/diffplug/spotless/issues/872))
 - Add support to skip license header application based on source file content pattern ([#650](https://github.com/diffplug/spotless/issues/650)).
 
