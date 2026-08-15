@@ -77,11 +77,6 @@ public final class EclipseJdtFormatterStep {
 		}
 
 		@Override
-		protected String lockfileResourcePath(String version) {
-			return "/com/diffplug/spotless/extra/eclipse_jdt_formatter/v" + version + ".lockfile";
-		}
-
-		@Override
 		public void setVersion(String version) {
 			if (version.endsWith(".0")) {
 				String newVersion = version.substring(0, version.length() - 2);

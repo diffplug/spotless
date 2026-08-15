@@ -176,17 +176,19 @@ public abstract class EquoBasedStepBuilder {
 	/**
 	 * Returns the classpath resource path of an embedded lockfile for the given formatter version.
 	 * <p>
-	 * The default implementation always returns {@code null}, which means dependency resolution
-	 * falls back to P2 provisioning.
+	 * Defaults to the same layout {@link EclipseBasedStepBuilder} uses -- {@code v<version>.lockfile}
+	 * inside a directory named after the formatter -- so a step picks up lockfile support simply by
+	 * having its lockfiles checked in. Versions with no embedded lockfile fall back to P2
+	 * provisioning, which is what keeps Eclipse releases newer than Spotless usable.
 	 * <p>
 	 * Overriding implementations should return an absolute classpath resource path (starting with
 	 * {@code /}) that is compatible with {@link Class#getResourceAsStream(String)}.
 	 *
-	 * @return absolute classpath resource path of the embedded lockfile, or {@code null} to use
-	 * P2 provisioning
+	 * @return absolute classpath resource path of the embedded lockfile, or {@code null} to always
+	 * use P2 provisioning
 	 */
 	protected @Nullable String lockfileResourcePath(String version) {
-		return null;
+		return "/" + EclipseBasedStepBuilder.ECLIPSE_FORMATTER_RESOURCES + "/" + formatterName.replace(' ', '_') + "/v" + version + ".lockfile";
 	}
 
 	private P2Model createModelWithMirrors() {

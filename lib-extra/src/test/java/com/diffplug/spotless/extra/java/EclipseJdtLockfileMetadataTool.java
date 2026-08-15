@@ -41,30 +41,68 @@ import dev.equo.solstice.p2.P2QueryResult;
  */
 public class EclipseJdtLockfileMetadataTool {
 
-	// Full explicit lockfiles can be produced for any target by taking Solstice's P2-resolved Maven
-	// coordinates directly (already fully version-resolved), then writing them as a lockfile.
-	private static final List<String> TARGET_VERSIONS = List.of("4.9", "4.11", "4.25", "4.26", "4.39", "4.40");
+	/**
+	 * Every Eclipse release from {@value #OLDEST_MINOR}, inclusive, through the version Spotless
+	 * defaults to gets an embedded lockfile, with no gaps.
+	 * <p>
+	 * Contiguity is the point: a user on any supported version should get the same resolution path
+	 * as a user on any other. Sampling versions instead would make the P2 fallback -- and the
+	 * behavior differences that come with it -- depend on which release you happen to pin.
+	 * <p>
+	 * Eclipse's switch from OSGi ranges to resolved concrete versions in its Maven metadata
+	 * (<a href="https://github.com/eclipse-platform/eclipse.platform.releng/issues/135">eclipse-platform/eclipse.platform.releng#135</a>,
+	 * effective 4.26) deliberately does <em>not</em> factor in. Full explicit lockfiles can be
+	 * produced for any target by taking Solstice's P2-resolved Maven coordinates directly, which
+	 * are already fully version-resolved under either style.
+	 */
+	private static final int OLDEST_MINOR = 9;
+
+	static List<String> targetVersions() {
+		String defaultVersion = EclipseJdtFormatterStep.defaultVersion();
+		int newestMinor = minorOf(defaultVersion);
+		if (newestMinor < OLDEST_MINOR) {
+			throw new IllegalStateException("Default version " + defaultVersion + " is older than 4." + OLDEST_MINOR);
+		}
+		List<String> versions = new ArrayList<>();
+		for (int minor = OLDEST_MINOR; minor <= newestMinor; minor++) {
+			versions.add("4." + minor);
+		}
+		return versions;
+	}
+
+	private static int minorOf(String version) {
+		if (!version.startsWith("4.")) {
+			throw new IllegalArgumentException("Expected 4.x but got " + version);
+		}
+		return Integer.parseInt(version.substring(2).split("\\.")[0]);
+	}
 
 	/**
-	 * Verifies the JDT lockfiles at {@link #TARGET_VERSIONS} against Eclipse P2 metadata.
+	 * Verifies the JDT lockfiles at {@link #targetVersions()} against Eclipse P2 metadata.
+	 * <p>
+	 * Exits non-zero if any lockfile is missing or out of date, so this can gate CI.
 	 */
 	public static class Verify {
 
 		public static void main(String[] args) {
-			run(false);
+			if (run(false) > 0) {
+				System.exit(1);
+			}
 		}
 
 	}
 
 	/**
-	 * Updates the JDT lockfiles at {@link #TARGET_VERSIONS} from Eclipse P2 metadata.
+	 * Updates the JDT lockfiles at {@link #targetVersions()} from Eclipse P2 metadata.
 	 * <p>
 	 * Missing lockfiles will be created.
 	 */
 	public static class Update {
 
 		public static void main(String[] args) {
-			run(true);
+			if (run(true) > 0) {
+				System.exit(1);
+			}
 		}
 
 	}
@@ -75,9 +113,10 @@ public class EclipseJdtLockfileMetadataTool {
 			"https://download.eclipse.org/eclipse/updates/",
 			"https://archive.eclipse.org/eclipse/updates/");
 
-	private static void run(boolean update) {
+	/** Returns the number of failures. */
+	private static int run(boolean update) {
 		Path lockfileDir = lockfileDir();
-		Map<String, Path> lockfilesByVersion = targetLockfiles(lockfileDir, TARGET_VERSIONS);
+		Map<String, Path> lockfilesByVersion = targetLockfiles(lockfileDir, targetVersions());
 
 		int checked = 0;
 		int failures = 0;
@@ -112,10 +151,11 @@ public class EclipseJdtLockfileMetadataTool {
 			}
 		}
 		if (update) {
-			System.out.println("Updated " + checked + " lockfile(s).");
+			System.out.println("Updated " + checked + " lockfile(s) with " + failures + " issue(s).");
 		} else {
 			System.out.println("Verified " + checked + " lockfile(s) with " + failures + " issue(s).");
 		}
+		return failures;
 	}
 
 	private static Map<String, Path> targetLockfiles(Path lockfileDir, List<String> versions) {
@@ -156,7 +196,7 @@ public class EclipseJdtLockfileMetadataTool {
 				+ " coordinates), actual: " + actualRoot + " (" + actualCoordinates.size() + " coordinates)";
 	}
 
-	private static Path lockfileDir() {
+	static Path lockfileDir() {
 		Path fromRepoRoot = Path.of("lib-extra", "src", "main", "resources", "com", "diffplug", "spotless", "extra", "eclipse_jdt_formatter");
 		if (Files.isDirectory(fromRepoRoot)) {
 			return fromRepoRoot;
