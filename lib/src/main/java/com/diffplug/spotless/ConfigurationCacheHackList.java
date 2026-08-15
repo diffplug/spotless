@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,13 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import com.diffplug.spotless.yaml.SerializeToByteArrayHack;
 
@@ -60,11 +65,47 @@ public final class ConfigurationCacheHackList implements Serializable {
 	private boolean optimizeForEquality;
 	private ArrayList<Object> backingList = new ArrayList<>();
 
+	/**
+	 * The failure from the most recent serialization attempt, if any. Not part of the
+	 * serialized form - it exists only so {@link #toString()} can report why serialization
+	 * failed without re-evaluating any step state.
+	 */
+	@Nullable private transient volatile String serializationFailure;
+
 	private boolean shouldWeSerializeToByteArrayFirst() {
 		return backingList.stream().anyMatch(SerializeToByteArrayHack.class::isInstance);
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
+		try {
+			writeSteps(out);
+		} catch (IOException | RuntimeException e) {
+			// Gradle reports a fingerprinting failure as "value '<toString()>' cannot be
+			// serialized" and discards the cause, so stash it where toString() can report
+			// it. Otherwise the actionable message (e.g. "P2 dependencies not predeclared")
+			// is lost and the user only sees "cannot be serialized". See #3004.
+			serializationFailure = describeFailure(e);
+			throw e;
+		}
+	}
+
+	/** Walks the cause chain so nested messages survive into {@link #toString()}. */
+	private static String describeFailure(Throwable e) {
+		StringBuilder causes = new StringBuilder();
+		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (Throwable t = e; t != null && seen.add(t); t = t.getCause()) {
+			String message = t.getMessage();
+			if (message != null && !message.isEmpty()) {
+				if (causes.length() > 0) {
+					causes.append(" > ");
+				}
+				causes.append(message);
+			}
+		}
+		return causes.length() == 0 ? e.getClass().getName() : causes.toString();
+	}
+
+	private void writeSteps(ObjectOutputStream out) throws IOException {
 		boolean serializeToByteArrayFirst = shouldWeSerializeToByteArrayFirst();
 		out.writeBoolean(serializeToByteArrayFirst);
 		out.writeBoolean(optimizeForEquality);
@@ -149,5 +190,29 @@ public final class ConfigurationCacheHackList implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(optimizeForEquality, backingList);
+	}
+
+	/**
+	 * Must not call {@link #hashCode()} — that fingerprints every step and may provision
+	 * P2/Maven deps. Gradle includes this value in "cannot be serialized" messages, so a
+	 * side-effecting {@code toString} re-triggers provisioning while the build is already
+	 * failing (see <a href="https://github.com/diffplug/spotless/issues/3004">#3004</a>).
+	 * <p>
+	 * Gradle builds that message only after serialization has already thrown, so any
+	 * failure is reported from {@link #serializationFailure} rather than by re-evaluating
+	 * the steps. That keeps actionable errors such as "P2 dependencies not predeclared"
+	 * visible to the user.
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder(getClass().getName())
+				.append('@').append(Integer.toHexString(System.identityHashCode(this)))
+				.append("[optimizeForEquality=").append(optimizeForEquality)
+				.append(", size=").append(backingList.size());
+		String failure = serializationFailure;
+		if (failure != null) {
+			builder.append(", failure=").append(failure);
+		}
+		return builder.append(']').toString();
 	}
 }

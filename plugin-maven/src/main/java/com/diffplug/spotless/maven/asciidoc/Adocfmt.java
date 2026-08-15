@@ -60,6 +60,18 @@ public class Adocfmt implements FormatterStepFactory {
 	@Parameter
 	private Boolean ensureSourceDelimiters;
 
+	@Parameter
+	private Boolean formatTables;
+
+	@Parameter
+	private String tableLayout;
+
+	@Parameter
+	private Integer tableMaxLineWidth;
+
+	@Parameter
+	private String tableBlankLines;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String version = this.version != null ? this.version : AdocfmtStep.defaultVersion();
@@ -86,6 +98,14 @@ public class Adocfmt implements FormatterStepFactory {
 			adocfmtConfig.ensureHeadingBlankLines = ensureHeadingBlankLines;
 		if (ensureSourceDelimiters != null)
 			adocfmtConfig.ensureSourceDelimiters = ensureSourceDelimiters;
+		if (formatTables != null)
+			adocfmtConfig.formatTables = formatTables;
+		if (tableLayout != null)
+			adocfmtConfig.tableLayout = tableLayout;
+		if (tableMaxLineWidth != null)
+			adocfmtConfig.tableMaxLineWidth = tableMaxLineWidth;
+		if (tableBlankLines != null)
+			adocfmtConfig.tableBlankLines = tableBlankLines;
 		return AdocfmtStep.create(version, config.getProvisioner(), adocfmtConfig);
 	}
 }
