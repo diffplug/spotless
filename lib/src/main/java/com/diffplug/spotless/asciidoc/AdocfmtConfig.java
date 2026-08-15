@@ -34,6 +34,10 @@ public class AdocfmtConfig implements Serializable {
 	public boolean normalizeOrderedListMarkers = false;
 	public boolean ensureHeadingBlankLines = true;
 	public boolean ensureSourceDelimiters = false;
+	public boolean formatTables = true;
+	public String tableLayout = "AUTO";
+	public int tableMaxLineWidth = 120;
+	public String tableBlankLines = "ALL";
 
 	public AdocfmtConfig() {}
 
@@ -53,13 +57,18 @@ public class AdocfmtConfig implements Serializable {
 				&& normalizeListBullets == other.normalizeListBullets
 				&& normalizeOrderedListMarkers == other.normalizeOrderedListMarkers
 				&& ensureHeadingBlankLines == other.ensureHeadingBlankLines
-				&& ensureSourceDelimiters == other.ensureSourceDelimiters;
+				&& ensureSourceDelimiters == other.ensureSourceDelimiters
+				&& formatTables == other.formatTables
+				&& Objects.equals(tableLayout, other.tableLayout)
+				&& tableMaxLineWidth == other.tableMaxLineWidth
+				&& Objects.equals(tableBlankLines, other.tableBlankLines);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(normalizeSetextHeadings, collapseConsecutiveBlankLines, oneSentencePerLine,
 				normalizeBlockDelimiters, removeTrailingHeaderEqualsSign, titleCase, removeTrailingWhitespace,
-				normalizeListBullets, normalizeOrderedListMarkers, ensureHeadingBlankLines, ensureSourceDelimiters);
+				normalizeListBullets, normalizeOrderedListMarkers, ensureHeadingBlankLines, ensureSourceDelimiters,
+				formatTables, tableLayout, tableMaxLineWidth, tableBlankLines);
 	}
 }

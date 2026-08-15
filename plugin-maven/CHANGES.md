@@ -5,9 +5,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 - `removeUnusedImports` no longer fails on Java `import module` declarations. ([#2890](https://github.com/diffplug/spotless/issues/2890))
+- Concurrent P2 provisioning no longer races Solstice's on-disk cache (affects Eclipse-based formatters under parallel builds). ([#3004](https://github.com/diffplug/spotless/issues/3004))
 ### Changes
 - Bump default `google-java-format` version `1.28.0` -> `1.30.0` (first release with `import module` support); require at least `1.30.0` on JVM 25+.
-
+- Bump default `adocfmt` version `0.2.0` -> `0.3.1`, which adds table formatting support (`<formatTables>`, `<tableLayout>`, `<tableMaxLineWidth>`, `<tableBlankLines>`).
+- Add support to apply alternate license header within same format ([#872](https://github.com/diffplug/spotless/issues/872))
+- Add support to skip license header application based on source file content pattern ([#650](https://github.com/diffplug/spotless/issues/650)).
 
 ## [3.9.0] - 2026-07-27
 ### Added
