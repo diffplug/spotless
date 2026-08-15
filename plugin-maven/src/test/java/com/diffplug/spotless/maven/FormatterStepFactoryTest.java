@@ -24,9 +24,11 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.aether.RepositorySystemSession;
@@ -52,11 +54,6 @@ class FormatterStepFactoryTest {
 	}
 
 	@Test
-	void eclipseUsesConfiguredCacheDirectory() throws Exception {
-		assertUsesConfiguredCacheDirectory(new Eclipse());
-	}
-
-	@Test
 	void grEclipseUsesConfiguredCacheDirectory() throws Exception {
 		assertUsesConfiguredCacheDirectory(new GrEclipse());
 	}
@@ -67,11 +64,6 @@ class FormatterStepFactoryTest {
 	}
 
 	@Test
-	void eclipseUsesDefaultCacheDirectory() throws Exception {
-		assertUsesDefaultCacheDirectory(new Eclipse());
-	}
-
-	@Test
 	void grEclipseUsesDefaultCacheDirectory() throws Exception {
 		assertUsesDefaultCacheDirectory(new GrEclipse());
 	}
@@ -79,6 +71,44 @@ class FormatterStepFactoryTest {
 	@Test
 	void eclipseCdtUsesDefaultCacheDirectory() throws Exception {
 		assertUsesDefaultCacheDirectory(new EclipseCdt());
+	}
+
+	/**
+	 * Eclipse JDT ships an embedded lockfile for its default version, so it resolves straight from
+	 * Maven and never runs a P2 query -- which also means its P2 cache directory goes unused. The
+	 * P2 cache directory behavior is covered by the grEclipse and eclipseCdt cases above, neither
+	 * of which has an embedded lockfile.
+	 */
+	@Test
+	void eclipseResolvesFromEmbeddedLockfileInsteadOfP2() throws Exception {
+		Eclipse factory = new Eclipse();
+		factory.init(repositorySystemSession(tempDir.resolve("local-repo").toFile()));
+
+		AtomicReference<Collection<String>> actualCoordinates = new AtomicReference<>();
+		AtomicBoolean p2WasQueried = new AtomicBoolean();
+		File fakeJar = tempDir.resolve("fake.jar").toFile();
+		Files.write(fakeJar.toPath(), new byte[]{0});
+
+		FormatterStep step = factory.newFormatterStep(new FormatterStepConfig(
+				UTF_8,
+				"",
+				Optional.empty(),
+				(withTransitives, mavenCoordinates) -> {
+					actualCoordinates.set(mavenCoordinates);
+					return Set.of(fakeJar);
+				},
+				(modelWrapper, mavenProvisioner, cacheDirectory) -> {
+					p2WasQueried.set(true);
+					return List.of(fakeJar);
+				},
+				null,
+				Optional.empty(),
+				Optional.empty()));
+
+		int unused = step.hashCode();
+
+		assertThat(p2WasQueried).isFalse();
+		assertThat(actualCoordinates.get()).anyMatch(coordinate -> coordinate.startsWith("org.eclipse.jdt:org.eclipse.jdt.core:"));
 	}
 
 	private void assertUsesConfiguredCacheDirectory(FormatterStepFactory factory) throws Exception {
