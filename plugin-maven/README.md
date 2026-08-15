@@ -1967,6 +1967,25 @@ Some files have fixed header lines (e.g. `<?xml version="1.0" ...` in XMLs, or `
 
 To define what lines to skip at the beginning of such files, fill the `skipLinesMatching` option with a regular expression that matches them (e.g. `<skipLinesMatching>^#!.+?$</skipLinesMatching>` to skip shebangs).
 
+### Skip headers and multiple license headers
+
+Sometimes it may be necessary to disable a license rule for specific files, or to maintain dual licenses.
+
+To define alternate replacements: 
+
+```xml
+<licenseHeader>
+    <name>PrimaryHeaderLicense</name>
+    <content>/** Base License Header */</content>
+    <onlyIfContentMatches>Best</onlyIfContentMatches>
+</licenseHeader>
+<licenseHeader>
+  <name>SecondaryHeaderLicense</name>
+  <content>/** Alternate License Header */</content>
+  <onlyIfContentMatches>.*Test.+</onlyIfContentMatches>
+</licenseHeader>
+```
+
 <a name="invisible"></a>
 
 <a name="ratchet"></a>

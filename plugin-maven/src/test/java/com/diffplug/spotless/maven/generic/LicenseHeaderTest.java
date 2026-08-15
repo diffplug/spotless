@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import com.diffplug.spotless.maven.MavenIntegrationHarness;
 class LicenseHeaderTest extends MavenIntegrationHarness {
 	private static final String KEY_LICENSE = "license/TestLicense";
 	private static final String KOTLIN_LICENSE_HEADER = "// Hello, I'm Kotlin license header";
+	private static final String TEST_JAVA = "src/main/java/pkg/Test.java";
+	private static final String CONTENT = "package pkg;\npublic class Test {}";
 
 	@Test
 	void fromFileJava() throws Exception {
@@ -31,6 +33,64 @@ class LicenseHeaderTest extends MavenIntegrationHarness {
 				"  <file>${basedir}/license.txt</file>",
 				"</licenseHeader>");
 		runTest();
+	}
+
+	/**
+	 * When {@code onlyIfContentMatches} matches the file content, the license header is applied.
+	 */
+	@Test
+	void onlyIfContentMatchesAppliesWhenPatternMatches() throws Exception {
+		writePomWithJavaSteps(
+				"<licenseHeader>",
+				"  <content>/** New License Header */</content>",
+				"  <onlyIfContentMatches>.+Test.+</onlyIfContentMatches>",
+				"</licenseHeader>");
+
+		setFile(TEST_JAVA).toContent(CONTENT);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(TEST_JAVA).hasContent("/** New License Header */\n" + CONTENT);
+	}
+
+	/**
+	 * When {@code onlyIfContentMatches} does not match the file content, the existing
+	 * content (including any existing header) is left unchanged.
+	 */
+	@Test
+	void onlyIfContentMatchesSkipsWhenPatternDoesNotMatch() throws Exception {
+		writePomWithJavaSteps(
+				"<licenseHeader>",
+				"  <content>/** Should Not Be Applied */</content>",
+				"  <onlyIfContentMatches>missingString</onlyIfContentMatches>",
+				"</licenseHeader>");
+
+		String existing = "/** This license header should be preserved */\n" + CONTENT;
+		setFile(TEST_JAVA).toContent(existing);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(TEST_JAVA).hasContent(existing);
+	}
+
+	/**
+	 * Multiple named license-header steps with different {@code onlyIfContentMatches}
+	 * patterns: the step whose pattern matches is applied (parity with Gradle
+	 * {@code filterByContentPatternTest}).
+	 */
+	@Test
+	void multipleNamedLicenseHeadersSelectByContentPattern() throws Exception {
+		writePomWithJavaSteps(
+				"<licenseHeader>",
+				"  <name>PrimaryHeaderLicense</name>",
+				"  <content>/** Base License Header */</content>",
+				"  <onlyIfContentMatches>Best</onlyIfContentMatches>",
+				"</licenseHeader>",
+				"<licenseHeader>",
+				"  <name>SecondaryHeaderLicense</name>",
+				"  <content>/** Alternate License Header */</content>",
+				"  <onlyIfContentMatches>.*Test.+</onlyIfContentMatches>",
+				"</licenseHeader>");
+
+		setFile(TEST_JAVA).toContent("/** 2003 */\n" + CONTENT);
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile(TEST_JAVA).hasContent("/** Alternate License Header */\n" + CONTENT);
 	}
 
 	@Test
