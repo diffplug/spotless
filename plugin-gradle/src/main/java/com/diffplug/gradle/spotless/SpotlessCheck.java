@@ -184,8 +184,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	private static String reconstructBuildTreePath(Project project) {
 		StringBuilder buildPrefix = new StringBuilder();
 		Gradle gradle = project.getGradle();
-		while (gradle.getParent() != null) {
-			Gradle parent = gradle.getParent();
+		for (Gradle parent = gradle.getParent(); parent != null; parent = gradle.getParent()) {
 			File rootDir = gradle.getRootProject().getRootDir().getAbsoluteFile();
 			String buildName = null;
 			for (IncludedBuild included : parent.getIncludedBuilds()) {
