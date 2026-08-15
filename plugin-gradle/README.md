@@ -871,7 +871,7 @@ spotless {
 [homepage](https://github.com/dheid/adocfmt). [available versions](https://search.maven.org/artifact/org.drjekyll/adocfmt).
 
 ```gradle
-adocfmt('0.2.0') // version is optional
+adocfmt('0.3.1') // version is optional
   .normalizeSetextHeadings(false)       // convert === underlines to ATX == (default: false)
   .collapseConsecutiveBlankLines(true)  // max 1 blank line (default: true)
   .oneSentencePerLine(false)            // each sentence on its own line (default: false)
@@ -883,6 +883,10 @@ adocfmt('0.2.0') // version is optional
   .normalizeOrderedListMarkers(false)   // 1. -> . (default: false)
   .ensureHeadingBlankLines(true)        // blank line before/after headings (default: true)
   .ensureSourceDelimiters(false)        // wrap [source] in ---- (default: false)
+  .formatTables(true)                   // format AsciiDoc tables (default: true)
+  .tableLayout('AUTO')                  // AUTO, EXPANDED, PRESERVE (default: AUTO)
+  .tableMaxLineWidth(120)               // max line width for compact table layout (default: 120)
+  .tableBlankLines('ALL')               // NONE, HEADER, ALL, PRESERVE (default: ALL)
 ```
 
 Options default to `true` or `false` as shown above. This formatter is designed to help you maintain a clean, consistent AsciiDoc structure. Surface-altering options like `oneSentencePerLine` and `normalizeSetextHeadings` default to `false` so that zero-config formatting is conservative; opt in explicitly if you want those transforms.
