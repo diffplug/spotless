@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 
 	private static final String UNFORMATTED_FILE = "license/MissingLicense.test";
 	private static final String FORMATTED_FILE = "license/HasLicense.test";
+	private static final String TARGET_JAVA = "src/main/java/com.github.youribonnaffe.gradle.format/Java8Test.java";
 
 	@Test
 	void testSpotlessCheckWithFormattingViolations() throws Exception {
@@ -44,6 +45,19 @@ class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 	void testSkipSpotlessCheckWithFormattingViolations() throws Exception {
 		writePomWithJavaLicenseHeaderStep();
 		testSpotlessCheck(UNFORMATTED_FILE, "spotless:check -Dspotless.check.skip", false);
+	}
+
+	@Test
+	void testSkipAllGoalsWithSpotlessSkip() throws Exception {
+		writePomWithJavaLicenseHeaderStep();
+		testSpotlessCheck(UNFORMATTED_FILE, "spotless:check -Dspotless.skip", false);
+	}
+
+	@Test
+	void testApplySkipDoesNotSkipCheck() throws Exception {
+		writePomWithJavaLicenseHeaderStep();
+		// apply.skip must not suppress check
+		testSpotlessCheck(UNFORMATTED_FILE, "spotless:check -Dspotless.apply.skip", true);
 	}
 
 	@Test
@@ -68,9 +82,39 @@ class SpotlessCheckMojoTest extends MavenIntegrationHarness {
 		testSpotlessCheck(UNFORMATTED_FILE, "verify", true);
 	}
 
+	@Test
+	void testApplySkipLeavesFileUnformatted() throws Exception {
+		writePomWithJavaLicenseHeaderStep();
+		setFile("license.txt").toResource("license/TestLicense");
+		setFile(TARGET_JAVA).toResource(UNFORMATTED_FILE);
+
+		mavenRunner().withArguments("spotless:apply -Dspotless.apply.skip").runNoError();
+		assertFile(TARGET_JAVA).sameAsResource(UNFORMATTED_FILE);
+	}
+
+	@Test
+	void testSpotlessSkipLeavesApplyUnformatted() throws Exception {
+		writePomWithJavaLicenseHeaderStep();
+		setFile("license.txt").toResource("license/TestLicense");
+		setFile(TARGET_JAVA).toResource(UNFORMATTED_FILE);
+
+		mavenRunner().withArguments("spotless:apply -Dspotless.skip").runNoError();
+		assertFile(TARGET_JAVA).sameAsResource(UNFORMATTED_FILE);
+	}
+
+	@Test
+	void testCheckSkipDoesNotSkipApply() throws Exception {
+		writePomWithJavaLicenseHeaderStep();
+		setFile("license.txt").toResource("license/TestLicense");
+		setFile(TARGET_JAVA).toResource(UNFORMATTED_FILE);
+
+		mavenRunner().withArguments("spotless:apply -Dspotless.check.skip").runNoError();
+		assertFile(TARGET_JAVA).sameAsResource(FORMATTED_FILE);
+	}
+
 	private void testSpotlessCheck(String fileName, String command, boolean expectError) throws Exception {
 		setFile("license.txt").toResource("license/TestLicense");
-		setFile("src/main/java/com.github.youribonnaffe.gradle.format/Java8Test.java").toResource(fileName);
+		setFile(TARGET_JAVA).toResource(fileName);
 
 		MavenRunner mavenRunner = mavenRunner().withArguments(command);
 

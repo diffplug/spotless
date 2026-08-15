@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
+- `spotlessCheck` violation message now suggests the correct composite/included-build task path (e.g. `./gradlew :my-utils:spotlessApply`) instead of a bare `spotlessApply` / `:spotlessApply` that does not select included-build tasks. ([#2421](https://github.com/diffplug/spotless/issues/2421))
 - Parallel multi-project builds no longer intermittently fail with "Cannot fingerprint input property 'stepsInternalEquality': ConfigurationCacheHackList cannot be serialized" / "Failed to provision P2 dependencies" when using `eclipse()` (or other P2-backed steps). Subprojects now share one deduping P2 provisioner and P2 queries are serialized process-wide. ([#3004](https://github.com/diffplug/spotless/issues/3004))
 ### Changes
 - Add embedded lockfiles to Eclipse JDT (4.9, 4.11, 4.39, 4.40), bump version to latest `4.39` -> `4.40`. ([#1996](https://github.com/diffplug/spotless/issues/1996))
