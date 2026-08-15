@@ -29,6 +29,12 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
 public class LicenseHeader implements FormatterStepFactory {
 
 	@Parameter
+	private String name;
+
+	@Parameter
+	private String onlyIfContentMatches;
+
+	@Parameter
 	private String file;
 
 	@Parameter
@@ -57,12 +63,17 @@ public class LicenseHeader implements FormatterStepFactory {
 				boolean updateYear = config.getRatchetFrom().isPresent();
 				yearMode = updateYear ? YearMode.UPDATE_TO_TODAY : YearMode.PRESERVE;
 			}
-			return LicenseHeaderStep.headerDelimiter(() -> readFileOrContent(config), delimiterString)
+			LicenseHeaderStep builder = LicenseHeaderStep.headerDelimiter(() -> readFileOrContent(config), delimiterString)
 					.withYearMode(yearMode)
 					.withSkipLinesMatching(skipLinesMatching)
-					.withYearStingFormat(yearStrFmt)
-					.build()
-					.filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
+					.withYearStingFormat(yearStrFmt);
+			if (name != null) {
+				builder = builder.withName(name);
+			}
+			if (onlyIfContentMatches != null) {
+				builder = builder.withContentPattern(onlyIfContentMatches);
+			}
+			return builder.build().filterByFile(LicenseHeaderStep.unsupportedJvmFilesFilter());
 		} else {
 			throw new IllegalArgumentException("Must specify exactly one of 'file' or 'content'.");
 		}
