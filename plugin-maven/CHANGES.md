@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 - Concurrent P2 provisioning no longer races Solstice's on-disk cache (affects Eclipse-based formatters under parallel builds). ([#3004](https://github.com/diffplug/spotless/issues/3004))
 ### Changes
+- Document Maven skip properties `spotless.skip`, `spotless.check.skip`, and `spotless.apply.skip`. Goal-specific skips now live on their own mojos so they no longer leak across goals. ([#3009](https://github.com/diffplug/spotless/pull/3009))
 - Bump default `adocfmt` version `0.2.0` -> `0.3.1`, which adds table formatting support (`<formatTables>`, `<tableLayout>`, `<tableMaxLineWidth>`, `<tableBlankLines>`).
 - Add support to apply alternate license header within same format ([#872](https://github.com/diffplug/spotless/issues/872))
 - Add support to skip license header application based on source file content pattern ([#650](https://github.com/diffplug/spotless/issues/650)).
