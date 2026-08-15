@@ -50,28 +50,42 @@ public interface P2Provisioner {
 			Provisioner mavenProvisioner,
 			@Nullable File cacheDirectory) throws IOException;
 
-	/** Creates a non-caching P2Provisioner for simple use cases. */
+	/**
+	 * Creates a non-caching P2Provisioner for simple use cases.
+	 * <p>
+	 * All queries are serialized on {@code P2Provisioner.class}. Gradle may fingerprint
+	 * many Spotless tasks in parallel; each fingerprint serializes the equality
+	 * {@code ConfigurationCacheHackList}, which eagerly resolves Eclipse/P2 jars.
+	 * Concurrent Solstice queries race on the on-disk cache and fail with
+	 * {@code Failed to provision P2 dependencies}, reported by Gradle as
+	 * "ConfigurationCacheHackList cannot be serialized"
+	 * (<a href="https://github.com/diffplug/spotless/issues/3004">#3004</a>,
+	 * <a href="https://github.com/diffplug/spotless/issues/2331">#2331</a>).
+	 */
 	static P2Provisioner createDefault() {
 		return (modelWrapper, mavenProvisioner, cacheDirectory) -> {
-			try {
-				if (cacheDirectory != null) {
-					CacheLocations.override_p2data = cacheDirectory;
+			// Serialize all P2 queries in this JVM — Solstice's cache is not concurrent-safe.
+			synchronized (P2Provisioner.class) {
+				try {
+					if (cacheDirectory != null) {
+						CacheLocations.override_p2data = cacheDirectory;
+					}
+					P2Model model = modelWrapper.unwrap();
+					P2QueryResult query = model.query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
+					var classpath = new ArrayList<File>();
+					var mavenDeps = new ArrayList<String>();
+					mavenDeps.add("dev.equo.ide:solstice:1.8.2");
+					mavenDeps.add("com.diffplug.durian:durian-swt.os:4.3.1");
+					mavenDeps.addAll(query.getJarsOnMavenCentral());
+					classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
+					classpath.addAll(query.getJarsNotOnMavenCentral());
+					for (var nested : NestedJars.inFiles(query.getJarsNotOnMavenCentral()).extractAllNestedJars()) {
+						classpath.add(nested.getValue());
+					}
+					return classpath;
+				} catch (Exception e) {
+					throw new IOException("Failed to provision P2 dependencies", e);
 				}
-				P2Model model = modelWrapper.unwrap();
-				P2QueryResult query = model.query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
-				var classpath = new ArrayList<File>();
-				var mavenDeps = new ArrayList<String>();
-				mavenDeps.add("dev.equo.ide:solstice:1.8.1");
-				mavenDeps.add("com.diffplug.durian:durian-swt.os:4.3.1");
-				mavenDeps.addAll(query.getJarsOnMavenCentral());
-				classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
-				classpath.addAll(query.getJarsNotOnMavenCentral());
-				for (var nested : NestedJars.inFiles(query.getJarsNotOnMavenCentral()).extractAllNestedJars()) {
-					classpath.add(nested.getValue());
-				}
-				return classpath;
-			} catch (Exception e) {
-				throw new IOException("Failed to provision P2 dependencies", e);
 			}
 		};
 	}
