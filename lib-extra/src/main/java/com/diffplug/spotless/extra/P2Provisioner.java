@@ -74,7 +74,7 @@ public interface P2Provisioner {
 					P2QueryResult query = model.query(P2ClientCache.PREFER_OFFLINE, P2QueryCache.ALLOW);
 					var classpath = new ArrayList<File>();
 					var mavenDeps = new ArrayList<String>();
-					mavenDeps.add("dev.equo.ide:solstice:1.8.1");
+					mavenDeps.add("dev.equo.ide:solstice:1.8.2");
 					mavenDeps.add("com.diffplug.durian:durian-swt.os:4.3.1");
 					mavenDeps.addAll(query.getJarsOnMavenCentral());
 					classpath.addAll(mavenProvisioner.provisionWithTransitives(false, mavenDeps));
