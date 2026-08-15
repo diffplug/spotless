@@ -17,6 +17,7 @@ package com.diffplug.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,6 +40,35 @@ class ConfigurationCacheHackListTest {
 				},
 				SerializedFunction.identity(),
 				eq -> (FormatterFunc) (s -> s));
+	}
+
+	/** Step whose state evaluation always fails, like an unresolvable P2/Maven dependency. */
+	private static FormatterStep explodingStep(String name, AtomicInteger stateEvals, String message) {
+		return FormatterStep.createLazy(name,
+				() -> {
+					stateEvals.incrementAndGet();
+					throw new RuntimeException(message);
+				},
+				SerializedFunction.identity(),
+				eq -> (FormatterFunc) (s -> s));
+	}
+
+	@Test
+	void toStringReportsSerializationFailureWithoutReEvaluating() throws Exception {
+		AtomicInteger evals = new AtomicInteger();
+		ConfigurationCacheHackList list = ConfigurationCacheHackList.forEquality();
+		list.addAll(List.of(explodingStep("unresolvable", evals, "P2 dependencies not predeclared")));
+
+		try (ObjectOutputStream out = new ObjectOutputStream(new ByteArrayOutputStream())) {
+			assertThatThrownBy(() -> out.writeObject(list)).isNotNull();
+		}
+		int evalsAfterSerialize = evals.get();
+		assertThat(evalsAfterSerialize).as("serialization evaluates state").isPositive();
+
+		// Gradle renders this value into "cannot be serialized" and drops the cause, so the
+		// actionable message has to survive here or the user never sees it (#3004).
+		assertThat(list.toString()).contains("P2 dependencies not predeclared");
+		assertThat(evals.get()).as("toString must not re-evaluate step state").isEqualTo(evalsAfterSerialize);
 	}
 
 	@Test
