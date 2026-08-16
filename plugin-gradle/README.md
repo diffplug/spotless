@@ -198,6 +198,9 @@ Spotless is primarily a formatter, _not_ a linter. In our opinion, a linter is j
 ```gradle
 spotless {
   java {
+    // replaces fully-qualified type names with simple names + imports, see below
+    shortenFullyQualifiedTypes()
+
     // Use the default importOrder configuration
     importOrder()
     // optional: you can specify import groups directly
@@ -285,6 +288,67 @@ spotless {
   }
 }
 ```
+
+### shortenFullyQualifiedTypes
+
+Replaces fully-qualified type names with their simple names, adding the imports they need. Useful for cleaning up generated code, or code where inline fully-qualified names have crept in.
+
+[JavaParser](https://javaparser.org/) parses the source and only type positions in the AST are rewritten, so fully-qualified names appearing in strings, text blocks, and comments are left alone. Unlike [`expandWildcardImports`](#expandwildcardimports), it works from the source file alone and does not need your compile classpath.
+
+New imports are appended after the existing ones, so run this before `importOrder()`:
+
+```gradle
+spotless {
+  java {
+    shortenFullyQualifiedTypes()
+    importOrder()
+    removeUnusedImports()
+  }
+}
+```
+
+Before:
+
+```java
+package com.acme;
+
+public class UserService {
+  private final java.util.Map<String, java.util.List<String>> cache = new java.util.HashMap<>();
+
+  public java.util.List<String> getUsers(java.util.function.Predicate<String> filter) throws java.io.IOException {
+    return new java.util.ArrayList<>();
+  }
+}
+```
+
+After:
+
+```java
+package com.acme;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+
+public class UserService {
+  private final Map<String, List<String>> cache = new HashMap<>();
+
+  public List<String> getUsers(Predicate<String> filter) throws IOException {
+    return new ArrayList<>();
+  }
+}
+```
+
+A name is left fully-qualified whenever shortening it could change what the code means:
+
+- two different fully-qualified names in the file would collapse to the same simple name (e.g. `java.util.List` and `java.awt.List`)
+- an existing import already binds that simple name to a different type
+- the file does not parse
+
+Types in `java.lang` and in the file's own package are shortened without adding an import.
 
 ### google-java-format
 
