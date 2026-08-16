@@ -120,12 +120,6 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter(property = "spotless.skip", defaultValue = "false")
 	private boolean skip;
 
-	@Parameter(property = "spotless.apply.skip", defaultValue = "false")
-	private boolean applySkip;
-
-	@Parameter(property = "spotless.check.skip", defaultValue = "false")
-	private boolean checkSkip;
-
 	@Parameter(defaultValue = "${project}", required = true, readonly = true)
 	private MavenProject project;
 
@@ -305,16 +299,14 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			getLog().debug("Skipping for incremental builds as parameter 'enableForIncrementalBuilds' is set to 'false'");
 			return true;
 		}
+		return isGoalSpecificSkip();
+	}
 
-		switch (goal) {
-		case GOAL_CHECK:
-			return checkSkip;
-		case GOAL_APPLY:
-			return applySkip;
-		default:
-			break;
-		}
-
+	/**
+	 * Goal-specific skip flags live on the concrete mojos (e.g. {@code spotless.check.skip}).
+	 * Override when a goal has its own property.
+	 */
+	protected boolean isGoalSpecificSkip() {
 		return false;
 	}
 

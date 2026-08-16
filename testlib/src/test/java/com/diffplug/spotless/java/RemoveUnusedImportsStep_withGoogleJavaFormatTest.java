@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package com.diffplug.spotless.java;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.SerializableEqualityTester;
@@ -36,6 +38,20 @@ class RemoveUnusedImportsStep_withGoogleJavaFormatTest {
 		// .testResource("java/removeunusedimports/Jdk17TextBlockUnformatted.test", "java/removeunusedimports/Jdk17TextBlockFormatted.test")
 		//.testResource("java/removeunusedimports/SealedClassTestsUnformatted.test", "java/removeunusedimports/SealedClassTestsFormatted.test")
 		;
+	}
+
+	/**
+	 * {@code import module} (JEP 511) is only parseable on JDK 25+. google-java-format 1.30+
+	 * skips module imports in {@code RemoveUnusedImports} instead of ClassCastException on
+	 * {@code JCModuleImport} (https://github.com/diffplug/spotless/issues/2890).
+	 */
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_25)
+	void moduleImports() throws Exception {
+		FormatterStep step = RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.GJF, TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResource("java/removeunusedimports/ModuleImportUnformatted.test", "java/removeunusedimports/ModuleImportFormatted.test")
+				.testResource("java/removeunusedimports/ModuleImportWithUnusedUnformatted.test", "java/removeunusedimports/ModuleImportWithUnusedFormatted.test");
 	}
 
 	@Test

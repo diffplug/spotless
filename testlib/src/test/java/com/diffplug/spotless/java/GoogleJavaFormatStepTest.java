@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.spotless.java;
 
 import static org.junit.jupiter.api.condition.JRE.JAVA_20;
 import static org.junit.jupiter.api.condition.JRE.JAVA_21;
+import static org.junit.jupiter.api.condition.JRE.JAVA_25;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -73,6 +74,15 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 		StepHarness.forStepNoRoundtrip(step)
 				.expectLintsOfResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
 				.toBe("LINE_UNDEFINED google-java-format(jvm-version) You are running Spotless on JVM 21. This requires google-java-format of at least 1.17.0 (you are using 1.9). (...)");
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_25)
+	void versionBelowMinOnJava25IsNotAllowed() throws Exception {
+		FormatterStep step = GoogleJavaFormatStep.create("1.28.0", "AOSP", TestProvisioner.mavenCentral());
+		StepHarness.forStepNoRoundtrip(step)
+				.expectLintsOfResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
+				.toBe("LINE_UNDEFINED google-java-format(jvm-version) You are running Spotless on JVM 25. This requires google-java-format of at least 1.30.0 (you are using 1.28.0). (...)");
 	}
 
 	@Test

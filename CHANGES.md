@@ -11,8 +11,12 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
+- `removeUnusedImports` no longer throws on Java `import module` declarations (`JCModuleImport` ClassCastException). ([#2890](https://github.com/diffplug/spotless/issues/2890))
 - Concurrent P2 provisioning (parallel multi-project Gradle fingerprinting of `eclipse()` / `greclipse()` steps) no longer races Solstice's on-disk cache; also `ConfigurationCacheHackList.toString()` no longer evaluates step state (which could re-trigger provisioning while Gradle reports "cannot be serialized"). ([#3004](https://github.com/diffplug/spotless/issues/3004))
 ### Changes
+- Default `google-java-format` remains `1.28.0` on JVM 17; bumps to `1.30.0` on JVM 21+; require at least `1.30.0` on JVM 25+ for `import module` support.
+- Add embedded lockfiles to Eclipse JDT for every supported version (`4.9` through `4.40`), so `eclipse()` resolves from Maven Central instead of querying a P2 update site. Versions without an embedded lockfile still fall back to P2 provisioning. ([#1996](https://github.com/diffplug/spotless/issues/1996))
+- Bump default `eclipse` version to latest `4.39` -> `4.40`. ([#1996](https://github.com/diffplug/spotless/issues/1996))
 - Bump default `adocfmt` version `0.2.0` -> `0.3.1`, which adds table formatting support (`formatTables`, `tableLayout`, `tableMaxLineWidth`, `tableBlankLines`).
 
 ## [4.9.0] - 2026-07-27

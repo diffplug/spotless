@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,9 +55,11 @@ public class EclipseBasedStepBuilder {
 	 * the fixed versions for the formatter and its transitive dependencies.
 	 * Each line is either a comment starting with {@code #} or corresponds to the format
 	 * {@code <groupId>:<artifactId>[:packaging][:classifier]:<versionRestriction>}
+	 * </p><p>
+	 * Shared with {@link EquoBasedStepBuilder}, which follows the same lockfile layout.
 	 * </p>
 	 */
-	private static final String ECLIPSE_FORMATTER_RESOURCES = EclipseBasedStepBuilder.class.getPackage().getName().replace('.', '/');
+	static final String ECLIPSE_FORMATTER_RESOURCES = EclipseBasedStepBuilder.class.getPackage().getName().replace('.', '/');
 
 	private List<String> dependencies = new ArrayList<>();
 	private Iterable<File> settingsFiles = new ArrayList<>();
