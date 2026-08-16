@@ -146,7 +146,7 @@ Spotless consists of a list of formats (in the example above, `misc` and `java`)
 
 ### Requirements
 
-Spotless requires Maven to be running on JRE 17+. 
+Spotless requires Maven to be running on JRE 17+.
 
 - If you're stuck on JRE 11, use [`2.46.1`](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2461---2025-07-21).
 - If you're stuck on JRE 8, go back to [`2.30.0` or older](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2300---2023-01-13).
@@ -157,9 +157,9 @@ If you want, you can run `mvn spotless:install-git-pre-push-hook` and it will in
 
 1. When you push, it runs `spotless:check`
 2. If formatting issues are found:
-   - It automatically runs `spotless:apply` to fix them
-   - Aborts the push with a message
-   - You can then commit the changes and push again
+  - It automatically runs `spotless:apply` to fix them
+  - Aborts the push with a message
+  - You can then commit the changes and push again
 
 This ensures your code is always clean before it leaves your machine.
 
@@ -379,18 +379,18 @@ Type annotations should be on the same line as the type that they qualify.
 
 ```java
   @Override
-  @Deprecated
-  @Nullable @Interned String s;
+@Deprecated
+@Nullable @Interned String s;
 ```
 
 However, some tools format them incorrectly, like this:
 
 ```java
   @Override
-  @Deprecated
-  @Nullable
-  @Interned
-  String s;
+@Deprecated
+@Nullable
+@Interned
+String s;
 ```
 
 To fix the incorrect formatting, add the `formatAnnotations` rule after a Java formatter.  For example:
@@ -458,7 +458,7 @@ These mechanisms already exist for the Gradle plugin.
       <order>java|javax,org,com,com.diffplug,,\#com.diffplug,\#</order>  <!-- or use <file>${project.basedir}/eclipse.importorder</file> -->
       <!-- you can use an empty string for all the imports you didn't specify explicitly, '|' to join group without blank line, and '\#` prefix for static imports. -->
     </importOrder>
-    
+
     <removeSemicolons/> <!-- removes semicolons at the end of lines -->
     <greclipse/>          <!-- has its own section below -->
 
@@ -800,7 +800,7 @@ Options default to `true` or `false` as shown above. This formatter is opinionat
 
 ```xml
 <dbeaver>
-    <configFile>dbeaver.properties</configFile> <!-- configFile is optional -->
+  <configFile>dbeaver.properties</configFile> <!-- configFile is optional -->
 </dbeaver>
 ```
 
@@ -955,7 +955,7 @@ Arbitrary formatter options from the [flexmark-java Markdown Formatter](https://
 
 [npm](https://www.npmjs.com/package/typescript-formatter). [changelog](https://github.com/vvakame/typescript-formatter/blob/master/CHANGELOG.md). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/typescript/Tsfmt.java). *Please note:*
 The auto-discovery of config files (up the file tree) will not work when using tsfmt within spotless,
-  hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline. See [tsfmt's default config settings](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L11L32) for what is available.
+hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline. See [tsfmt's default config settings](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L11L32) for what is available.
 
 ```xml
 <tsfmt>
@@ -1010,20 +1010,20 @@ reference to a `tsconfig.json` is required.
   <configFile>${project.basedir}/.eslintrc.js</configFile>
   <configJs>
     {
-      env: {
-        browser: true,
-        es2021: true
-      },
-      extends: 'standard-with-typescript',
-      overrides: [
-      ],
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        project: './tsconfig.json',
-      },
-      rules: {
-      }
+    env: {
+    browser: true,
+    es2021: true
+    },
+    extends: 'standard-with-typescript',
+    overrides: [
+    ],
+    parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    project: './tsconfig.json',
+    },
+    rules: {
+    }
     }
   </configJs>
   <!-- recommended: provide a tsconfigFile - especially when using the styleguides -->
@@ -1090,19 +1090,19 @@ The configuration is very similar to the [ESLint (Typescript)](#eslint-typescrip
   <configFile>${project.basedir}/.eslintrc.js</configFile>
   <configJs>
     {
-      env: {
-        browser: true,
-        es2021: true
-      },
-      extends: 'standard',
-      overrides: [
-      ],
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module'
-      },
-      rules: {
-      }
+    env: {
+    browser: true,
+    es2021: true
+    },
+    extends: 'standard',
+    overrides: [
+    ],
+    parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module'
+    },
+    rules: {
+    }
     }
   </configJs>
 </eslint>
@@ -1157,10 +1157,10 @@ Uses Google Gson to also allow sorting by keys besides custom indentation - usef
 
 Notes:
 * There's no option in Gson to leave HTML as-is (i.e. escaped HTML would remain escaped, raw would remain raw). Either
-all HTML characters are written escaped or none. Set `escapeHtml` if you prefer the former.
+  all HTML characters are written escaped or none. Set `escapeHtml` if you prefer the former.
 * `sortByKeys` will apply lexicographic order on the keys of the input JSON. See the
-[javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
-for details.
+  [javadoc of String](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#compareTo(java.lang.String))
+  for details.
 
 ### Jackson
 
@@ -1178,6 +1178,10 @@ Uses Jackson for formatting.
     <QUOTE_FIELD_NAMES>false</QUOTE_FIELD_NAMES>                   <!-- false by default -->
     <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any JsonGenerator.Feature can be toggled on or off -->
   </jsonFeatures>
+  <jsonParserFeatures>
+    <ALLOW_COMMENTS>true</ALLOW_COMMENTS>                          <!-- false by default -->
+    <ANY_OTHER_FEATURE>true|false</ANY_OTHER_FEATURE>              <!-- any JsonParser.Feature can be toggled on or off -->
+  </jsonParserFeatures>
   <spaceBeforeSeparator>false</spaceBeforeSeparator>               <!-- optional: false by default -->
 </jackson>
 ```
@@ -1197,7 +1201,7 @@ For example, to apply the patch from the [JSON Patch homepage](https://jsonpatch
   { "op": "replace", "path": "/baz", "value": "boo" },
   { "op": "add", "path": "/hello", "value": ["world"] },
   { "op": "remove", "path": "/foo" }
-]</jsonPatch>
+  ]</jsonPatch>
 ```
 
 ## YAML
@@ -1248,7 +1252,7 @@ Uses Jackson and YAMLFactory to pretty print objects:
     <includes>     <!-- Not required. Defaults to **/*.sh -->
       <include>scripts/**/*.sh</include>
     </includes>
-    
+
     <shfmt />    <!-- has its own section below -->
   </shell>
 </configuration>
@@ -1345,12 +1349,12 @@ Standard Go formatter, part of Go distribution.
 
 ### Generic Options
 
-List of generic configuration `parameters (type/default)` 
+List of generic configuration `parameters (type/default)`
 
-* `failOnWarning (boolean/true)`: The Jena parser produces three levels of problem reports: warning, error, and fatal. By default, 
-the build fails for any of them. You can ignore warnings using this parameter. They will still be logged in the plugin's 
-output.
-* `verify (boolean/true)`: If `true`, the content before and after formatting is parsed to an RDF model and compared for isomorphicity.   
+* `failOnWarning (boolean/true)`: The Jena parser produces three levels of problem reports: warning, error, and fatal. By default,
+  the build fails for any of them. You can ignore warnings using this parameter. They will still be logged in the plugin's
+  output.
+* `verify (boolean/true)`: If `true`, the content before and after formatting is parsed to an RDF model and compared for isomorphicity.
 * `turtleFormatterVersion (string|RdfFormatterStep.LATEST_TURTLE_FORMATTER_VERSION)`: the version of Cool RDF Formatter to use (see below).
 
 ### Supported RDF formats: only TTL (at the moment)
@@ -1414,7 +1418,7 @@ RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version t
   <excludes>  <!-- optional: if you want to ignore auto generated protos -->
     <exclude>target/**/<exclude>
   </excludes>
-  
+
   <protobuf>
     <buf />  <!-- has its own section below -->
   </protobuf>
@@ -1426,9 +1430,9 @@ RDF parsing is done via [Apache Jena](https://jena.apache.org/) in the version t
 [homepage](https://buf.build/) [buf repo](https://github.com/bufbuild/buf).
 ```xml
  <buf>
-    <version>1.44.0</version>    <!-- optional. Explicitly allow "any found version" with '*'. -->
-    <pathToExe>/path/to/buf</pathToExe>  <!-- optional: if buf isn't in your path -->
- </buf>        
+  <version>1.44.0</version>    <!-- optional. Explicitly allow "any found version" with '*'. -->
+  <pathToExe>/path/to/buf</pathToExe>  <!-- optional: if buf isn't in your path -->
+</buf>        
 ```
 
 
@@ -1474,7 +1478,7 @@ You can use prettier in any language-specific format, but usually you will be cr
         <!-- Specify at most one of the following 3 configs: either 'prettierVersion' (2.0.5 is default), 'devDependencies' or 'devDependencyProperties'  -->
         <prettierVersion>1.19.0</prettierVersion>
         <devDependencies>
-            <prettier>1.19.0</prettier>
+          <prettier>1.19.0</prettier>
         </devDependencies>
         <devDependencyProperties>
           <property>
@@ -1489,9 +1493,9 @@ You can use prettier in any language-specific format, but usually you will be cr
         <!-- Specify config file and/or inline config, the inline always trumps file -->
         <configFile>${project.basedir}/path/to/configfile</configFile>
         <config>
-            <useTabs>true</useTabs>
-            <!-- Prettier v3 Only - Comma Delimited -->
-            <plugins>@prettier/plugin-php</plugins>
+          <useTabs>true</useTabs>
+          <!-- Prettier v3 Only - Comma Delimited -->
+          <plugins>@prettier/plugin-php</plugins>
         </config>
       </prettier>
     </format>
@@ -1531,13 +1535,13 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
 
       <prettier>
         <devDependencies>
-            <prettier>2.8.8</prettier>
-            <prettier-plugin-java>2.2.0</prettier-plugin-java>
+          <prettier>2.8.8</prettier>
+          <prettier-plugin-java>2.2.0</prettier-plugin-java>
         </devDependencies>
         <config>
-            <tabWidth>4</tabWidth>
-            <parser>java</parser>
-            <plugins>prettier-plugin-java</plugins><!-- this is only for prettier 3.0.0 and above: an additional 'plugins' config element is required -->
+          <tabWidth>4</tabWidth>
+          <parser>java</parser>
+          <plugins>prettier-plugin-java</plugins><!-- this is only for prettier 3.0.0 and above: an additional 'plugins' config element is required -->
         </config>
       </prettier>
     </format>
@@ -1561,9 +1565,9 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
           </property>
         </devDependencyProperties>
         <config>
-            <tabWidth>3</tabWidth>
-            <parser>php</parser>
-            <plugins>@prettier/plugin-php</plugins><!-- this is only for prettier 3.0.0 and above: an additional 'plugins' config element is required -->
+          <tabWidth>3</tabWidth>
+          <parser>php</parser>
+          <plugins>@prettier/plugin-php</plugins><!-- this is only for prettier 3.0.0 and above: an additional 'plugins' config element is required -->
         </config>
       </prettier>
     </format>
@@ -1711,8 +1715,8 @@ more formats:
 ```xml
 <configuration>
   <formats>
-    <format><includes>src/**/*.ts</includes><biome/></format>
-    <format><includes>src/**/*.js</includes><biome/></format>
+  <format><includes>src/**/*.ts</includes><biome/></format>
+  <format><includes>src/**/*.js</includes><biome/></format>
 </configuration>
 ```
 
@@ -1898,41 +1902,41 @@ See [here](../INTELLIJ_IDEA_SCREENSHOTS.md) for an explanation on how to extract
 <endWithNewline /> <!-- files must end with a newline -->
 
 <indent> <!-- specify whether to use tabs or spaces for indentation -->
-  <spaces>true</spaces> <!-- or <tabs>true</tabs> -->
-  <spacesPerTab>4</spacesPerTab> <!-- optional, default is 4 -->
+<spaces>true</spaces> <!-- or <tabs>true</tabs> -->
+<spacesPerTab>4</spacesPerTab> <!-- optional, default is 4 -->
 </indent>
 
 <jsr223> <!-- specify replacements using JSR223 scripting -->
-  <name>Greetings to Mars</name>
-  <dependency>org.codehaus.groovy:groovy-jsr223:3.0.9</dependency> <!-- optional, maven dependency, containing the jsr223 compatible scripting engine -->
-  <engine>groovy</engine> <!-- nashorn is provided by JDK 8-14, other engines can be loaded from the given dependency -->
-  <script>source.replace('World','Mars');</script> <!-- the source variable contains the unformatted code, the returned value of the script is the formatted code -->
+<name>Greetings to Mars</name>
+<dependency>org.codehaus.groovy:groovy-jsr223:3.0.9</dependency> <!-- optional, maven dependency, containing the jsr223 compatible scripting engine -->
+<engine>groovy</engine> <!-- nashorn is provided by JDK 8-14, other engines can be loaded from the given dependency -->
+<script>source.replace('World','Mars');</script> <!-- the source variable contains the unformatted code, the returned value of the script is the formatted code -->
 </jsr223>
 
 <nativeCmd> <!-- run a native binary -->
-  <name>Greetings to Mars from sed</name>
-  <pathToExe>/usr/bin/sed</pathToExe> <!-- path to the binary, unformatted code is send via StdIn, formatted code is expected on StdOut -->
-  <arguments> <!-- optional, list with arguments for the binary call -->
-    <argument>s/World/Mars/g</argument>
-  </arguments>
+<name>Greetings to Mars from sed</name>
+<pathToExe>/usr/bin/sed</pathToExe> <!-- path to the binary, unformatted code is send via StdIn, formatted code is expected on StdOut -->
+<arguments> <!-- optional, list with arguments for the binary call -->
+  <argument>s/World/Mars/g</argument>
+</arguments>
 </nativeCmd>
 
 <replace> <!-- specify replacements using search and replace -->
-  <name>Say Hello to Mars</name>
-  <search>World</search>
-  <replacement>Mars</replacement>
+<name>Say Hello to Mars</name>
+<search>World</search>
+<replacement>Mars</replacement>
 </replace>
 
 <replaceRegex> <!-- specify replacements using regex match and replace -->
-  <name>Say Hello to Mars from Regex</name>
-  <searchRegex>(Hello) W[a-z]{3}d</searchRegex>
-  <replacement>$1 Mars</replacement>
+<name>Say Hello to Mars from Regex</name>
+<searchRegex>(Hello) W[a-z]{3}d</searchRegex>
+<replacement>$1 Mars</replacement>
 </replaceRegex>
 
 <forbidRegex>
-  <name>Forbid FooBar</name>
-  <searchRegex>import foo\.bar\.(.*)</searchRegex>
-  <lintDetail>foobar is officially abandoned, use fizzbuzz instead</lintDetail>
+<name>Forbid FooBar</name>
+<searchRegex>import foo\.bar\.(.*)</searchRegex>
+<lintDetail>foobar is officially abandoned, use fizzbuzz instead</lintDetail>
 </forbidRegex>
 ```
 
@@ -1971,18 +1975,18 @@ To define what lines to skip at the beginning of such files, fill the `skipLines
 
 Sometimes it may be necessary to disable a license rule for specific files, or to maintain dual licenses.
 
-To define alternate replacements: 
+To define alternate replacements:
 
 ```xml
 <licenseHeader>
-    <name>PrimaryHeaderLicense</name>
-    <content>/** Base License Header */</content>
-    <onlyIfContentMatches>Best</onlyIfContentMatches>
+  <name>PrimaryHeaderLicense</name>
+  <content>/** Base License Header */</content>
+  <onlyIfContentMatches>Best</onlyIfContentMatches>
 </licenseHeader>
 <licenseHeader>
-  <name>SecondaryHeaderLicense</name>
-  <content>/** Alternate License Header */</content>
-  <onlyIfContentMatches>.*Test.+</onlyIfContentMatches>
+<name>SecondaryHeaderLicense</name>
+<content>/** Alternate License Header */</content>
+<onlyIfContentMatches>.*Test.+</onlyIfContentMatches>
 </licenseHeader>
 ```
 
@@ -2212,7 +2216,7 @@ To enable it use the following parameter
 ```
 
 In addition Eclipse problem markers are being emitted for goal `check`. By default they have the severity `WARNING`.
-You can adjust this with 
+You can adjust this with
 
 ```
 <configuration>

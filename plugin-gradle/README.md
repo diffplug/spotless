@@ -152,9 +152,9 @@ If you want, you can run `./gradlew spotlessInstallGitPrePushHook` and it will i
 
 1. When you push, it runs `spotlessCheck`
 2. If formatting issues are found:
-   - It automatically runs `spotlessApply` to fix them
-   - Aborts the push with a message
-   - You can then commit the changes and push again
+  - It automatically runs `spotlessApply` to fix them
+  - Aborts the push with a message
+  - You can then commit the changes and push again
 
 This ensures your code is always clean before it leaves your machine.
 
@@ -356,7 +356,7 @@ spotless {
 #### Sort Members
 
 Not only can you format your code with Eclipse JDT, but you can also sort the members as you know it from Eclipse IDE.
-This ensures that the methods are always in sorted order (and thus reduces the likelihood of collisions in a version 
+This ensures that the methods are always in sorted order (and thus reduces the likelihood of collisions in a version
 control system). It is turned off by default, but you might want to consider enabling it when setting coding standards
 for a project.
 
@@ -393,18 +393,18 @@ Type annotations should be on the same line as the type that they qualify.
 
 ```java
   @Override
-  @Deprecated
-  @Nullable @Interned String s;
+@Deprecated
+@Nullable @Interned String s;
 ```
 
 However, some tools format them incorrectly, like this:
 
 ```java
   @Override
-  @Deprecated
-  @Nullable
-  @Interned
-  String s;
+@Deprecated
+@Nullable
+@Interned
+String s;
 ```
 
 To fix the incorrect formatting, add the `formatAnnotations()` rule after a Java formatter.  For example:
@@ -555,7 +555,7 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
 
 > [!WARNING]
 > The target is usually inferred automatically from the java source sets. However, Spotless cannot automatically detect [android](https://github.com/diffplug/spotless/issues/111) or [java-gradle-plugin](https://github.com/diffplug/spotless/issues/437) sources, but you can fix this easily:
-> 
+>
 > ```gradle
 > spotless {
 >   kotlin {
@@ -1008,7 +1008,7 @@ spotless {
 
 [npm](https://www.npmjs.com/package/typescript-formatter). [changelog](https://github.com/vvakame/typescript-formatter/blob/master/CHANGELOG.md). *Please note:*
 The auto-discovery of config files (up the file tree) will not work when using tsfmt within spotless,
-  hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline. See [tsfmt's default config settings](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L11L32) for what is available.
+hence you are required to provide resolvable file paths for config files, or alternatively provide the configuration inline. See [tsfmt's default config settings](https://github.com/vvakame/typescript-formatter/blob/7764258ad42ac65071399840d1b8701868510ca7/lib/utils.ts#L11L32) for what is available.
 
 ```gradle
 spotless {
@@ -1211,7 +1211,7 @@ spotless {
       .feature('ORDER_MAP_ENTRIES_BY_KEYS', true)    // optional: false by default
       .feature('ANY_OTHER_FEATURE', true|false)      // optional: any SerializationFeature can be toggled on or off
       .jsonFeature('ANY_OTHER_FEATURE', true|false)  // any JsonGenerator.Feature can be toggled on or off
-  }
+      }
 }
 ```
 
@@ -1309,8 +1309,8 @@ spotless {
 
 [homepage](https://github.com/mvdan/sh). [changelog](https://github.com/mvdan/sh/blob/master/CHANGELOG.md).
 
-When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.editorconfig`. 
-Refer to the `shfmt` [man page](https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd) for `.editorconfig` settings. 
+When formatting shell scripts via `shfmt`, configure `shfmt` settings via `.editorconfig`.
+Refer to the `shfmt` [man page](https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd) for `.editorconfig` settings.
 
 ```gradle
 shfmt('3.8.0') // version is optional. Explicitly allow "any found version" with '*'.
@@ -1768,10 +1768,10 @@ you can force a certain language like this:
 ```xml
 spotless {
   format 'biome', {
-    target 'src/**/typescript/**/*.mjson'
-    biome('1.2.0').language('json')
+  target 'src/**/typescript/**/*.mjson'
+  biome('1.2.0').language('json')
   }
-}
+  }
 ```
 
 The following languages are currently recognized:
@@ -1786,12 +1786,12 @@ The following languages are currently recognized:
 
 ## IntelliJ IDEA
 
-[homepage](https://www.jetbrains.com/idea/). [changelog](https://www.jetbrains.com/idea/whatsnew/). 
+[homepage](https://www.jetbrains.com/idea/). [changelog](https://www.jetbrains.com/idea/whatsnew/).
 
 `IntelliJ IDEA` is a powerful IDE for java, kotlin and many more languages. There are [specific variants](https://www.jetbrains.com/products/) for almost any modern language
 and a plethora of [plugins](https://plugins.jetbrains.com/).
 
-Spotless provides access to IntelliJ IDEA's command line formatter. 
+Spotless provides access to IntelliJ IDEA's command line formatter.
 
 ```gradle
 spotless {
@@ -1810,7 +1810,7 @@ spotless {
 ```
 
 ### How to generate code style settings files
-See [here](../INTELLIJ_IDEA_SCREENSHOTS.md) for an explanation on how to extract or reference existing code style files. 
+See [here](../INTELLIJ_IDEA_SCREENSHOTS.md) for an explanation on how to extract or reference existing code style files.
 
 ### Limitations
 - Currently, only IntelliJ IDEA is supported - none of the other jetbrains IDE. Consider opening a PR if you want to change this.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,6 +165,15 @@ public class JsonExtension extends FormatExtension {
 		 */
 		public JacksonJsonGradleConfig jsonFeature(String feature, boolean toggle) {
 			this.jacksonConfig.appendJsonFeatureToToggle(Map.of(feature, toggle));
+			formatExtension.replaceStep(createStep());
+			return this;
+		}
+
+		/**
+		 * Refers to com.fasterxml.jackson.core.JsonParser.Feature
+		 */
+		public JacksonJsonGradleConfig jsonParserFeature(String feature, boolean toggle) {
+			this.jacksonConfig.appendJsonParserFeatureToToggle(Map.of(feature, toggle));
 			formatExtension.replaceStep(createStep());
 			return this;
 		}

@@ -8,6 +8,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Parallel multi-project builds no longer intermittently fail with "Cannot fingerprint input property 'stepsInternalEquality': ConfigurationCacheHackList cannot be serialized" / "Failed to provision P2 dependencies" when using `eclipse()` (or other P2-backed steps). Subprojects now share one deduping P2 provisioner and P2 queries are serialized process-wide. ([#3004](https://github.com/diffplug/spotless/issues/3004))
 ### Changes
 - Bump default `adocfmt` version `0.2.0` -> `0.3.1`, which adds table formatting support (`formatTables`, `tableLayout`, `tableMaxLineWidth`, `tableBlankLines`).
+### Added
+- Add support for `jsonParserFeature` to configure Jackson's `JsonParser.Feature` options like ALLOW_COMMENTS. ([#2271](https://github.com/diffplug/spotless/issues/2271))
 
 ## [8.9.0] - 2026-07-27
 ### Added

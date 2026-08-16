@@ -14,6 +14,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Concurrent P2 provisioning (parallel multi-project Gradle fingerprinting of `eclipse()` / `greclipse()` steps) no longer races Solstice's on-disk cache; also `ConfigurationCacheHackList.toString()` no longer evaluates step state (which could re-trigger provisioning while Gradle reports "cannot be serialized"). ([#3004](https://github.com/diffplug/spotless/issues/3004))
 ### Changes
 - Bump default `adocfmt` version `0.2.0` -> `0.3.1`, which adds table formatting support (`formatTables`, `tableLayout`, `tableMaxLineWidth`, `tableBlankLines`).
+### Added
+- Add support for `jsonParserFeature` to configure Jackson's `JsonParser.Feature` options like ALLOW_COMMENTS. ([#2271](https://github.com/diffplug/spotless/issues/2271))
 
 ## [4.9.0] - 2026-07-27
 ### Added

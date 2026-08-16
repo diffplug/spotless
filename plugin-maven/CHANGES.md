@@ -10,6 +10,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `adocfmt` version `0.2.0` -> `0.3.1`, which adds table formatting support (`<formatTables>`, `<tableLayout>`, `<tableMaxLineWidth>`, `<tableBlankLines>`).
 - Add support to apply alternate license header within same format ([#872](https://github.com/diffplug/spotless/issues/872))
 - Add support to skip license header application based on source file content pattern ([#650](https://github.com/diffplug/spotless/issues/650)).
+### Added
+- Add support for `jsonParserFeature` to configure Jackson's `JsonParser.Feature` options like ALLOW_COMMENTS. ([#2271](https://github.com/diffplug/spotless/issues/2271))
 
 ## [3.9.0] - 2026-07-27
 ### Added

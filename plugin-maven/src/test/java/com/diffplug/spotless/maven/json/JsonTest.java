@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,6 +88,16 @@ public class JsonTest extends MavenIntegrationHarness {
 
 		mavenRunner().withArguments("spotless:apply").runNoError();
 		assertFile("json_test.json").sameAsResource("json/sortByKeysAfter_Jackson_spaceAfterKeySeparator.json");
+	}
+
+	@Test
+	public void testFormatJson_WithJackson_allowComments() throws Exception {
+		writePomWithJsonSteps("<jackson><jsonParserFeatures><ALLOW_COMMENTS>true</ALLOW_COMMENTS></jsonParserFeatures></jackson>");
+
+		setFile("json_test.json").toResource("json/commentObjectBefore.json");
+
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("json_test.json").sameAsResource("json/commentObjectAfter_Jackson.json");
 	}
 
 	@Test

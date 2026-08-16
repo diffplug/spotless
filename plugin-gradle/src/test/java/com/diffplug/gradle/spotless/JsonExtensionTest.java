@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,6 +155,25 @@ class JsonExtensionTest extends GradleIntegrationHarness {
 		setFile("src/main/resources/example.json").toResource("json/sortByKeysBefore.json");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("src/main/resources/example.json").sameAsResource("json/sortByKeysAfter_Jackson.json");
+	}
+
+	@Test
+	void jacksonFormattingWithJsonParserFeatureAllowComments() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    json {",
+				"        target 'src/**/*.json'",
+				"        jackson().jsonParserFeature('ALLOW_COMMENTS', true)",
+				"    }",
+				"}");
+		setFile("src/main/resources/example.json").toResource("json/commentObjectBefore.json");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/resources/example.json").sameAsResource("json/commentObjectAfter_Jackson.json");
 	}
 
 	@Test
