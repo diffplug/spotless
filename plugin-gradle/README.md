@@ -198,9 +198,6 @@ Spotless is primarily a formatter, _not_ a linter. In our opinion, a linter is j
 ```gradle
 spotless {
   java {
-    // replaces fully-qualified type names with simple names + imports, see below
-    shortenFullyQualifiedTypes()
-
     // Use the default importOrder configuration
     importOrder()
     // optional: you can specify import groups directly
@@ -213,6 +210,7 @@ spotless {
     removeUnusedImports()
     forbidWildcardImports() // or expandWildcardImports, see below
     forbidModuleImports()
+    shortenFullyQualifiedTypes() // replaces fully-qualified type names with simple names + imports
 
     // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
     cleanthat()          // has its own section below

@@ -219,8 +219,6 @@ any other maven phase (i.e. compile) then it can be configured as below;
 
     <tableTestFormatter /> <!-- has its own section below -->
 
-    <shortenFullyQualifiedTypes /> <!-- replaces fully-qualified type names with simple names + imports, see below -->
-
     <importOrder /> <!-- standard import order -->
     <importOrder>  <!-- or a custom ordering -->
       <wildcardsLast>false</wildcardsLast> <!-- Optional, default false. Sort wildcard import after specific imports -->
@@ -238,6 +236,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <removeUnusedImports /> <!-- self-explanatory -->
     <forbidWildcardImports /> <!-- yell if any import ends with '*'; or use expandWildcardImports, see below -->
     <forbidModuleImports /> <!-- yell if any module imports are found (Java 25+) -->
+    <shortenFullyQualifiedTypes /> <!-- replaces fully-qualified type names with simple names + imports, see below -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
