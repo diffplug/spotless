@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,20 +63,19 @@ public final class ShortenFullyQualifiedTypesStep implements Serializable {
 
 	private record State(JarState jarState) implements Serializable {
 
-		@Serial
-		private static final long serialVersionUID = 1L;
+	@Serial
+	private static final long serialVersionUID = 1L;
 
-		FormatterFunc toFormatter() {
-			try {
-				return (FormatterFunc) jarState
-						.getClassLoader()
-						.loadClass("com.diffplug.spotless.glue.javaparser.ShortenQualifiedTypesFormatterFunc")
-						.getConstructor()
-						.newInstance();
-			} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
-					| InstantiationException | IllegalAccessException | NoClassDefFoundError cause) {
-				throw new IllegalStateException(INCOMPATIBLE_ERROR_MESSAGE, cause);
-			}
+	FormatterFunc toFormatter() {
+		try {
+			return (FormatterFunc) jarState
+					.getClassLoader()
+					.loadClass("com.diffplug.spotless.glue.javaparser.ShortenQualifiedTypesFormatterFunc")
+					.getConstructor()
+					.newInstance();
+		} catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException
+				| InstantiationException | IllegalAccessException | NoClassDefFoundError cause) {
+			throw new IllegalStateException(INCOMPATIBLE_ERROR_MESSAGE, cause);
 		}
 	}
-}
+}}
