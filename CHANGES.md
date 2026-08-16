@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- New `ShortenFullyQualifiedTypesStep` for Java, which replaces fully-qualified type names with their simple names and adds the imports they need. Uses JavaParser to find type references in the AST, so occurrences in strings, comments, and other non-type contexts are left alone. ([#2945](https://github.com/diffplug/spotless/issues/2945))
 ### Fixed
 - `removeUnusedImports` no longer throws on Java `import module` declarations (`JCModuleImport` ClassCastException). ([#2890](https://github.com/diffplug/spotless/issues/2890))
 - Concurrent P2 provisioning (parallel multi-project Gradle fingerprinting of `eclipse()` / `greclipse()` steps) no longer races Solstice's on-disk cache; also `ConfigurationCacheHackList.toString()` no longer evaluates step state (which could re-trigger provisioning while Gradle reports "cannot be serialized"). ([#3004](https://github.com/diffplug/spotless/issues/3004))

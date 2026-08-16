@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- New `shortenFullyQualifiedTypes()` step for Java, which replaces fully-qualified type names with their simple names and adds the imports they need. Best combined with `importOrder()` and `removeUnusedImports()`. ([#2945](https://github.com/diffplug/spotless/issues/2945))
 ### Fixed
 - `removeUnusedImports` no longer fails on Java `import module` declarations. ([#2890](https://github.com/diffplug/spotless/issues/2890))
 - `expandWildcardImports()` now builds its type-solver classpath from each Java source set's compile classpath instead of every resolvable configuration. Unrelated configurations (for example generated-code or custom resolvable configs that are not ready yet) are no longer resolved. ([#2998](https://github.com/diffplug/spotless/issues/2998))

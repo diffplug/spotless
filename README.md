@@ -89,6 +89,7 @@ lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      
 lib('java.ExpandWildcardImportsStep')            +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('java.ForbidWildcardImportsStep')            +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.ForbidModuleImportsStep')              +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
+lib('java.ShortenFullyQualifiedTypesStep')       +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 extra('java.EclipseJdtFormatterStep')            +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.FormatAnnotationsStep')                +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('java.CleanthatJavaStep')                    +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
@@ -149,6 +150,7 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`java.ExpandWildcardImportsStep`](lib/src/main/java/com/diffplug/spotless/java/ExpandWildcardImportsStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`java.ForbidWildcardImportsStep`](lib/src/main/java/com/diffplug/spotless/java/ForbidWildcardImportsStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.ForbidModuleImportsStep`](lib/src/main/java/com/diffplug/spotless/java/ForbidModuleImportsStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
+| [`java.ShortenFullyQualifiedTypesStep`](lib/src/main/java/com/diffplug/spotless/java/ShortenFullyQualifiedTypesStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`java.EclipseJdtFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/java/EclipseJdtFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.FormatAnnotationsStep`](lib/src/main/java/com/diffplug/spotless/java/FormatAnnotationsStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`java.CleanthatJavaStep`](lib/src/main/java/com/diffplug/spotless/java/CleanthatJavaStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
