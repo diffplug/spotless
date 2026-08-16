@@ -1,0 +1,19 @@
+# Spotless formatter based on Eclipse-JDT 4.35
+org.eclipse.jdt:org.eclipse.jdt.core:3.41.0
+net.java.dev.jna:jna-platform:5.16.0
+org.eclipse.jdt:ecj:3.41.0
+org.eclipse.platform:org.eclipse.core.commands:3.12.300
+org.eclipse.platform:org.eclipse.core.contenttype:3.9.600
+org.eclipse.platform:org.eclipse.core.expressions:3.9.400
+org.eclipse.platform:org.eclipse.core.filesystem:1.11.100
+org.eclipse.platform:org.eclipse.core.jobs:3.15.500
+org.eclipse.platform:org.eclipse.core.resources:3.22.100
+org.eclipse.platform:org.eclipse.core.runtime:3.33.0
+org.eclipse.platform:org.eclipse.equinox.app:1.7.300
+org.eclipse.platform:org.eclipse.equinox.common:3.20.0
+org.eclipse.platform:org.eclipse.equinox.preferences:3.11.300
+org.eclipse.platform:org.eclipse.equinox.registry:3.12.300
+org.eclipse.platform:org.eclipse.equinox.supplement:1.12.0
+org.eclipse.platform:org.eclipse.osgi:3.23.0
+org.eclipse.platform:org.eclipse.text:3.14.300
+org.osgi:org.osgi.service.prefs:1.1.2

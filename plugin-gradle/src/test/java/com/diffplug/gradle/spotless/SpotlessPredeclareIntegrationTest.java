@@ -209,9 +209,13 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 			setFile("sub/test.java").toResource("java/eclipse/JavaCodeUnformatted.test");
 
 			BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
+			// Eclipse JDT resolves from an embedded lockfile rather than a P2 query, so an
+			// un-predeclared subproject fails on the Maven coordinates instead of on P2.
+			// greclipse still has no lockfile, so it keeps the P2 message - see
+			// GroovyDependencies.predeclareFailsWhenGroovyGrEclipseNotPredeclared.
 			assertThat(result.getOutput())
-					.contains("P2 dependencies not predeclared")
-					.contains("Add Eclipse formatter configuration to the `spotlessPredeclare` block in the root project");
+					.contains("into the `spotlessPredeclare` block in the root project")
+					.contains("org.eclipse.jdt:org.eclipse.jdt.core");
 		}
 
 		@Test

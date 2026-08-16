@@ -96,6 +96,27 @@ p2deps {
 	}
 }
 
+// Embedded Eclipse JDT lockfiles, see EclipseJdtLockfileMetadataTool. `verify` runs in CI so the
+// lockfiles cannot silently drift from Eclipse's P2 metadata; `update` is run by hand whenever the
+// default version moves. Both hit the Eclipse update sites, so neither is wired into `build`.
+def eclipseJdtLockfileTool = { String entrypoint ->
+	return {
+		group = 'verification'
+		classpath = sourceSets.test.runtimeClasspath
+		mainClass = "com.diffplug.spotless.extra.java.EclipseJdtLockfileMetadataTool\$${entrypoint}"
+		workingDir = rootProject.projectDir
+		outputs.upToDateWhen { false }
+	}
+}
+tasks.register('verifyEclipseJdtLockfiles', JavaExec) {
+	configure eclipseJdtLockfileTool('Verify')
+	description = 'Checks the embedded Eclipse JDT lockfiles against Eclipse P2 metadata.'
+}
+tasks.register('updateEclipseJdtLockfiles', JavaExec) {
+	configure eclipseJdtLockfileTool('Update')
+	description = 'Regenerates the embedded Eclipse JDT lockfiles from Eclipse P2 metadata.'
+}
+
 // we'll hold the core lib to a high standard
 spotbugs {
 	// LOW|MEDIUM|DEFAULT|HIGH (low = sensitive to even minor mistakes).
