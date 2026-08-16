@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 - New `shortenFullyQualifiedTypes()` step for Java, which replaces fully-qualified type names with their simple names and adds the imports they need. Best combined with `importOrder()` and `removeUnusedImports()`. ([#2945](https://github.com/diffplug/spotless/issues/2945))
+- Add embedded lockfiles to Eclipse JDT for every supported version (`4.9` through `4.40`), so `eclipse()` resolves from Maven Central instead of querying a P2 update site. Versions without an embedded lockfile still fall back to P2 provisioning. ([#1996](https://github.com/diffplug/spotless/issues/1996))
 ### Fixed
 - `removeUnusedImports` no longer fails on Java `import module` declarations. ([#2890](https://github.com/diffplug/spotless/issues/2890))
 - `expandWildcardImports()` now builds its type-solver classpath from each Java source set's compile classpath instead of every resolvable configuration. Unrelated configurations (for example generated-code or custom resolvable configs that are not ready yet) are no longer resolved. ([#2998](https://github.com/diffplug/spotless/issues/2998))
@@ -12,7 +13,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Parallel multi-project builds no longer intermittently fail with "Cannot fingerprint input property 'stepsInternalEquality': ConfigurationCacheHackList cannot be serialized" / "Failed to provision P2 dependencies" when using `eclipse()` (or other P2-backed steps). Subprojects now share one deduping P2 provisioner and P2 queries are serialized process-wide. ([#3004](https://github.com/diffplug/spotless/issues/3004))
 ### Changes
 - Default `google-java-format` remains `1.28.0` on JVM 17; bumps to `1.30.0` on JVM 21+; require at least `1.30.0` on JVM 25+ for `import module` support.
-- Add embedded lockfiles to Eclipse JDT for every supported version (`4.9` through `4.40`), so `eclipse()` resolves from Maven Central instead of querying a P2 update site. Versions without an embedded lockfile still fall back to P2 provisioning. ([#1996](https://github.com/diffplug/spotless/issues/1996))
 - Bump default `eclipse` version to latest `4.39` -> `4.40`. ([#1996](https://github.com/diffplug/spotless/issues/1996))
 - Bump default `adocfmt` version `0.2.0` -> `0.3.1`, which adds table formatting support (`formatTables`, `tableLayout`, `tableMaxLineWidth`, `tableBlankLines`).
 
