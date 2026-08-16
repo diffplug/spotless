@@ -31,7 +31,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 
@@ -176,7 +175,10 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	public void expandWildcardImports() {
 		SourceSetContainer sourceSets = getSourceSets(getProject(), "expansion of wildcards requires the 'java' plugin to be applied");
 		Set<File> typeSolverClasspath = sourceSets.stream().flatMap(s -> s.getAllJava().getSrcDirs().stream()).collect(toSet());
-		getProject().getConfigurations().stream().filter(Configuration::isCanBeResolved).flatMap(c -> c.getFiles().stream()).forEach(typeSolverClasspath::add);
+		sourceSets.stream()
+				.map(SourceSet::getCompileClasspath)
+				.flatMap(classpath -> classpath.getFiles().stream())
+				.forEach(typeSolverClasspath::add);
 		addStep(ExpandWildcardImportsStep.create(typeSolverClasspath, provisioner()));
 	}
 

@@ -2,6 +2,7 @@ name: Scheduled Cleanup 🧹
 on:
   schedule:
     - cron: '0 16 * * 3'
+  workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -27,3 +28,8 @@ jobs:
         run: ./gradlew assemble -Derror-prone=true
       - name: OpenRewrite ☑️ # 4m 55s (2 min compile, 3 min rewrite)
         run: ./gradlew rewriteDryRun
+      # Catches upstream drift between the embedded lockfiles and Eclipse's P2 metadata. It lives
+      # here rather than in CI because it queries the Eclipse update sites -- per-PR gaps and strays
+      # are already caught offline by EclipseJdtFormatterStepTest.
+      - name: Eclipse JDT Lockfiles 🔒 # ~1 min
+        run: ./gradlew :lib-extra:verifyEclipseJdtLockfiles
