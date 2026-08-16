@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
+import org.gradle.api.initialization.IncludedBuild;
+import org.gradle.api.invocation.Gradle;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
@@ -139,10 +142,67 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		getProjectPath().set(getProject().getPath());
 		getEncoding().set(impl.map(SpotlessTask::getEncoding));
 		getRunToFixMessage().convention(
-				"Run '" + calculateGradleCommand() + " spotlessApply' to fix all violations.");
+				"Run '" + calculateGradleCommand() + " " + spotlessApplySelector(getProject()) + "' to fix all violations.");
 	}
 
 	private static String calculateGradleCommand() {
 		return FileSignature.machineIsWin() ? "gradlew.bat" : "./gradlew";
+	}
+
+	/**
+	 * Task selector for the fix-it hint.
+	 * <ul>
+	 *   <li>In the main/root build, bare {@code spotlessApply} fixes every project (see #2592).</li>
+	 *   <li>In an included/composite build, bare task names do not select included-build tasks,
+	 *       so we must use the build-tree path (e.g. {@code :my-utils:spotlessApply}) — see #2421.</li>
+	 * </ul>
+	 */
+	static String spotlessApplySelector(Project project) {
+		if (project.getGradle().getParent() == null) {
+			return "spotlessApply";
+		}
+		return buildTreePath(project) + ":spotlessApply";
+	}
+
+	/**
+	 * Path of this project in the full build tree (includes included-build names).
+	 * Uses {@link Project#getBuildTreePath()} when available (Gradle 8.10+), otherwise
+	 * reconstructs it from {@link Gradle#getIncludedBuilds()}.
+	 */
+	static String buildTreePath(Project project) {
+		try {
+			Object treePath = Project.class.getMethod("getBuildTreePath").invoke(project);
+			if (treePath instanceof String s && !s.isEmpty()) {
+				return s;
+			}
+		} catch (ReflectiveOperationException ignored) {
+			// Gradle < 8.10
+		}
+		return reconstructBuildTreePath(project);
+	}
+
+	private static String reconstructBuildTreePath(Project project) {
+		StringBuilder buildPrefix = new StringBuilder();
+		Gradle gradle = project.getGradle();
+		for (Gradle parent = gradle.getParent(); parent != null; parent = gradle.getParent()) {
+			File rootDir = gradle.getRootProject().getRootDir().getAbsoluteFile();
+			String buildName = null;
+			for (IncludedBuild included : parent.getIncludedBuilds()) {
+				if (included.getProjectDir().getAbsoluteFile().equals(rootDir)) {
+					buildName = included.getName();
+					break;
+				}
+			}
+			if (buildName == null) {
+				buildName = gradle.getRootProject().getName();
+			}
+			buildPrefix.insert(0, ":" + buildName);
+			gradle = parent;
+		}
+		String projectPath = project.getPath();
+		if (":".equals(projectPath)) {
+			return buildPrefix.length() == 0 ? ":" : buildPrefix.toString();
+		}
+		return buildPrefix + projectPath;
 	}
 }
