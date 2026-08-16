@@ -122,7 +122,8 @@ public final class GoogleJavaFormatStep implements Serializable {
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME)
 			.addMin(21, "1.17.0") // java 21 requires at least 1.17.0 due to https://github.com/google/google-java-format/issues/898
 			.addMin(25, "1.30.0") // import module (JEP 511) requires google-java-format >= 1.30.0 (https://github.com/google/google-java-format/issues/1213)
-			.add(17, "1.30.0"); // default version (1.30.0+ handles `import module` in RemoveUnusedImports)
+			.add(17, "1.28.0") // last version compatible with JDK 17 (1.30.0 references JCAnyPattern, JDK 21+ only)
+			.add(21, "1.30.0"); // default on JVM 21+ (1.30.0+ handles `import module` in RemoveUnusedImports on JVM 25+)
 
 	public static String defaultGroupArtifact() {
 		return MAVEN_COORDINATE;
