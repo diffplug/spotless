@@ -47,6 +47,7 @@ import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.PrinceOfSpaceStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import com.diffplug.spotless.java.ShortenFullyQualifiedTypesStep;
 import com.diffplug.spotless.java.TableTestFormatterStep;
 
 public class JavaExtension extends FormatExtension implements HasBuiltinDelimiterForLicense, JvmLang {
@@ -166,6 +167,11 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public void forbidWildcardImports() {
 		addStep(ForbidWildcardImportsStep.create());
+	}
+
+	/** Shortens fully qualified type names and adds imports. */
+	public void shortenFullyQualifiedTypes() {
+		addStep(ShortenFullyQualifiedTypesStep.create(provisioner()));
 	}
 
 	public void forbidModuleImports() {
