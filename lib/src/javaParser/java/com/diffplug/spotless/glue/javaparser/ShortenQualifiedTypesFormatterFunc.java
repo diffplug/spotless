@@ -81,36 +81,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 		Map<String, Set<String>> simpleToFqns = new LinkedHashMap<>();
 		List<QualifiedTypeRef> qualifiedRefs = new ArrayList<>();
 
-		cu.accept(new VoidVisitorAdapter<Void>() {
-			@Override
-			public void visit(ClassOrInterfaceType type, Void arg) {
-				super.visit(type, arg);
-				if (type.getScope().isEmpty()) {
-					return;
-				}
-				// Skip types that are themselves the scope of a parent type
-				if (type.getParentNode().isPresent()
-						&& type.getParentNode().get() instanceof ClassOrInterfaceType parent
-						&& parent.getScope().isPresent()
-						&& parent.getScope().get() == type) {
-					return;
-				}
-				String rawName = buildRawName(type);
-				if (!startsWithPackage(rawName)) {
-					return;
-				}
-				String simple = type.getNameAsString();
-				simpleToFqns.computeIfAbsent(simple, k -> new LinkedHashSet<>()).add(rawName);
-
-				// Record the text range of the scope (to be removed)
-				ClassOrInterfaceType scope = type.getScope().get();
-				if (scope.getBegin().isPresent() && type.getName().getBegin().isPresent()) {
-					Position scopeStart = scope.getBegin().get();
-					Position nameStart = type.getName().getBegin().get();
-					qualifiedRefs.add(new QualifiedTypeRef(rawName, simple, scopeStart, nameStart));
-				}
-			}
-		}, null);
+		cu.accept(new CollectQualifiedTypesVisitor(simpleToFqns, qualifiedRefs), null);
 
 		if (qualifiedRefs.isEmpty()) {
 			return rawUnix;
@@ -199,6 +170,46 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 	}
 
 	private record QualifiedTypeRef(String fqn, String simpleName, Position scopeStart, Position nameStart) {}
+
+	/** Collects the outermost fully-qualified type nodes, along with the text range of the scope to remove. */
+	private static final class CollectQualifiedTypesVisitor extends VoidVisitorAdapter<Void> {
+		private final Map<String, Set<String>> simpleToFqns;
+		private final List<QualifiedTypeRef> qualifiedRefs;
+
+		CollectQualifiedTypesVisitor(Map<String, Set<String>> simpleToFqns, List<QualifiedTypeRef> qualifiedRefs) {
+			this.simpleToFqns = simpleToFqns;
+			this.qualifiedRefs = qualifiedRefs;
+		}
+
+		@Override
+		public void visit(ClassOrInterfaceType type, Void arg) {
+			super.visit(type, arg);
+			if (type.getScope().isEmpty()) {
+				return;
+			}
+			// Skip types that are themselves the scope of a parent type
+			if (type.getParentNode().isPresent()
+					&& type.getParentNode().get() instanceof ClassOrInterfaceType parent
+					&& parent.getScope().isPresent()
+					&& parent.getScope().get() == type) {
+				return;
+			}
+			String rawName = buildRawName(type);
+			if (!startsWithPackage(rawName)) {
+				return;
+			}
+			String simple = type.getNameAsString();
+			simpleToFqns.computeIfAbsent(simple, k -> new LinkedHashSet<>()).add(rawName);
+
+			// Record the text range of the scope (to be removed)
+			ClassOrInterfaceType scope = type.getScope().get();
+			if (scope.getBegin().isPresent() && type.getName().getBegin().isPresent()) {
+				Position scopeStart = scope.getBegin().get();
+				Position nameStart = type.getName().getBegin().get();
+				qualifiedRefs.add(new QualifiedTypeRef(rawName, simple, scopeStart, nameStart));
+			}
+		}
+	}
 
 	private static String buildRawName(ClassOrInterfaceType type) {
 		StringBuilder sb = new StringBuilder();
