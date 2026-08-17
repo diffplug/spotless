@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [4.10.0] - 2026-08-17
 ### Added
 - New `ShortenFullyQualifiedTypesStep` for Java, which replaces fully-qualified type names with their simple names and adds the imports they need. Uses JavaParser to find type references in the AST, so occurrences in strings, comments, and other non-type contexts are left alone. ([#2945](https://github.com/diffplug/spotless/issues/2945))
 - Add embedded lockfiles to Eclipse JDT for every supported version (`4.9` through `4.40`), so `eclipse()` resolves from Maven Central instead of querying a P2 update site. Versions without an embedded lockfile still fall back to P2 provisioning. ([#1996](https://github.com/diffplug/spotless/issues/1996))
