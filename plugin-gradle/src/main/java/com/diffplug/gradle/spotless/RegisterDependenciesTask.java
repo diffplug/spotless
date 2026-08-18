@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
@@ -66,7 +67,8 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		taskService = SpotlessTaskService.registerIfAbsent(getProject(), compositeBuildSuffix);
 		usesService(taskService);
 		getBuildEventsListenerRegistry().onTaskCompletion(taskService);
-		unitOutput = new File(getProject().getLayout().getBuildDirectory().getAsFile().get(), "tmp/spotless-register-dependencies");
+		// lazy, so a build directory set later in the buildscript still counts
+		getUnitOutput().set(getProject().getLayout().getBuildDirectory().file("tmp/spotless-register-dependencies"));
 	}
 
 	List<FormatterStep> steps = new ArrayList<>();
@@ -76,15 +78,12 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 		return steps;
 	}
 
-	File unitOutput;
-
 	@OutputFile
-	public File getUnitOutput() {
-		return unitOutput;
-	}
+	public abstract RegularFileProperty getUnitOutput();
 
 	@TaskAction
 	public void trivialFunction() throws IOException {
+		File unitOutput = getUnitOutput().get().getAsFile();
 		Files.createParentDirs(unitOutput);
 		Files.write(Integer.toString(1), unitOutput, StandardCharsets.UTF_8);
 	}
