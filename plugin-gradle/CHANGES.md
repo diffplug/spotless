@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Fixed
+- `spotlessInternalRegisterDependencies` now writes its output under a build directory that is configured after the plugin is applied, instead of always under the default `build/`. ([#2114](https://github.com/diffplug/spotless/issues/2114))
 
 ## [8.10.0] - 2026-08-17
 ### Added
