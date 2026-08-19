@@ -17,10 +17,10 @@ apply plugin: 'com.diffplug.spotless-changelog'
 spotlessChangelog {
 	changelogFile 'CHANGES.md'
 	// need -Prelease=true in order to do a publish
-	appendDashSnapshotUnless_dashPrelease=true
+	appendDashSnapshotUnless_dashPrelease =true
 
-	branch        'release'
-	tagPrefix     "${kind}/"
+	branch 'release'
+	tagPrefix "${kind}/"
 	commitMessage "Published ${kind}/{{version}}" // {{version}} will be replaced
 	tagMessage "{{changes}}"
 	runAfterPush "gh release create ${kind}/{{version}} --title '${releaseTitle} v{{version}}' --notes-from-tag"

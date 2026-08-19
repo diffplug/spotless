@@ -63,8 +63,8 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = 'spotless'
 
 include 'lib' // reusable library with no dependencies
-include 'lib-extra'	// reusable library with lots of dependencies
-include 'plugin-gradle'	// gradle-specific glue code
+include 'lib-extra' // reusable library with lots of dependencies
+include 'plugin-gradle' // gradle-specific glue code
 include 'testlib' // library for sharing test infrastructure between the projects below
 
 def getStartProperty(String name) {
