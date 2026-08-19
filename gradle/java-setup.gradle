@@ -14,7 +14,7 @@ tasks.withType(JavaCompile).configureEach {
 //////////////
 apply plugin: 'com.github.spotbugs'
 spotbugs {
-	ignoreFailures = false 	// bug free or it doesn't ship!
+	ignoreFailures = false // bug free or it doesn't ship!
 	// LOW|MEDIUM|DEFAULT|HIGH (low = sensitive to even minor mistakes).
 	reportLevel = com.github.spotbugs.snom.Confidence.valueOf('MEDIUM')
 	omitVisitors = [
