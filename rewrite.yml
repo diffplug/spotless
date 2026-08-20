@@ -14,15 +14,15 @@ recipeList:
   - org.openrewrite.java.migrate.UpgradeToJava17
   - org.openrewrite.java.migrate.lang.StringRulesRecipes
   - org.openrewrite.java.migrate.util.JavaLangAPIs
-  - org.openrewrite.java.migrate.util.JavaUtilAPIs
+  # - org.openrewrite.java.migrate.util.JavaUtilAPIs # MigrateCollectionsEmpty* swaps Collections.emptyList/Map/Set for List/Map/Set.of; Gradle's configuration cache cannot round-trip those, which breaks IsolatedProjectTest
   - org.openrewrite.java.migrate.util.MigrateInflaterDeflaterToClose
   - org.openrewrite.java.migrate.util.ReplaceStreamCollectWithToList
   - org.openrewrite.java.migrate.util.SequencedCollection
   - org.openrewrite.java.recipes.JavaRecipeBestPractices
   - org.openrewrite.java.recipes.RecipeTestingBestPractices
   - org.openrewrite.staticanalysis.BufferedWriterCreationRecipes
-  - org.openrewrite.staticanalysis.CommonStaticAnalysis
-  - org.openrewrite.staticanalysis.EqualsAvoidsNull
+  # - org.openrewrite.staticanalysis.CommonStaticAnalysis # bundles OrderImports, which permanently disagrees with gradle/spotless.importorder (each tool undoes the other)
+  # - org.openrewrite.staticanalysis.EqualsAvoidsNull # wants to flip x.equals("literal") to "literal".equals(x) repo-wide; not worth the churn
   - org.openrewrite.staticanalysis.JavaApiBestPractices
   - org.openrewrite.staticanalysis.LowercasePackage
   - org.openrewrite.staticanalysis.MissingOverrideAnnotation
@@ -36,16 +36,16 @@ recipeList:
   - org.openrewrite.staticanalysis.SimplifyTernaryRecipes
   - org.openrewrite.staticanalysis.URLEqualsHashCodeRecipes
   - org.openrewrite.staticanalysis.UnnecessaryCloseInTryWithResources
-  - org.openrewrite.staticanalysis.UnnecessaryExplicitTypeArguments
+  # - org.openrewrite.staticanalysis.UnnecessaryExplicitTypeArguments # strips the required witness from Jvm.<String>support(..), producing code that does not compile
   - org.openrewrite.staticanalysis.UnnecessaryParentheses
   - org.openrewrite.staticanalysis.UnnecessaryReturnAsLastStatement
   - tech.picnic.errorprone.refasterrules.BigDecimalRulesRecipes
-  - tech.picnic.errorprone.refasterrules.CharSequenceRulesRecipes
+  # - tech.picnic.errorprone.refasterrules.CharSequenceRulesRecipes # length() == 0 -> isEmpty(); not worth the churn
   - tech.picnic.errorprone.refasterrules.ClassRulesRecipes
   # tech.picnic.errorprone.refasterrules.CollectionRulesRecipes # needs UpgradeToJava21
   - tech.picnic.errorprone.refasterrules.ComparatorRulesRecipes
   - tech.picnic.errorprone.refasterrules.EqualityRulesRecipes
-  - tech.picnic.errorprone.refasterrules.FileRulesRecipes
+  # - tech.picnic.errorprone.refasterrules.FileRulesRecipes # FilesNewOutputStreamToPath rewrites new FileOutputStream(..) to Files.newOutputStream(..), which does not compile where the variable is declared FileOutputStream
   - tech.picnic.errorprone.refasterrules.MapRulesRecipes
   - tech.picnic.errorprone.refasterrules.MicrometerRulesRecipes
   - tech.picnic.errorprone.refasterrules.MockitoRulesRecipes
@@ -55,6 +55,6 @@ recipeList:
   - tech.picnic.errorprone.refasterrules.PreconditionsRulesRecipes
   - tech.picnic.errorprone.refasterrules.PrimitiveRulesRecipes
   - tech.picnic.errorprone.refasterrules.StreamRulesRecipes
-  - tech.picnic.errorprone.refasterrules.StringRulesRecipes
+  # - tech.picnic.errorprone.refasterrules.StringRulesRecipes # String.format -> "..".formatted and friends; not worth the churn
   - tech.picnic.errorprone.refasterrules.TimeRulesRecipes
 ---
