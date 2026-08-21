@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,10 +129,11 @@ public final class StandardNpmProcessFactory implements NpmProcessFactory {
 
 		@Override
 		protected List<String> commandLine() {
+			// npm 12 rejects --scripts-prepend-node-path (unknown CLI flag). Node is already
+			// on PATH via environmentVariables(), which is what that flag used to do.
 			return List.of(
 					npmExecutable(),
 					"start",
-					"--scripts-prepend-node-path=true",
 					"--",
 					"--node-server-instance-id=" + nodeServerInstanceId);
 		}
