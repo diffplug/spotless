@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
+- `prettier()` and other npm-based steps no longer fail to start on npm 12 (`EUNKNOWNCONFIG` from `--scripts-prepend-node-path`). ([#3024](https://github.com/diffplug/spotless/issues/3024))
 - `spotlessInternalRegisterDependencies` now writes its output under a build directory that is configured after the plugin is applied, instead of always under the default `build/`. ([#2114](https://github.com/diffplug/spotless/issues/2114))
 
 ## [8.10.0] - 2026-08-17
