@@ -33,6 +33,9 @@ import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
+import com.github.javaparser.ast.body.RecordDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
@@ -77,7 +80,13 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			existingImportsBySimple.put(simple, fqn);
 		}
 
-		// 3. Walk the AST to find outermost fully-qualified type nodes
+		// 3. Collect type names declared in this file (top-level + nested)
+		Set<String> declaredTypeNames = new LinkedHashSet<>();
+		cu.findAll(ClassOrInterfaceDeclaration.class).forEach(c -> declaredTypeNames.add(c.getNameAsString()));
+		cu.findAll(EnumDeclaration.class).forEach(c -> declaredTypeNames.add(c.getNameAsString()));
+		cu.findAll(RecordDeclaration.class).forEach(c -> declaredTypeNames.add(c.getNameAsString()));
+
+		// 4. Walk the AST to find outermost fully-qualified type nodes
 		Map<String, Set<String>> simpleToFqns = new LinkedHashMap<>();
 		List<QualifiedTypeRef> qualifiedRefs = new ArrayList<>();
 
@@ -87,7 +96,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			return rawUnix;
 		}
 
-		// 4. Determine which FQNs are safe to shorten
+		// 5. Determine which FQNs are safe to shorten
 		Set<String> safeToShorten = new LinkedHashSet<>();
 		for (Map.Entry<String, Set<String>> entry : simpleToFqns.entrySet()) {
 			String simple = entry.getKey();
@@ -100,6 +109,10 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			if (existing != null && !existing.equals(fqn)) {
 				continue;
 			}
+			// Skip if simple name clashes with a type declared in this file
+			if (declaredTypeNames.contains(simple)) {
+				continue;
+			}
 			safeToShorten.add(fqn);
 		}
 
@@ -107,7 +120,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			return rawUnix;
 		}
 
-		// 5. Convert line/column positions to string offsets and replace
+		// 6. Convert line/column positions to string offsets and replace
 		// Build line-start offset table
 		int[] lineOffsets = buildLineOffsets(rawUnix);
 
@@ -134,7 +147,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			sb.delete(removal[0], removal[1]);
 		}
 
-		// 6. Add missing imports
+		// 7. Add missing imports
 		Set<String> newImports = new TreeSet<>();
 		for (String fqn : safeToShorten) {
 			if (fqn.startsWith("java.lang.") && fqn.indexOf('.', 10) == -1) {
