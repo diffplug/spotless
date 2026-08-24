@@ -47,7 +47,9 @@ import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileSystemLocation;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
@@ -344,6 +346,9 @@ public class FormatExtension {
 				matchedFiles.exclude(excludes);
 			}
 			return matchedFiles;
+		} else if (isExclude && (target instanceof FileSystemLocation || target instanceof Provider)) {
+			// an excluded directory means the files under it, and the tree resolves them lazily
+			return getProject().files(target).getAsFileTree();
 		} else {
 			return getProject().files(target);
 		}
