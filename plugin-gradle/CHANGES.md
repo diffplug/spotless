@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 - `prettier()` and other npm-based steps no longer fail to start on npm 12 (`EUNKNOWNCONFIG` from `--scripts-prepend-node-path`). ([#3024](https://github.com/diffplug/spotless/issues/3024))
 - `spotlessInternalRegisterDependencies` now writes its output under a build directory that is configured after the plugin is applied, instead of always under the default `build/`. ([#2114](https://github.com/diffplug/spotless/issues/2114))
+- `targetExclude` now accepts a Gradle `Directory`, `DirectoryProperty`, or `Provider<Directory>` and excludes the files under it. Previously the directory was treated as a single file, so excluding one silently did nothing. ([#2667](https://github.com/diffplug/spotless/issues/2667))
 
 ## [8.10.0] - 2026-08-17
 ### Added
