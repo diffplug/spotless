@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [4.10.1] - 2026-08-27
 ### Fixed
 - Prettier and other npm-based formatters no longer fail to start on npm 12 (`EUNKNOWNCONFIG` from `--scripts-prepend-node-path`). ([#3024](https://github.com/diffplug/spotless/issues/3024))
 
