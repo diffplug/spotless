@@ -302,6 +302,49 @@ class ShortenFullyQualifiedTypesStepTest {
 	}
 
 	@Test
+	void fqnCollisionWithEnclosingClassName() throws Exception {
+		// dev.jbang.cli.Alias intentionally uses dev.jbang.catalog.Alias as FQN
+		// because the simple name "Alias" would clash with the enclosing class
+		String code = String.join("\n",
+				"package dev.jbang.cli;",
+				"",
+				"public class Alias {",
+				"    dev.jbang.catalog.Alias catalogAlias;",
+				"}",
+				"");
+		assertEquals(code, apply(code));
+	}
+
+	@Test
+	void fqnCollisionWithInnerClassName() throws Exception {
+		// FQN whose simple name matches an inner class declared in the same file
+		String code = String.join("\n",
+				"package com.example;",
+				"",
+				"public class Outer {",
+				"    static class Conflict {}",
+				"    com.other.Conflict externalConflict;",
+				"}",
+				"");
+		assertEquals(code, apply(code));
+	}
+
+	@Test
+	void fqnNoCollisionWithDifferentSimpleName() throws Exception {
+		// FQN whose simple name does NOT match the enclosing class — should still shorten
+		String before = String.join("\n",
+				"package dev.jbang.cli;",
+				"",
+				"public class Alias {",
+				"    java.util.List<String> items;",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(codeBody(result).contains("java.util.List"), "non-conflicting FQN should be shortened");
+		assertTrue(result.contains("import java.util.List;"), "should import List");
+	}
+
+	@Test
 	void multipleAnnotationsWithFqn() throws Exception {
 		// FQNs used as annotation types should NOT be treated as type references
 		// (annotations start with @, not handled by ClassOrInterfaceType)
