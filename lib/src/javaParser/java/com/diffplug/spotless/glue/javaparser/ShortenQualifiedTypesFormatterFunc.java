@@ -86,7 +86,13 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 		cu.findAll(EnumDeclaration.class).forEach(c -> declaredTypeNames.add(c.getNameAsString()));
 		cu.findAll(RecordDeclaration.class).forEach(c -> declaredTypeNames.add(c.getNameAsString()));
 
-		// 4. Walk the AST to find outermost fully-qualified type nodes
+		// 4. Collect unqualified type references, which may resolve to types in the same package
+		Set<String> unqualifiedTypeNames = new LinkedHashSet<>();
+		cu.findAll(ClassOrInterfaceType.class).stream()
+				.filter(type -> type.getScope().isEmpty())
+				.forEach(type -> unqualifiedTypeNames.add(type.getNameAsString()));
+
+		// 5. Walk the AST to find outermost fully-qualified type nodes
 		Map<String, Set<String>> simpleToFqns = new LinkedHashMap<>();
 		List<QualifiedTypeRef> qualifiedRefs = new ArrayList<>();
 
@@ -96,7 +102,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			return rawUnix;
 		}
 
-		// 5. Determine which FQNs are safe to shorten
+		// 6. Determine which FQNs are safe to shorten
 		Set<String> safeToShorten = new LinkedHashSet<>();
 		for (Map.Entry<String, Set<String>> entry : simpleToFqns.entrySet()) {
 			String simple = entry.getKey();
@@ -109,8 +115,9 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			if (existing != null && !existing.equals(fqn)) {
 				continue;
 			}
-			// Skip if simple name clashes with a type declared in this file
-			if (declaredTypeNames.contains(simple)) {
+			// Skip if simple name clashes with a type declared or already referenced in this file
+			if (declaredTypeNames.contains(simple)
+					|| (existing == null && unqualifiedTypeNames.contains(simple) && !isImplicitlyImported(fqn, packageName))) {
 				continue;
 			}
 			safeToShorten.add(fqn);
@@ -120,7 +127,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			return rawUnix;
 		}
 
-		// 6. Convert line/column positions to string offsets and replace
+		// 7. Convert line/column positions to string offsets and replace
 		// Build line-start offset table
 		int[] lineOffsets = buildLineOffsets(rawUnix);
 
@@ -147,14 +154,10 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			sb.delete(removal[0], removal[1]);
 		}
 
-		// 7. Add missing imports
+		// 8. Add missing imports
 		Set<String> newImports = new TreeSet<>();
 		for (String fqn : safeToShorten) {
-			if (fqn.startsWith("java.lang.") && fqn.indexOf('.', 10) == -1) {
-				continue;
-			}
-			if (!packageName.isEmpty() && fqn.startsWith(packageName + ".")
-					&& fqn.indexOf('.', packageName.length() + 1) == -1) {
+			if (isImplicitlyImported(fqn, packageName)) {
 				continue;
 			}
 			if (existingImportFqns.contains(fqn)) {
@@ -240,6 +243,12 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 
 	private static boolean startsWithPackage(String rawName) {
 		return !rawName.isEmpty() && Character.isLowerCase(rawName.charAt(0));
+	}
+
+	private static boolean isImplicitlyImported(String fqn, String packageName) {
+		return fqn.startsWith("java.lang.") && fqn.indexOf('.', 10) == -1
+				|| !packageName.isEmpty() && fqn.startsWith(packageName + ".")
+						&& fqn.indexOf('.', packageName.length() + 1) == -1;
 	}
 
 	/** Builds an array where lineOffsets[line] is the char offset of the start of that line (1-indexed). */

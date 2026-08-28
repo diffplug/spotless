@@ -139,6 +139,7 @@ class ShortenFullyQualifiedTypesStepTest {
 				"",
 				"public class Foo {",
 				"    java.util.List<String> a;",
+				"    List<String> b;",
 				"}",
 				"");
 		String result = apply(before);
@@ -324,6 +325,20 @@ class ShortenFullyQualifiedTypesStepTest {
 				"public class Outer {",
 				"    static class Conflict {}",
 				"    com.other.Conflict externalConflict;",
+				"}",
+				"");
+		assertEquals(code, apply(code));
+	}
+
+	@Test
+	void fqnCollisionWithUnqualifiedSamePackageType() throws Exception {
+		// RandomAccessFile is declared in another file in this package; importing java.io.RandomAccessFile
+		// would silently change which type the unqualified superclass name resolves to
+		String code = String.join("\n",
+				"package test.reprod1;",
+				"",
+				"public class ClassA extends RandomAccessFile {",
+				"    final java.io.RandomAccessFile file;",
 				"}",
 				"");
 		assertEquals(code, apply(code));
