@@ -21,6 +21,7 @@ def NEEDS_GLUE = [
 	'javaParser',
 	'ktfmt',
 	'ktlint',
+	'lombokStubs',
 	'palantirJavaFormat',
 	'princeOfSpace',
 	'scalafmt',
