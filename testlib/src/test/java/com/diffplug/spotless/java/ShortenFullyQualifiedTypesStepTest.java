@@ -27,6 +27,47 @@ import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.TestProvisioner;
 
+/**
+ * Tests for {@code shortenFullyQualifiedTypes}.
+ *
+ * <h3>Safety contract: never introduce a compile error</h3>
+ *
+ * <p>The formatter operates without a classpath, so it cannot resolve types the way
+ * the compiler does. The rule is: <em>when in doubt, leave the reference qualified.</em>
+ * A verbose FQN is harmless; a wrong shortening breaks the build.
+ *
+ * <p>Tests are organised into three groups:
+ *
+ * <ol>
+ *   <li><b>Exact checks</b> — situations where we have enough information to
+ *       decide with certainty. Examples: the simple name already appears in a
+ *       different import, or clashes with a type declared in the same file.
+ *       In these cases the formatter must leave the FQN alone.</li>
+ *
+ *   <li><b>Expression-context heuristics</b> — FQTs used as static method call
+ *       targets ({@code java.lang.management.ManagementFactory.getPlatformMXBeans(…)}),
+ *       static field or enum-constant access, or nested-type member access.
+ *       JavaParser sees these as {@code FieldAccessExpr}/{@code MethodCallExpr},
+ *       not type nodes, so two heuristics guard against false positives:
+ *       <ul>
+ *         <li><em>Known-package check:</em> if the candidate's package already
+ *             appears in the file's imports, own package, or {@code java.lang},
+ *             we trust it.</li>
+ *         <li><em>Minimum-depth fallback:</em> otherwise we require ≥ 2 lowercase
+ *             (package) segments before the first uppercase (type) segment.
+ *             This rejects {@code variable.Field} patterns that look like a FQT
+ *             but are really field access on a local variable.
+ *             In theory a legitimate single-segment package ({@code a.MyType})
+ *             with no matching import would be skipped, but single-segment
+ *             packages are virtually non-existent in real-world Java.</li>
+ *       </ul></li>
+ *
+ *   <li><b>Known ambiguous / leave-as-is</b> — cases where shortening <em>could</em>
+ *       change semantics and the formatter cannot prove safety. For example,
+ *       a FQN whose simple name matches a same-package type used unqualified
+ *       elsewhere in the file.</li>
+ * </ol>
+ */
 class ShortenFullyQualifiedTypesStepTest {
 
 	private FormatterStep step() {
@@ -357,6 +398,167 @@ class ShortenFullyQualifiedTypesStepTest {
 		String result = apply(before);
 		assertFalse(codeBody(result).contains("java.util.List"), "non-conflicting FQN should be shortened");
 		assertTrue(result.contains("import java.util.List;"), "should import List");
+	}
+
+	@Test
+	void issue3039_fqtInStaticMethodCall() throws Exception {
+		String before = String.join("\n",
+				"import java.lang.management.BufferPoolMXBean;",
+				"import java.util.List;",
+				"",
+				"public class ClassA {",
+				"    public void methodA() {",
+				"        final List<BufferPoolMXBean> pools = java.lang.management.ManagementFactory.getPlatformMXBeans(BufferPoolMXBean.class);",
+				"    }",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(codeBody(result).contains("java.lang.management.ManagementFactory"),
+				"FQT in static method call should be shortened");
+		assertTrue(result.contains("import java.lang.management.ManagementFactory;"),
+				"should add ManagementFactory import");
+	}
+
+	@Test
+	void issue3039_fqtNestedTypeFieldAccess() throws Exception {
+		String before = String.join("\n",
+				"import java.util.List;",
+				"import pkg.models.CustomTypeProperty;",
+				"",
+				"public class ClassB {",
+				"    final List<CustomTypeProperty> connectionProps = List.of(new CustomTypeProperty().name(\"host\")",
+				"        .type(pkg.models.CustomTypeProperty.TypeEnum.STRING));",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(codeBody(result).contains("pkg.models.CustomTypeProperty"),
+				"FQT in nested type field access should be shortened");
+	}
+
+	@Test
+	void exprStaticFieldAccess() throws Exception {
+		String before = String.join("\n",
+				"import java.util.concurrent.TimeUnit;",
+				"",
+				"public class Foo {",
+				"    long millis = java.util.concurrent.TimeUnit.SECONDS.toMillis(5);",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(codeBody(result).contains("java.util.concurrent.TimeUnit"),
+				"FQT for static field access should be shortened");
+	}
+
+	@Test
+	void exprJavaLangImplicitPackage() throws Exception {
+		// java.lang is always known — should shorten even without explicit imports
+		String before = String.join("\n",
+				"public class Foo {",
+				"    void test() {",
+				"        java.lang.System.exit(0);",
+				"    }",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(codeBody(result).contains("java.lang.System"),
+				"java.lang.System should be shortened (java.lang is implicit)");
+		assertFalse(result.contains("import java.lang.System"),
+				"java.lang types should not be imported");
+	}
+
+	@Test
+	void exprChainedAfterStaticMethod() throws Exception {
+		String before = String.join("\n",
+				"import java.util.List;",
+				"",
+				"public class Foo {",
+				"    List<String> items = java.util.Collections.unmodifiableList(new java.util.ArrayList<>());",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(codeBody(result).contains("java.util.Collections"),
+				"FQT in chained static method call should be shortened");
+		assertTrue(result.contains("import java.util.Collections;"), "should import Collections");
+	}
+
+	@Test
+	void exprEnumConstantAccess() throws Exception {
+		String before = String.join("\n",
+				"import java.time.LocalDate;",
+				"",
+				"public class Foo {",
+				"    Object day = java.time.DayOfWeek.MONDAY;",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(codeBody(result).contains("java.time.DayOfWeek"),
+				"FQT for enum constant should be shortened");
+		assertTrue(result.contains("import java.time.DayOfWeek;"), "should import DayOfWeek");
+	}
+
+	// ── Expression-context: should NOT shorten (ambiguous) ───────────────
+
+	@Test
+	void exprSingleSegmentUnknownPackageNotShortened() throws Exception {
+		// 'config' could be a local variable; only 1 lowercase segment, no matching import
+		String code = String.join("\n",
+				"public class Foo {",
+				"    Object v = config.Default.VALUE;",
+				"}",
+				"");
+		assertEquals(code, apply(code));
+	}
+
+	@Test
+	void exprSingleSegmentUnknownPackageMethodNotShortened() throws Exception {
+		// 'builder' could be a local variable; only 1 lowercase segment, no matching import
+		String code = String.join("\n",
+				"public class Foo {",
+				"    Object v = builder.Type.create();",
+				"}",
+				"");
+		assertEquals(code, apply(code));
+	}
+
+	@Test
+	void exprSingleSegmentWithKnownImportDoesShorten() throws Exception {
+		// 'config' has 1 lowercase segment but IS a known package (import exists from config.*)
+		String before = String.join("\n",
+				"import config.Other;",
+				"",
+				"public class Foo {",
+				"    Object v = config.Default.VALUE;",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(codeBody(result).contains("config.Default"),
+				"known single-segment package should be shortened");
+	}
+
+	@Test
+	void exprCollisionWithExistingImportNotShortened() throws Exception {
+		// java.util.List is already imported; java.awt.List in expression context must not shorten
+		String code = String.join("\n",
+				"import java.util.List;",
+				"",
+				"public class Foo {",
+				"    int n = java.awt.List.COLUMN_HEADERS;",
+				"}",
+				"");
+		assertEquals(code, apply(code));
+	}
+
+	@Test
+	void exprCollisionWithDeclaredTypeNotShortened() throws Exception {
+		// File declares class named 'Entry'; expression FQT with same simple name must not shorten
+		String code = String.join("\n",
+				"import java.util.Map;",
+				"",
+				"public class Entry {",
+				"    Object e = java.util.Map.Entry.class;",
+				"}",
+				"");
+		assertEquals(code, apply(code));
 	}
 
 	@Test
