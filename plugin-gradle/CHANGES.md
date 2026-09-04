@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [8.10.2] - 2026-09-04
 ### Fixed
 - `shortenFullyQualifiedTypes()` now shortens fully-qualified types used in expression contexts (such as static method calls, static fields, and enum constants) while avoiding imports that would change how existing unqualified type references resolve. ([#3039](https://github.com/diffplug/spotless/pull/3039))
 - Eclipse JDT formatter step no longer fails with `NoClassDefFoundError` when lombok is active as a JVM agent (e.g. `-javaagent:lombok.jar` in Eclipse/VS Code/Cursor). ([#2795](https://github.com/diffplug/spotless/issues/2795))
