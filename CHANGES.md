@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- `FeatureClassLoader` now provides stub implementations of `lombok.*` classes (and synthesises empty classes for any others) so that the Eclipse JDT formatter step no longer fails with `NoClassDefFoundError` when lombok is active as a JVM agent (e.g. `-javaagent:lombok.jar` in Eclipse/VS Code/Cursor). ([#2795](https://github.com/diffplug/spotless/issues/2795))
 
 ## [4.10.1] - 2026-08-27
 ### Fixed
