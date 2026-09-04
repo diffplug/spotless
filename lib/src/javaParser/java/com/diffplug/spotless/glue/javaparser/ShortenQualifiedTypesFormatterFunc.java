@@ -32,18 +32,66 @@ import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.RecordDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import com.diffplug.spotless.FormatterFunc;
 
 /**
- * Uses JavaParser to identify fully qualified type references in the AST,
- * then performs text-level replacement to shorten them and add imports.
+ * Shortens fully-qualified type references and adds the corresponding imports.
+ *
+ * <h3>Goal: never introduce a compile error</h3>
+ *
+ * <p>Spotless runs without a full classpath or type-resolution, so the formatter
+ * cannot know every type visible to the compiler. The guiding principle is:
+ * <em>"when in doubt, leave it alone."</em> An un-shortened reference is merely
+ * verbose; a wrongly-shortened one breaks the build.
+ *
+ * <h4>What we can check exactly</h4>
+ * <ul>
+ *   <li><b>Type context (AST).</b> JavaParser tells us exactly which tokens are
+ *       {@code ClassOrInterfaceType} nodes, so we never touch strings, comments,
+ *       or non-type expressions when shortening type references.</li>
+ *   <li><b>Import collisions.</b> If the simple name is already imported to a
+ *       <em>different</em> FQN, we leave the reference qualified.</li>
+ *   <li><b>Declared-type collisions.</b> If the simple name matches a class,
+ *       enum, or record declared in the same file, we leave it.</li>
+ *   <li><b>Unqualified-reference collisions.</b> If the simple name is already
+ *       used unqualified elsewhere (possibly resolving to a same-package type),
+ *       adding an import could silently change what it resolves to.</li>
+ * </ul>
+ *
+ * <h4>Expression-context heuristics</h4>
+ *
+ * <p>FQTs also appear in expression context — static method calls
+ * ({@code java.lang.management.ManagementFactory.getPlatformMXBeans(…)}),
+ * static field / enum-constant access
+ * ({@code java.util.concurrent.TimeUnit.SECONDS}), and nested-type member
+ * access ({@code pkg.models.CustomTypeProperty.TypeEnum.STRING}).
+ * JavaParser sees these as {@code FieldAccessExpr}/{@code MethodCallExpr},
+ * not type nodes, so we apply two heuristics to avoid false positives:
+ *
+ * <ol>
+ *   <li><b>Known-package check.</b> If the candidate FQN's package already
+ *       appears in the file's imports, own package declaration, or is
+ *       {@code java.lang}, we trust it.</li>
+ *   <li><b>Minimum-depth fallback.</b> Otherwise we require at least two
+ *       lowercase (package) segments before the first uppercase (type) segment.
+ *       This filters out {@code variable.Field} patterns that look superficially
+ *       like a FQT but are really field access on a local variable.
+ *       <br>In theory this could skip a legitimate single-segment package
+ *       (e.g. {@code a.MyType.method()}) that has no import in the file yet,
+ *       but single-segment packages are virtually non-existent in practice.</li>
+ * </ol>
  *
  * <p>The parser gives us accurate type-context identification (no false positives
  * from strings, comments, or non-type contexts). Text-level replacement preserves
@@ -86,17 +134,36 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 		cu.findAll(EnumDeclaration.class).forEach(c -> declaredTypeNames.add(c.getNameAsString()));
 		cu.findAll(RecordDeclaration.class).forEach(c -> declaredTypeNames.add(c.getNameAsString()));
 
-		// 4. Walk the AST to find outermost fully-qualified type nodes
+		// 4. Collect unqualified type references, which may resolve to types in the same package
+		Set<String> unqualifiedTypeNames = new LinkedHashSet<>();
+		cu.findAll(ClassOrInterfaceType.class).stream()
+				.filter(type -> type.getScope().isEmpty())
+				.forEach(type -> unqualifiedTypeNames.add(type.getNameAsString()));
+
+		// 5. Build set of known packages from existing imports, own package, and java.lang
+		Set<String> knownPackages = new LinkedHashSet<>();
+		knownPackages.add("java.lang");
+		if (!packageName.isEmpty()) {
+			knownPackages.add(packageName);
+		}
+		for (String fqn : existingImportFqns) {
+			int lastDot = fqn.lastIndexOf('.');
+			if (lastDot > 0) {
+				knownPackages.add(fqn.substring(0, lastDot));
+			}
+		}
+
+		// 6. Walk the AST to find outermost fully-qualified type nodes
 		Map<String, Set<String>> simpleToFqns = new LinkedHashMap<>();
 		List<QualifiedTypeRef> qualifiedRefs = new ArrayList<>();
 
-		cu.accept(new CollectQualifiedTypesVisitor(simpleToFqns, qualifiedRefs), null);
+		cu.accept(new CollectQualifiedTypesVisitor(simpleToFqns, qualifiedRefs, knownPackages), null);
 
 		if (qualifiedRefs.isEmpty()) {
 			return rawUnix;
 		}
 
-		// 5. Determine which FQNs are safe to shorten
+		// 7. Determine which FQNs are safe to shorten
 		Set<String> safeToShorten = new LinkedHashSet<>();
 		for (Map.Entry<String, Set<String>> entry : simpleToFqns.entrySet()) {
 			String simple = entry.getKey();
@@ -109,8 +176,9 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			if (existing != null && !existing.equals(fqn)) {
 				continue;
 			}
-			// Skip if simple name clashes with a type declared in this file
-			if (declaredTypeNames.contains(simple)) {
+			// Skip if simple name clashes with a type declared or already referenced in this file
+			if (declaredTypeNames.contains(simple)
+					|| (existing == null && unqualifiedTypeNames.contains(simple) && !isImplicitlyImported(fqn, packageName))) {
 				continue;
 			}
 			safeToShorten.add(fqn);
@@ -120,7 +188,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			return rawUnix;
 		}
 
-		// 6. Convert line/column positions to string offsets and replace
+		// 8. Convert line/column positions to string offsets and replace
 		// Build line-start offset table
 		int[] lineOffsets = buildLineOffsets(rawUnix);
 
@@ -147,14 +215,10 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			sb.delete(removal[0], removal[1]);
 		}
 
-		// 7. Add missing imports
+		// 9. Add missing imports
 		Set<String> newImports = new TreeSet<>();
 		for (String fqn : safeToShorten) {
-			if (fqn.startsWith("java.lang.") && fqn.indexOf('.', 10) == -1) {
-				continue;
-			}
-			if (!packageName.isEmpty() && fqn.startsWith(packageName + ".")
-					&& fqn.indexOf('.', packageName.length() + 1) == -1) {
+			if (isImplicitlyImported(fqn, packageName)) {
 				continue;
 			}
 			if (existingImportFqns.contains(fqn)) {
@@ -188,10 +252,13 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 	private static final class CollectQualifiedTypesVisitor extends VoidVisitorAdapter<Void> {
 		private final Map<String, Set<String>> simpleToFqns;
 		private final List<QualifiedTypeRef> qualifiedRefs;
+		private final Set<String> knownPackages;
 
-		CollectQualifiedTypesVisitor(Map<String, Set<String>> simpleToFqns, List<QualifiedTypeRef> qualifiedRefs) {
+		CollectQualifiedTypesVisitor(Map<String, Set<String>> simpleToFqns, List<QualifiedTypeRef> qualifiedRefs,
+				Set<String> knownPackages) {
 			this.simpleToFqns = simpleToFqns;
 			this.qualifiedRefs = qualifiedRefs;
+			this.knownPackages = knownPackages;
 		}
 
 		@Override
@@ -222,6 +289,73 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 				qualifiedRefs.add(new QualifiedTypeRef(rawName, simple, scopeStart, nameStart));
 			}
 		}
+
+		@Override
+		public void visit(MethodCallExpr expr, Void arg) {
+			super.visit(expr, arg);
+			expr.getScope().ifPresent(this::processExpressionScope);
+		}
+
+		@Override
+		public void visit(FieldAccessExpr expr, Void arg) {
+			super.visit(expr, arg);
+			if (expr.getParentNode().isPresent()) {
+				Node parent = expr.getParentNode().get();
+				if (parent instanceof FieldAccessExpr fa && fa.getScope() == expr) {
+					return;
+				}
+				if (parent instanceof MethodCallExpr mc && mc.getScope().isPresent() && mc.getScope().get() == expr) {
+					return;
+				}
+			}
+			processExpressionScope(expr);
+		}
+
+		/** Extracts a fully-qualified type from an expression chain of FieldAccessExpr/NameExpr nodes. */
+		private void processExpressionScope(Expression expr) {
+			List<FieldAccessExpr> chain = new ArrayList<>();
+			Expression current = expr;
+			while (current instanceof FieldAccessExpr fa) {
+				chain.add(0, fa);
+				current = fa.getScope();
+			}
+			if (!(current instanceof NameExpr ne)) {
+				return;
+			}
+			String rootName = ne.getNameAsString();
+			if (rootName.isEmpty() || !Character.isLowerCase(rootName.charAt(0))) {
+				return;
+			}
+			int typeIdx = -1;
+			for (int i = 0; i < chain.size(); i++) {
+				String name = chain.get(i).getNameAsString();
+				if (!name.isEmpty() && Character.isUpperCase(name.charAt(0))) {
+					typeIdx = i;
+					break;
+				}
+			}
+			if (typeIdx < 0) {
+				return;
+			}
+			StringBuilder fqn = new StringBuilder(rootName);
+			for (int i = 0; i <= typeIdx; i++) {
+				fqn.append('.').append(chain.get(i).getNameAsString());
+			}
+			String fqnStr = fqn.toString();
+			String candidatePackage = fqnStr.substring(0, fqnStr.lastIndexOf('.'));
+			// Trust if package is known from imports; otherwise require ≥2 package segments
+			if (!knownPackages.contains(candidatePackage) && (typeIdx + 1) < 2) {
+				return;
+			}
+			String simple = chain.get(typeIdx).getNameAsString();
+			FieldAccessExpr typeNode = chain.get(typeIdx);
+			Expression typeScope = typeNode.getScope();
+			if (typeScope.getBegin().isPresent() && typeNode.getName().getBegin().isPresent()) {
+				simpleToFqns.computeIfAbsent(simple, k -> new LinkedHashSet<>()).add(fqnStr);
+				qualifiedRefs.add(new QualifiedTypeRef(fqnStr, simple,
+						typeScope.getBegin().get(), typeNode.getName().getBegin().get()));
+			}
+		}
 	}
 
 	private static String buildRawName(ClassOrInterfaceType type) {
@@ -240,6 +374,12 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 
 	private static boolean startsWithPackage(String rawName) {
 		return !rawName.isEmpty() && Character.isLowerCase(rawName.charAt(0));
+	}
+
+	private static boolean isImplicitlyImported(String fqn, String packageName) {
+		return fqn.startsWith("java.lang.") && fqn.indexOf('.', 10) == -1
+				|| !packageName.isEmpty() && fqn.startsWith(packageName + ".")
+						&& fqn.indexOf('.', packageName.length() + 1) == -1;
 	}
 
 	/** Builds an array where lineOffsets[line] is the char offset of the start of that line (1-indexed). */
