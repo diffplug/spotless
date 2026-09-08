@@ -11,6 +11,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Fixed
+- `VersionCatalogStep` preserves entries when comments contain unmatched brackets, keeps line boundaries in multiline entries containing comments, and reports unfinished entries instead of returning a partial catalog.
+
 ## [4.10.2] - 2026-09-04
 ### Fixed
 - `ShortenFullyQualifiedTypesStep` now shortens fully-qualified types used in expression contexts (such as static method calls, static fields, and enum constants) while avoiding imports that would change how existing unqualified type references resolve. ([#3039](https://github.com/diffplug/spotless/pull/3039))

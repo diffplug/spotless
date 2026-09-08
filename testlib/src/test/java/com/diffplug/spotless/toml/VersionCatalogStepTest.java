@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.toml;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.spotless.FormatterStep;
@@ -88,6 +90,67 @@ class VersionCatalogStepTest {
 		harness.test(
 				"[versions]\nfoo =\"1.0\" # latest stable\n",
 				"[versions]\nfoo = \"1.0\" # latest stable\n");
+	}
+
+	@Test
+	void bracketsInInlineCommentsDoNotConsumeFollowingEntries() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		for (String comment : new String[]{"[planned update", "]", "{", "}", "[\"unfinished quote"}) {
+			harness.test(
+					"[versions]\nzoo = \"1.0\" # " + comment + "\nalpha = \"2.0\"\n",
+					"[versions]\nalpha = \"2.0\"\nzoo = \"1.0\" # " + comment + "\n");
+		}
+	}
+
+	@Test
+	void hashesAndBracketsInsideStringsAreNotComments() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		for (String value : new String[]{"\"1.0#[\"", "'1.0#['", "\"1.0\\\"#[\""}) {
+			harness.testUnaffected("[versions]\nfoo = " + value + "\n");
+		}
+	}
+
+	@Test
+	void escapedBackslashBeforeClosingQuoteDoesNotHideComment() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create()).test(
+				"[versions]\nzoo = \"1.0\\\\\" # [planned update\nalpha = \"2.0\"\n",
+				"[versions]\nalpha = \"2.0\"\nzoo = \"1.0\\\\\" # [planned update\n");
+	}
+
+	@Test
+	void multilineArrayCommentsKeepTheirLineBoundaries() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create()).test(
+				"[bundles]\nzoo = [\"c\"]\n\"alpha\" = [\n  \"a\", # [keep this note\n  # } another note\n  \"b\"\n]\n",
+				"[bundles]\n\"alpha\" = [\n  \"a\", # [keep this note\n  # } another note\n  \"b\"\n]\nzoo = [ \"c\" ]\n");
+	}
+
+	@Test
+	void multilineArrayWithoutCommentsStillJoins() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create()).test(
+				"[bundles]\nfoo = [\n  \"a\",\n  \"b\"\n]\n",
+				"[bundles]\nfoo = [ \"a\", \"b\" ]\n");
+	}
+
+	@Test
+	void preservedMultilineEntriesStillStripQuotedKeys() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create(true)).test(
+				"[bundles]\n\"foo\" = [\n  \"a#b\"\n]\n",
+				"[bundles]\nfoo = [\n  \"a#b\"\n]\n");
+	}
+
+	@Test
+	void multilineStringsKeepHashesBracketsAndWhitespace() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		for (String delimiter : new String[]{"\"\"\"", "'''"}) {
+			harness.testUnaffected("[versions]\nfoo = " + delimiter + "1.0  \n# [literal text\n" + delimiter + "\n");
+		}
+	}
+
+	@Test
+	void unfinishedEntryDoesNotReturnPartialCatalog() {
+		assertThatThrownBy(() -> VersionCatalogStep.format("[bundles]\nalpha = [\"a\"]\nzoo = [\n  \"b\"\n", false))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("Unterminated version catalog entry");
 	}
 
 	@Test
