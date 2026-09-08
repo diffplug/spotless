@@ -325,6 +325,7 @@ class LicenseHeaderStepTest extends ResourceHarness {
 					.setMessage("add")
 					.setAuthor("Test User", "test@example.com")
 					.setCommitter("Test User", "test@example.com")
+					.setSign(false)
 					.call();
 		}
 

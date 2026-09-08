@@ -82,7 +82,7 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 		FormatterStep step = GoogleJavaFormatStep.create("1.28.0", "AOSP", TestProvisioner.mavenCentral());
 		StepHarness.forStepNoRoundtrip(step)
 				.expectLintsOfResource("java/googlejavaformat/JavaCodeWithLicenseUnformatted.test")
-				.toBe("LINE_UNDEFINED google-java-format(jvm-version) You are running Spotless on JVM 25. This requires google-java-format of at least 1.30.0 (you are using 1.28.0). (...)");
+				.toBe("LINE_UNDEFINED google-java-format(jvm-version) You are running Spotless on JVM " + Jvm.version() + ". This requires google-java-format of at least 1.30.0 (you are using 1.28.0). (...)");
 	}
 
 	@Test

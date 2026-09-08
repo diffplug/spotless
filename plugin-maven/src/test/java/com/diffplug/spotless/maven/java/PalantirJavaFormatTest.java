@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.spotless.maven.java;
 
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class PalantirJavaFormatTest extends MavenIntegrationHarness {
@@ -34,7 +35,7 @@ class PalantirJavaFormatTest extends MavenIntegrationHarness {
 	void specificJava11Version2() throws Exception {
 		writePomWithJavaSteps(
 				"<palantirJavaFormat>",
-				"  <version>2.39.0</version>",
+				"  <version>" + PalantirJavaFormatStep.defaultVersion() + "</version>",
 				"</palantirJavaFormat>");
 
 		runTest("java/palantirjavaformat/JavaCodeFormatted.test", "java/palantirjavaformat/JavaCodeUnformatted.test");
@@ -44,7 +45,7 @@ class PalantirJavaFormatTest extends MavenIntegrationHarness {
 	void formatJavaDoc() throws Exception {
 		writePomWithJavaSteps(
 				"<palantirJavaFormat>",
-				"  <version>2.39.0</version>",
+				"  <version>" + PalantirJavaFormatStep.defaultVersion() + "</version>",
 				"  <formatJavadoc>true</formatJavadoc>",
 				"</palantirJavaFormat>");
 
