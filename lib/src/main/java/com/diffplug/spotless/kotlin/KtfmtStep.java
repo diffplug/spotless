@@ -41,7 +41,7 @@ import com.diffplug.spotless.ThrowingEx;
 public final class KtfmtStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = "0.63";
+	private static final String DEFAULT_VERSION = KotlinBuildConfig.VERSION_KTFMT;
 	private static final String NAME = "ktfmt";
 	private static final String MAVEN_COORDINATE = "com.facebook:ktfmt:";
 
@@ -495,15 +495,14 @@ public final class KtfmtStep implements Serializable {
 		}
 
 		private @Nullable Boolean getManageTrailingCommasFrom(
-			@Nullable TrailingCommaManagementStrategy trailingCommaManagementStrategy
-		) {
+				@Nullable TrailingCommaManagementStrategy trailingCommaManagementStrategy) {
 			if (trailingCommaManagementStrategy == null) {
 				return null;
 			}
 
 			return switch (trailingCommaManagementStrategy) {
-				case NONE, ONLY_ADD -> false;
-				case COMPLETE -> true;
+			case NONE, ONLY_ADD -> false;
+			case COMPLETE -> true;
 			};
 		}
 	}

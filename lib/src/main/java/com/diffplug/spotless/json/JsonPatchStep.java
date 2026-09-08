@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public final class JsonPatchStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.flipkart.zjsonpatch:zjsonpatch";
-	private static final String DEFAULT_VERSION = "0.4.16";
+	private static final String DEFAULT_VERSION = JsonBuildConfig.VERSION_ZJSONPATCH;
 	public static final String NAME = "apply-json-patch";
 
 	private final JarState.Promised jarState;
@@ -47,6 +47,10 @@ public final class JsonPatchStep implements Serializable {
 		this.jarState = jarState;
 		this.patchString = patchString;
 		this.patch = patch;
+	}
+
+	public static String defaultVersion() {
+		return DEFAULT_VERSION;
 	}
 
 	public static FormatterStep create(String patchString, Provisioner provisioner) {

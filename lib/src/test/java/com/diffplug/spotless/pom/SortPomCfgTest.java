@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ class SortPomCfgTest {
 		SortPomCfg cfg = new SortPomCfg();
 
 		// Test default values using AssertJ
-		assertThat(cfg.version).isEqualTo("4.0.0");
+		assertThat(cfg.version).isEqualTo(PomBuildConfig.VERSION_SORTPOM);
 		assertThat(cfg.encoding).isEqualTo("UTF-8");
 		assertThat(cfg.lineSeparator).isEqualTo(System.getProperty("line.separator"));
 		assertThat(cfg.expandEmptyElements).isFalse();

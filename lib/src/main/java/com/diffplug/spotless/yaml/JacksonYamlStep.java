@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public final class JacksonYamlStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:";
-	private static final String DEFAULT_VERSION = "2.14.1";
+	private static final String DEFAULT_VERSION = YamlBuildConfig.VERSION_JACKSON;
 	public static final String NAME = "jacksonYaml";
 
 	private final JarState.Promised jarState;

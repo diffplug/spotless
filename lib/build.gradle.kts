@@ -2,6 +2,7 @@ import com.github.spotbugs.snom.Confidence
 
 plugins {
   `java-library`
+  alias(libs.plugins.buildconfig)
   alias(libs.plugins.version.compatibility)
   id("spotless.java-setup")
   id("spotless.java-publish")
@@ -11,6 +12,51 @@ plugins {
 extra["artifactId"] = property("artifactIdLib")
 
 version = spotlessChangelog.versionNext
+
+fun catalogVersion(dependency: Provider<MinimalExternalModuleDependency>): Provider<String> =
+    dependency.map {
+      it.versionConstraint.requiredVersion
+    }
+
+buildConfig {
+  packageName("com.diffplug.spotless.java")
+  useJavaOutput {
+    defaultVisibility = true
+  }
+  buildConfigField("VERSION_CLEANTHAT", catalogVersion(libs.cleanthat.java))
+  buildConfigField("VERSION_GJF", catalogVersion(libs.google.java.format))
+  buildConfigField("VERSION_PALANTIR_JAVA_FORMAT", libs.versions.palantir.java.format.default)
+  buildConfigField("VERSION_PRINCE_OF_SPACE", catalogVersion(libs.prince.of.space.core))
+  buildConfigField("VERSION_TABLETEST_FORMATTER", catalogVersion(libs.tabletest.formatter.core))
+
+  forClass("com.diffplug.spotless.kotlin", "KotlinBuildConfig") {
+    buildConfigField("VERSION_DIKTAT", catalogVersion(libs.diktat.runner))
+    buildConfigField("VERSION_KTFMT", catalogVersion(libs.ktfmt))
+    buildConfigField("VERSION_KTLINT", catalogVersion(libs.ktlint.rule.engine))
+  }
+  forClass("com.diffplug.spotless.scala", "ScalaBuildConfig") {
+    buildConfigField("VERSION_SCALAFMT", catalogVersion(libs.scalafmt.core))
+  }
+  forClass("com.diffplug.spotless.markdown", "MarkdownBuildConfig") {
+    buildConfigField("VERSION_FLEXMARK", catalogVersion(libs.flexmark.all))
+  }
+  forClass("com.diffplug.spotless.gherkin", "GherkinBuildConfig") {
+    buildConfigField("VERSION_GHERKIN_UTILS", catalogVersion(libs.gherkin.utils))
+  }
+  forClass("com.diffplug.spotless.pom", "PomBuildConfig") {
+    buildConfigField("VERSION_SORTPOM", catalogVersion(libs.sortpom.sorter))
+  }
+  forClass("com.diffplug.spotless.json", "JsonBuildConfig") {
+    buildConfigField("VERSION_JACKSON", catalogVersion(libs.jackson.databind))
+    buildConfigField("VERSION_ZJSONPATCH", catalogVersion(libs.zjsonpatch))
+  }
+  forClass("com.diffplug.spotless.json.gson", "GsonBuildConfig") {
+    buildConfigField("VERSION_GSON", catalogVersion(libs.gson))
+  }
+  forClass("com.diffplug.spotless.yaml", "YamlBuildConfig") {
+    buildConfigField("VERSION_JACKSON", catalogVersion(libs.jackson.dataformat.yaml))
+  }
+}
 
 val needsGlue =
     listOf(
