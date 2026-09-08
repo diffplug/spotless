@@ -11,11 +11,7 @@ fun String.toBooleanGroovy(): Boolean = trim().lowercase() in setOf("true", "y",
 
 tasks.withType<JavaCompile>().configureEach {
   options.errorprone {
-    if (System.getenv("error-prone")?.toBooleanGroovy() == true) {
-      enable()
-    } else {
-      disable()
-    }
+    enabled = System.getenv("error-prone")?.toBooleanGroovy() == true
     // https://github.com/diffplug/spotless/issues/2745
     // https://github.com/google/error-prone/issues/5365
     disableAllWarnings = true
