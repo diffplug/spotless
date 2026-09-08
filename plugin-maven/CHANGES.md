@@ -4,6 +4,10 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Fixed
+- `<versionCatalog>` preserves entries when comments contain unmatched brackets, preserves commas inside quoted strings, and keeps significant line boundaries in multiline entries. ([#3042](https://github.com/diffplug/spotless/pull/3042))
+- `<versionCatalog>` now reports unfinished entries as lints at their starting line. These fail formatting by default, so upgrading may expose catalog errors that previously caused silent data loss. ([#3042](https://github.com/diffplug/spotless/pull/3042))
+
 ## [3.10.2] - 2026-09-04
 ### Fixed
 - `<shortenFullyQualifiedTypes>` now shortens fully-qualified types used in expression contexts (such as static method calls, static fields, and enum constants) while avoiding imports that would change how existing unqualified type references resolve. ([#3039](https://github.com/diffplug/spotless/pull/3039))

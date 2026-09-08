@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Lint;
 
 public final class VersionCatalogStep {
 	private VersionCatalogStep() {}
@@ -125,12 +126,15 @@ public final class VersionCatalogStep {
 		List<Entry> currentEntries = null;
 		List<String> pendingComments = new ArrayList<>();
 		StringBuilder multiLineAccumulator = null;
+		int lineNumber = 0;
+		int entryStartLine = 0;
 
 		for (String line : raw.split("\n", -1)) {
+			lineNumber++;
 			String trimmed = line.trim();
 
 			if (multiLineAccumulator != null) {
-				multiLineAccumulator.append(' ').append(trimmed);
+				multiLineAccumulator.append('\n').append(line);
 				if (isBalanced(multiLineAccumulator.toString())) {
 					Entry entry = new Entry(multiLineAccumulator.toString(), new ArrayList<>(pendingComments));
 					currentEntries.add(entry);
@@ -153,7 +157,8 @@ public final class VersionCatalogStep {
 				if (trimmed.isEmpty() || trimmed.startsWith("#")) {
 					pendingComments.add(trimmed);
 				} else if (!isBalanced(trimmed)) {
-					multiLineAccumulator = new StringBuilder(trimmed);
+					multiLineAccumulator = new StringBuilder(line.stripLeading());
+					entryStartLine = lineNumber;
 				} else {
 					Entry entry = new Entry(trimmed, new ArrayList<>(pendingComments));
 					currentEntries.add(entry);
@@ -162,30 +167,90 @@ public final class VersionCatalogStep {
 			}
 		}
 
+		if (multiLineAccumulator != null) {
+			// Report the incomplete entry instead of silently returning a partially parsed catalog.
+			throw Lint.atLine(entryStartLine, "unterminatedEntry", "Unterminated version catalog entry in " + currentHeader).shortcut();
+		}
 		return sections;
 	}
 
 	private static boolean isBalanced(String text) {
 		int depth = 0;
-		boolean inQuote = false;
 
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
-			if (c == '"' && (i == 0 || text.charAt(i - 1) != '\\')) {
-				inQuote = !inQuote;
-			} else if (!inQuote) {
-				if (c == '{' || c == '[') {
-					depth++;
-				} else if (c == '}' || c == ']') {
-					depth--;
+			if (c == '"' || c == '\'') {
+				i = skipQuotedString(text, i);
+				if (i == text.length()) {
+					return false;
 				}
+			} else if (c == '#') {
+				i = text.indexOf('\n', i);
+				if (i == -1) {
+					break;
+				}
+			} else if (c == '{' || c == '[') {
+				depth++;
+			} else if (c == '}' || c == ']') {
+				depth--;
 			}
 		}
 		return depth == 0;
 	}
 
+	/** Returns the closing quote's index, or the text length if the string is unfinished. */
+	private static int skipQuotedString(String text, int start) {
+		char quote = text.charAt(start);
+		boolean multiline = isMultilineString(text, start);
+		for (int i = start + (multiline ? 3 : 1); i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (!multiline && c == '\n') {
+				return text.length();
+			}
+			if (quote == '"' && c == '\\' && i + 1 < text.length() && text.charAt(i + 1) != '\n') {
+				i++;
+			} else if (c == quote) {
+				if (!multiline) {
+					return i;
+				}
+				if (i + 2 < text.length() && text.charAt(i + 1) == quote && text.charAt(i + 2) == quote) {
+					i += 2;
+					// A multiline string may end with one or two additional literal quotes.
+					while (i + 1 < text.length() && text.charAt(i + 1) == quote) {
+						i++;
+					}
+					return i;
+				}
+			}
+		}
+		return text.length();
+	}
+
+	/** Called only at an opening quote. */
+	private static boolean isMultilineString(String text, int start) {
+		char quote = text.charAt(start);
+		return start + 2 < text.length() && text.charAt(start + 1) == quote && text.charAt(start + 2) == quote;
+	}
+
+	private static boolean hasCommentsOrMultilineStrings(String text) {
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c == '"' || c == '\'') {
+				if (isMultilineString(text, i)) {
+					return true;
+				}
+				i = skipQuotedString(text, i);
+			} else if (c == '#') {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private static String extractKey(String formattedEntry) {
-		Matcher matcher = ENTRY_LINE.matcher(formattedEntry);
+		int lineEnd = formattedEntry.indexOf('\n');
+		String firstLine = lineEnd == -1 ? formattedEntry : formattedEntry.substring(0, lineEnd);
+		Matcher matcher = ENTRY_LINE.matcher(firstLine);
 		if (!matcher.matches()) {
 			return formattedEntry;
 		}
@@ -197,7 +262,13 @@ public final class VersionCatalogStep {
 	}
 
 	static String formatEntry(String entry, boolean stripQuotedKeys) {
-		Matcher matcher = ENTRY_LINE.matcher(entry);
+		int lineEnd = entry.indexOf('\n');
+		// Preserve line boundaries that can be significant to comments or multiline strings.
+		boolean preserveLines = lineEnd != -1 && hasCommentsOrMultilineStrings(entry);
+		if (lineEnd != -1 && !preserveLines) {
+			entry = String.join(" ", entry.lines().map(String::trim).toList());
+		}
+		Matcher matcher = ENTRY_LINE.matcher(preserveLines ? entry.substring(0, lineEnd) : entry);
 		if (!matcher.matches()) {
 			return entry;
 		}
@@ -208,6 +279,10 @@ public final class VersionCatalogStep {
 			if (isBareKey(bare)) {
 				key = bare;
 			}
+		}
+		if (preserveLines) {
+			// The first line starts at offset zero, so the match's value offset also applies to the full entry.
+			return key + " = " + entry.substring(matcher.start(2)).stripLeading();
 		}
 		String valueAndComment = matcher.group(2).trim();
 
@@ -225,21 +300,18 @@ public final class VersionCatalogStep {
 	}
 
 	private static String extractInlineComment(String valueAndComment) {
-		boolean inQuote = false;
 		int depth = 0;
 
 		for (int i = 0; i < valueAndComment.length(); i++) {
 			char c = valueAndComment.charAt(i);
-			if (c == '"' && (i == 0 || valueAndComment.charAt(i - 1) != '\\')) {
-				inQuote = !inQuote;
-			} else if (!inQuote) {
-				if (c == '{' || c == '[') {
-					depth++;
-				} else if (c == '}' || c == ']') {
-					depth--;
-				} else if (c == '#' && depth == 0) {
-					return valueAndComment.substring(i);
-				}
+			if (c == '"' || c == '\'') {
+				i = skipQuotedString(valueAndComment, i);
+			} else if (c == '{' || c == '[') {
+				depth++;
+			} else if (c == '}' || c == ']') {
+				depth--;
+			} else if (c == '#' && depth == 0) {
+				return valueAndComment.substring(i);
 			}
 		}
 		return null;
@@ -316,22 +388,19 @@ public final class VersionCatalogStep {
 	private static String[] splitTopLevel(String input, char delimiter) {
 		List<String> parts = new ArrayList<>();
 		int depth = 0;
-		boolean inQuote = false;
 		int start = 0;
 
 		for (int i = 0; i < input.length(); i++) {
 			char c = input.charAt(i);
-			if (c == '"' && (i == 0 || input.charAt(i - 1) != '\\')) {
-				inQuote = !inQuote;
-			} else if (!inQuote) {
-				if (c == '{' || c == '[') {
-					depth++;
-				} else if (c == '}' || c == ']') {
-					depth--;
-				} else if (c == delimiter && depth == 0) {
-					parts.add(input.substring(start, i));
-					start = i + 1;
-				}
+			if (c == '"' || c == '\'') {
+				i = skipQuotedString(input, i);
+			} else if (c == '{' || c == '[') {
+				depth++;
+			} else if (c == '}' || c == ']') {
+				depth--;
+			} else if (c == delimiter && depth == 0) {
+				parts.add(input.substring(start, i));
+				start = i + 1;
 			}
 		}
 		parts.add(input.substring(start));
@@ -345,7 +414,7 @@ public final class VersionCatalogStep {
 	}
 
 	private static final class State implements Serializable {
-		private static final long serialVersionUID = 3L;
+		private static final long serialVersionUID = 5L;
 
 		private final boolean stripQuotedKeys;
 
