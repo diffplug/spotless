@@ -15,11 +15,18 @@
  */
 package com.diffplug.spotless.toml;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarness;
 
@@ -118,6 +125,60 @@ class VersionCatalogStepTest {
 	}
 
 	@Test
+	void literalStringCommasInArraysArePreserved() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create()).test(
+				"[bundles]\nfoo=['a,b','c']\n",
+				"[bundles]\nfoo = [ 'a,b', 'c' ]\n");
+	}
+
+	@Test
+	void literalStringCommasInInlineTablesArePreserved() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create()).test(
+				"[libraries]\nfoo={module='a,b',version=\"1.0\"}\n",
+				"[libraries]\nfoo = { module = 'a,b', version = \"1.0\" }\n");
+	}
+
+	@Test
+	void escapedBackslashBeforeArrayDelimiterDoesNotChangeStrings() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create()).test(
+				"[bundles]\nfoo=[\"a\\\\\",\"b,c\"]\n",
+				"[bundles]\nfoo = [ \"a\\\\\", \"b,c\" ]\n");
+	}
+
+	@Test
+	void escapedBackslashBeforeTableDelimiterDoesNotChangeStrings() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create()).test(
+				"[libraries]\nfoo={module=\"a\\\\\",version=\"b,c\"}\n",
+				"[libraries]\nfoo = { module = \"a\\\\\", version = \"b,c\" }\n");
+	}
+
+	@Test
+	void singleLineStringsCannotConsumeFollowingEntries() {
+		for (String quote : new String[]{"\"", "'"}) {
+			StepHarness.forStep(VersionCatalogStep.create())
+					.expectLintsOf("[versions]\nfoo = " + quote + "1.0\nbar = " + quote + "2.0\n")
+					.toBe("L2 versionCatalog(unterminatedEntry) Unterminated version catalog entry in [versions]");
+		}
+	}
+
+	@Test
+	void escapedNewlineCannotContinueSingleLineString() {
+		StepHarness.forStep(VersionCatalogStep.create())
+				.expectLintsOf("[versions]\nfoo = \"1.0\\\nbar = \"2.0\n")
+				.toBe("L2 versionCatalog(unterminatedEntry) Unterminated version catalog entry in [versions]");
+	}
+
+	@Test
+	void tripleQuotedStringCommasInArraysArePreserved() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		for (String delimiter : new String[]{"\"\"\"", "'''"}) {
+			harness.test(
+					"[bundles]\nfoo=[" + delimiter + "a,b" + delimiter + ",'c']\n",
+					"[bundles]\nfoo = [ " + delimiter + "a,b" + delimiter + ", 'c' ]\n");
+		}
+	}
+
+	@Test
 	void multilineArrayCommentsKeepTheirLineBoundaries() throws Exception {
 		StepHarness.forStep(VersionCatalogStep.create()).test(
 				"[bundles]\nzoo = [\"c\"]\n\"alpha\" = [\n  \"a\", # [keep this note\n  # } another note\n  \"b\"\n]\n",
@@ -134,8 +195,24 @@ class VersionCatalogStepTest {
 	@Test
 	void preservedMultilineEntriesStillStripQuotedKeys() throws Exception {
 		StepHarness.forStep(VersionCatalogStep.create(true)).test(
-				"[bundles]\n\"foo\" = [\n  \"a#b\"\n]\n",
-				"[bundles]\nfoo = [\n  \"a#b\"\n]\n");
+				"[bundles]\n\"foo\" = [\n  \"a#b\" # keep this note\n]\n",
+				"[bundles]\nfoo = [\n  \"a#b\" # keep this note\n]\n");
+	}
+
+	@Test
+	void quotedCommentAndMultilineMarkersDoNotPreventJoiningArrays() throws Exception {
+		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
+		for (String value : new String[]{"\"a#b\"", "'a#b'", "\"'''\"", "'\"\"\"'"}) {
+			harness.test(
+					"[bundles]\nfoo = [\n  " + value + "\n]\n",
+					"[bundles]\nfoo = [ " + value + " ]\n");
+		}
+	}
+
+	@Test
+	void multilineBasicStringCanContinueAfterEscapedNewline() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create()).testUnaffected(
+				"[versions]\nfoo = \"\"\"1.0\\\n  continued\"\"\"\n");
 	}
 
 	@Test
@@ -147,10 +224,19 @@ class VersionCatalogStepTest {
 	}
 
 	@Test
-	void unfinishedEntryDoesNotReturnPartialCatalog() {
-		assertThatThrownBy(() -> VersionCatalogStep.format("[bundles]\nalpha = [\"a\"]\nzoo = [\n  \"b\"\n", false))
-				.isInstanceOf(IllegalArgumentException.class)
-				.hasMessageContaining("Unterminated version catalog entry");
+	void unfinishedEntryDoesNotReturnPartialCatalog() throws Exception {
+		String input = "# Catalog\n\n[bundles]\nalpha=[\"a\"]\nzoo = [\n  \"b\"\n";
+		try (Formatter formatter = Formatter.builder()
+				.steps(List.of(VersionCatalogStep.create()))
+				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
+				.encoding(StandardCharsets.UTF_8)
+				.build()) {
+			StepHarness.forFormatter(formatter).expectLintsOf(input)
+					.toBe("L5 versionCatalog(unterminatedEntry) Unterminated version catalog entry in [bundles]");
+			LintState state = LintState.of(formatter, new File("libs.versions.toml"), input.getBytes(StandardCharsets.UTF_8));
+			assertThat(state.isHasLints()).isTrue();
+			assertThat(state.getDirtyState().isClean()).isTrue();
+		}
 	}
 
 	@Test

@@ -12,7 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 
 ### Fixed
-- `VersionCatalogStep` preserves entries when comments contain unmatched brackets, keeps line boundaries in multiline entries containing comments, and reports unfinished entries instead of returning a partial catalog.
+- `VersionCatalogStep` preserves entries when comments contain unmatched brackets, preserves commas inside quoted strings, keeps significant line boundaries in multiline entries, and reports unfinished entries at their starting line instead of returning a partial catalog.
 
 ## [4.10.2] - 2026-09-04
 ### Fixed

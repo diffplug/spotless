@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.Lint;
 
 public final class VersionCatalogStep {
 	private VersionCatalogStep() {}
@@ -125,8 +126,11 @@ public final class VersionCatalogStep {
 		List<Entry> currentEntries = null;
 		List<String> pendingComments = new ArrayList<>();
 		StringBuilder multiLineAccumulator = null;
+		int lineNumber = 0;
+		int entryStartLine = 0;
 
 		for (String line : raw.split("\n", -1)) {
+			lineNumber++;
 			String trimmed = line.trim();
 
 			if (multiLineAccumulator != null) {
@@ -154,6 +158,7 @@ public final class VersionCatalogStep {
 					pendingComments.add(trimmed);
 				} else if (!isBalanced(trimmed)) {
 					multiLineAccumulator = new StringBuilder(line.stripLeading());
+					entryStartLine = lineNumber;
 				} else {
 					Entry entry = new Entry(trimmed, new ArrayList<>(pendingComments));
 					currentEntries.add(entry);
@@ -163,7 +168,8 @@ public final class VersionCatalogStep {
 		}
 
 		if (multiLineAccumulator != null) {
-			throw new IllegalArgumentException("Unterminated version catalog entry in " + currentHeader);
+			// Report the incomplete entry instead of silently returning a partially parsed catalog.
+			throw Lint.atLine(entryStartLine, "unterminatedEntry", "Unterminated version catalog entry in " + currentHeader).shortcut();
 		}
 		return sections;
 	}
@@ -195,10 +201,13 @@ public final class VersionCatalogStep {
 	/** Returns the closing quote's index, or the text length if the string is unfinished. */
 	private static int skipQuotedString(String text, int start) {
 		char quote = text.charAt(start);
-		boolean multiline = start + 2 < text.length() && text.charAt(start + 1) == quote && text.charAt(start + 2) == quote;
+		boolean multiline = isMultilineString(text, start);
 		for (int i = start + (multiline ? 3 : 1); i < text.length(); i++) {
 			char c = text.charAt(i);
-			if (quote == '"' && c == '\\') {
+			if (!multiline && c == '\n') {
+				return text.length();
+			}
+			if (quote == '"' && c == '\\' && i + 1 < text.length() && text.charAt(i + 1) != '\n') {
 				i++;
 			} else if (c == quote) {
 				if (!multiline) {
@@ -215,6 +224,27 @@ public final class VersionCatalogStep {
 			}
 		}
 		return text.length();
+	}
+
+	/** Called only at an opening quote. */
+	private static boolean isMultilineString(String text, int start) {
+		char quote = text.charAt(start);
+		return start + 2 < text.length() && text.charAt(start + 1) == quote && text.charAt(start + 2) == quote;
+	}
+
+	private static boolean hasCommentsOrMultilineStrings(String text) {
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c == '"' || c == '\'') {
+				if (isMultilineString(text, i)) {
+					return true;
+				}
+				i = skipQuotedString(text, i);
+			} else if (c == '#') {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static String extractKey(String formattedEntry) {
@@ -234,7 +264,7 @@ public final class VersionCatalogStep {
 	static String formatEntry(String entry, boolean stripQuotedKeys) {
 		int lineEnd = entry.indexOf('\n');
 		// Preserve line boundaries that can be significant to comments or multiline strings.
-		boolean preserveLines = lineEnd != -1 && (entry.indexOf('#') != -1 || entry.contains("\"\"\"") || entry.contains("'''"));
+		boolean preserveLines = lineEnd != -1 && hasCommentsOrMultilineStrings(entry);
 		if (lineEnd != -1 && !preserveLines) {
 			entry = String.join(" ", entry.lines().map(String::trim).toList());
 		}
@@ -251,6 +281,7 @@ public final class VersionCatalogStep {
 			}
 		}
 		if (preserveLines) {
+			// The first line starts at offset zero, so the match's value offset also applies to the full entry.
 			return key + " = " + entry.substring(matcher.start(2)).stripLeading();
 		}
 		String valueAndComment = matcher.group(2).trim();
@@ -357,22 +388,19 @@ public final class VersionCatalogStep {
 	private static String[] splitTopLevel(String input, char delimiter) {
 		List<String> parts = new ArrayList<>();
 		int depth = 0;
-		boolean inQuote = false;
 		int start = 0;
 
 		for (int i = 0; i < input.length(); i++) {
 			char c = input.charAt(i);
-			if (c == '"' && (i == 0 || input.charAt(i - 1) != '\\')) {
-				inQuote = !inQuote;
-			} else if (!inQuote) {
-				if (c == '{' || c == '[') {
-					depth++;
-				} else if (c == '}' || c == ']') {
-					depth--;
-				} else if (c == delimiter && depth == 0) {
-					parts.add(input.substring(start, i));
-					start = i + 1;
-				}
+			if (c == '"' || c == '\'') {
+				i = skipQuotedString(input, i);
+			} else if (c == '{' || c == '[') {
+				depth++;
+			} else if (c == '}' || c == ']') {
+				depth--;
+			} else if (c == delimiter && depth == 0) {
+				parts.add(input.substring(start, i));
+				start = i + 1;
 			}
 		}
 		parts.add(input.substring(start));
@@ -386,7 +414,7 @@ public final class VersionCatalogStep {
 	}
 
 	private static final class State implements Serializable {
-		private static final long serialVersionUID = 4L;
+		private static final long serialVersionUID = 5L;
 
 		private final boolean stripQuotedKeys;
 
