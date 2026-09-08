@@ -1,6 +1,9 @@
 import com.gradle.develocity.agent.gradle.test.DevelocityTestConfiguration
 
 plugins {
+  // this script configures the `test` task and registers Test tasks, so it needs java itself
+  // rather than relying on every consumer to declare it earlier in their plugins block
+  id("java")
   id("com.adarshr.test-logger")
 }
 
