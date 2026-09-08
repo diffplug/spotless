@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,14 +52,31 @@ public abstract class GitPrePushHookInstaller {
 	protected final File root;
 
 	/**
+	 * The extra arguments inserted before the Spotless goals in the generated hook.
+	 */
+	protected final String args;
+
+	/**
 	 * Constructor to initialize the GitPrePushHookInstaller with a logger and repository root path.
 	 *
 	 * @param logger The logger for recording messages.
 	 * @param root   The root directory of the Git repository.
 	 */
 	protected GitPrePushHookInstaller(GitPreHookLogger logger, File root) {
+		this(logger, root, "");
+	}
+
+	/**
+	 * Constructor to initialize the GitPrePushHookInstaller with a logger, repository root path and extra executor arguments.
+	 *
+	 * @param logger The logger for recording messages.
+	 * @param root   The root directory of the Git repository.
+	 * @param args   The extra arguments inserted before the Spotless goals in the generated hook.
+	 */
+	protected GitPrePushHookInstaller(GitPreHookLogger logger, File root, String args) {
 		this.logger = requireNonNull(logger, "logger can not be null");
 		this.root = requireNonNull(root, "root file can not be null");
+		this.args = args == null ? "" : args.trim();
 	}
 
 	/**
@@ -240,12 +257,14 @@ public abstract class GitPrePushHookInstaller {
 	protected String preHookTemplate(Executor executor, String commandCheck, String commandApply) {
 		var spotlessHook = "";
 
+		final var argsPrefix = args.isEmpty() ? "" : args + " ";
+
 		spotlessHook += "\n";
 		spotlessHook += "\n" + HOOK_HEADER;
 		spotlessHook += "\nSPOTLESS_EXECUTOR=" + executorPath(executor);
-		spotlessHook += "\nif ! $SPOTLESS_EXECUTOR " + commandCheck + " ; then";
+		spotlessHook += "\nif ! $SPOTLESS_EXECUTOR " + argsPrefix + commandCheck + " ; then";
 		spotlessHook += "\n    echo 1>&2 \"spotless found problems, running " + commandApply + "; commit the result and re-push\"";
-		spotlessHook += "\n    $SPOTLESS_EXECUTOR " + commandApply;
+		spotlessHook += "\n    $SPOTLESS_EXECUTOR " + argsPrefix + commandApply;
 		spotlessHook += "\n    exit 1";
 		spotlessHook += "\nfi";
 		spotlessHook += "\n" + HOOK_FOOTER;

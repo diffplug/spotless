@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- `GitPrePushHookInstaller` now accepts extra executor arguments that are inserted before the Spotless goals in the generated pre-push hook (e.g. `-T1C` for Maven or `--parallel` for Gradle).
 
 ## [4.10.2] - 2026-09-04
 ### Fixed

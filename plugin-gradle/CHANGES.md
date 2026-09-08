@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- `spotlessInstallGitPrePushHook` accepts a new `spotless.hook.args` project property, inserted before the Spotless tasks in the generated hook so the hook can run e.g. in parallel: `./gradlew spotlessInstallGitPrePushHook -Pspotless.hook.args=--parallel`.
 
 ## [8.10.2] - 2026-09-04
 ### Fixed

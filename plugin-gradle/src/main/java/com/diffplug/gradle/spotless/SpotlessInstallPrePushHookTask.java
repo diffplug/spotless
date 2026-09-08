@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,12 @@ public abstract class SpotlessInstallPrePushHookTask extends DefaultTask {
 	abstract Property<Boolean> getIsRootExecution();
 
 	/**
+	 * The extra arguments inserted before the Spotless tasks in the generated pre-push hook.
+	 */
+	@Internal
+	abstract Property<String> getArgs();
+
+	/**
 	 * Executes the task to install the Git pre-push hook.
 	 *
 	 * <p>This method creates an instance of {@link GitPrePushHookInstallerGradle},
@@ -79,7 +85,7 @@ public abstract class SpotlessInstallPrePushHookTask extends DefaultTask {
 			}
 		};
 
-		final var installer = new GitPrePushHookInstallerGradle(logger, getRootDir().get());
+		final var installer = new GitPrePushHookInstallerGradle(logger, getRootDir().get(), getArgs().getOrElse(""));
 		installer.install();
 	}
 }

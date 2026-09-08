@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- `install-git-pre-push-hook` accepts a new `spotless.hook.args` argument, inserted before the Spotless goals in the generated hook so the hook can run e.g. in parallel: `mvn spotless:install-git-pre-push-hook -Dspotless.hook.args=-T1C`.
 
 ## [3.10.2] - 2026-09-04
 ### Fixed

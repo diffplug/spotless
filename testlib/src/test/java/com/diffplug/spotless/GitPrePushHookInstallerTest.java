@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -229,6 +229,41 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 	}
 
 	@Test
+	public void should_include_extra_args_in_maven_hook_when_provided() throws Exception {
+		// given
+		final var maven = new GitPrePushHookInstallerMaven(logger, rootFolder(), "-T1C");
+		setFile("mvnw").toContent("");
+		setFile(".git/config").toContent("");
+
+		// when
+		maven.install();
+
+		// then
+		assertThat(logs).containsExactly(
+				"Installing git pre-push hook",
+				"Git pre-push hook not found, creating it",
+				"Git pre-push hook installed successfully to the file " + newFile(".git/hooks/pre-push").getAbsolutePath());
+
+		final var content = mavenHookContentWithArgs("git_pre_hook/pre-push.created-args-tpl", ExecutorType.WRAPPER, "-T1C");
+		assertFile(".git/hooks/pre-push").hasContent(content);
+	}
+
+	@Test
+	public void should_include_extra_args_in_gradle_hook_when_provided() throws Exception {
+		// given
+		final var gradle = new GitPrePushHookInstallerGradle(logger, rootFolder(), "--parallel");
+		setFile("gradlew").toContent("");
+		setFile(".git/config").toContent("");
+
+		// when
+		gradle.install();
+
+		// then
+		final var content = gradleHookContentWithArgs("git_pre_hook/pre-push.created-args-tpl", ExecutorType.WRAPPER, "--parallel");
+		assertFile(".git/hooks/pre-push").hasContent(content);
+	}
+
+	@Test
 	public void should_use_global_maven_when_maven_wrapper_is_not_installed() throws Exception {
 		// given
 		final var gradle = new GitPrePushHookInstallerMaven(logger, rootFolder());
@@ -377,6 +412,14 @@ class GitPrePushHookInstallerTest extends ResourceHarness {
 				.replace("${executor}", executorType == ExecutorType.WRAPPER ? fileAbsolutePath(newFile("mvnw")) : "mvn")
 				.replace("${checkCommand}", "spotless:check")
 				.replace("${applyCommand}", "spotless:apply");
+	}
+
+	private String mavenHookContentWithArgs(String resourcePath, ExecutorType executorType, String args) {
+		return mavenHookContent(resourcePath, executorType).replace("${args}", args);
+	}
+
+	private String gradleHookContentWithArgs(String resourcePath, ExecutorType executorType, String args) {
+		return gradleHookContent(resourcePath, executorType).replace("${args}", args);
 	}
 
 	private String fileAbsolutePath(File file) {

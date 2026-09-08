@@ -44,6 +44,9 @@ public class SpotlessExtensionImpl extends SpotlessExtension {
 			task.setDescription(INSTALL_GIT_PRE_PUSH_HOOK_DESCRIPTION);
 			task.getRootDir().set(project.getRootDir());
 			task.getIsRootExecution().set(project.equals(project.getRootProject()));
+			if (project.hasProperty("spotless.hook.args")) {
+				task.getArgs().set(String.valueOf(project.property("spotless.hook.args")));
+			}
 		});
 
 		project.afterEvaluate(unused -> {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,10 @@ public class GitPrePushHookInstallerGradle extends GitPrePushHookInstaller {
 
 	public GitPrePushHookInstallerGradle(GitPreHookLogger logger, File root) {
 		super(logger, root);
+	}
+
+	public GitPrePushHookInstallerGradle(GitPreHookLogger logger, File root, String args) {
+		super(logger, root, args);
 	}
 
 	/**

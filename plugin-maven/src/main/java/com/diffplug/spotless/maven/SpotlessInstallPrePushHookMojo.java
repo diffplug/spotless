@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,12 @@ public class SpotlessInstallPrePushHookMojo extends AbstractMojo {
 	private MavenProject project;
 
 	/**
+	 * The extra arguments inserted before the Spotless goals in the generated pre-push hook.
+	 */
+	@Parameter(property = "spotless.hook.args", defaultValue = "")
+	private String hookArgs;
+
+	/**
 	 * Executes the Mojo, installing the Git pre-push hook for the Spotless plugin.
 	 *
 	 * <p>This method creates an instance of {@link GitPrePushHookInstallerMaven},
@@ -75,7 +81,7 @@ public class SpotlessInstallPrePushHookMojo extends AbstractMojo {
 		};
 
 		try {
-			final var installer = new GitPrePushHookInstallerMaven(logger, project.getBasedir());
+			final var installer = new GitPrePushHookInstallerMaven(logger, project.getBasedir(), hookArgs);
 			installer.install();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Unable to install pre-push hook", e);
