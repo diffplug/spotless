@@ -34,7 +34,7 @@ class RegisterDependenciesTaskBuildDirTest extends GradleIntegrationHarness {
 				"spotless { predeclareDeps() }",
 				"",
 				"spotlessPredeclare {",
-				"    java { googleJavaFormat('1.17.0') }",
+				"    java { googleJavaFormat() }",
 				"}",
 				"",
 				"layout.buildDirectory = layout.projectDirectory.dir('custom-build')");
@@ -45,7 +45,7 @@ class RegisterDependenciesTaskBuildDirTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target 'src/main/java/**/*.java'",
-				"        googleJavaFormat('1.17.0')",
+				"        googleJavaFormat()",
 				"    }",
 				"}");
 		setFile("sub/src/main/java/Hello.java").toLines(

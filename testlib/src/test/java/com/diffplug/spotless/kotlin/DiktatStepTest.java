@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ class DiktatStepTest extends ResourceHarness {
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
 		FileSignature config = signAsList(conf);
 
-		FormatterStep step = DiktatStep.create("1.2.1", TestProvisioner.mavenCentral(), config);
-		StepHarnessWithFile.forStep(this, step).expectLintsOfResource("kotlin/diktat/Unsolvable.kt").toBe("L1 diktat(diktat-ruleset:debug-print) [DEBUG_PRINT] use a dedicated logging library: found println()",
+		FormatterStep step = DiktatStep.create("2.0.0", TestProvisioner.mavenCentral(), config);
+		StepHarnessWithFile.forStep(this, step).expectLintsOfResource("kotlin/diktat/Unsolvable.kt").toBe("L12 diktat(diktat-ruleset:debug-print) [DEBUG_PRINT] use a dedicated logging library: found println()",
 				"L13 diktat(diktat-ruleset:debug-print) [DEBUG_PRINT] use a dedicated logging library: found println()");
 	}
 
