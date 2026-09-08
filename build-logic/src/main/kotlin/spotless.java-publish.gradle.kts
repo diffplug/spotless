@@ -16,6 +16,12 @@ fun decode64(varName: String): String {
   return String(Base64.getMimeDecoder().decode(envValue), Charsets.UTF_8)
 }
 
+// These end up in the published Maven coordinates, so a missing one has to fail the build. A
+// fallback would quietly publish e.g. `com.diffplug.spotless:lib` instead of `:spotless-lib`.
+fun requiredProperty(name: String): String =
+    project.findProperty(name)?.toString()
+        ?: error("${project.path} is missing the '$name' property, which is required to publish it")
+
 java {
   withJavadocJar()
   withSourcesJar()
@@ -32,13 +38,12 @@ tasks.withType<Javadoc>().configureEach {
       addStringOption("Xdoclint:none", "-quiet")
       addStringOption("Xwerror", "-quiet")
       addStringOption("source", "17")
-      val artifactId = project.findProperty("artifactId")?.toString() ?: project.name
-      val org = project.findProperty("org")?.toString() ?: "diffplug"
-      val name = project.findProperty("name")?.toString() ?: "spotless"
+      val artifactId = requiredProperty("artifactId")
+      val org = requiredProperty("org")
       val version = project.version.toString()
       val group = project.group.toString()
       val javadocInfo =
-          "<h2><a href=\"https://github.com/$org/$name\" style=\"text-transform: none;\">$group:$artifactId:$version</a> by <a href=\"https://www.diffplug.com\" style=\"text-transform: none;\">DiffPlug</a></h2>"
+          "<h2><a href=\"https://github.com/$org/${rootProject.name}\" style=\"text-transform: none;\">$group:$artifactId:$version</a> by <a href=\"https://www.diffplug.com\" style=\"text-transform: none;\">DiffPlug</a></h2>"
       header = javadocInfo
 
       val dotdotGradle = if (project.name.startsWith("eclipse-")) "../../gradle" else "../gradle"
@@ -62,7 +67,8 @@ tasks.check {
 
 afterEvaluate {
   val isExt = project.name.startsWith("eclipse-")
-  val artifactId = project.findProperty("artifactId")?.toString() ?: project.name
+  val artifactId = requiredProperty("artifactId")
+  val org = requiredProperty("org")
   val isPluginMaven = artifactId == "spotless-maven-plugin"
   val isPluginGradle = pluginManager.hasPlugin("java-gradle-plugin")
 
@@ -84,13 +90,11 @@ afterEvaluate {
         pom {
           name = artifactId
           description = project.description
-          url = "https://github.com/${project.findProperty("org")}/${rootProject.name}"
+          url = "https://github.com/$org/${rootProject.name}"
           scm {
-            url = "https://github.com/${project.findProperty("org")}/${rootProject.name}"
-            connection =
-                "scm:git:https://github.com/${project.findProperty("org")}/${rootProject.name}.git"
-            developerConnection =
-                "scm:git:ssh:git@github.com/${project.findProperty("org")}/${rootProject.name}.git"
+            url = "https://github.com/$org/${rootProject.name}"
+            connection = "scm:git:https://github.com/$org/${rootProject.name}.git"
+            developerConnection = "scm:git:ssh:git@github.com/$org/${rootProject.name}.git"
           }
           licenses {
             license {
