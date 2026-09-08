@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class PalantirJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        palantirJavaFormat('2.39.0').formatJavadoc(true)",
+				"        palantirJavaFormat('2.80.0').formatJavadoc(true)",
 				"    }",
 				"}");
 

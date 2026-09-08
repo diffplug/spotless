@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.diffplug.spotless.maven.java;
 
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
 class GoogleJavaFormatTest extends MavenIntegrationHarness {
@@ -24,7 +25,7 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	void specificVersionDefaultStyle() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.17.0</version>",
+				"  <version>" + GoogleJavaFormatStep.defaultVersion() + "</version>",
 				"</googleJavaFormat>");
 
 		runTest("java/googlejavaformat/JavaCodeFormatted.test");
@@ -34,7 +35,7 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	void specificVersionSpecificStyle() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.17.0</version>",
+				"  <version>" + GoogleJavaFormatStep.defaultVersion() + "</version>",
 				"  <style>AOSP</style>",
 				"</googleJavaFormat>");
 
@@ -45,7 +46,7 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	void specificVersionReflowLongStrings() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.17.0</version>",
+				"  <version>" + GoogleJavaFormatStep.defaultVersion() + "</version>",
 				"  <reflowLongStrings>true</reflowLongStrings>",
 				"</googleJavaFormat>");
 
@@ -56,7 +57,7 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	void specificVersionReorderImports() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.17.0</version>",
+				"  <version>" + GoogleJavaFormatStep.defaultVersion() + "</version>",
 				"  <style>AOSP</style>",
 				"  <reorderImports>true</reorderImports>",
 				"</googleJavaFormat>");
@@ -68,7 +69,7 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 	void specificVersionSkipJavadocFormatting() throws Exception {
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.17.0</version>",
+				"  <version>" + GoogleJavaFormatStep.defaultVersion() + "</version>",
 				"  <formatJavadoc>false</formatJavadoc>",
 				"</googleJavaFormat>");
 

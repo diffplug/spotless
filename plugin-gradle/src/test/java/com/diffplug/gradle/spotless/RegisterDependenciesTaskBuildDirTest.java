@@ -20,6 +20,8 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
+
 class RegisterDependenciesTaskBuildDirTest extends GradleIntegrationHarness {
 	@Test
 	void unitOutputFollowsCustomBuildDirectory() throws IOException {
@@ -34,7 +36,7 @@ class RegisterDependenciesTaskBuildDirTest extends GradleIntegrationHarness {
 				"spotless { predeclareDeps() }",
 				"",
 				"spotlessPredeclare {",
-				"    java { googleJavaFormat('1.17.0') }",
+				"    java { googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "') }",
 				"}",
 				"",
 				"layout.buildDirectory = layout.projectDirectory.dir('custom-build')");
@@ -45,7 +47,7 @@ class RegisterDependenciesTaskBuildDirTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target 'src/main/java/**/*.java'",
-				"        googleJavaFormat('1.17.0')",
+				"        googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "')",
 				"    }",
 				"}");
 		setFile("sub/src/main/java/Hello.java").toLines(

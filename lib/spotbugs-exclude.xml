@@ -20,4 +20,9 @@
 	<Match>
 		<Bug pattern="USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION"/>
 	</Match>
+	<Match>
+		<!-- Process implements AutoCloseable on Java 24+, but not on Java 17 -->
+		<Class name="com.diffplug.spotless.ProcessRunner$LongRunningProcess"/>
+		<Bug pattern="RI_REDUNDANT_INTERFACES"/>
+	</Match>
 </FindBugsFilter>

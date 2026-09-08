@@ -88,7 +88,7 @@ class GitRatchetMavenTest extends MavenIntegrationHarness {
 	private void checkBehavior(Git git) throws Exception {
 		setFile(TEST_PATH).toContent("HELLO");
 		git.add().addFilepattern(TEST_PATH).call();
-		git.commit().setMessage("Initial state").call();
+		git.commit().setSign(false).setMessage("Initial state").call();
 		// tag this initial state as the baseline for spotless to ratchet from
 		git.tag().setName("baseline").call();
 
@@ -165,7 +165,7 @@ class GitRatchetMavenTest extends MavenIntegrationHarness {
 
 		setFile(TEST_PATH).toContent("HELLO");
 		mainGit.add().addFilepattern(TEST_PATH).call();
-		mainGit.commit().setMessage("Initial commit").call();
+		mainGit.commit().setSign(false).setMessage("Initial commit").call();
 		mainGit.tag().setName("baseline").call();
 
 		// Set up a worktree manually (JGit doesn't support worktrees)

@@ -23,6 +23,8 @@ import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
+
 /**
  * Integration tests for the spotlessPredeclare feature, which allows dependencies
  * to be predeclared in the root project and reused across all subprojects to avoid
@@ -41,9 +43,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					repositories { mavenCentral() }
 					spotless { predeclareDeps() }
 					spotlessPredeclare {
-					    java { googleJavaFormat('1.17.0') }
+					    java { googleJavaFormat('%s') }
 					}
-					""");
+					""".formatted(GoogleJavaFormatStep.defaultVersion()));
 			setFile("settings.gradle").toContent("include 'sub'");
 			setFile("sub/build.gradle").toContent("""
 					plugins {
@@ -53,10 +55,10 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					spotless {
 					    java {
 					        target file('test.java')
-					        googleJavaFormat('1.17.0')
+					        googleJavaFormat('%s')
 					    }
 					}
-					""");
+					""".formatted(GoogleJavaFormatStep.defaultVersion()));
 			setFile("sub/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
 			BuildResult result = gradleRunner().withArguments("spotlessApply").build();
@@ -85,15 +87,15 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					spotless {
 					    java {
 					        target file('test.java')
-					        googleJavaFormat('1.17.0')
+					        googleJavaFormat('%s')
 					    }
 					}
-					""");
+					""".formatted(GoogleJavaFormatStep.defaultVersion()));
 			setFile("sub/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
 			BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
 			assertThat(result.getOutput())
-					.contains("Add a step with [com.google.googlejavaformat:google-java-format:1.17.0]")
+					.contains("Add a step with [com.google.googlejavaformat:google-java-format:" + GoogleJavaFormatStep.defaultVersion() + "]")
 					.contains("into the `spotlessPredeclare` block in the root project");
 		}
 
@@ -106,9 +108,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					repositories { mavenCentral() }
 					spotless { predeclareDeps() }
 					spotlessPredeclare {
-					    java { googleJavaFormat('1.17.0') }
+					    java { googleJavaFormat('%s') }
 					}
-					""");
+					""".formatted(GoogleJavaFormatStep.defaultVersion()));
 			setFile("settings.gradle").toContent("include 'sub1', 'sub2'");
 			setFile("sub1/build.gradle").toContent("""
 					plugins {
@@ -118,10 +120,10 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					spotless {
 					    java {
 					        target file('test.java')
-					        googleJavaFormat('1.17.0')
+					        googleJavaFormat('%s')
 					    }
 					}
-					""");
+					""".formatted(GoogleJavaFormatStep.defaultVersion()));
 			setFile("sub1/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 			setFile("sub2/build.gradle").toContent("""
 					plugins {
@@ -131,10 +133,10 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					spotless {
 					    java {
 					        target file('test.java')
-					        googleJavaFormat('1.17.0')
+					        googleJavaFormat('%s')
 					    }
 					}
-					""");
+					""".formatted(GoogleJavaFormatStep.defaultVersion()));
 			setFile("sub2/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
 			BuildResult result = gradleRunner().withArguments("spotlessApply").build();
@@ -469,11 +471,11 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					spotless { predeclareDeps() }
 					spotlessPredeclare {
 					    java {
-					        googleJavaFormat('1.17.0')
+					        googleJavaFormat('%s')
 					        eclipse()
 					    }
 					}
-					""");
+					""".formatted(GoogleJavaFormatStep.defaultVersion()));
 			setFile("settings.gradle").toContent("include 'sub1', 'sub2'");
 			setFile("sub1/build.gradle").toContent("""
 					plugins {
@@ -483,10 +485,10 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					spotless {
 					    java {
 					        target file('test.java')
-					        googleJavaFormat('1.17.0')
+					        googleJavaFormat('%s')
 					    }
 					}
-					""");
+					""".formatted(GoogleJavaFormatStep.defaultVersion()));
 			setFile("sub1/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 			setFile("sub2/build.gradle").toContent("""
 					plugins {

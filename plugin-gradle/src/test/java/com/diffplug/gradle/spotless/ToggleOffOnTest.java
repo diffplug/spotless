@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import java.io.IOException;
 
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
+
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
 
 abstract class ToggleOffOnTest extends GradleIntegrationHarness {
 	private final boolean useConfigCache;
@@ -104,7 +106,7 @@ abstract class ToggleOffOnTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.17.0')",
+				"        googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "')",
 				"        toggleOffOn()",
 				"    }",
 				"}");

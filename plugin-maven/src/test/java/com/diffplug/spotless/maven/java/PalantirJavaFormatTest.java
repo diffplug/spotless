@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 DiffPlug
+ * Copyright 2022-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class PalantirJavaFormatTest extends MavenIntegrationHarness {
 	void specificJava11Version2() throws Exception {
 		writePomWithJavaSteps(
 				"<palantirJavaFormat>",
-				"  <version>2.39.0</version>",
+				"  <version>2.80.0</version>",
 				"</palantirJavaFormat>");
 
 		runTest("java/palantirjavaformat/JavaCodeFormatted.test", "java/palantirjavaformat/JavaCodeUnformatted.test");
@@ -44,7 +44,7 @@ class PalantirJavaFormatTest extends MavenIntegrationHarness {
 	void formatJavaDoc() throws Exception {
 		writePomWithJavaSteps(
 				"<palantirJavaFormat>",
-				"  <version>2.39.0</version>",
+				"  <version>2.80.0</version>",
 				"  <formatJavadoc>true</formatJavadoc>",
 				"</palantirJavaFormat>");
 
