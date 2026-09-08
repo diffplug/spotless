@@ -16,15 +16,17 @@ tasks.withType<JavaCompile>().configureEach {
     } else {
       disable()
     }
+    // https://github.com/diffplug/spotless/issues/2745
+    // https://github.com/google/error-prone/issues/5365
     disableAllWarnings = true
     disable(
-        "AnnotateFormatMethod",
+        "AnnotateFormatMethod", // We don't want to use ErrorProne's annotations.
         "FunctionalInterfaceMethodChanged",
-        "ImmutableEnumChecker",
-        "InlineMeSuggester",
+        "ImmutableEnumChecker", // We don't want to use ErrorProne's annotations.
+        "InlineMeSuggester", // We don't want to use ErrorProne's annotations.
         "JavaxInjectOnAbstractMethod",
         "OverridesJavaxInjectableMethod",
-        "ReturnValueIgnored",
+        "ReturnValueIgnored", // We don't want to use ErrorProne's annotations.
     )
     error(
         "ReturnValueIgnored",
@@ -33,6 +35,9 @@ tasks.withType<JavaCompile>().configureEach {
         "UnnecessarilyFullyQualified",
         "UnnecessaryLambda",
     )
+    // bug: this only happens when the file is dirty.
+    // might be an up2date (caching) issue, as file is currently in corrupt state.
+    // ForbidGradleInternal(import
     excludedPaths = ".*/GradleIntegrationHarness.java"
   }
 }

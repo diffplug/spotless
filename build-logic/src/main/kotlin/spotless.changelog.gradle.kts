@@ -12,12 +12,14 @@ val (kind, releaseTitle) =
       }
     }
 
+// the root project and plugins have their own changelogs
 spotlessChangelog {
   changelogFile("CHANGES.md")
+  // need -Prelease=true in order to do a publish
   setAppendDashSnapshotUnless_dashPrelease(true)
   branch("release")
   tagPrefix("$kind/")
-  commitMessage("Published $kind/{{version}}")
+  commitMessage("Published $kind/{{version}}") // {{version}} will be replaced
   tagMessage("{{changes}}")
   runAfterPush(
       "gh release create $kind/{{version}} --title '$releaseTitle v{{version}}' --notes-from-tag"
@@ -28,11 +30,14 @@ if (project == rootProject) {
   gradle.taskGraph.whenReady {
     val changelogPushTasks = allTasks.filter { it.name == "changelogPush" }.map { it.path }
     if (changelogPushTasks.size > 1) {
+      // make sure only one changelog gets published per tag/commit
       throw IllegalArgumentException(
           "Run changelogPush one at a time:\n" + changelogPushTasks.joinToString("\n")
       )
     }
     if (changelogPushTasks.size == 1) {
+      // if the one thing being published is a plugin, make sure there aren't any unreleased
+      // changes in lib
       val isPlugin =
           changelogPushTasks[0] == ":plugin-gradle:changelogPush" ||
               changelogPushTasks[0] == ":plugin-maven:changelogPush"

@@ -14,9 +14,16 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 spotbugs {
-  ignoreFailures = false
+  ignoreFailures = false // bug free or it doesn't ship!
+  // LOW|MEDIUM|DEFAULT|HIGH (low = sensitive to even minor mistakes).
   reportLevel = Confidence.MEDIUM
-  omitVisitors = listOf("ConstructorThrow", "FindReturnRef")
+  omitVisitors =
+      listOf(
+          // https://spotbugs.readthedocs.io/en/latest/detectors.html#constructorthrow
+          "ConstructorThrow",
+          // https://spotbugs.readthedocs.io/en/latest/detectors.html#findreturnref
+          "FindReturnRef",
+      )
 }
 
 tasks.spotbugsTest {

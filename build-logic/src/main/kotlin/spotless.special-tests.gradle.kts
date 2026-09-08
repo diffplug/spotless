@@ -7,6 +7,7 @@ plugins {
   id("com.adarshr.test-logger")
 }
 
+// See com.diffplug.spotless.tag package for available JUnit 5 @Tag annotations
 val special = listOf("black", "buf", "clang", "gofmt", "idea", "npm", "shfmt")
 
 val isCiServer = System.getenv().containsKey("CI")
@@ -21,8 +22,11 @@ tasks.withType<Test>().configureEach {
     }
   }
   // selfie https://selfie.dev/jvm/get-started#gradle
+  // optional, see "Overwrite everything" there
   project.findProperty("selfie")?.let { environment("selfie", it) }
+  // optional, improves up-to-date checking
   inputs.files(fileTree("src/test") { include("**/*.ss") })
+  // https://docs.gradle.org/8.8/userguide/performance.html#execute_tests_in_parallel
   maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
 }
 

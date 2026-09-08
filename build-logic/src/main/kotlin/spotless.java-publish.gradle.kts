@@ -35,6 +35,8 @@ tasks.withType<Javadoc>().configureEach {
   options {
     (this as? StandardJavadocDocletOptions)?.apply {
       encoding = Charsets.UTF_8.name()
+      // Where it's possible to name parameters and methods clearly enough that javadoc is not
+      // necessary, why make the code bigger?  Thus, no javadoc warnings.
       addStringOption("Xdoclint:none", "-quiet")
       addStringOption("Xwerror", "-quiet")
       addStringOption("source", "17")
@@ -61,6 +63,7 @@ tasks.withType<Javadoc>().configureEach {
   }
 }
 
+// make sure bad javadoc breaks the build
 tasks.check {
   dependsOn(tasks.javadoc)
 }
@@ -140,6 +143,7 @@ afterEvaluate {
             }
           }
           if (isPluginMaven) {
+            // Maven plugin requires Maven 3.1.0+ to run
             withXml {
               val rootNode = asNode()
               val prerequisites = rootNode.appendNode("prerequisites")
@@ -164,19 +168,23 @@ afterEvaluate {
         sign(publishing.publications)
       }
 
+      // find the project with the changelog (this project for plugins, root project for libs)
       val changelogProject = if (tasks.names.contains("changelogBump")) project else rootProject
       val changelogTasks = changelogProject.tasks
 
+      // ensures that nothing will be built if changelogPush will end up failing
       tasks.jar {
         dependsOn(changelogTasks.named("changelogCheck"))
       }
 
+      // ensures that changelog bump and push only happens if the publish was successful
       val thisProj = project
       changelogTasks.named("changelogBump") {
         dependsOn(
             ":${thisProj.path.removePrefix(":")}:publishPluginMavenPublicationToSonatypeRepository"
         )
         dependsOn(":closeAndReleaseSonatypeStagingRepository")
+        // if we have a Gradle plugin, we need to push it up to the plugin portal too
         if (thisProj.tasks.names.contains("publishPlugins")) {
           dependsOn(thisProj.tasks.named("publishPlugins"))
         }
