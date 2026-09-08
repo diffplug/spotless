@@ -9,6 +9,8 @@ plugins {
   id("spotless.java-setup")
   id("spotless.spotless-freshmark")
   id("spotless.special-tests")
+  // must come after java-gradle-plugin, which is what creates the 'pluginMaven' publication that
+  // spotless.java-publish then configures
   id("spotless.java-publish")
 }
 

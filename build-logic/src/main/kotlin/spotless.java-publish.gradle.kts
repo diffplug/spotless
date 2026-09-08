@@ -74,13 +74,18 @@ afterEvaluate {
 
   publishing {
     publications {
+      // java-gradle-plugin creates 'pluginMaven' from its own afterEvaluate, with the java
+      // component already attached. Ours has to run after that one, which it only does because
+      // java-gradle-plugin is applied earlier in the consumer's plugins block. If that ever
+      // inverts we would create an empty publication here and ship a POM with no jar, so check
+      // rather than silently degrade.
+      val existing = findByName("pluginMaven") as? MavenPublication
+      check(!isPluginGradle || existing != null) {
+        "${project.path} applies java-gradle-plugin, which must be applied before " +
+            "spotless.java-publish so that it can create the 'pluginMaven' publication"
+      }
       val pluginMaven =
-          findByName("pluginMaven") as? MavenPublication
-              ?: create<MavenPublication>("pluginMaven") {
-                if (!isPluginGradle) {
-                  from(components["java"])
-                }
-              }
+          existing ?: create<MavenPublication>("pluginMaven") { from(components["java"]) }
 
       pluginMaven.apply {
         groupId = project.group.toString()
