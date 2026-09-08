@@ -7,9 +7,13 @@ plugins {
   signing
 }
 
+// getMimeDecoder, not getDecoder: the secrets are line-wrapped. GPG_KEY64 is produced with
+// `openssl base64`, which wraps at 64 chars unless given -A, and the basic decoder rejects those
+// newlines. Groovy's String.decodeBase64 (used before the Kotlin DSL migration) skipped whitespace.
+// This only runs on a real `-Prelease=true` publish, so CI never exercises it.
 fun decode64(varName: String): String {
   val envValue = System.getenv(varName) ?: return ""
-  return String(Base64.getDecoder().decode(envValue), Charsets.UTF_8)
+  return String(Base64.getMimeDecoder().decode(envValue), Charsets.UTF_8)
 }
 
 java {
