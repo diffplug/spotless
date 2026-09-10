@@ -10,8 +10,6 @@ plugins {
 // See com.diffplug.spotless.tag package for available JUnit 5 @Tag annotations
 val special = listOf("black", "buf", "clang", "gofmt", "idea", "npm", "shfmt")
 
-val isCiServer = System.getenv().containsKey("CI")
-
 tasks.withType<Test>().configureEach {
   if (isCiServer) {
     configure<DevelocityTestConfiguration> {

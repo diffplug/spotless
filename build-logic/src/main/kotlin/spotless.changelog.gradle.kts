@@ -43,14 +43,14 @@ if (project == rootProject) {
               changelogPushTasks[0] == ":plugin-maven:changelogPush"
       if (
           isPlugin &&
-              !rootProject.spotlessChangelog.parsedChangelog.noUnreleasedChanges() &&
+              !rootSpotlessChangelog.parsedChangelog.noUnreleasedChanges() &&
               rootProject.findProperty("ignoreUnreleasedLib")?.toString() != "true"
       ) {
         throw IllegalArgumentException(
             "You're going to publish ${changelogPushTasks[0]}, but there are unreleased features in lib!\n" +
                 "You should run :changelogPush first!  Else you'll be missing out on:\n" +
-                "${rootProject.spotlessChangelog.parsedChangelog.unreleasedChanges()}\n" +
-                "If it's okay to miss those and link against the old ${rootProject.spotlessChangelog.versionLast} then " +
+                "${rootSpotlessChangelog.parsedChangelog.unreleasedChanges()}\n" +
+                "If it's okay to miss those and link against the old ${rootSpotlessChangelog.versionLast} then " +
                 "add -PignoreUnreleasedLib=true"
         )
       }

@@ -1,5 +1,4 @@
 import com.diffplug.gradle.spotless.FreshMarkExtension
-import com.diffplug.spotless.changelog.gradle.ChangelogExtension
 
 plugins {
   id("com.diffplug.spotless")
@@ -26,7 +25,7 @@ spotless {
 
 // if this freshmark has a changelog file, then it has version-sensitive content
 pluginManager.withPlugin("com.diffplug.spotless-changelog") {
-  val changelog = the<ChangelogExtension>()
+  val changelog = spotlessChangelog
   val versionLast = changelog.versionLast
   val versionNext = changelog.versionNext
 

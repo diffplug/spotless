@@ -1,26 +1,8 @@
-import com.diffplug.spotless.changelog.gradle.ChangelogExtension
-import java.util.Base64
-
 plugins {
   `java-library`
   `maven-publish`
   signing
 }
-
-// getMimeDecoder, not getDecoder: the secrets are line-wrapped. GPG_KEY64 is produced with
-// `openssl base64`, which wraps at 64 chars unless given -A, and the basic decoder rejects those
-// newlines. Groovy's String.decodeBase64 (used before the Kotlin DSL migration) skipped whitespace.
-// This only runs on a real `-Prelease=true` publish, so CI never exercises it.
-fun decode64(varName: String): String {
-  val envValue = System.getenv(varName) ?: return ""
-  return String(Base64.getMimeDecoder().decode(envValue), Charsets.UTF_8)
-}
-
-// These end up in the published Maven coordinates, so a missing one has to fail the build. A
-// fallback would quietly publish e.g. `com.diffplug.spotless:lib` instead of `:spotless-lib`.
-fun requiredProperty(name: String): String =
-    project.findProperty(name)?.toString()
-        ?: error("${project.path} is missing the '$name' property, which is required to publish it")
 
 java {
   withJavadocJar()
@@ -50,7 +32,7 @@ tasks.withType<Javadoc>().configureEach {
 
       val dotdotGradle = if (project.name.startsWith("eclipse-")) "../../gradle" else "../gradle"
       linksOffline("https://docs.gradle.org/6.1.1/javadoc/", "$dotdotGradle/javadoc/gradle")
-      val versionLast = rootProject.the<ChangelogExtension>().versionLast
+      val versionLast = rootSpotlessChangelog.versionLast
       linksOffline(
           "https://javadoc.io/static/com.diffplug.spotless/spotless-lib/$versionLast",
           "$dotdotGradle/javadoc/spotless-lib",

@@ -1,5 +1,3 @@
-import com.diffplug.spotless.changelog.gradle.ChangelogExtension
-
 plugins {
   alias(libs.plugins.maven.plugin.development)
   id("spotless.changelog")
@@ -11,7 +9,7 @@ plugins {
 
 extra["artifactId"] = property("artifactIdMaven")
 
-version = the<ChangelogExtension>().versionNext
+version = spotlessChangelog.versionNext
 
 mavenPlugin {
   name = "Spotless Maven Plugin"

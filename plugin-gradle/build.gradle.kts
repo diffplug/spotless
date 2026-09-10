@@ -1,4 +1,3 @@
-import com.diffplug.spotless.changelog.gradle.ChangelogExtension
 import org.gradle.plugin.compatibility.compatibility
 
 plugins {
@@ -16,9 +15,7 @@ plugins {
 
 extra["artifactId"] = property("artifactIdGradle")
 
-version = the<ChangelogExtension>().versionNext
-
-val rootSpotlessChangelog = rootProject.the<ChangelogExtension>()
+version = spotlessChangelog.versionNext
 
 dependencies {
   if (

@@ -1,4 +1,3 @@
-import com.diffplug.spotless.changelog.gradle.ChangelogExtension
 import com.github.spotbugs.snom.Confidence
 
 plugins {
@@ -9,7 +8,7 @@ plugins {
 
 extra["artifactId"] = property("artifactIdTestLib")
 
-version = rootProject.the<ChangelogExtension>().versionNext
+version = spotlessChangelog.versionNext
 
 dependencies {
   api(projects.lib)
