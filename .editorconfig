@@ -23,6 +23,10 @@ ij_java_names_count_to_use_import_on_demand = 999
 [*.xml.mustache]
 indent_size = 4
 
+[*.template]
+indent_style = tab
+indent_size = 4
+
 # Prevent unexpected automatic indentation when crafting test-cases
 [/testlib/src/main/resources/**]
 charset = unset
