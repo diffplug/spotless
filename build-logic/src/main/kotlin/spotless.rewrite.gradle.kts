@@ -19,7 +19,7 @@ rewrite {
 }
 
 dependencies {
-  "rewrite"(libs.rewrite.recipe.migrate.java)
-  "rewrite"(libs.rewrite.recipe.static.analysis)
-  "rewrite"(libs.rewrite.recipe.third.party)
+  rewrite(libs.rewrite.recipe.migrate.java)
+  rewrite(libs.rewrite.recipe.static.analysis)
+  rewrite(libs.rewrite.recipe.third.party)
 }
