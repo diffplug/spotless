@@ -11,6 +11,10 @@ Tracked issues found during review against the TOML v1.1.0 spec (https://toml.io
 - [x] Multi-line inline tables are not parsed correctly (split across lines and corrupted)
 - [x] Long lines can be split into multi-line inline tables (configurable `maxLineLength`)
 - [x] Short multi-line inline tables are joined into single lines when they fit
+- [x] Commas inside literal strings and triple-quoted strings are preserved by `splitTopLevel`
+- [x] Escaped backslashes before closing quotes no longer confuse `splitTopLevel`
+- [x] Single-line strings cannot consume following entries across a newline; unfinished
+      entries report a lint at their starting line instead of returning a partial catalog
 
 ## TODO — TOML spec edge cases
 
@@ -27,10 +31,9 @@ addressed for full TOML spec compliance.
       (`[section.subsection]`) and quoted table headers (`["quoted.key"]`).
       Their entries are silently dropped.
 
-### String handling in `splitTopLevel`
+### Scanner and formatting improvements
 
-- [ ] Single-quoted (literal) strings `'...'` are not recognized — commas or `=` inside
-      them will incorrectly split or match.
-- [ ] Multiline string delimiters (`"""`, `'''`) confuse the single-char quote toggle.
-- [ ] Double-backslash before closing quote (`"value\\"`) is misidentified as an escaped
-      quote. Needs odd/even backslash counting instead of single-char lookbehind.
+- [ ] Carry scanner state across lines instead of rescanning the accumulated multiline
+      entry after each line; the current approach is quadratic for long entries.
+- [ ] Normalize trailing whitespace outside strings in preserved multiline entries;
+      whitespace inside multiline strings must remain unchanged.
