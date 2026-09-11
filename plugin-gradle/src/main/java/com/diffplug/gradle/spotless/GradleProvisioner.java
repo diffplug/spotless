@@ -35,6 +35,7 @@ import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.java.TargetJvmEnvironment;
 import org.gradle.api.initialization.dsl.ScriptHandler;
+import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,16 +54,16 @@ final class GradleProvisioner {
 
 		public DedupingProvisioner dedupingProvisioner(Project project) {
 			return switch (this) {
-				case ROOT_PROJECT -> new DedupingProvisioner(forProject(project));
-				case ROOT_BUILDSCRIPT -> new DedupingProvisioner(forRootProjectBuildscript(project));
-				default -> throw Unhandled.enumException(this);
+			case ROOT_PROJECT -> new DedupingProvisioner(forProject(project));
+			case ROOT_BUILDSCRIPT -> new DedupingProvisioner(forRootProjectBuildscript(project));
+			default -> throw Unhandled.enumException(this);
 			};
 		}
 
 		public DedupingP2Provisioner dedupingP2Provisioner(Project project) {
 			return switch (this) {
-				case ROOT_PROJECT, ROOT_BUILDSCRIPT -> new DedupingP2Provisioner(P2Provisioner.createDefault(), defaultP2CacheDirectory(project));
-				default -> throw Unhandled.enumException(this);
+			case ROOT_PROJECT, ROOT_BUILDSCRIPT -> new DedupingP2Provisioner(P2Provisioner.createDefault(), defaultP2CacheDirectory(project));
+			default -> throw Unhandled.enumException(this);
 			};
 		}
 	}
@@ -133,7 +134,10 @@ final class GradleProvisioner {
 				config.setDescription("Spotless internal dependency resolution for " + request);
 				config.setTransitive(withTransitives);
 				config.setCanBeConsumed(false);
-				config.setVisible(false);
+				if (GradleVersion.current().compareTo(GradleVersion.version("9.1.0")) < 0) {
+					// Deprecated from 9.1.0
+					config.setVisible(false);
+				}
 				config.attributes(attr -> {
 					attr.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, Category.LIBRARY));
 					attr.attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EXTERNAL));
