@@ -17,7 +17,7 @@ dependencies {
   implementation(plugin("errorprone"))
   implementation(plugin("rewrite"))
   implementation(plugin("test-logger"))
-  implementation(plugin("nexus-publish"))
+  implementation(plugin("maven-publish"))
   implementation(plugin("develocity"))
 
   // TODO: https://github.com/gradle/gradle/issues/15383

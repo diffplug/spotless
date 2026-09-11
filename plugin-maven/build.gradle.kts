@@ -7,14 +7,29 @@ plugins {
   id("spotless.java-publish")
 }
 
-extra["artifactId"] = property("artifactIdMaven")
-
 version = spotlessChangelog.versionNext
 
 mavenPlugin {
-  name = "Spotless Maven Plugin"
-  artifactId = property("artifactIdMaven").toString()
-  description = project.description
+  name = property("POM_NAME").toString()
+  artifactId = property("POM_ARTIFACT_ID").toString()
+  description = property("POM_DESCRIPTION").toString()
+}
+
+mavenPublishing {
+  pom {
+    developers {
+      developer {
+        id = "lutovich"
+        name = "Konstantin Lutovich"
+        email = "konstantin.lutovich@neotechnology.com"
+      }
+    }
+    withXml {
+      val rootNode = asNode()
+      val prerequisites = rootNode.appendNode("prerequisites")
+      prerequisites.appendNode("maven", "3.1.0")
+    }
+  }
 }
 
 dependencies {

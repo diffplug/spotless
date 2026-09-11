@@ -6,8 +6,6 @@ plugins {
   id("spotless.special-tests")
 }
 
-extra["artifactId"] = property("artifactIdTestLib")
-
 version = spotlessChangelog.versionNext
 
 dependencies {
