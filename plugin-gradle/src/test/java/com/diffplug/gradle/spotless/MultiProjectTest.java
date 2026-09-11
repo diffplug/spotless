@@ -21,6 +21,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.java.GoogleJavaFormatStep;
 
 class MultiProjectTest extends GradleIntegrationHarness {
 	private static final int N = 100;
@@ -47,7 +48,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.17.0')",
+				"        googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "')",
 				"    }",
 				"}");
 		setFile(name + "/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
@@ -71,7 +72,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.17.0')",
+				"        googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "')",
 				"    }",
 				"}");
 		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
@@ -88,7 +89,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"spotless { predeclareDeps() }");
 		createNSubprojects();
 		Assertions.assertThat(gradleRunner().withArguments("spotlessApply").buildAndFail().getOutput())
-				.contains("Add a step with [com.google.googlejavaformat:google-java-format:1.17.0] into the `spotlessPredeclare` block in the root project.");
+				.contains("Add a step with [com.google.googlejavaformat:google-java-format:" + GoogleJavaFormatStep.defaultVersion() + "] into the `spotlessPredeclare` block in the root project.");
 	}
 
 	@Test
@@ -101,7 +102,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"spotless { predeclareDeps() }",
 				"",
 				"spotlessPredeclare {",
-				"    java { googleJavaFormat('1.17.0') }",
+				"    java { googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "') }",
 				"}");
 		createNSubprojects();
 		gradleRunner().withArguments("spotlessApply").build();
@@ -119,7 +120,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"repositories { mavenCentral() }",
 				"spotless { predeclareDepsFromBuildscript() }",
 				"spotlessPredeclare {",
-				"    java { googleJavaFormat('1.17.0') }",
+				"    java { googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "') }",
 				"}");
 		createNSubprojects();
 		gradleRunner().withArguments("spotlessApply").build();
@@ -138,7 +139,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"",
 				"spotlessPredeclare {",
 				"    fromBuildscriptRepositories()",
-				"    java { googleJavaFormat('1.17.0') }",
+				"    java { googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "') }",
 				"}");
 		createNSubprojects();
 		gradleRunner().withArguments("spotlessApply").build();
@@ -152,7 +153,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotlessPredeclare {",
-				" java { googleJavaFormat('1.17.0') }",
+				" java { googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "') }",
 				"}",
 				"spotless { predeclareDeps() }");
 		createNSubprojects();
@@ -169,11 +170,11 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"    predeclareDeps()",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.17.0')",
+				"        googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "')",
 				"    }",
 				"}",
 				"spotlessPredeclare {",
-				"    java { googleJavaFormat('1.17.0') }",
+				"    java { googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "') }",
 				"}");
 		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		setFile("sub/build.gradle").toLines(
@@ -182,11 +183,11 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.17.0')",
+				"        googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "')",
 				"    }",
 				"}");
 		setFile("sub/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
-		gradleRunner().withGradleVersion("8.14").withArguments("spotlessApply").build();
+		gradleRunner().withArguments("spotlessApply").build();
 	}
 
 	@Test
@@ -197,7 +198,7 @@ class MultiProjectTest extends GradleIntegrationHarness {
 				"}",
 				"repositories { mavenCentral() }",
 				"spotlessPredeclare {",
-				" java { googleJavaFormat('1.17.0') }",
+				" java { googleJavaFormat('" + GoogleJavaFormatStep.defaultVersion() + "') }",
 				"}");
 		createNSubprojects();
 		gradleRunner().withArguments("spotlessApply").build();

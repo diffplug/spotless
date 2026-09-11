@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class DiktatTest extends MavenIntegrationHarness {
 
 		writePomWithKotlinSteps(
 				"<diktat>",
-				"  <version>1.2.1</version>",
+				"  <version>2.0.0</version>",
 				"</diktat>");
 
 		String path = "src/main/kotlin/Main.kt";
@@ -56,7 +56,7 @@ class DiktatTest extends MavenIntegrationHarness {
 		File conf = setFile(configPath).toResource("kotlin/diktat/diktat-analysis.yml");
 		writePomWithKotlinSteps(
 				"<diktat>",
-				"  <version>1.2.1</version>",
+				"  <version>2.0.0</version>",
 				"  <configFile>" + conf.getAbsolutePath() + "</configFile>",
 				"</diktat>");
 

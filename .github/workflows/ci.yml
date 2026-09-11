@@ -39,10 +39,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        jre: [ 17, 21, 24 ] # Test on all supported LTS and latest JDK.
+        jre: [ 17, 21, 25, 26 ] # Test on all supported LTS and latest JDK.
         include:
           - os: windows-latest
-            jre: 24 # Test on the latest JDK for speeds.
+            jre: 26 # Test on the latest JDK for speeds.
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -67,10 +67,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        jre: [ 17, 21, 24 ] # Test on all supported LTS and latest JDK.
+        jre: [ 17, 21, 25, 26 ] # Test on all supported LTS and latest JDK.
         include:
           - os: windows-latest
-            jre: 24 # Test on the latest JDK for speeds.
+            jre: 26 # Test on the latest JDK for speeds.
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6

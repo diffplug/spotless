@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2024 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ class LicenseHeaderRatchetTest extends MavenIntegrationHarness {
 	@Test
 	void ratchetFrom() throws Exception {
 		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
-			git.commit().setMessage("First commit").call();
+			git.commit().setSign(false).setMessage("First commit").call();
 		}
 		setRatchetFrom("<ratchetFrom>HEAD</ratchetFrom>");
 		testSuiteUpdateWithLatest(true);

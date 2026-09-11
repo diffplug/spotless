@@ -163,7 +163,7 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 	@Test
 	void ratchetFrom() throws Exception {
 		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
-			git.commit().setMessage("First commit").call();
+			git.commit().setSign(false).setMessage("First commit").call();
 		}
 		setLicenseStep("licenseHeader('/** $YEAR */')\nratchetFrom 'HEAD'");
 		testSuiteUpdateWithLatest(true);
@@ -172,7 +172,7 @@ class LicenseHeaderTest extends GradleIntegrationHarness {
 	@Test
 	void ratchetFromButUpdateFalse() throws Exception {
 		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
-			git.commit().setMessage("First commit").call();
+			git.commit().setSign(false).setMessage("First commit").call();
 		}
 		try (Git ignored = Git.init().setDirectory(rootFolder()).call()) {
 			setLicenseStep("licenseHeader('/** $YEAR */').updateYearWithLatest(false)\nratchetFrom 'HEAD'");

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.JarState;
 import com.diffplug.spotless.Jvm;
@@ -53,10 +54,10 @@ public class RdfFormatterStep implements Serializable {
 		return new State(step.config, step.turtleFormatterStyle, step.jarState.get());
 	}
 
-	public static RdfFormatterFunc formatterFunc(State state)
+	public static FormatterFunc formatterFunc(State state)
 			throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		var formatterFunc = new RdfFormatterFunc(state);
-		return (RdfFormatterFunc) JVM_SUPPORT.suggestLaterVersionOnError(state.config.getTurtleFormatterVersion(), formatterFunc);
+		return JVM_SUPPORT.suggestLaterVersionOnError(state.config.getTurtleFormatterVersion(), formatterFunc);
 	}
 
 	public RdfFormatterStep(JarState.Promised jarState, RdfFormatterConfig config,
