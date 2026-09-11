@@ -4,7 +4,6 @@ plugins {
   alias(libs.plugins.version.compatibility) apply false
   alias(libs.plugins.maven.plugin.development) apply false
   alias(libs.plugins.p2deps) apply false
-  id("spotless.nexus-publish")
   id("spotless.changelog")
   id("spotless.rewrite")
   id("spotless.spotless-freshmark")

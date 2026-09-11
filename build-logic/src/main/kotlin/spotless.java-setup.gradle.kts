@@ -8,6 +8,8 @@ plugins {
   id("spotless.spotless-conventions")
 }
 
+group = property("GROUP").toString()
+
 tasks.withType<JavaCompile>().configureEach {
   options.encoding = Charsets.UTF_8.name()
   options.release = libs.versions.jdk.release.map { it.toInt() }

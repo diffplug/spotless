@@ -13,8 +13,6 @@ plugins {
   id("spotless.java-publish")
 }
 
-extra["artifactId"] = property("artifactIdGradle")
-
 version = spotlessChangelog.versionNext
 
 dependencies {
@@ -60,7 +58,7 @@ gradlePlugin {
       id = "com.diffplug.spotless"
       implementationClass = "com.diffplug.gradle.spotless.SpotlessPlugin"
       displayName = "Spotless formatting plugin"
-      description = project.description
+      description = property("POM_DESCRIPTION").toString()
       tags =
           listOf(
               "format",
