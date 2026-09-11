@@ -35,7 +35,6 @@ public final class JacksonYamlStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:";
-	private static final String DEFAULT_VERSION = YamlBuildConfig.VERSION_JACKSON;
 	public static final String NAME = "jacksonYaml";
 
 	private final JarState.Promised jarState;
@@ -47,7 +46,7 @@ public final class JacksonYamlStep implements Serializable {
 	}
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return YamlBuildConfig.VERSION_JACKSON;
 	}
 
 	public static FormatterStep create(JacksonYamlConfig jacksonConfig,

@@ -34,7 +34,6 @@ public final class JsonPatchStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.flipkart.zjsonpatch:zjsonpatch";
-	private static final String DEFAULT_VERSION = JsonBuildConfig.VERSION_ZJSONPATCH;
 	public static final String NAME = "apply-json-patch";
 
 	private final JarState.Promised jarState;
@@ -50,11 +49,11 @@ public final class JsonPatchStep implements Serializable {
 	}
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return JsonBuildConfig.VERSION_ZJSONPATCH;
 	}
 
 	public static FormatterStep create(String patchString, Provisioner provisioner) {
-		return create(DEFAULT_VERSION, patchString, provisioner);
+		return create(JsonBuildConfig.VERSION_ZJSONPATCH, patchString, provisioner);
 	}
 
 	public static FormatterStep create(String zjsonPatchVersion, String patchString, Provisioner provisioner) {
@@ -68,7 +67,7 @@ public final class JsonPatchStep implements Serializable {
 	}
 
 	public static FormatterStep create(List<Map<String, Object>> patch, Provisioner provisioner) {
-		return create(DEFAULT_VERSION, patch, provisioner);
+		return create(JsonBuildConfig.VERSION_ZJSONPATCH, patch, provisioner);
 	}
 
 	public static FormatterStep create(String zjsonPatchVersion, List<Map<String, Object>> patch, Provisioner provisioner) {

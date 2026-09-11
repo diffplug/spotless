@@ -34,7 +34,6 @@ public final class JacksonJsonStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.fasterxml.jackson.core:jackson-databind:";
-	private static final String DEFAULT_VERSION = JsonBuildConfig.VERSION_JACKSON;
 	public static final String NAME = "jacksonJson";
 
 	private final JarState.Promised jarState;
@@ -46,7 +45,7 @@ public final class JacksonJsonStep implements Serializable {
 	}
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return JsonBuildConfig.VERSION_JACKSON;
 	}
 
 	public static FormatterStep create(Provisioner provisioner) {

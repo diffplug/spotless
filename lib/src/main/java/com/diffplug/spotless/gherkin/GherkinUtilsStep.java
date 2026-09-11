@@ -30,7 +30,6 @@ public final class GherkinUtilsStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "io.cucumber:gherkin-utils:";
-	private static final String DEFAULT_VERSION = GherkinBuildConfig.VERSION_GHERKIN_UTILS;
 	public static final String NAME = "gherkinUtils";
 
 	private final JarState.Promised jarState;
@@ -42,7 +41,7 @@ public final class GherkinUtilsStep implements Serializable {
 	}
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return GherkinBuildConfig.VERSION_GHERKIN_UTILS;
 	}
 
 	public static FormatterStep create(GherkinUtilsConfig gherkinSimpleConfig,

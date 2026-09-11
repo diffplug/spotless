@@ -5,7 +5,7 @@ selfie = "3.1.1"
 jackson = "2.20.1"
 maven-api = "3.0"
 ktlint = "1.8.0"
-palantir-java-format-default = "2.80.0"
+javaparser = "3.27.1"
 
 [libraries]
 durian-core = { module = "com.diffplug.durian:durian-core", version.ref = "durian" }
@@ -28,6 +28,11 @@ maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven-api"
 ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", version.ref = "ktlint" }
 ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standard", version.ref = "ktlint" }
 
+javaparser-core = { module = "com.github.javaparser:javaparser-core", version.ref = "javaparser" }
+javaparser-symbol-solver-core = { module = "com.github.javaparser:javaparser-symbol-solver-core", version.ref = "javaparser" }
+
+palantir-java-format-default = "com.palantir.javaformat:palantir-java-format:2.80.0"
+
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.7.1.202607240634-r"
 junit-jupiter = "org.junit.jupiter:junit-jupiter:6.1.3"
 assertj-core = "org.assertj:assertj-core:3.27.7"
@@ -44,14 +49,18 @@ plexus-build-api = "org.sonatype.plexus:plexus-build-api:0.0.7"
 concurrent-trees = "com.googlecode.concurrent-trees:concurrent-trees:2.6.1"
 owasp-encoder = "org.owasp.encoder:encoder:1.4.0"
 mustache-compiler = "com.github.spullara.mustache.java:compiler:0.9.14"
+adocfmt = "org.drjekyll:adocfmt:0.3.1"
+antlr4-formatter = "com.khubla.antlr4formatter:antlr4-formatter:1.2.1"
 cleanthat-java = "io.github.solven-eu.cleanthat:java:2.25"
+cool-rdf-formatter = "cool.rdf:cool-rdf-formatter:2.0.1"
 diktat-rules = "org.cqfn.diktat:diktat-rules:1.2.5"
 diktat-runner = "com.saveourtool.diktat:diktat-runner:2.0.0"
 flexmark-all = "com.vladsch.flexmark:flexmark-all:0.64.8"
+freshmark = "com.diffplug.freshmark:freshmark:1.3.1"
 gherkin-utils = "io.cucumber:gherkin-utils:10.0.0"
 google-java-format = "com.google.googlejavaformat:google-java-format:1.30.0"
 gson = "com.google.code.gson:gson:2.14.0"
-javaparser-symbol-solver-core = "com.github.javaparser:javaparser-symbol-solver-core:3.27.1"
+json-simple = "org.json:json:20210307"
 ktfmt = "com.facebook:ktfmt:0.63"
 palantir-java-format = "com.palantir.javaformat:palantir-java-format:1.1.0"
 prince-of-space-core = "io.github.agustafson.princeofspace:prince-of-space-core:2.2.0"

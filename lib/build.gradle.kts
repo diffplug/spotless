@@ -13,48 +13,58 @@ extra["artifactId"] = property("artifactIdLib")
 
 version = spotlessChangelog.versionNext
 
-fun catalogVersion(dependency: Provider<MinimalExternalModuleDependency>): Provider<String> =
-    dependency.map {
-      it.versionConstraint.requiredVersion
-    }
+val Provider<MinimalExternalModuleDependency>.version: Provider<String>
+  get() = map { it.version }
 
 buildConfig {
   packageName("com.diffplug.spotless.java")
   useJavaOutput {
     defaultVisibility = true
   }
-  buildConfigField("VERSION_CLEANTHAT", catalogVersion(libs.cleanthat.java))
-  buildConfigField("VERSION_GJF", catalogVersion(libs.google.java.format))
-  buildConfigField("VERSION_PALANTIR_JAVA_FORMAT", libs.versions.palantir.java.format.default)
-  buildConfigField("VERSION_PRINCE_OF_SPACE", catalogVersion(libs.prince.of.space.core))
-  buildConfigField("VERSION_TABLETEST_FORMATTER", catalogVersion(libs.tabletest.formatter.core))
+  buildConfigField("VERSION_CLEANTHAT", libs.cleanthat.java.version)
+  buildConfigField("VERSION_GJF", libs.google.java.format.version)
+  buildConfigField("VERSION_JAVAPARSER", libs.javaparser.symbol.solver.core.version)
+  buildConfigField("VERSION_PALANTIR_JAVA_FORMAT", libs.palantir.java.format.default.version)
+  buildConfigField("VERSION_PRINCE_OF_SPACE", libs.prince.of.space.core.version)
+  buildConfigField("VERSION_TABLETEST_FORMATTER", libs.tabletest.formatter.core.version)
 
-  forClass("com.diffplug.spotless.kotlin", "KotlinBuildConfig") {
-    buildConfigField("VERSION_DIKTAT", catalogVersion(libs.diktat.runner))
-    buildConfigField("VERSION_KTFMT", catalogVersion(libs.ktfmt))
-    buildConfigField("VERSION_KTLINT", catalogVersion(libs.ktlint.rule.engine))
+  forClass("com.diffplug.spotless.antlr4", "Antlr4BuildConfig") {
+    buildConfigField("VERSION_ANTLR4", libs.antlr4.formatter.version)
   }
-  forClass("com.diffplug.spotless.scala", "ScalaBuildConfig") {
-    buildConfigField("VERSION_SCALAFMT", catalogVersion(libs.scalafmt.core))
-  }
-  forClass("com.diffplug.spotless.markdown", "MarkdownBuildConfig") {
-    buildConfigField("VERSION_FLEXMARK", catalogVersion(libs.flexmark.all))
+  forClass("com.diffplug.spotless.asciidoc", "AsciidocBuildConfig") {
+    buildConfigField("VERSION_ADOCFMT", libs.adocfmt.version)
   }
   forClass("com.diffplug.spotless.gherkin", "GherkinBuildConfig") {
-    buildConfigField("VERSION_GHERKIN_UTILS", catalogVersion(libs.gherkin.utils))
-  }
-  forClass("com.diffplug.spotless.pom", "PomBuildConfig") {
-    buildConfigField("VERSION_SORTPOM", catalogVersion(libs.sortpom.sorter))
+    buildConfigField("VERSION_GHERKIN_UTILS", libs.gherkin.utils.version)
   }
   forClass("com.diffplug.spotless.json", "JsonBuildConfig") {
-    buildConfigField("VERSION_JACKSON", catalogVersion(libs.jackson.databind))
-    buildConfigField("VERSION_ZJSONPATCH", catalogVersion(libs.zjsonpatch))
+    buildConfigField("VERSION_JACKSON", libs.jackson.databind.version)
+    buildConfigField("VERSION_JSON_SIMPLE", libs.json.simple.version)
+    buildConfigField("VERSION_ZJSONPATCH", libs.zjsonpatch.version)
   }
   forClass("com.diffplug.spotless.json.gson", "GsonBuildConfig") {
-    buildConfigField("VERSION_GSON", catalogVersion(libs.gson))
+    buildConfigField("VERSION_GSON", libs.gson.version)
+  }
+  forClass("com.diffplug.spotless.kotlin", "KotlinBuildConfig") {
+    buildConfigField("VERSION_DIKTAT", libs.diktat.runner.version)
+    buildConfigField("VERSION_KTFMT", libs.ktfmt.version)
+    buildConfigField("VERSION_KTLINT", libs.ktlint.rule.engine.version)
+  }
+  forClass("com.diffplug.spotless.markdown", "MarkdownBuildConfig") {
+    buildConfigField("VERSION_FLEXMARK", libs.flexmark.all.version)
+    buildConfigField("VERSION_FRESHMARK", libs.freshmark.version)
+  }
+  forClass("com.diffplug.spotless.pom", "PomBuildConfig") {
+    buildConfigField("VERSION_SORTPOM", libs.sortpom.sorter.version)
+  }
+  forClass("com.diffplug.spotless.rdf", "RdfBuildConfig") {
+    buildConfigField("VERSION_COOL_RDF_FORMATTER", libs.cool.rdf.formatter.version)
+  }
+  forClass("com.diffplug.spotless.scala", "ScalaBuildConfig") {
+    buildConfigField("VERSION_SCALAFMT", libs.scalafmt.core.version)
   }
   forClass("com.diffplug.spotless.yaml", "YamlBuildConfig") {
-    buildConfigField("VERSION_JACKSON", catalogVersion(libs.jackson.dataformat.yaml))
+    buildConfigField("VERSION_JACKSON", libs.jackson.dataformat.yaml.version)
   }
 }
 

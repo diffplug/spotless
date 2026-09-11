@@ -28,12 +28,12 @@ import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.Provisioner;
 
 public class RdfFormatterStep implements Serializable {
-	public static final String LATEST_TURTLE_FORMATTER_VERSION = "2.0.1";
+	public static final String LATEST_TURTLE_FORMATTER_VERSION = RdfBuildConfig.VERSION_COOL_RDF_FORMATTER;
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support("cool-rdf-formatter")
-			.add(25, "2.0.1");
+			.add(25, RdfBuildConfig.VERSION_COOL_RDF_FORMATTER);
 
 	private static final String TURTLE_FORMATTER_COORDINATES = "cool.rdf:cool-rdf-formatter";
 

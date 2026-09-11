@@ -41,7 +41,7 @@ import com.diffplug.spotless.ThrowingEx;
 public final class KtfmtStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = KotlinBuildConfig.VERSION_KTFMT;
+
 	private static final String NAME = "ktfmt";
 	private static final String MAVEN_COORDINATE = "com.facebook:ktfmt:";
 
@@ -219,7 +219,7 @@ public final class KtfmtStep implements Serializable {
 	}
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return KotlinBuildConfig.VERSION_KTFMT;
 	}
 
 	private State equalityState() {

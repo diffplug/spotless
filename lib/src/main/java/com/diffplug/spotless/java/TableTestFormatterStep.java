@@ -39,7 +39,6 @@ public final class TableTestFormatterStep implements Serializable {
 	private static final long serialVersionUID = 2L;
 	private static final String NAME = "tableTestFormatter";
 	private static final String MAVEN_COORDINATE = "org.tabletest:tabletest-formatter-core:";
-	private static final String DEFAULT_VERSION = BuildConfig.VERSION_TABLETEST_FORMATTER;
 
 	/** Default fallback indent style ({@code "space"}) for Java/Kotlin files. */
 	public static final String DEFAULT_INDENT_STYLE = "space";
@@ -89,7 +88,7 @@ public final class TableTestFormatterStep implements Serializable {
 
 	/** Get default formatter version. */
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return BuildConfig.VERSION_TABLETEST_FORMATTER;
 	}
 
 	private State equalityState() {

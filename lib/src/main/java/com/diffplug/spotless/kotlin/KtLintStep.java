@@ -38,7 +38,7 @@ import com.diffplug.spotless.Provisioner;
 public final class KtLintStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_VERSION = KotlinBuildConfig.VERSION_KTLINT;
+
 	private static final String NAME = "ktlint";
 	private static final String MAVEN_COORDINATE_0_DOT = "com.pinterest:ktlint:";
 	private static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";
@@ -83,7 +83,7 @@ public final class KtLintStep implements Serializable {
 	}
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return KotlinBuildConfig.VERSION_KTLINT;
 	}
 
 	private State equalityState() {
