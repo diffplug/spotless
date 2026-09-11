@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ public final class FreshMarkStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private static final String DEFAULT_VERSION = "1.3.1";
 	private static final String NAME = "freshmark";
 	private static final String MAVEN_COORDINATE = "com.diffplug.freshmark:freshmark:";
 
@@ -85,7 +84,7 @@ public final class FreshMarkStep implements Serializable {
 	}
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return MarkdownBuildConfig.VERSION_FRESHMARK;
 	}
 
 	private State equalityState() throws Exception {

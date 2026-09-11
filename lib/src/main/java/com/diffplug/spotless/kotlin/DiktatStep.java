@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,13 +49,12 @@ public final class DiktatStep implements Serializable {
 
 	private static final String PACKAGE_RELOCATED_VERSION = "2.0.0";
 
-	private static final String DEFAULT_VERSION = "2.0.0";
 	private static final String NAME = "diktat";
 	private static final String MAVEN_COORDINATE_PRE_2_0_0 = "org.cqfn.diktat:diktat-rules:";
 	private static final String MAVEN_COORDINATE = "com.saveourtool.diktat:diktat-runner:";
 
 	public static String defaultVersionDiktat() {
-		return DEFAULT_VERSION;
+		return KotlinBuildConfig.VERSION_DIKTAT;
 	}
 
 	public static FormatterStep create(Provisioner provisioner) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import com.diffplug.spotless.json.gson.GsonStep;
 
 public class JsonExtension extends FormatExtension {
 	private static final int DEFAULT_INDENTATION = 4;
-	private static final String DEFAULT_ZJSONPATCH_VERSION = "0.4.14";
 	static final String NAME = "json";
 
 	@Inject
@@ -216,7 +215,7 @@ public class JsonExtension extends FormatExtension {
 		private List<Map<String, Object>> patch;
 
 		public JsonPatchConfig(List<Map<String, Object>> patch) {
-			this(DEFAULT_ZJSONPATCH_VERSION, patch);
+			this(JsonPatchStep.defaultVersion(), patch);
 		}
 
 		public JsonPatchConfig(String zjsonPatchVersion, List<Map<String, Object>> patch) {

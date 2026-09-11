@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ public class SortPomCfg implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	public String version = "4.0.0";
+	public String version = PomBuildConfig.VERSION_SORTPOM;
 
 	public String encoding = "UTF-8";
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public final class PalantirJavaFormatStep implements Serializable {
 	private static final String DEFAULT_STYLE = "PALANTIR";
 	private static final String NAME = "palantir-java-format";
 	public static final String MAVEN_COORDINATE = "com.palantir.javaformat:palantir-java-format:";
-	public static final String DEFAULT_VERSION = "2.80.0"; // compatible with Java 11+
+	public static final String DEFAULT_VERSION = BuildConfig.VERSION_PALANTIR_JAVA_FORMAT; // compatible with Java 11+
 
 	/** The jar that contains the formatter. */
 	private final JarState.Promised jarState;
