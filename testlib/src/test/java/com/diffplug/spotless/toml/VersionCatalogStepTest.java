@@ -92,6 +92,19 @@ class VersionCatalogStepTest {
 	}
 
 	@Test
+	void standaloneCommentsAtSectionBoundariesAndEofArePreserved() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create()).testUnaffected(
+				"[versions]\nzoo = \"1.0\"\n# keep this trailing comment\n\n[libraries]\nfoo = { module = \"g:a\", version.ref = \"zoo\" }\n# keep this final comment\n");
+	}
+
+	@Test
+	void trailingCommentsFollowTheirSectionWhenTablesAreSorted() throws Exception {
+		StepHarness.forStep(VersionCatalogStep.create()).test(
+				"[plugins]\nzoo = \"g:z:1\"\n# plugin note\n[versions]\nalpha = \"1.0\"\n# version note\n",
+				"[versions]\nalpha = \"1.0\"\n# version note\n\n[plugins]\nzoo = \"g:z:1\"\n# plugin note\n");
+	}
+
+	@Test
 	void inlineCommentsPreserved() throws Exception {
 		StepHarness harness = StepHarness.forStep(VersionCatalogStep.create());
 		harness.test(
