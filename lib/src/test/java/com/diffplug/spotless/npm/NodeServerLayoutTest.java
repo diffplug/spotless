@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ class NodeServerLayoutTest extends ResourceHarness {
 	}
 
 	static String prettierPackageJson(Map<String, String> dependencies) {
-		String templateContent = NpmResourceHelper.readUtf8StringFromClasspath(NodeServerLayoutTest.class, "/com/diffplug/spotless/npm/prettier-package.json");
+		String templateContent = NpmResourceHelper.readUtf8StringFromClasspath(NodeServerLayoutTest.class, "/com/diffplug/spotless/npm/prettier-package.json.template");
 		String dependenciesList = dependencies.entrySet().stream()
 				.map(entry -> "\"%s\": \"%s\"".formatted(entry.getKey(), entry.getValue()))
 				.reduce((a, b) -> a + ",\n  " + b)

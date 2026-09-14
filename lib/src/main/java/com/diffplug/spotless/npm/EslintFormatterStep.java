@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ public final class EslintFormatterStep {
 			super(stepName,
 					new NpmConfig(
 							replaceDevDependencies(
-									NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class, "/com/diffplug/spotless/npm/eslint-package.json"),
+									NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class, "/com/diffplug/spotless/npm/eslint-package.json.template"),
 									new TreeMap<>(devDependencies)),
 							NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class,
 									"/com/diffplug/spotless/npm/common-serve.js",
