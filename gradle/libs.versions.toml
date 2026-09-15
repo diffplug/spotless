@@ -31,7 +31,7 @@ ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standa
 javaparser-core = { module = "com.github.javaparser:javaparser-core", version.ref = "javaparser" }
 javaparser-symbol-solver-core = { module = "com.github.javaparser:javaparser-symbol-solver-core", version.ref = "javaparser" }
 
-palantir-java-format-default = "com.palantir.javaformat:palantir-java-format:2.80.0"
+palantir-java-format-default = "com.palantir.javaformat:palantir-java-format:2.98.0"
 
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.8.0.202609011348-r"
 junit-jupiter = "org.junit.jupiter:junit-jupiter:6.1.3"
