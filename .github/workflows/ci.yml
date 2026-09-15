@@ -15,7 +15,7 @@ concurrency:
 jobs:
   sanity-check:
     name: Sanity Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     env:
       # Only push to the remote build cache on push events to prevent cache pollution and poisoning from PRs.
       buildcacheuser: ${{ github.event_name == 'push' && secrets.BUILDCACHE_USER || '' }}
@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-java@v6
         with:
-          distribution: "temurin"
+          distribution: 'zulu'
           java-version: 21
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew spotlessCheck
@@ -38,17 +38,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ ubuntu-24.04-arm ]
         jre: [ 17, 21, 25, 26 ] # Test on all supported LTS and latest JDK.
         include:
-          - os: windows-latest
-            jre: 26 # Test on the latest JDK for speeds.
+          - os: windows-11-arm
+            jre: 25 # Test on the latest LTS for speeds.
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
         with:
-          distribution: "temurin"
+          distribution: 'zulu'
           java-version: ${{ matrix.jre }}
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew build -x spotlessCheck -PSPOTLESS_EXCLUDE_MAVEN=true
@@ -66,17 +66,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ ubuntu-24.04-arm ]
         jre: [ 17, 21, 25, 26 ] # Test on all supported LTS and latest JDK.
         include:
-          - os: windows-latest
-            jre: 26 # Test on the latest JDK for speeds.
+          - os: windows-11-arm
+            jre: 25 # Test on the latest LTS for speeds.
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
         with:
-          distribution: "temurin"
+          distribution: 'zulu'
           java-version: ${{ matrix.jre }}
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew :plugin-maven:build -x spotlessCheck
@@ -91,12 +91,12 @@ jobs:
   test-npm:
     name: NPM
     needs: sanity-check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
         with:
-          distribution: "temurin"
+          distribution: 'zulu'
           java-version: 17
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew testNpm
@@ -111,12 +111,12 @@ jobs:
   test-shfmt:
     name: Shfmt
     needs: sanity-check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
         with:
-          distribution: "temurin"
+          distribution: 'zulu'
           java-version: 17
       - uses: gradle/actions/setup-gradle@v6
       - uses: actions/setup-go@v7
@@ -138,12 +138,12 @@ jobs:
   test-idea:
     name: IntelliJ IDEA
     needs: sanity-check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
         with:
-          distribution: "temurin"
+          distribution: 'zulu'
           java-version: 17
       - uses: gradle/actions/setup-gradle@v6
       - name: Test idea
