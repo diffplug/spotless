@@ -18,6 +18,11 @@ dependencyResolutionManagement {
   repositories {
     mavenCentral()
   }
+  versionCatalogs {
+    create("pinnedLibs") {
+      from(files("gradle/pinned-libs.versions.toml"))
+    }
+  }
 }
 
 if (System.getenv("CI") != null) {

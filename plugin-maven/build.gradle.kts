@@ -36,9 +36,9 @@ dependencies {
   implementation(projects.lib)
   implementation(projects.libExtra)
 
-  compileOnly(libs.maven.plugin.api)
-  compileOnly(libs.maven.plugin.annotations)
-  compileOnly(libs.maven.core)
+  compileOnly(pinnedLibs.maven.plugin.api)
+  compileOnly(pinnedLibs.maven.plugin.annotations)
+  compileOnly(pinnedLibs.maven.core)
   compileOnly(libs.aether.api)
 
   compileOnly(libs.jakarta.annotation.api)
@@ -58,10 +58,10 @@ dependencies {
   testImplementation(libs.durian.io)
   testImplementation(libs.mustache.compiler)
   testImplementation(libs.owasp.encoder)
-  testImplementation(libs.maven.plugin.api)
+  testImplementation(pinnedLibs.maven.plugin.api)
   testImplementation(libs.aether.api)
   testImplementation(libs.plexus.resources)
-  testImplementation(libs.maven.core)
+  testImplementation(pinnedLibs.maven.core)
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

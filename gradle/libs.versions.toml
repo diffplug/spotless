@@ -3,7 +3,6 @@ jdk-release = "17"
 durian = "1.2.0"
 selfie = "3.1.1"
 jackson = "2.22.2"
-maven-api = "3.0"
 ktlint = "1.8.0"
 javaparser = "3.28.2"
 
@@ -21,17 +20,13 @@ solstice = "dev.equo.ide:solstice:1.8.2"
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
 
-maven-plugin-api = { module = "org.apache.maven:maven-plugin-api", version.ref = "maven-api" }
-maven-plugin-annotations = { module = "org.apache.maven.plugin-tools:maven-plugin-annotations", version.ref = "maven-api" }
-maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven-api" }
-
 ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", version.ref = "ktlint" }
 ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standard", version.ref = "ktlint" }
 
 javaparser-core = { module = "com.github.javaparser:javaparser-core", version.ref = "javaparser" }
 javaparser-symbol-solver-core = { module = "com.github.javaparser:javaparser-symbol-solver-core", version.ref = "javaparser" }
 
-palantir-java-format-default = "com.palantir.javaformat:palantir-java-format:2.98.0"
+palantir-java-format = "com.palantir.javaformat:palantir-java-format:2.98.0"
 
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.8.0.202609011348-r"
 junit-jupiter = "org.junit.jupiter:junit-jupiter:6.1.3"
@@ -62,7 +57,6 @@ google-java-format = "com.google.googlejavaformat:google-java-format:1.30.0"
 gson = "com.google.code.gson:gson:2.14.0"
 json-simple = "org.json:json:20210307"
 ktfmt = "com.facebook:ktfmt:0.64"
-palantir-java-format = "com.palantir.javaformat:palantir-java-format:1.1.0"
 prince-of-space-core = "io.github.agustafson.princeofspace:prince-of-space-core:2.2.0"
 scalafmt-core = "org.scalameta:scalafmt-core_2.13:3.8.1"
 sortpom-sorter = "com.github.ekryd.sortpom:sortpom-sorter:4.0.0"

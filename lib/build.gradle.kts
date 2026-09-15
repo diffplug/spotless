@@ -22,7 +22,7 @@ buildConfig {
   buildConfigField("VERSION_CLEANTHAT", libs.cleanthat.java.version)
   buildConfigField("VERSION_GJF", libs.google.java.format.version)
   buildConfigField("VERSION_JAVAPARSER", libs.javaparser.symbol.solver.core.version)
-  buildConfigField("VERSION_PALANTIR_JAVA_FORMAT", libs.palantir.java.format.default.version)
+  buildConfigField("VERSION_PALANTIR_JAVA_FORMAT", libs.palantir.java.format.version)
   buildConfigField("VERSION_PRINCE_OF_SPACE", libs.prince.of.space.core.version)
   buildConfigField("VERSION_TABLETEST_FORMATTER", libs.tabletest.formatter.core.version)
 
@@ -173,7 +173,7 @@ dependencies {
   "compatKtLint1Dot0Dot0CompileAndTestOnly"(libs.slf4j.api)
   // palantirJavaFormat
   "palantirJavaFormatCompileOnly"(
-      libs.palantir.java.format
+      pinnedLibs.palantir.java.format
   ) // this version needs to stay compilable against Java 8 for CI Job testNpm
   // princeOfSpace
   "princeOfSpaceCompileOnly"(libs.prince.of.space.core)
