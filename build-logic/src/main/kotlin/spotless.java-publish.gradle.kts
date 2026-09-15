@@ -34,40 +34,34 @@ tasks.withType<Javadoc>().configureEach {
   }
 }
 
-if (System.getenv("JITPACK") == "true") {
-  signing {
-    isRequired = false
+signing {
+  if (
+      !project.providers.gradleProperty("signingInMemoryKey").isPresent &&
+          System.getenv("ORG_GRADLE_PROJECT_gpg_key64") != null
+  ) {
+    val gpgKey = decode64("ORG_GRADLE_PROJECT_gpg_key64")
+    useInMemoryPgpKeys(
+        "0x4272C851",
+        gpgKey,
+        System.getenv("ORG_GRADLE_PROJECT_gpg_passphrase"),
+    )
   }
-} else {
-  signing {
-    if (
-        !project.providers.gradleProperty("signingInMemoryKey").isPresent &&
-            System.getenv("ORG_GRADLE_PROJECT_gpg_key64") != null
-    ) {
-      val gpgKey = decode64("ORG_GRADLE_PROJECT_gpg_key64")
-      useInMemoryPgpKeys(
-          "0x4272C851",
-          gpgKey,
-          System.getenv("ORG_GRADLE_PROJECT_gpg_passphrase"),
-      )
-    }
-  }
+}
 
-  // find the project with the changelog (this project for plugins, root project for libs)
-  val changelogProject = if (pluginManager.hasPlugin("spotless.changelog")) project else rootProject
-  val changelogTasks = changelogProject.tasks
+// find the project with the changelog (this project for plugins, root project for libs)
+val changelogProject = if (pluginManager.hasPlugin("spotless.changelog")) project else rootProject
+val changelogTasks = changelogProject.tasks
 
-  // ensures that nothing will be built if changelogPush will end up failing
-  tasks.jar {
-    dependsOn(changelogTasks.named("changelogCheck"))
-  }
+// ensures that nothing will be built if changelogPush will end up failing
+tasks.jar {
+  dependsOn(changelogTasks.named("changelogCheck"))
+}
 
-  // ensures that changelog bump and push only happens if the publish was successful
-  changelogTasks.named("changelogBump") {
-    dependsOn(tasks.named("publishToMavenCentral"))
-    // if we have a Gradle plugin, we need to push it up to the plugin portal too
-    plugins.withId("com.gradle.plugin-publish") {
-      dependsOn(tasks.named("publishPlugins"))
-    }
+// ensures that changelog bump and push only happens if the publish was successful
+changelogTasks.named("changelogBump") {
+  dependsOn(tasks.named("publishToMavenCentral"))
+  // if we have a Gradle plugin, we need to push it up to the plugin portal too
+  plugins.withId("com.gradle.plugin-publish") {
+    dependsOn(tasks.named("publishPlugins"))
   }
 }

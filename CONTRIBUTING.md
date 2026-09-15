@@ -192,7 +192,7 @@ the pipeline fails, first check if the code is formatted and no bugs were found.
 
 ## Integration testing
 
-### Gradle - locally
+### Gradle
 
 First, run `./gradlew publishToMavenLocal` in your local checkout of Spotless.  Now, in any other project on your machine, you can use the following snippet in your `settings.gradle` (for Gradle 6.0+).
 
@@ -216,37 +216,9 @@ pluginManagement {
 }
 ```
 
-### Gradle - any commit in a public GitHub repo (this one, or any fork)
-
-In Gradle 6.0+, you can use the following snippet in your `settings.gradle`.
-
-
-```gradle
-pluginManagement {
-  repositories {
-    maven {
-      url 'https://jitpack.io'
-      content {
-        includeGroup 'com.github.{{user-or-org}}.spotless'
-      }
-    }
-    gradlePluginPortal()
-  }
-  resolutionStrategy {
-    eachPlugin {
-      if (requested.id.id == 'com.diffplug.spotless') {
-        useModule('com.github.{{USER_OR_ORG}}.spotless:spotless-plugin-gradle:{{SHA_OF_COMMIT_YOU_WANT}}')
-      }
-    }
-  }
-}
-```
-
-If it doesn't work, you can check the JitPack log at `https://jitpack.io/com/github/{{USER_OR_ORG}}/spotless/{{SHA_OF_COMMIT_YOU_WANT}}/build.log`.
-
 ### Maven
 
-Run `./gradlew publishToMavenLocal` to publish this to your local repository. You can also use the JitPack artifacts, using the same principles as Gradle above.
+Run `./gradlew publishToMavenLocal` to publish this to your local repository.
 
 ## License
 
