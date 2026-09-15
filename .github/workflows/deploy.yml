@@ -43,7 +43,7 @@ jobs:
       - name: Configure git credentials for JGit
         run: |
           git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${{ secrets.GITHUB_TOKEN }} | base64 -w0)"
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           java-version: 21
           distribution: 'temurin'
