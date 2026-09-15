@@ -4,9 +4,15 @@ plugins {
   id("net.ltgt.errorprone")
 }
 
+// error_prone_core 2.43.0+ requires Java 21+ to run (compiled with classfile version 65.0).
+val isJava21Compatible = JavaVersion.current() >= JavaVersion.VERSION_21
+
 tasks.withType<JavaCompile>().configureEach {
   options.errorprone {
-    enabled = System.getenv("error-prone")?.toBooleanGroovy() == true
+    enabled =
+        isJava21Compatible &&
+            (System.getProperty("error-prone")?.toBooleanGroovy() == true ||
+                System.getenv("error-prone")?.toBooleanGroovy() == true)
     // https://github.com/diffplug/spotless/issues/2745
     // https://github.com/google/error-prone/issues/5365
     disableAllWarnings = true
@@ -34,5 +40,7 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 dependencies {
-  errorprone(libs.errorprone.core)
+  if (isJava21Compatible) {
+    errorprone(libs.errorprone.core)
+  }
 }
