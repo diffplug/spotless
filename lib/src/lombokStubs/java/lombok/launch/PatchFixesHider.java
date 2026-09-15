@@ -15,21 +15,27 @@
  */
 package lombok.launch;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+
 /**
  * Stub implementation of {@code lombok.launch.PatchFixesHider} used only
  * within the {@code FeatureClassLoader} isolation boundary.
  *
- * <p>When lombok is loaded as a JVM agent (e.g. {@code -javaagent:lombok.jar}),
- * it patches ECJ's {@code Parser} class so that its static initializer
- * references inner classes of {@code PatchFixesHider} such as
- * {@code ModuleClassLoading} and {@code Transform}.  Spotless's
- * {@code FeatureClassLoader} isolates formatter JARs from the build-tool
- * class-loader, so it cannot see the real {@code PatchFixesHider} that was
- * injected by the agent.  Loading this stub instead allows ECJ's
- * {@code Parser.<clinit>} to complete without a {@link NoClassDefFoundError}.
+ * <p>When lombok is active as a JVM agent it patches ECJ classes so that their
+ * methods call into inner classes of {@code PatchFixesHider}.  The real class
+ * lives in lombok's shadow class-loader and is never reachable from
+ * {@code FeatureClassLoader}.  This stub satisfies those call sites so that
+ * ECJ's patched initialisers can complete without a {@link NoClassDefFoundError}
+ * or {@link NoSuchMethodError}.
  *
- * <p>Every method in every inner class is a no-op stub.  No real formatting
- * logic lives here.
+ * <p>Method signatures must exactly match the transplanted descriptors that
+ * lombok injects into ECJ bytecode; hence several methods use concrete ECJ
+ * types rather than {@code Object}.
  */
 @SuppressWarnings("unused")
 final class PatchFixesHider {
@@ -40,33 +46,54 @@ final class PatchFixesHider {
 	public static final class ModuleClassLoading {
 		private ModuleClassLoading() {}
 
-		/** Stub – performs no class-loader manipulation. */
-		public static void parserClinit() {
-			// no-op stub
-		}
+		/** Stub – no-op. */
+		public static void parserClinit() {}
 	}
 
 	/** Stub for {@code PatchFixesHider.Transform}. */
 	public static final class Transform {
 		private Transform() {}
 
-		/** Stub – performs no AST transformation. */
-		public static void transform(Object parser, Object ast) {
-			// no-op stub
-		}
+		/** Stub – no-op. */
+		public static void transform(Object parser, Object ast) throws IOException {}
 
-		/** Stub – performs no AST transformation. */
-		public static void transform_swapped(Object ast, Object parser) {
-			// no-op stub
-		}
+		/** Stub – no-op. */
+		public static void transform_swapped(Object ast, Object parser) throws IOException {}
 	}
 
 	/** Stub for {@code PatchFixesHider.PatchFixes}. */
 	public static final class PatchFixes {
 		private PatchFixes() {}
 
-		/** Stub – always returns {@code false}. */
-		public static boolean isGenerated(Object node) {
+		/**
+		 * Stub – always returns {@code false}.
+		 * Matches transplanted descriptor: {@code (Lorg/eclipse/jdt/core/dom/ASTNode;)Z}
+		 */
+		public static boolean isGenerated(org.eclipse.jdt.core.dom.ASTNode node) {
+			return false;
+		}
+
+		/**
+		 * Stub – always returns {@code false}.
+		 * Matches transplanted descriptor: {@code (Lorg/eclipse/jdt/internal/compiler/ast/ASTNode;)Z}
+		 */
+		public static boolean isGenerated(ASTNode node) {
+			return false;
+		}
+
+		/**
+		 * Stub – always returns {@code false}.
+		 * Matches transplanted descriptor: {@code (Lorg/eclipse/jdt/core/IMember;)Z}
+		 */
+		public static boolean isGenerated(org.eclipse.jdt.core.IMember member) {
+			return false;
+		}
+
+		/**
+		 * Stub – always returns {@code false}.
+		 * Matches transplanted descriptor for isBlockedVisitorAndGenerated.
+		 */
+		public static boolean isBlockedVisitorAndGenerated(org.eclipse.jdt.core.dom.ASTNode node, ASTVisitor visitor) {
 			return false;
 		}
 
@@ -80,18 +107,8 @@ final class PatchFixesHider {
 			return true;
 		}
 
-		/** Stub – always returns {@code false}. */
-		public static boolean isBlockedVisitorAndGenerated(Object node, Object visitor) {
-			return false;
-		}
-
-		/** Stub – returns 0-length array. */
-		public static Object[] listRewriteHandleGeneratedMethods(Object rewriteEvent) {
-			return new Object[0];
-		}
-
 		/** Stub – returns {@code sourceEnd} unchanged. */
-		public static int getSourceEndFixed(int sourceEnd, Object node) {
+		public static int getSourceEndFixed(int sourceEnd, ASTNode node) throws Exception {
 			return sourceEnd;
 		}
 
@@ -101,8 +118,42 @@ final class PatchFixesHider {
 		}
 
 		/** Stub – returns {@code original} unchanged. */
+		public static int fixRetrieveIdentifierEndPosition(int original, int start, int end) {
+			if (original == -1)
+				return end;
+			if (original < start)
+				return end;
+			return original;
+		}
+
+		/** Stub – returns {@code original} unchanged. */
+		public static int fixRetrieveEllipsisStartPosition(int original, int end) {
+			return original == -1 ? end : original;
+		}
+
+		/** Stub – returns {@code original} unchanged. */
+		public static int fixRetrieveStartBlockPosition(int original, int start) {
+			return original == -1 ? start : original;
+		}
+
+		/** Stub – returns {@code original} unchanged. */
 		public static int fixRetrieveRightBraceOrSemiColonPosition(int original, int end) {
 			return original == -1 ? end : original;
+		}
+
+		/** Stub – returns 0-length array. */
+		public static Object[] listRewriteHandleGeneratedMethods(Object rewriteEvent) {
+			return new Object[0];
+		}
+
+		/** Stub – returns {@code original} unchanged. */
+		public static String getRealNodeSource(String original, ASTNode node) {
+			return original;
+		}
+
+		/** Stub – returns {@code original} unchanged. */
+		public static String getRealNodeSource(String original, org.eclipse.jdt.core.dom.ASTNode node) throws Exception {
+			return original;
 		}
 	}
 
@@ -198,6 +249,26 @@ final class PatchFixesHider {
 	/** Stub for {@code PatchFixesHider.LombokDeps}. */
 	public static final class LombokDeps {
 		private LombokDeps() {}
+
+		/** Stub – returns {@code origReturnValue} unchanged. */
+		public static String addLombokNotesToEclipseAboutDialog(String origReturnValue, String key) {
+			return origReturnValue;
+		}
+
+		/** Stub – returns {@code bytes} unchanged. */
+		public static byte[] runPostCompiler(byte[] bytes, String fileName) {
+			return bytes;
+		}
+
+		/** Stub – returns {@code out} unchanged. */
+		public static OutputStream runPostCompiler(OutputStream out) throws IOException {
+			return out;
+		}
+
+		/** Stub – returns {@code out} unchanged. */
+		public static BufferedOutputStream runPostCompiler(BufferedOutputStream out, String path, String name) throws IOException {
+			return out;
+		}
 	}
 
 	/** Stub for {@code PatchFixesHider.Javadoc}. */
