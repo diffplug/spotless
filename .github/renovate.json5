@@ -12,6 +12,13 @@
       ],
     },
     {
+      enabled: false,
+      matchPackageNames: [
+        'com.palantir.javaformat:palantir-java-format',
+      ],
+      matchCurrentVersion: '<= 1.1.0',
+    },
+    {
       groupName: 'Ktlint',
       matchPackageNames: [
         'com.pinterest.ktlint:*',
