@@ -8,6 +8,7 @@
       enabled: false,
       matchPackageNames: [
         'org.apache.maven:*',
+        'org.apache.maven.plugin-tools:*',
       ],
     },
     {
