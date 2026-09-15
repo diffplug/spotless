@@ -34,6 +34,7 @@ buildConfig {
   }
   forClass("com.diffplug.spotless.gherkin", "GherkinBuildConfig") {
     buildConfigField("VERSION_GHERKIN_UTILS", libs.gherkin.utils.version)
+    buildConfigField("VERSION_GHERKIN", libs.cucumber.gherkin.version)
   }
   forClass("com.diffplug.spotless.json", "JsonBuildConfig") {
     buildConfigField("VERSION_JACKSON", libs.jackson.databind.version)
@@ -149,6 +150,7 @@ dependencies {
   "flexmarkCompileOnly"(libs.flexmark.all)
   // gherkin
   "gherkinCompileOnly"(libs.gherkin.utils)
+  "gherkinCompileOnly"(libs.cucumber.gherkin)
   "gherkinCompileOnly"(libs.slf4j.api)
   // googleJavaFormat
   "googleJavaFormatCompileOnly"(pinnedLibs.google.java.format)
