@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `jackson` version `2.20.1` -> `2.22.2`. ([#2819](https://github.com/diffplug/spotless/pull/2819))
 - Bump default `javaparser` version `3.27.1` -> `3.28.2`. ([#3065](https://github.com/diffplug/spotless/pull/3065))
 - Bump default `palantir-java-format` version `2.80.0` -> `2.98.0`. ([#3068](https://github.com/diffplug/spotless/pull/3068))
+- Bump default `google-java-format` version `1.30.0` -> `1.36.1`. ([#2706](https://github.com/diffplug/spotless/pull/2706))
 
 ### Fixed
 - `<versionCatalog>` preserves entries when comments contain unmatched brackets, preserves commas inside quoted strings, and keeps significant line boundaries in multiline entries. ([#3042](https://github.com/diffplug/spotless/pull/3042))
