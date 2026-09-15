@@ -192,11 +192,11 @@ the pipeline fails, first check if the code is formatted and no bugs were found.
 
 ## Integration testing
 
-### Gradle
+### Gradle - locally
 
 First, run `./gradlew publishToMavenLocal` in your local checkout of Spotless.  Now, in any other project on your machine, you can use the following snippet in your `settings.gradle` (for Gradle 6.0+).
 
-```
+```gradle
 pluginManagement {
   repositories {
     mavenLocal {
@@ -206,19 +206,30 @@ pluginManagement {
     }
     gradlePluginPortal()
   }
-  resolutionStrategy {
-    eachPlugin {
-      if (requested.id.id == 'com.diffplug.spotless') {
-        useModule('com.diffplug.spotless:spotless-plugin-gradle:{latest-SNAPSHOT}')
+}
+```
+
+### Gradle - snapshot builds
+
+Snapshot builds are automatically published to Maven Central Snapshots on every commit to `main`. In any project, you can use the following snippet in your `settings.gradle` (for Gradle 6.0+).
+
+```gradle
+pluginManagement {
+  repositories {
+    maven {
+      url 'https://central.sonatype.com/repository/maven-snapshots/'
+      content {
+        includeGroup 'com.diffplug.spotless'
       }
     }
+    gradlePluginPortal()
   }
 }
 ```
 
 ### Maven
 
-Run `./gradlew publishToMavenLocal` to publish this to your local repository.
+Run `./gradlew publishToMavenLocal` to publish this to your local repository. You can also use snapshot artifacts from `https://central.sonatype.com/repository/maven-snapshots/`.
 
 ## License
 
