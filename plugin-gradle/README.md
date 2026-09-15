@@ -10,6 +10,7 @@ output = [
   '',
   link(shield('VS Code plugin', 'IDE', 'VS Code', 'blueviolet'), 'https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle'),
   link(shield('IntelliJ plugin', 'IDE', 'IntelliJ', 'blueviolet'), 'https://plugins.jetbrains.com/plugin/18321-spotless-gradle'),
+  link(shield('Spotless IntelliJ plugin', 'IDE', 'Spotless (IntelliJ)', 'blueviolet'), 'https://plugins.jetbrains.com/plugin/29287-spotless'),
   link(shield('Add other IDE', 'IDE', 'add yours', 'blueviolet'), 'IDE_HOOK.md')
   ].join('\n');
 -->
@@ -20,6 +21,7 @@ output = [
 
 [![VS Code plugin](https://img.shields.io/badge/IDE-VS_Code-blueviolet.svg)](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)
 [![IntelliJ plugin](https://img.shields.io/badge/IDE-IntelliJ-blueviolet.svg)](https://plugins.jetbrains.com/plugin/18321-spotless-gradle)
+[![Spotless IntelliJ plugin](https://img.shields.io/badge/IDE-Spotless_(IntelliJ)-blueviolet.svg)](https://plugins.jetbrains.com/plugin/29287-spotless)
 [![Add other IDE](https://img.shields.io/badge/IDE-add_yours-blueviolet.svg)](IDE_HOOK.md)
 <!---freshmark /shields -->
 
