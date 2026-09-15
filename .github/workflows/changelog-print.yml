@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
         with:
-          java-version: 21
+          java-version: 25.0.4+101.0.LTS
           distribution: 'temurin'
       - name: gradle caching
         uses: gradle/actions/setup-gradle@v6
