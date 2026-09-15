@@ -1,0 +1,41 @@
+name: Renovate Changelog Updater
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - 'gradle/libs.versions.toml'
+
+jobs:
+  update-changelog:
+    name: Update Changelog
+    if: github.actor == 'renovate[bot]' || startsWith(github.head_ref, 'renovate/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Update Changelogs
+        run: |
+          python3 .github/scripts/update_renovate_changelogs.py \
+            --base-ref "origin/${{ github.base_ref }}" \
+            --pr-number "${{ github.event.pull_request.number }}" \
+            --pr-url "${{ github.event.pull_request.html_url }}"
+      - name: Commit and push changes
+        run: |
+          if [ -n "$(git status --porcelain CHANGES.md plugin-gradle/CHANGES.md plugin-maven/CHANGES.md)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add CHANGES.md plugin-gradle/CHANGES.md plugin-maven/CHANGES.md
+            git commit -m "Update changelogs for default formatter version bump (#${{ github.event.pull_request.number }})"
+            git push origin HEAD:${{ github.head_ref }}
+          else
+            echo "No changelog updates needed."
+          fi
