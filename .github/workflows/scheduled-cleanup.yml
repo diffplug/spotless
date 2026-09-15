@@ -15,7 +15,7 @@ jobs:
       buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: actions/setup-java@v6

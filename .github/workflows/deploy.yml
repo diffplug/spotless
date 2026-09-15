@@ -37,7 +37,7 @@ jobs:
       ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
       ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.GPG_KEY64 }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Configure git credentials for JGit
