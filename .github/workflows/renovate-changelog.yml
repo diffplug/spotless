@@ -20,8 +20,6 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
       - uses: actions/setup-python@v7
-        with:
-          python-version: "3.14"
       - name: Update Changelogs
         run: |
           python3 .github/scripts/update_renovate_changelogs.py \
