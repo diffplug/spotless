@@ -28,6 +28,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - `VersionCatalogStep` preserves standalone comments at section boundaries and the end of the file. ([#3048](https://github.com/diffplug/spotless/issues/3048))
 - `VersionCatalogStep` preserves entries when comments contain unmatched brackets, preserves commas inside quoted strings, and keeps significant line boundaries in multiline entries. ([#3042](https://github.com/diffplug/spotless/pull/3042))
 - `VersionCatalogStep` now reports unfinished entries as lints at their starting line. These fail formatting by default, so upgrading may expose catalog errors that previously caused silent data loss. ([#3042](https://github.com/diffplug/spotless/pull/3042))
+- `FeatureClassLoader` now provides stub implementations of `lombok.*` classes (and synthesises empty classes for any unknown ones) so that the Eclipse JDT formatter step no longer fails with `NoClassDefFoundError` or `NoSuchMethodError` when lombok is active as a JVM agent (e.g. `-javaagent:lombok.jar` in Eclipse/VS Code/Cursor). ([#2795](https://github.com/diffplug/spotless/issues/2795))
 
 ## [4.10.2] - 2026-09-04
 ### Fixed
