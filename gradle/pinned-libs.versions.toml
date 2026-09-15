@@ -11,3 +11,7 @@ maven-plugin-annotations = { module = "org.apache.maven.plugin-tools:maven-plugi
 maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven" }
 
 palantir-java-format = "com.palantir.javaformat:palantir-java-format:1.1.0"
+google-java-format = "com.google.googlejavaformat:google-java-format:1.7"
+diktat-rules = "org.cqfn.diktat:diktat-rules:1.2.5"
+aether-api = "org.eclipse.aether:aether-api:1.1.0"
+plexus-build-api = "org.sonatype.plexus:plexus-build-api:0.0.7"

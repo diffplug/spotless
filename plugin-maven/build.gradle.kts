@@ -39,7 +39,7 @@ dependencies {
   compileOnly(pinnedLibs.maven.plugin.api)
   compileOnly(pinnedLibs.maven.plugin.annotations)
   compileOnly(pinnedLibs.maven.core)
-  compileOnly(libs.aether.api)
+  compileOnly(pinnedLibs.aether.api)
 
   compileOnly(libs.jakarta.annotation.api)
 
@@ -49,7 +49,7 @@ dependencies {
   implementation(libs.plexus.resources)
   implementation(libs.plexus.utils)
   implementation(libs.jgit)
-  implementation(libs.plexus.build.api)
+  implementation(pinnedLibs.plexus.build.api)
 
   testImplementation(projects.testlib)
   testImplementation(libs.junit.jupiter)
@@ -59,7 +59,7 @@ dependencies {
   testImplementation(libs.mustache.compiler)
   testImplementation(libs.owasp.encoder)
   testImplementation(pinnedLibs.maven.plugin.api)
-  testImplementation(libs.aether.api)
+  testImplementation(pinnedLibs.aether.api)
   testImplementation(libs.plexus.resources)
   testImplementation(pinnedLibs.maven.core)
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")

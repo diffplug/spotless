@@ -142,7 +142,7 @@ dependencies {
   "cleanthatCompileOnly"(libs.cleanthat.java)
   "compatCleanthat2Dot1CompileAndTestOnly"(libs.cleanthat.java)
   // diktat old supported version 1.x
-  "compatDiktat1Dot2Dot5CompileOnly"(libs.diktat.rules)
+  "compatDiktat1Dot2Dot5CompileOnly"(pinnedLibs.diktat.rules)
   // diktat latest supported version 2.x
   "compatDiktat2Dot0Dot0CompileOnly"(libs.diktat.runner)
   // flexmark
@@ -161,11 +161,7 @@ dependencies {
   "javaParserCompileOnly"(libs.javaparser.symbol.solver.core)
   // ktfmt
   "ktfmtCompileOnly"(libs.ktfmt)
-  "ktfmtCompileOnly"("com.google.googlejavaformat:google-java-format") {
-    version {
-      strictly("1.7") // for JDK 8 compatibility
-    }
-  }
+  "ktfmtCompileOnly"(pinnedLibs.google.java.format) // for JDK 8 compatibility
   "ktfmtCompileOnly"(libs.jsr305)
   // ktlint latest supported version
   "compatKtLint1Dot0Dot0CompileAndTestOnly"(libs.ktlint.rule.engine)
