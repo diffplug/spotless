@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class NpmTestsWithDynamicallyInstalledNpmInstallationTest extends MavenIn
 	@Test
 	void useDownloadedNpmInstallation() throws Exception {
 		writePomWithPrettierSteps(
-				pomPluginLines("v18.13.0", null),
+				pomPluginLines("v22.14.0", null),
 				"src/main/typescript/test.ts",
 				"<prettier>",
 				"    <npmExecutable>" + installedNpmPath() + "</npmExecutable>",
