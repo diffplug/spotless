@@ -4,13 +4,13 @@
  */
 plugins {
     id 'com.diffplug.spotless'
-    id 'com.github.node-gradle.node' version '3.5.1'
+    id 'com.github.node-gradle.node' version '7.1.0'
 }
 repositories { mavenCentral() }
 node {
     download = true
-    version = '18.16.1'
-    npmVersion = '9.5.1'
+    version = '22.14.0'
+    npmVersion = '10.9.2'
 	// when setting both these directories, npm and node will be in separate directories
     workDir = file("${buildDir}/nodejs")
     npmWorkDir = file("${buildDir}/npm")
