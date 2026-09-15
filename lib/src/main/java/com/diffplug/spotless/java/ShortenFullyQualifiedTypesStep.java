@@ -41,7 +41,7 @@ public final class ShortenFullyQualifiedTypesStep implements Serializable {
 
 	private static final String NAME = "shortenFullyQualifiedTypes";
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with JavaParser; maybe you set an incompatible version?";
-	private static final String MAVEN_COORDINATES = "com.github.javaparser:javaparser-core:3.27.1";
+	private static final String MAVEN_COORDINATES = "com.github.javaparser:javaparser-core:" + BuildConfig.VERSION_JAVAPARSER;
 
 	private final JarState.Promised jarState;
 

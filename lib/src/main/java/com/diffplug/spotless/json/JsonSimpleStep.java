@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ public final class JsonSimpleStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "org.json:json:";
-	private static final String DEFAULT_VERSION = "20210307";
 	public static final String NAME = "jsonSimple";
 
 	private final JarState.Promised jarState;
@@ -48,9 +47,13 @@ public final class JsonSimpleStep implements Serializable {
 	public static FormatterStep create(int indent, Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
 		return FormatterStep.create(NAME,
-				new JsonSimpleStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + DEFAULT_VERSION, provisioner)), indent),
+				new JsonSimpleStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + defaultVersion(), provisioner)), indent),
 				JsonSimpleStep::equalityState,
 				State::toFormatter);
+	}
+
+	public static String defaultVersion() {
+		return JsonBuildConfig.VERSION_JSON_SIMPLE;
 	}
 
 	private State equalityState() {

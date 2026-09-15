@@ -38,7 +38,7 @@ public final class ExpandWildcardImportsStep implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final String INCOMPATIBLE_ERROR_MESSAGE = "There was a problem interacting with Java-Parser; maybe you set an incompatible version?";
-	private static final String MAVEN_COORDINATES = "com.github.javaparser:javaparser-symbol-solver-core:3.27.1";
+	private static final String MAVEN_COORDINATES = "com.github.javaparser:javaparser-symbol-solver-core:" + BuildConfig.VERSION_JAVAPARSER;
 
 	private final Collection<File> typeSolverClasspath;
 	private final JarState.Promised jarState;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,8 @@ import com.diffplug.spotless.maven.FormatterStepFactory;
  * A {@link FormatterStepFactory} implementation that corresponds to {@code <jsonPatch>...</jsonPatch>} configuration element.
  */
 public class JsonPatch implements FormatterStepFactory {
-	private static final String DEFAULT_ZJSONPATCH_VERSION = "0.4.14";
-
 	@Parameter
-	String zjsonPatchVersion = DEFAULT_ZJSONPATCH_VERSION;
+	String zjsonPatchVersion = JsonPatchStep.defaultVersion();
 
 	@Parameter
 	String patch;

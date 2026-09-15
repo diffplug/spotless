@@ -38,7 +38,7 @@ public final class ScalaFmtStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	static final String DEFAULT_VERSION = "3.8.1";
+	static final String DEFAULT_VERSION = ScalaBuildConfig.VERSION_SCALAFMT;
 
 	private static final String DEFAULT_SCALA_MAJOR_VERSION = "2.13";
 	private static final String NAME = "scalafmt";

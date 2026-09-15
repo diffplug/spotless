@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ public final class Antlr4FormatterStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "com.khubla.antlr4formatter:antlr4-formatter:";
-	private static final String DEFAULT_VERSION = "1.2.1";
 	public static final String NAME = "antlr4Formatter";
 
 	private final JarState.Promised jarState;
@@ -51,7 +50,7 @@ public final class Antlr4FormatterStep implements Serializable {
 	}
 
 	public static String defaultVersion() {
-		return DEFAULT_VERSION;
+		return Antlr4BuildConfig.VERSION_ANTLR4;
 	}
 
 	private State equalityState() {

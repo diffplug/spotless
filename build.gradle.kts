@@ -1,4 +1,5 @@
 plugins {
+  alias(libs.plugins.buildconfig) apply false
   alias(libs.plugins.equo.ide)
   alias(libs.plugins.plugin.publish) apply false
   alias(libs.plugins.version.compatibility) apply false
