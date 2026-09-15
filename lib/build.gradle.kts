@@ -22,6 +22,7 @@ buildConfig {
   buildConfigField("VERSION_CLEANTHAT", libs.cleanthat.java.version)
   buildConfigField("VERSION_GJF", libs.google.java.format.version)
   buildConfigField("VERSION_JAVAPARSER", libs.javaparser.symbol.solver.core.version)
+  buildConfigField("VERSION_OPEN_JAVA_FORMAT", libs.open.java.format.version)
   buildConfigField("VERSION_PALANTIR_JAVA_FORMAT", libs.palantir.java.format.default.version)
   buildConfigField("VERSION_PRINCE_OF_SPACE", libs.prince.of.space.core.version)
   buildConfigField("VERSION_TABLETEST_FORMATTER", libs.tabletest.formatter.core.version)

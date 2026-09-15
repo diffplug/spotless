@@ -23,6 +23,7 @@ KEY_MAPPING = {
     ("libraries", "gson"): "gson",
     ("libraries", "json-simple"): "json-simple",
     ("libraries", "ktfmt"): "ktfmt",
+    ("libraries", "open-java-format"): "open-java-format",
     ("libraries", "prince-of-space-core"): "prince-of-space",
     ("libraries", "scalafmt-core"): "scalafmt",
     ("libraries", "sortpom-sorter"): "sortpom",

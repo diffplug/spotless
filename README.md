@@ -83,6 +83,7 @@ lib('gherkin.GherkinUtilsStep')                  +'{{yes}}       | {{yes}}      
 extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.GoogleJavaFormatStep')                 +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('java.ImportOrderStep')                      +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
+lib('java.OpenJavaFormatStep')                   +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('java.PalantirJavaFormatStep')               +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('java.PrinceOfSpaceStep')                    +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('java.RemoveUnusedImportsStep')              +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
@@ -144,6 +145,7 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`groovy.GrEclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/groovy/GrEclipseFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.GoogleJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/GoogleJavaFormatStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`java.ImportOrderStep`](lib/src/main/java/com/diffplug/spotless/java/ImportOrderStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
+| [`java.OpenJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/OpenJavaFormatStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`java.PalantirJavaFormatStep`](lib/src/main/java/com/diffplug/spotless/java/PalantirJavaFormatStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`java.PrinceOfSpaceStep`](lib/src/main/java/com/diffplug/spotless/java/PrinceOfSpaceStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`java.RemoveUnusedImportsStep`](lib/src/main/java/com/diffplug/spotless/java/RemoveUnusedImportsStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |

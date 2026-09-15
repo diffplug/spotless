@@ -56,7 +56,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Git hook (optional)](#git-hook)
   - [Linting](#linting)
 - **Languages**
-  - [Java](#java) ([removeUnusedImports](#removeunusedimports), [forbidWildcardImports](#forbidwildcardimports), [expandWildcardImports](#expandwildcardimports), [forbidModuleImports](#forbidmoduleimports), [shortenFullyQualifiedTypes](#shortenfullyqualifiedtypes), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
+  - [Java](#java) ([removeUnusedImports](#removeunusedimports), [forbidWildcardImports](#forbidwildcardimports), [expandWildcardImports](#expandwildcardimports), [forbidModuleImports](#forbidmoduleimports), [shortenFullyQualifiedTypes](#shortenfullyqualifiedtypes), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [open-java-format](#open-java-format), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -359,6 +359,19 @@ spotless {
     //   and/or reflow long strings
     //   and/or use custom group artifact (you probably don't need this)
     googleJavaFormat('1.8').aosp().reflowLongStrings().formatJavadoc(false).reorderImports(false).groupArtifact('com.google.googlejavaformat:google-java-format')
+```
+
+### open-java-format
+
+[homepage](https://github.com/openjavaformat/open-java-format). [changelog](https://github.com/openjavaformat/open-java-format/releases). Requires a JDK 21+ host runtime.
+```gradle
+spotless {
+  java {
+    openJavaFormat()
+    // optional: you can specify a specific version and/or switch to AOSP/GOOGLE style
+    openJavaFormat('2.98.0.1').style("GOOGLE")
+    // optional: you can also format Javadocs
+    openJavaFormat('2.98.0.1').formatJavadoc(true)
 ```
 
 ### palantir-java-format

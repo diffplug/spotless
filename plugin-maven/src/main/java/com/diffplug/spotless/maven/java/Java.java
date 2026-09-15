@@ -67,6 +67,10 @@ public class Java extends FormatterFactory {
 		addStepFactory(importOrder);
 	}
 
+	public void addOpenJavaFormat(OpenJavaFormat openJavaFormat) {
+		addStepFactory(openJavaFormat);
+	}
+
 	public void addPalantirJavaFormat(PalantirJavaFormat palantirJavaFormat) {
 		addStepFactory(palantirJavaFormat);
 	}

@@ -44,6 +44,7 @@ import com.diffplug.spotless.java.ForbidWildcardImportsStep;
 import com.diffplug.spotless.java.FormatAnnotationsStep;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.java.ImportOrderStep;
+import com.diffplug.spotless.java.OpenJavaFormatStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.PrinceOfSpaceStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
@@ -270,6 +271,50 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 					reflowLongStrings,
 					reorderImports,
 					formatJavadoc);
+		}
+	}
+
+	/** Uses the <a href="https://github.com/openjavaformat/open-java-format">open-java-format</a> jar to format source code. */
+	public OpenJavaFormatConfig openJavaFormat() {
+		return openJavaFormat(OpenJavaFormatStep.defaultVersion());
+	}
+
+	/**
+	 * Uses the given version of <a href="https://github.com/openjavaformat/open-java-format">open-java-format</a> to format source code.
+	 * <p>
+	 * Limited to published versions.  See <a href="https://github.com/diffplug/spotless/issues/33#issuecomment-252315095">issue #33</a>
+	 * for a workaround for using snapshot versions.
+	 */
+	public OpenJavaFormatConfig openJavaFormat(String version) {
+		Objects.requireNonNull(version);
+		return new OpenJavaFormatConfig(version);
+	}
+
+	public class OpenJavaFormatConfig {
+		final String version;
+		String style;
+		boolean formatJavadoc;
+
+		OpenJavaFormatConfig(String version) {
+			this.version = Objects.requireNonNull(version);
+			this.style = OpenJavaFormatStep.defaultStyle();
+			addStep(createStep());
+		}
+
+		public OpenJavaFormatConfig style(String style) {
+			this.style = Objects.requireNonNull(style);
+			replaceStep(createStep());
+			return this;
+		}
+
+		public OpenJavaFormatConfig formatJavadoc(boolean formatJavadoc) {
+			this.formatJavadoc = formatJavadoc;
+			replaceStep(createStep());
+			return this;
+		}
+
+		private FormatterStep createStep() {
+			return OpenJavaFormatStep.create(version, style, formatJavadoc, provisioner());
 		}
 	}
 
