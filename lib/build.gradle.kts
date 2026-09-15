@@ -9,8 +9,6 @@ plugins {
   id("spotless.special-tests")
 }
 
-extra["artifactId"] = property("artifactIdLib")
-
 version = spotlessChangelog.versionNext
 
 val Provider<MinimalExternalModuleDependency>.version: Provider<String>

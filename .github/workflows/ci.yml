@@ -30,7 +30,7 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew spotlessCheck
-      - run: ./gradlew assemble testClasses
+      - run: ./gradlew assemble testClasses publishToMavenLocal
 
   build-gradle:
     name: Gradle (Java ${{ matrix.jre }}, ${{ matrix.os }})

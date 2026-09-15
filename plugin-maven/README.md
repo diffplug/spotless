@@ -2,7 +2,7 @@
 
 <!---freshmark shields
 output = [
-  link(shield('MavenCentral', 'mavencentral', '{{group}}:{{artifactIdMaven}}', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{group}}%22%20AND%20a%3A%22{{artifactIdMaven}}%22'),
+  link(shield('MavenCentral', 'mavencentral', '{{GROUP}}:spotless-maven-plugin', 'blue'), 'https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22{{GROUP}}%22%20AND%20a%3A%22spotless-maven-plugin%22'),
   link(shield('Changelog', 'changelog', '{{versionLast}}', 'blue'), 'CHANGES.md'),
   link(shield('Javadoc', 'javadoc', 'here', 'blue'), 'https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/{{versionLast}}/index.html')
   ].join('\n');
@@ -13,7 +13,7 @@ output = [
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
-output = prefixDelimiterReplace(input, 'https://{{org}}.github.io/{{name}}/javadoc/spotless-plugin-maven/', '/', versionLast)
+output = prefixDelimiterReplace(input, 'https://diffplug.github.io/spotless/javadoc/spotless-plugin-maven/', '/', versionLast)
 -->
 
 Spotless is a general-purpose formatting plugin used by [6,000 projects on GitHub (Jan 2023)](https://github.com/search?l=Maven+POM&q=spotless&type=Code).  It is completely à la carte, but also includes powerful "batteries-included" if you opt-in. Plugin requires a version of Maven higher or equal to 3.1.0.
