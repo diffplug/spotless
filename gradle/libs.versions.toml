@@ -76,7 +76,7 @@ rewrite-recipe-third-party = "org.openrewrite.recipe:rewrite-third-party:0.40.1"
 errorprone-core = "com.google.errorprone:error_prone_core:2.42.0"
 
 [plugins]
-buildconfig = "com.github.gmazzo.buildconfig:6.0.10"
+buildconfig = "com.github.gmazzo.buildconfig:6.1.0"
 test-logger = "com.adarshr.test-logger:4.0.0"
 spotless = "com.diffplug.spotless:8.10.2"
 spotless-changelog = "com.diffplug.spotless-changelog:3.1.2"
