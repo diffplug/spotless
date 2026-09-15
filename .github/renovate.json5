@@ -5,10 +5,16 @@
   ],
   packageRules: [
     {
+      enabled: false,
+      matchPackageNames: [
+        'org.apache.maven:*',
+      ],
+    },
+    {
       groupName: 'Ktlint',
       matchPackageNames: [
         'com.pinterest.ktlint:*',
-      ]
+      ],
     },
     {
       groupName: 'OpenRewrite',
@@ -16,5 +22,5 @@
         'org.openrewrite.recipe:*',
       ],
     },
-  ]
+  ],
 }
