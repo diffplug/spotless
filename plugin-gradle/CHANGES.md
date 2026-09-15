@@ -15,6 +15,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `palantir-java-format` version `2.80.0` -> `2.98.0`. ([#3068](https://github.com/diffplug/spotless/pull/3068))
 - Bump default `scalafmt` version `3.8.1` -> `3.11.5`. ([#2173](https://github.com/diffplug/spotless/pull/2173))
 - Bump default `google-java-format` version `1.30.0` -> `1.36.1`. ([#3075](https://github.com/diffplug/spotless/pull/3075))
+- Bump default `gherkin-utils` version `10.0.0` -> `12.0.2`. ([#2979](https://github.com/diffplug/spotless/pull/2979))
 
 ### Fixed
 - `versionCatalog()` preserves standalone comments at section boundaries and the end of the file. ([#3048](https://github.com/diffplug/spotless/issues/3048))
