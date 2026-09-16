@@ -59,7 +59,7 @@ public final class VersionCatalogStep {
 			return raw;
 		}
 
-		Map<String, List<Entry>> sections = parseSections(raw);
+		Map<String, Section> sections = parseSections(raw);
 		List<String> preambleLines = extractPreamble(raw);
 
 		StringBuilder result = new StringBuilder();
@@ -83,7 +83,8 @@ public final class VersionCatalogStep {
 		}
 
 		for (String header : orderedKeys) {
-			List<Entry> entries = sections.get(header);
+			Section section = sections.get(header);
+			List<Entry> entries = section.entries;
 			if (!first) {
 				result.append('\n');
 			}
@@ -100,6 +101,9 @@ public final class VersionCatalogStep {
 					result.append(commentLine).append('\n');
 				}
 				result.append(entry.formatted).append('\n');
+			}
+			for (String commentLine : section.trailingComments) {
+				result.append(commentLine).append('\n');
 			}
 		}
 
@@ -120,10 +124,10 @@ public final class VersionCatalogStep {
 		return preamble;
 	}
 
-	private static Map<String, List<Entry>> parseSections(String raw) {
-		Map<String, List<Entry>> sections = new LinkedHashMap<>();
+	private static Map<String, Section> parseSections(String raw) {
+		Map<String, Section> sections = new LinkedHashMap<>();
 		String currentHeader = null;
-		List<Entry> currentEntries = null;
+		Section currentSection = null;
 		List<String> pendingComments = new ArrayList<>();
 		StringBuilder multiLineAccumulator = null;
 		int lineNumber = 0;
@@ -137,7 +141,7 @@ public final class VersionCatalogStep {
 				multiLineAccumulator.append('\n').append(line);
 				if (isBalanced(multiLineAccumulator.toString())) {
 					Entry entry = new Entry(multiLineAccumulator.toString(), new ArrayList<>(pendingComments));
-					currentEntries.add(entry);
+					currentSection.entries.add(entry);
 					pendingComments.clear();
 					multiLineAccumulator = null;
 				}
@@ -149,11 +153,11 @@ public final class VersionCatalogStep {
 			}
 			Matcher headerMatcher = TABLE_HEADER.matcher(trimmed);
 			if (headerMatcher.matches()) {
+				moveTrailingComments(currentSection, pendingComments);
 				currentHeader = "[" + headerMatcher.group(1) + "]";
-				currentEntries = new ArrayList<>();
-				sections.put(currentHeader, currentEntries);
-				pendingComments.clear();
-			} else if (currentEntries != null) {
+				currentSection = new Section();
+				sections.put(currentHeader, currentSection);
+			} else if (currentSection != null) {
 				if (trimmed.isEmpty() || trimmed.startsWith("#")) {
 					pendingComments.add(trimmed);
 				} else if (!isBalanced(trimmed)) {
@@ -161,7 +165,7 @@ public final class VersionCatalogStep {
 					entryStartLine = lineNumber;
 				} else {
 					Entry entry = new Entry(trimmed, new ArrayList<>(pendingComments));
-					currentEntries.add(entry);
+					currentSection.entries.add(entry);
 					pendingComments.clear();
 				}
 			}
@@ -171,7 +175,20 @@ public final class VersionCatalogStep {
 			// Report the incomplete entry instead of silently returning a partially parsed catalog.
 			throw Lint.atLine(entryStartLine, "unterminatedEntry", "Unterminated version catalog entry in " + currentHeader).shortcut();
 		}
+		moveTrailingComments(currentSection, pendingComments);
 		return sections;
+	}
+
+	private static void moveTrailingComments(Section section, List<String> pendingComments) {
+		if (section == null) {
+			return;
+		}
+		int lastNonBlank = pendingComments.size();
+		while (lastNonBlank > 0 && pendingComments.get(lastNonBlank - 1).isEmpty()) {
+			lastNonBlank--;
+		}
+		section.trailingComments.addAll(pendingComments.subList(0, lastNonBlank));
+		pendingComments.clear();
 	}
 
 	private static boolean isBalanced(String text) {
@@ -440,5 +457,10 @@ public final class VersionCatalogStep {
 		String sortKey() {
 			return extractKey(formatted != null ? formatted : content);
 		}
+	}
+
+	private static final class Section {
+		final List<Entry> entries = new ArrayList<>();
+		final List<String> trailingComments = new ArrayList<>();
 	}
 }
