@@ -151,7 +151,7 @@ dependencies {
   "gherkinCompileOnly"(libs.gherkin.utils)
   "gherkinCompileOnly"(libs.slf4j.api)
   // googleJavaFormat
-  "googleJavaFormatCompileOnly"(libs.google.java.format)
+  "googleJavaFormatCompileOnly"(pinnedLibs.google.java.format)
   // gson
   "gsonCompileOnly"(libs.gson)
   // jackson
