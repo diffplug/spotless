@@ -8,7 +8,7 @@ Spotless can format &lt;antlr | c | c# | c++ | css | flow | graphql | groovy | h
 
 You probably want one of the links below:
 
-## [❇️ Spotless for Gradle](plugin-gradle) (with integrations for [VS Code](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle) and IntelliJ with [Spotless](https://plugins.jetbrains.com/plugin/29287-spotless) or [Spotless Gradle](https://plugins.jetbrains.com/plugin/18321-spotless-gradle))
+## [❇️ Spotless for Gradle](plugin-gradle) (with integrations for [VS Code](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle) and IntelliJ with [Spotless Daemon](https://plugins.jetbrains.com/plugin/29287-spotless-daemon) or [Spotless Gradle](https://plugins.jetbrains.com/plugin/18321-spotless-gradle))
 
 ```console
 user@machine repo % ./gradlew build

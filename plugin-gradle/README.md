@@ -10,7 +10,7 @@ output = [
   '',
   link(shield('VS Code plugin', 'IDE', 'VS Code', 'blueviolet'), 'https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle'),
   link(shield('IntelliJ plugin', 'IDE', 'IntelliJ', 'blueviolet'), 'https://plugins.jetbrains.com/plugin/18321-spotless-gradle'),
-  link(shield('Spotless IntelliJ plugin', 'IDE', 'Spotless (IntelliJ)', 'blueviolet'), 'https://plugins.jetbrains.com/plugin/29287-spotless'),
+  link(shield('Spotless Daemon plugin', 'IDE', 'Spotless Daemon', 'blueviolet'), 'https://plugins.jetbrains.com/plugin/29287-spotless-daemon'),
   link(shield('Add other IDE', 'IDE', 'add yours', 'blueviolet'), 'IDE_HOOK.md')
   ].join('\n');
 -->
@@ -21,9 +21,30 @@ output = [
 
 [![VS Code plugin](https://img.shields.io/badge/IDE-VS_Code-blueviolet.svg)](https://marketplace.visualstudio.com/items?itemName=richardwillis.vscode-spotless-gradle)
 [![IntelliJ plugin](https://img.shields.io/badge/IDE-IntelliJ-blueviolet.svg)](https://plugins.jetbrains.com/plugin/18321-spotless-gradle)
-[![Spotless IntelliJ plugin](https://img.shields.io/badge/IDE-Spotless_(IntelliJ)-blueviolet.svg)](https://plugins.jetbrains.com/plugin/29287-spotless)
+[![Spotless Daemon plugin](https://img.shields.io/badge/IDE-Spotless_Daemon-blueviolet.svg)](https://plugins.jetbrains.com/plugin/29287-spotless-daemon)
 [![Add other IDE](https://img.shields.io/badge/IDE-add_yours-blueviolet.svg)](IDE_HOOK.md)
 <!---freshmark /shields -->
+
+Two IntelliJ plugins are available, with different trade-offs:
+
+**[Spotless Daemon](https://plugins.jetbrains.com/plugin/29287-spotless-daemon)**
+
+|    |                                                                                                          |
+|:---|:---------------------------------------------------------------------------------------------------------|
+| ✅ | Fast response — the Gradle daemon stays resident, so each format skips Gradle's startup and task execution |
+| ✅ | Replaces the IDE's built-in formatter, so the formatting UX is identical to native reformat |
+| ✅ | Includes targeted optimizations, e.g. import optimization is preprocessed on the IDE side |
+| ❌ | The resident daemon holds some resources while running |
+| ❌ | Implementation depends on some internal Gradle plugin structures rather than public integration APIs |
+
+**[Spotless Gradle](https://plugins.jetbrains.com/plugin/18321-spotless-gradle)**
+
+|    |                                                                                                          |
+|:---|:---------------------------------------------------------------------------------------------------------|
+| ✅ | Stable and battle-tested over years of use |
+| ✅ | Works through the standard `spotlessApply` Gradle task integration |
+| ❌ | Slow cold start — every invocation pays Gradle's startup cost |
+| ❌ | Runs as a separate action, disconnected from the IDE's built-in format UX |
 
 <!---freshmark javadoc
 output = prefixDelimiterReplace(input, 'https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/', '/', versionLast)
