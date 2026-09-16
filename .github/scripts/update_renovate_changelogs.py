@@ -10,7 +10,7 @@ KEY_MAPPING = {
     ("versions", "jackson"): "jackson",
     ("versions", "ktlint"): "ktlint",
     ("versions", "javaparser"): "javaparser",
-    ("libraries", "palantir-java-format-default"): "palantir-java-format",
+    ("libraries", "palantir-java-format"): "palantir-java-format",
     ("libraries", "adocfmt"): "adocfmt",
     ("libraries", "antlr4-formatter"): "antlr4-formatter",
     ("libraries", "cleanthat-java"): "cleanthat",

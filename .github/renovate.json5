@@ -6,17 +6,9 @@
   packageRules: [
     {
       enabled: false,
-      matchPackageNames: [
-        'org.apache.maven:*',
-        'org.apache.maven.plugin-tools:*',
+      matchFileNames: [
+        'gradle/pinned-libs.versions.toml',
       ],
-    },
-    {
-      enabled: false,
-      matchPackageNames: [
-        'com.palantir.javaformat:palantir-java-format',
-      ],
-      matchCurrentVersion: '<= 1.1.0',
     },
     {
       groupName: 'Ktlint',
