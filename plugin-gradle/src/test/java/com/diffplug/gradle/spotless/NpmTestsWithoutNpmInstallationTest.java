@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,13 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 			setFile("build.gradle").toLines(
 					"plugins {",
 					"    id 'com.diffplug.spotless'",
-					"    id 'com.github.node-gradle.node' version '3.5.1'",
+					"    id 'com.github.node-gradle.node' version '7.1.0'",
 					"}",
 					"repositories { mavenCentral() }",
 					"node {",
 					"    download = true",
-					"    version = '18.16.1'",
-					"    npmVersion = '9.5.1'",
+					"    version = '22.14.0'",
+					"    npmVersion = '10.9.2'",
 					"    workDir = file(\"${buildDir}/nodejs\")",
 					"    npmWorkDir = file(\"${buildDir}/npm\")",
 					"}",
@@ -106,12 +106,12 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 			setFile("build.gradle").toLines(
 					"plugins {",
 					"    id 'com.diffplug.spotless'",
-					"    id 'com.github.node-gradle.node' version '3.5.1'",
+					"    id 'com.github.node-gradle.node' version '7.1.0'",
 					"}",
 					"repositories { mavenCentral() }",
 					"node {",
 					"    download = true",
-					"    version = '18.16.1'",
+					"    version = '22.14.0'",
 					"    workDir = file(\"${buildDir}/nodejs\")",
 					"}",
 					"def prettierConfig = [:]",
@@ -145,12 +145,12 @@ class NpmTestsWithoutNpmInstallationTest extends GradleIntegrationHarness {
 			setFile("build.gradle").toLines(
 					"plugins {",
 					"    id 'com.diffplug.spotless'",
-					"    id 'com.github.node-gradle.node' version '3.5.1'",
+					"    id 'com.github.node-gradle.node' version '7.1.0'",
 					"}",
 					"repositories { mavenCentral() }",
 					"node {",
 					"    download = true",
-					"    version = '18.13.0'",
+					"    version = '22.14.0'",
 					"    workDir = file(\"${buildDir}/nodejs\")",
 					"}",
 					"def prettierConfig = [:]",

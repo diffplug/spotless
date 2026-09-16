@@ -4,12 +4,12 @@
  */
 plugins {
     id 'com.diffplug.spotless'
-    id 'com.github.node-gradle.node' version '3.5.1'
+    id 'com.github.node-gradle.node' version '7.1.0'
 }
 repositories { mavenCentral() }
 node {
     download = true
-    version = '18.16.1'
+    version = '22.14.0'
 	// when not setting an explicit `npmWorkDir`, the npm binary will be installed next to the node binary
     workDir = file("${buildDir}/nodejs")
 }
