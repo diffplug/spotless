@@ -32,14 +32,17 @@ jobs:
       contents: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      ORG_GRADLE_PROJECT_nexus_user: ${{ secrets.NEXUS_USER }}
-      ORG_GRADLE_PROJECT_nexus_pass64: ${{ secrets.NEXUS_PASS64 }}
-      ORG_GRADLE_PROJECT_gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
-      ORG_GRADLE_PROJECT_gpg_key64: ${{ secrets.GPG_KEY64 }}
+      ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.NEXUS_USER }}
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - name: Configure publishing secrets
+        env:
+          NEXUS_PASS64: ${{ secrets.NEXUS_PASS64 }}
+          GPG_KEY64: ${{ secrets.GPG_KEY64 }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: python3 .github/scripts/configure_publishing_secrets.py
       - name: Configure git credentials for JGit
         run: |
           git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${{ secrets.GITHUB_TOKEN }} | base64 -w0)"
