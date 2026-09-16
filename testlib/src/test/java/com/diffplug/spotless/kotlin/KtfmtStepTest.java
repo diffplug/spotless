@@ -18,6 +18,8 @@ package com.diffplug.spotless.kotlin;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
@@ -79,6 +81,7 @@ class KtfmtStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(max = JRE.JAVA_24)
 	void dropboxStyle_0_16() throws Exception {
 		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
 		FormatterStep step = KtfmtStep.create("0.16", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
@@ -86,6 +89,7 @@ class KtfmtStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(max = JRE.JAVA_24)
 	void dropboxStyle_0_18() throws Exception {
 		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
 		FormatterStep step = KtfmtStep.create("0.18", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);
@@ -93,6 +97,7 @@ class KtfmtStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(max = JRE.JAVA_24)
 	void dropboxStyle_0_22() throws Exception {
 		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
 		FormatterStep step = KtfmtStep.create("0.22", TestProvisioner.mavenCentral(), KtfmtStep.Style.DROPBOX, options);

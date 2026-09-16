@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void integrationDiktat() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'org.jetbrains.kotlin.jvm' version '2.1.10'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -49,7 +49,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		setFile("build.gradle.kts").toLines(
 				"import  com.diffplug.spotless.kotlin.KtfmtStep.TrailingCommaManagementStrategy",
 				"plugins {",
-				"    id(\"org.jetbrains.kotlin.jvm\") version \"1.6.21\"",
+				"    id(\"org.jetbrains.kotlin.jvm\") version \"2.1.10\"",
 				"    id(\"com.diffplug.spotless\")",
 				"}",
 				"repositories { mavenCentral() }",
@@ -73,7 +73,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void withExperimentalEditorConfigOverride() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'org.jetbrains.kotlin.jvm' version '2.1.10'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -97,7 +97,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'org.jetbrains.kotlin.jvm' version '2.1.10'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -117,7 +117,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'org.jetbrains.kotlin.jvm' version '2.1.10'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -134,7 +134,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		setFile(".editorconfig").toResource("kotlin/ktlint/ktlint_official/.editorconfig");
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'org.jetbrains.kotlin.jvm' version '2.1.10'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -153,7 +153,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 		setFile(".editorconfig").toResource("kotlin/ktlint/intellij_idea/.editorconfig");
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'org.jetbrains.kotlin.jvm' version '2.1.10'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -171,7 +171,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void withCustomRuleSetApply() throws IOException {
 		setFile("build.gradle.kts").toLines(
 				"plugins {",
-				"    id(\"org.jetbrains.kotlin.jvm\") version \"1.6.21\"",
+				"    id(\"org.jetbrains.kotlin.jvm\") version \"2.1.10\"",
 				"    id(\"com.diffplug.spotless\")",
 				"}",
 				"repositories { mavenCentral() }",
@@ -195,7 +195,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void testWithHeader() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'org.jetbrains.kotlin.jvm' version '2.1.10'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",
@@ -214,7 +214,7 @@ class KotlinExtensionTest extends GradleIntegrationHarness {
 	void testWithCustomMaxWidthDefaultStyleKtfmt() throws IOException {
 		setFile("build.gradle").toLines(
 				"plugins {",
-				"    id 'org.jetbrains.kotlin.jvm' version '1.6.21'",
+				"    id 'org.jetbrains.kotlin.jvm' version '2.1.10'",
 				"    id 'com.diffplug.spotless'",
 				"}",
 				"repositories { mavenCentral() }",

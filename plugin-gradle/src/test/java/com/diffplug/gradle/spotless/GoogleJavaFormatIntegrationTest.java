@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,11 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.Jvm;
+
 class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
+	private static final String NON_DEFAULT_VERSION = Jvm.version() <= 17 ? "1.27.0" : "1.34.1";
+
 	@Test
 	void integration() throws IOException {
 		setFile("build.gradle").toLines(
@@ -31,7 +35,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.17.0')",
+				"        googleJavaFormat('" + NON_DEFAULT_VERSION + "')",
 				"    }",
 				"}");
 
@@ -41,7 +45,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 
 		checkRunsThenUpToDate();
 		replace("build.gradle",
-				"googleJavaFormat('1.17.0')",
+				"googleJavaFormat('" + NON_DEFAULT_VERSION + "')",
 				"googleJavaFormat()");
 		checkRunsThenUpToDate();
 	}
@@ -57,7 +61,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.17.0').aosp().reorderImports(true)",
+				"        googleJavaFormat('" + NON_DEFAULT_VERSION + "').aosp().reorderImports(true)",
 				"    }",
 				"}");
 
@@ -67,7 +71,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 
 		checkRunsThenUpToDate();
 		replace("build.gradle",
-				"googleJavaFormat('1.17.0')",
+				"googleJavaFormat('" + NON_DEFAULT_VERSION + "')",
 				"googleJavaFormat()");
 		checkRunsThenUpToDate();
 	}
@@ -83,7 +87,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.17.0').skipJavadocFormatting()",
+				"        googleJavaFormat('" + NON_DEFAULT_VERSION + "').skipJavadocFormatting()",
 				"    }",
 				"}");
 
@@ -93,7 +97,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 
 		checkRunsThenUpToDate();
 		replace("build.gradle",
-				"googleJavaFormat('1.17.0')",
+				"googleJavaFormat('" + NON_DEFAULT_VERSION + "')",
 				"googleJavaFormat()");
 		checkRunsThenUpToDate();
 	}

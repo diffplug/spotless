@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 					"}");
 			setFile(TEST_PATH).toContent("HELLO");
 			git.add().addFilepattern(TEST_PATH).call();
-			git.commit().setMessage("Initial state").call();
+			git.commit().setSign(false).setMessage("Initial state").call();
 			// tag this initial state as the baseline for spotless to ratchet from
 			git.tag().setName("baseline").call();
 
@@ -271,7 +271,7 @@ class GitRatchetGradleTest extends GradleIntegrationHarness {
 	private RevCommit addAndCommit(Git git) throws NoFilepatternException, GitAPIException {
 		PersonIdent emptyPerson = new PersonIdent("jane doe", "jane@doe.com", new Date(0), TimeZone.getTimeZone("UTC"));
 		git.add().addFilepattern(".").call();
-		return git.commit().setMessage("baseline")
+		return git.commit().setSign(false).setMessage("baseline")
 				.setCommitter(emptyPerson)
 				.setAuthor(emptyPerson)
 				.call();
