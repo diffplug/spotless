@@ -22,6 +22,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - `versionCatalog()` preserves entries when comments contain unmatched brackets, preserves commas inside quoted strings, and keeps significant line boundaries in multiline entries. ([#3042](https://github.com/diffplug/spotless/pull/3042))
 - `versionCatalog()` now reports unfinished entries as lints at their starting line. These fail formatting by default, so upgrading may expose catalog errors that previously caused silent data loss. ([#3042](https://github.com/diffplug/spotless/pull/3042))
 - Stop calling deprecated `Configuration.setVisible` from Gradle 9.0.0 ([#3053](https://github.com/diffplug/spotless/pull/3053))
+- Eclipse JDT formatter step no longer fails with `NoClassDefFoundError` or `NoSuchMethodError` when lombok is active as a JVM agent (e.g. `-javaagent:lombok.jar` in Eclipse/VS Code/Cursor). ([#2795](https://github.com/diffplug/spotless/issues/2795))
 
 ## [8.10.2] - 2026-09-04
 ### Fixed

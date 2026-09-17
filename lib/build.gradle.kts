@@ -184,6 +184,9 @@ dependencies {
   "tableTestFormatterCompileOnly"(libs.tabletest.formatter.core)
   // zjsonPatch
   "zjsonPatchCompileOnly"(libs.zjsonpatch)
+  // lombokStubs – needs ECJ types to match the exact method descriptors that lombok
+  // transplants into ECJ's ASTConverter, ASTNode, etc.
+  "lombokStubsCompileOnly"("org.eclipse.jdt:org.eclipse.jdt.core:3.46.0")
 }
 
 // we'll hold the core lib to a high standard
