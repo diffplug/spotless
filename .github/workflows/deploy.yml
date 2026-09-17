@@ -31,6 +31,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: deploy
+    environment: maven-central
     permissions:
       contents: write
     env:

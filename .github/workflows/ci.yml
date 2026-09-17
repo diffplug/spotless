@@ -12,6 +12,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# least privilege by default; jobs opt in to more below
+permissions:
+  contents: read
+
 jobs:
   sanity-check:
     name: Sanity Check
@@ -35,6 +39,9 @@ jobs:
   build-gradle:
     name: Gradle (Java ${{ matrix.jre }}, ${{ matrix.os }})
     needs: sanity-check
+    permissions:
+      contents: read
+      checks: write # mikepenz/action-junit-report posts check runs
     strategy:
       fail-fast: false
       matrix:
@@ -63,6 +70,9 @@ jobs:
   build-maven:
     name: Maven (Java ${{ matrix.jre }}, ${{ matrix.os }})
     needs: sanity-check
+    permissions:
+      contents: read
+      checks: write # mikepenz/action-junit-report posts check runs
     strategy:
       fail-fast: false
       matrix:
@@ -91,6 +101,9 @@ jobs:
   test-npm:
     name: NPM
     needs: sanity-check
+    permissions:
+      contents: read
+      checks: write # mikepenz/action-junit-report posts check runs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -111,6 +124,9 @@ jobs:
   test-shfmt:
     name: Shfmt
     needs: sanity-check
+    permissions:
+      contents: read
+      checks: write # mikepenz/action-junit-report posts check runs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -138,6 +154,9 @@ jobs:
   test-idea:
     name: IntelliJ IDEA
     needs: sanity-check
+    permissions:
+      contents: read
+      checks: write # mikepenz/action-junit-report posts check runs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -188,6 +207,10 @@ jobs:
     name: Publish Snapshots
     needs: final-status
     if: github.event.repository.fork == false && github.ref == 'refs/heads/main'
+    # only this environment holds the publishing secrets, and only main/release may use it
+    environment: maven-central
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
