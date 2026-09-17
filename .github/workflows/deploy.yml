@@ -7,6 +7,8 @@
 # GRADLE_KEY
 # GRADLE_SECRET
 #
+# NEXUS_PASS and GPG_KEY are environment secrets on `maven-central`, not org secrets.
+#
 # Store each secret in the exact form the build consumes. GitHub masks the value it was given,
 # so anything a workflow step decodes or reshapes is no longer masked and lands in the log.
 # That is why the base64 variants (NEXUS_PASS64, GPG_KEY64) were deleted on 2026-09-17; do not
@@ -31,6 +33,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: deploy
+    # holds the publishing secrets; its branch policy allows only `release`, which only
+    # nedtwigg can push to, so nothing else in the repo can reach them
     environment: maven-central
     permissions:
       contents: write
