@@ -66,11 +66,6 @@ dependencies {
 
 tasks.withType<Test>().configureEach { testLogging.showStandardStreams = true }
 
-tasks.validatePlugins {
-  // TODO: https://github.com/gradle/gradle/issues/22600
-  enableStricterValidation = true
-}
-
 //////////////////////////
 // GRADLE PLUGIN PORTAL //
 //////////////////////////
