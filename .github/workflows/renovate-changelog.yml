@@ -20,20 +20,29 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
       - uses: actions/setup-python@v7
+      # branch and PR fields arrive through env, never spliced into the shell: a branch name is
+      # attacker-controlled text, and ${{ }} would run it as part of the command
       - name: Update Changelogs
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
           python3 .github/scripts/update_renovate_changelogs.py \
-            --base-ref "origin/${{ github.base_ref }}" \
-            --pr-number "${{ github.event.pull_request.number }}" \
-            --pr-url "${{ github.event.pull_request.html_url }}"
+            --base-ref "origin/$BASE_REF" \
+            --pr-number "$PR_NUMBER" \
+            --pr-url "$PR_URL"
       - name: Commit and push changes
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           if [ -n "$(git status --porcelain CHANGES.md plugin-gradle/CHANGES.md plugin-maven/CHANGES.md)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add CHANGES.md plugin-gradle/CHANGES.md plugin-maven/CHANGES.md
-            git commit -m "Update changelogs for default formatter version bump (#${{ github.event.pull_request.number }})"
-            git push origin HEAD:${{ github.head_ref }}
+            git commit -m "Update changelogs for default formatter version bump (#$PR_NUMBER)"
+            git push origin "HEAD:$HEAD_REF"
           else
             echo "No changelog updates needed."
           fi

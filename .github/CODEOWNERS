@@ -1,0 +1,8 @@
+# Changes to these paths can move secrets, publish artifacts, or change what ships to users,
+# so they need an owner's review. Takes effect once branch protection on main requires
+# approvals and "require review from Code Owners".
+/.github/            @nedtwigg @edgartwigg
+/build-logic/        @nedtwigg @edgartwigg
+/settings.gradle.kts @nedtwigg @edgartwigg
+/build.gradle.kts    @nedtwigg @edgartwigg
+/gradle.properties   @nedtwigg @edgartwigg
