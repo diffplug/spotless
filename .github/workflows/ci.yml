@@ -200,12 +200,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
         with:
           cache-read-only: true
-      - name: Configure publishing secrets
-        env:
-          NEXUS_PASS64: ${{ secrets.NEXUS_PASS64 }}
-          GPG_KEY64: ${{ secrets.GPG_KEY64 }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: python3 .github/scripts/configure_publishing_secrets.py
-      - run: ./gradlew publishToMavenCentral
+      # each secret is stored in the exact form the build consumes, so GitHub masks it in the logs
+      - run: ./gradlew publishToMavenCentral --no-configuration-cache
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.NEXUS_USER }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.NEXUS_PASS }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: "0x4272C851"
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PASSPHRASE }}
