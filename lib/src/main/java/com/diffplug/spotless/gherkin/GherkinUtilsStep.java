@@ -19,6 +19,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -30,6 +31,7 @@ public final class GherkinUtilsStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	private static final String MAVEN_COORDINATE = "io.cucumber:gherkin-utils:";
+	private static final String GHERKIN_MAVEN_COORDINATE = "io.cucumber:gherkin:";
 	public static final String NAME = "gherkinUtils";
 
 	private final JarState.Promised jarState;
@@ -47,8 +49,11 @@ public final class GherkinUtilsStep implements Serializable {
 	public static FormatterStep create(GherkinUtilsConfig gherkinSimpleConfig,
 			String formatterVersion, Provisioner provisioner) {
 		Objects.requireNonNull(provisioner, "provisioner cannot be null");
+		List<String> coordinates = List.of(
+				MAVEN_COORDINATE + formatterVersion,
+				GHERKIN_MAVEN_COORDINATE + GherkinBuildConfig.VERSION_GHERKIN);
 		return FormatterStep.create(NAME,
-				new GherkinUtilsStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + formatterVersion, provisioner)), gherkinSimpleConfig),
+				new GherkinUtilsStep(JarState.promise(() -> JarState.from(coordinates, provisioner)), gherkinSimpleConfig),
 				GherkinUtilsStep::equalityState,
 				GherkinUtilsStep.State::toFormatter);
 	}
