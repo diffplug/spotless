@@ -44,6 +44,7 @@ jobs:
       ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.NEXUS_PASS }}
       ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY }}
       # signing subkey issued 2026-09-17, replacing 0x4272C851 whose encrypted copy was exposed
+      # in public CI logs: https://github.com/diffplug/spotless/issues/3089
       ORG_GRADLE_PROJECT_signingInMemoryKeyId: "0xFA5C18CFB74EC7C6"
       ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PASSPHRASE }}
     steps:
