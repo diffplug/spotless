@@ -16,6 +16,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `scalafmt` version `3.8.1` -> `3.11.5`. ([#2173](https://github.com/diffplug/spotless/pull/2173))
 - Bump default `google-java-format` version `1.30.0` -> `1.36.1`. ([#3075](https://github.com/diffplug/spotless/pull/3075))
 - Bump default `gherkin-utils` version `10.0.0` -> `12.0.2`. ([#2979](https://github.com/diffplug/spotless/pull/2979))
+- **POTENTIALLY BREAKING** We no longer publish a plugin marker for the legacy `com.diffplug.gradle.spotless` id. Builds that still request it now fail with `Plugin [id: 'com.diffplug.gradle.spotless'] was not found` instead of the migration message it used to print. Use `com.diffplug.spotless` instead. ([#3086](https://github.com/diffplug/spotless/pull/3086))
+- **POTENTIALLY BREAKING** `spotless-plugin-gradle` now declares the historical capability `com.diffplug.gradle.spotless:spotless-plugin-gradle`. A build that resolves both this and the pre-4.0 artifact of that name will now fail with a capability conflict rather than silently putting both on the classpath. ([#3086](https://github.com/diffplug/spotless/pull/3086))
 
 ### Fixed
 - `versionCatalog()` preserves standalone comments at section boundaries and the end of the file. ([#3048](https://github.com/diffplug/spotless/issues/3048))
