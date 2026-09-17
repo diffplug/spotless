@@ -1,3 +1,7 @@
+import org.gradle.api.plugins.JavaPlugin.API_ELEMENTS_CONFIGURATION_NAME
+import org.gradle.api.plugins.JavaPlugin.JAVADOC_ELEMENTS_CONFIGURATION_NAME
+import org.gradle.api.plugins.JavaPlugin.RUNTIME_ELEMENTS_CONFIGURATION_NAME
+import org.gradle.api.plugins.JavaPlugin.SOURCES_ELEMENTS_CONFIGURATION_NAME
 import org.gradle.plugin.compatibility.compatibility
 
 plugins {
@@ -14,6 +18,26 @@ plugins {
 }
 
 version = spotlessChangelog.versionNext
+
+val publishedElements =
+    listOf(
+        API_ELEMENTS_CONFIGURATION_NAME,
+        RUNTIME_ELEMENTS_CONFIGURATION_NAME,
+        JAVADOC_ELEMENTS_CONFIGURATION_NAME,
+        SOURCES_ELEMENTS_CONFIGURATION_NAME,
+    )
+
+configurations.configureEach {
+  when (name) {
+    in publishedElements ->
+        outgoing {
+          // Main/current capability.
+          capability("com.diffplug.spotless:spotless-plugin-gradle:$version")
+          // Historical capabilities.
+          capability("com.diffplug.gradle.spotless:spotless-plugin-gradle:$version")
+        }
+  }
+}
 
 dependencies {
   if (
@@ -78,13 +102,6 @@ gradlePlugin {
               "clang-format",
           )
       compatibility { features { configurationCache = true } }
-    }
-    create("spotlessPluginLegacy") {
-      id = "com.diffplug.gradle.spotless"
-      implementationClass = "com.diffplug.gradle.spotless.SpotlessPluginRedirect"
-      displayName = "Spotless formatting plugin (legacy)"
-      description = project.description
-      tags = listOf("format")
     }
   }
 }

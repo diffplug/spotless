@@ -1,5 +1,3 @@
-import kotlin.io.encoding.Base64
-
 pluginManagement {
   includeBuild("build-logic")
   repositories {
@@ -92,26 +90,3 @@ val excludeMaven =
 if (!excludeMaven) {
   include("plugin-maven") // maven-specific glue code
 }
-
-fun decode64(varName: String): String {
-  val envValue = System.getenv(varName) ?: return ""
-  return String(Base64.Mime.decode(envValue), Charsets.UTF_8)
-}
-
-val projectProperties = startParameter.projectProperties.toMutableMap()
-
-if (!projectProperties.containsKey("mavenCentralUsername")) {
-  System.getenv("ORG_GRADLE_PROJECT_nexus_user")?.let {
-    projectProperties["mavenCentralUsername"] = it
-  }
-}
-
-if (!projectProperties.containsKey("mavenCentralPassword")) {
-  decode64("ORG_GRADLE_PROJECT_nexus_pass64")
-      .takeIf { it.isNotEmpty() }
-      ?.let {
-        projectProperties["mavenCentralPassword"] = it
-      }
-}
-
-startParameter.setProjectProperties(projectProperties)

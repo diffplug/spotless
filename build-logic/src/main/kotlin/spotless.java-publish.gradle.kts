@@ -1,7 +1,6 @@
 plugins {
   `java-library`
   id("com.vanniktech.maven.publish")
-  signing
 }
 
 tasks.withType<Javadoc>().configureEach {
@@ -31,20 +30,6 @@ tasks.withType<Javadoc>().configureEach {
           "../gradle/javadoc/spotless-lib-extra",
       )
     }
-  }
-}
-
-signing {
-  if (
-      !project.providers.gradleProperty("signingInMemoryKey").isPresent &&
-          System.getenv("ORG_GRADLE_PROJECT_gpg_key64") != null
-  ) {
-    val gpgKey = decode64("ORG_GRADLE_PROJECT_gpg_key64")
-    useInMemoryPgpKeys(
-        "0x4272C851",
-        gpgKey,
-        System.getenv("ORG_GRADLE_PROJECT_gpg_passphrase"),
-    )
   }
 }
 
