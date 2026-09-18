@@ -211,8 +211,10 @@ pluginManagement {
 
 ### Gradle - snapshot builds
 
-We don't publish snapshots. Publishing credentials are reachable only from the `release` branch, so
-`main` cannot publish anything. Use the local workflow above to test an unreleased change.
+Nothing is published automatically -- a push to any branch cannot publish anything. A maintainer can
+publish a snapshot by hand with the `release-snapshot` workflow, which we use to exercise publishing
+and signing before a release, so don't count on any particular snapshot existing. To test an
+unreleased change, use the local workflow above.
 
 ### Maven
 

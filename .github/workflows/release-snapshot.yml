@@ -1,0 +1,53 @@
+# Publishes a snapshot to Maven Central, by hand.
+#
+# Snapshots are never published automatically -- a push to any branch cannot publish anything.
+# Run this to exercise the publishing credentials and the signing key without cutting a release,
+# which is worth doing after any change to publishing, signing, or the secrets themselves.
+#
+# It runs in the same environment as a release, so the environment's branch policy decides where
+# it can be dispatched from.
+name: release-snapshot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-snapshot:
+    name: Publish snapshot
+    runs-on: ubuntu-latest
+    environment: maven-central
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v6
+        with:
+          distribution: "temurin"
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: true
+      # a release is immutable on Central, so make sure this can only ever ship a snapshot
+      - name: Verify every published version is a snapshot
+        run: |
+          for project in :lib :lib-extra :plugin-gradle :plugin-maven; do
+            version=$(./gradlew -q --no-configuration-cache "$project:properties" | awk -F': ' '/^version:/{print $2}')
+            echo "$project: $version"
+            case "$version" in
+              *-SNAPSHOT) ;;
+              *) echo "refusing to publish non-snapshot version $version for $project"; exit 1 ;;
+            esac
+          done
+      # each secret is stored in the exact form the build consumes, so GitHub masks it in the logs
+      - run: ./gradlew publishToMavenCentral --no-configuration-cache
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.NEXUS_USER }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.NEXUS_PASS }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY }}
+          # signing subkey issued 2026-09-17, replacing 0x4272C851 whose encrypted copy was exposed
+          # in public CI logs: https://github.com/diffplug/spotless/issues/3089
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: "0xFA5C18CFB74EC7C6"
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PASSPHRASE }}
