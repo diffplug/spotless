@@ -344,10 +344,13 @@ Types in `java.lang` and in the file's own package are shortened without adding 
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
   <formatJavadoc>false</formatJavadoc>        <!-- optional -->
+  <reorderImports>false</reorderImports>.     <!-- optional -->
   <!-- optional: custom group artifact (you probably don't need this) -->
   <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
 </googleJavaFormat>
 ```
+
+Note: when enabling `AOSP` style, `reorderImports` needs to be enabled to apply the correct import order from [the AOSP guidelines](https://source.android.com/docs/setup/contribute/code-style#order-import-statements).
 
 ### palantir-java-format
 
