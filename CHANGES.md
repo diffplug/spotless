@@ -11,8 +11,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
-- Fix race when creating the npm install cache directory. (([#3096](https://github.com/diffplug/spotless/pull/3096))
-
 ### Changes
 - Generate formatter defaults from version catalog. ([#3045](https://github.com/diffplug/spotless/pull/3045))
 - Bump default `gson` version `2.13.2` -> `2.14.0`. ([#3045](https://github.com/diffplug/spotless/pull/3045))
@@ -32,6 +30,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - `VersionCatalogStep` preserves entries when comments contain unmatched brackets, preserves commas inside quoted strings, and keeps significant line boundaries in multiline entries. ([#3042](https://github.com/diffplug/spotless/pull/3042))
 - `VersionCatalogStep` now reports unfinished entries as lints at their starting line. These fail formatting by default, so upgrading may expose catalog errors that previously caused silent data loss. ([#3042](https://github.com/diffplug/spotless/pull/3042))
 - `FeatureClassLoader` now provides stub implementations of `lombok.*` classes (and synthesises empty classes for any unknown ones) so that the Eclipse JDT formatter step no longer fails with `NoClassDefFoundError` or `NoSuchMethodError` when lombok is active as a JVM agent (e.g. `-javaagent:lombok.jar` in Eclipse/VS Code/Cursor). ([#2795](https://github.com/diffplug/spotless/issues/2795))
+- Fix race when creating the npm install cache directory. (([#3096](https://github.com/diffplug/spotless/pull/3096))
 
 ## [4.10.2] - 2026-09-04
 ### Fixed
