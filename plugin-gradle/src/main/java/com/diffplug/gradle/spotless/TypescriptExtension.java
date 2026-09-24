@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,7 +170,7 @@ public class TypescriptExtension extends FormatExtension {
 		private void fixParserToTypescript() {
 			if (this.prettierConfig == null) {
 				this.prettierConfig = new TreeMap<>(Map.of("parser", "typescript"));
-			} else {
+			} else if (!Objects.equals(this.prettierConfig.get("parser"), "typescript")) {
 				final Object replaced = this.prettierConfig.put("parser", "typescript");
 				if (replaced != null) {
 					getProject().getLogger().warn("overriding parser option to 'typescript'. Was set to '{}'",
