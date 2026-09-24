@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,10 +48,10 @@ public final class NodeModulesCachingNpmProcessFactory implements NpmProcessFact
 
 	private File assertDir() {
 		try {
-		    Files.createDirectories(cacheDir.toPath());
+			Files.createDirectories(cacheDir.toPath());
 		} catch (IOException e) {
-		    throw new UncheckedIOException(
-		            "Could not create cache directory: " + cacheDir.getAbsolutePath(), e);
+			throw new UncheckedIOException(
+					"Could not create cache directory: " + cacheDir.getAbsolutePath(), e);
 		}
 		return cacheDir;
 	}
