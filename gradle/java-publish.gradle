@@ -1,20 +1,5 @@
-import java.nio.charset.StandardCharsets
-
-def decode64(String varName) {
-	String envValue = System.env[varName]
-	if (envValue == null) {
-		return ""
-	} else {
-		return new String(envValue.decodeBase64(), "UTF-8")
-	}
-}
-
 if (project.parent == null) {
 	group = 'com.diffplug.spotless'
-	def pass = System.env['ORG_GRADLE_PROJECT_nexus_pass64']
-	if (pass != null) {
-		pass = pass.decodeBase64()
-	}
 	// it's the root project
 	apply plugin: 'io.github.gradle-nexus.publish-plugin'
 	nexusPublishing {
@@ -23,7 +8,7 @@ if (project.parent == null) {
 				nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
 				snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
 				username = System.env['ORG_GRADLE_PROJECT_nexus_user']
-				password = decode64('ORG_GRADLE_PROJECT_nexus_pass64')
+				password = System.env['ORG_GRADLE_PROJECT_nexus_pass']
 			}
 		}
 	}
@@ -180,8 +165,9 @@ if (System.env['JITPACK'] == 'true' || version.endsWith('-SNAPSHOT')) {
 	}
 } else {
 	signing {
-		String gpg_key = decode64('ORG_GRADLE_PROJECT_gpg_key64')
-		useInMemoryPgpKeys('0x4272C851', gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])
+		String gpg_key = System.env['ORG_GRADLE_PROJECT_gpg_key']
+		// Signing subkey replacing the key exposed in https://github.com/diffplug/spotless/issues/3089.
+		useInMemoryPgpKeys('0xFA5C18CFB74EC7C6', gpg_key, System.env['ORG_GRADLE_PROJECT_gpg_passphrase'])
 		sign(publishing.publications)
 	}
 
