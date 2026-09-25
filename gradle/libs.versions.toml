@@ -70,7 +70,7 @@ errorprone-core = "com.google.errorprone:error_prone_core:2.50.0"
 [plugins]
 buildconfig = "com.github.gmazzo.buildconfig:6.1.0"
 test-logger = "com.adarshr.test-logger:4.0.0"
-spotless = "com.diffplug.spotless:8.10.2"
+spotless = "com.diffplug.spotless:8.10.3"
 spotless-changelog = "com.diffplug.spotless-changelog:3.1.2"
 spotbugs = "com.github.spotbugs:6.5.11"
 plugin-publish = "com.gradle.plugin-publish:2.2.1"
