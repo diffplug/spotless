@@ -17,6 +17,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `google-java-format` version `1.30.0` -> `1.36.1`. ([#3075](https://github.com/diffplug/spotless/pull/3075))
 - Bump default `gherkin-utils` version `10.0.0` -> `12.0.2`. ([#2979](https://github.com/diffplug/spotless/pull/2979))
 - We no longer publish a plugin marker for the legacy `com.diffplug.gradle.spotless` id, which has been redirecting to `com.diffplug.spotless` since 4.0. Builds that still request it now fail with `Plugin [id: 'com.diffplug.gradle.spotless'] was not found` instead of the migration message. ([#3086](https://github.com/diffplug/spotless/pull/3086))
+- Bump default `palantir-java-format` version `2.98.0` -> `2.99.0`. ([#3103](https://github.com/diffplug/spotless/pull/3103))
 
 ### Fixed
 - GrEclipse no longer emits expected OSGi and nested-jar warnings during initialization. ([#2445](https://github.com/diffplug/spotless/issues/2445))
