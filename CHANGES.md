@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 
 ### Fixed
+- Confirm artifact publication before updating release changelogs and pushing tags. ([#3109](https://github.com/diffplug/spotless/pull/3109))
 - Add recovery publishing for missing library artifacts from existing release tags. ([#3108](https://github.com/diffplug/spotless/pull/3108))
 
 ## [4.10.3] - 2026-09-25
