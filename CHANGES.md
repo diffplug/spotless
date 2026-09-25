@@ -11,6 +11,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Changes
+- Update the development build to Gradle `9.8.0`, including its wrapper JAR and launchers. ([#3107](https://github.com/diffplug/spotless/pull/3107))
+
 ## [4.10.3] - 2026-09-25
 
 ### Changes
