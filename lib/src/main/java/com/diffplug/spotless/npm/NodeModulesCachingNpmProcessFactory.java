@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 package com.diffplug.spotless.npm;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -43,14 +46,12 @@ public final class NodeModulesCachingNpmProcessFactory implements NpmProcessFact
 		this.shadowCopy = new ShadowCopy(this::assertDir);
 	}
 
-	private synchronized File assertDir() {
-		if (cacheDir.exists() && !cacheDir.isDirectory()) {
-			throw new IllegalArgumentException("Cache dir must be a directory");
-		}
-		if (!cacheDir.exists()) {
-			if (!cacheDir.mkdirs()) {
-				throw new IllegalArgumentException("Cache dir could not be created.");
-			}
+	private File assertDir() {
+		try {
+			Files.createDirectories(cacheDir.toPath());
+		} catch (IOException e) {
+			throw new UncheckedIOException(
+					"Could not create cache directory: " + cacheDir.getAbsolutePath(), e);
 		}
 		return cacheDir;
 	}
