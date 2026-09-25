@@ -19,6 +19,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - We no longer publish a plugin marker for the legacy `com.diffplug.gradle.spotless` id, which has been redirecting to `com.diffplug.spotless` since 4.0. Builds that still request it now fail with `Plugin [id: 'com.diffplug.gradle.spotless'] was not found` instead of the migration message. ([#3086](https://github.com/diffplug/spotless/pull/3086))
 
 ### Fixed
+- Fix release signing by using Gradle's required eight-digit signing subkey ID. ([#3105](https://github.com/diffplug/spotless/pull/3105))
 - Fix race when creating the npm install cache directory. (([#3096](https://github.com/diffplug/spotless/pull/3096))
 - GrEclipse no longer emits expected OSGi and nested-jar warnings during initialization. ([#2445](https://github.com/diffplug/spotless/issues/2445))
 - `typescript` `prettier()` no longer emits a warning when its parser is already set to `typescript`. ([#3098](https://github.com/diffplug/spotless/pull/3098))
