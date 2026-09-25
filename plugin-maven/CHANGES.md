@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Fixed
+- Release publishing now uses the `maven-central` environment, raw credentials, and the replacement signing subkey. ([#3104](https://github.com/diffplug/spotless/pull/3104))
 
 ## [3.10.2] - 2026-09-04
 ### Fixed
