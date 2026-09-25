@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [8.10.3] - 2026-09-25
 ### Changes
 - Generate formatter defaults from version catalog. ([#3045](https://github.com/diffplug/spotless/pull/3045))
 - Bump default `gson` version `2.13.2` -> `2.14.0`. ([#3045](https://github.com/diffplug/spotless/pull/3045))
