@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.diffplug.gradle.spotless;
 
 import java.io.IOException;
 
+import org.assertj.core.api.Assertions;
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -208,5 +210,50 @@ class TypescriptExtensionTest extends GradleIntegrationHarness {
 		setFile("test.ts").toResource("npm/eslint/typescript/styleguide/standard_with_typescript/typescript.dirty");
 		gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertFile("test.ts").sameAsResource("npm/eslint/typescript/styleguide/standard_with_typescript/typescript.clean");
+	}
+
+	@Test
+	void prettierDoesNotWarnWhenTypescriptParserIsAlreadySet() throws IOException {
+		setFile(".prettierrc.json").toContent("{}");
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        prettier().npmInstallCache().configFile('.prettierrc.json')",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/prettier/filetypes/typescript/typescript.dirty");
+
+		BuildResult result = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+
+		Assertions.assertThat(result.getOutput())
+				.doesNotContain("overriding parser option to 'typescript'. Was set to 'typescript'");
+		assertFile("test.ts").sameAsResource("npm/prettier/filetypes/typescript/typescript.clean");
+	}
+
+	@Test
+	void prettierWarnsWhenOverridingNonTypescriptParser() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    typescript {",
+				"        target 'test.ts'",
+				"        prettier().config(['parser': 'babel'])",
+				"    }",
+				"}");
+		setFile("test.ts").toResource("npm/prettier/filetypes/typescript/typescript.dirty");
+
+		BuildResult result = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+
+		Assertions.assertThat(result.getOutput())
+				.contains("overriding parser option to 'typescript'. Was set to 'babel'");
+		assertFile("test.ts").sameAsResource("npm/prettier/filetypes/typescript/typescript.clean");
 	}
 }

@@ -17,7 +17,11 @@ package com.diffplug.spotless.extra.glue.groovy;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Proxy;
+import java.net.URISyntaxException;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +46,8 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.osgi.internal.location.EquinoxLocations;
 import org.eclipse.text.edits.TextEdit;
 import org.osgi.framework.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dev.equo.solstice.NestedJars;
 import dev.equo.solstice.ShimIdeBootstrapServices;
@@ -50,15 +56,50 @@ import dev.equo.solstice.p2.CacheLocations;
 
 /** Spotless-Formatter step which calls out to the Groovy-Eclipse formatter. */
 public class GrEclipseFormatterStepImpl {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(GrEclipseFormatterStepImpl.class);
+
+	private static Logger warnAsInfo(Logger delegate) {
+		return (Logger) Proxy.newProxyInstance(
+				Logger.class.getClassLoader(),
+				new Class<?>[]{Logger.class},
+				(proxy, method, args) -> {
+					String name = method.getName();
+
+					if ("warn".equals(name)) {
+						return Logger.class
+								.getMethod("info", method.getParameterTypes())
+								.invoke(delegate, args);
+					}
+					if ("isWarnEnabled".equals(name)) {
+						return Logger.class
+								.getMethod("isInfoEnabled", method.getParameterTypes())
+								.invoke(delegate, args);
+					}
+
+					return method.invoke(delegate, args);
+				});
+	}
+
 	static {
 		NestedJars.setToWarnOnly();
-		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(CacheLocations.p2nestedJars());
+		NestedJars.onClassPath().confirmAllNestedJarsArePresentOnClasspath(nestedJarFolder());
+
 		try {
 			var solstice = Solstice.findBundlesOnClasspath();
-			solstice.warnAndModifyManifestsToFix();
-			var props = Map.of("osgi.nl", "en_US",
+
+			// Missing OSGi requirements are expected in the minimal Eclipse runtime
+			// used by the formatter. Solstice removes them before starting it.
+			solstice.warnAndModifyManifestsToFix(warnAsInfo(LOGGER));
+
+			var props = Map.of(
+					"osgi.nl", "en_US",
 					Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT,
-					EquinoxLocations.PROP_INSTANCE_AREA, Files.createTempDirectory("spotless-groovy").toAbsolutePath().toString());
+					EquinoxLocations.PROP_INSTANCE_AREA,
+					Files.createTempDirectory("spotless-groovy-instance").toAbsolutePath().toString(),
+					EquinoxLocations.PROP_CONFIG_AREA,
+					Files.createTempDirectory("spotless-groovy-config").toAbsolutePath().toString());
+
 			solstice.openShim(props);
 			ShimIdeBootstrapServices.apply(props, solstice.getContext());
 			solstice.start("org.apache.felix.scr");
@@ -67,6 +108,27 @@ public class GrEclipseFormatterStepImpl {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static File nestedJarFolder() {
+		ClassLoader classLoader = GrEclipseFormatterStepImpl.class.getClassLoader();
+		if (classLoader instanceof URLClassLoader urlClassLoader) {
+			for (var url : urlClassLoader.getURLs()) {
+				if (!"file".equals(url.getProtocol())) {
+					continue;
+				}
+				try {
+					File file = new File(url.toURI());
+					File parent = file.getParentFile();
+					if (parent != null && NestedJars.DIR.equals(parent.getName())) {
+						return parent;
+					}
+				} catch (URISyntaxException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		return CacheLocations.p2nestedJars();
 	}
 
 	/**
