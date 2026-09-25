@@ -28,6 +28,11 @@ on:
           - plugin-maven
           - all
           - lib
+          - lib-recover
+      lib_version:
+        description: 'Existing lib tag version to publish when using lib-recover (e.g. 4.10.3)'
+        required: false
+        type: string
 
 jobs:
   build:
@@ -49,9 +54,19 @@ jobs:
       ORG_GRADLE_PROJECT_signingInMemoryKeyId: "0xB74EC7C6"
       ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PASSPHRASE }}
     steps:
+      - name: Validate library recovery input
+        if: "${{ inputs.to_publish == 'lib-recover' }}"
+        env:
+          LIB_VERSION: ${{ inputs.lib_version }}
+        run: |
+          [[ "$LIB_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+            echo 'lib-recover requires a released library version, e.g. 4.10.3'
+            exit 1
+          }
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+          ref: ${{ inputs.to_publish == 'lib-recover' && format('refs/tags/lib/{0}', inputs.lib_version) || github.ref }}
       - name: Configure git credentials for JGit
         run: |
           git config --local http.https://github.com/.extraheader "AUTHORIZATION: basic $(echo -n x-access-token:${{ secrets.GITHUB_TOKEN }} | base64 -w0)"
@@ -83,3 +98,28 @@ jobs:
         if: "${{ github.event.inputs.to_publish == 'lib' }}"
         run: |
           ./gradlew :changelogPush -Prelease=true --stacktrace --warning-mode all --no-configuration-cache
+      - name: Recover library artifacts from an existing tag
+        if: "${{ inputs.to_publish == 'lib-recover' }}"
+        env:
+          LIB_VERSION: ${{ inputs.lib_version }}
+        run: |
+          # Verify the build's versions without printing Gradle properties or secrets.
+          cat > "$RUNNER_TEMP/verify-library-version.gradle" <<'EOF'
+          gradle.projectsEvaluated {
+              if (rootProject.name != 'spotless') {
+                  return // Init scripts also run for the included build-logic build.
+              }
+              [':lib', ':lib-extra'].each { projectPath ->
+                  def library = rootProject.project(projectPath)
+                  if (library.version.toString() != System.getenv('LIB_VERSION')) {
+                      throw new GradleException("Library version does not match the recovery tag: ${projectPath}")
+                  }
+              }
+          }
+          EOF
+          # End this build successfully so the publishing plugin uploads its bundle.
+          # Do not run changelogPush: the version and tag already exist.
+          ./gradlew :lib:publishToMavenCentral :lib-extra:publishToMavenCentral \
+            -Prelease=true -PmavenCentralDeploymentValidation=PUBLISHED \
+            --init-script "$RUNNER_TEMP/verify-library-version.gradle" \
+            --stacktrace --warning-mode all --no-configuration-cache --no-scan
