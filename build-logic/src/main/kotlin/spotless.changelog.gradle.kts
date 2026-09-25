@@ -36,6 +36,10 @@ if (project == rootProject) {
       )
     }
     if (changelogPushTasks.size == 1) {
+      check(rootProject.findProperty("publicationConfirmed")?.toString() == "true") {
+        "Publish and confirm the artifacts before pushing release tags. " +
+            "Use bash .github/scripts/publish-release.sh {lib|plugin-gradle|plugin-maven}."
+      }
       // if the one thing being published is a plugin, make sure there aren't any unreleased
       // changes in lib
       val isPlugin =
