@@ -1,0 +1,17 @@
+package test;
+
+import java.util.*;
+import java.util.concurrent.*;
+
+public class Test {
+	List<String> sorted(List<String> values) {
+		Collections.sort(values);
+		var iterator = values.iterator();
+		values.forEach(value -> System.out.println(value.length()));
+		return iterator.hasNext() ? values : Collections.emptyList();
+	}
+
+	long timeoutMillis() {
+		return TimeUnit.SECONDS.toMillis(1);
+	}
+}

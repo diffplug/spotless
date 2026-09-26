@@ -13,6 +13,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Changes
 - Bump default Eclipse JDT formatter version from `4.40` to `4.41`.
+### Fixed
+- `expandWildcardImports` no longer drops the import of a type that is only used to qualify a static member (such as `Collections.sort(list)` or `TimeUnit.SECONDS`), or the static import of a field or enum constant (such as `PI` from `import static java.lang.Math.*`), which produced code that did not compile. ([#2833](https://github.com/diffplug/spotless/issues/2833))
 
 ## [4.10.3] - 2026-09-25
 
