@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless;
 
+import javax.annotation.Nullable;
+
 import static com.diffplug.spotless.GitPrePushHookInstaller.Executor.GRADLE;
 
 import java.io.File;
@@ -26,7 +28,11 @@ import java.io.File;
 public class GitPrePushHookInstallerGradle extends GitPrePushHookInstaller {
 
 	public GitPrePushHookInstallerGradle(GitPreHookLogger logger, File root) {
-		super(logger, root);
+		this(logger, root, null);
+	}
+
+	public GitPrePushHookInstallerGradle(GitPreHookLogger logger, File root, @Nullable File hooksRoot) {
+		super(logger, root, hooksRoot);
 	}
 
 	/**
