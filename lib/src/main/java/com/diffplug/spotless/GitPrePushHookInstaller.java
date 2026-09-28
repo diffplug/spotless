@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Locale;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import javax.annotation.Nullable;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Abstract class responsible for installing a Git pre-push hook in a repository.
@@ -143,8 +143,8 @@ public abstract class GitPrePushHookInstaller {
 
 		var hookContent = "";
 		final var gitHookFile = (hooksRoot != null ? hooksRoot.toPath() : root.toPath().resolve(".git/hooks"))
-			.resolve("pre-push")
-			.toFile();
+				.resolve("pre-push")
+				.toFile();
 
 		if (!gitHookFile.exists()) {
 			logger.info("Git pre-push hook not found, creating it");

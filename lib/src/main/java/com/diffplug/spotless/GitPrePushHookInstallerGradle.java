@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
  */
 package com.diffplug.spotless;
 
-import javax.annotation.Nullable;
-
 import static com.diffplug.spotless.GitPrePushHookInstaller.Executor.GRADLE;
 
 import java.io.File;
+
+import javax.annotation.Nullable;
 
 /**
  * Implementation of {@link GitPrePushHookInstaller} specifically for Gradle-based projects.
