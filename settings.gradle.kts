@@ -9,7 +9,7 @@ pluginManagement {
 plugins {
   id("com.diffplug.spotless") version "8.10.3" apply false
   id("com.github.spotbugs") version "6.5.12" apply false
-  id("com.gradle.develocity") version "4.5.1"
+  id("com.gradle.develocity") version "4.6.0"
 }
 
 dependencyResolutionManagement {
