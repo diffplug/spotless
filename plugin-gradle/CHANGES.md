@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Changes
 - Bump default `eclipse` version from `4.40` to `4.41`.
+- spotlessInstallGitPrePushHook now respects Git’s core.hooksPath when installing the pre-push hook, instead of always writing to .git/hooks. ([#3115](https://github.com/diffplug/spotless/pull/3115)
 
 ## [8.10.3] - 2026-09-25
 ### Changes
