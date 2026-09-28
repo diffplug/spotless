@@ -103,7 +103,7 @@ class EquoBasedStepBuilderLockfileTest {
 				"lockfile test formatter",
 				mavenProvisioner,
 				p2Provisioner,
-				"4.40",
+				"4.41",
 				state -> input -> input,
 				ImmutableMap.builder()) {
 			@Override
