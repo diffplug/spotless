@@ -126,61 +126,29 @@ public class ExpandWildcardImportsStepTest extends ResourceHarness {
 		FormatterStep step = ExpandWildcardImportsStep.create(Collections.emptySet(), TestProvisioner.mavenCentral());
 
 		// Even with empty classpath, Java standard library imports should still be expanded
-		String simpleCode = """
-				package test;
-
-				import java.util.*;
-
-				public class Test {
-					private List<String> items;
-				}
-				""";
-
-		String expectedOutput = """
-				package test;
-
-				import java.util.List;
-
-				public class Test {
-					private List<String> items;
-				}
-				""";
-
 		// The step should still expand java.util.* to java.util.List
-		StepHarness.forStep(step).test(simpleCode, expectedOutput);
+		StepHarness.forStep(step).testResource("java/expandwildcardimports/JavaUtilWildcardUnformatted.test", "java/expandwildcardimports/JavaUtilWildcardFormatted.test");
 	}
 
 	@Test
 	void expandWildcardImports_resolvesJdkXmlTypes() throws Exception {
 		FormatterStep step = ExpandWildcardImportsStep.create(Collections.emptySet(), TestProvisioner.mavenCentral());
 
-		String simpleCode = """
-				package test;
+		StepHarness.forStep(step).testResource("java/expandwildcardimports/JdkXmlTypesUnformatted.test", "java/expandwildcardimports/JdkXmlTypesFormatted.test");
+	}
 
-				import java.io.*;
-				import org.xml.sax.InputSource;
+	@Test
+	void expandWildcardImports_keepsTypesOnlyUsedAsQualifiers() throws Exception {
+		FormatterStep step = ExpandWildcardImportsStep.create(Collections.emptySet(), TestProvisioner.mavenCentral());
 
-				public class Test {
-					InputSource inputSource(String value) {
-						return new InputSource(new StringReader(value));
-					}
-				}
-				""";
+		StepHarness.forStep(step).testResource("java/expandwildcardimports/QualifierTypesUnformatted.test", "java/expandwildcardimports/QualifierTypesFormatted.test");
+	}
 
-		String expectedOutput = """
-				package test;
+	@Test
+	void expandWildcardImports_keepsStaticFieldsAndEnumConstants() throws Exception {
+		FormatterStep step = ExpandWildcardImportsStep.create(Collections.emptySet(), TestProvisioner.mavenCentral());
 
-				import java.io.StringReader;
-				import org.xml.sax.InputSource;
-
-				public class Test {
-					InputSource inputSource(String value) {
-						return new InputSource(new StringReader(value));
-					}
-				}
-				""";
-
-		StepHarness.forStep(step).test(simpleCode, expectedOutput);
+		StepHarness.forStep(step).testResource("java/expandwildcardimports/StaticFieldsAndEnumConstantsUnformatted.test", "java/expandwildcardimports/StaticFieldsAndEnumConstantsFormatted.test");
 	}
 
 	@Test

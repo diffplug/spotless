@@ -1,0 +1,10 @@
+package test;
+
+import java.io.StringReader;
+import org.xml.sax.InputSource;
+
+public class Test {
+	InputSource inputSource(String value) {
+		return new InputSource(new StringReader(value));
+	}
+}
