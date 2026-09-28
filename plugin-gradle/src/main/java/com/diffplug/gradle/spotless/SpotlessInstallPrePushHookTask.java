@@ -127,31 +127,31 @@ public abstract class SpotlessInstallPrePushHookTask extends DefaultTask {
 	}
 
 	private boolean isGitWorkTree(File root) {
-		var stdout = new ByteArrayOutputStream();
-		var stderr = new ByteArrayOutputStream();
+		var outputStream = new ByteArrayOutputStream();
+		var errorStream = new ByteArrayOutputStream();
 
 		var result = getExecOperations().exec(spec -> {
 			spec.setWorkingDir(root);
 			spec.commandLine("git", "rev-parse", "--is-inside-work-tree");
-			spec.setStandardOutput(stdout);
-			spec.setErrorOutput(stderr);
+			spec.setStandardOutput(outputStream);
+			spec.setErrorOutput(errorStream);
 			spec.setIgnoreExitValue(true);
 		});
 
 		return result.getExitValue() == 0
-				&& stdout.toString(StandardCharsets.UTF_8).trim().equals("true");
+				&& outputStream.toString(StandardCharsets.UTF_8).trim().equals("true");
 	}
 
 	private File resolvePrePushHookFile(File root) {
-		var output = new ByteArrayOutputStream();
+		var outputStream = new ByteArrayOutputStream();
 
 		getExecOperations().exec(spec -> {
 			spec.setWorkingDir(root);
 			spec.commandLine("git", "rev-parse", "--git-path", "hooks/pre-push");
-			spec.setStandardOutput(output);
+			spec.setStandardOutput(outputStream);
 		});
 
-		String pathOutput = output.toString(StandardCharsets.UTF_8);
+		String pathOutput = outputStream.toString(StandardCharsets.UTF_8);
 		var path = Path.of(normalizePath(pathOutput));
 		return (path.isAbsolute() ? path : root.toPath().resolve(path)).normalize().toFile();
 	}
