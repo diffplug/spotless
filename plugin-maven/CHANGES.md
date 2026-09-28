@@ -21,6 +21,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `scalafmt` version `3.8.1` -> `3.11.5`. ([#2173](https://github.com/diffplug/spotless/pull/2173))
 - Bump default `google-java-format` version `1.30.0` -> `1.36.1`. ([#3075](https://github.com/diffplug/spotless/pull/3075))
 - Bump default `gherkin-utils` version `10.0.0` -> `12.0.2`. ([#2979](https://github.com/diffplug/spotless/pull/2979))
+- Bump default `jackson` version `2.22.2` -> `2.22.3`. ([#3101](https://github.com/diffplug/spotless/pull/3101))
 
 ### Fixed
 - Fix release signing by using Gradle's required eight-digit signing subkey ID. ([#3105](https://github.com/diffplug/spotless/pull/3105))
