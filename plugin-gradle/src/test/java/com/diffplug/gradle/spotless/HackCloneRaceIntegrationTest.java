@@ -108,7 +108,6 @@ class HackCloneRaceIntegrationTest extends GradleIntegrationHarness {
 
 		for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
 			BuildResult result = gradleRunner()
-					.withGradleVersion("9.6.1")
 					.withArguments("spotlessRace", "--parallel", "--build-cache", "--rerun-tasks", "--max-workers=" + SUBPROJECTS, "--stacktrace")
 					.build();
 			assertThat(result.getOutput())
