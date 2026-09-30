@@ -7,6 +7,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 - Bump default `eclipse` version from `4.40` to `4.41`.
 
+### Fixed
+Migrate Plexus component injection to JSR-330 and Maven parameter. ([#3122](https://github.com/diffplug/spotless/pull/3122))
+
 ## [3.10.3] - 2026-09-25
 ### Changes
 - Generate formatter defaults from version catalog. ([#3045](https://github.com/diffplug/spotless/pull/3045))
