@@ -16,7 +16,9 @@
 package com.diffplug.spotless.glue.javaparser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -37,6 +39,7 @@ import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.RecordDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -65,6 +68,11 @@ import com.diffplug.spotless.FormatterFunc;
  *       <em>different</em> FQN, we leave the reference qualified.</li>
  *   <li><b>Declared-type collisions.</b> If the simple name matches a class,
  *       enum, or record declared in the same file, we leave it.</li>
+ *   <li><b>Unknown inheritance.</b> A superclass or superinterface that is not
+ *       declared in this file can contribute member types. Those names are
+ *       invisible without a classpath, so a type with such a supertype
+ *       (including through a same-file supertype) is left qualified. An
+ *       implicit {@code java.lang.Object} does not count.</li>
  *   <li><b>Unqualified-reference collisions.</b> If the simple name is already
  *       used unqualified elsewhere (possibly resolving to a same-package type),
  *       adding an import could silently change what it resolves to.</li>
@@ -191,18 +199,21 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 		// 8. Convert line/column positions to string offsets and replace
 		// Build line-start offset table
 		int[] lineOffsets = buildLineOffsets(rawUnix);
+		Set<TypeDeclaration<?>> unknownInheritance = typesWithUnknownInheritance(cu);
 
 		// Use a set keyed on start offset to deduplicate (JavaParser may visit the same node twice,
 		// e.g. for instanceof pattern variables)
 		Map<Integer, int[]> removalsByStart = new LinkedHashMap<>();
+		Set<String> shortened = new LinkedHashSet<>();
 		for (QualifiedTypeRef ref : qualifiedRefs) {
-			if (!safeToShorten.contains(ref.fqn)) {
+			if (!safeToShorten.contains(ref.fqn) || insideUnknownInheritance(ref.node, unknownInheritance)) {
 				continue;
 			}
 			int scopeStartOffset = toOffset(lineOffsets, ref.scopeStart);
 			int nameStartOffset = toOffset(lineOffsets, ref.nameStart);
 			if (scopeStartOffset >= 0 && nameStartOffset > scopeStartOffset) {
 				removalsByStart.putIfAbsent(scopeStartOffset, new int[]{scopeStartOffset, nameStartOffset});
+				shortened.add(ref.fqn);
 			}
 		}
 		List<int[]> removals = new ArrayList<>(removalsByStart.values());
@@ -217,7 +228,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 
 		// 9. Add missing imports
 		Set<String> newImports = new TreeSet<>();
-		for (String fqn : safeToShorten) {
+		for (String fqn : shortened) {
 			if (isImplicitlyImported(fqn, packageName)) {
 				continue;
 			}
@@ -246,7 +257,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 		return sb.toString();
 	}
 
-	private record QualifiedTypeRef(String fqn, String simpleName, Position scopeStart, Position nameStart) {}
+	private record QualifiedTypeRef(String fqn, String simpleName, Position scopeStart, Position nameStart, Node node) {}
 
 	/** Collects the outermost fully-qualified type nodes, along with the text range of the scope to remove. */
 	private static final class CollectQualifiedTypesVisitor extends VoidVisitorAdapter<Void> {
@@ -286,7 +297,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			if (scope.getBegin().isPresent() && type.getName().getBegin().isPresent()) {
 				Position scopeStart = scope.getBegin().get();
 				Position nameStart = type.getName().getBegin().get();
-				qualifiedRefs.add(new QualifiedTypeRef(rawName, simple, scopeStart, nameStart));
+				qualifiedRefs.add(new QualifiedTypeRef(rawName, simple, scopeStart, nameStart, type));
 			}
 		}
 
@@ -353,9 +364,123 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			if (typeScope.getBegin().isPresent() && typeNode.getName().getBegin().isPresent()) {
 				simpleToFqns.computeIfAbsent(simple, k -> new LinkedHashSet<>()).add(fqnStr);
 				qualifiedRefs.add(new QualifiedTypeRef(fqnStr, simple,
-						typeScope.getBegin().get(), typeNode.getName().getBegin().get()));
+						typeScope.getBegin().get(), typeNode.getName().getBegin().get(), typeNode));
 			}
 		}
+	}
+
+	/**
+	 * A supertype that is not in this file can declare member types. Those names
+	 * are in scope in the subtype, and the formatter cannot see them.
+	 */
+	private static Set<TypeDeclaration<?>> typesWithUnknownInheritance(CompilationUnit cu) {
+		List<TypeDeclaration<?>> decls = new ArrayList<>();
+		decls.addAll(cu.findAll(ClassOrInterfaceDeclaration.class));
+		decls.addAll(cu.findAll(EnumDeclaration.class));
+		decls.addAll(cu.findAll(RecordDeclaration.class));
+		Map<TypeDeclaration<?>, Boolean> memo = new IdentityHashMap<>();
+		Set<TypeDeclaration<?>> visiting = Collections.newSetFromMap(new IdentityHashMap<>());
+		Set<TypeDeclaration<?>> unknown = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (TypeDeclaration<?> decl : decls) {
+			if (hasUnknownInheritance(decl, decls, memo, visiting)) {
+				unknown.add(decl);
+			}
+		}
+		return unknown;
+	}
+
+	private static boolean hasUnknownInheritance(TypeDeclaration<?> decl, List<TypeDeclaration<?>> all,
+			Map<TypeDeclaration<?>, Boolean> memo, Set<TypeDeclaration<?>> visiting) {
+		Boolean cached = memo.get(decl);
+		if (cached != null) {
+			return cached;
+		}
+		if (!visiting.add(decl)) {
+			return true;
+		}
+		boolean unknown = false;
+		for (ClassOrInterfaceType supertype : supertypes(decl)) {
+			if (isJavaLangObject(supertype, all)) {
+				continue;
+			}
+			TypeDeclaration<?> resolved = resolveInFile(supertype, all);
+			if (resolved == null || hasUnknownInheritance(resolved, all, memo, visiting)) {
+				unknown = true;
+				break;
+			}
+		}
+		visiting.remove(decl);
+		memo.put(decl, unknown);
+		return unknown;
+	}
+
+	private static List<ClassOrInterfaceType> supertypes(TypeDeclaration<?> decl) {
+		List<ClassOrInterfaceType> types = new ArrayList<>();
+		if (decl instanceof ClassOrInterfaceDeclaration classOrInterface) {
+			types.addAll(classOrInterface.getExtendedTypes());
+			types.addAll(classOrInterface.getImplementedTypes());
+		} else if (decl instanceof EnumDeclaration enumDecl) {
+			types.addAll(enumDecl.getImplementedTypes());
+		} else if (decl instanceof RecordDeclaration recordDecl) {
+			types.addAll(recordDecl.getImplementedTypes());
+		}
+		return types;
+	}
+
+	/** {@code java.lang.Object} has no member types. A bare {@code Object} is that type unless this file declares one. */
+	private static boolean isJavaLangObject(ClassOrInterfaceType type, List<TypeDeclaration<?>> all) {
+		if (type.getScope().isPresent()) {
+			return "java.lang.Object".equals(buildRawName(type));
+		}
+		if (!"Object".equals(type.getNameAsString())) {
+			return false;
+		}
+		for (TypeDeclaration<?> decl : all) {
+			if ("Object".equals(decl.getNameAsString())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static TypeDeclaration<?> resolveInFile(ClassOrInterfaceType type, List<TypeDeclaration<?>> all) {
+		if (type.getScope().isPresent()) {
+			if (startsWithPackage(buildRawName(type))) {
+				return null;
+			}
+			TypeDeclaration<?> scope = resolveInFile(type.getScope().get(), all);
+			if (scope == null) {
+				return null;
+			}
+			for (var member : scope.getMembers()) {
+				if (member instanceof TypeDeclaration<?> nested && nested.getNameAsString().equals(type.getNameAsString())) {
+					return nested;
+				}
+			}
+			return null;
+		}
+		TypeDeclaration<?> match = null;
+		for (TypeDeclaration<?> decl : all) {
+			if (!decl.getNameAsString().equals(type.getNameAsString())) {
+				continue;
+			}
+			if (match != null) {
+				return null;
+			}
+			match = decl;
+		}
+		return match;
+	}
+
+	private static boolean insideUnknownInheritance(Node node, Set<TypeDeclaration<?>> unknown) {
+		Node current = node;
+		while (current != null) {
+			if (current instanceof TypeDeclaration<?> decl && unknown.contains(decl)) {
+				return true;
+			}
+			current = current.getParentNode().orElse(null);
+		}
+		return false;
 	}
 
 	private static String buildRawName(ClassOrInterfaceType type) {
