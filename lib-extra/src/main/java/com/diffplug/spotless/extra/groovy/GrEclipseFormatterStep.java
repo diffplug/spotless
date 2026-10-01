@@ -34,7 +34,7 @@ public final class GrEclipseFormatterStep {
 	private GrEclipseFormatterStep() {}
 
 	private static final String NAME = "eclipse groovy formatter";
-	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(17, "4.36").add(21, "4.40");
+	private static final Jvm.Support<String> JVM_SUPPORT = Jvm.<String> support(NAME).add(17, "4.36").add(21, "4.41");
 
 	public static String defaultVersion() {
 		return JVM_SUPPORT.getRecommendedFormatterVersion();
@@ -70,6 +70,8 @@ public final class GrEclipseFormatterStep {
 						"org.eclipse.jdt.groovy.core",
 						"org.codehaus.groovy"));
 				model.addFilterAndValidate("no-debug", filter -> filter.exclude("org.eclipse.jdt.debug"));
+				model.addFilterAndValidate("no-supplement",
+						filter -> filter.exclude("org.eclipse.equinox.supplement"));
 				// work around https://github.com/groovy/groovy-eclipse/issues/1617
 				model.useMavenCentral = false;
 				return model;
