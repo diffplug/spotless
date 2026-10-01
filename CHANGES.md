@@ -14,6 +14,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 - Bump default Eclipse JDT formatter version from `4.40` to `4.41`.
 
+### Fixed
+- `shortenFullyQualifiedTypes` leaves a qualified name alone when the enclosing type extends or implements a type that is not in the same file, so an inherited member type cannot take the simple name. ([#3117](https://github.com/diffplug/spotless/issues/3117))
+
 ## [4.10.3] - 2026-09-25
 
 ### Changes
