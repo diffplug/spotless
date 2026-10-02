@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Changes
 - Bump default `eclipse` version from `4.40` to `4.41`.
+- No longer hardcode the `com.sun.*` internal packages required by the Java formatters, improving support for newer JDKs such as JDK 27. ([#3128](https://github.com/diffplug/spotless/issues/3128))
 
 ## [8.10.3] - 2026-09-25
 ### Changes

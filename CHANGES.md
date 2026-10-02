@@ -13,6 +13,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Changes
 - Bump default Eclipse JDT formatter version from `4.40` to `4.41`.
+- Java formatters (google-java-format, palantir-java-format, cleanthat) no longer rely on a hardcoded list of `com.sun.*` internal packages. The required packages are discovered in the `jdk.compiler` module at runtime, which improves support for newer JDKs such as JDK 27. ([#3128](https://github.com/diffplug/spotless/issues/3128))
 
 ## [4.10.3] - 2026-09-25
 
