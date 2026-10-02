@@ -105,7 +105,7 @@ class ImportOrderStepTest extends ResourceHarness {
 
 	@Test
 	void semanticSort() {
-		FormatterStep step = ImportOrderStep.forJava().createFrom(false, true, Set.of("com.sun.jna.platform.win32.COM"),
+		FormatterStep step = ImportOrderStep.forJava().createFrom(false, true, Set.of("com.jna.platform.win32.COM"),
 				Set.of("com.example.b"), createTestFile("java/importsorter/import.properties"));
 		StepHarness.forStep(step).testResource("java/importsorter/JavaCodeUnsortedSemanticSort.test", "java/importsorter/JavaCodeSortedSemanticSort.test");
 	}

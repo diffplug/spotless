@@ -91,16 +91,8 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	void gitAttributes() throws IOException {
 		setFile(".gitattributes").toContent("* text eol=lf");
 		if (Jvm.version() >= 16) {
-			// for GJF https://github.com/diffplug/spotless/issues/834
-			setFile(".mvn/jvm.config").toContent(
-					"--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"
-							+ " --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED"
-							+ " --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED"
-							+ " --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED"
-							+ " --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"
-							// this last line is for Detekt
-							+ // this last line is for Detekt
-							" --add-opens java.base/java.lang=ALL-UNNAMED");
+			// this line is for Detekt
+			setFile(".mvn/jvm.config").toContent("--add-opens java.base/java.lang=ALL-UNNAMED");
 		}
 		// copy the mvnw resources
 		copy("mvnw").setExecutable(true);

@@ -22,35 +22,29 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.diffplug.spotless.Jvm;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import sun.misc.Unsafe;
 
+/**
+ * Some Java formatters (google-java-format, palantir-java-format, cleanthat) need access to
+ * the internal packages of the JDK compiler module. Instead of hardcoding those package names,
+ * which are JDK internals that may be renamed or removed, we enumerate and open every package
+ * of that module.
+ */
 final class ModuleHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ModuleHelper.class);
 
+	/** The module which owns the packages that the Java formatters above require. */
+	private static final String REQUIRED_MODULE = "jdk.compiler";
+
 	// prevent direct instantiation
 	private ModuleHelper() {}
-
-	private static final Map<String, String> REQUIRED_PACKAGES_TO_TEST_CLASSES = new HashMap<>();
-
-	static {
-		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.util", "Context");
-		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.file", "CacheFSInfo");
-		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.tree", "TreeTranslator");
-		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.parser", "Tokens$TokenKind");
-		REQUIRED_PACKAGES_TO_TEST_CLASSES.putIfAbsent("com.sun.tools.javac.api", "DiagnosticFormatter$PositionKind");
-	}
 
 	private static boolean checkDone;
 
@@ -67,9 +61,8 @@ final class ModuleHelper {
 				if (!failedToOpen.isEmpty()) {
 					final StringBuilder message = new StringBuilder();
 					message.append("WARNING: Some required internal classes are unavailable. Please consider adding the following JVM arguments\n");
-					message.append("WARNING: ");
 					for (String name : failedToOpen) {
-						message.append("--add-opens jdk.compiler/%s=ALL-UNNAMED".formatted(name));
+						message.append("WARNING: --add-opens %s/%s=ALL-UNNAMED%n".formatted(REQUIRED_MODULE, name));
 					}
 					LOGGER.warn("{}", message);
 				}
@@ -79,34 +72,31 @@ final class ModuleHelper {
 		}
 	}
 
-	@SuppressFBWarnings("REC_CATCH_EXCEPTION") // workaround JDK11
+	/** @return the packages of {@link #REQUIRED_MODULE} which are not open to the module calling this code. */
 	private static List<String> unavailableRequiredPackages() {
+		final Module callerModule = ModuleHelper.class.getModule();
 		final List<String> packages = new ArrayList<>();
-		for (Map.Entry<String, String> e : REQUIRED_PACKAGES_TO_TEST_CLASSES.entrySet()) {
-			final String key = e.getKey();
-			final String value = e.getValue();
-			try {
-				final Class<?> clazz = Class.forName(key + "." + value);
-				if (clazz.isEnum()) {
-					clazz.getMethod("values").invoke(null);
-				} else {
-					clazz.getDeclaredConstructor().newInstance();
+		for (Module module : requiredModules()) {
+			for (String name : module.getPackages()) {
+				if (!module.isOpen(name, callerModule)) {
+					packages.add(name);
 				}
-			} catch (IllegalAccessException ex) {
-				packages.add(key);
-			} catch (Exception ignore) {
-				// in old versions of JDK some classes could be unavailable
 			}
 		}
 		return packages;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static void openPackages(Collection<String> packagesToOpen) throws Throwable {
-		final Collection<?> modules = allModules();
-		if (modules == null) {
-			return;
+	private static List<Module> requiredModules() {
+		final List<Module> modules = new ArrayList<>();
+		for (Module module : ModuleLayer.boot().modules()) {
+			if (REQUIRED_MODULE.equals(module.getName())) {
+				modules.add(module);
+			}
 		}
+		return modules;
+	}
+
+	private static void openPackages(Collection<String> packagesToOpen) throws Throwable {
 		final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
 		unsafeField.setAccessible(true);
 		final Unsafe unsafe = (Unsafe) unsafeField.get(null);
@@ -115,30 +105,14 @@ final class ModuleHelper {
 				unsafe.staticFieldBase(implLookupField),
 				unsafe.staticFieldOffset(implLookupField));
 		final MethodHandle modifiers = lookup.findSetter(Method.class, "modifiers", Integer.TYPE);
-		final Method exportMethod = Class.forName("java.lang.Module").getDeclaredMethod("implAddOpens", String.class);
-		modifiers.invokeExact(exportMethod, Modifier.PUBLIC);
-		for (Object module : modules) {
-			final Collection<String> packages = (Collection<String>) module.getClass().getMethod("getPackages").invoke(module);
-			for (String name : packages) {
+		final Method addOpensMethod = Module.class.getDeclaredMethod("implAddOpens", String.class);
+		modifiers.invokeExact(addOpensMethod, Modifier.PUBLIC);
+		for (Module module : requiredModules()) {
+			for (String name : module.getPackages()) {
 				if (packagesToOpen.contains(name)) {
-					exportMethod.invoke(module, name);
+					addOpensMethod.invoke(module, name);
 				}
 			}
-		}
-	}
-
-	@Nullable @SuppressFBWarnings("REC_CATCH_EXCEPTION") // workaround JDK11
-	private static Collection<?> allModules() {
-		// calling ModuleLayer.boot().modules() by reflection
-		try {
-			final Object boot = Class.forName("java.lang.ModuleLayer").getMethod("boot").invoke(null);
-			if (boot == null) {
-				return null;
-			}
-			final Object modules = boot.getClass().getMethod("modules").invoke(boot);
-			return (Collection<?>) modules;
-		} catch (Exception ignore) {
-			return null;
 		}
 	}
 }
