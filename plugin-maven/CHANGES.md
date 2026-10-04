@@ -10,6 +10,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `jackson` version `2.22.2` -> `2.22.3`. ([#3101](https://github.com/diffplug/spotless/pull/3101))
 - Bump default `palantir-java-format` version `2.98.0` -> `2.99.0`. ([#3103](https://github.com/diffplug/spotless/pull/3103))
 - Bump default `google-java-format` version `1.36.1` -> `1.37.0`. ([#3130](https://github.com/diffplug/spotless/pull/3130))
+- Bump default `palantir-java-format` version `2.98.0` -> `2.99.0`. ([#3130](https://github.com/diffplug/spotless/pull/3130))
+
 
 ## [3.10.3] - 2026-09-25
 ### Changes
