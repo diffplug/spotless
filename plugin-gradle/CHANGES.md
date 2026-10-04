@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Changes
 - Bump default `eclipse` version from `4.40` to `4.41`.
+- Bump default `gherkin` version `42.0.0` -> `42.0.1`. ([#3088](https://github.com/diffplug/spotless/pull/3088))
 
 ## [8.10.3] - 2026-09-25
 ### Changes
