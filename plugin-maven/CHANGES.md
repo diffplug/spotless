@@ -15,6 +15,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 - `shortenFullyQualifiedTypes` leaves a qualified name alone when the enclosing type extends or implements a type that is not in the same file, so an inherited member type cannot take the simple name. ([#3117](https://github.com/diffplug/spotless/issues/3117))
 
+### Fixed
+Migrate Plexus component injection to JSR-330 and Maven parameter. ([#3122](https://github.com/diffplug/spotless/pull/3122))
+
 ## [3.10.3] - 2026-09-25
 ### Changes
 - Generate formatter defaults from version catalog. ([#3045](https://github.com/diffplug/spotless/pull/3045))
