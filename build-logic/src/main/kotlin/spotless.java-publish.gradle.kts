@@ -42,7 +42,9 @@ tasks.jar {
   dependsOn(changelogTasks.named("changelogCheck"))
 }
 
-// ensures that changelog bump and push only happens if the publish was successful
+// These tasks prepare publications, but Central uploads only when the build ends.
+// CI uses publish-release.sh to finish publishing before a separate changelog build,
+// which excludes these dependencies because the artifacts are already published.
 changelogTasks.named("changelogBump") {
   dependsOn(tasks.named("publishToMavenCentral"))
   // if we have a Gradle plugin, we need to push it up to the plugin portal too

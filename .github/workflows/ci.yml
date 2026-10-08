@@ -33,6 +33,8 @@ jobs:
           distribution: "temurin"
           java-version: 21
       - uses: gradle/actions/setup-gradle@v6
+      - name: Check release publication ordering
+        run: python3 .github/scripts/test_publish_release.py
       - run: ./gradlew spotlessCheck
       - run: ./gradlew assemble testClasses publishToMavenLocal
 
