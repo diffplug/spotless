@@ -21,6 +21,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `greclipse` version to latest `4.40` -> `4.41`. ([#3123](https://github.com/diffplug/spotless/pull/3123))
 - Bump default `ktfmt` version `0.64` -> `0.65`. ([#3135](https://github.com/diffplug/spotless/pull/3135))  
   Which moved to the `org.jetbrains.kotlinx:ktfmt` coordinate and `org.jetbrains.kotlinx.ktfmt` package. Older versions are still supported.
+- Bump default `palantir-java-format` version `2.99.0` -> `2.102.0`. ([#3132](https://github.com/diffplug/spotless/pull/3132))
 
 ### Fixed
 - `shortenFullyQualifiedTypes` no longer corrupts a method reference on a field/variable (`localVar.field::method`), which JavaParser parses as a type-shaped scope; such scopes now go through the same known-package / minimum-depth heuristic as other expression scopes before being treated as fully-qualified types. ([#3133](https://github.com/diffplug/spotless/issues/3133))
