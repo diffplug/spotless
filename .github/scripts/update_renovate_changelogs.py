@@ -61,58 +61,75 @@ def extract_formatter_versions(toml_str: str) -> dict[str, str]:
     return result
 
 
+PR_LINK = r"\[#\d+\]\([^\s)]+\)"
+BUMP_ENTRY = re.compile(
+    r"- Bump default `(?P<tool>[^`]+)` version `(?P<old>[^`]+)` -> `(?P<new>[^`]+)`\. "
+    rf"\((?P<links>{PR_LINK}(?:, {PR_LINK})*)\)(?P<trailing>[ \t]*)"
+)
+
+
+def merge_changelog_entry(changes: str, entry: str) -> str:
+    """Consolidate generated bumps, leaving handwritten entries and continuation lines intact."""
+    incoming = BUMP_ENTRY.fullmatch(entry)
+    lines = changes.splitlines(keepends=True)
+    matches = []
+    if incoming:
+        for index, line in enumerate(lines):
+            existing = BUMP_ENTRY.fullmatch(line.rstrip("\n"))
+            if existing and existing["tool"] == incoming["tool"]:
+                matches.append((index, existing))
+
+    if not matches:
+        if entry in changes.splitlines():
+            return changes
+        prefix = changes.rstrip()
+        return prefix + ("\n" if prefix else "") + entry + "\n\n"
+
+    # The first unreleased entry records the version users last received. The catalog's
+    # current version is authoritative, even when Renovate updates the same PR again.
+    first_index, first = matches[0]
+    links = []
+    for match in [existing for _, existing in matches] + [incoming]:
+        for link in re.findall(PR_LINK, match["links"]):
+            if link not in links:
+                links.append(link)
+    lines[first_index] = (
+        f"- Bump default `{incoming['tool']}` version `{first['old']}` -> `{incoming['new']}`. "
+        f"({', '.join(links)}){first['trailing']}\n"
+    )
+    for index, _ in reversed(matches[1:]):
+        del lines[index]
+    return "".join(lines)
+
+
 def insert_changelog_entries(content: str, entries: list[str]) -> str:
-    unreleased_match = re.search(r"(##\s*\[Unreleased\]\s*\n+)", content)
+    if not entries:
+        return content
+    unreleased_match = re.search(r"^##[ \t]*\[Unreleased\][ \t]*\n", content, re.MULTILINE)
     if not unreleased_match:
         return content
 
     unreleased_start = unreleased_match.end()
-    next_release_match = re.search(r"\n##\s*\[", content[unreleased_start:])
-    if next_release_match:
-        unreleased_end = unreleased_start + next_release_match.start()
-        unreleased_block = content[unreleased_start:unreleased_end]
-        after_block = content[unreleased_end:]
+    next_release = re.search(r"^##[ \t]+", content[unreleased_start:], re.MULTILINE)
+    unreleased_end = unreleased_start + next_release.start() if next_release else len(content)
+    block = content[unreleased_start:unreleased_end]
+
+    changes_header = re.search(r"^###[ \t]+Changes[ \t]*\n", block, re.MULTILINE)
+    if changes_header:
+        start = changes_header.end()
+        next_section = re.search(r"^###[ \t]+", block[start:], re.MULTILINE)
+        end = start + next_section.start() if next_section else len(block)
+        changes = block[start:end]
+        for entry in entries:
+            changes = merge_changelog_entry(changes, entry)
+        block = block[:start] + changes + block[end:]
     else:
-        unreleased_block = content[unreleased_start:]
-        after_block = ""
+        changes = ""
+        for entry in entries:
+            changes = merge_changelog_entry(changes, entry)
+        block = "\n### Changes\n" + changes.lstrip("\n") + block.lstrip("\n")
 
-    new_entries = [e for e in entries if e not in unreleased_block]
-    if not new_entries:
-        return content
-
-    entries_text = "\n".join(new_entries)
-
-    changes_match = re.search(r"(###\s*Changes\s*\n)", unreleased_block)
-    if changes_match:
-        changes_header_end = changes_match.end()
-        # Find the end of ### Changes section (either next ### or next ## or end of block)
-        next_section_match = re.search(r"\n(###\s+\w+|##\s*\[)", unreleased_block[changes_header_end:])
-        if next_section_match:
-            changes_end = changes_header_end + next_section_match.start()
-            changes_content = unreleased_block[changes_header_end:changes_end].rstrip()
-            rest = unreleased_block[changes_end:].lstrip("\n")
-            unreleased_block = (
-                unreleased_block[:changes_header_end]
-                + (changes_content + "\n" if changes_content else "")
-                + entries_text
-                + "\n\n"
-                + rest
-            )
-        else:
-            changes_content = unreleased_block[changes_header_end:].rstrip()
-            unreleased_block = (
-                unreleased_block[:changes_header_end]
-                + (changes_content + "\n" if changes_content else "")
-                + entries_text
-                + "\n\n"
-            )
-    else:
-        if unreleased_block.strip():
-            unreleased_block = "### Changes\n" + entries_text + "\n\n" + unreleased_block.lstrip()
-        else:
-            unreleased_block = "### Changes\n" + entries_text + "\n\n"
-
-    return content[:unreleased_start] + unreleased_block + after_block
+    return content[:unreleased_start] + block + content[unreleased_end:]
 
 
 def main() -> None:

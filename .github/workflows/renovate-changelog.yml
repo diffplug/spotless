@@ -5,10 +5,25 @@ on:
     types: [ opened, synchronize, reopened ]
     paths:
       - 'gradle/libs.versions.toml'
+      - '.github/scripts/*renovate_changelogs.py'
+      - '.github/workflows/renovate-changelog.yml'
 
 jobs:
+  test-updater:
+    name: Test Changelog Updater
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
+
   update-changelog:
     name: Update Changelog
+    needs: test-updater
     if: github.actor == 'renovate[bot]' || startsWith(github.head_ref, 'renovate/')
     runs-on: ubuntu-latest
     permissions:
@@ -20,6 +35,8 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
       - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
       # branch and PR fields arrive through env, never spliced into the shell: a branch name is
       # attacker-controlled text, and ${{ }} would run it as part of the command
       - name: Update Changelogs
