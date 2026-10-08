@@ -22,5 +22,14 @@
         'org.openrewrite.recipe:*',
       ],
     },
+    {
+      // 7.40.0+ requires artifacts from the authenticated Code Genome Project repository.
+      // Keep builds accessible without a token until we opt into that migration.
+      // https://github.com/openrewrite/rewrite-gradle-plugin/issues/476
+      matchPackageNames: [
+        'org.openrewrite.rewrite:org.openrewrite.rewrite.gradle.plugin',
+      ],
+      allowedVersions: '<7.40.0',
+    },
   ],
 }
