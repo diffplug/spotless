@@ -65,6 +65,20 @@ class KtfmtStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void behavior_0_64() throws Exception {
+		FormatterStep step = KtfmtStep.create("0.64", TestProvisioner.mavenCentral());
+		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic.clean");
+	}
+
+	@Test
+	void behaviorWithOptions_0_64() {
+		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
+		options.setMaxWidth(100);
+		FormatterStep step = KtfmtStep.create("0.64", TestProvisioner.mavenCentral(), KtfmtStep.Style.GOOGLE, options);
+		StepHarness.forStep(step).testResource("kotlin/ktfmt/basic.dirty", "kotlin/ktfmt/basic.clean");
+	}
+
+	@Test
 	void behaviorWithOptions_0_53() {
 		KtfmtStep.KtfmtFormattingOptions options = new KtfmtStep.KtfmtFormattingOptions();
 		options.setMaxWidth(100);

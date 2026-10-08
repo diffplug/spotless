@@ -575,7 +575,7 @@ Groovy-Eclipse formatting errors/warnings lead per default to a build failure. T
 
 ### ktfmt
 
-[homepage](https://github.com/facebook/ktfmt). [changelog](https://github.com/facebook/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
+[homepage](https://github.com/Kotlin/ktfmt). [changelog](https://github.com/Kotlin/ktfmt/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/kotlin/Ktfmt.java).
 
 ```xml
 <ktfmt>

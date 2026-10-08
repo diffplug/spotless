@@ -36,14 +36,18 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.ThrowingEx;
 
 /**
- * Wraps up <a href="https://github.com/facebook/ktfmt">ktfmt</a> as a FormatterStep.
+ * Wraps up <a href="https://github.com/Kotlin/ktfmt">ktfmt</a> as a FormatterStep.
  */
 public final class KtfmtStep implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private static final String NAME = "ktfmt";
-	private static final String MAVEN_COORDINATE = "com.facebook:ktfmt:";
+	/**
+	 * Since 0.65, ktfmt is published under the {@code org.jetbrains.kotlinx} group with the {@code org.jetbrains.kotlinx.ktfmt} package.
+	 */
+	private static final String MAVEN_COORDINATE = "org.jetbrains.kotlinx:ktfmt:";
+	private static final String MAVEN_COORDINATE_LEGACY = "com.facebook:ktfmt:";
 
 	private final String version;
 	/**
@@ -69,7 +73,7 @@ public final class KtfmtStep implements Serializable {
 	/**
 	 * Used to allow multiple style option through formatting options and since when is each of them available.
 	 *
-	 * @see <a href="https://github.com/facebook/ktfmt/blob/v0.51/core/src/main/java/com/facebook/ktfmt/format/Formatter.kt#L45-L68">ktfmt source</a>
+	 * @see <a href="https://github.com/Kotlin/ktfmt/blob/v0.51/core/src/main/java/com/Kotlin/ktfmt/format/Formatter.kt#L45-L68">ktfmt source</a>
 	 */
 	public enum Style {
 		// @formatter:off
@@ -213,13 +217,24 @@ public final class KtfmtStep implements Serializable {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
 		return FormatterStep.create(NAME,
-				new KtfmtStep(version, JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner)), style, options),
+				new KtfmtStep(version, JarState.promise(() -> JarState.from(mavenCoordinate(version) + version, provisioner)), style, options),
 				KtfmtStep::equalityState,
 				State::createFormat);
 	}
 
 	public static String defaultVersion() {
 		return KotlinBuildConfig.VERSION_KTFMT;
+	}
+
+	private static String mavenCoordinate(String version) {
+		return isLegacyPackage(version) ? MAVEN_COORDINATE_LEGACY : MAVEN_COORDINATE;
+	}
+
+	/**
+	 * Versions before 0.65 use the {@code com.facebook} group and package, so they can't use the glue code compiled against the latest ktfmt.
+	 */
+	private static boolean isLegacyPackage(String version) {
+		return BadSemver.version(version) < BadSemver.version(0, 65);
 	}
 
 	private State equalityState() {
@@ -249,11 +264,7 @@ public final class KtfmtStep implements Serializable {
 		FormatterFunc createFormat() throws Exception {
 			final ClassLoader classLoader = jarState.getClassLoader();
 
-			if (BadSemver.version(version) < BadSemver.version(0, 51)) {
-				return new KtfmtFormatterFuncCompat(version, style, options, classLoader).getFormatterFunc();
-			}
-
-			if (options != null && BadSemver.version(version) < BadSemver.version(0, 63)) {
+			if (isLegacyPackage(version)) {
 				return new KtfmtFormatterFuncCompat(version, style, options, classLoader).getFormatterFunc();
 			}
 
@@ -342,13 +353,16 @@ public final class KtfmtStep implements Serializable {
 		}
 	}
 
+	/**
+	 * Reflection-based formatter for ktfmt versions before 0.65, which use the {@code com.facebook.ktfmt} package.
+	 */
 	private static final class KtfmtFormatterFuncCompat {
 		private static final String PACKAGE = "com.facebook.ktfmt";
 
 		/**
 		 * The <code>format</code> method is available in the link below.
 		 *
-		 * @see <a href="https://github.com/facebook/ktfmt/blob/v0.51/core/src/main/java/com/facebook/ktfmt/format/Formatter.kt#L78-L94">ktfmt source</a>
+		 * @see <a href="https://github.com/Kotlin/ktfmt/blob/v0.51/core/src/main/java/com/Kotlin/ktfmt/format/Formatter.kt#L78-L94">ktfmt source</a>
 		 */
 		static final String FORMATTER_METHOD = "format";
 
@@ -430,7 +444,7 @@ public final class KtfmtStep implements Serializable {
 							/* manageTrailingCommas = */ Objects.requireNonNullElse(getManageTrailingCommasFrom(options.trailingCommaManagementStrategy), (Boolean) formattingOptionsClass.getMethod("getManageTrailingCommas").invoke(formattingOptions)),
 							/* removeUnusedImports = */ Objects.requireNonNullElse(options.removeUnusedImports, (Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
 							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions));
-				} else {
+				} else if (BadSemver.version(version) < BadSemver.version(0, 63)) {
 					Class<?> trailingCommaManagementStrategyClass = getTrailingCommaManagementStrategyClazz();
 					Object trailingCommaManagementStrategy = options.trailingCommaManagementStrategy == null
 							? formattingOptionsClass.getMethod("getTrailingCommaManagementStrategy").invoke(formattingOptions)
@@ -442,6 +456,28 @@ public final class KtfmtStep implements Serializable {
 							/* trailingCommaManagementStrategy = */ trailingCommaManagementStrategy,
 							/* removeUnusedImports = */ Objects.requireNonNullElse(options.removeUnusedImports, (Boolean) formattingOptionsClass.getMethod("getRemoveUnusedImports").invoke(formattingOptions)),
 							/* debuggingPrintOpsAfterFormatting = */ (Boolean) formattingOptionsClass.getMethod("getDebuggingPrintOpsAfterFormatting").invoke(formattingOptions));
+				} else {
+					// FormattingOptions.Builder is available since 0.63, and keeps the options not managed here (e.g. preserveLambdaBreaks) from the style.
+					Object builder = formattingOptionsClass.getMethod("toBuilder").invoke(formattingOptions);
+					Class<?> builderClass = builder.getClass();
+					if (options.maxWidth != null) {
+						builderClass.getMethod("maxWidth", int.class).invoke(builder, options.maxWidth);
+					}
+					if (options.blockIndent != null) {
+						builderClass.getMethod("blockIndent", int.class).invoke(builder, options.blockIndent);
+					}
+					if (options.continuationIndent != null) {
+						builderClass.getMethod("continuationIndent", int.class).invoke(builder, options.continuationIndent);
+					}
+					if (options.trailingCommaManagementStrategy != null) {
+						Class<?> trailingCommaManagementStrategyClass = getTrailingCommaManagementStrategyClazz();
+						builderClass.getMethod("trailingCommaManagementStrategy", trailingCommaManagementStrategyClass).invoke(builder,
+								Enum.valueOf((Class<? extends Enum>) trailingCommaManagementStrategyClass, options.trailingCommaManagementStrategy.name()));
+					}
+					if (options.removeUnusedImports != null) {
+						builderClass.getMethod("removeUnusedImports", boolean.class).invoke(builder, options.removeUnusedImports);
+					}
+					formattingOptions = builderClass.getMethod("build").invoke(builder);
 				}
 			}
 
