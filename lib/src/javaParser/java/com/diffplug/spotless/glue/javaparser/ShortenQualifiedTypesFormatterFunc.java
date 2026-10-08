@@ -43,7 +43,9 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.MethodReferenceExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
@@ -290,6 +292,13 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 				return;
 			}
 			String simple = type.getNameAsString();
+			// A method-reference scope (`scope::method`) is parsed as a type even when it is really a
+			// field access on an expression (e.g. `localVar.field::get`). Apply the same known-package /
+			// minimum-depth heuristic used for the other expression scopes before trusting it as a
+			// fully-qualified type (issue #3133).
+			if (isMethodReferenceScope(type) && !isTrustedFullyQualifiedName(rawName, knownPackages)) {
+				return;
+			}
 			simpleToFqns.computeIfAbsent(simple, k -> new LinkedHashSet<>()).add(rawName);
 
 			// Record the text range of the scope (to be removed)
@@ -353,9 +362,7 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 				fqn.append('.').append(chain.get(i).getNameAsString());
 			}
 			String fqnStr = fqn.toString();
-			String candidatePackage = fqnStr.substring(0, fqnStr.lastIndexOf('.'));
-			// Trust if package is known from imports; otherwise require ≥2 package segments
-			if (!knownPackages.contains(candidatePackage) && (typeIdx + 1) < 2) {
+			if (!isTrustedFullyQualifiedName(fqnStr, knownPackages)) {
 				return;
 			}
 			String simple = chain.get(typeIdx).getNameAsString();
@@ -481,6 +488,60 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 			current = current.getParentNode().orElse(null);
 		}
 		return false;
+	}
+
+	/**
+	 * True if {@code type} is the scope (qualifier) of a method reference, i.e. the
+	 * {@code scope} in {@code scope::method}. JavaParser parses such a scope as a
+	 * {@link ClassOrInterfaceType} even when it is really a field access on an
+	 * expression (e.g. {@code localVar.field::get}), so callers must verify it is a
+	 * real type before shortening it.
+	 */
+	private static boolean isMethodReferenceScope(ClassOrInterfaceType type) {
+		ClassOrInterfaceType outer = type;
+		while (outer.getParentNode().isPresent()
+				&& outer.getParentNode().get() instanceof ClassOrInterfaceType parent
+				&& parent.getScope().isPresent()
+				&& parent.getScope().get() == outer) {
+			outer = parent;
+		}
+		if (outer.getParentNode().isEmpty() || !(outer.getParentNode().get() instanceof TypeExpr typeExpr)) {
+			return false;
+		}
+		return typeExpr.getParentNode().isPresent()
+				&& typeExpr.getParentNode().get() instanceof MethodReferenceExpr methodRef
+				&& methodRef.getScope() == typeExpr;
+	}
+
+	/**
+	 * Decides whether a dotted name is a trustworthy fully-qualified <em>type</em>
+	 * reference, mirroring the expression-scope heuristic: the first upper-case
+	 * segment is the type; everything before it is the package. We trust it when the
+	 * package is already known (from imports, the file's own package, or
+	 * {@code java.lang}) or when there are at least two package segments. This
+	 * rejects {@code variable.Field} / {@code variable.field} shapes that only look
+	 * like a fully-qualified type.
+	 */
+	private static boolean isTrustedFullyQualifiedName(String dottedName, Set<String> knownPackages) {
+		String[] segments = dottedName.split("\\.");
+		int typeIdx = -1;
+		for (int i = 0; i < segments.length; i++) {
+			if (!segments[i].isEmpty() && Character.isUpperCase(segments[i].charAt(0))) {
+				typeIdx = i;
+				break;
+			}
+		}
+		if (typeIdx <= 0) {
+			return false;
+		}
+		StringBuilder pkg = new StringBuilder();
+		for (int i = 0; i < typeIdx; i++) {
+			if (i > 0) {
+				pkg.append('.');
+			}
+			pkg.append(segments[i]);
+		}
+		return knownPackages.contains(pkg.toString()) || typeIdx >= 2;
 	}
 
 	private static String buildRawName(ClassOrInterfaceType type) {

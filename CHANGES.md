@@ -22,6 +22,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   Which moved to the `org.jetbrains.kotlinx:ktfmt` coordinate and `org.jetbrains.kotlinx.ktfmt` package. Older versions are still supported.
 
 ### Fixed
+- `shortenFullyQualifiedTypes` no longer corrupts a method reference on a field/variable (`localVar.field::method`), which JavaParser parses as a type-shaped scope; such scopes now go through the same known-package / minimum-depth heuristic as other expression scopes before being treated as fully-qualified types. ([#3133](https://github.com/diffplug/spotless/issues/3133))
 - `shortenFullyQualifiedTypes` leaves a qualified name alone when the enclosing type extends or implements a type that is not in the same file, so an inherited member type cannot take the simple name. ([#3117](https://github.com/diffplug/spotless/issues/3117))
 
 ## [4.10.3] - 2026-09-25

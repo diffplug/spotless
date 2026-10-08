@@ -663,4 +663,71 @@ class ShortenFullyQualifiedTypesStepTest {
 		assertFalse(codeBody(result).contains("java.util.List"), "FQN should be shortened");
 		assertTrue(result.contains("import java.util.List;"), "should import List");
 	}
+
+	@Test
+	void issue3133_methodReferenceOnFieldNotShortened() throws Exception {
+		// `localVar.field::method` is a field access on an expression, parsed by JavaParser
+		// as a ClassOrInterfaceType scope. It must NOT be treated as a fully-qualified type.
+		String before = String.join("\n",
+				"package com.example;",
+				"",
+				"import java.util.Map;",
+				"import java.util.function.Function;",
+				"",
+				"public class Example {",
+				"    static class Catalog {",
+				"        Map<String, String> aliases;",
+				"    }",
+				"",
+				"    String demo(Catalog catalog) {",
+				"        return find(catalog.aliases::get);",
+				"    }",
+				"",
+				"    String find(Function<String, String> f) {",
+				"        return f.apply(\"x\");",
+				"    }",
+				"}",
+				"");
+		String result = apply(before);
+		assertTrue(result.contains("catalog.aliases::get"), "field method reference must be left untouched");
+		assertFalse(result.contains("import catalog."), "must not add a bogus import: " + result);
+	}
+
+	@Test
+	void methodReferenceOnRealTypeStillShortened() throws Exception {
+		// A genuine fully-qualified type method reference should still be shortened.
+		String before = String.join("\n",
+				"package com.example;",
+				"",
+				"import java.util.function.Function;",
+				"",
+				"public class Example {",
+				"    Function<String, Integer> f() {",
+				"        return java.lang.Integer::parseInt;",
+				"    }",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(result.contains("java.lang.Integer::parseInt"), "FQN type method reference should be shortened");
+		assertTrue(result.contains("Integer::parseInt"), "should shorten to Integer::parseInt");
+	}
+
+	@Test
+	void methodReferenceWithSingleSegmentScopeLeftAlone() throws Exception {
+		// `config.Database::connect` has an upper-case simple name but a single-segment,
+		// non-package scope (e.g. a field access). Not a known package and < 2 package
+		// segments, so it must be left alone rather than shortened to a bogus import.
+		String before = String.join("\n",
+				"package com.example;",
+				"",
+				"public class Example {",
+				"    Runnable r() {",
+				"        return config.Database::connect;",
+				"    }",
+				"}",
+				"");
+		String result = apply(before);
+		assertTrue(result.contains("config.Database::connect"), "single-segment non-package scope must be left alone");
+		assertFalse(result.contains("import config."), "must not add a bogus import: " + result);
+	}
 }
