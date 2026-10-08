@@ -40,10 +40,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javax.inject.Inject;
+
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.resource.ResourceManager;
@@ -102,16 +103,16 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	static final String GOAL_APPLY = "apply";
 	static final String GOAL_PRE_PUSH_HOOK = "install-git-pre-push-hook";
 
-	@Component
+	@Inject
 	private RepositorySystem repositorySystem;
 
-	@Component
+	@Inject
 	private ResourceManager resourceManager;
 
-	@Component
+	@Inject
 	protected BuildContext buildContext;
 
-	@Component
+	@Parameter(defaultValue = "${session}", readonly = true)
 	private MavenSession mavenSession;
 
 	@Parameter(defaultValue = "${mojoExecution.goal}", required = true, readonly = true)

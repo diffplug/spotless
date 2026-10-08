@@ -7,6 +7,16 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 - Bump default `eclipse` version from `4.40` to `4.41`.
 - spotlessInstallGitPrePushHook now respects Git’s core.hooksPath when installing the pre-push hook, instead of always writing to .git/hooks. ([#3115](https://github.com/diffplug/spotless/pull/3115)
+- Bump default `gherkin` version `42.0.0` -> `42.0.1`. ([#3088](https://github.com/diffplug/spotless/pull/3088))
+- Bump default `jackson` version `2.22.2` -> `2.22.3`. ([#3101](https://github.com/diffplug/spotless/pull/3101))
+- Bump default `palantir-java-format` version `2.98.0` -> `2.99.0`. ([#3103](https://github.com/diffplug/spotless/pull/3103))
+- Bump default `mockito-core` version `5.23.0` -> `5.24.0`. ([#3106](https://github.com/diffplug/spotless/pull/3106))
+- Bump default `greclipse` version to latest `4.40` -> `4.41`. ([#3123](https://github.com/diffplug/spotless/pull/3123))
+- Bump default `ktfmt` version `0.64` -> `0.65`. ([#3135](https://github.com/diffplug/spotless/pull/3135))  
+  Which moved to the `org.jetbrains.kotlinx:ktfmt` coordinate and `org.jetbrains.kotlinx.ktfmt` package. Older versions are still supported.
+
+### Fixed
+- `shortenFullyQualifiedTypes` leaves a qualified name alone when the enclosing type extends or implements a type that is not in the same file, so an inherited member type cannot take the simple name. ([#3117](https://github.com/diffplug/spotless/issues/3117))
 
 ## [8.10.3] - 2026-09-25
 ### Changes

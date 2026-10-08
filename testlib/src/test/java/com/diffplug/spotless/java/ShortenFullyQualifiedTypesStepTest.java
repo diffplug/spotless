@@ -562,6 +562,92 @@ class ShortenFullyQualifiedTypesStepTest {
 	}
 
 	@Test
+	void inheritedMemberTypeFromAnotherFileIsNotShortened() throws Exception {
+		// Base lives in another file, so a member type named Type is invisible here.
+		// Shortening external.Type would resolve to that member. #3117
+		String code = String.join("\n",
+				"package repro;",
+				"",
+				"public class Child extends Base {",
+				"    public static String use(external.Type value) {",
+				"        return value.externalOnly();",
+				"    }",
+				"}",
+				"");
+		assertEquals(code, apply(code));
+	}
+
+	@Test
+	void nestedClassInsideUnknownSupertypeIsNotShortened() throws Exception {
+		String code = String.join("\n",
+				"package repro;",
+				"",
+				"public class Child extends Base {",
+				"    static class Inner {",
+				"        external.Type value;",
+				"    }",
+				"}",
+				"");
+		assertEquals(code, apply(code));
+	}
+
+	@Test
+	void sameFqnShortensOnlyOutsideUnknownInheritance() throws Exception {
+		String before = String.join("\n",
+				"package repro;",
+				"",
+				"class Child extends Base {",
+				"    external.Type value;",
+				"}",
+				"",
+				"class Other {",
+				"    external.Type value;",
+				"}",
+				"");
+		String result = apply(before);
+		assertTrue(result.contains("class Child extends Base {\n    external.Type value;"), result);
+		assertFalse(result.contains("class Other {\n    external.Type value;"), result);
+		assertTrue(result.contains("import external.Type;"), result);
+	}
+
+	@Test
+	void inheritedMemberTypeInSameFileBlocksOnlyThatName() throws Exception {
+		String before = String.join("\n",
+				"package repro;",
+				"",
+				"class Base {",
+				"    static class Type {}",
+				"}",
+				"",
+				"public class Child extends Base {",
+				"    external.Type value;",
+				"    java.util.List<String> items;",
+				"}",
+				"");
+		String result = apply(before);
+		assertTrue(codeBody(result).contains("external.Type"), "inherited member name must stay qualified: " + result);
+		assertFalse(codeBody(result).contains("java.util.List"), "unrelated FQN should still be shortened: " + result);
+		assertTrue(result.contains("import java.util.List;"), result);
+		assertFalse(result.contains("import external.Type;"), result);
+	}
+
+	@Test
+	void extendsInFileTypeWithNoMemberTypesStillShortens() throws Exception {
+		String before = String.join("\n",
+				"package repro;",
+				"",
+				"class Base {}",
+				"",
+				"public class Child extends Base {",
+				"    java.util.List<String> items;",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(codeBody(result).contains("java.util.List"), result);
+		assertTrue(result.contains("import java.util.List;"), result);
+	}
+
+	@Test
 	void multipleAnnotationsWithFqn() throws Exception {
 		// FQNs used as annotation types should NOT be treated as type references
 		// (annotations start with @, not handled by ClassOrInterfaceType)
@@ -576,5 +662,72 @@ class ShortenFullyQualifiedTypesStepTest {
 		String result = apply(before);
 		assertFalse(codeBody(result).contains("java.util.List"), "FQN should be shortened");
 		assertTrue(result.contains("import java.util.List;"), "should import List");
+	}
+
+	@Test
+	void issue3133_methodReferenceOnFieldNotShortened() throws Exception {
+		// `localVar.field::method` is a field access on an expression, parsed by JavaParser
+		// as a ClassOrInterfaceType scope. It must NOT be treated as a fully-qualified type.
+		String before = String.join("\n",
+				"package com.example;",
+				"",
+				"import java.util.Map;",
+				"import java.util.function.Function;",
+				"",
+				"public class Example {",
+				"    static class Catalog {",
+				"        Map<String, String> aliases;",
+				"    }",
+				"",
+				"    String demo(Catalog catalog) {",
+				"        return find(catalog.aliases::get);",
+				"    }",
+				"",
+				"    String find(Function<String, String> f) {",
+				"        return f.apply(\"x\");",
+				"    }",
+				"}",
+				"");
+		String result = apply(before);
+		assertTrue(result.contains("catalog.aliases::get"), "field method reference must be left untouched");
+		assertFalse(result.contains("import catalog."), "must not add a bogus import: " + result);
+	}
+
+	@Test
+	void methodReferenceOnRealTypeStillShortened() throws Exception {
+		// A genuine fully-qualified type method reference should still be shortened.
+		String before = String.join("\n",
+				"package com.example;",
+				"",
+				"import java.util.function.Function;",
+				"",
+				"public class Example {",
+				"    Function<String, Integer> f() {",
+				"        return java.lang.Integer::parseInt;",
+				"    }",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(result.contains("java.lang.Integer::parseInt"), "FQN type method reference should be shortened");
+		assertTrue(result.contains("Integer::parseInt"), "should shorten to Integer::parseInt");
+	}
+
+	@Test
+	void methodReferenceWithSingleSegmentScopeLeftAlone() throws Exception {
+		// `config.Database::connect` has an upper-case simple name but a single-segment,
+		// non-package scope (e.g. a field access). Not a known package and < 2 package
+		// segments, so it must be left alone rather than shortened to a bogus import.
+		String before = String.join("\n",
+				"package com.example;",
+				"",
+				"public class Example {",
+				"    Runnable r() {",
+				"        return config.Database::connect;",
+				"    }",
+				"}",
+				"");
+		String result = apply(before);
+		assertTrue(result.contains("config.Database::connect"), "single-segment non-package scope must be left alone");
+		assertFalse(result.contains("import config."), "must not add a bogus import: " + result);
 	}
 }

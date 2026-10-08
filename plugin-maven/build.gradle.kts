@@ -42,6 +42,7 @@ dependencies {
   compileOnly(pinnedLibs.aether.api)
 
   compileOnly(libs.jakarta.annotation.api)
+  compileOnly(libs.javax.inject)
 
   implementation(libs.durian.core)
   implementation(libs.durian.io)

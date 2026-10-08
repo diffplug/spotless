@@ -15,11 +15,15 @@
  */
 package com.diffplug.spotless.glue.ktfmt;
 
+import java.io.File;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.facebook.ktfmt.format.Formatter;
-import com.facebook.ktfmt.format.FormattingOptions;
+import org.jetbrains.kotlinx.ktfmt.format.FileType;
+import org.jetbrains.kotlinx.ktfmt.format.Formatter;
+import org.jetbrains.kotlinx.ktfmt.format.FormattingOptions;
+import org.jetbrains.kotlinx.ktfmt.format.KotlinCode;
 
 import com.diffplug.spotless.FormatterFunc;
 
@@ -50,15 +54,26 @@ public final class KtfmtFormatterFunc implements FormatterFunc {
 	@Nonnull
 	@Override
 	public String apply(@Nonnull String input) throws Exception {
-		return Formatter.format(createFormattingOptions(), input);
+		return format(input, FileType.REGULAR);
+	}
+
+	@Nonnull
+	@Override
+	public String apply(@Nonnull String input, @Nonnull File file) throws Exception {
+		FileType fileType = file.getName().endsWith("." + FileType.SCRIPT.getExtension()) ? FileType.SCRIPT : FileType.REGULAR;
+		return format(input, fileType);
+	}
+
+	private String format(String input, FileType fileType) throws Exception {
+		return Formatter.format(createFormattingOptions(), KotlinCode.Companion.from(input, fileType));
 	}
 
 	private FormattingOptions createFormattingOptions() throws Exception {
 		FormattingOptions formattingOptions = switch (style) {
-			case META -> Formatter.META_FORMAT;
-			case GOOGLE -> Formatter.GOOGLE_FORMAT;
-			case KOTLIN_LANG -> Formatter.KOTLINLANG_FORMAT;
-			default -> throw new IllegalStateException("Unknown formatting option " + style);
+		case META -> Formatter.META_FORMAT;
+		case GOOGLE -> Formatter.GOOGLE_FORMAT;
+		case KOTLIN_LANG -> Formatter.KOTLINLANG_FORMAT;
+		default -> throw new IllegalStateException("Unknown formatting option " + style);
 		};
 
 		if (ktfmtFormattingOptions == null) {

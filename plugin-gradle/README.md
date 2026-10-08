@@ -626,7 +626,7 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
 
 ### ktfmt
 
-[homepage](https://github.com/facebook/ktfmt). [changelog](https://github.com/facebook/ktfmt/releases).
+[homepage](https://github.com/Kotlin/ktfmt). [changelog](https://github.com/Kotlin/ktfmt/releases).
 
 ```kotlin
 spotless {
