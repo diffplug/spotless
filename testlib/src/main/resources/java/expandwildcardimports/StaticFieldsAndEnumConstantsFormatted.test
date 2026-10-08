@@ -1,0 +1,15 @@
+package test;
+
+import static java.lang.Math.PI;
+import static java.lang.Math.max;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+public class Test {
+	double circleArea(double radius) {
+		return PI * radius * radius;
+	}
+
+	long timeoutMillis() {
+		return SECONDS.toMillis(max(1, 2));
+	}
+}

@@ -17,6 +17,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 - Migrate Plexus component injection to JSR-330 and Maven parameter. ([#3122](https://github.com/diffplug/spotless/pull/3122))
 - `shortenFullyQualifiedTypes` leaves a qualified name alone when the enclosing type extends or implements a type that is not in the same file, so an inherited member type cannot take the simple name. ([#3117](https://github.com/diffplug/spotless/issues/3117))
+- `expandWildcardImports` no longer drops the import of a type that is only used to qualify a static member (such as `Collections.sort(list)` or `TimeUnit.SECONDS`), or the static import of a field or enum constant (such as `PI` from `import static java.lang.Math.*`), which produced code that did not compile. ([#2833](https://github.com/diffplug/spotless/issues/2833))
 
 ## [3.10.3] - 2026-09-25
 ### Changes

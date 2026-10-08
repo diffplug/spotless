@@ -37,8 +37,11 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.MethodReferenceExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
@@ -47,6 +50,7 @@ import com.github.javaparser.resolution.SymbolResolver;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedAnnotationDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
@@ -185,6 +189,65 @@ public class ExpandWildcardsFormatterFunc implements FormatterFunc.NeedsFile {
 				matchTypeName(importMap, resolved.getQualifiedName(), true);
 			}
 			super.visit(n, importMap);
+		}
+
+		@Override
+		public void visit(final NameExpr n, final Map<ImportDeclaration, Set<ImportDeclaration>> importMap) {
+			Optional<ResolvedValueDeclaration> value = resolveValue(n);
+			if (value.isPresent()) {
+				// static imports of fields and enum constants, e.g. `PI` or `SECONDS`
+				staticMemberName(value.get()).ifPresent(name -> matchTypeName(importMap, name, true));
+			} else if (isQualifier(n)) {
+				// a type that is only used to qualify a member, e.g. `Collections.sort(list)`
+				resolveTypeName(n).ifPresent(name -> matchTypeName(importMap, name, false));
+			}
+			super.visit(n, importMap);
+		}
+
+		private static Optional<ResolvedValueDeclaration> resolveValue(NameExpr n) {
+			try {
+				return Optional.of(n.resolve());
+			} catch (RuntimeException ex) {
+				// not a resolvable variable, parameter, field or enum constant; possibly the name of a type or package
+				return Optional.empty();
+			}
+		}
+
+		private static Optional<String> staticMemberName(ResolvedValueDeclaration value) {
+			if (value.isField() && value.asField().isStatic()) {
+				return Optional.of(value.asField().declaringType().getQualifiedName() + "." + value.getName());
+			}
+			if (value.isEnumConstant()) {
+				ResolvedType enumType = value.getType();
+				if (enumType.isReferenceType()) {
+					return Optional.of(enumType.asReferenceType().getQualifiedName() + "." + value.getName());
+				}
+			}
+			return Optional.empty();
+		}
+
+		private static boolean isQualifier(NameExpr n) {
+			Node parent = n.getParentNode().orElse(null);
+			if (parent instanceof MethodCallExpr call) {
+				return call.getScope().filter(scope -> scope == n).isPresent();
+			}
+			if (parent instanceof FieldAccessExpr access) {
+				return access.getScope() == n;
+			}
+			if (parent instanceof MethodReferenceExpr reference) {
+				return reference.getScope() == n;
+			}
+			return false;
+		}
+
+		private static Optional<String> resolveTypeName(NameExpr n) {
+			try {
+				ResolvedType type = n.calculateResolvedType();
+				return type.isReferenceType() ? Optional.of(type.asReferenceType().getQualifiedName()) : Optional.empty();
+			} catch (RuntimeException ex) {
+				// e.g. the first segment of a fully qualified name, which needs no import
+				return Optional.empty();
+			}
 		}
 
 		private static <T extends Node, R> R wrapUnsolvedSymbolException(T node, Function<T, R> func) {
