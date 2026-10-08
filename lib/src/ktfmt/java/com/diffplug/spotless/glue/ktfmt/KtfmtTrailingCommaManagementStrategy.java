@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  */
 package com.diffplug.spotless.glue.ktfmt;
 
-import com.facebook.ktfmt.format.TrailingCommaManagementStrategy;
+import org.jetbrains.kotlinx.ktfmt.format.TrailingCommaManagementStrategy;
 
 public enum KtfmtTrailingCommaManagementStrategy {
 	NONE, ONLY_ADD, COMPLETE;
 
 	public TrailingCommaManagementStrategy toFormatterTrailingCommaManagementStrategy() {
 		return switch (this) {
-			case NONE -> TrailingCommaManagementStrategy.NONE;
-			case ONLY_ADD -> TrailingCommaManagementStrategy.ONLY_ADD;
-			case COMPLETE -> TrailingCommaManagementStrategy.COMPLETE;
+		case NONE -> TrailingCommaManagementStrategy.NONE;
+		case ONLY_ADD -> TrailingCommaManagementStrategy.ONLY_ADD;
+		case COMPLETE -> TrailingCommaManagementStrategy.COMPLETE;
 		};
 	}
 }
