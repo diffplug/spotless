@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import static com.diffplug.spotless.GitPrePushHookInstaller.Executor.GRADLE;
 
 import java.io.File;
 
+import javax.annotation.Nullable;
+
 /**
  * Implementation of {@link GitPrePushHookInstaller} specifically for Gradle-based projects.
  * This class installs a Git pre-push hook that uses Gradle's `gradlew` executable to check and apply Spotless formatting.
@@ -26,7 +28,11 @@ import java.io.File;
 public class GitPrePushHookInstallerGradle extends GitPrePushHookInstaller {
 
 	public GitPrePushHookInstallerGradle(GitPreHookLogger logger, File root) {
-		super(logger, root);
+		this(logger, root, null);
+	}
+
+	public GitPrePushHookInstallerGradle(GitPreHookLogger logger, File root, @Nullable File hooksRoot) {
+		super(logger, root, hooksRoot);
 	}
 
 	/**

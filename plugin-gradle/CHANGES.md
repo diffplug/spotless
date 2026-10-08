@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ### Changes
 - Bump default `eclipse` version from `4.40` to `4.41`.
+- spotlessInstallGitPrePushHook now respects Git’s core.hooksPath when installing the pre-push hook, instead of always writing to .git/hooks. ([#3115](https://github.com/diffplug/spotless/pull/3115)
 - Bump default `gherkin` version `42.0.0` -> `42.0.1`. ([#3088](https://github.com/diffplug/spotless/pull/3088))
 - Bump default `jackson` version `2.22.2` -> `2.22.3`. ([#3101](https://github.com/diffplug/spotless/pull/3101))
 - Bump default `palantir-java-format` version `2.98.0` -> `2.99.0`. ([#3103](https://github.com/diffplug/spotless/pull/3103))

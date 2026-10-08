@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 DiffPlug
+ * Copyright 2025-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Locale;
+
+import javax.annotation.Nullable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -52,14 +54,31 @@ public abstract class GitPrePushHookInstaller {
 	protected final File root;
 
 	/**
+	 * Optional directory set in core.hooksPath.
+	 */
+	@Nullable protected final File hooksRoot;
+
+	/**
 	 * Constructor to initialize the GitPrePushHookInstaller with a logger and repository root path.
 	 *
 	 * @param logger The logger for recording messages.
 	 * @param root   The root directory of the Git repository.
 	 */
 	protected GitPrePushHookInstaller(GitPreHookLogger logger, File root) {
+		this(logger, root, null);
+	}
+
+	/**
+	 * Constructor to initialize the GitPrePushHookInstaller with a logger,repository root path and optional hooks root.
+	 *
+	 * @param logger 		The logger for recording messages.
+	 * @param root   		The root directory of the Git repository.
+	 * @param hooksRoot     Optional hooks directory set by core.hooksPath.
+	 */
+	protected GitPrePushHookInstaller(GitPreHookLogger logger, File root, @Nullable File hooksRoot) {
 		this.logger = requireNonNull(logger, "logger can not be null");
 		this.root = requireNonNull(root, "root file can not be null");
+		this.hooksRoot = hooksRoot;
 	}
 
 	/**
@@ -123,7 +142,10 @@ public abstract class GitPrePushHookInstaller {
 		}
 
 		var hookContent = "";
-		final var gitHookFile = root.toPath().resolve(".git/hooks/pre-push").toFile();
+		final var gitHookFile = (hooksRoot != null ? hooksRoot.toPath() : root.toPath().resolve(".git/hooks"))
+				.resolve("pre-push")
+				.toFile();
+
 		if (!gitHookFile.exists()) {
 			logger.info("Git pre-push hook not found, creating it");
 			if (!gitHookFile.getParentFile().exists() && !gitHookFile.getParentFile().mkdirs()) {
