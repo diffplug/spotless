@@ -89,7 +89,7 @@ p2deps {
   into("groovyCompileOnly") {
     p2repo("https://download.eclipse.org/eclipse/updates/4.26/")
     p2repo(
-        "https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/"
+        "https://groovy.jfrog.io/artifactory/plugins-release/org/codehaus/groovy/groovy-eclipse-integration/4.8.0/e4.26/",
     )
     install("org.codehaus.groovy.eclipse.refactoring")
     install("org.codehaus.groovy.eclipse.core")

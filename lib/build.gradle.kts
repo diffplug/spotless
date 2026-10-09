@@ -171,7 +171,7 @@ dependencies {
   "compatKtLint1Dot0Dot0CompileAndTestOnly"(libs.slf4j.api)
   // palantirJavaFormat
   "palantirJavaFormatCompileOnly"(
-      pinnedLibs.palantir.java.format
+      pinnedLibs.palantir.java.format,
   ) // this version needs to stay compilable against Java 8 for CI Job testNpm
   // princeOfSpace
   "princeOfSpaceCompileOnly"(libs.prince.of.space.core)

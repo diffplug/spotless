@@ -12,7 +12,7 @@ rewrite {
           "**idea/full.clean.java",
           "**package-info.java",
           "**testlib/src/main/resources**",
-      )
+      ),
   )
   isExportDatatables = true
   failOnDryRunResults = true

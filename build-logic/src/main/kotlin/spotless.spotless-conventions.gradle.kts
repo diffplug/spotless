@@ -2,10 +2,6 @@ plugins {
   id("com.diffplug.spotless")
 }
 
-// The released Spotless plugin used here only knows the legacy `com.facebook:ktfmt` coordinate.
-// TODO: switch back to `libs.ktfmt` once a Spotless release supporting ktfmt 0.65+ is used.
-val KTFMT_VERSION = "0.64"
-
 spotless {
   if (project != rootProject) {
     java {
@@ -27,21 +23,11 @@ spotless {
   }
   kotlin {
     target("build-logic/src/**/*.kt")
-    ktfmt(KTFMT_VERSION)
+    ktfmt(libs.ktfmt.get().version)
   }
   kotlinGradle {
     target("*.gradle.kts", "build-logic/*.gradle.kts", "build-logic/src/**/*.gradle.kts")
-    ktfmt(KTFMT_VERSION)
-  }
-  groovyGradle {
-    target("*.gradle", "gradle/*.gradle")
-    greclipse()
-        .configFile(
-            rootProject.files(
-                "gradle/spotless.eclipseformat.xml",
-                "gradle/spotless.groovyformat.prefs",
-            )
-        )
+    ktfmt(libs.ktfmt.get().version)
   }
   format("dotfiles") {
     target(".gitignore", ".gitattributes", ".editorconfig")
