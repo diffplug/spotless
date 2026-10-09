@@ -22,7 +22,7 @@ spotlessChangelog {
   commitMessage("Published $kind/{{version}}") // {{version}} will be replaced
   tagMessage("{{changes}}")
   runAfterPush(
-      "gh release create $kind/{{version}} --title '$releaseTitle v{{version}}' --notes-from-tag"
+      "gh release create $kind/{{version}} --title '$releaseTitle v{{version}}' --notes-from-tag",
   )
 }
 
@@ -32,7 +32,7 @@ if (project == rootProject) {
     if (changelogPushTasks.size > 1) {
       // make sure only one changelog gets published per tag/commit
       throw IllegalArgumentException(
-          "Run changelogPush one at a time:\n" + changelogPushTasks.joinToString("\n")
+          "Run changelogPush one at a time:\n" + changelogPushTasks.joinToString("\n"),
       )
     }
     if (changelogPushTasks.size == 1) {
@@ -55,7 +55,7 @@ if (project == rootProject) {
                 "You should run :changelogPush first!  Else you'll be missing out on:\n" +
                 "${rootSpotlessChangelog.parsedChangelog.unreleasedChanges()}\n" +
                 "If it's okay to miss those and link against the old ${rootSpotlessChangelog.versionLast} then " +
-                "add -PignoreUnreleasedLib=true"
+                "add -PignoreUnreleasedLib=true",
         )
       }
     }
