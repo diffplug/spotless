@@ -10,7 +10,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `eclipse` version from `4.40` to `4.41`.
 - Bump default `gherkin` version `42.0.0` -> `42.0.1`. ([#3088](https://github.com/diffplug/spotless/pull/3088))
 - Bump default `jackson` version `2.22.2` -> `2.22.3`. ([#3101](https://github.com/diffplug/spotless/pull/3101))
-- Bump default `palantir-java-format` version `2.98.0` -> `2.102.0`. ([#3103](https://github.com/diffplug/spotless/pull/3103), [#3132](https://github.com/diffplug/spotless/pull/3132))
 - Bump default `mockito-core` version `5.23.0` -> `5.24.0`. ([#3106](https://github.com/diffplug/spotless/pull/3106))
 - Bump default `greclipse` version to latest `4.40` -> `4.41`. ([#3123](https://github.com/diffplug/spotless/pull/3123))
 - Bump default `ktfmt` version `0.64` -> `0.65`. ([#3135](https://github.com/diffplug/spotless/pull/3135))  
