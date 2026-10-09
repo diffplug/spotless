@@ -33,16 +33,6 @@ spotless {
     target("*.gradle.kts", "build-logic/*.gradle.kts", "build-logic/src/**/*.gradle.kts")
     ktfmt(KTFMT_VERSION)
   }
-  groovyGradle {
-    target("*.gradle", "gradle/*.gradle")
-    greclipse()
-        .configFile(
-            rootProject.files(
-                "gradle/spotless.eclipseformat.xml",
-                "gradle/spotless.groovyformat.prefs",
-            )
-        )
-  }
   format("dotfiles") {
     target(".gitignore", ".gitattributes", ".editorconfig")
     leadingTabsToSpaces(2)
