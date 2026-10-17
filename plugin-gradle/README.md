@@ -1696,7 +1696,7 @@ spotless {
     // Download Biome from the network if not already downloaded, see below for more info
     biome('2.1.0')
 
-    // (optional) Path to the directory with the biome.json conig file
+    // (optional) Path to the directory with the biome.json config file
     biome('2.1.0').configPath("path/config/dir")
 
     // (optional) Biome will auto detect the language based on the file extension.
