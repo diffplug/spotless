@@ -15,6 +15,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `ktfmt` version `0.64` -> `0.65`. ([#3135](https://github.com/diffplug/spotless/pull/3135))  
   Which moved to the `org.jetbrains.kotlinx:ktfmt` coordinate and `org.jetbrains.kotlinx.ktfmt` package. Older versions are still supported.
 - Bump default `palantir-java-format` version `2.99.0` -> `2.102.0`. ([#3132](https://github.com/diffplug/spotless/pull/3132))
+- Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
 
 ### Fixed
 - Migrate Plexus component injection to JSR-330 and Maven parameter. ([#3122](https://github.com/diffplug/spotless/pull/3122))
