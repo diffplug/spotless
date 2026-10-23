@@ -15,8 +15,11 @@
  */
 package com.diffplug.spotless.maven.java;
 
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.java.GoogleJavaFormatStep;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
@@ -74,6 +77,19 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 				"</googleJavaFormat>");
 
 		runTest("java/googlejavaformat/JavaCodeFormattedSkipJavadocFormatting.test");
+	}
+
+	@Test
+	void specificVersionMaxLineLength() throws Exception {
+		assumeTrue(Jvm.version() >= 21, "google-java-format 1.37.0 requires JVM 21+");
+
+		writePomWithJavaSteps(
+				"<googleJavaFormat>",
+				"  <version>1.37.0</version>",
+				"  <maxLineLength>240</maxLineLength>",
+				"</googleJavaFormat>");
+
+		runTest("java/googlejavaformat/JavaCodeFormattedMaxLineLength240.test");
 	}
 
 	private void runTest(String targetResource) throws Exception {
