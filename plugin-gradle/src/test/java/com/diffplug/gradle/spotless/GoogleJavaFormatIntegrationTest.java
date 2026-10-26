@@ -106,7 +106,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 
 	@Test
 	void integrationWithMaxLineLength() throws IOException {
-		assumeTrue(Jvm.version() >= 21, "google-java-format 1.37.0 requires JVM 21+");
+		assumeTrue(Jvm.version() >= 21, "google-java-format 1.38.0 requires JVM 21+");
 
 		setFile("build.gradle").toLines(
 				"plugins {",
@@ -117,7 +117,7 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 				"spotless {",
 				"    java {",
 				"        target file('test.java')",
-				"        googleJavaFormat('1.37.0').maxLineLength(240)",
+				"        googleJavaFormat('1.38.0').maxLineLength(240)",
 				"    }",
 				"}");
 

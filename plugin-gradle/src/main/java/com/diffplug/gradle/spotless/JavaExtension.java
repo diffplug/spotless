@@ -264,7 +264,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 		/**
 		 * Overrides the column limit prescribed by the style (100 for both GOOGLE and AOSP).
-		 * Requires google-java-format 1.37.0 or later.
+		 * Requires google-java-format 1.38.0 or later.
 		 */
 		public GoogleJavaFormatConfig maxLineLength(int maxLineLength) {
 			this.maxLineLength = maxLineLength;

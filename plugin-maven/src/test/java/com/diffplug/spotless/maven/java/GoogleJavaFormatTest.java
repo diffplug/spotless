@@ -81,11 +81,11 @@ class GoogleJavaFormatTest extends MavenIntegrationHarness {
 
 	@Test
 	void specificVersionMaxLineLength() throws Exception {
-		assumeTrue(Jvm.version() >= 21, "google-java-format 1.37.0 requires JVM 21+");
+		assumeTrue(Jvm.version() >= 21, "google-java-format 1.38.0 requires JVM 21+");
 
 		writePomWithJavaSteps(
 				"<googleJavaFormat>",
-				"  <version>1.37.0</version>",
+				"  <version>1.38.0</version>",
 				"  <maxLineLength>240</maxLineLength>",
 				"</googleJavaFormat>");
 

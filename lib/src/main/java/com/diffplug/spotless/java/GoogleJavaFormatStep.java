@@ -37,8 +37,12 @@ public final class GoogleJavaFormatStep implements Serializable {
 	private static final boolean DEFAULT_FORMAT_JAVADOC = true;
 	/** 0 means "not set", i.e. use whatever column limit the formatter's style prescribes. */
 	private static final int DEFAULT_MAX_LINE_LENGTH = 0;
-	/** The first version which made `JavaFormatterOptions.Style` configurable, see [#3151](https://github.com/diffplug/spotless/issues/3151). */
-	static final String MIN_VERSION_FOR_MAX_LINE_LENGTH = "1.37.0";
+	/**
+	 * The first version which combines a configurable {@code JavaFormatterOptions.Style} with the
+	 * enum-compatible methods restored by [google/google-java-format#1477](https://github.com/google/google-java-format/pull/1477),
+	 * see [#3151](https://github.com/diffplug/spotless/issues/3151).
+	 */
+	static final String MIN_VERSION_FOR_MAX_LINE_LENGTH = "1.38.0";
 	private static final String NAME = "google-java-format";
 	private static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format";
 
@@ -102,7 +106,7 @@ public final class GoogleJavaFormatStep implements Serializable {
 
 	/**
 	 * Creates a step which formats everything - groupArtifact, code, import order, and unused imports - and optionally reflows long strings.
-	 * A positive {@code maxLineLength} overrides the column limit prescribed by the style, and requires google-java-format {@code 1.37.0} or later.
+	 * A positive {@code maxLineLength} overrides the column limit prescribed by the style, and requires google-java-format {@code 1.38.0} or later.
 	 */
 	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, int maxLineLength) {
 		return createInternally(NAME, groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, maxLineLength, false);

@@ -144,18 +144,10 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 
 	@Test
 	@EnabledForJreRange(min = JAVA_21)
-	void behavior137() throws Exception {
-		FormatterStep step = GoogleJavaFormatStep.create("1.37.0", TestProvisioner.mavenCentral());
-		StepHarness.forStep(step)
-				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormatted.test");
-	}
-
-	@Test
-	@EnabledForJreRange(min = JAVA_21)
 	void behaviorWithMaxLineLength() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create(
 				GoogleJavaFormatStep.defaultGroupArtifact(),
-				"1.37.0",
+				"1.38.0",
 				GoogleJavaFormatStep.defaultStyle(),
 				TestProvisioner.mavenCentral(),
 				GoogleJavaFormatStep.defaultReflowLongStrings(),
@@ -167,10 +159,10 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
-	void maxLineLengthRequiresVersion1Dot37OrLater() {
+	void maxLineLengthRequiresVersion1Dot38OrLater() {
 		IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-				() -> GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.36.1", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false, false, true, 120));
-		assertTrue(error.getMessage().contains("maxLineLength requires google-java-format 1.37.0 or later"), error.getMessage());
+				() -> GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.37.0", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false, false, true, 120));
+		assertTrue(error.getMessage().contains("maxLineLength requires google-java-format 1.38.0 or later"), error.getMessage());
 	}
 
 	@Test
