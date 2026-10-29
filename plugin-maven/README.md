@@ -343,6 +343,7 @@ Types in `java.lang` and in the file's own package are shortened without adding 
   <version>1.8</version>                      <!-- optional, 1.8 is the minimum supported version for Java 11 -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
+  <maxLineLength>120</maxLineLength>          <!-- optional, requires google-java-format 1.38.0+ -->
   <formatJavadoc>false</formatJavadoc>        <!-- optional -->
   <reorderImports>false</reorderImports>.     <!-- optional -->
   <!-- optional: custom group artifact (you probably don't need this) -->

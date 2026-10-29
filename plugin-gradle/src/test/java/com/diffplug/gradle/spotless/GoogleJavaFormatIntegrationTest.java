@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -99,6 +101,30 @@ class GoogleJavaFormatIntegrationTest extends GradleIntegrationHarness {
 		replace("build.gradle",
 				"googleJavaFormat('" + NON_DEFAULT_VERSION + "')",
 				"googleJavaFormat()");
+		checkRunsThenUpToDate();
+	}
+
+	@Test
+	void integrationWithMaxLineLength() throws IOException {
+		assumeTrue(Jvm.version() >= 21, "google-java-format 1.38.0 requires JVM 21+");
+
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"    java {",
+				"        target file('test.java')",
+				"        googleJavaFormat('1.38.0').maxLineLength(240)",
+				"    }",
+				"}");
+
+		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormattedMaxLineLength240.test");
+
 		checkRunsThenUpToDate();
 	}
 }

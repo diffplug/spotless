@@ -11,6 +11,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 
+### Features
+- `googleJavaFormat` gained a `maxLineLength` option, which overrides the 100-column limit prescribed by the GOOGLE and AOSP styles. It requires `google-java-format` `1.38.0` or later (the first version which combines a configurable `JavaFormatterOptions.Style` with the enum-compatible methods restored by [google/google-java-format#1477](https://github.com/google/google-java-format/pull/1477)). ([#3151](https://github.com/diffplug/spotless/issues/3151))
+
 ## [4.10.4] - 2026-10-08
 
 ### Changes
