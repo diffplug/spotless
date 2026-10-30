@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package com.diffplug.spotless.glue.java;
 
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -46,7 +47,7 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 
 	private final boolean reorderImports;
 
-	public GoogleJavaFormatFormatterFunc(@Nonnull String version, @Nonnull String style, boolean reflowStrings, boolean reorderImports, boolean formatJavadoc) {
+	public GoogleJavaFormatFormatterFunc(@Nonnull String version, @Nonnull String style, boolean reflowStrings, boolean reorderImports, boolean formatJavadoc, boolean cleanup) {
 		this.version = Objects.requireNonNull(version);
 		this.formatterStyle = Style.valueOf(Objects.requireNonNull(style));
 		this.reflowStrings = reflowStrings;
@@ -56,7 +57,27 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 		if (!formatJavadoc) {
 			builder = builder.formatJavadoc(false);
 		}
+		if (!cleanup) {
+			builder = disableCleanup(builder);
+		}
 		this.formatter = new Formatter(builder.build());
+	}
+
+	// JavaFormatterOptions.Builder.cleanup(boolean) was added in google-java-format 2.0.0, and this
+	// glue is compiled against an older version.
+	private static JavaFormatterOptions.Builder disableCleanup(JavaFormatterOptions.Builder builder) {
+		Method cleanup;
+		try {
+			cleanup = JavaFormatterOptions.Builder.class.getMethod("cleanup", boolean.class);
+		} catch (NoSuchMethodException e) {
+			// google-java-format versions before 2.0.0 don't have cleanups
+			return builder;
+		}
+		try {
+			return (JavaFormatterOptions.Builder) cleanup.invoke(builder, false);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	@Override

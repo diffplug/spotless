@@ -118,6 +118,21 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void behaviorWithCleanup() throws Exception {
+		String unformatted = "class T {\n  @Deprecated() void f() { g((x) -> x);; }\n}\n";
+		try (StepHarness step = StepHarness.forStep(createWithCleanup(true))) {
+			step.test(unformatted, "class T {\n  @Deprecated\n  void f() {\n    g(x -> x);\n  }\n}\n");
+		}
+		try (StepHarness step = StepHarness.forStep(createWithCleanup(false))) {
+			step.test(unformatted, "class T {\n  @Deprecated()\n  void f() {\n    g((x) -> x);\n    ;\n  }\n}\n");
+		}
+	}
+
+	private static FormatterStep createWithCleanup(boolean cleanup) {
+		return GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), GoogleJavaFormatStep.defaultVersion(), GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), GoogleJavaFormatStep.defaultReflowLongStrings(), GoogleJavaFormatStep.defaultReorderImports(), GoogleJavaFormatStep.defaultFormatJavadoc(), cleanup);
+	}
+
+	@Test
 	void behaviorWithCustomGroupArtifact() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), GoogleJavaFormatStep.defaultVersion(), GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false);
 		StepHarness.forStep(step)

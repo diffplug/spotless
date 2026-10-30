@@ -5,9 +5,9 @@ public class Java {
   public static void main(String[] args) {
     var a =
         """
-      Howdy
-      Partner!
-      """;
+        Howdy
+        Partner!
+        """;
     System.out.println(a);
     UsedB.someMethod();
     UsedA.someMethod();
