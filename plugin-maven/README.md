@@ -345,6 +345,7 @@ Types in `java.lang` and in the file's own package are shortened without adding 
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
   <formatJavadoc>false</formatJavadoc>        <!-- optional -->
   <reorderImports>false</reorderImports>.     <!-- optional -->
+  <cleanup>false</cleanup>                    <!-- optional, disables non-whitespace cleanups in google-java-format >= 2.0.0 -->
   <!-- optional: custom group artifact (you probably don't need this) -->
   <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
 </googleJavaFormat>

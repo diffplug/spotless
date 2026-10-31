@@ -34,6 +34,7 @@ public final class GoogleJavaFormatStep implements Serializable {
 	private static final boolean DEFAULT_REFLOW_LONG_STRINGS = false;
 	private static final boolean DEFAULT_REORDER_IMPORTS = false;
 	private static final boolean DEFAULT_FORMAT_JAVADOC = true;
+	private static final boolean DEFAULT_CLEANUP = true;
 	private static final String NAME = "google-java-format";
 	private static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format";
 
@@ -44,19 +45,22 @@ public final class GoogleJavaFormatStep implements Serializable {
 	private final boolean reflowLongStrings;
 	private final boolean reorderImports;
 	private final boolean formatJavadoc;
+	private final boolean cleanup;
 
 	private GoogleJavaFormatStep(JarState.Promised jarState,
 			String version,
 			String style,
 			boolean reflowLongStrings,
 			boolean reorderImports,
-			boolean formatJavadoc) {
+			boolean formatJavadoc,
+			boolean cleanup) {
 		this.jarState = jarState;
 		this.version = version;
 		this.style = style;
 		this.reflowLongStrings = reflowLongStrings;
 		this.reorderImports = reorderImports;
 		this.formatJavadoc = formatJavadoc;
+		this.cleanup = cleanup;
 	}
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
@@ -89,14 +93,22 @@ public final class GoogleJavaFormatStep implements Serializable {
 
 	/** Creates a step which formats everything - groupArtifact, code, import order, and unused imports - and optionally reflows long strings. */
 	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc) {
-		return createInternally(NAME, groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, false);
+		return create(groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, DEFAULT_CLEANUP);
+	}
+
+	/**
+	 * Creates a step which formats everything - groupArtifact, code, import order, and unused imports - and optionally reflows long strings.
+	 * If {@code cleanup} is false, google-java-format 2.0.0 and later skip their non-whitespace cleanups (older versions don't have any).
+	 */
+	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean cleanup) {
+		return createInternally(NAME, groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, cleanup, false);
 	}
 
 	static FormatterStep createRemoveUnusedImportsOnly(Provisioner provisioner) {
-		return createInternally(RemoveUnusedImportsStep.NAME, MAVEN_COORDINATE, defaultVersion(), defaultStyle(), provisioner, defaultReflowLongStrings(), defaultReorderImports(), defaultFormatJavadoc(), true);
+		return createInternally(RemoveUnusedImportsStep.NAME, MAVEN_COORDINATE, defaultVersion(), defaultStyle(), provisioner, defaultReflowLongStrings(), defaultReorderImports(), defaultFormatJavadoc(), defaultCleanup(), true);
 	}
 
-	private static FormatterStep createInternally(String name, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean removeImports) {
+	private static FormatterStep createInternally(String name, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean cleanup, boolean removeImports) {
 		Objects.requireNonNull(groupArtifact, "groupArtifact");
 		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
 			throw new IllegalArgumentException("groupArtifact must be in the form 'groupId:artifactId'");
@@ -105,7 +117,7 @@ public final class GoogleJavaFormatStep implements Serializable {
 		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
 
-		GoogleJavaFormatStep step = new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc);
+		GoogleJavaFormatStep step = new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc, cleanup);
 		if (removeImports) {
 			return FormatterStep.create(name,
 					step,
@@ -150,8 +162,12 @@ public final class GoogleJavaFormatStep implements Serializable {
 		return DEFAULT_FORMAT_JAVADOC;
 	}
 
+	public static boolean defaultCleanup() {
+		return DEFAULT_CLEANUP;
+	}
+
 	private State equalityState() {
-		return new State(version, style, jarState.get(), reflowLongStrings, reorderImports, formatJavadoc);
+		return new State(version, style, jarState.get(), reflowLongStrings, reorderImports, formatJavadoc, cleanup);
 	}
 
 	private static final class State implements Serializable {
@@ -164,13 +180,15 @@ public final class GoogleJavaFormatStep implements Serializable {
 		private final boolean reflowLongStrings;
 		private final boolean reorderImports;
 		private final boolean formatJavadoc;
+		private final boolean cleanup;
 
 		State(String version,
 				String style,
 				JarState jarState,
 				boolean reflowLongStrings,
 				boolean reorderImports,
-				boolean formatJavadoc) {
+				boolean formatJavadoc,
+				boolean cleanup) {
 			JVM_SUPPORT.assertFormatterSupported(version);
 			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = jarState;
@@ -179,13 +197,14 @@ public final class GoogleJavaFormatStep implements Serializable {
 			this.reflowLongStrings = reflowLongStrings;
 			this.reorderImports = reorderImports;
 			this.formatJavadoc = formatJavadoc;
+			this.cleanup = cleanup;
 		}
 
 		FormatterFunc createFormat() throws Exception {
 			final ClassLoader classLoader = jarState.getClassLoader();
 			Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.java.GoogleJavaFormatFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(String.class, String.class, boolean.class, boolean.class, boolean.class);
-			FormatterFunc googleJavaFormatFormatterFunc = (FormatterFunc) constructor.newInstance(version, style, reflowLongStrings, reorderImports, formatJavadoc);
+			Constructor<?> constructor = formatterFunc.getConstructor(String.class, String.class, boolean.class, boolean.class, boolean.class, boolean.class);
+			FormatterFunc googleJavaFormatFormatterFunc = (FormatterFunc) constructor.newInstance(version, style, reflowLongStrings, reorderImports, formatJavadoc, cleanup);
 
 			return JVM_SUPPORT.suggestLaterVersionOnError(version, googleJavaFormatFormatterFunc);
 		}

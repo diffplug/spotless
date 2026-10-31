@@ -10,6 +10,10 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add a `cleanup` option to `GoogleJavaFormatStep` to disable google-java-format's non-whitespace cleanups. ([#3157](https://github.com/diffplug/spotless/pull/3157))
+### Changes
+- Bump default `google-java-format` version `1.36.1` -> `2.0.0`. ([#3157](https://github.com/diffplug/spotless/pull/3157))
 
 ## [4.10.4] - 2026-10-08
 
