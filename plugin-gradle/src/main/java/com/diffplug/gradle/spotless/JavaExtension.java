@@ -211,6 +211,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		boolean reflowLongStrings;
 		boolean reorderImports;
 		boolean formatJavadoc = true;
+		boolean cleanup = true;
 
 		GoogleJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
@@ -261,6 +262,13 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		/** Enables or disables google-java-format's non-whitespace cleanups (google-java-format 2.0.0 and later), which are enabled by default. */
+		public GoogleJavaFormatConfig cleanup(boolean cleanup) {
+			this.cleanup = cleanup;
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
 			return GoogleJavaFormatStep.create(
 					groupArtifact,
@@ -269,7 +277,8 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 					provisioner(),
 					reflowLongStrings,
 					reorderImports,
-					formatJavadoc);
+					formatJavadoc,
+					cleanup);
 		}
 	}
 
