@@ -44,6 +44,9 @@ public class GoogleJavaFormat implements FormatterStepFactory {
 	@Parameter
 	private Boolean cleanup;
 
+	@Parameter
+	private Integer maxLineLength;
+
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
 		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : GoogleJavaFormatStep.defaultGroupArtifact();
@@ -53,6 +56,7 @@ public class GoogleJavaFormat implements FormatterStepFactory {
 		boolean reorderImports = this.reorderImports != null ? this.reorderImports : GoogleJavaFormatStep.defaultReorderImports();
 		boolean formatJavadoc = this.formatJavadoc != null ? this.formatJavadoc : GoogleJavaFormatStep.defaultFormatJavadoc();
 		boolean cleanup = this.cleanup != null ? this.cleanup : GoogleJavaFormatStep.defaultCleanup();
-		return GoogleJavaFormatStep.create(groupArtifact, version, style, config.getProvisioner(), reflowLongStrings, reorderImports, formatJavadoc, cleanup);
+		int maxLineLength = this.maxLineLength != null ? this.maxLineLength : GoogleJavaFormatStep.defaultMaxLineLength();
+		return GoogleJavaFormatStep.create(groupArtifact, version, style, config.getProvisioner(), reflowLongStrings, reorderImports, formatJavadoc, cleanup, maxLineLength);
 	}
 }

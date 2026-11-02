@@ -18,6 +18,7 @@ package com.diffplug.spotless.java;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.Objects;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -35,6 +36,16 @@ public final class GoogleJavaFormatStep implements Serializable {
 	private static final boolean DEFAULT_REORDER_IMPORTS = false;
 	private static final boolean DEFAULT_FORMAT_JAVADOC = true;
 	private static final boolean DEFAULT_CLEANUP = true;
+	/** 0 means "not set", i.e. use whatever column limit the formatter's style prescribes. */
+	private static final int DEFAULT_MAX_LINE_LENGTH = 0;
+	/**
+	 * The minimum version for the {@code maxLineLength} option: google-java-format {@code 2.0.0},
+	 * the bug-fixing major release which stabilized the configurable {@code JavaFormatterOptions.Style}
+	 * introduced experimentally in 1.37.0 (no 1.38.0 was ever published), see
+	 * [google/google-java-format#1477](https://github.com/google/google-java-format/pull/1477) and
+	 * [#3151](https://github.com/diffplug/spotless/issues/3151).
+	 */
+	static final String MIN_VERSION_FOR_MAX_LINE_LENGTH = "2.0.0";
 	private static final String NAME = "google-java-format";
 	private static final String MAVEN_COORDINATE = "com.google.googlejavaformat:google-java-format";
 
@@ -46,6 +57,7 @@ public final class GoogleJavaFormatStep implements Serializable {
 	private final boolean reorderImports;
 	private final boolean formatJavadoc;
 	private final boolean cleanup;
+	private final int maxLineLength;
 
 	private GoogleJavaFormatStep(JarState.Promised jarState,
 			String version,
@@ -53,7 +65,8 @@ public final class GoogleJavaFormatStep implements Serializable {
 			boolean reflowLongStrings,
 			boolean reorderImports,
 			boolean formatJavadoc,
-			boolean cleanup) {
+			boolean cleanup,
+			int maxLineLength) {
 		this.jarState = jarState;
 		this.version = version;
 		this.style = style;
@@ -61,6 +74,7 @@ public final class GoogleJavaFormatStep implements Serializable {
 		this.reorderImports = reorderImports;
 		this.formatJavadoc = formatJavadoc;
 		this.cleanup = cleanup;
+		this.maxLineLength = maxLineLength;
 	}
 
 	/** Creates a step which formats everything - code, import order, and unused imports. */
@@ -93,7 +107,15 @@ public final class GoogleJavaFormatStep implements Serializable {
 
 	/** Creates a step which formats everything - groupArtifact, code, import order, and unused imports - and optionally reflows long strings. */
 	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc) {
-		return create(groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, DEFAULT_CLEANUP);
+		return create(groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, DEFAULT_CLEANUP, DEFAULT_MAX_LINE_LENGTH);
+	}
+
+	/**
+	 * Creates a step which formats everything - groupArtifact, code, import order, and unused imports - and optionally reflows long strings.
+	 * A positive {@code maxLineLength} overrides the column limit prescribed by the style, and requires google-java-format {@code 2.0.0} or later.
+	 */
+	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, int maxLineLength) {
+		return create(groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, DEFAULT_CLEANUP, maxLineLength);
 	}
 
 	/**
@@ -101,14 +123,23 @@ public final class GoogleJavaFormatStep implements Serializable {
 	 * If {@code cleanup} is false, google-java-format 2.0.0 and later skip their non-whitespace cleanups (older versions don't have any).
 	 */
 	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean cleanup) {
-		return createInternally(NAME, groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, cleanup, false);
+		return create(groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, cleanup, DEFAULT_MAX_LINE_LENGTH);
+	}
+
+	/**
+	 * Creates a step which formats everything - groupArtifact, code, import order, and unused imports - and optionally reflows long strings.
+	 * A positive {@code maxLineLength} overrides the column limit prescribed by the style, and requires google-java-format {@code 2.0.0} or later.
+	 * If {@code cleanup} is false, google-java-format 2.0.0 and later skip their non-whitespace cleanups (older versions don't have any).
+	 */
+	public static FormatterStep create(String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean cleanup, int maxLineLength) {
+		return createInternally(NAME, groupArtifact, version, style, provisioner, reflowLongStrings, reorderImports, formatJavadoc, cleanup, maxLineLength, false);
 	}
 
 	static FormatterStep createRemoveUnusedImportsOnly(Provisioner provisioner) {
-		return createInternally(RemoveUnusedImportsStep.NAME, MAVEN_COORDINATE, defaultVersion(), defaultStyle(), provisioner, defaultReflowLongStrings(), defaultReorderImports(), defaultFormatJavadoc(), defaultCleanup(), true);
+		return createInternally(RemoveUnusedImportsStep.NAME, MAVEN_COORDINATE, defaultVersion(), defaultStyle(), provisioner, defaultReflowLongStrings(), defaultReorderImports(), defaultFormatJavadoc(), defaultCleanup(), DEFAULT_MAX_LINE_LENGTH, true);
 	}
 
-	private static FormatterStep createInternally(String name, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean cleanup, boolean removeImports) {
+	private static FormatterStep createInternally(String name, String groupArtifact, String version, String style, Provisioner provisioner, boolean reflowLongStrings, boolean reorderImports, boolean formatJavadoc, boolean cleanup, int maxLineLength, boolean removeImports) {
 		Objects.requireNonNull(groupArtifact, "groupArtifact");
 		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
 			throw new IllegalArgumentException("groupArtifact must be in the form 'groupId:artifactId'");
@@ -116,8 +147,14 @@ public final class GoogleJavaFormatStep implements Serializable {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
+		if (maxLineLength < 0) {
+			throw new IllegalArgumentException("maxLineLength must be positive, but was: " + maxLineLength);
+		}
+		if (maxLineLength > 0 && compareVersions(version, MIN_VERSION_FOR_MAX_LINE_LENGTH) < 0) {
+			throw new IllegalArgumentException("maxLineLength requires google-java-format " + MIN_VERSION_FOR_MAX_LINE_LENGTH + " or later (you are using " + version + ")");
+		}
 
-		GoogleJavaFormatStep step = new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc, cleanup);
+		GoogleJavaFormatStep step = new GoogleJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, reflowLongStrings, reorderImports, formatJavadoc, cleanup, maxLineLength);
 		if (removeImports) {
 			return FormatterStep.create(name,
 					step,
@@ -166,8 +203,36 @@ public final class GoogleJavaFormatStep implements Serializable {
 		return DEFAULT_CLEANUP;
 	}
 
+	public static int defaultMaxLineLength() {
+		return DEFAULT_MAX_LINE_LENGTH;
+	}
+
+	/** Compares dotted numeric versions, e.g. {@code compareVersions("1.36.1", "1.37.0") < 0}. */
+	private static int compareVersions(String left, String right) {
+		int[] lhs = parseVersion(left);
+		int[] rhs = parseVersion(right);
+		int numberOfElements = Math.max(lhs.length, rhs.length);
+		lhs = Arrays.copyOf(lhs, numberOfElements);
+		rhs = Arrays.copyOf(rhs, numberOfElements);
+		for (int i = 0; i < numberOfElements; i++) {
+			if (lhs[i] != rhs[i]) {
+				return lhs[i] > rhs[i] ? 1 : -1;
+			}
+		}
+		return 0;
+	}
+
+	private static int[] parseVersion(String version) {
+		try {
+			String withoutSuffix = version.endsWith("-SNAPSHOT") ? version.substring(0, version.length() - "-SNAPSHOT".length()) : version;
+			return Arrays.stream(withoutSuffix.split("\\.")).mapToInt(Integer::parseInt).toArray();
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Not a semantic version: " + version, e);
+		}
+	}
+
 	private State equalityState() {
-		return new State(version, style, jarState.get(), reflowLongStrings, reorderImports, formatJavadoc, cleanup);
+		return new State(version, style, jarState.get(), reflowLongStrings, reorderImports, formatJavadoc, cleanup, maxLineLength);
 	}
 
 	private static final class State implements Serializable {
@@ -181,6 +246,7 @@ public final class GoogleJavaFormatStep implements Serializable {
 		private final boolean reorderImports;
 		private final boolean formatJavadoc;
 		private final boolean cleanup;
+		private final int maxLineLength;
 
 		State(String version,
 				String style,
@@ -188,7 +254,8 @@ public final class GoogleJavaFormatStep implements Serializable {
 				boolean reflowLongStrings,
 				boolean reorderImports,
 				boolean formatJavadoc,
-				boolean cleanup) {
+				boolean cleanup,
+				int maxLineLength) {
 			JVM_SUPPORT.assertFormatterSupported(version);
 			ModuleHelper.doOpenInternalPackagesIfRequired();
 			this.jarState = jarState;
@@ -198,13 +265,14 @@ public final class GoogleJavaFormatStep implements Serializable {
 			this.reorderImports = reorderImports;
 			this.formatJavadoc = formatJavadoc;
 			this.cleanup = cleanup;
+			this.maxLineLength = maxLineLength;
 		}
 
 		FormatterFunc createFormat() throws Exception {
 			final ClassLoader classLoader = jarState.getClassLoader();
 			Class<?> formatterFunc = classLoader.loadClass("com.diffplug.spotless.glue.java.GoogleJavaFormatFormatterFunc");
-			Constructor<?> constructor = formatterFunc.getConstructor(String.class, String.class, boolean.class, boolean.class, boolean.class, boolean.class);
-			FormatterFunc googleJavaFormatFormatterFunc = (FormatterFunc) constructor.newInstance(version, style, reflowLongStrings, reorderImports, formatJavadoc, cleanup);
+			Constructor<?> constructor = formatterFunc.getConstructor(String.class, String.class, boolean.class, boolean.class, boolean.class, boolean.class, int.class);
+			FormatterFunc googleJavaFormatFormatterFunc = (FormatterFunc) constructor.newInstance(version, style, reflowLongStrings, reorderImports, formatJavadoc, cleanup, maxLineLength);
 
 			return JVM_SUPPORT.suggestLaterVersionOnError(version, googleJavaFormatFormatterFunc);
 		}

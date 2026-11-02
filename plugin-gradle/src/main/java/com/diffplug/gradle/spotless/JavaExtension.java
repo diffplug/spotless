@@ -212,6 +212,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		boolean reorderImports;
 		boolean formatJavadoc = true;
 		boolean cleanup = true;
+		int maxLineLength = GoogleJavaFormatStep.defaultMaxLineLength();
 
 		GoogleJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
@@ -269,6 +270,16 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		/**
+		 * Overrides the column limit prescribed by the style (100 for both GOOGLE and AOSP).
+		 * Requires google-java-format 2.0.0 or later.
+		 */
+		public GoogleJavaFormatConfig maxLineLength(int maxLineLength) {
+			this.maxLineLength = maxLineLength;
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
 			return GoogleJavaFormatStep.create(
 					groupArtifact,
@@ -278,7 +289,8 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 					reflowLongStrings,
 					reorderImports,
 					formatJavadoc,
-					cleanup);
+					cleanup,
+					maxLineLength);
 		}
 	}
 

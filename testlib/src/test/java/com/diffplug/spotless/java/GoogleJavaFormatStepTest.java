@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.java;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.JRE.JAVA_20;
 import static org.junit.jupiter.api.condition.JRE.JAVA_21;
 import static org.junit.jupiter.api.condition.JRE.JAVA_25;
@@ -162,6 +164,29 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 		try (StepHarness step = StepHarness.forStep(disabled)) {
 			step.testResource(unformatted, "java/googlejavaformat/JavaWithReorderImportsDisabledFormatted.test");
 		}
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_21)
+	void behaviorWithMaxLineLength() throws Exception {
+		FormatterStep step = GoogleJavaFormatStep.create(
+				GoogleJavaFormatStep.defaultGroupArtifact(),
+				"2.0.0",
+				GoogleJavaFormatStep.defaultStyle(),
+				TestProvisioner.mavenCentral(),
+				GoogleJavaFormatStep.defaultReflowLongStrings(),
+				GoogleJavaFormatStep.defaultReorderImports(),
+				GoogleJavaFormatStep.defaultFormatJavadoc(),
+				240);
+		StepHarness.forStep(step)
+				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedMaxLineLength240.test");
+	}
+
+	@Test
+	void maxLineLengthRequiresVersion2Dot0OrLater() {
+		IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+				() -> GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.38.0", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false, false, true, 120));
+		assertTrue(error.getMessage().contains("maxLineLength requires google-java-format 2.0.0 or later"), error.getMessage());
 	}
 
 	@Test
