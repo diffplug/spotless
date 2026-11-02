@@ -340,7 +340,7 @@ Types in `java.lang` and in the file's own package are shortened without adding 
 
 ```xml
 <googleJavaFormat>
-  <version>1.8</version>                      <!-- optional, 1.8 is the minimum supported version for Java 11 -->
+  <version>2.0.0</version>                      <!-- optional -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
   <maxLineLength>120</maxLineLength>          <!-- optional, requires google-java-format 2.0.0+ -->
