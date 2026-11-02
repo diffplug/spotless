@@ -10,9 +10,11 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-
-### Features
-- `googleJavaFormat` gained a `maxLineLength` option, which overrides the 100-column limit prescribed by the GOOGLE and AOSP styles. It requires `google-java-format` `1.38.0` or later (the first version which combines a configurable `JavaFormatterOptions.Style` with the enum-compatible methods restored by [google/google-java-format#1477](https://github.com/google/google-java-format/pull/1477)). ([#3151](https://github.com/diffplug/spotless/issues/3151))
+### Added
+- Add a `cleanup` option to `GoogleJavaFormatStep` to disable google-java-format's non-whitespace cleanups. ([#3157](https://github.com/diffplug/spotless/pull/3157))
+- Add a `maxLineLength` option to `GoogleJavaFormatStep`, which overrides the 100-column limit prescribed by the GOOGLE and AOSP styles. It requires `google-java-format` `2.0.0` or later, the bug-fixing major release which stabilized the configurable `JavaFormatterOptions.Style` introduced experimentally in 1.37.0 (no `1.38.0` was ever published). ([#3151](https://github.com/diffplug/spotless/issues/3151))
+### Changes
+- Bump default `google-java-format` version `1.36.1` -> `2.0.0`. ([#3157](https://github.com/diffplug/spotless/pull/3157))
 
 ## [4.10.4] - 2026-10-08
 

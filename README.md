@@ -77,7 +77,7 @@ lib('generic.TrimTrailingWhitespaceStep')        +'{{yes}}       | {{yes}}      
 lib('antlr4.Antlr4FormatterStep')                +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('biome.BiomeStep')                           +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 lib('cpp.ClangFormatStep')                       +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
-extra('cpp.EclipseFormatterStep')                +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
+extra('cpp.EclipseCdtFormatterStep')             +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
 lib('go.GofmtFormatStep')                        +'{{yes}}       | {{no}}       | {{no}}       | {{no}}  |',
 lib('gherkin.GherkinUtilsStep')                  +'{{yes}}       | {{yes}}      | {{no}}       | {{no}}  |',
 extra('groovy.GrEclipseFormatterStep')           +'{{yes}}       | {{yes}}      | {{yes}}      | {{no}}  |',
@@ -138,7 +138,7 @@ lib('yaml.JacksonYamlStep')                      +'{{yes}}       | {{yes}}      
 | [`antlr4.Antlr4FormatterStep`](lib/src/main/java/com/diffplug/spotless/antlr4/Antlr4FormatterStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`biome.BiomeStep`](lib/src/main/java/com/diffplug/spotless/biome/BiomeStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`cpp.ClangFormatStep`](lib/src/main/java/com/diffplug/spotless/cpp/ClangFormatStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
-| [`cpp.EclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/cpp/EclipseFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
+| [`cpp.EclipseCdtFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/cpp/EclipseCdtFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |
 | [`go.GofmtFormatStep`](lib/src/main/java/com/diffplug/spotless/go/GofmtFormatStep.java) | :+1:       | :white_large_square:       | :white_large_square:       | :white_large_square:  |
 | [`gherkin.GherkinUtilsStep`](lib/src/main/java/com/diffplug/spotless/gherkin/GherkinUtilsStep.java) | :+1:       | :+1:      | :white_large_square:       | :white_large_square:  |
 | [`groovy.GrEclipseFormatterStep`](lib-extra/src/main/java/com/diffplug/spotless/extra/groovy/GrEclipseFormatterStep.java) | :+1:       | :+1:      | :+1:      | :white_large_square:  |

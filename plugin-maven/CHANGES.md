@@ -3,9 +3,12 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
-
-### Features
-- `<googleJavaFormat>` gained a `<maxLineLength>` parameter, which overrides the 100-column limit prescribed by the GOOGLE and AOSP styles. It requires `google-java-format` `1.38.0` or later. ([#3151](https://github.com/diffplug/spotless/issues/3151))
+### Added
+- Add `<cleanup>false</cleanup>` to `<googleJavaFormat>` to disable google-java-format's non-whitespace cleanups. ([#3157](https://github.com/diffplug/spotless/pull/3157))
+- Add a `<maxLineLength>` parameter to `<googleJavaFormat>`, which overrides the 100-column limit prescribed by the GOOGLE and AOSP styles. It requires `google-java-format` `2.0.0` or later. ([#3151](https://github.com/diffplug/spotless/issues/3151))
+### Changes
+- Bump default `google-java-format` version `1.36.1` -> `2.0.0`.  ([#3157](https://github.com/diffplug/spotless/pull/3157))  
+  This version applies some small non-whitespace cleanups by default (removing redundant semicolons, empty annotation parentheses, and parentheses around single lambda parameters), which can be disabled with `<cleanup>false</cleanup>`.
 
 ## [3.10.4] - 2026-10-08
 

@@ -343,9 +343,10 @@ Types in `java.lang` and in the file's own package are shortened without adding 
   <version>1.8</version>                      <!-- optional, 1.8 is the minimum supported version for Java 11 -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
-  <maxLineLength>120</maxLineLength>          <!-- optional, requires google-java-format 1.38.0+ -->
+  <maxLineLength>120</maxLineLength>          <!-- optional, requires google-java-format 2.0.0+ -->
   <formatJavadoc>false</formatJavadoc>        <!-- optional -->
   <reorderImports>false</reorderImports>.     <!-- optional -->
+  <cleanup>false</cleanup>                    <!-- optional, disables non-whitespace cleanups in google-java-format >= 2.0.0 -->
   <!-- optional: custom group artifact (you probably don't need this) -->
   <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
 </googleJavaFormat>
@@ -392,7 +393,7 @@ Note: when enabling `AOSP` style, `reorderImports` needs to be enabled to apply 
   <version>4.26</version>
   <!-- Optional: Specify a file which contains all formatting options. -->
   <file>${project.basedir}/eclipse-formatter.xml</file>
-  <!-- If the access to the p2 repositories is restricted, mirrors can be pecified using a URI prefix map as follows:-->
+  <!-- If the access to the p2 repositories is restricted, mirrors can be specified using a URI prefix map as follows:-->
   <p2Mirrors>
     <p2Mirror>
       <prefix>https://download.eclipse.org/eclipse/updates/4.26/</prefix>
@@ -875,7 +876,7 @@ sql.formatter.keyword.case=UPPER
 sql.formatter.statement.delimiter=;
 # Indentation style (space or tab)
 sql.formatter.indent.type=space
-# Number of identation characters
+# Number of indentation characters
 sql.formatter.indent.size=4
 ```
 

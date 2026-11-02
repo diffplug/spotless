@@ -380,9 +380,10 @@ spotless {
     googleJavaFormat()
     // optional: you can specify a specific version (>= 1.8) and/or switch to AOSP style
     //   and/or reflow long strings
-    //   and/or override the 100-column limit (requires google-java-format 1.38.0+)
+    //   and/or override the 100-column limit (requires google-java-format 2.0.0+)
+    //   and/or disable non-whitespace cleanups (google-java-format >= 2.0.0)
     //   and/or use custom group artifact (you probably don't need this)
-    googleJavaFormat('1.8').aosp().reflowLongStrings().maxLineLength(120).formatJavadoc(false).reorderImports(false).groupArtifact('com.google.googlejavaformat:google-java-format')
+    googleJavaFormat('1.8').aosp().reflowLongStrings().maxLineLength(120).formatJavadoc(false).reorderImports(false).cleanup(false).groupArtifact('com.google.googlejavaformat:google-java-format')
 ```
 
 ### palantir-java-format
@@ -1697,7 +1698,7 @@ spotless {
     // Download Biome from the network if not already downloaded, see below for more info
     biome('2.1.0')
 
-    // (optional) Path to the directory with the biome.json conig file
+    // (optional) Path to the directory with the biome.json config file
     biome('2.1.0').configPath("path/config/dir")
 
     // (optional) Biome will auto detect the language based on the file extension.
