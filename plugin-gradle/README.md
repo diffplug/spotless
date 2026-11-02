@@ -383,7 +383,7 @@ spotless {
     //   and/or override the 100-column limit (requires google-java-format 2.0.0+)
     //   and/or disable non-whitespace cleanups (google-java-format >= 2.0.0)
     //   and/or use custom group artifact (you probably don't need this)
-    googleJavaFormat('1.8').aosp().reflowLongStrings().maxLineLength(120).formatJavadoc(false).reorderImports(false).cleanup(false).groupArtifact('com.google.googlejavaformat:google-java-format')
+    googleJavaFormat('2.0.0').aosp().reflowLongStrings().maxLineLength(120).formatJavadoc(false).reorderImports(false).cleanup(false).groupArtifact('com.google.googlejavaformat:google-java-format')
 ```
 
 ### palantir-java-format
