@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [8.11.0] - 2026-11-02
 ### Added
 - Add `cleanup(false)` to `googleJavaFormat()` to disable google-java-format's non-whitespace cleanups. ([#3157](https://github.com/diffplug/spotless/pull/3157))
 - Add `maxLineLength(int)` to `googleJavaFormat()`. ([#3151](https://github.com/diffplug/spotless/issues/3151))  
