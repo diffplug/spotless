@@ -66,7 +66,7 @@ rewrite-recipe-migrate-java = "org.openrewrite.recipe:rewrite-migrate-java:3.42.
 rewrite-recipe-static-analysis = "org.openrewrite.recipe:rewrite-static-analysis:2.41.1"
 rewrite-recipe-third-party = "org.openrewrite.recipe:rewrite-third-party:0.45.0"
 
-errorprone-core = "com.google.errorprone:error_prone_core:2.50.0"
+errorprone-core = "com.google.errorprone:error_prone_core:2.52.0"
 
 [plugins]
 buildconfig = "com.github.gmazzo.buildconfig:6.1.2"
