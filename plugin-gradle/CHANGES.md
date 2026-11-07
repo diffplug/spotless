@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
+- String `targetExclude` patterns ending in `/**` (e.g. `**/build/**`) are now applied as exclude patterns on String `target`s, so excluded directories are skipped while walking the target instead of walking the whole project directory, which made configuration cache store and reuse scale with the size of the project. ([#3147](https://github.com/diffplug/spotless/issues/3147))
 
 ## [8.11.0] - 2026-11-02
 ### Added
