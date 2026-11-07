@@ -59,7 +59,7 @@ ktfmt = "org.jetbrains.kotlinx:ktfmt:0.65"
 prince-of-space-core = "io.github.agustafson.princeofspace:prince-of-space-core:2.2.0"
 scalafmt-core = "org.scalameta:scalafmt-core_2.13:3.11.5"
 sortpom-sorter = "com.github.ekryd.sortpom:sortpom-sorter:4.0.0"
-tabletest-formatter-core = "org.tabletest:tabletest-formatter-core:1.1.2"
+tabletest-formatter-core = "org.tabletest:tabletest-formatter-core:1.1.3"
 zjsonpatch = "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
 
 rewrite-recipe-migrate-java = "org.openrewrite.recipe:rewrite-migrate-java:3.42.1"
