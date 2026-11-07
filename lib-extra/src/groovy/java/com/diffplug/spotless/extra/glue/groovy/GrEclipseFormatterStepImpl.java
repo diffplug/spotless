@@ -92,10 +92,12 @@ public class GrEclipseFormatterStepImpl {
 			// used by the formatter. Solstice removes them before starting it.
 			solstice.warnAndModifyManifestsToFix(warnAsInfo(LOGGER));
 
+			// Solstice URL-encodes an explicit instance area into a directory name relative to
+			// the working directory (#2019), so set it through the default Equinox falls back on.
 			var props = Map.of(
 					"osgi.nl", "en_US",
 					Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT,
-					EquinoxLocations.PROP_INSTANCE_AREA,
+					EquinoxLocations.PROP_INSTANCE_AREA_DEFAULT,
 					Files.createTempDirectory("spotless-groovy-instance").toAbsolutePath().toString(),
 					EquinoxLocations.PROP_CONFIG_AREA,
 					Files.createTempDirectory("spotless-groovy-config").toAbsolutePath().toString());
