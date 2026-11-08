@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ public class Tsfmt extends AbstractNpmFormatterStepFactory {
 		File baseDir = baseDir(stepConfig);
 		File cacheDir = cacheDir(stepConfig);
 		NpmPathResolver npmPathResolver = npmPathResolver(stepConfig);
-		return TsFmtFormatterStep.create(devDependencies, stepConfig.getProvisioner(), baseDir, buildDir, cacheDir, npmPathResolver, configFile, configInline);
+		return TsFmtFormatterStep.create(devDependencies, dependencyOverrides(), stepConfig.getProvisioner(), baseDir, buildDir, cacheDir, npmPathResolver, configFile, configInline);
 	}
 
 	private static IllegalArgumentException onlyOneConfig() {

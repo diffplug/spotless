@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `dependencyOverrides` to the npm-based formatter steps (`PrettierFormatterStep`, `EslintFormatterStep`, `TsFmtFormatterStep`), written to the npm `overrides` field of the generated `package.json` to pin transitive dependencies. ([#2534](https://github.com/diffplug/spotless/issues/2534))
 ### Fixed
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
 

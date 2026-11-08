@@ -12,7 +12,7 @@ ${devDependencies},
 		"express": "5.1.0",
 		"http-graceful-shutdown": "3.1.14"
 	},
-	"dependencies": {},
+	"dependencies": {},${dependencyOverrides}
 	"engines": {
 		"node": ">= 18"
 	}
