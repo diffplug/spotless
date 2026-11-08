@@ -15,8 +15,13 @@
  */
 package com.diffplug.spotless.extra.groovy;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -41,5 +46,14 @@ public class GrEclipseFormatterStepTest extends EquoResourceHarness {
 
 	private static Stream<String> formatWithVersion() {
 		return Stream.of("4.18", GrEclipseFormatterStep.defaultVersion());
+	}
+
+	/** https://github.com/diffplug/spotless/issues/2019 */
+	@Test
+	void doesNotCreateDirectoriesInWorkingDirectory() throws Exception {
+		harnessFor(GrEclipseFormatterStep.defaultVersion()).test("test.groovy", INPUT, EXPECTED);
+		try (Stream<Path> files = Files.list(Path.of(System.getProperty("user.dir")))) {
+			assertThat(files.map(file -> file.getFileName().toString())).noneMatch(name -> name.startsWith("file%3A"));
+		}
 	}
 }
