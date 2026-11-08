@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,11 @@
  */
 package com.diffplug.spotless.sql;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +41,22 @@ class DBeaverSQLFormatterStepTest extends ResourceHarness {
 				.testResource("sql/dbeaver/alter-table.dirty", "sql/dbeaver/alter-table.clean")
 				.testResource("sql/dbeaver/create.dirty", "sql/dbeaver/create.clean")
 				.testResource("sql/dbeaver/jdbi-params.dirty", "sql/dbeaver/jdbi-params.clean");
+	}
+
+	@Test
+	void keywordAtStartOfFileDoesNotThrow() {
+		// https://github.com/diffplug/spotless/issues/1552
+		PrintStream originalErr = System.err;
+		ByteArrayOutputStream err = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(err, true));
+		try {
+			FormatterStep step = DBeaverSQLFormatterStep.create(Collections.emptySet());
+			StepHarness.forStep(step)
+					.testResource("sql/dbeaver/set-mode.dirty", "sql/dbeaver/set-mode.clean");
+		} finally {
+			System.setErr(originalErr);
+		}
+		assertThat(err.toString()).isEmpty();
 	}
 
 	@Test
