@@ -50,7 +50,7 @@ class UpToDateTest extends GradleIntegrationHarness {
 		// going to change during this run.  This second
 		// run is very fast though, because it will
 		// only run on the few files that were changed.
-		onlyFormatTaskDidWork();
+		applyOnlyRerunsFormatTask(":spotlessMisc");
 		// it's not until the third run that everything
 		// is totally up-to-date
 		applyIsUpToDate(true);
@@ -70,7 +70,7 @@ class UpToDateTest extends GradleIntegrationHarness {
 		applyIsUpToDate(false);
 		assertFile("README.md").hasContent("ab");
 		// and it'll take two more runs to get to up-to-date
-		onlyFormatTaskDidWork();
+		applyOnlyRerunsFormatTask(":spotlessMisc");
 		applyIsUpToDate(true);
 	}
 
@@ -93,19 +93,8 @@ class UpToDateTest extends GradleIntegrationHarness {
 		assertFile("README.md").hasContent("abc");
 
 		// and it'll take two more runs to get to fully UP-TO-DATE
-		onlyFormatTaskDidWork();
+		applyOnlyRerunsFormatTask(":spotlessMisc");
 		applyIsUpToDate(true);
-	}
-
-	/**
-	 * The format task runs again (its input was rewritten by the previous apply),
-	 * but there is nothing left to apply, so the apply tasks report no work (#2715).
-	 */
-	private void onlyFormatTaskDidWork() throws IOException {
-		pauseForFilesystem();
-		BuildResult buildResult = gradleRunner().withArguments("spotlessApply").build();
-		Assertions.assertThat(outcomes(buildResult, TaskOutcome.SUCCESS)).containsExactly(":spotlessMisc");
-		Assertions.assertThat(outcomes(buildResult, TaskOutcome.UP_TO_DATE)).containsExactly(":spotlessMiscApply", ":spotlessApply");
 	}
 
 	@Test
