@@ -40,6 +40,7 @@ dependencies {
   compileOnly(pinnedLibs.maven.plugin.annotations)
   compileOnly(pinnedLibs.maven.core)
   compileOnly(pinnedLibs.aether.api)
+  compileOnly(pinnedLibs.plexus.xml)
 
   compileOnly(libs.jakarta.annotation.api)
   compileOnly(libs.javax.inject)
@@ -51,6 +52,9 @@ dependencies {
   implementation(libs.plexus.utils)
   implementation(libs.jgit)
   implementation(pinnedLibs.plexus.build.api)
+  // spotless:report; only these two small API jars, no Doxia renderer
+  implementation(pinnedLibs.maven.reporting.api)
+  implementation(pinnedLibs.doxia.sink.api)
 
   testImplementation(projects.testlib)
   testImplementation(libs.junit.jupiter)
