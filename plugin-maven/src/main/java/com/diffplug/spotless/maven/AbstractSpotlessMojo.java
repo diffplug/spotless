@@ -62,6 +62,7 @@ import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.LintState;
 import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.extra.GitIgnoredFiles;
 import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.maven.antlr4.Antlr4;
 import com.diffplug.spotless.maven.asciidoc.Asciidoc;
@@ -144,6 +145,15 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 
 	@Parameter
 	private String ratchetFrom;
+
+	/**
+	 * If {@code true}, files which git ignores (via {@code .gitignore}, {@code .git/info/exclude} or
+	 * {@code core.excludesFile}) and which are not tracked are skipped. Can be overridden per format.
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean respectGitignore;
+
+	private GitIgnoredFiles gitIgnoredFiles;
 
 	@Parameter
 	private LicenseHeader licenseHeader;
@@ -314,11 +324,14 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	private List<File> collectFiles(FormatterFactory formatterFactory, FormatterConfig config) {
 		Optional<String> ratchetFrom = formatterFactory.ratchetFrom(config);
 		try {
-			final List<File> files;
+			List<File> files;
 			if (ratchetFrom.isPresent()) {
 				files = collectFilesFromGit(formatterFactory, ratchetFrom.orElseThrow());
 			} else {
 				files = collectFilesFromFormatterFactory(formatterFactory);
+			}
+			if (formatterFactory.respectGitignore(respectGitignore)) {
+				files = withoutGitIgnored(files);
 			}
 			if (isNullOrEmpty(filePatterns)) {
 				return files;
@@ -338,6 +351,22 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		} catch (IOException e) {
 			throw new PluginException("Unable to scan file tree rooted at " + baseDir, e);
 		}
+	}
+
+	private List<File> withoutGitIgnored(List<File> files) {
+		GitIgnoredFiles ignored = gitIgnoredFiles();
+		try {
+			return files.stream().filter(ignored::isNotIgnored).collect(toList());
+		} catch (IllegalArgumentException e) {
+			throw new PluginException("Unable to apply <respectGitignore>: " + e.getMessage(), e);
+		}
+	}
+
+	private synchronized GitIgnoredFiles gitIgnoredFiles() {
+		if (gitIgnoredFiles == null) {
+			gitIgnoredFiles = GitIgnoredFiles.under(baseDir);
+		}
+		return gitIgnoredFiles;
 	}
 
 	private List<File> collectFilesFromGit(FormatterFactory formatterFactory, String ratchetFrom) {

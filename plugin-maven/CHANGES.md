@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `<respectGitignore>true</respectGitignore>` to skip files which git ignores, globally or per-format. ([#2443](https://github.com/diffplug/spotless/issues/2443))
 ### Fixed
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
 

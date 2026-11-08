@@ -50,6 +50,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemLocation;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
@@ -66,6 +67,7 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
+import com.diffplug.spotless.extra.GitIgnoredFiles;
 import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
@@ -173,6 +175,31 @@ public class FormatExtension {
 	/** @see #setRatchetFrom(String) */
 	public void ratchetFrom(String ratchetFrom) {
 		setRatchetFrom(ratchetFrom);
+	}
+
+	private @Nullable Boolean respectGitignore;
+
+	/** @see #setRespectGitignore(boolean) */
+	public boolean isRespectGitignore() {
+		return respectGitignore == null ? spotless.isRespectGitignore() : respectGitignore;
+	}
+
+	/**
+	 * Allows you to override the value from the parent
+	 * {@link SpotlessExtension#setRespectGitignore(boolean)} for this specific format.
+	 */
+	public void setRespectGitignore(boolean respectGitignore) {
+		this.respectGitignore = respectGitignore;
+	}
+
+	/** @see #setRespectGitignore(boolean) */
+	public void respectGitignore(boolean respectGitignore) {
+		setRespectGitignore(respectGitignore);
+	}
+
+	/** Shorthand for {@code respectGitignore(true)}. @see #setRespectGitignore(boolean) */
+	public void respectGitignore() {
+		setRespectGitignore(true);
 	}
 
 	/**
@@ -1093,7 +1120,10 @@ public class FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setLintSuppressions(lintSuppressions);
-		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
+		FileCollection targetMinusExclude = targetExclude == null ? target : target.minus(targetExclude);
+		FileCollection totalTarget = isRespectGitignore()
+				? targetMinusExclude.filter(new NotGitIgnored(GitIgnoredFiles.under(getProject().getProjectDir())))
+				: targetMinusExclude;
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
 		if (toggleFence != null) {
@@ -1114,6 +1144,25 @@ public class FormatExtension {
 				getProject().provider(() -> lineEndings.createPolicy(projectDir.getAsFile(), () -> totalTarget)));
 		spotless.getSpotlessTaskService().get().hookSubprojectTask(getProject(), task);
 		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
+	}
+
+	/**
+	 * Configuration-cache friendly filter, the git state inside {@link GitIgnoredFiles} is transient and
+	 * therefore recomputed in every build, so changes to {@code .gitignore} are always picked up.
+	 */
+	private static final class NotGitIgnored implements Spec<File>, Serializable {
+		private static final long serialVersionUID = 1L;
+
+		private final GitIgnoredFiles ignored;
+
+		NotGitIgnored(GitIgnoredFiles ignored) {
+			this.ignored = ignored;
+		}
+
+		@Override
+		public boolean isSatisfiedBy(File file) {
+			return ignored.isNotIgnored(file);
+		}
 	}
 
 	/** Returns the project that this extension is attached to. */

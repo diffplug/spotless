@@ -108,6 +108,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
+  - [How can I skip files ignored by git?](#respect-gitignore)
   - [`spotless:off` and `spotless:on`](#spotlessoff-and-spotlesson)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Custom steps](#custom-steps)
@@ -1966,6 +1967,24 @@ Many popular CI systems (GitHub, GitLab, BitBucket, and Travis) use a "shallow c
 
 - calling `git fetch origin main` before you call Spotless
 - disabling the shallow clone [like so](https://github.com/diffplug/spotless/issues/710)
+
+<a name="respect-gitignore"></a>
+
+## How can I skip files ignored by git?
+
+If your targets are broad (e.g. `target '**/*.md'`), they can pick up files which git ignores, such as generated sources or `node_modules`. Rather than repeating your `.gitignore` in `targetExclude`, you can tell Spotless to skip them:
+
+```gradle
+spotless {
+  respectGitignore() // skip files which git ignores, in every format
+  format 'misc', {
+    target '**/*.md'
+    respectGitignore(false) // or override per-format
+  }
+}
+```
+
+A file is skipped exactly when `git status` would consider it ignored: it matches a pattern from any `.gitignore`, from `.git/info/exclude` or from `core.excludesFile`, **and** it is not tracked. Tracked files are always formatted, even when they match an ignore pattern. Changes to `.gitignore` are picked up by the next build, also with the configuration cache. The project must be inside a git repository, otherwise the build fails.
 
 ## `spotless:off` and `spotless:on`
 
