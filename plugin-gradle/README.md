@@ -2142,6 +2142,23 @@ Note that this feature is also incompatible with Isolated projects, because ever
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
 
+### Which files did `spotlessApply` change?
+
+Every `SpotlessApply` task (e.g. `spotlessJavaApply`) writes the files its most recent run rewrote to `build/spotless/<taskName>-changed-files.txt` (one project-relative path per line, empty if nothing changed). The task only reports that it did work when it actually rewrote a file, so you can use this to tell developers what was fixed:
+
+```gradle
+tasks.withType(com.diffplug.gradle.spotless.SpotlessApply).configureEach {
+  // optional, this is the default location
+  changedFilesReport = layout.buildDirectory.file("spotless/${name}-changed-files.txt")
+  def report = changedFilesReport
+  doLast {
+    if (didWork) {
+      logger.lifecycle("Spotless fixed:\n" + report.get().asFile.text)
+    }
+  }
+}
+```
+
 ## Can I apply Spotless to specific files?
 
 You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
