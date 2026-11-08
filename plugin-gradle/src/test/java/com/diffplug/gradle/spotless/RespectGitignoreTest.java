@@ -17,6 +17,7 @@ package com.diffplug.gradle.spotless;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.jgit.api.Git;
@@ -107,7 +108,8 @@ class RespectGitignoreTest extends GradleIntegrationHarness {
 		try (Git git = givenRepoWithDirtyIgnoredFile()) {
 			givenBuild(configCache, "respectGitignore()", "respectGitignore(false)");
 			BuildResult result = gradleRunner().withArguments("spotlessCheck").buildAndFail();
-			assertThat(result.getOutput()).contains("src/generated/Ignored.md");
+			// the violation message lists paths with native separators
+			assertThat(result.getOutput()).contains(IGNORED.replace('/', File.separatorChar));
 		}
 	}
 
