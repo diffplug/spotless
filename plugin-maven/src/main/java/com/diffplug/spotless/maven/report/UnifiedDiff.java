@@ -37,8 +37,11 @@ final class UnifiedDiff {
 	enum Kind {
 		/** {@code @@ -1,3 +1,3 @@} */
 		HUNK,
+		/** A line that is the same before and after. */
 		CONTEXT,
+		/** A line that only the after text has. */
 		ADDED,
+		/** A line that only the before text has. */
 		REMOVED,
 		/** {@code \ No newline at end of file} */
 		NOTE
