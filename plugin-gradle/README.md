@@ -2159,6 +2159,8 @@ tasks.withType(com.diffplug.gradle.spotless.SpotlessApply).configureEach {
 }
 ```
 
+`changedFilesReport` is an output of the apply task, so another task can declare it as an input (e.g. `inputs.file(tasks.named('spotlessJavaApply').flatMap { it.changedFilesReport })`) and Gradle will run the apply task first, without an explicit `dependsOn`.
+
 ## Can I apply Spotless to specific files?
 
 You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:

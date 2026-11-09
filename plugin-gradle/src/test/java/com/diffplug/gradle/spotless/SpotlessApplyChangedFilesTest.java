@@ -154,4 +154,71 @@ class SpotlessApplyChangedFilesTest extends GradleIntegrationHarness {
 		assertThat(result.getOutput()).contains("spotless fixed: src/a.md");
 		assertThat(rootFolder().toPath().resolve(DEFAULT_REPORT).toFile()).doesNotExist();
 	}
+
+	private static final String[] CONSUMER_TASK = {
+			"tasks.register('printSpotlessFixes') {",
+			"    def report = tasks.named('spotlessMiscApply').flatMap { it.changedFilesReport }",
+			"    inputs.file(report)",
+			"    doLast {",
+			"        report.get().asFile.readLines().each { println \"spotless fixed: $it\" }",
+			"    }",
+			"}"};
+
+	@Test
+	@DisplayName("given a task that declares the report as its input, when only that task is run, then Gradle runs spotlessApply first and the task sees the rewritten files")
+	void consumerOfReportDependsOnApplyImplicitly() throws IOException {
+		// given
+		writeBuildFile(CONSUMER_TASK);
+		setFile("src/a.md").toContent("AAA");
+
+		// when
+		BuildResult result = gradleRunner().withArguments("printSpotlessFixes").build();
+
+		// then
+		assertThat(result.task(":spotlessMiscApply")).as("apply task ran via implicit dependency").isNotNull();
+		assertThat(result.task(":spotlessMiscApply").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertFile("src/a.md").hasContent("aaa");
+		assertThat(result.getOutput()).contains("spotless fixed: src/a.md");
+	}
+
+	@Test
+	@DisplayName("given the configuration cache is enabled and a task consumes the report, when it runs twice, then the cache entry is stored and each run sees its own apply result")
+	void consumerOfReportWorksWithConfigurationCache() throws IOException {
+		// given
+		setFile("gradle.properties").toContent("org.gradle.configuration-cache=true");
+		writeBuildFile(CONSUMER_TASK);
+		setFile("src/a.md").toContent("AAA");
+		setFile("src/b.md").toContent("bbb");
+
+		// when
+		BuildResult first = gradleRunner().withArguments("printSpotlessFixes").build();
+		pauseForFilesystem();
+		setFile("src/b.md").toContent("BBB");
+		BuildResult second = gradleRunner().withArguments("printSpotlessFixes").build();
+
+		// then
+		assertThat(first.getOutput()).contains("Configuration cache entry stored.").contains("spotless fixed: src/a.md");
+		assertThat(second.getOutput()).contains("spotless fixed: src/b.md").doesNotContain("spotless fixed: src/a.md");
+		assertFile("src/b.md").hasContent("bbb");
+	}
+
+	@Test
+	@DisplayName("given a previous run had nothing to fix, when a file becomes unformatted, then spotlessApply still runs and fixes it although its report output is unchanged")
+	void applyIsNeverSkippedBecauseItsReportIsUnchanged() throws IOException {
+		// given
+		writeBuildFile();
+		setFile("src/clean.md").toContent("already clean");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertThat(report(DEFAULT_REPORT)).isEmpty();
+
+		// when
+		pauseForFilesystem();
+		setFile("src/a.md").toContent("AAA");
+		BuildResult result = gradleRunner().withArguments("spotlessApply").build();
+
+		// then
+		assertThat(result.task(":spotlessMiscApply").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertFile("src/a.md").hasContent("aaa");
+		assertThat(report(DEFAULT_REPORT)).isEqualTo("src/a.md\n");
+	}
 }

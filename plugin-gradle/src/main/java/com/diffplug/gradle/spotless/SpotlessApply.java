@@ -30,7 +30,7 @@ import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileVisitDetails;
 import org.gradle.api.file.FileVisitor;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.work.DisableCachingByDefault;
@@ -45,10 +45,11 @@ public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
 	 * <p>
 	 * Defaults to {@code build/spotless/<taskName>-changed-files.txt}.
 	 * <p>
-	 * Deliberately {@link Internal} rather than an output: a task which declares outputs
-	 * but no inputs can be considered up-to-date by Gradle, and apply must always run.
+	 * Declared as an output, so a task which uses this provider as an input automatically
+	 * depends on this task. Because this task has no inputs, Gradle would otherwise consider
+	 * it up-to-date whenever the report is unchanged, so the task is forced to always run.
 	 */
-	@Internal
+	@OutputFile
 	public abstract RegularFileProperty getChangedFilesReport();
 
 	@Override
@@ -56,6 +57,8 @@ public abstract class SpotlessApply extends SpotlessTaskService.ClientTask {
 		super.init(impl);
 		getChangedFilesReport().convention(getProject().getLayout().getBuildDirectory()
 				.file("spotless/" + getName() + "-changed-files.txt"));
+		// apply rewrites sources in place, so it must never be skipped as up-to-date
+		getOutputs().upToDateWhen(t -> false);
 	}
 
 	@TaskAction
