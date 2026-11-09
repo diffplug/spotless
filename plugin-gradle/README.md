@@ -397,6 +397,8 @@ spotless {
     palantirJavaFormat('2.9.0').style("GOOGLE")
     // optional: you can also format Javadocs, requires at least Palantir 2.39.0
     palantirJavaFormat('2.39.0').formatJavadoc(true)
+    // optional: you can also use custom group artifact (you probably don't need this)
+    palantirJavaFormat('2.39.0').groupArtifact('com.palantir.javaformat:palantir-java-format')
 ```
 
 ### prince-of-space

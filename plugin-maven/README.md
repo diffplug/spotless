@@ -363,6 +363,8 @@ Note: when enabling `AOSP` style, `reorderImports` needs to be enabled to apply 
   <version>2.39.0</version>                     <!-- optional -->
   <style>PALANTIR</style>                       <!-- or AOSP/GOOGLE (optional) -->
   <formatJavadoc>false</formatJavadoc>          <!-- defaults to false (optional, requires at least Palantir 2.39.0) -->
+  <!-- optional: custom group artifact (you probably don't need this) -->
+  <groupArtifact>com.palantir.javaformat:palantir-java-format</groupArtifact>
 </palantirJavaFormat>
 ```
 
