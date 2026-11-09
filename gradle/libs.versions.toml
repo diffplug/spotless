@@ -1,7 +1,7 @@
 [versions]
 jdk-release = "17"
 durian = "1.2.0"
-selfie = "3.1.1"
+selfie = "3.1.2"
 jackson = "2.22.3"
 ktlint = "1.8.0"
 javaparser = "3.28.2"
