@@ -254,6 +254,23 @@ class SpotlessReportTest {
 	}
 
 	@Test
+	void pageNamesThatDifferOnlyInCaseAreUnique() throws IOException {
+		// on case-insensitive file systems, such as the defaults on Windows and macOS, these two would share a page
+		Formatter formatter = formatter(LineEnding.UNIX, TrimTrailingWhitespaceStep.create());
+		SpotlessReport.Format format = report.addFormat("Format", formatter);
+		add(format, formatter, "docs/Api.md", "x \n");
+		add(format, formatter, "docs.api.md", "y \n");
+
+		String summary = writeStandalone();
+		String[] pages = new File(dir, "site").list();
+		Arrays.sort(pages);
+		assertThat(pages).containsExactly("spotless-docs.Api.md.html", "spotless-docs.api.md-2.html", "spotless.html");
+		assertThat(summary).contains("spotless-docs.Api.md.html").contains("spotless-docs.api.md-2.html");
+		assertThat(read("site/spotless-docs.Api.md.html")).contains("docs/Api.md");
+		assertThat(read("site/spotless-docs.api.md-2.html")).contains("docs.api.md");
+	}
+
+	@Test
 	void toggleFenceIsExplained() throws IOException {
 		Formatter formatter = formatter(LineEnding.UNIX, NeverUpToDateStep.create("toggle", input -> input));
 		add(report.addFormat("Java", formatter), formatter, "src/A.java", "class A {}\n");

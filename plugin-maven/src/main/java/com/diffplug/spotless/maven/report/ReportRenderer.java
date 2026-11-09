@@ -74,8 +74,10 @@ final class ReportRenderer {
 	ReportRenderer(SpotlessReport report, String outputName) {
 		this.report = report;
 		this.mainPage = outputName + ".html";
+		// lower-cased, because names that differ only in case are the same file
+		// on case-insensitive file systems, such as the defaults on Windows and macOS
 		Set<String> usedPages = new HashSet<>();
-		usedPages.add(mainPage);
+		usedPages.add(mainPage.toLowerCase(Locale.ROOT));
 		for (Format format : report.formats()) {
 			for (FileResult file : format.files) {
 				if (!file.isClean()) {
@@ -94,7 +96,7 @@ final class ReportRenderer {
 			base = base.substring(0, 180);
 		}
 		String name = base + ".html";
-		for (int i = 2; !usedPages.add(name); i++) {
+		for (int i = 2; !usedPages.add(name.toLowerCase(Locale.ROOT)); i++) {
 			name = base + "-" + i + ".html";
 		}
 		return name;
