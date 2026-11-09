@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `dependencyOverrides(Map)` to `prettier()`, `eslint()` and `tsfmt()` to pin transitive npm dependencies via npm `overrides`. ([#2534](https://github.com/diffplug/spotless/issues/2534))
 ### Fixed
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
 

@@ -43,10 +43,19 @@ public final class TsFmtFormatterStep {
 	public static final String NAME = "tsfmt-format";
 
 	public static FormatterStep create(Map<String, String> versions, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
+		return create(versions, Map.of(), provisioner, projectDir, buildDir, cacheDir, npmPathResolver, configFile, inlineTsFmtSettings);
+	}
+
+	/**
+	 * @param dependencyOverrides written to the npm {@code overrides} field of the generated {@code package.json},
+	 *        e.g. to pin a transitive dependency to an exact version
+	 */
+	public static FormatterStep create(Map<String, String> versions, Map<String, String> dependencyOverrides, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) {
+		requireNonNull(dependencyOverrides);
 		requireNonNull(provisioner);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, versions, projectDir, buildDir, cacheDir, npmPathResolver, configFile, inlineTsFmtSettings),
+				() -> new State(NAME, versions, dependencyOverrides, projectDir, buildDir, cacheDir, npmPathResolver, configFile, inlineTsFmtSettings),
 				State::createFormatterFunc);
 	}
 
@@ -73,9 +82,13 @@ public final class TsFmtFormatterStep {
 		@Nullable private final TypedTsFmtConfigFile configFile;
 
 		public State(String stepName, Map<String, String> versions, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
+			this(stepName, versions, Map.of(), projectDir, buildDir, cacheDir, npmPathResolver, configFile, inlineTsFmtSettings);
+		}
+
+		public State(String stepName, Map<String, String> versions, Map<String, String> dependencyOverrides, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, @Nullable TypedTsFmtConfigFile configFile, @Nullable Map<String, Object> inlineTsFmtSettings) throws IOException {
 			super(stepName,
 					new NpmConfig(
-							replaceDevDependencies(NpmResourceHelper.readUtf8StringFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json.template"), new TreeMap<>(versions)),
+							replaceDependencies(NpmResourceHelper.readUtf8StringFromClasspath(TsFmtFormatterStep.class, "/com/diffplug/spotless/npm/tsfmt-package.json.template"), new TreeMap<>(versions), dependencyOverrides),
 							NpmResourceHelper.readUtf8StringFromClasspath(PrettierFormatterStep.class,
 									"/com/diffplug/spotless/npm/common-serve.js",
 									"/com/diffplug/spotless/npm/tsfmt-serve.js"),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,11 @@ import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.gradle.testkit.runner.BuildResult;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.diffplug.spotless.npm.InstalledNpmPackages;
 import com.diffplug.spotless.npm.PrettierFormatterStep;
 import com.diffplug.spotless.tag.NpmTest;
 
@@ -413,5 +415,27 @@ class PrettierIntegrationTest extends GradleIntegrationHarness {
 		setFile("test.ts").toResource("npm/prettier/config/typescript.dirty");
 		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").buildAndFail();
 		Assertions.assertThat(spotlessApply.getOutput()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
+	}
+
+	@Test
+	void dependencyOverridesPinTransitiveDependencies() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    format 'sql', {",
+				"        target 'test.sql'",
+				"        prettier(['prettier': '3.3.3', 'prettier-plugin-sql': '0.20.0'])",
+				"            .config(['plugins': ['prettier-plugin-sql'], 'parser': 'sql'])",
+				"            .dependencyOverrides(['sql-formatter': '15.7.0'])",
+				"    }",
+				"}");
+		setFile("test.sql").toContent("select a, b from t where x = 1");
+		final BuildResult spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		Assertions.assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("test.sql").hasContent("select\n  a,\n  b\nfrom\n  t\nwhere\n  x = 1\n");
+		Assertions.assertThat(InstalledNpmPackages.versionInstalledBelow(newFile("build"), "sql-formatter")).isEqualTo("15.7.0");
 	}
 }
