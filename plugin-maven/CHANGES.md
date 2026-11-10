@@ -5,8 +5,15 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Added
 - Add a `<groupArtifact>` parameter to `<palantirJavaFormat>`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
+- Add a `spotless:report` goal that puts a Spotless page in the Maven site. ([#3175](https://github.com/diffplug/spotless/pull/3175))  
+  List `spotless-maven-plugin` under `<reporting>` and run `mvn site`: the page shows which files need formatting, with a colored diff for each, and their lint problems. It works with `maven-site-plugin` 3.12.1 and 3.20.0 or later.
 ### Fixed
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
+- DBeaver SQL formatter no longer prints an `IndexOutOfBoundsException` when a file starts with a keyword like `SET`. ([#1552](https://github.com/diffplug/spotless/issues/1552))
+- `<expandWildcardImports>` no longer fails with `Symbol resolution not configured` on records and other syntax newer than Java 11, and leaves files JavaParser cannot validate unchanged. ([#2946](https://github.com/diffplug/spotless/issues/2946))
+- `<removeSemicolons/>` no longer removes semicolons inside dollar-slashy strings (`$/ ... /$`), after escaped triple quotes in multiline strings, or in multi-line `for (init; cond; update)` headers. ([#2780](https://github.com/diffplug/spotless/issues/2780))
+- `<removeUnusedImports>` and `<googleJavaFormat>` no longer remove imports that are only used by links in Markdown doc comments (`///`, JDK 23+). ([#3161](https://github.com/diffplug/spotless/issues/3161))
+- `forbidWildcardImports` no longer reports import statements inside Java text blocks or comments. ([#2997](https://github.com/diffplug/spotless/issues/2997))
 
 ## [3.11.0] - 2026-11-02
 ### Added

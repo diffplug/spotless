@@ -30,9 +30,12 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -227,6 +230,22 @@ public class FormatExtension {
 	protected FileCollection target;
 	protected FileCollection targetExclude;
 
+	/*
+	 * Bookkeeping which lets String excludes be applied as fileTree exclude patterns on the String targets, so that
+	 * excluded directories are pruned while walking the target instead of subtracting a fileTree which walks the whole
+	 * project directory, see https://github.com/diffplug/spotless/issues/3147
+	 */
+	/** Trees created from String targets, all rooted at the project dir. */
+	private final Set<ConfigurableFileTree> projectDirTargetTrees = Collections.newSetFromMap(new IdentityHashMap<>());
+	/** The parts of each union created by {@link #parseTargetsIsExclude} for a target. */
+	private final Map<FileCollection, List<FileCollection>> targetUnionParts = new IdentityHashMap<>();
+	/** The {@link #targetExclude} which {@link #targetExcludePrunable} and {@link #targetExcludeRest} were split from. */
+	@Nullable private FileCollection targetExcludeSplitFrom;
+	/** String excludes ending in a {@code **} segment, which exclude exactly the same files as a tree exclude. */
+	private List<String> targetExcludePrunable = List.of();
+	/** The rest of {@link #targetExclude}, or null if it consists only of prunable patterns. */
+	@Nullable private FileCollection targetExcludeRest;
+
 	/** The value from which files will be excluded if their content contain it. */
 	@Nullable protected String targetExcludeContentPattern;
 
@@ -263,9 +282,39 @@ public class FormatExtension {
 	 * fileTree, with project.rootDir as the dir. List<String> are treated as the
 	 * 'includes' arg to fileTree, with project.rootDir as the dir. Anything else
 	 * gets passed to getProject().files().
+	 * <p>
+	 * String patterns which end with {@code /**} (e.g. {@code "**\/build/**"}) are
+	 * applied directly to String targets, so the excluded directories are skipped
+	 * while walking the target rather than walking the whole project directory.
 	 */
 	public void targetExclude(Object... targets) {
 		this.targetExclude = parseTargetsIsExclude(targets, true);
+		List<String> prunable = new ArrayList<>();
+		List<Object> rest = new ArrayList<>();
+		splitExcludes(Arrays.asList(targets), prunable, rest);
+		this.targetExcludeSplitFrom = targetExclude;
+		this.targetExcludePrunable = prunable;
+		this.targetExcludeRest = rest.isEmpty() ? null : parseTargetsIsExclude(rest.toArray(), true);
+	}
+
+	private static void splitExcludes(Collection<?> targets, List<String> prunable, List<Object> rest) {
+		for (Object target : targets) {
+			if (target instanceof Collection<?> collection) {
+				splitExcludes(collection, prunable, rest);
+			} else if (target instanceof String pattern && endsWithDoubleStarSegment(pattern)) {
+				prunable.add(pattern);
+			} else {
+				rest.add(target);
+			}
+		}
+	}
+
+	/**
+	 * A tree exclude prunes every directory matching the pattern, while subtracting {@code fileTree.include(pattern)}
+	 * only removes the files matching it. Both remove the same files iff the pattern ends with a {@code **} segment.
+	 */
+	private static boolean endsWithDoubleStarSegment(String pattern) {
+		return pattern.equals("**") || pattern.endsWith("/**") || pattern.endsWith("\\**");
 	}
 
 	/**
@@ -294,8 +343,14 @@ public class FormatExtension {
 			return parseTargetIsExclude(targets[0], isExclude);
 		} else {
 			FileCollection union = getProject().files();
+			List<FileCollection> parts = new ArrayList<>(targets.length);
 			for (Object target : targets) {
-				union = union.plus(parseTargetIsExclude(target, isExclude));
+				FileCollection part = parseTargetIsExclude(target, isExclude);
+				parts.add(part);
+				union = union.plus(part);
+			}
+			if (!isExclude) {
+				targetUnionParts.put(union, parts);
 			}
 			return union;
 		}
@@ -345,6 +400,7 @@ public class FormatExtension {
 				}
 				matchedFiles.exclude(excludes);
 			}
+			projectDirTargetTrees.add(matchedFiles);
 			return matchedFiles;
 		} else if (isExclude && (target instanceof FileSystemLocation || target instanceof Provider)) {
 			// an excluded directory means the files under it, and the tree resolves them lazily
@@ -1093,7 +1149,7 @@ public class FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setLintSuppressions(lintSuppressions);
-		FileCollection totalTarget = targetExclude == null ? target : target.minus(targetExclude);
+		FileCollection totalTarget = targetExclude == null ? target : excludeFrom(target);
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
 		if (toggleFence != null) {
@@ -1114,6 +1170,28 @@ public class FormatExtension {
 				getProject().provider(() -> lineEndings.createPolicy(projectDir.getAsFile(), () -> totalTarget)));
 		spotless.getSpotlessTaskService().get().hookSubprojectTask(getProject(), task);
 		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
+	}
+
+	/** Returns {@code fromTarget - targetExclude}, applying prunable String excludes as tree excludes where possible. */
+	private FileCollection excludeFrom(FileCollection fromTarget) {
+		List<FileCollection> parts = targetUnionParts.get(fromTarget);
+		if (parts != null) {
+			FileCollection union = getProject().files();
+			for (FileCollection part : parts) {
+				union = union.plus(excludeFrom(part));
+			}
+			return union;
+		} else if (fromTarget instanceof ConfigurableFileTree tree && projectDirTargetTrees.contains(tree)
+				&& targetExclude == targetExcludeSplitFrom && !targetExcludePrunable.isEmpty()) {
+			// same root as the String excludes, so the patterns match the same relative paths
+			ConfigurableFileTree pruned = getProject().fileTree(tree.getDir());
+			pruned.setIncludes(tree.getIncludes());
+			pruned.setExcludes(tree.getExcludes());
+			pruned.exclude(targetExcludePrunable);
+			return targetExcludeRest == null ? pruned : pruned.minus(targetExcludeRest);
+		} else {
+			return fromTarget.minus(targetExclude);
+		}
 	}
 
 	/** Returns the project that this extension is attached to. */

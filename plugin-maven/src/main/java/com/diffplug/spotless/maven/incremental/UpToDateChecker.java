@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,25 @@ public interface UpToDateChecker extends AutoCloseable {
 
 	static UpToDateChecker noop(MavenProject project, Path indexFile, Log log) {
 		return NoopChecker.create(project, indexFile, log);
+	}
+
+	/**
+	 * A checker that never reads, writes or deletes the up-to-date index, so every file is processed.
+	 * Unlike {@link #noop}, it leaves the index used by {@code spotless:check} and {@code spotless:apply} alone.
+	 */
+	static UpToDateChecker ignoringIndex() {
+		return new UpToDateChecker() {
+			@Override
+			public boolean isUpToDate(Path file) {
+				return false;
+			}
+
+			@Override
+			public void setUpToDate(Path file) {}
+
+			@Override
+			public void close() {}
+		};
 	}
 
 	static UpToDateChecker forProject(MavenProject project, Path indexFile, Iterable<Formatter> formatters, Log log) {

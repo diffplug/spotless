@@ -72,6 +72,7 @@ user@machine repo % mvn spotless:check
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `mvn spotless:apply` will do?](#how-do-i-preview-what-mvn-spotlessapply-will-do)
+  - [Maven site report](#maven-site-report)
   - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
   - [How to centralize Spotless configuration](#central-configuration)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
@@ -2175,15 +2176,17 @@ By default, `spotless:check` is bound to the `verify` phase. You might want to d
 
 | Property | Scope | Effect |
 | --- | --- | --- |
-| `spotless.skip` | `spotless:check` and `spotless:apply` | Skips both formatting goals |
+| `spotless.skip` | `spotless:check`, `spotless:apply` and `spotless:report` | Skips all three goals |
 | `spotless.check.skip` | `spotless:check` only | Skips only the check goal |
 | `spotless.apply.skip` | `spotless:apply` only | Skips only the apply goal |
+| `spotless.report.skip` | `spotless:report` only | Skips only the [site report](#maven-site-report) |
 
 You can set them at the command line or in the `<properties>` section of the `pom.xml`:
 
-- `-Dspotless.skip=true` / `<spotless.skip>true</spotless.skip>` — skip both `spotless:check` and `spotless:apply`
+- `-Dspotless.skip=true` / `<spotless.skip>true</spotless.skip>` — skip `spotless:check`, `spotless:apply` and `spotless:report`
 - `-Dspotless.check.skip=true` / `<spotless.check.skip>true</spotless.check.skip>` — skip only `spotless:check` (including when it is bound to `verify`)
 - `-Dspotless.apply.skip=true` / `<spotless.apply.skip>true</spotless.apply.skip>` — skip only `spotless:apply`
+- `-Dspotless.report.skip=true` / `<spotless.report.skip>true</spotless.report.skip>` — skip only `spotless:report`
 
 `spotless.check.skip` does **not** skip `spotless:apply`, and `spotless.apply.skip` does **not** skip `spotless:check`. Use `spotless.skip` when you want both. These properties do **not** affect `spotless:install-git-pre-push-hook`.
 
@@ -2254,6 +2257,36 @@ Spotless is primarily a formatter, _not_ a linter. In our opinion, a linter is j
 - View the changes with `git diff`
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
+
+You can also look at the changes without applying them, in the [site report](#maven-site-report).
+
+## Maven site report
+
+`spotless:report` adds a **Spotless** page to the site that `mvn site` builds. List the plugin in the `<reporting>` section of your `pom.xml`:
+
+```xml
+<reporting>
+  <plugins>
+    <plugin>
+      <groupId>com.diffplug.spotless</groupId>
+      <artifactId>spotless-maven-plugin</artifactId>
+      <version>${spotless.version}</version>
+    </plugin>
+  </plugins>
+</reporting>
+```
+
+You don't need to repeat your Spotless configuration: the report uses the plugin-level `<configuration>` of the Spotless plugin in your `<build>` section, except for anything you set in `<reporting>` itself. Configuration inside an `<execution>` is not used.
+
+`mvn site` then lists Spotless under *Project Reports*. The page shows, for each format, how many files are clean, need formatting or have lint problems. Each file with a problem gets its own page, with a colored diff of the changes `mvn spotless:apply` would make and a table of its lint problems.
+
+The report checks the same files as `spotless:check`, so `ratchetFrom`, `spotlessFiles` and `<lintSuppressions>` apply to it. It never changes your files, never fails the build because of violations, and ignores the [up-to-date index](#incremental-up-to-date-checking-and-formatting), so every file is checked.
+
+- `mvn spotless:report` writes the report to `target/site/spotless.html` without building the whole site. Run this way, it reads only the configuration in `<build>`, because Maven never applies `<reporting>` to goals you run directly. If you use both, put report options such as `<maxDiffLines>` in `<build>`.
+- `<maxDiffLines>` (default `1000`, `0` for no limit) limits how many lines of diff each file's page shows. `-Dspotless.report.maxDiffLines` sets it from the command line.
+- `-Dspotless.report.skip=true` skips the report, and so does `-Dspotless.skip=true`.
+
+The report works with `maven-site-plugin` 3.12.1, which Maven 3.9 uses by default, and with 3.20.0 or later.
 
 ## Can I apply Spotless to specific files?
 
