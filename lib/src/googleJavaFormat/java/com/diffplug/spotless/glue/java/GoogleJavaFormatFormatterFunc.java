@@ -26,7 +26,6 @@ import com.google.googlejavaformat.java.FormatterException;
 import com.google.googlejavaformat.java.ImportOrderer;
 import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.google.googlejavaformat.java.JavaFormatterOptions.Style;
-import com.google.googlejavaformat.java.RemoveUnusedImports;
 import com.google.googlejavaformat.java.StringWrapper;
 
 import com.diffplug.spotless.FormatterFunc;
@@ -116,7 +115,7 @@ public class GoogleJavaFormatFormatterFunc implements FormatterFunc {
 	@Nonnull
 	public String apply(@Nonnull String input) throws Exception {
 		String formatted = formatter.formatSource(input);
-		String removedUnused = RemoveUnusedImports.removeUnusedImports(formatted);
+		String removedUnused = GoogleJavaFormatUnusedImports.removeUnusedImports(formatted);
 		String sortedImports = ImportOrderer.reorderImports(removedUnused, reorderImports ? formatterStyle : Style.GOOGLE);
 		return reflowLongStrings(sortedImports);
 	}
