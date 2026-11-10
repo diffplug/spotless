@@ -12,9 +12,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
+- `removeSemicolons()` no longer removes semicolons inside dollar-slashy strings (`$/ ... /$`), after escaped triple quotes in multiline strings, or in multi-line `for (init; cond; update)` headers. ([#2780](https://github.com/diffplug/spotless/issues/2780))
 - `RemoveUnusedImportsStep` and `GoogleJavaFormatStep` no longer remove imports that are only used by links in Markdown doc comments (`///`, JDK 23+). ([#3161](https://github.com/diffplug/spotless/issues/3161))
-
-### Fixed
 - `forbidWildcardImports` no longer reports import statements inside Java text blocks or comments. ([#2997](https://github.com/diffplug/spotless/issues/2997))
 
 ## [4.11.0] - 2026-11-02
