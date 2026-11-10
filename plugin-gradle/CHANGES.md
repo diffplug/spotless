@@ -3,6 +3,10 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- `SpotlessApply` writes a report of the files it rewrote to `build/spotless/<taskName>-changed-files.txt`, configurable via `changedFilesReport`. The report is a task output, so tasks which take it as an input automatically depend on the apply task. ([#2715](https://github.com/diffplug/spotless/issues/2715))
+### Changes
+- `SpotlessApply` now only reports that it did work (and is otherwise `UP-TO-DATE`) when it actually rewrote a file. ([#2715](https://github.com/diffplug/spotless/issues/2715))
 ### Fixed
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
 - `expandWildcardImports()` no longer fails with `Symbol resolution not configured` on records and other syntax newer than Java 11, and leaves files JavaParser cannot validate unchanged. ([#2946](https://github.com/diffplug/spotless/issues/2946))
