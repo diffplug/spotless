@@ -6,6 +6,9 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
 - String `targetExclude` patterns ending in `/**` (e.g. `**/build/**`) are now applied as exclude patterns on String `target`s, so excluded directories are skipped while walking the target instead of walking the whole project directory, which made configuration cache store and reuse scale with the size of the project. ([#3147](https://github.com/diffplug/spotless/issues/3147))
+- `removeSemicolons()` no longer removes semicolons inside dollar-slashy strings (`$/ ... /$`), after escaped triple quotes in multiline strings, or in multi-line `for (init; cond; update)` headers. ([#2780](https://github.com/diffplug/spotless/issues/2780))
+- `removeUnusedImports()` and `googleJavaFormat()` no longer remove imports that are only used by links in Markdown doc comments (`///`, JDK 23+). ([#3161](https://github.com/diffplug/spotless/issues/3161))
+- `forbidWildcardImports` no longer reports import statements inside Java text blocks or comments. ([#2997](https://github.com/diffplug/spotless/issues/2997))
 
 ## [8.11.0] - 2026-11-02
 ### Added
