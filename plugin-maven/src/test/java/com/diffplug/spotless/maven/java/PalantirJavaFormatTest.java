@@ -15,8 +15,11 @@
  */
 package com.diffplug.spotless.maven.java;
 
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import org.junit.jupiter.api.Test;
 
+import com.diffplug.spotless.Jvm;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 
@@ -50,6 +53,19 @@ class PalantirJavaFormatTest extends MavenIntegrationHarness {
 				"</palantirJavaFormat>");
 
 		runTest("java/palantirjavaformat/JavaCodeWithJavaDocFormatted.test", "java/palantirjavaformat/JavaCodeWithJavaDocUnformatted.test");
+	}
+
+	@Test
+	void customGroupArtifact() throws Exception {
+		assumeTrue(Jvm.version() >= 21, "open-java-format 21.0.2 requires JVM 21+");
+
+		writePomWithJavaSteps(
+				"<palantirJavaFormat>",
+				"  <groupArtifact>dev.openjavaformat:open-java-format</groupArtifact>",
+				"  <version>21.0.2</version>",
+				"</palantirJavaFormat>");
+
+		runTest("java/palantirjavaformat/JavaCodeFormatted.test", "java/palantirjavaformat/JavaCodeUnformatted.test");
 	}
 
 	private void runTest(String targetResource, String sourceResource) throws Exception {
