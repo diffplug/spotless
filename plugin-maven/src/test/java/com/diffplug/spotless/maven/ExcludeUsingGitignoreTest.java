@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.maven;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 
 import org.eclipse.jgit.api.Git;
@@ -25,29 +27,34 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.common.base.StringPrinter;
 import com.diffplug.spotless.ClearGitConfig;
 
-/** Integration tests for {@code <respectGitignore>}, see https://github.com/diffplug/spotless/issues/2443 */
+/** Integration tests for {@code <excludeUsingGitignore>}, see https://github.com/diffplug/spotless/issues/2443 */
 @ClearGitConfig
-class RespectGitignoreTest extends MavenIntegrationHarness {
+class ExcludeUsingGitignoreTest extends MavenIntegrationHarness {
 	private static final String IGNORED = "src/generated/Ignored.md";
 	private static final String TRACKED = "src/main/Tracked.md";
+	private static final String OPT_IN = "<excludeUsingGitignore>true</excludeUsingGitignore>";
 
-	private static String pom(String globalFlag, String formatFlag, String ratchet) {
+	private static String withFormats(String... formats) {
 		return StringPrinter.buildStringFromLines(
-				globalFlag,
-				ratchet,
 				"<formats>",
+				String.join("\n", formats),
+				"</formats>");
+	}
+
+	/** A format which lowercases HELLO in the given files, with extra configuration lines. */
+	private static String format(String include, String... extraLines) {
+		return StringPrinter.buildStringFromLines(
 				"  <format>",
-				formatFlag,
+				String.join("\n", extraLines),
 				"    <includes>",
-				"      <include>src/**/*.md</include>",
+				"      <include>" + include + "</include>",
 				"    </includes>",
 				"    <replace>",
 				"      <name>Lowercase hello</name>",
 				"      <search>HELLO</search>",
 				"      <replacement>hello</replacement>",
 				"    </replace>",
-				"  </format>",
-				"</formats>");
+				"  </format>");
 	}
 
 	/** Repo with a committed .gitignore for src/generated/, a clean tracked file, and a dirty ignored file. */
@@ -63,19 +70,19 @@ class RespectGitignoreTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	@DisplayName("given respectGitignore is not configured, when checking, then ignored files are still formatted (unchanged default)")
+	@DisplayName("given excludeUsingGitignore is not configured, when checking, then ignored files are still formatted (unchanged default)")
 	void defaultStillFormatsIgnoredFiles() throws Exception {
 		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			writePom(pom("", "", ""));
+			writePom(withFormats(format("src/**/*.md")));
 			mavenRunner().withArguments("spotless:check").runHasError();
 		}
 	}
 
 	@Test
-	@DisplayName("given global respectGitignore, when checking and applying, then ignored files are skipped")
-	void globalFlagSkipsIgnoredFiles() throws Exception {
+	@DisplayName("given excludeUsingGitignore on the format, when checking and applying, then ignored files are skipped")
+	void skipsIgnoredFiles() throws Exception {
 		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			writePom(pom("<respectGitignore>true</respectGitignore>", "", ""));
+			writePom(withFormats(format("src/**/*.md", OPT_IN)));
 			mavenRunner().withArguments("spotless:check").runNoError();
 			mavenRunner().withArguments("spotless:apply").runNoError();
 			assertFile(IGNORED).hasContent("HELLO");
@@ -83,10 +90,10 @@ class RespectGitignoreTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	@DisplayName("given global respectGitignore, when a non-ignored file is dirty, then it is still reported and fixed")
-	void globalFlagStillFormatsNonIgnoredFiles() throws Exception {
+	@DisplayName("given excludeUsingGitignore on the format, when a non-ignored file is dirty, then it is still reported and fixed")
+	void stillFormatsNonIgnoredFiles() throws Exception {
 		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			writePom(pom("<respectGitignore>true</respectGitignore>", "", ""));
+			writePom(withFormats(format("src/**/*.md", OPT_IN)));
 			setFile(TRACKED).toContent("HELLO");
 			mavenRunner().withArguments("spotless:check").runHasError();
 			mavenRunner().withArguments("spotless:apply").runNoError();
@@ -96,29 +103,41 @@ class RespectGitignoreTest extends MavenIntegrationHarness {
 	}
 
 	@Test
-	@DisplayName("given respectGitignore only on the format, when checking, then ignored files are skipped")
-	void formatFlagSkipsIgnoredFiles() throws Exception {
+	@DisplayName("given two formats and only one opts in, when applying, then only the other format still formats ignored files")
+	void onlyAffectsTheFormatWhichOptsIn() throws Exception {
 		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			writePom(pom("", "<respectGitignore>true</respectGitignore>", ""));
+			setFile("src/generated/Ignored.txt").toContent("HELLO");
+			writePom(withFormats(format("src/**/*.md", OPT_IN), format("src/**/*.txt")));
+			mavenRunner().withArguments("spotless:apply").runNoError();
+			assertFile(IGNORED).hasContent("HELLO");
+			assertFile("src/generated/Ignored.txt").hasContent("hello");
+		}
+	}
+
+	@Test
+	@DisplayName("given excludeUsingGitignore together with excludes, when checking, then both exclusions apply")
+	void combinesWithExcludes() throws Exception {
+		try (Git git = givenRepoWithDirtyIgnoredFile()) {
+			setFile("src/vendor/Vendored.md").toContent("HELLO");
+			writePom(withFormats(format("src/**/*.md", OPT_IN, "<excludes><exclude>src/vendor/**</exclude></excludes>")));
 			mavenRunner().withArguments("spotless:check").runNoError();
 		}
 	}
 
 	@Test
-	@DisplayName("given global true but format false, when checking, then the format-level value wins")
-	void formatFlagOverridesGlobal() throws Exception {
-		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			writePom(pom("<respectGitignore>true</respectGitignore>", "<respectGitignore>false</respectGitignore>", ""));
-			mavenRunner().withArguments("spotless:check").runHasError();
-		}
-	}
-
-	@Test
-	@DisplayName("given respectGitignore with ratchetFrom, when an ignored file is new, then it is skipped")
+	@DisplayName("given excludeUsingGitignore with ratchetFrom, when an ignored file is new, then it is skipped")
 	void combinesWithRatchetFrom() throws Exception {
 		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			writePom(pom("<respectGitignore>true</respectGitignore>", "", "<ratchetFrom>baseline</ratchetFrom>"));
+			writePom("<ratchetFrom>baseline</ratchetFrom>\n" + withFormats(format("src/**/*.md", OPT_IN)));
 			mavenRunner().withArguments("spotless:check").runNoError();
 		}
+	}
+
+	@Test
+	@DisplayName("given excludeUsingGitignore outside of a git repository, when checking, then the build fails with a clear message")
+	void notAGitRepositoryFails() throws Exception {
+		setFile(TRACKED).toContent("hello");
+		writePom(withFormats(format("src/**/*.md", OPT_IN)));
+		assertThat(mavenRunner().withArguments("spotless:check").runHasError().stdOutUtf8()).contains("requires a git repository");
 	}
 }

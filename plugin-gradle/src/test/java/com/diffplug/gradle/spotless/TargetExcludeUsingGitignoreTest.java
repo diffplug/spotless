@@ -30,13 +30,18 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import com.diffplug.spotless.ClearGitConfig;
 
-/** Integration tests for {@code respectGitignore()}, see https://github.com/diffplug/spotless/issues/2443 */
+/** Integration tests for {@code targetExcludeUsingGitignore()}, see https://github.com/diffplug/spotless/issues/2443 */
 @ClearGitConfig
-class RespectGitignoreTest extends GradleIntegrationHarness {
+class TargetExcludeUsingGitignoreTest extends GradleIntegrationHarness {
 	private static final String IGNORED = "src/generated/Ignored.md";
 	private static final String TRACKED = "src/main/Tracked.md";
+	private static final String OPT_IN = "targetExcludeUsingGitignore()";
 
-	private void givenBuild(boolean configCache, String global, String format) throws IOException {
+	private void givenBuild(boolean configCache, String... miscFormatLines) throws IOException {
+		givenBuildWithFormats(configCache, format("misc", miscFormatLines));
+	}
+
+	private void givenBuildWithFormats(boolean configCache, String... formats) throws IOException {
 		if (configCache) {
 			setFile("gradle.properties").toContent("org.gradle.configuration-cache=true");
 		}
@@ -45,13 +50,17 @@ class RespectGitignoreTest extends GradleIntegrationHarness {
 				"  id 'com.diffplug.spotless'",
 				"}",
 				"spotless {",
-				"  " + global,
-				"  format 'misc', {",
-				"    target 'src/**/*.md'",
-				"    " + format,
-				"    replace 'lowercase hello', 'HELLO', 'hello'",
-				"  }",
+				String.join("\n", formats),
 				"}");
+	}
+
+	private static String format(String name, String... extraLines) {
+		return String.join("\n",
+				"  format '" + name + "', {",
+				"    target 'src/**/*.md'",
+				"    " + String.join("\n    ", extraLines),
+				"    replace 'lowercase hello', 'HELLO', 'hello'",
+				"  }");
 	}
 
 	/** Repo with a committed .gitignore for src/generated/, a clean tracked file, and a dirty ignored file. */
@@ -65,22 +74,28 @@ class RespectGitignoreTest extends GradleIntegrationHarness {
 		return git;
 	}
 
+	private static String nativePath(String unixPath) {
+		// the violation message lists paths with native separators
+		return unixPath.replace('/', File.separatorChar);
+	}
+
 	@ParameterizedTest(name = "configCache={0}")
 	@ValueSource(booleans = {false, true})
-	@DisplayName("given respectGitignore is not configured, when checking, then ignored files are still formatted (unchanged default)")
+	@DisplayName("given targetExcludeUsingGitignore is not configured, when checking, then ignored files are still formatted (unchanged default)")
 	void defaultStillFormatsIgnoredFiles(boolean configCache) throws Exception {
 		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			givenBuild(configCache, "", "");
-			gradleRunner().withArguments("spotlessCheck").buildAndFail();
+			givenBuild(configCache);
+			BuildResult result = gradleRunner().withArguments("spotlessCheck").buildAndFail();
+			assertThat(result.getOutput()).contains(nativePath(IGNORED));
 		}
 	}
 
 	@ParameterizedTest(name = "configCache={0}")
 	@ValueSource(booleans = {false, true})
-	@DisplayName("given global respectGitignore(), when checking and applying, then ignored files are skipped but others are fixed")
-	void globalFlagSkipsIgnoredFiles(boolean configCache) throws Exception {
+	@DisplayName("given targetExcludeUsingGitignore(), when checking and applying, then ignored files are skipped but others are fixed")
+	void skipsIgnoredFiles(boolean configCache) throws Exception {
 		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			givenBuild(configCache, "respectGitignore()", "");
+			givenBuild(configCache, OPT_IN);
 			gradleRunner().withArguments("spotlessCheck").build();
 
 			setFile(TRACKED).toContent("HELLO");
@@ -93,32 +108,33 @@ class RespectGitignoreTest extends GradleIntegrationHarness {
 
 	@ParameterizedTest(name = "configCache={0}")
 	@ValueSource(booleans = {false, true})
-	@DisplayName("given respectGitignore() only on the format, when checking, then ignored files are skipped")
-	void formatFlagSkipsIgnoredFiles(boolean configCache) throws Exception {
+	@DisplayName("given two formats and only one opts in, when checking, then only the other format still sees ignored files")
+	void onlyAffectsTheFormatWhichOptsIn(boolean configCache) throws Exception {
 		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			givenBuild(configCache, "", "respectGitignore()");
+			givenBuildWithFormats(configCache, format("optedIn", OPT_IN), format("notOptedIn"));
+			gradleRunner().withArguments("spotlessOptedInCheck").build();
+			BuildResult result = gradleRunner().withArguments("spotlessNotOptedInCheck").buildAndFail();
+			assertThat(result.getOutput()).contains(nativePath(IGNORED));
+		}
+	}
+
+	@ParameterizedTest(name = "configCache={0}")
+	@ValueSource(booleans = {false, true})
+	@DisplayName("given targetExcludeUsingGitignore() together with targetExclude, when checking, then both exclusions apply")
+	void combinesWithTargetExclude(boolean configCache) throws Exception {
+		try (Git git = givenRepoWithDirtyIgnoredFile()) {
+			givenBuild(configCache, OPT_IN, "targetExclude 'src/vendor/**'");
+			setFile("src/vendor/Vendored.md").toContent("HELLO");
 			gradleRunner().withArguments("spotlessCheck").build();
 		}
 	}
 
 	@ParameterizedTest(name = "configCache={0}")
 	@ValueSource(booleans = {false, true})
-	@DisplayName("given global true but format respectGitignore(false), when checking, then the format-level value wins")
-	void formatFlagOverridesGlobal(boolean configCache) throws Exception {
-		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			givenBuild(configCache, "respectGitignore()", "respectGitignore(false)");
-			BuildResult result = gradleRunner().withArguments("spotlessCheck").buildAndFail();
-			// the violation message lists paths with native separators
-			assertThat(result.getOutput()).contains(IGNORED.replace('/', File.separatorChar));
-		}
-	}
-
-	@ParameterizedTest(name = "configCache={0}")
-	@ValueSource(booleans = {false, true})
-	@DisplayName("given respectGitignore(), when .gitignore changes between builds, then the next build honors the new rules")
+	@DisplayName("given targetExcludeUsingGitignore(), when .gitignore changes between builds, then the next build honors the new rules")
 	void gitignoreChangeIsPickedUp(boolean configCache) throws Exception {
 		try (Git git = givenRepoWithDirtyIgnoredFile()) {
-			givenBuild(configCache, "respectGitignore()", "");
+			givenBuild(configCache, OPT_IN);
 			setFile("src/other/Dirty.md").toContent("HELLO");
 			gradleRunner().withArguments("spotlessCheck").buildAndFail();
 
@@ -131,11 +147,25 @@ class RespectGitignoreTest extends GradleIntegrationHarness {
 	}
 
 	@Test
-	@DisplayName("given respectGitignore() outside of a git repository, when checking, then the build fails with a clear message")
+	@DisplayName("given targetExcludeUsingGitignore() outside of a git repository, when checking, then the build fails with a clear message")
 	void notAGitRepositoryFails() throws Exception {
-		givenBuild(false, "respectGitignore()", "");
+		givenBuild(false, OPT_IN);
 		setFile(TRACKED).toContent("hello");
 		BuildResult result = gradleRunner().withArguments("spotlessCheck").buildAndFail();
 		assertThat(result.getOutput()).contains("requires a git repository");
+	}
+
+	@Test
+	@DisplayName("given targetExcludeUsingGitignore() at the top level of the spotless block, when configuring, then the build fails because it is format-level only")
+	void isNotAvailableGlobally() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"  id 'com.diffplug.spotless'",
+				"}",
+				"spotless {",
+				"  " + OPT_IN,
+				"}");
+		BuildResult result = gradleRunner().withArguments("spotlessCheck").buildAndFail();
+		assertThat(result.getOutput()).contains("targetExcludeUsingGitignore");
 	}
 }

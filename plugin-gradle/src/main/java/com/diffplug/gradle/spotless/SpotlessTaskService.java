@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
@@ -47,6 +48,7 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.extra.GitIgnoredFiles;
 import com.diffplug.spotless.extra.P2Provisioner;
 
 /**
@@ -135,6 +137,15 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		ratchet.close();
 	}
 	// </GitRatchet>
+
+	// <GitIgnoredFiles>
+	private final Map<File, GitIgnoredFiles> gitIgnoredFiles = new ConcurrentHashMap<>();
+
+	/** The git-ignored files below the given project, shared by every format of that project for the duration of the build. */
+	GitIgnoredFiles gitIgnoredFilesFor(File projectDir) {
+		return gitIgnoredFiles.computeIfAbsent(projectDir, GitIgnoredFiles::under);
+	}
+	// </GitIgnoredFiles>
 
 	static String INDEPENDENT_HELPER = "Helper";
 

@@ -151,6 +151,34 @@ public class ExpandWildcardImportsStepTest extends ResourceHarness {
 		StepHarness.forStep(step).testResource("java/expandwildcardimports/StaticFieldsAndEnumConstantsUnformatted.test", "java/expandwildcardimports/StaticFieldsAndEnumConstantsFormatted.test");
 	}
 
+	/** Regression test for <a href="https://github.com/diffplug/spotless/issues/2946">#2946</a>. */
+	@Test
+	void expandWildcardImports_givenRecord_whenExpanding_thenImportsUsedType() throws Exception {
+		// given
+		FormatterStep step = ExpandWildcardImportsStep.create(Collections.emptySet(), TestProvisioner.mavenCentral());
+
+		// when / then
+		StepHarness.forStep(step).testResource("java/expandwildcardimports/RecordUnformatted.test", "java/expandwildcardimports/RecordFormatted.test");
+	}
+
+	@Test
+	void expandWildcardImports_givenPostJava11Syntax_whenExpanding_thenImportsUsedTypes() throws Exception {
+		// given: sealed interface, records, guarded and record-deconstruction patterns in a switch expression
+		FormatterStep step = ExpandWildcardImportsStep.create(Collections.emptySet(), TestProvisioner.mavenCentral());
+
+		// when / then
+		StepHarness.forStep(step).testResource("java/expandwildcardimports/ModernSyntaxUnformatted.test", "java/expandwildcardimports/ModernSyntaxFormatted.test");
+	}
+
+	@Test
+	void expandWildcardImports_givenValidationProblem_whenExpanding_thenLeavesSourceUnchanged() throws Exception {
+		// given: syntactically parseable, but rejected by JavaParser's validator (duplicated modifier)
+		FormatterStep step = ExpandWildcardImportsStep.create(Collections.emptySet(), TestProvisioner.mavenCentral());
+
+		// when / then: treated like an unparseable file instead of failing on symbol resolution
+		StepHarness.forStep(step).testResourceUnaffected("java/expandwildcardimports/ValidationProblem.test");
+	}
+
 	@Test
 	void expandWildcardImports_nullSafety() throws Exception {
 		// Test null safety

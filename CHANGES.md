@@ -11,9 +11,15 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+- Add a `groupArtifact` option to `PalantirJavaFormatStep`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
 - Add `GitIgnoredFiles` to `lib-extra`, which answers whether git ignores a file using the same rules as `git status`. ([#2443](https://github.com/diffplug/spotless/issues/2443))
 ### Fixed
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
+- DBeaver SQL formatter no longer prints an `IndexOutOfBoundsException` when a file starts with a keyword like `SET`. ([#1552](https://github.com/diffplug/spotless/issues/1552))
+- `ExpandWildcardImportsStep` no longer fails with `Symbol resolution not configured` on records and other syntax newer than Java 11, and leaves files JavaParser cannot validate unchanged. ([#2946](https://github.com/diffplug/spotless/issues/2946))
+- `removeSemicolons()` no longer removes semicolons inside dollar-slashy strings (`$/ ... /$`), after escaped triple quotes in multiline strings, or in multi-line `for (init; cond; update)` headers. ([#2780](https://github.com/diffplug/spotless/issues/2780))
+- `RemoveUnusedImportsStep` and `GoogleJavaFormatStep` no longer remove imports that are only used by links in Markdown doc comments (`///`, JDK 23+). ([#3161](https://github.com/diffplug/spotless/issues/3161))
+- `forbidWildcardImports` no longer reports import statements inside Java text blocks or comments. ([#2997](https://github.com/diffplug/spotless/issues/2997))
 
 ## [4.11.0] - 2026-11-02
 ### Added

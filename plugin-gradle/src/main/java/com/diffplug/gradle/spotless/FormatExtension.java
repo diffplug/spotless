@@ -30,9 +30,12 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -67,7 +70,6 @@ import com.diffplug.spotless.Provisioner;
 import com.diffplug.spotless.SerializedFunction;
 import com.diffplug.spotless.cpp.ClangFormatStep;
 import com.diffplug.spotless.extra.EclipseBasedStepBuilder;
-import com.diffplug.spotless.extra.GitIgnoredFiles;
 import com.diffplug.spotless.extra.P2Provisioner;
 import com.diffplug.spotless.extra.wtp.EclipseWtpFormatterStep;
 import com.diffplug.spotless.generic.EndWithNewlineStep;
@@ -177,31 +179,6 @@ public class FormatExtension {
 		setRatchetFrom(ratchetFrom);
 	}
 
-	private @Nullable Boolean respectGitignore;
-
-	/** @see #setRespectGitignore(boolean) */
-	public boolean isRespectGitignore() {
-		return respectGitignore == null ? spotless.isRespectGitignore() : respectGitignore;
-	}
-
-	/**
-	 * Allows you to override the value from the parent
-	 * {@link SpotlessExtension#setRespectGitignore(boolean)} for this specific format.
-	 */
-	public void setRespectGitignore(boolean respectGitignore) {
-		this.respectGitignore = respectGitignore;
-	}
-
-	/** @see #setRespectGitignore(boolean) */
-	public void respectGitignore(boolean respectGitignore) {
-		setRespectGitignore(respectGitignore);
-	}
-
-	/** Shorthand for {@code respectGitignore(true)}. @see #setRespectGitignore(boolean) */
-	public void respectGitignore() {
-		setRespectGitignore(true);
-	}
-
 	/**
 	 * Sets the encoding to use (defaults to
 	 * {@link SpotlessExtensionImpl#getEncoding()}.
@@ -254,6 +231,25 @@ public class FormatExtension {
 	protected FileCollection target;
 	protected FileCollection targetExclude;
 
+	/*
+	 * Bookkeeping which lets String excludes be applied as fileTree exclude patterns on the String targets, so that
+	 * excluded directories are pruned while walking the target instead of subtracting a fileTree which walks the whole
+	 * project directory, see https://github.com/diffplug/spotless/issues/3147
+	 */
+	/** Trees created from String targets, all rooted at the project dir. */
+	private final Set<ConfigurableFileTree> projectDirTargetTrees = Collections.newSetFromMap(new IdentityHashMap<>());
+	/** The parts of each union created by {@link #parseTargetsIsExclude} for a target. */
+	private final Map<FileCollection, List<FileCollection>> targetUnionParts = new IdentityHashMap<>();
+	/** The {@link #targetExclude} which {@link #targetExcludePrunable} and {@link #targetExcludeRest} were split from. */
+	@Nullable private FileCollection targetExcludeSplitFrom;
+	/** String excludes ending in a {@code **} segment, which exclude exactly the same files as a tree exclude. */
+	private List<String> targetExcludePrunable = List.of();
+	/** The rest of {@link #targetExclude}, or null if it consists only of prunable patterns. */
+	@Nullable private FileCollection targetExcludeRest;
+
+	/** If true, files which git ignores are excluded, see {@link #targetExcludeUsingGitignore()}. */
+	protected boolean targetExcludeUsingGitignore;
+
 	/** The value from which files will be excluded if their content contain it. */
 	@Nullable protected String targetExcludeContentPattern;
 
@@ -290,9 +286,55 @@ public class FormatExtension {
 	 * fileTree, with project.rootDir as the dir. List<String> are treated as the
 	 * 'includes' arg to fileTree, with project.rootDir as the dir. Anything else
 	 * gets passed to getProject().files().
+	 * <p>
+	 * String patterns which end with {@code /**} (e.g. {@code "**\/build/**"}) are
+	 * applied directly to String targets, so the excluded directories are skipped
+	 * while walking the target rather than walking the whole project directory.
 	 */
 	public void targetExclude(Object... targets) {
 		this.targetExclude = parseTargetsIsExclude(targets, true);
+		List<String> prunable = new ArrayList<>();
+		List<Object> rest = new ArrayList<>();
+		splitExcludes(Arrays.asList(targets), prunable, rest);
+		this.targetExcludeSplitFrom = targetExclude;
+		this.targetExcludePrunable = prunable;
+		this.targetExcludeRest = rest.isEmpty() ? null : parseTargetsIsExclude(rest.toArray(), true);
+	}
+
+	private static void splitExcludes(Collection<?> targets, List<String> prunable, List<Object> rest) {
+		for (Object target : targets) {
+			if (target instanceof Collection<?> collection) {
+				splitExcludes(collection, prunable, rest);
+			} else if (target instanceof String pattern && endsWithDoubleStarSegment(pattern)) {
+				prunable.add(pattern);
+			} else {
+				rest.add(target);
+			}
+		}
+	}
+
+	/**
+	 * A tree exclude prunes every directory matching the pattern, while subtracting {@code fileTree.include(pattern)}
+	 * only removes the files matching it. Both remove the same files iff the pattern ends with a {@code **} segment.
+	 */
+	private static boolean endsWithDoubleStarSegment(String pattern) {
+		return pattern.equals("**") || pattern.endsWith("/**") || pattern.endsWith("\\**");
+	}
+
+	/**
+	 * Excludes all files which git ignores, in addition to {@link #targetExclude(Object...)}.
+	 * <p>
+	 * A file is excluded exactly when {@code git status} would consider it ignored: it matches a pattern
+	 * from any {@code .gitignore}, from {@code .git/info/exclude} or from {@code core.excludesFile},
+	 * <b>and</b> it is not tracked. The project must be inside a git repository.
+	 * <p>
+	 * This is the slowest way to narrow a target, because the ignored files are still found by
+	 * {@link #target(Object...)} first, and git's ignore rules have to be evaluated on top. Prefer a
+	 * tight {@link #target(Object...)}, then {@link #targetExclude(Object...)}, and use this only when
+	 * the ignored files cannot be described with a few globs.
+	 */
+	public void targetExcludeUsingGitignore() {
+		this.targetExcludeUsingGitignore = true;
 	}
 
 	/**
@@ -321,8 +363,14 @@ public class FormatExtension {
 			return parseTargetIsExclude(targets[0], isExclude);
 		} else {
 			FileCollection union = getProject().files();
+			List<FileCollection> parts = new ArrayList<>(targets.length);
 			for (Object target : targets) {
-				union = union.plus(parseTargetIsExclude(target, isExclude));
+				FileCollection part = parseTargetIsExclude(target, isExclude);
+				parts.add(part);
+				union = union.plus(part);
+			}
+			if (!isExclude) {
+				targetUnionParts.put(union, parts);
 			}
 			return union;
 		}
@@ -372,6 +420,7 @@ public class FormatExtension {
 				}
 				matchedFiles.exclude(excludes);
 			}
+			projectDirTargetTrees.add(matchedFiles);
 			return matchedFiles;
 		} else if (isExclude && (target instanceof FileSystemLocation || target instanceof Provider)) {
 			// an excluded directory means the files under it, and the tree resolves them lazily
@@ -1120,9 +1169,9 @@ public class FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setLintSuppressions(lintSuppressions);
-		FileCollection targetMinusExclude = targetExclude == null ? target : target.minus(targetExclude);
-		FileCollection totalTarget = isRespectGitignore()
-				? targetMinusExclude.filter(new NotGitIgnored(GitIgnoredFiles.under(getProject().getProjectDir())))
+		FileCollection targetMinusExclude = targetExclude == null ? target : excludeFrom(target);
+		FileCollection totalTarget = targetExcludeUsingGitignore
+				? targetMinusExclude.filter(new NotGitIgnored(spotless.getSpotlessTaskService(), getProject().getProjectDir()))
 				: targetMinusExclude;
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
@@ -1146,22 +1195,45 @@ public class FormatExtension {
 		task.setupRatchet(getRatchetFrom() != null ? getRatchetFrom() : "");
 	}
 
+	/** Returns {@code fromTarget - targetExclude}, applying prunable String excludes as tree excludes where possible. */
+	private FileCollection excludeFrom(FileCollection fromTarget) {
+		List<FileCollection> parts = targetUnionParts.get(fromTarget);
+		if (parts != null) {
+			FileCollection union = getProject().files();
+			for (FileCollection part : parts) {
+				union = union.plus(excludeFrom(part));
+			}
+			return union;
+		} else if (fromTarget instanceof ConfigurableFileTree tree && projectDirTargetTrees.contains(tree)
+				&& targetExclude == targetExcludeSplitFrom && !targetExcludePrunable.isEmpty()) {
+			// same root as the String excludes, so the patterns match the same relative paths
+			ConfigurableFileTree pruned = getProject().fileTree(tree.getDir());
+			pruned.setIncludes(tree.getIncludes());
+			pruned.setExcludes(tree.getExcludes());
+			pruned.exclude(targetExcludePrunable);
+			return targetExcludeRest == null ? pruned : pruned.minus(targetExcludeRest);
+		} else {
+			return fromTarget.minus(targetExclude);
+		}
+	}
+
 	/**
-	 * Configuration-cache friendly filter, the git state inside {@link GitIgnoredFiles} is transient and
-	 * therefore recomputed in every build, so changes to {@code .gitignore} are always picked up.
+	 * Keeps the files which git does not ignore. The git state lives in the {@link SpotlessTaskService},
+	 * so it is computed at most once per project and build, no matter how many formats use it, and
+	 * changes to {@code .gitignore} are picked up by the next build, also with the configuration cache.
 	 */
-	private static final class NotGitIgnored implements Spec<File>, Serializable {
-		private static final long serialVersionUID = 1L;
+	private static final class NotGitIgnored implements Spec<File> {
+		private final Provider<SpotlessTaskService> taskService;
+		private final File projectDir;
 
-		private final GitIgnoredFiles ignored;
-
-		NotGitIgnored(GitIgnoredFiles ignored) {
-			this.ignored = ignored;
+		NotGitIgnored(Provider<SpotlessTaskService> taskService, File projectDir) {
+			this.taskService = taskService;
+			this.projectDir = projectDir;
 		}
 
 		@Override
 		public boolean isSatisfiedBy(File file) {
-			return ignored.isNotIgnored(file);
+			return taskService.get().gitIgnoredFilesFor(projectDir).isNotIgnored(file);
 		}
 	}
 

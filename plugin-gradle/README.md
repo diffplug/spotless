@@ -108,7 +108,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
-  - [How can I skip files ignored by git?](#respect-gitignore)
+  - [How can I skip files ignored by git?](#exclude-using-gitignore)
   - [`spotless:off` and `spotless:on`](#spotlessoff-and-spotlesson)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Custom steps](#custom-steps)
@@ -398,6 +398,8 @@ spotless {
     palantirJavaFormat('2.9.0').style("GOOGLE")
     // optional: you can also format Javadocs, requires at least Palantir 2.39.0
     palantirJavaFormat('2.39.0').formatJavadoc(true)
+    // optional: you can also use custom group artifact (you probably don't need this)
+    palantirJavaFormat('2.39.0').groupArtifact('com.palantir.javaformat:palantir-java-format')
 ```
 
 ### prince-of-space
@@ -1968,23 +1970,24 @@ Many popular CI systems (GitHub, GitLab, BitBucket, and Travis) use a "shallow c
 - calling `git fetch origin main` before you call Spotless
 - disabling the shallow clone [like so](https://github.com/diffplug/spotless/issues/710)
 
-<a name="respect-gitignore"></a>
+<a name="exclude-using-gitignore"></a>
 
 ## How can I skip files ignored by git?
 
-If your targets are broad (e.g. `target '**/*.md'`), they can pick up files which git ignores, such as generated sources or `node_modules`. Rather than repeating your `.gitignore` in `targetExclude`, you can tell Spotless to skip them:
+The fastest way to keep Spotless away from generated sources or `node_modules` is a tight `target`, e.g. `target 'src/**/*.md'` rather than `target '**/*.md'`. If that is not possible, add a `targetExclude`: patterns ending in `/**` (e.g. `targetExclude '**/node_modules/**'`) are not even walked. Only if the ignored files cannot be described with a few globs, you can ask git instead:
 
 ```gradle
 spotless {
-  respectGitignore() // skip files which git ignores, in every format
   format 'misc', {
     target '**/*.md'
-    respectGitignore(false) // or override per-format
+    targetExcludeUsingGitignore() // in addition to targetExclude
   }
 }
 ```
 
-A file is skipped exactly when `git status` would consider it ignored: it matches a pattern from any `.gitignore`, from `.git/info/exclude` or from `core.excludesFile`, **and** it is not tracked. Tracked files are always formatted, even when they match an ignore pattern. Changes to `.gitignore` are picked up by the next build, also with the configuration cache. The project must be inside a git repository, otherwise the build fails.
+A file is excluded exactly when `git status` would consider it ignored: it matches a pattern from any `.gitignore`, from `.git/info/exclude` or from `core.excludesFile`, **and** it is not tracked. Tracked files are always formatted, even when they match an ignore pattern. Changes to `.gitignore` are picked up by the next build, also with the configuration cache. The project must be inside a git repository, otherwise the build fails.
+
+This is the slowest of the three options, which is why it has to be set per format: the ignored files are still found by `target` first, and Spotless then has to list the working tree of the project once per build to evaluate git's ignore rules.
 
 ## `spotless:off` and `spotless:on`
 
@@ -2160,6 +2163,25 @@ Note that this feature is also incompatible with Isolated projects, because ever
 - View the changes with `git diff`
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
+
+### Which files did `spotlessApply` change?
+
+Every `SpotlessApply` task (e.g. `spotlessJavaApply`) writes the files its most recent run rewrote to `build/spotless/<taskName>-changed-files.txt` (one project-relative path per line, empty if nothing changed). The task only reports that it did work when it actually rewrote a file, so you can use this to tell developers what was fixed:
+
+```gradle
+tasks.withType(com.diffplug.gradle.spotless.SpotlessApply).configureEach {
+  // optional, this is the default location
+  changedFilesReport = layout.buildDirectory.file("spotless/${name}-changed-files.txt")
+  def report = changedFilesReport
+  doLast {
+    if (didWork) {
+      logger.lifecycle("Spotless fixed:\n" + report.get().asFile.text)
+    }
+  }
+}
+```
+
+`changedFilesReport` is an output of the apply task, so another task can declare it as an input (e.g. `inputs.file(tasks.named('spotlessJavaApply').flatMap { it.changedFilesReport })`) and Gradle will run the apply task first, without an explicit `dependsOn`.
 
 ## Can I apply Spotless to specific files?
 

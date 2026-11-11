@@ -63,9 +63,12 @@ public abstract class FormatterFactory {
 	@Parameter
 	private String ratchetFrom = RATCHETFROM_NOT_SET_AT_FORMAT_LEVEL;
 
-	/** Overrides the global {@code respectGitignore} for this format when set. */
-	@Parameter
-	private Boolean respectGitignore;
+	/**
+	 * If {@code true}, files which git ignores (via {@code .gitignore}, {@code .git/info/exclude} or
+	 * {@code core.excludesFile}) and which are not tracked are excluded, in addition to {@code <excludes>}.
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean excludeUsingGitignore;
 
 	@Parameter
 	private String[] includes;
@@ -185,8 +188,8 @@ public abstract class FormatterFactory {
 				.filter(ratchet -> !RATCHETFROM_NONE.equals(ratchet));
 	}
 
-	boolean respectGitignore(boolean globalDefault) {
-		return respectGitignore == null ? globalDefault : respectGitignore;
+	boolean excludeUsingGitignore() {
+		return excludeUsingGitignore;
 	}
 
 	private Optional<String> optionalRatchetFrom() {

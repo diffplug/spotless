@@ -17,17 +17,18 @@ package com.diffplug.spotless.extra;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.eclipse.jgit.lib.IndexDiff;
-import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.dircache.DirCacheIterator;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
+import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.WorkingTreeIterator;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 import com.diffplug.spotless.FileSignature;
@@ -39,17 +40,16 @@ import com.diffplug.spotless.FileSignature;
  * Tracked files are never ignored, even when they match an ignore pattern.
  * <p>
  * The ignored paths below the root directory are computed once, lazily, on the first call to
- * {@link #isIgnored(File)} and are cached for the lifetime of this instance. Ignored directories are not
- * descended into, so large ignored folders such as {@code node_modules} or {@code build} are cheap.
+ * {@link #isIgnored(File)} and are cached for the lifetime of this instance, so an instance must not
+ * outlive a build. The computation only lists directories and evaluates ignore rules, it never reads
+ * or stats the content of a file. Ignored directories without tracked files are not descended into, so
+ * large ignored folders such as {@code node_modules} or {@code build} are cheap.
  * <p>
- * Instances are thread-safe. They are {@link Serializable} so that build tools can cache their configuration,
- * the computed state is not serialized and is recomputed after deserialization.
+ * Instances are thread-safe.
  */
-public final class GitIgnoredFiles implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public final class GitIgnoredFiles {
 	private final File rootDir;
-	private transient volatile @Nullable State state;
+	private volatile @Nullable State state;
 
 	private GitIgnoredFiles(File rootDir) {
 		this.rootDir = Objects.requireNonNull(rootDir).getAbsoluteFile();
@@ -114,23 +114,49 @@ public final class GitIgnoredFiles implements Serializable {
 		static State compute(File rootDir) throws IOException {
 			GitWorkarounds.RepositorySpecificResolver resolver = GitWorkarounds.fileRepositoryResolverForProject(rootDir);
 			if (resolver.getGitDir() == null) {
-				throw new IllegalArgumentException("Respecting .gitignore requires a git repository, but none was found in "
+				throw new IllegalArgumentException("Excluding files using .gitignore requires a git repository, but none was found in "
 						+ rootDir + " or any of its parent directories");
 			}
 			try (Repository repo = resolver.build()) {
 				if (repo.isBare()) {
-					throw new IllegalArgumentException("Respecting .gitignore requires a git working tree, but " + repo.getDirectory() + " is bare");
+					throw new IllegalArgumentException("Excluding files using .gitignore requires a git working tree, but " + repo.getDirectory() + " is bare");
 				}
 				Path workTree = repo.getWorkTree().toPath().toAbsolutePath().normalize();
-				// ObjectId == null: compare index to working tree only, we don't need HEAD
-				IndexDiff indexDiff = new IndexDiff(repo, (ObjectId) null, new FileTreeIterator(repo));
 				String subPath = toUnixRelative(workTree, rootDir.toPath());
-				if (subPath != null && !subPath.isEmpty()) {
-					indexDiff.setFilter(PathFilter.create(subPath));
-				}
-				indexDiff.diff();
-				return new State(workTree, Set.copyOf(indexDiff.getIgnoredNotInIndex()));
+				return new State(workTree, Set.copyOf(ignoredPaths(repo, subPath)));
 			}
+		}
+
+		/**
+		 * Walks the index and the working tree side by side, and collects every untracked path which is ignored.
+		 * An ignored directory is only entered if the index has entries below it, because git never ignores a tracked file.
+		 */
+		private static Set<String> ignoredPaths(Repository repo, @Nullable String subPath) throws IOException {
+			Set<String> ignoredPaths = new HashSet<>();
+			try (TreeWalk walk = new TreeWalk(repo)) {
+				int indexTree = walk.addTree(new DirCacheIterator(repo.readDirCache()));
+				FileTreeIterator workingTreeIterator = new FileTreeIterator(repo);
+				workingTreeIterator.setDirCacheIterator(walk, indexTree);
+				int workingTree = walk.addTree(workingTreeIterator);
+				walk.setRecursive(false);
+				if (subPath != null && !subPath.isEmpty()) {
+					walk.setFilter(PathFilter.create(subPath));
+				}
+				while (walk.next()) {
+					WorkingTreeIterator onDisk = walk.getTree(workingTree, WorkingTreeIterator.class);
+					if (onDisk == null) {
+						// only in the index, e.g. deleted from the working tree
+						continue;
+					}
+					boolean tracked = walk.getTree(indexTree, DirCacheIterator.class) != null;
+					if (!tracked && onDisk.isEntryIgnored()) {
+						ignoredPaths.add(walk.getPathString());
+					} else if (walk.isSubtree()) {
+						walk.enterSubtree();
+					}
+				}
+			}
+			return ignoredPaths;
 		}
 
 		boolean isIgnored(File file) {

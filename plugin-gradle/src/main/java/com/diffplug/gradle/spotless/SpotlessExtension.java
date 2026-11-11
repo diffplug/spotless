@@ -120,32 +120,6 @@ public abstract class SpotlessExtension {
 		setRatchetFrom(ratchetFrom);
 	}
 
-	private boolean respectGitignore;
-
-	/**
-	 * If {@code true}, files which git ignores (via {@code .gitignore}, {@code .git/info/exclude} or
-	 * {@code core.excludesFile}) and which are not tracked are removed from every format's target.
-	 * Defaults to {@code false}. Can be overridden per format with {@link FormatExtension#setRespectGitignore(boolean)}.
-	 */
-	public void setRespectGitignore(boolean respectGitignore) {
-		this.respectGitignore = respectGitignore;
-	}
-
-	/** @see #setRespectGitignore(boolean) */
-	public boolean isRespectGitignore() {
-		return respectGitignore;
-	}
-
-	/** @see #setRespectGitignore(boolean) */
-	public void respectGitignore(boolean respectGitignore) {
-		setRespectGitignore(respectGitignore);
-	}
-
-	/** Shorthand for {@code respectGitignore(true)}. @see #setRespectGitignore(boolean) */
-	public void respectGitignore() {
-		setRespectGitignore(true);
-	}
-
 	final Map<String, FormatExtension> formats = new LinkedHashMap<>();
 
 	/** Configures the special java-specific extension. */

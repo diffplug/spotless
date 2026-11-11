@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import com.diffplug.spotless.maven.FormatterStepConfig;
 import com.diffplug.spotless.maven.FormatterStepFactory;
 
 public class PalantirJavaFormat implements FormatterStepFactory {
+	@Parameter
+	private String groupArtifact;
 
 	@Parameter
 	private String version;
@@ -35,9 +37,10 @@ public class PalantirJavaFormat implements FormatterStepFactory {
 
 	@Override
 	public FormatterStep newFormatterStep(FormatterStepConfig config) {
+		String groupArtifact = this.groupArtifact != null ? this.groupArtifact : PalantirJavaFormatStep.defaultGroupArtifact();
 		String version = this.version != null ? this.version : PalantirJavaFormatStep.defaultVersion();
 		String style = this.style != null ? this.style : PalantirJavaFormatStep.defaultStyle();
 		boolean formatJavadoc = this.formatJavadoc != null ? this.formatJavadoc : PalantirJavaFormatStep.defaultFormatJavadoc();
-		return PalantirJavaFormatStep.create(version, style, formatJavadoc, config.getProvisioner());
+		return PalantirJavaFormatStep.create(groupArtifact, version, style, formatJavadoc, config.getProvisioner());
 	}
 }

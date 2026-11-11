@@ -3,7 +3,18 @@ plugins {
 }
 
 spotless {
-  if (project != rootProject) {
+  if (project == rootProject) {
+    kotlin {
+      target("build-logic/src/**/*.kt", "*.kts", "build-logic/*.kts")
+      ktfmt(libs.ktfmt.get().version)
+    }
+    format("dotfiles") {
+      target(".gitignore", ".gitattributes", ".editorconfig")
+      leadingTabsToSpaces(2)
+      trimTrailingWhitespace()
+      endWithNewline()
+    }
+  } else {
     java {
       ratchetFrom("origin/main")
       bumpThisNumberIfACustomStepChanges(1)
@@ -20,19 +31,5 @@ spotless {
           "Don't use Gradle's internal API",
       )
     }
-  }
-  kotlin {
-    target("build-logic/src/**/*.kt")
-    ktfmt(libs.ktfmt.get().version)
-  }
-  kotlinGradle {
-    target("*.gradle.kts", "build-logic/*.gradle.kts", "build-logic/src/**/*.gradle.kts")
-    ktfmt(libs.ktfmt.get().version)
-  }
-  format("dotfiles") {
-    target(".gitignore", ".gitattributes", ".editorconfig")
-    leadingTabsToSpaces(2)
-    trimTrailingWhitespace()
-    endWithNewline()
   }
 }

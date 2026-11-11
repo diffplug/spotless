@@ -185,6 +185,83 @@ class ExpandWildcardImportsStepTest extends MavenIntegrationHarness {
 		assertFile(path).sameAsResource("java/expandwildcardimports/JavaClassWithWildcardsFormatted.test");
 	}
 
+	/**
+	 * Regression test for <a href="https://github.com/diffplug/spotless/issues/2946">#2946</a>:
+	 * a reactor where module {@code two} depends on module {@code one}, and {@code two}
+	 * contains a record using a wildcard import.
+	 */
+	@Test
+	void expandWildcardImports_givenMultiModuleReactorWithRecords_whenApply_thenExpandsImports() throws Exception {
+		// given
+		String spotlessVersion = System.getProperty("spotlessMavenPluginVersion");
+		setFile("pom.xml").toContent("""
+				<project xmlns="http://maven.apache.org/POM/4.0.0">
+				  <modelVersion>4.0.0</modelVersion>
+				  <groupId>com.example</groupId>
+				  <artifactId>parent</artifactId>
+				  <version>1.0.0-SNAPSHOT</version>
+				  <packaging>pom</packaging>
+				  <modules>
+				    <module>one</module>
+				    <module>two</module>
+				  </modules>
+				  <properties>
+				    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+				  </properties>
+				  <build>
+				    <plugins>
+				      <plugin>
+				        <groupId>com.diffplug.spotless</groupId>
+				        <artifactId>spotless-maven-plugin</artifactId>
+				        <version>%s</version>
+				        <configuration>
+				          <java><expandWildcardImports/></java>
+				        </configuration>
+				      </plugin>
+				    </plugins>
+				  </build>
+				</project>
+				""".formatted(spotlessVersion));
+		setFile("one/pom.xml").toContent(childPom("one", ""));
+		setFile("two/pom.xml").toContent(childPom("two", """
+				<dependencies>
+				  <dependency>
+				    <groupId>com.example</groupId>
+				    <artifactId>one</artifactId>
+				    <version>1.0.0-SNAPSHOT</version>
+				  </dependency>
+				</dependencies>
+				"""));
+		setFile("one/src/main/java/one/One.java").toContent("""
+				package one;
+
+				public record One(Integer x, Integer y) {}
+				""");
+		String path = "two/src/main/java/two/Two.java";
+		setFile(path).toResource("java/expandwildcardimports/RecordUnformatted.test");
+
+		// when
+		mavenRunner().withArguments("spotless:apply").runNoError();
+
+		// then
+		assertFile(path).sameAsResource("java/expandwildcardimports/RecordFormatted.test");
+	}
+
+	private static String childPom(String artifactId, String dependencies) {
+		return """
+				<project xmlns="http://maven.apache.org/POM/4.0.0">
+				  <modelVersion>4.0.0</modelVersion>
+				  <parent>
+				    <groupId>com.example</groupId>
+				    <artifactId>parent</artifactId>
+				    <version>1.0.0-SNAPSHOT</version>
+				  </parent>
+				  <artifactId>%s</artifactId>
+				  %s
+				</project>
+				""".formatted(artifactId, dependencies);
+	}
+
 	private void setupLocalMavenRepo() throws Exception {
 		// Write a minimal POM so that mvnw can start for install:install-file
 		setFile("pom.xml").toContent("""

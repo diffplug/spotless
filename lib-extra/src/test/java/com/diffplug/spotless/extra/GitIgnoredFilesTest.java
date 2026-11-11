@@ -18,12 +18,8 @@ package com.diffplug.spotless.extra;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -196,38 +192,41 @@ class GitIgnoredFilesTest extends ResourceHarness {
 	@DisplayName("given edge cases")
 	class EdgeCases {
 		@Test
+		@DisplayName("when the root dir itself lies inside an ignored directory, then its files are ignored")
+		void rootDirInsideIgnoredDirectory() throws Exception {
+			try (Git git = initRepo()) {
+				setFile(".gitignore").toContent("scratch/\n");
+				addAndCommit(git);
+				File file = setFile("scratch/moduleA/src/Main.java").toContent("class Main {}");
+				assertThat(GitIgnoredFiles.under(newFile("scratch/moduleA")).isIgnored(file)).isTrue();
+			}
+		}
+
+		@Test
+		@DisplayName("when a tracked file was deleted from the working tree, then its untracked siblings are still answered correctly")
+		void trackedFileDeletedFromWorkingTree() throws Exception {
+			try (Git git = initRepo()) {
+				setFile(".gitignore").toContent("*.log\n");
+				File deleted = setFile("dir/Deleted.java").toContent("class Deleted {}");
+				addAndCommit(git);
+				assertThat(deleted.delete()).isTrue();
+				File log = setFile("dir/debug.log").toContent("x");
+				File java = setFile("dir/Main.java").toContent("class Main {}");
+
+				GitIgnoredFiles ignored = underRoot();
+				assertThat(ignored.isIgnored(log)).isTrue();
+				assertThat(ignored.isIgnored(java)).isFalse();
+				assertThat(ignored.isIgnored(deleted)).isFalse();
+			}
+		}
+
+		@Test
 		@DisplayName("when the root dir is not inside a git repository, then a clear error is thrown")
 		void notAGitRepositoryFails() throws IOException {
 			File file = setFile("a.txt").toContent("x");
 			assertThatThrownBy(() -> underRoot().isIgnored(file))
 					.isInstanceOf(IllegalArgumentException.class)
 					.hasMessageContaining("requires a git repository");
-		}
-
-		@Test
-		@DisplayName("when the instance is serialized and deserialized, then it still answers correctly")
-		void survivesSerialization() throws Exception {
-			try (Git git = initRepo()) {
-				setFile(".gitignore").toContent("*.log\n");
-				addAndCommit(git);
-				File log = setFile("debug.log").toContent("x");
-				GitIgnoredFiles original = underRoot();
-				assertThat(original.isIgnored(log)).isTrue(); // computes and caches state
-
-				GitIgnoredFiles copy = roundTrip(original);
-				assertThat(copy.getRootDir()).isEqualTo(original.getRootDir());
-				assertThat(copy.isIgnored(log)).isTrue();
-			}
-		}
-	}
-
-	private static GitIgnoredFiles roundTrip(GitIgnoredFiles original) throws IOException, ClassNotFoundException {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		try (ObjectOutputStream out = new ObjectOutputStream(bytes)) {
-			out.writeObject(original);
-		}
-		try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()))) {
-			return (GitIgnoredFiles) in.readObject();
 		}
 	}
 }

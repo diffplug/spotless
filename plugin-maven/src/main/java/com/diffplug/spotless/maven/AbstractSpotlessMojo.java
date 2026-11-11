@@ -103,6 +103,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	static final String GOAL_CHECK = "check";
 	static final String GOAL_APPLY = "apply";
 	static final String GOAL_PRE_PUSH_HOOK = "install-git-pre-push-hook";
+	static final String GOAL_REPORT = "report";
 
 	@Inject
 	private RepositorySystem repositorySystem;
@@ -146,13 +147,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	@Parameter
 	private String ratchetFrom;
 
-	/**
-	 * If {@code true}, files which git ignores (via {@code .gitignore}, {@code .git/info/exclude} or
-	 * {@code core.excludesFile}) and which are not tracked are skipped. Can be overridden per format.
-	 */
-	@Parameter(defaultValue = "false")
-	private boolean respectGitignore;
-
+	/** Computed at most once per module, shared by every format which sets {@code <excludeUsingGitignore>}. */
 	private GitIgnoredFiles gitIgnoredFiles;
 
 	@Parameter
@@ -300,9 +295,26 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		} catch (PluginException e) {
 			throw e.asMojoExecutionException();
 		}
+		afterProcessing();
 	}
 
-	private boolean shouldSkip() {
+	/**
+	 * Called once after every format has been processed and the formatters have been closed.
+	 * Goals that collect results in {@link #process}, such as {@code spotless:report}, act on them here.
+	 */
+	protected void afterProcessing() throws MojoExecutionException {}
+
+	/**
+	 * Whether this goal uses the up-to-date index, which skips files that were clean the last time
+	 * {@code spotless:check} or {@code spotless:apply} ran. Goals that must look at every file without
+	 * touching that index, such as {@code spotless:report}, return {@code false}.
+	 */
+	protected boolean usesUpToDateIndex() {
+		return true;
+	}
+
+	/** Returns {@code true} if this goal should do nothing, because of {@code spotless.skip}, a goal-specific skip flag, or an m2e incremental build. */
+	protected final boolean shouldSkip() {
 		if (skip) {
 			return true;
 		}
@@ -330,7 +342,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			} else {
 				files = collectFilesFromFormatterFactory(formatterFactory);
 			}
-			if (formatterFactory.respectGitignore(respectGitignore)) {
+			if (formatterFactory.excludeUsingGitignore()) {
 				files = withoutGitIgnored(files);
 			}
 			if (isNullOrEmpty(filePatterns)) {
@@ -358,7 +370,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		try {
 			return files.stream().filter(ignored::isNotIgnored).collect(toList());
 		} catch (IllegalArgumentException e) {
-			throw new PluginException("Unable to apply <respectGitignore>: " + e.getMessage(), e);
+			throw new PluginException("Unable to apply <excludeUsingGitignore>: " + e.getMessage(), e);
 		}
 	}
 
@@ -492,6 +504,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private UpToDateChecker createUpToDateChecker(Iterable<Formatter> formatters) {
+		if (!usesUpToDateIndex()) {
+			return UpToDateChecker.ignoringIndex();
+		}
 		Path indexFile = upToDateChecking == null ? null : upToDateChecking.getIndexFile();
 		if (indexFile == null) {
 			Path targetDir = project.getBasedir().toPath().resolve(project.getBuild().getDirectory());
