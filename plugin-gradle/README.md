@@ -99,7 +99,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Shell](#shell)
   - [Gherkin](#gherkin)
   - Multiple languages
-    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install), [pinning transitive dependencies](#pinning-transitive-npm-dependencies))
+    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [clang-format](#clang-format)
     - [eclipse web tools platform](#eclipse-web-tools-platform)
     - [Biome](#biome) ([binary detection](#biome-binary), [config file](#biome-configuration-file), [input language](#biome-input-language))
@@ -1112,7 +1112,7 @@ spotless {
 
 **Prerequisite: tsfmt requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching results of `npm install`](#caching-results-of-npm-install) and [pinning transitive npm dependencies](#pinning-transitive-npm-dependencies) sections of prettier, which apply also to tsfmt.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to tsfmt.
 
 
 ### ESLint (Typescript)
@@ -1161,7 +1161,7 @@ spotless {
 
 **Prerequisite: ESLint requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching results of `npm install`](#caching-results-of-npm-install) and [pinning transitive npm dependencies](#pinning-transitive-npm-dependencies) sections of prettier, which apply also to ESLint.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to ESLint.
 
 ## Javascript
 
@@ -1224,7 +1224,7 @@ spotless {
 
 **Prerequisite: ESLint requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching results of `npm install`](#caching-results-of-npm-install) and [pinning transitive npm dependencies](#pinning-transitive-npm-dependencies) sections of prettier, which apply also to ESLint.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to ESLint.
 
 ## JSON
 
@@ -1501,6 +1501,7 @@ spotless {
 
     prettier('2.0.4') // version is optional
     prettier(['my-prettier-fork': '1.16.4']) // can specify exactly which npm packages to use
+    prettier().dependencyOverrides(['sql-formatter': '15.7.0']) // pin transitive npm dependencies via npm `overrides` (also for tsfmt and eslint)
 
     // by default, prettier uses the file's extension to guess a parser
     // but you can override that and specify the parser manually
@@ -1608,25 +1609,6 @@ spotless {
 
 Depending on your filesystem and the location of the cache directory, spotless will use hardlinks when caching the npm packages. If that is not
 possible, it will fall back to copying the files.
-
-### Pinning transitive npm dependencies
-
-Formatters and their plugins often depend on other npm packages using version ranges (e.g. `prettier-plugin-sql` depends on `sql-formatter@^15.x`).
-A new release of such a transitive dependency can change the formatting output, even though none of your configured versions changed.
-To keep the formatting stable, you can pin transitive dependencies to exact versions. Spotless writes them to the
-[`overrides`](https://docs.npmjs.com/cli/configuring-npm/package-json#overrides) field of the `package.json` it generates.
-This works for every npm-based formatter (prettier, tsfmt and ESLint).
-
-```gradle
-spotless {
-  format 'sql', {
-    target 'src/**/*.sql'
-    prettier(['prettier': '3.3.3', 'prettier-plugin-sql': '0.20.0'])
-      .config(['plugins': ['prettier-plugin-sql'], 'parser': 'sql'])
-      .dependencyOverrides(['sql-formatter': '15.7.0']) // pin the transitive dependency
-```
-
-Only the flat `'package': 'version'` form of npm overrides is supported (including references such as `'$prettier'`).
 
 ## clang-format
 

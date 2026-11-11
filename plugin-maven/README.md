@@ -60,7 +60,7 @@ user@machine repo % mvn spotless:check
   - [RDF](#RDF)
   - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang))
   - Multiple languages
-    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install), [pinning transitive dependencies](#pinning-transitive-npm-dependencies))
+    - [Prettier](#prettier) ([plugins](#prettier-plugins), [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching `npm install` results](#caching-results-of-npm-install))
     - [eclipse web tools platform](#eclipse-web-tools-platform)
     - [Biome](#biome) ([binary detection](#biome-binary), [config file](#biome-configuration-file), [input language](#biome-input-language))
     - [IntelliJ IDEA](#intellij-idea)
@@ -1040,7 +1040,7 @@ The auto-discovery of config files (up the file tree) will not work when using t
 
 **Prerequisite: tsfmt requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching results of `npm install`](#caching-results-of-npm-install) and [pinning transitive npm dependencies](#pinning-transitive-npm-dependencies) sections of prettier, which apply also to tsfmt.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to tsfmt.
 
 ### ESLint (typescript)
 
@@ -1096,7 +1096,7 @@ reference to a `tsconfig.json` is required.
 
 **Prerequisite: ESLint requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching results of `npm install`](#caching-results-of-npm-install) and [pinning transitive npm dependencies](#pinning-transitive-npm-dependencies) sections of prettier, which apply also to ESLint.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to ESLint.
 
 
 ## Javascript
@@ -1173,7 +1173,7 @@ The configuration is very similar to the [ESLint (Typescript)](#eslint-typescrip
 
 **Prerequisite: ESLint requires a working NodeJS version**
 
-For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection), [caching results of `npm install`](#caching-results-of-npm-install) and [pinning transitive npm dependencies](#pinning-transitive-npm-dependencies) sections of prettier, which apply also to ESLint.
+For details, see the [npm detection](#npm-detection), [`.npmrc` detection](#npmrc-detection) and [caching results of `npm install`](#caching-results-of-npm-install) sections of prettier, which apply also to ESLint.
 
 ## JSON
 
@@ -1549,6 +1549,10 @@ You can use prettier in any language-specific format, but usually you will be cr
             <value>0.19.6</value>
           </property>
         </devDependencyProperties>
+        <!-- Optional: pin transitive npm dependencies via npm `overrides` (also for tsfmt and eslint) -->
+        <dependencyOverrides>
+            <sql-formatter>15.7.0</sql-formatter>
+        </dependencyOverrides>
         <!-- Specify config file and/or inline config, the inline always trumps file -->
         <configFile>${project.basedir}/path/to/configfile</configFile>
         <config>
@@ -1675,32 +1679,6 @@ it will not need to download the packages again, but instead reuse the cached ve
 
 Depending on your filesystem and the location of the cache directory, spotless will use hardlinks when caching the npm packages. If that is not
 possible, it will fall back to copying the files.
-
-### Pinning transitive npm dependencies
-
-Formatters and their plugins often depend on other npm packages using version ranges (e.g. `prettier-plugin-sql` depends on `sql-formatter@^15.x`).
-A new release of such a transitive dependency can change the formatting output, even though none of your configured versions changed.
-To keep the formatting stable, you can pin transitive dependencies to exact versions. Spotless writes them to the
-[`overrides`](https://docs.npmjs.com/cli/configuring-npm/package-json#overrides) field of the `package.json` it generates.
-This works for every npm-based formatter (prettier, tsfmt and ESLint).
-
-```xml
-<prettier>
-  <devDependencies>
-    <prettier>3.3.3</prettier>
-    <prettier-plugin-sql>0.20.0</prettier-plugin-sql>
-  </devDependencies>
-  <dependencyOverrides>
-    <sql-formatter>15.7.0</sql-formatter> <!-- pin the transitive dependency -->
-  </dependencyOverrides>
-  <config>
-    <plugins>prettier-plugin-sql</plugins>
-    <parser>sql</parser>
-  </config>
-</prettier>
-```
-
-Only the flat `<package>version</package>` form of npm overrides is supported (including references such as `$prettier`).
 
 <a name="applying-eclipse-wtp-to-css--html--etc"></a>
 
