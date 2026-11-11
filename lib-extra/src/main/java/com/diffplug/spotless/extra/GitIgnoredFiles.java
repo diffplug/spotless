@@ -42,8 +42,8 @@ import com.diffplug.spotless.FileSignature;
  * The ignored paths below the root directory are computed once, lazily, on the first call to
  * {@link #isIgnored(File)} and are cached for the lifetime of this instance, so an instance must not
  * outlive a build. The computation only lists directories and evaluates ignore rules, it never reads
- * or stats the content of a file. Ignored directories without tracked files are not descended into, so
- * large ignored folders such as {@code node_modules} or {@code build} are cheap.
+ * the content of a file. Ignored directories without tracked files are not descended into, so large
+ * ignored folders such as {@code node_modules} or {@code build} are cheap.
  * <p>
  * Instances are thread-safe.
  */

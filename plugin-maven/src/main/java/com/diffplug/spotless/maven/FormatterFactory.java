@@ -67,7 +67,7 @@ public abstract class FormatterFactory {
 	 * If {@code true}, files which git ignores (via {@code .gitignore}, {@code .git/info/exclude} or
 	 * {@code core.excludesFile}) and which are not tracked are excluded, in addition to {@code <excludes>}.
 	 */
-	@Parameter(defaultValue = "false")
+	@Parameter
 	private boolean excludeUsingGitignore;
 
 	@Parameter
