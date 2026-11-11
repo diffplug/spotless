@@ -68,6 +68,7 @@ user@machine repo % mvn spotless:check
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
+  - [How can I skip files ignored by git?](#exclude-using-gitignore)
   - [`spotless:off` and `spotless:on`](#spotlessoff-and-spotlesson)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
@@ -2130,6 +2131,26 @@ Many popular CI systems (GitHub, GitLab, BitBucket, and Travis) use a "shallow c
 
 - calling `git fetch origin main` before you call Spotless
 - disabling the shallow clone [like so](https://github.com/diffplug/spotless/issues/710)
+
+<a name="exclude-using-gitignore"></a>
+
+## How can I skip files ignored by git?
+
+The fastest way to keep Spotless away from generated sources or `node_modules` is a tight `<include>`, e.g. `<include>src/**/*.md</include>` rather than `<include>**/*.md</include>`, followed by `<excludes>`. Only if the ignored files cannot be described with a few globs, you can ask git instead:
+
+```xml
+<formats>
+  <format>
+    <includes>
+      <include>**/*.md</include>
+    </includes>
+    <excludeUsingGitignore>true</excludeUsingGitignore> <!-- in addition to <excludes> -->
+    ...
+```
+
+A file is excluded exactly when `git status` would consider it ignored: it matches a pattern from any `.gitignore`, from `.git/info/exclude` or from `core.excludesFile`, **and** it is not tracked. Tracked files are always formatted, even when they match an ignore pattern. It can be combined with [`ratchetFrom`](#ratchet). The project must be inside a git repository, otherwise the build fails.
+
+This is the slowest of the three options, which is why it has to be set per format: the ignored files are still found by `<includes>` first, and Spotless then has to list the working tree of the module once per build to evaluate git's ignore rules.
 
 ## `spotless:off` and `spotless:on`
 

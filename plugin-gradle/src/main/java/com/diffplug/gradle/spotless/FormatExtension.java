@@ -53,6 +53,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileSystemLocation;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.util.GradleVersion;
 import org.slf4j.Logger;
@@ -246,6 +247,9 @@ public class FormatExtension {
 	/** The rest of {@link #targetExclude}, or null if it consists only of prunable patterns. */
 	@Nullable private FileCollection targetExcludeRest;
 
+	/** If true, files which git ignores are excluded, see {@link #targetExcludeUsingGitignore()}. */
+	protected boolean targetExcludeUsingGitignore;
+
 	/** The value from which files will be excluded if their content contain it. */
 	@Nullable protected String targetExcludeContentPattern;
 
@@ -315,6 +319,22 @@ public class FormatExtension {
 	 */
 	private static boolean endsWithDoubleStarSegment(String pattern) {
 		return pattern.equals("**") || pattern.endsWith("/**") || pattern.endsWith("\\**");
+	}
+
+	/**
+	 * Excludes all files which git ignores, in addition to {@link #targetExclude(Object...)}.
+	 * <p>
+	 * A file is excluded exactly when {@code git status} would consider it ignored: it matches a pattern
+	 * from any {@code .gitignore}, from {@code .git/info/exclude} or from {@code core.excludesFile},
+	 * <b>and</b> it is not tracked. The project must be inside a git repository.
+	 * <p>
+	 * This is the slowest way to narrow a target, because the ignored files are still found by
+	 * {@link #target(Object...)} first, and git's ignore rules have to be evaluated on top. Prefer a
+	 * tight {@link #target(Object...)}, then {@link #targetExclude(Object...)}, and use this only when
+	 * the ignored files cannot be described with a few globs.
+	 */
+	public void targetExcludeUsingGitignore() {
+		this.targetExcludeUsingGitignore = true;
 	}
 
 	/**
@@ -1149,7 +1169,10 @@ public class FormatExtension {
 	protected void setupTask(SpotlessTask task) {
 		task.setEncoding(getEncoding().name());
 		task.setLintSuppressions(lintSuppressions);
-		FileCollection totalTarget = targetExclude == null ? target : excludeFrom(target);
+		FileCollection targetMinusExclude = targetExclude == null ? target : excludeFrom(target);
+		FileCollection totalTarget = targetExcludeUsingGitignore
+				? targetMinusExclude.filter(new NotGitIgnored(spotless.getSpotlessTaskService(), getProject().getProjectDir()))
+				: targetMinusExclude;
 		task.setTarget(totalTarget);
 		List<FormatterStep> steps;
 		if (toggleFence != null) {
@@ -1191,6 +1214,26 @@ public class FormatExtension {
 			return targetExcludeRest == null ? pruned : pruned.minus(targetExcludeRest);
 		} else {
 			return fromTarget.minus(targetExclude);
+		}
+	}
+
+	/**
+	 * Keeps the files which git does not ignore. The git state lives in the {@link SpotlessTaskService},
+	 * so it is computed at most once per project and build, no matter how many formats use it, and
+	 * changes to {@code .gitignore} are picked up by the next build, also with the configuration cache.
+	 */
+	private static final class NotGitIgnored implements Spec<File> {
+		private final Provider<SpotlessTaskService> taskService;
+		private final File projectDir;
+
+		NotGitIgnored(Provider<SpotlessTaskService> taskService, File projectDir) {
+			this.taskService = taskService;
+			this.projectDir = projectDir;
+		}
+
+		@Override
+		public boolean isSatisfiedBy(File file) {
+			return taskService.get().gitIgnoredFilesFor(projectDir).isNotIgnored(file);
 		}
 	}
 

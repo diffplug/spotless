@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Add a `<groupArtifact>` parameter to `<palantirJavaFormat>`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
 - Add a `spotless:report` goal that puts a Spotless page in the Maven site. ([#3175](https://github.com/diffplug/spotless/pull/3175))  
   List `spotless-maven-plugin` under `<reporting>` and run `mvn site`: the page shows which files need formatting, with a colored diff for each, and their lint problems. It works with `maven-site-plugin` 3.12.1 and 3.20.0 or later.
+- Add `<excludeUsingGitignore>true</excludeUsingGitignore>` to exclude the files of a format which git ignores. ([#2443](https://github.com/diffplug/spotless/issues/2443))
 ### Fixed
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
 - DBeaver SQL formatter no longer prints an `IndexOutOfBoundsException` when a file starts with a keyword like `SET`. ([#1552](https://github.com/diffplug/spotless/issues/1552))

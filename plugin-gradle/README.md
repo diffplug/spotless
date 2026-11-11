@@ -108,6 +108,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Generic steps](#generic-steps)
   - [License header](#license-header) ([slurp year from git](#retroactively-slurp-years-from-git-history))
   - [How can I enforce formatting gradually? (aka "ratchet")](#ratchet)
+  - [How can I skip files ignored by git?](#exclude-using-gitignore)
   - [`spotless:off` and `spotless:on`](#spotlessoff-and-spotlesson)
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Custom steps](#custom-steps)
@@ -1968,6 +1969,25 @@ Many popular CI systems (GitHub, GitLab, BitBucket, and Travis) use a "shallow c
 
 - calling `git fetch origin main` before you call Spotless
 - disabling the shallow clone [like so](https://github.com/diffplug/spotless/issues/710)
+
+<a name="exclude-using-gitignore"></a>
+
+## How can I skip files ignored by git?
+
+The fastest way to keep Spotless away from generated sources or `node_modules` is a tight `target`, e.g. `target 'src/**/*.md'` rather than `target '**/*.md'`. If that is not possible, add a `targetExclude`: patterns ending in `/**` (e.g. `targetExclude '**/node_modules/**'`) are not even walked. Only if the ignored files cannot be described with a few globs, you can ask git instead:
+
+```gradle
+spotless {
+  format 'misc', {
+    target '**/*.md'
+    targetExcludeUsingGitignore() // in addition to targetExclude
+  }
+}
+```
+
+A file is excluded exactly when `git status` would consider it ignored: it matches a pattern from any `.gitignore`, from `.git/info/exclude` or from `core.excludesFile`, **and** it is not tracked. Tracked files are always formatted, even when they match an ignore pattern. Changes to `.gitignore` are picked up by the next build, also with the configuration cache. The project must be inside a git repository, otherwise the build fails.
+
+This is the slowest of the three options, which is why it has to be set per format: the ignored files are still found by `target` first, and Spotless then has to list the working tree of the project once per build to evaluate git's ignore rules.
 
 ## `spotless:off` and `spotless:on`
 
