@@ -1,0 +1,9 @@
+package p;
+
+import java.util.Objects;
+
+class A {
+    Object f(Object o) {
+        return Objects.requireNonNull(Objects.isNull(o) ? null : o);
+    }
+}

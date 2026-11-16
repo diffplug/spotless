@@ -30,12 +30,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-import javassist.ClassPool;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
-import com.github.javaparser.ParserConfiguration;
-import com.github.javaparser.ParserConfiguration.LanguageLevel;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
@@ -56,10 +53,6 @@ import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.JarTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.LineEnding;
@@ -68,26 +61,10 @@ import com.diffplug.spotless.Lint;
 public class ExpandWildcardsFormatterFunc implements FormatterFunc.NeedsFile {
 
 	private final JavaParser parser;
-	static {
-		// If ClassPool is allowed to cache class files, it does not free the file-lock
-		ClassPool.cacheOpenedJarFile = false;
-	}
 
 	public ExpandWildcardsFormatterFunc(Collection<File> typeSolverClasspath) throws IOException {
-		// JavaParser defaults to Java 11 and rejects newer syntax such as records; align with JavaParserTypeSolver's default.
-		this.parser = new JavaParser(new ParserConfiguration().setLanguageLevel(LanguageLevel.BLEEDING_EDGE));
-
-		CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
-		combinedTypeSolver.add(new ReflectionTypeSolver(ReflectionTypeSolver.JCL_ONLY));
-		for (File element : typeSolverClasspath) {
-			if (element.isFile() && element.getName().endsWith(".jar")) {
-				combinedTypeSolver.add(new JarTypeSolver(element));
-			} else if (element.isDirectory()) {
-				combinedTypeSolver.add(new JavaParserTypeSolver(element));
-			} // gracefully ignore non-existing src-directories
-		}
-
-		SymbolResolver symbolSolver = new JavaSymbolSolver(combinedTypeSolver);
+		this.parser = SymbolResolution.parser();
+		SymbolResolver symbolSolver = new JavaSymbolSolver(SymbolResolution.typeSolver(typeSolverClasspath));
 		parser.getParserConfiguration().setSymbolResolver(symbolSolver);
 	}
 
