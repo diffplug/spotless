@@ -8,6 +8,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Add a `spotless:report` goal that puts a Spotless page in the Maven site. ([#3175](https://github.com/diffplug/spotless/pull/3175))  
   List `spotless-maven-plugin` under `<reporting>` and run `mvn site`: the page shows which files need formatting, with a colored diff for each, and their lint problems. It works with `maven-site-plugin` 3.12.1 and 3.20.0 or later.
 ### Fixed
+- `<shortenFullyQualifiedTypes/>` now also shortens fully qualified annotation names such as `@com.example.Foo`. ([#3159](https://github.com/diffplug/spotless/issues/3159))
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
 - DBeaver SQL formatter no longer prints an `IndexOutOfBoundsException` when a file starts with a keyword like `SET`. ([#1552](https://github.com/diffplug/spotless/issues/1552))
 - `<expandWildcardImports>` no longer fails with `Symbol resolution not configured` on records and other syntax newer than Java 11, and leaves files JavaParser cannot validate unchanged. ([#2946](https://github.com/diffplug/spotless/issues/2946))
