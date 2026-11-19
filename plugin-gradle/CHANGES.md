@@ -9,6 +9,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 - `SpotlessApply` now only reports that it did work (and is otherwise `UP-TO-DATE`) when it actually rewrote a file. ([#2715](https://github.com/diffplug/spotless/issues/2715))
 ### Fixed
+- The README section "Can I apply Spotless to specific files?" no longer documents `-PspotlessFiles`, which the Gradle plugin does not read; it points to `-PspotlessIdeHook` and `ratchetFrom` instead. ([#3183](https://github.com/diffplug/spotless/issues/3183))
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
 - DBeaver SQL formatter no longer prints an `IndexOutOfBoundsException` when a file starts with a keyword like `SET`. ([#1552](https://github.com/diffplug/spotless/issues/1552))
 - `expandWildcardImports()` no longer fails with `Symbol resolution not configured` on records and other syntax newer than Java 11, and leaves files JavaParser cannot validate unchanged. ([#2946](https://github.com/diffplug/spotless/issues/2946))
