@@ -20,6 +20,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - `removeSemicolons()` no longer removes semicolons inside dollar-slashy strings (`$/ ... /$`), after escaped triple quotes in multiline strings, or in multi-line `for (init; cond; update)` headers. ([#2780](https://github.com/diffplug/spotless/issues/2780))
 - `removeUnusedImports()` and `googleJavaFormat()` no longer remove imports that are only used by links in Markdown doc comments (`///`, JDK 23+). ([#3161](https://github.com/diffplug/spotless/issues/3161))
 - `forbidWildcardImports` no longer reports import statements inside Java text blocks or comments. ([#2997](https://github.com/diffplug/spotless/issues/2997))
+- `spotlessCheck` no longer fails with `There were 0 lint error(s)` when `spotless-clean` only contains stale files which already match the source on disk. ([#2992](https://github.com/diffplug/spotless/issues/2992))
 
 ## [8.11.0] - 2026-11-02
 ### Added
