@@ -2165,13 +2165,13 @@ tasks.withType(com.diffplug.gradle.spotless.SpotlessApply).configureEach {
 
 ## Can I apply Spotless to specific files?
 
-You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
+The Gradle plugin does not read a `spotlessFiles` property like the Maven plugin does (`-PspotlessFiles` was deprecated in `4.3.0` and removed in `5.0.0`). To format one or a few files, pass their absolute paths to the [IDE hook](IDE_HOOK.md) as a comma-separated list:
 
 ```
-cmd> gradle spotlessApply -PspotlessFiles=my/file/pattern.java,more/generic/.*-pattern.java
+cmd> gradle spotlessApply -PspotlessIdeHook=/abs/path/to/A.java,/abs/path/to/B.java
 ```
 
-The patterns are matched using `String#matches(String)` against the absolute file path.
+In this mode `spotlessCheck` is disabled, and `spotlessApply` formats only the listed files that are part of a target. To limit formatting to the files changed on a branch, use [`ratchetFrom`](#ratchet).
 
 <a name="central-configuration"></a>
 
