@@ -102,6 +102,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	static final String GOAL_CHECK = "check";
 	static final String GOAL_APPLY = "apply";
 	static final String GOAL_PRE_PUSH_HOOK = "install-git-pre-push-hook";
+	static final String GOAL_REPORT = "report";
 
 	@Inject
 	private RepositorySystem repositorySystem;
@@ -290,9 +291,26 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		} catch (PluginException e) {
 			throw e.asMojoExecutionException();
 		}
+		afterProcessing();
 	}
 
-	private boolean shouldSkip() {
+	/**
+	 * Called once after every format has been processed and the formatters have been closed.
+	 * Goals that collect results in {@link #process}, such as {@code spotless:report}, act on them here.
+	 */
+	protected void afterProcessing() throws MojoExecutionException {}
+
+	/**
+	 * Whether this goal uses the up-to-date index, which skips files that were clean the last time
+	 * {@code spotless:check} or {@code spotless:apply} ran. Goals that must look at every file without
+	 * touching that index, such as {@code spotless:report}, return {@code false}.
+	 */
+	protected boolean usesUpToDateIndex() {
+		return true;
+	}
+
+	/** Returns {@code true} if this goal should do nothing, because of {@code spotless.skip}, a goal-specific skip flag, or an m2e incremental build. */
+	protected final boolean shouldSkip() {
 		if (skip) {
 			return true;
 		}
@@ -410,8 +428,19 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		final Optional<String> userRatchetFrom = Optional.ofNullable((String) mavenSession.getUserProperties().get("ratchetFrom"));
 		final Optional<String> optionalRatchetFrom = Optional.ofNullable(this.ratchetFrom)
 				.filter(ratchet -> !RATCHETFROM_NONE.equals(ratchet));
-		// Lazy: only resolve dependencies when the expandWildcardImports step actually requests the classpath.
-		Supplier<Set<File>> projectClasspathSupplier = () -> computeTypeSolverClasspath(resolver);
+		// Lazy: only resolve dependencies when a step that resolves names, such as expandWildcardImports, actually requests the
+		// classpath, and only once, however many steps request it.
+		Supplier<Set<File>> projectClasspathSupplier = new Supplier<>() {
+			private Set<File> classpath;
+
+			@Override
+			public synchronized Set<File> get() {
+				if (classpath == null) {
+					classpath = computeTypeSolverClasspath(resolver);
+				}
+				return classpath;
+			}
+		};
 		return new FormatterConfig(baseDir, encoding, lineEndings, userRatchetFrom, optionalRatchetFrom, provisioner, p2Provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory), lintSuppressions, Optional.of(projectClasspathSupplier));
 	}
 
@@ -437,7 +466,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			Set<File> dependencyJars = resolver.resolveProjectDependencies(project, repositories);
 			classpath.addAll(dependencyJars);
 		} catch (Exception e) {
-			getLog().warn("Could not resolve project dependencies for expandWildcardImports: " + e.getMessage());
+			getLog().warn("Could not resolve project dependencies for expandWildcardImports or replaceStaticImports: " + e.getMessage());
 		}
 
 		return classpath;
@@ -463,6 +492,9 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 	}
 
 	private UpToDateChecker createUpToDateChecker(Iterable<Formatter> formatters) {
+		if (!usesUpToDateIndex()) {
+			return UpToDateChecker.ignoringIndex();
+		}
 		Path indexFile = upToDateChecking == null ? null : upToDateChecking.getIndexFile();
 		if (indexFile == null) {
 			Path targetDir = project.getBasedir().toPath().resolve(project.getBuild().getDirectory());

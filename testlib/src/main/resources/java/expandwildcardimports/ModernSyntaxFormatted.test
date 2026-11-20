@@ -1,0 +1,19 @@
+package shapes;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public sealed interface Shape permits Shape.Circle, Shape.Square {
+
+	record Circle(double radius, LocalDate created) implements Shape {}
+
+	record Square(double side, List<String> tags) implements Shape {}
+
+	static String describe(Shape shape) {
+		return switch (shape) {
+			case Circle c when c.radius() > 10 -> "big circle";
+			case Circle c -> "circle";
+			case Square(double side, var tags) -> "square " + side + tags;
+		};
+	}
+}

@@ -68,12 +68,21 @@ public final class EslintFormatterStep {
 	}
 
 	public static FormatterStep create(Map<String, String> devDependencies, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) {
+		return create(devDependencies, Map.of(), provisioner, projectDir, buildDir, cacheDir, npmPathResolver, eslintConfig);
+	}
+
+	/**
+	 * @param dependencyOverrides written to the npm {@code overrides} field of the generated {@code package.json},
+	 *        e.g. to pin a transitive dependency to an exact version
+	 */
+	public static FormatterStep create(Map<String, String> devDependencies, Map<String, String> dependencyOverrides, Provisioner provisioner, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) {
 		requireNonNull(devDependencies);
+		requireNonNull(dependencyOverrides);
 		requireNonNull(provisioner);
 		requireNonNull(projectDir);
 		requireNonNull(buildDir);
 		return FormatterStep.createLazy(NAME,
-				() -> new State(NAME, devDependencies, projectDir, buildDir, cacheDir, npmPathResolver, eslintConfig),
+				() -> new State(NAME, devDependencies, dependencyOverrides, projectDir, buildDir, cacheDir, npmPathResolver, eslintConfig),
 				State::createFormatterFunc);
 	}
 
@@ -83,12 +92,13 @@ public final class EslintFormatterStep {
 		private final EslintConfig origEslintConfig;
 		private EslintConfig eslintConfigInUse;
 
-		State(String stepName, Map<String, String> devDependencies, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) throws IOException {
+		State(String stepName, Map<String, String> devDependencies, Map<String, String> dependencyOverrides, File projectDir, File buildDir, File cacheDir, NpmPathResolver npmPathResolver, EslintConfig eslintConfig) throws IOException {
 			super(stepName,
 					new NpmConfig(
-							replaceDevDependencies(
+							replaceDependencies(
 									NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class, "/com/diffplug/spotless/npm/eslint-package.json.template"),
-									new TreeMap<>(devDependencies)),
+									new TreeMap<>(devDependencies),
+									dependencyOverrides),
 							NpmResourceHelper.readUtf8StringFromClasspath(EslintFormatterStep.class,
 									"/com/diffplug/spotless/npm/common-serve.js",
 									"/com/diffplug/spotless/npm/eslint-serve.js"),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ public class JavascriptExtension extends FormatExtension {
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
-			return EslintFormatterStep.create(devDependencies, provisioner(), project.getProjectDir(),
+			return EslintFormatterStep.create(devDependencies, dependencyOverrides, provisioner(), project.getProjectDir(),
 					project.getLayout().getBuildDirectory().getAsFile().get(), npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(),
 							Arrays.asList(project.getProjectDir(), project.getRootDir())),
