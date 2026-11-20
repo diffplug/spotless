@@ -208,6 +208,58 @@ class JavaDefaultTargetTest extends GradleIntegrationHarness {
 		assertFile("src/main/java/test.java").sameAsResource("java/googlejavaformat/JavaCodeUnformatted.test");
 	}
 
+	@Test
+	void replaceStaticImports() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'java'",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"    java {",
+				"        target file('src/main/java/p/A.java')",
+				"        replaceStaticImports('java.lang.Math.*')",
+				"    }",
+				"}");
+		// only resolvable through the source sets
+		setFile("src/main/java/q/Codes.java").toLines(
+				"package q;",
+				"",
+				"public final class Codes {",
+				"    public static final int OK = 0;",
+				"}");
+		setFile("src/main/java/p/A.java").toLines(
+				"package p;",
+				"",
+				"import static java.lang.Math.max;",
+				"import static java.util.Objects.requireNonNull;",
+				"import static q.Codes.OK;",
+				"",
+				"class A {",
+				"    int f(Object o) {",
+				"        requireNonNull(o);",
+				"        return max(OK, 1);",
+				"    }",
+				"}");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("src/main/java/p/A.java").hasLines(
+				"package p;",
+				"",
+				"import static java.lang.Math.max;",
+				"import java.util.Objects;",
+				"import q.Codes;",
+				"",
+				"class A {",
+				"    int f(Object o) {",
+				"        Objects.requireNonNull(o);",
+				"        return max(Codes.OK, 1);",
+				"    }",
+				"}");
+	}
+
 	/**
 	 * Triggers the special case in {@link FormatExtension#setupTask(SpotlessTask)} with {@code toggleFence} and
 	 * {@code targetExcludeContentPattern} both being not {@code null}.

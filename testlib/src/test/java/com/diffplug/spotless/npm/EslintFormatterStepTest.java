@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import com.diffplug.common.collect.ImmutableMap;
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
+import com.diffplug.spotless.SerializableEqualityTester;
 import com.diffplug.spotless.StepHarnessWithFile;
 import com.diffplug.spotless.TestProvisioner;
 import com.diffplug.spotless.tag.NpmTest;
@@ -168,6 +169,39 @@ class EslintFormatterStepTest {
 			try (StepHarnessWithFile stepHarness = StepHarnessWithFile.forStep(this, formatterStep)) {
 				stepHarness.test(testDir + "test.ts", ResourceHarness.getTestResource(dirtyFile), ResourceHarness.getTestResource(cleanFile));
 			}
+		}
+	}
+
+	@Nested
+	class DependencyOverridesEquality extends NpmFormatterStepCommonTests {
+
+		@Test
+		void givenDifferentDependencyOverrides_whenComparingSteps_thenTheyAreDifferent() {
+			new SerializableEqualityTester() {
+				Map<String, String> dependencyOverrides = Map.of();
+
+				@Override
+				protected void setupTest(API api) {
+					api.areDifferentThan();
+					dependencyOverrides = Map.of("some-transitive-lib", "1.0.0");
+					api.areDifferentThan();
+					dependencyOverrides = Map.of("some-transitive-lib", "1.0.1");
+					api.areDifferentThan();
+				}
+
+				@Override
+				protected FormatterStep create() {
+					return EslintFormatterStep.create(
+							EslintFormatterStep.defaultDevDependencies(),
+							dependencyOverrides,
+							TestProvisioner.mavenCentral(),
+							projectDir(),
+							buildDir(),
+							null,
+							npmPathResolver(),
+							new EslintConfig(null, "{}"));
+				}
+			}.testEquals();
 		}
 	}
 }

@@ -4,12 +4,26 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Changes
+- Bump default `adocfmt` version `0.3.1` -> `0.3.2`. ([#3180](https://github.com/diffplug/spotless/pull/3180))
+- Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
 - Bump default `prince-of-space` version `2.2.0` -> `2.3.1`. ([#3181](https://github.com/diffplug/spotless/pull/3181))
+- Bump default `tabletest-formatter` version `1.1.2` -> `1.1.3`. ([#3167](https://github.com/diffplug/spotless/pull/3167))
+- Bump default `gson` version `2.14.0` -> `2.15.0`. ([#3168](https://github.com/diffplug/spotless/pull/3168))
 
+### Added
+- Add `<dependencyOverrides>` to `<prettier>`, `<eslint>` and `<tsfmt>` to pin transitive npm dependencies via npm `overrides`. ([#2534](https://github.com/diffplug/spotless/issues/2534))
+- Add a `<groupArtifact>` parameter to `<palantirJavaFormat>`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
+- Add a `spotless:report` goal that puts a Spotless page in the Maven site. ([#3175](https://github.com/diffplug/spotless/pull/3175))  
+  List `spotless-maven-plugin` under `<reporting>` and run `mvn site`: the page shows which files need formatting, with a colored diff for each, and their lint problems. It works with `maven-site-plugin` 3.12.1 and 3.20.0 or later.
+- Add `<replaceStaticImports>` for Java, which replaces static imports with regular imports and qualified references, such as `Assertions.assertTrue(x)`, using the project's source roots and dependencies to resolve names. Static imports to keep go in `<excludes>`. ([#1379](https://github.com/diffplug/spotless/issues/1379))
 ### Fixed
+- `<shortenFullyQualifiedTypes/>` now also shortens fully qualified annotation names such as `@com.example.Foo`. ([#3159](https://github.com/diffplug/spotless/issues/3159))
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
-
-### Fixed
+- DBeaver SQL formatter no longer prints an `IndexOutOfBoundsException` when a file starts with a keyword like `SET`. ([#1552](https://github.com/diffplug/spotless/issues/1552))
+- DBeaver SQL formatter no longer adds spaces inside backtick-quoted identifiers such as `` `MyCol.1` ``. ([#2250](https://github.com/diffplug/spotless/issues/2250))
+- `<expandWildcardImports>` no longer fails with `Symbol resolution not configured` on records and other syntax newer than Java 11, and leaves files JavaParser cannot validate unchanged. ([#2946](https://github.com/diffplug/spotless/issues/2946))
+- `<removeSemicolons/>` no longer removes semicolons inside dollar-slashy strings (`$/ ... /$`), after escaped triple quotes in multiline strings, or in multi-line `for (init; cond; update)` headers. ([#2780](https://github.com/diffplug/spotless/issues/2780))
+- `<removeUnusedImports>` and `<googleJavaFormat>` no longer remove imports that are only used by links in Markdown doc comments (`///`, JDK 23+). ([#3161](https://github.com/diffplug/spotless/issues/3161))
 - `forbidWildcardImports` no longer reports import statements inside Java text blocks or comments. ([#2997](https://github.com/diffplug/spotless/issues/2997))
 
 ## [3.11.0] - 2026-11-02

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
  */
 package com.diffplug.spotless.npm;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Nested;
@@ -190,11 +193,41 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 		}
 	}
 
+	@NpmTest
+	@Nested
+	class DependencyOverrides extends NpmFormatterStepCommonTests {
+
+		private static final String PINNED_SQL_FORMATTER = "15.7.0";
+
+		@Test
+		void givenTransitiveDependencyOverride_whenFormatting_thenPinnedVersionIsInstalled() throws Exception {
+			// given: prettier-plugin-sql@0.20.0 depends on sql-formatter@^15.7.0, which npm would resolve to the newest 15.x
+			final FormatterStep formatterStep = PrettierFormatterStep.create(
+					Map.of("prettier", "3.3.3", "prettier-plugin-sql", "0.20.0"), // plugin needs prettier ^3.0.3
+					Map.of("sql-formatter", PINNED_SQL_FORMATTER),
+					TestProvisioner.mavenCentral(),
+					projectDir(),
+					buildDir(),
+					null,
+					npmPathResolver(),
+					new PrettierConfig(null, Map.of("plugins", List.of("prettier-plugin-sql"), "parser", "sql")));
+
+			// when
+			try (StepHarness stepHarness = StepHarness.forStep(formatterStep)) {
+				stepHarness.test("select a, b from t where x = 1", "select\n  a,\n  b\nfrom\n  t\nwhere\n  x = 1\n");
+			}
+
+			// then
+			assertThat(InstalledNpmPackages.versionInstalledBelow(buildDir(), "sql-formatter")).isEqualTo(PINNED_SQL_FORMATTER);
+		}
+	}
+
 	@Test
 	void equality() {
 		new SerializableEqualityTester() {
 			String prettierVersion = "3.0.0";
 			PrettierConfig config = new PrettierConfig(null, Map.of("parser", "typescript"));
+			Map<String, String> dependencyOverrides = Map.of();
 
 			@Override
 			protected void setupTest(API api) {
@@ -205,12 +238,18 @@ class PrettierFormatterStepTest extends NpmFormatterStepCommonTests {
 				api.areDifferentThan();
 				config = new PrettierConfig(null, Map.of("parser", "css"));
 				api.areDifferentThan();
+				// pinning a transitive dependency makes it different
+				dependencyOverrides = Map.of("some-transitive-lib", "1.0.0");
+				api.areDifferentThan();
+				dependencyOverrides = Map.of("some-transitive-lib", "1.0.1");
+				api.areDifferentThan();
 			}
 
 			@Override
 			protected FormatterStep create() {
 				return PrettierFormatterStep.create(
 						ImmutableMap.of("prettier", prettierVersion),
+						dependencyOverrides,
 						TestProvisioner.mavenCentral(),
 						projectDir(),
 						buildDir(),

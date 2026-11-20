@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,6 +168,17 @@ class PaddedCellTaskTest extends ResourceHarness {
 		cycle.check();
 		converge.check();
 		diverge.check();
+	}
+
+	@Test
+	void checkPassesWhenCleanFileMatchesDisk() throws Exception {
+		Bundle wellbehaved = wellbehaved();
+		wellbehaved.format();
+		setFile("src/test.wellbehaved").toContent("42");
+		assertFile(wellbehaved.outputFile.get()).hasContent("42");
+
+		// a stale clean file without lints must not fail the check (#2992)
+		wellbehaved.check.get().performActionTest();
 	}
 
 	@Test

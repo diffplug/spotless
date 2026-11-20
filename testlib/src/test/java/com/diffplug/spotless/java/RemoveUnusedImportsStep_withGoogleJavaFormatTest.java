@@ -54,6 +54,27 @@ class RemoveUnusedImportsStep_withGoogleJavaFormatTest {
 				.testResource("java/removeunusedimports/ModuleImportWithUnusedUnformatted.test", "java/removeunusedimports/ModuleImportWithUnusedFormatted.test");
 	}
 
+	/**
+	 * Markdown doc comments (JDK 23+) are only parsed by javac if it can find the Markdown parser
+	 * in the {@code jdk.internal.md} module through the context class loader. Gradle and Maven run
+	 * Spotless with a context class loader which cannot see that module, simulated here with the
+	 * platform class loader (https://github.com/diffplug/spotless/issues/3161).
+	 */
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_23)
+	void markdownJavadoc() throws Exception {
+		FormatterStep step = RemoveUnusedImportsStep.create(RemoveUnusedImportsStep.GJF, TestProvisioner.mavenCentral());
+		Thread thread = Thread.currentThread();
+		ClassLoader originalClassLoader = thread.getContextClassLoader();
+		thread.setContextClassLoader(ClassLoader.getPlatformClassLoader());
+		try {
+			StepHarness.forStep(step)
+					.testResource("java/removeunusedimports/MarkdownJavadocUnformatted.test", "java/removeunusedimports/MarkdownJavadocFormatted.test");
+		} finally {
+			thread.setContextClassLoader(originalClassLoader);
+		}
+	}
+
 	@Test
 	void equality() throws Exception {
 		new SerializableEqualityTester() {

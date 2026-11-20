@@ -17,12 +17,20 @@ package com.diffplug.spotless.groovy;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
 
 /**
- * Removes unnecessary semicolons from Groovy code. Preserves semicolons inside strings and comments.
+ * Removes unnecessary semicolons from Groovy code. A semicolon is only removed when it is the last non-whitespace
+ * character on its line, outside any string literal or comment, and not part of a multi-line {@code for (init; cond;
+ * update)} header.
+ * <p>
+ * Recognised literals: {@code '...'}, {@code "..."}, {@code '''...'''}, {@code """..."""} and dollar-slashy
+ * {@code $/.../$} strings. Plain slashy strings ({@code /.../}) are not recognised, because telling them apart from
+ * division requires a full Groovy lexer.
  *
  * @author Jose Luis Badano
  */
@@ -46,113 +54,120 @@ public final class RemoveSemicolonsStep implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		FormatterFunc toFormatter() {
-			return raw -> {
-				StringBuilder result = new StringBuilder(raw.length());
+			return State::removeSemicolons;
+		}
 
-				// State tracking
-				boolean inSingleQuoteString = false;
-				boolean inDoubleQuoteString = false;
-				boolean inTripleSingleQuoteString = false;
-				boolean inTripleDoubleQuoteString = false;
-				boolean inSingleLineComment = false;
-				boolean inMultiLineComment = false;
-				boolean escaped = false;
+		private enum Mode {
+			CODE, LINE_COMMENT, BLOCK_COMMENT, SINGLE_QUOTE, DOUBLE_QUOTE, TRIPLE_SINGLE_QUOTE, TRIPLE_DOUBLE_QUOTE, DOLLAR_SLASHY
+		}
 
-				for (int i = 0; i < raw.length(); i++) {
-					char c = raw.charAt(i);
-
-					// Check for triple quotes first (needs lookahead)
-					if (!inSingleLineComment && !inMultiLineComment && i + 2 < raw.length()) {
-						String triple = raw.substring(i, i + 3);
-						if ("'''".equals(triple) && !inDoubleQuoteString && !inTripleDoubleQuoteString) {
-							inTripleSingleQuoteString = !inTripleSingleQuoteString;
-							result.append(triple);
-							i += 2;
-							continue;
-						} else if ("\"\"\"".equals(triple) && !inSingleQuoteString && !inTripleSingleQuoteString) {
-							inTripleDoubleQuoteString = !inTripleDoubleQuoteString;
-							result.append(triple);
-							i += 2;
-							continue;
-						}
+		private static String removeSemicolons(String raw) {
+			StringBuilder result = new StringBuilder(raw.length());
+			Mode mode = Mode.CODE;
+			// one entry per open bracket, true if it is the '(' of a `for` header
+			Deque<Boolean> brackets = new ArrayDeque<>();
+			int i = 0;
+			while (i < raw.length()) {
+				char c = raw.charAt(i);
+				int consumed = 1;
+				switch (mode) {
+				case CODE:
+					if (raw.startsWith("//", i)) {
+						mode = Mode.LINE_COMMENT;
+						consumed = 2;
+					} else if (raw.startsWith("/*", i)) {
+						mode = Mode.BLOCK_COMMENT;
+						consumed = 2;
+					} else if (raw.startsWith("'''", i)) {
+						mode = Mode.TRIPLE_SINGLE_QUOTE;
+						consumed = 3;
+					} else if (raw.startsWith("\"\"\"", i)) {
+						mode = Mode.TRIPLE_DOUBLE_QUOTE;
+						consumed = 3;
+					} else if (raw.startsWith("$/", i) && (i == 0 || !Character.isJavaIdentifierPart(raw.charAt(i - 1)))) {
+						mode = Mode.DOLLAR_SLASHY;
+						consumed = 2;
+					} else if (c == '\'') {
+						mode = Mode.SINGLE_QUOTE;
+					} else if (c == '"') {
+						mode = Mode.DOUBLE_QUOTE;
+					} else if (c == '(') {
+						brackets.push(isPrecededByFor(raw, i));
+					} else if (c == '{' || c == '[') {
+						brackets.push(Boolean.FALSE);
+					} else if (c == ')' || c == '}' || c == ']') {
+						brackets.poll();
+					} else if (c == ';' && !Boolean.TRUE.equals(brackets.peek()) && isLastOnLine(raw, i)) {
+						i++;
+						continue; // drop the semicolon
 					}
-
-					// Handle escaping
-					if (c == '\\' && (inSingleQuoteString || inDoubleQuoteString ||
-							inTripleSingleQuoteString || inTripleDoubleQuoteString)) {
-						escaped = !escaped;
-						result.append(c);
-						continue;
+					break;
+				case LINE_COMMENT:
+					if (c == '\n' || c == '\r') {
+						mode = Mode.CODE;
 					}
-
-					// Check for comments (only if not in string)
-					if (!inSingleQuoteString && !inDoubleQuoteString &&
-							!inTripleSingleQuoteString && !inTripleDoubleQuoteString && !escaped) {
-
-						// Single line comment
-						if (c == '/' && i + 1 < raw.length() && raw.charAt(i + 1) == '/' && !inMultiLineComment) {
-							inSingleLineComment = true;
-						}
-						// Multi-line comment start
-						else if (c == '/' && i + 1 < raw.length() && raw.charAt(i + 1) == '*' && !inSingleLineComment) {
-							inMultiLineComment = true;
-						}
-						// Multi-line comment end
-						else if (c == '*' && i + 1 < raw.length() && raw.charAt(i + 1) == '/' && inMultiLineComment) {
-							inMultiLineComment = false;
-							result.append(c);
-							if (i + 1 < raw.length()) {
-								result.append(raw.charAt(i + 1));
-								i++;
-							}
-							continue;
-						}
+					break;
+				case BLOCK_COMMENT:
+					if (raw.startsWith("*/", i)) {
+						mode = Mode.CODE;
+						consumed = 2;
 					}
-
-					// Check for string quotes (only if not in comment and not already in triple quotes)
-					if (!inSingleLineComment && !inMultiLineComment && !escaped) {
-						if (c == '\'' && !inDoubleQuoteString && !inTripleSingleQuoteString && !inTripleDoubleQuoteString) {
-							inSingleQuoteString = !inSingleQuoteString;
-						} else if (c == '"' && !inSingleQuoteString && !inTripleSingleQuoteString && !inTripleDoubleQuoteString) {
-							inDoubleQuoteString = !inDoubleQuoteString;
-						}
+					break;
+				case SINGLE_QUOTE:
+				case DOUBLE_QUOTE:
+					if (c == '\\') {
+						consumed = 2; // skip the escaped character
+					} else if (c == (mode == Mode.SINGLE_QUOTE ? '\'' : '"') || c == '\n' || c == '\r') {
+						// a newline can't occur in a single-line string, so it means we misread the input: resync
+						mode = Mode.CODE;
 					}
-
-					// End single line comment on newline
-					if ((c == '\n' || c == '\r') && inSingleLineComment) {
-						inSingleLineComment = false;
+					break;
+				case TRIPLE_SINGLE_QUOTE:
+				case TRIPLE_DOUBLE_QUOTE:
+					if (c == '\\') {
+						consumed = 2; // skip the escaped character, so \''' or \""" doesn't end the string
+					} else if (raw.startsWith(mode == Mode.TRIPLE_SINGLE_QUOTE ? "'''" : "\"\"\"", i)) {
+						mode = Mode.CODE;
+						consumed = 3;
 					}
-
-					// Check if we should remove this semicolon
-					if (c == ';' && !inSingleQuoteString && !inDoubleQuoteString &&
-							!inTripleSingleQuoteString && !inTripleDoubleQuoteString &&
-							!inSingleLineComment && !inMultiLineComment) {
-
-						// Look ahead to see if this semicolon is at the end of the line
-						boolean isEndOfLine = true;
-						for (int j = i + 1; j < raw.length(); j++) {
-							char next = raw.charAt(j);
-							if (next == '\n' || next == '\r') {
-								break; // End of line
-							} else if (!Character.isWhitespace(next)) {
-								isEndOfLine = false;
-								break;
-							}
-							// If it's whitespace but not newline, continue checking
-						}
-
-						// Only remove if it's at the end of the line
-						if (isEndOfLine) {
-							continue; // Skip this semicolon
-						}
+					break;
+				case DOLLAR_SLASHY:
+					if (raw.startsWith("$$", i) || raw.startsWith("$/", i)) {
+						consumed = 2; // escaped dollar or slash
+					} else if (raw.startsWith("/$", i)) {
+						mode = Mode.CODE;
+						consumed = 2;
 					}
-
-					result.append(c);
-					escaped = false;
+					break;
+				default:
+					throw new IllegalStateException("Unknown mode " + mode);
 				}
+				int end = Math.min(raw.length(), i + consumed);
+				result.append(raw, i, end);
+				i = end;
+			}
+			return result.toString();
+		}
 
-				return result.toString();
-			};
+		private static boolean isPrecededByFor(String raw, int parenIndex) {
+			int j = parenIndex - 1;
+			while (j >= 0 && Character.isWhitespace(raw.charAt(j))) {
+				j--;
+			}
+			return j >= 2 && raw.startsWith("for", j - 2)
+					&& (j < 3 || !Character.isJavaIdentifierPart(raw.charAt(j - 3)));
+		}
+
+		private static boolean isLastOnLine(String raw, int semicolonIndex) {
+			for (int j = semicolonIndex + 1; j < raw.length(); j++) {
+				char next = raw.charAt(j);
+				if (next == '\n' || next == '\r') {
+					return true;
+				} else if (!Character.isWhitespace(next)) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }
