@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ final class SQLDialect {
 	private static final String[] DEFAULT_LINE_COMMENTS = {SQLConstants.SL_COMMENT};
 	private static final String[] EXEC_KEYWORDS = new String[0];
 
-	private static final String[][] DEFAULT_QUOTE_STRINGS = {{"\"", "\""}};
+	private static final String[][] DEFAULT_QUOTE_STRINGS = {{"\"", "\""}, {"`", "`"}};
 
 	// Keywords
 	private final TreeMap<String, DBPKeywordType> allKeywords = new TreeMap<>();

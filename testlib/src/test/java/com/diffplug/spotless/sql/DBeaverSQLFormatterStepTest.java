@@ -60,6 +60,14 @@ class DBeaverSQLFormatterStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void backtickQuotedIdentifiers() {
+		// https://github.com/diffplug/spotless/issues/2250
+		FormatterStep step = DBeaverSQLFormatterStep.create(Collections.emptySet());
+		StepHarness.forStep(step)
+				.testResource("sql/dbeaver/backticks.dirty", "sql/dbeaver/backticks.clean");
+	}
+
+	@Test
 	void behaviorWithConfigFile() {
 		FormatterStep step = DBeaverSQLFormatterStep.create(createTestFiles("sql/dbeaver/sqlConfig.properties"));
 		StepHarness.forStep(step)
