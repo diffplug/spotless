@@ -7,6 +7,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
 - Bump default `tabletest-formatter` version `1.1.2` -> `1.1.3`. ([#3167](https://github.com/diffplug/spotless/pull/3167))
 - Bump default `gson` version `2.14.0` -> `2.15.0`. ([#3168](https://github.com/diffplug/spotless/pull/3168))
+- Bump default `jackson` version `2.22.4` -> `2.23.0`. ([#3193](https://github.com/diffplug/spotless/pull/3193))
 
 ### Added
 - Add `<dependencyOverrides>` to `<prettier>`, `<eslint>` and `<tsfmt>` to pin transitive npm dependencies via npm `overrides`. ([#2534](https://github.com/diffplug/spotless/issues/2534))
