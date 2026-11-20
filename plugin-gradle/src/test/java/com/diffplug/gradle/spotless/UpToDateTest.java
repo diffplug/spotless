@@ -46,11 +46,11 @@ class UpToDateTest extends GradleIntegrationHarness {
 		applyIsUpToDate(false);
 		assertFile("README.md").hasContent("abc");
 		// because a file was changed (by spotless),
-		// up-to-date is false, even though nothing is
+		// the format task runs again, even though nothing is
 		// going to change during this run.  This second
 		// run is very fast though, because it will
 		// only run on the few files that were changed.
-		applyIsUpToDate(false);
+		applyOnlyRerunsFormatTask(":spotlessMisc");
 		// it's not until the third run that everything
 		// is totally up-to-date
 		applyIsUpToDate(true);
@@ -70,7 +70,7 @@ class UpToDateTest extends GradleIntegrationHarness {
 		applyIsUpToDate(false);
 		assertFile("README.md").hasContent("ab");
 		// and it'll take two more runs to get to up-to-date
-		applyIsUpToDate(false);
+		applyOnlyRerunsFormatTask(":spotlessMisc");
 		applyIsUpToDate(true);
 	}
 
@@ -93,7 +93,7 @@ class UpToDateTest extends GradleIntegrationHarness {
 		assertFile("README.md").hasContent("abc");
 
 		// and it'll take two more runs to get to fully UP-TO-DATE
-		applyIsUpToDate(false);
+		applyOnlyRerunsFormatTask(":spotlessMisc");
 		applyIsUpToDate(true);
 	}
 

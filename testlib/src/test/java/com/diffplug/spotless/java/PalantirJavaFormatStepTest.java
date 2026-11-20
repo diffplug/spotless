@@ -15,7 +15,11 @@
  */
 package com.diffplug.spotless.java;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.condition.JRE.JAVA_21;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 import com.diffplug.spotless.FormatterStep;
 import com.diffplug.spotless.ResourceHarness;
@@ -68,8 +72,27 @@ class PalantirJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	@EnabledForJreRange(min = JAVA_21)
+	void behaviorWithCustomGroupArtifact() throws Exception {
+		FormatterStep step = PalantirJavaFormatStep.create("dev.openjavaformat:open-java-format", "21.0.2", PalantirJavaFormatStep.defaultStyle(), PalantirJavaFormatStep.defaultFormatJavadoc(), TestProvisioner.mavenCentral());
+		StepHarness.forStep(step)
+				.testResource("java/palantirjavaformat/JavaCodeUnformatted.test", "java/palantirjavaformat/JavaCodeFormatted.test")
+				.testResource("java/palantirjavaformat/JavaCodeWithLicenseUnformatted.test", "java/palantirjavaformat/JavaCodeWithLicenseFormatted.test")
+				.testResource("java/palantirjavaformat/JavaCodeWithPackageUnformatted.test", "java/palantirjavaformat/JavaCodeWithPackageFormatted.test");
+	}
+
+	@Test
+	void invalidGroupArtifact() {
+		assertThrows(IllegalArgumentException.class,
+				() -> PalantirJavaFormatStep.create("com.palantir.javaformat", "1.1.0", "PALANTIR", false, TestProvisioner.mavenCentral()));
+		assertThrows(IllegalArgumentException.class,
+				() -> PalantirJavaFormatStep.create("com.palantir.javaformat:palantir-java-format:1.1.0", "1.1.0", "PALANTIR", false, TestProvisioner.mavenCentral()));
+	}
+
+	@Test
 	void equality() {
 		new SerializableEqualityTester() {
+			String groupArtifact = PalantirJavaFormatStep.defaultGroupArtifact();
 			String version = "1.1.0";
 			String style = "";
 			boolean formatJavadoc;
@@ -93,12 +116,17 @@ class PalantirJavaFormatStepTest extends ResourceHarness {
 				formatJavadoc = true;
 				api.areDifferentThan();
 				formatJavadoc = false;
+
+				// change the groupArtifact, and it's different
+				groupArtifact = "com.palantir.javaformat:palantir-java-format-spi";
+				api.areDifferentThan();
+				groupArtifact = PalantirJavaFormatStep.defaultGroupArtifact();
 			}
 
 			@Override
 			protected FormatterStep create() {
 				String finalVersion = this.version;
-				return PalantirJavaFormatStep.create(finalVersion, style, formatJavadoc, TestProvisioner.mavenCentral());
+				return PalantirJavaFormatStep.create(groupArtifact, finalVersion, style, formatJavadoc, TestProvisioner.mavenCentral());
 			}
 		}.testEquals();
 	}
