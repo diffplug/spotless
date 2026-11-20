@@ -1,0 +1,8 @@
+package q;
+
+import p.A;
+import p.B;
+
+class Main {
+    String s = B.X + A.a();
+}

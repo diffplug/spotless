@@ -1,0 +1,7 @@
+SELECT
+    `MyCol.1` AS MY_COLUMN_1,
+    t.`MyCol.2` AS MY_COLUMN_2
+FROM
+    `my table` t
+WHERE
+    `MyCol.1` = 1;

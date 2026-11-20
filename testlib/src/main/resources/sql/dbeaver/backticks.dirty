@@ -1,0 +1,1 @@
+select `MyCol.1` as MY_COLUMN_1, t.`MyCol.2` as MY_COLUMN_2 from `my table` t where `MyCol.1` = 1;
