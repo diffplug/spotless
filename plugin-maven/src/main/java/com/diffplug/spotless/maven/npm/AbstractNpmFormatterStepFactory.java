@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,14 @@ public abstract class AbstractNpmFormatterStepFactory implements FormatterStepFa
 
 	@Parameter
 	private String npmInstallCache;
+
+	/** Written to the npm {@code overrides} field of the generated {@code package.json}, e.g. to pin transitive dependencies. */
+	@Parameter
+	private Map<String, String> dependencyOverrides;
+
+	protected Map<String, String> dependencyOverrides() {
+		return dependencyOverrides != null ? dependencyOverrides : Map.of();
+	}
 
 	protected File npm(FormatterStepConfig stepConfig) {
 		return npmExecutable != null ? stepConfig.getFileLocator().locateFile(npmExecutable) : null;

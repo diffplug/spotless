@@ -16,13 +16,14 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.gradle.spotless.PluginGradlePreconditions.requireElementsNonNull;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toCollection;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,6 +48,7 @@ import com.diffplug.spotless.java.ImportOrderStep;
 import com.diffplug.spotless.java.PalantirJavaFormatStep;
 import com.diffplug.spotless.java.PrinceOfSpaceStep;
 import com.diffplug.spotless.java.RemoveUnusedImportsStep;
+import com.diffplug.spotless.java.ReplaceStaticImportsStep;
 import com.diffplug.spotless.java.ShortenFullyQualifiedTypesStep;
 import com.diffplug.spotless.java.TableTestFormatterStep;
 
@@ -179,13 +181,28 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 	}
 
 	public void expandWildcardImports() {
-		SourceSetContainer sourceSets = getSourceSets(getProject(), "expansion of wildcards requires the 'java' plugin to be applied");
-		Set<File> typeSolverClasspath = sourceSets.stream().flatMap(s -> s.getAllJava().getSrcDirs().stream()).collect(toSet());
+		addStep(ExpandWildcardImportsStep.create(typeSolverClasspath("expansion of wildcards requires the 'java' plugin to be applied"), provisioner()));
+	}
+
+	/**
+	 * Replaces static imports with regular imports and qualified references, such as {@code Assertions.assertTrue(x)}.
+	 *
+	 * @param excludes static imports to keep, such as {@code org.assertj.core.api.Assertions.*} for every static import
+	 *        from that class, or {@code java.util.concurrent.TimeUnit.SECONDS} for the import of that member
+	 */
+	public void replaceStaticImports(String... excludes) {
+		addStep(ReplaceStaticImportsStep.create(typeSolverClasspath("replacing static imports requires the 'java' plugin to be applied"), List.of(excludes), provisioner()));
+	}
+
+	/** The source directories and compile classpath of every source set, which JavaParser uses to resolve names. */
+	private Set<File> typeSolverClasspath(String message) {
+		SourceSetContainer sourceSets = getSourceSets(getProject(), message);
+		Set<File> typeSolverClasspath = sourceSets.stream().flatMap(s -> s.getAllJava().getSrcDirs().stream()).collect(toCollection(LinkedHashSet::new));
 		sourceSets.stream()
 				.map(SourceSet::getCompileClasspath)
 				.flatMap(classpath -> classpath.getFiles().stream())
 				.forEach(typeSolverClasspath::add);
-		addStep(ExpandWildcardImportsStep.create(typeSolverClasspath, provisioner()));
+		return typeSolverClasspath;
 	}
 
 	/** Uses the <a href="https://github.com/google/google-java-format">google-java-format</a> jar to format source code. */
@@ -211,6 +228,8 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		boolean reflowLongStrings;
 		boolean reorderImports;
 		boolean formatJavadoc = true;
+		boolean cleanup = true;
+		int maxLineLength = GoogleJavaFormatStep.defaultMaxLineLength();
 
 		GoogleJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
@@ -261,6 +280,23 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		/** Enables or disables google-java-format's non-whitespace cleanups (google-java-format 2.0.0 and later), which are enabled by default. */
+		public GoogleJavaFormatConfig cleanup(boolean cleanup) {
+			this.cleanup = cleanup;
+			replaceStep(createStep());
+			return this;
+		}
+
+		/**
+		 * Overrides the column limit prescribed by the style (100 for both GOOGLE and AOSP).
+		 * Requires google-java-format 2.0.0 or later.
+		 */
+		public GoogleJavaFormatConfig maxLineLength(int maxLineLength) {
+			this.maxLineLength = maxLineLength;
+			replaceStep(createStep());
+			return this;
+		}
+
 		private FormatterStep createStep() {
 			return GoogleJavaFormatStep.create(
 					groupArtifact,
@@ -269,7 +305,9 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 					provisioner(),
 					reflowLongStrings,
 					reorderImports,
-					formatJavadoc);
+					formatJavadoc,
+					cleanup,
+					maxLineLength);
 		}
 	}
 
@@ -291,13 +329,21 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public class PalantirJavaFormatConfig {
 		final String version;
+		String groupArtifact;
 		String style;
 		boolean formatJavadoc;
 
 		PalantirJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
+			this.groupArtifact = PalantirJavaFormatStep.defaultGroupArtifact();
 			this.style = PalantirJavaFormatStep.defaultStyle();
 			addStep(createStep());
+		}
+
+		public PalantirJavaFormatConfig groupArtifact(String groupArtifact) {
+			this.groupArtifact = Objects.requireNonNull(groupArtifact);
+			replaceStep(createStep());
+			return this;
 		}
 
 		public PalantirJavaFormatConfig style(String style) {
@@ -313,7 +359,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		}
 
 		private FormatterStep createStep() {
-			return PalantirJavaFormatStep.create(version, style, formatJavadoc, provisioner());
+			return PalantirJavaFormatStep.create(groupArtifact, version, style, formatJavadoc, provisioner());
 		}
 	}
 

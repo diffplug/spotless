@@ -68,6 +68,7 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	private static final String MODULES = "modules";
 	private static final String DEPENDENCIES = "dependencies";
 	private static final String PLUGINS = "plugins";
+	private static final String REPORTING = "reporting";
 	private static final String MODULE_NAME = "name";
 	private static final int REMOTE_DEBUG_PORT = 5005;
 
@@ -221,6 +222,13 @@ public class MavenIntegrationHarness extends ResourceHarness {
 	protected void writePom(String[] executions, String[] configuration, String[] dependencies, String[] plugins) throws IOException {
 		String pomXmlContent = createPomXmlContent(null, executions, configuration, dependencies, plugins);
 		setFile("pom.xml").toContent(pomXmlContent);
+	}
+
+	/** Writes a pom with the given {@code <reporting>} section, for testing {@code spotless:report} through {@code mvn site}. */
+	protected void writePomWithReporting(String[] plugins, String[] configuration, String reporting) throws IOException {
+		Map<String, Object> params = buildPomXmlParams(null, null, null, configuration, null, null, plugins);
+		params.put(REPORTING, reporting);
+		setFile("pom.xml").toContent(createPomXmlContent(POM_TEMPLATE, params));
 	}
 
 	protected MavenRunner mavenRunner() throws IOException {

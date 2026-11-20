@@ -15,6 +15,8 @@
  */
 package com.diffplug.spotless.java;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.JRE.JAVA_20;
 import static org.junit.jupiter.api.condition.JRE.JAVA_21;
 import static org.junit.jupiter.api.condition.JRE.JAVA_25;
@@ -34,7 +36,8 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	@Test
 	void jvm13Features() throws Exception {
 		try (StepHarness step = StepHarness.forStep(GoogleJavaFormatStep.create(TestProvisioner.mavenCentral()))) {
-			step.testResource("java/googlejavaformat/TextBlock.dirty", "java/googlejavaformat/TextBlock.clean");
+			// google-java-format 2.0.0 indents text block contents even when long strings aren't reflowed
+			step.testResource("java/googlejavaformat/TextBlock.dirty", defaultVersionIsAtLeast2() ? "java/googlejavaformat/TextBlockGjf2.clean" : "java/googlejavaformat/TextBlock.clean");
 		}
 	}
 
@@ -118,6 +121,29 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 	}
 
 	@Test
+	void behaviorWithCleanup() throws Exception {
+		String unformatted = "class T {\n  @Deprecated() void f() { g((x) -> x);; }\n}\n";
+		String withoutCleanups = "class T {\n  @Deprecated()\n  void f() {\n    g((x) -> x);\n    ;\n  }\n}\n";
+		// google-java-format versions before 2.0.0 don't have cleanups
+		String withCleanups = defaultVersionIsAtLeast2() ? "class T {\n  @Deprecated\n  void f() {\n    g(x -> x);\n  }\n}\n" : withoutCleanups;
+		try (StepHarness step = StepHarness.forStep(createWithCleanup(true))) {
+			step.test(unformatted, withCleanups);
+		}
+		try (StepHarness step = StepHarness.forStep(createWithCleanup(false))) {
+			step.test(unformatted, withoutCleanups);
+		}
+	}
+
+	/** The default version depends on the JVM, e.g. google-java-format 2.0.0 requires Java 21. */
+	private static boolean defaultVersionIsAtLeast2() {
+		return !GoogleJavaFormatStep.defaultVersion().startsWith("1.");
+	}
+
+	private static FormatterStep createWithCleanup(boolean cleanup) {
+		return GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), GoogleJavaFormatStep.defaultVersion(), GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), GoogleJavaFormatStep.defaultReflowLongStrings(), GoogleJavaFormatStep.defaultReorderImports(), GoogleJavaFormatStep.defaultFormatJavadoc(), cleanup);
+	}
+
+	@Test
 	void behaviorWithCustomGroupArtifact() throws Exception {
 		FormatterStep step = GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), GoogleJavaFormatStep.defaultVersion(), GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false);
 		StepHarness.forStep(step)
@@ -138,6 +164,29 @@ class GoogleJavaFormatStepTest extends ResourceHarness {
 		try (StepHarness step = StepHarness.forStep(disabled)) {
 			step.testResource(unformatted, "java/googlejavaformat/JavaWithReorderImportsDisabledFormatted.test");
 		}
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_21)
+	void behaviorWithMaxLineLength() throws Exception {
+		FormatterStep step = GoogleJavaFormatStep.create(
+				GoogleJavaFormatStep.defaultGroupArtifact(),
+				"2.0.0",
+				GoogleJavaFormatStep.defaultStyle(),
+				TestProvisioner.mavenCentral(),
+				GoogleJavaFormatStep.defaultReflowLongStrings(),
+				GoogleJavaFormatStep.defaultReorderImports(),
+				GoogleJavaFormatStep.defaultFormatJavadoc(),
+				240);
+		StepHarness.forStep(step)
+				.testResource("java/googlejavaformat/JavaCodeUnformatted.test", "java/googlejavaformat/JavaCodeFormattedMaxLineLength240.test");
+	}
+
+	@Test
+	void maxLineLengthRequiresVersion2Dot0OrLater() {
+		IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+				() -> GoogleJavaFormatStep.create(GoogleJavaFormatStep.defaultGroupArtifact(), "1.38.0", GoogleJavaFormatStep.defaultStyle(), TestProvisioner.mavenCentral(), false, false, true, 120));
+		assertTrue(error.getMessage().contains("maxLineLength requires google-java-format 2.0.0 or later"), error.getMessage());
 	}
 
 	@Test

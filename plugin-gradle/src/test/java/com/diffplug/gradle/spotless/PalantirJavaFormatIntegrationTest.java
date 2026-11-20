@@ -15,9 +15,12 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.junit.jupiter.api.condition.JRE.JAVA_21;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 class PalantirJavaFormatIntegrationTest extends GradleIntegrationHarness {
 	@Test
@@ -64,6 +67,29 @@ class PalantirJavaFormatIntegrationTest extends GradleIntegrationHarness {
 		setFile("test.java").toResource("java/palantirjavaformat/JavaCodeWithJavaDocUnformatted.test");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("test.java").sameAsResource("java/palantirjavaformat/JavaCodeWithJavaDocFormatted.test");
+
+		checkRunsThenUpToDate();
+	}
+
+	@Test
+	@EnabledForJreRange(min = JAVA_21)
+	void customGroupArtifact() throws IOException {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"",
+				"spotless {",
+				"    java {",
+				"        target file('test.java')",
+				"        palantirJavaFormat('21.0.2').groupArtifact('dev.openjavaformat:open-java-format')",
+				"    }",
+				"}");
+
+		setFile("test.java").toResource("java/palantirjavaformat/JavaCodeUnformatted.test");
+		gradleRunner().withArguments("spotlessApply").build();
+		assertFile("test.java").sameAsResource("java/palantirjavaformat/JavaCodeFormatted.test");
 
 		checkRunsThenUpToDate();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2023 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import com.diffplug.spotless.ProcessRunner;
 import com.diffplug.spotless.maven.MavenIntegrationHarness;
 import com.diffplug.spotless.maven.generic.Prettier;
+import com.diffplug.spotless.npm.InstalledNpmPackages;
 import com.diffplug.spotless.tag.NpmTest;
 
 @NpmTest
@@ -278,5 +279,27 @@ class PrettierFormatStepTest extends MavenIntegrationHarness {
 				"</prettier>");
 		ProcessRunner.Result result = runExpectingError("typescript", suffix);
 		assertThat(result.stdOutUtf8()).containsPattern("Running npm command.*npm install.* failed with exit code: 1");
+	}
+
+	@Test
+	void dependencyOverrides_pin_transitive_dependencies() throws Exception {
+		writePomWithPrettierSteps("src/main/sql/*.sql",
+				"<prettier>",
+				"  <devDependencies>",
+				"    <prettier>3.3.3</prettier>",
+				"    <prettier-plugin-sql>0.20.0</prettier-plugin-sql>",
+				"  </devDependencies>",
+				"  <dependencyOverrides>",
+				"    <sql-formatter>15.7.0</sql-formatter>",
+				"  </dependencyOverrides>",
+				"  <config>",
+				"    <plugins>prettier-plugin-sql</plugins>",
+				"    <parser>sql</parser>",
+				"  </config>",
+				"</prettier>");
+		setFile("src/main/sql/test.sql").toContent("select a, b from t where x = 1");
+		mavenRunner().withArguments("spotless:apply").runNoError();
+		assertFile("src/main/sql/test.sql").hasContent("select\n  a,\n  b\nfrom\n  t\nwhere\n  x = 1\n");
+		assertThat(InstalledNpmPackages.versionInstalledBelow(newFile("target"), "sql-formatter")).isEqualTo("15.7.0");
 	}
 }

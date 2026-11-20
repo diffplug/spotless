@@ -1,0 +1,10 @@
+package p;
+
+import static java.util.Objects.requireNonNull;
+import static org.example.Missing.*;
+
+class A {
+    Object f(Object o) {
+        return requireNonNull(o);
+    }
+}

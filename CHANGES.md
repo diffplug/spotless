@@ -10,6 +10,30 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changes
+- Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
+
+### Added
+- Add `dependencyOverrides` to the npm-based formatter steps (`PrettierFormatterStep`, `EslintFormatterStep`, `TsFmtFormatterStep`), written to the npm `overrides` field of the generated `package.json` to pin transitive dependencies. ([#2534](https://github.com/diffplug/spotless/issues/2534))
+- Add a `groupArtifact` option to `PalantirJavaFormatStep`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
+- Add `ReplaceStaticImportsStep`, which replaces static imports with regular imports and qualified references, such as `Assertions.assertTrue(x)`. Static imports to keep can be excluded. ([#1379](https://github.com/diffplug/spotless/issues/1379))
+### Fixed
+- `shortenFullyQualifiedTypes` now also shortens fully qualified annotation names such as `@com.example.Foo`. ([#3159](https://github.com/diffplug/spotless/issues/3159))
+- GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
+- DBeaver SQL formatter no longer prints an `IndexOutOfBoundsException` when a file starts with a keyword like `SET`. ([#1552](https://github.com/diffplug/spotless/issues/1552))
+- DBeaver SQL formatter no longer adds spaces inside backtick-quoted identifiers such as `` `MyCol.1` ``. ([#2250](https://github.com/diffplug/spotless/issues/2250))
+- `ExpandWildcardImportsStep` no longer fails with `Symbol resolution not configured` on records and other syntax newer than Java 11, and leaves files JavaParser cannot validate unchanged. ([#2946](https://github.com/diffplug/spotless/issues/2946))
+- `removeSemicolons()` no longer removes semicolons inside dollar-slashy strings (`$/ ... /$`), after escaped triple quotes in multiline strings, or in multi-line `for (init; cond; update)` headers. ([#2780](https://github.com/diffplug/spotless/issues/2780))
+- `RemoveUnusedImportsStep` and `GoogleJavaFormatStep` no longer remove imports that are only used by links in Markdown doc comments (`///`, JDK 23+). ([#3161](https://github.com/diffplug/spotless/issues/3161))
+- `forbidWildcardImports` no longer reports import statements inside Java text blocks or comments. ([#2997](https://github.com/diffplug/spotless/issues/2997))
+
+## [4.11.0] - 2026-11-02
+### Added
+- Add a `cleanup` option to `GoogleJavaFormatStep` to disable google-java-format's non-whitespace cleanups. ([#3157](https://github.com/diffplug/spotless/pull/3157))
+- Add a `maxLineLength` option to `GoogleJavaFormatStep`. ([#3151](https://github.com/diffplug/spotless/issues/3151))  
+  Overrides the 100-column limit prescribed by the GOOGLE and AOSP styles. Requires `google-java-format` `2.0.0` or later, the bug-fixing major release which stabilized the configurable `JavaFormatterOptions.Style` introduced experimentally in `1.37.0` (no `1.38.0` was ever published).
+### Changes
+- Bump default `google-java-format` version `1.36.1` -> `2.0.0`. ([#3157](https://github.com/diffplug/spotless/pull/3157))
 
 ## [4.10.4] - 2026-10-08
 
@@ -23,7 +47,6 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Bump default `ktfmt` version `0.64` -> `0.65`. ([#3135](https://github.com/diffplug/spotless/pull/3135))  
   Which moved to the `org.jetbrains.kotlinx:ktfmt` coordinate and `org.jetbrains.kotlinx.ktfmt` package. Older versions are still supported.
 - Bump default `palantir-java-format` version `2.99.0` -> `2.102.0`. ([#3132](https://github.com/diffplug/spotless/pull/3132))
-- Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
 
 ### Fixed
 - `shortenFullyQualifiedTypes` no longer corrupts a method reference on a field/variable (`localVar.field::method`), which JavaParser parses as a type-shaped scope; such scopes now go through the same known-package / minimum-depth heuristic as other expression scopes before being treated as fully-qualified types. ([#3133](https://github.com/diffplug/spotless/issues/3133))

@@ -33,7 +33,8 @@ public final class PalantirJavaFormatStep implements Serializable {
 	private static final boolean DEFAULT_FORMAT_JAVADOC = false;
 	private static final String DEFAULT_STYLE = "PALANTIR";
 	private static final String NAME = "palantir-java-format";
-	public static final String MAVEN_COORDINATE = "com.palantir.javaformat:palantir-java-format:";
+	private static final String DEFAULT_GROUP_ARTIFACT = "com.palantir.javaformat:palantir-java-format";
+	public static final String MAVEN_COORDINATE = DEFAULT_GROUP_ARTIFACT + ":";
 	public static final String DEFAULT_VERSION = BuildConfig.VERSION_PALANTIR_JAVA_FORMAT; // compatible with Java 11+
 
 	/** The jar that contains the formatter. */
@@ -77,14 +78,31 @@ public final class PalantirJavaFormatStep implements Serializable {
 	 * format style.
 	 */
 	public static FormatterStep create(String version, String style, boolean formatJavadoc, Provisioner provisioner) {
+		return create(defaultGroupArtifact(), version, style, formatJavadoc, provisioner);
+	}
+
+	/**
+	 * Creates a step which formats everything - groupArtifact, code, import order, unused imports, and Java docs. And with the given
+	 * format style.
+	 */
+	public static FormatterStep create(String groupArtifact, String version, String style, boolean formatJavadoc, Provisioner provisioner) {
+		Objects.requireNonNull(groupArtifact, "groupArtifact");
+		if (groupArtifact.chars().filter(ch -> ch == ':').count() != 1) {
+			throw new IllegalArgumentException("groupArtifact must be in the form 'groupId:artifactId'");
+		}
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(style, "style");
 		Objects.requireNonNull(provisioner, "provisioner");
 
 		return FormatterStep.create(NAME,
-				new PalantirJavaFormatStep(JarState.promise(() -> JarState.from(MAVEN_COORDINATE + version, provisioner)), version, style, formatJavadoc),
+				new PalantirJavaFormatStep(JarState.promise(() -> JarState.from(groupArtifact + ":" + version, provisioner)), version, style, formatJavadoc),
 				PalantirJavaFormatStep::equalityState,
 				State::createFormat);
+	}
+
+	/** Get default formatter group and artifact */
+	public static String defaultGroupArtifact() {
+		return DEFAULT_GROUP_ARTIFACT;
 	}
 
 	/** Get default formatter version */

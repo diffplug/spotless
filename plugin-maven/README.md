@@ -8,8 +8,8 @@ output = [
   ].join('\n');
 -->
 [![MavenCentral](https://img.shields.io/badge/mavencentral-com.diffplug.spotless%3Aspotless--maven--plugin-blue.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.diffplug.spotless%22%20AND%20a%3A%22spotless-maven-plugin%22)
-[![Changelog](https://img.shields.io/badge/changelog-3.10.4-blue.svg)](CHANGES.md)
-[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/3.10.4/index.html)
+[![Changelog](https://img.shields.io/badge/changelog-3.11.0-blue.svg)](CHANGES.md)
+[![Javadoc](https://img.shields.io/badge/javadoc-here-blue.svg)](https://javadoc.io/doc/com.diffplug.spotless/spotless-maven-plugin/3.11.0/index.html)
 <!---freshmark /shields -->
 
 <!---freshmark javadoc
@@ -40,7 +40,7 @@ user@machine repo % mvn spotless:check
   - [Git hook (optional)](#git-hook)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([removeUnusedImports](#removeunusedimports), [forbidWildcardImports](#forbidwildcardimports), [expandWildcardImports](#expandwildcardimports), [forbidModuleImports](#forbidmoduleimports), [shortenFullyQualifiedTypes](#shortenfullyqualifiedtypes), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
+  - [Java](#java) ([removeUnusedImports](#removeunusedimports), [forbidWildcardImports](#forbidwildcardimports), [expandWildcardImports](#expandwildcardimports), [forbidModuleImports](#forbidmoduleimports), [shortenFullyQualifiedTypes](#shortenfullyqualifiedtypes), [replaceStaticImports](#replacestaticimports), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -72,6 +72,7 @@ user@machine repo % mvn spotless:check
   - [Line endings and encodings (invisible stuff)](#line-endings-and-encodings-invisible-stuff)
   - [Disabling warnings and error messages](#disabling-warnings-and-error-messages)
   - [How do I preview what `mvn spotless:apply` will do?](#how-do-i-preview-what-mvn-spotlessapply-will-do)
+  - [Maven site report](#maven-site-report)
   - [Can I apply Spotless to specific files?](#can-i-apply-spotless-to-specific-files)
   - [How to centralize Spotless configuration](#central-configuration)
   - [Example configurations (from real-world projects)](#example-configurations-from-real-world-projects)
@@ -237,6 +238,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <forbidWildcardImports /> <!-- yell if any import ends with '*'; or use expandWildcardImports, see below -->
     <forbidModuleImports /> <!-- yell if any module imports are found (Java 25+) -->
     <shortenFullyQualifiedTypes /> <!-- replaces fully-qualified type names with simple names + imports, see below -->
+    <replaceStaticImports /> <!-- replaces static imports with qualified references + imports, see below -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
@@ -334,17 +336,89 @@ A name is left fully-qualified whenever shortening it could change what the code
 
 Types in `java.lang` and in the file's own package are shortened without adding an import.
 
+### replaceStaticImports
+
+Replaces static imports with regular imports and qualified references, for codebases that prefer `Assertions.assertTrue(x)` to a bare `assertTrue(x)`.
+
+Like [`expandWildcardImports`](#expandwildcardimports), it uses [JavaParser](https://javaparser.org/) and your project's source roots and dependencies to work out what each name refers to. New imports are appended after the existing ones, so run it before `<importOrder>`:
+
+```xml
+<replaceStaticImports/>
+<importOrder/>
+<removeUnusedImports/>
+```
+
+Before:
+
+```java
+package com.acme;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class TimeoutTest {
+  void defaultTimeout() {
+    assertEquals(30_000, SECONDS.toMillis(30));
+  }
+}
+```
+
+After:
+
+```java
+package com.acme;
+
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Assertions;
+
+class TimeoutTest {
+  void defaultTimeout() {
+    Assertions.assertEquals(30_000, TimeUnit.SECONDS.toMillis(30));
+  }
+}
+```
+
+It never changes what the code means, so a static import is only replaced when every use of it can be resolved:
+
+- a name hidden by a local variable, or by a method, field or nested class of the enclosing class, is not a use of the import and stays as it is
+- an enum constant used as a `case` label of a `switch` on that enum stays unqualified, since qualified ones only compile from Java 21 on
+- when the simple name of the class is already taken in the file, the fully qualified name is used, e.g. `java.util.Date.from(instant)`
+- a static import of a nested class becomes a regular import of that class, e.g. `import java.util.Map.Entry;`
+- a static import that the classpath cannot resolve, or whose names are also supplied by another imported class, is left alone
+- so is a static import with a use that cannot be resolved with certainty, for example in a class whose supertypes are not on the classpath or that uses Lombok, inside a `spotless:off` region, or in a Javadoc reference
+
+It relies on the classpath to know what names mean:
+
+- JDK classes are those of the JDK that runs Maven, so run Maven with the JDK that the project compiles against, or a newer one
+- main and test sources share one classpath, as with `expandWildcardImports`
+- classes that are not on the classpath, such as generated sources, are assumed not to exist: a generated class in the same package named like a class that it qualifies with, such as `Math`, would take over `Math.max`
+- of the regions that `<toggleOffOn>` restores, it only recognises those between `spotless:off` and `spotless:on`, or `@formatter:off` and `@formatter:on`
+
+To keep some static imports, such as AssertJ's, list them. `Type.*`, or just `Type`, keeps every static import from that class. `Type.member` keeps the static import of that member, and an on-demand `import static Type.*;` if the file uses that member through it:
+
+```xml
+<replaceStaticImports>
+  <excludes>
+    <exclude>org.assertj.core.api.Assertions.*</exclude>
+    <exclude>java.util.concurrent.TimeUnit.SECONDS</exclude>
+  </excludes>
+</replaceStaticImports>
+```
+
+
 ### google-java-format
 
 [homepage](https://github.com/google/google-java-format). [changelog](https://github.com/google/google-java-format/releases). [code](https://github.com/diffplug/spotless/blob/main/plugin-maven/src/main/java/com/diffplug/spotless/maven/java/GoogleJavaFormat.java).
 
 ```xml
 <googleJavaFormat>
-  <version>1.8</version>                      <!-- optional, 1.8 is the minimum supported version for Java 11 -->
+  <version>2.0.0</version>                      <!-- optional -->
   <style>GOOGLE</style>                       <!-- or AOSP (optional) -->
   <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
+  <maxLineLength>120</maxLineLength>          <!-- optional, requires google-java-format 2.0.0+ -->
   <formatJavadoc>false</formatJavadoc>        <!-- optional -->
   <reorderImports>false</reorderImports>.     <!-- optional -->
+  <cleanup>false</cleanup>                    <!-- optional, disables non-whitespace cleanups in google-java-format >= 2.0.0 -->
   <!-- optional: custom group artifact (you probably don't need this) -->
   <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
 </googleJavaFormat>
@@ -361,6 +435,8 @@ Note: when enabling `AOSP` style, `reorderImports` needs to be enabled to apply 
   <version>2.39.0</version>                     <!-- optional -->
   <style>PALANTIR</style>                       <!-- or AOSP/GOOGLE (optional) -->
   <formatJavadoc>false</formatJavadoc>          <!-- defaults to false (optional, requires at least Palantir 2.39.0) -->
+  <!-- optional: custom group artifact (you probably don't need this) -->
+  <groupArtifact>com.palantir.javaformat:palantir-java-format</groupArtifact>
 </palantirJavaFormat>
 ```
 
@@ -391,7 +467,7 @@ Note: when enabling `AOSP` style, `reorderImports` needs to be enabled to apply 
   <version>4.26</version>
   <!-- Optional: Specify a file which contains all formatting options. -->
   <file>${project.basedir}/eclipse-formatter.xml</file>
-  <!-- If the access to the p2 repositories is restricted, mirrors can be pecified using a URI prefix map as follows:-->
+  <!-- If the access to the p2 repositories is restricted, mirrors can be specified using a URI prefix map as follows:-->
   <p2Mirrors>
     <p2Mirror>
       <prefix>https://download.eclipse.org/eclipse/updates/4.26/</prefix>
@@ -874,7 +950,7 @@ sql.formatter.keyword.case=UPPER
 sql.formatter.statement.delimiter=;
 # Indentation style (space or tab)
 sql.formatter.indent.type=space
-# Number of identation characters
+# Number of indentation characters
 sql.formatter.indent.size=4
 ```
 
@@ -1547,6 +1623,10 @@ You can use prettier in any language-specific format, but usually you will be cr
             <value>0.19.6</value>
           </property>
         </devDependencyProperties>
+        <!-- Optional: pin transitive npm dependencies via npm `overrides` (also for tsfmt and eslint) -->
+        <dependencyOverrides>
+            <sql-formatter>15.7.0</sql-formatter>
+        </dependencyOverrides>
         <!-- Specify config file and/or inline config, the inline always trumps file -->
         <configFile>${project.basedir}/path/to/configfile</configFile>
         <config>
@@ -2171,15 +2251,17 @@ By default, `spotless:check` is bound to the `verify` phase. You might want to d
 
 | Property | Scope | Effect |
 | --- | --- | --- |
-| `spotless.skip` | `spotless:check` and `spotless:apply` | Skips both formatting goals |
+| `spotless.skip` | `spotless:check`, `spotless:apply` and `spotless:report` | Skips all three goals |
 | `spotless.check.skip` | `spotless:check` only | Skips only the check goal |
 | `spotless.apply.skip` | `spotless:apply` only | Skips only the apply goal |
+| `spotless.report.skip` | `spotless:report` only | Skips only the [site report](#maven-site-report) |
 
 You can set them at the command line or in the `<properties>` section of the `pom.xml`:
 
-- `-Dspotless.skip=true` / `<spotless.skip>true</spotless.skip>` — skip both `spotless:check` and `spotless:apply`
+- `-Dspotless.skip=true` / `<spotless.skip>true</spotless.skip>` — skip `spotless:check`, `spotless:apply` and `spotless:report`
 - `-Dspotless.check.skip=true` / `<spotless.check.skip>true</spotless.check.skip>` — skip only `spotless:check` (including when it is bound to `verify`)
 - `-Dspotless.apply.skip=true` / `<spotless.apply.skip>true</spotless.apply.skip>` — skip only `spotless:apply`
+- `-Dspotless.report.skip=true` / `<spotless.report.skip>true</spotless.report.skip>` — skip only `spotless:report`
 
 `spotless.check.skip` does **not** skip `spotless:apply`, and `spotless.apply.skip` does **not** skip `spotless:check`. Use `spotless.skip` when you want both. These properties do **not** affect `spotless:install-git-pre-push-hook`.
 
@@ -2250,6 +2332,36 @@ Spotless is primarily a formatter, _not_ a linter. In our opinion, a linter is j
 - View the changes with `git diff`
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
+
+You can also look at the changes without applying them, in the [site report](#maven-site-report).
+
+## Maven site report
+
+`spotless:report` adds a **Spotless** page to the site that `mvn site` builds. List the plugin in the `<reporting>` section of your `pom.xml`:
+
+```xml
+<reporting>
+  <plugins>
+    <plugin>
+      <groupId>com.diffplug.spotless</groupId>
+      <artifactId>spotless-maven-plugin</artifactId>
+      <version>${spotless.version}</version>
+    </plugin>
+  </plugins>
+</reporting>
+```
+
+You don't need to repeat your Spotless configuration: the report uses the plugin-level `<configuration>` of the Spotless plugin in your `<build>` section, except for anything you set in `<reporting>` itself. Configuration inside an `<execution>` is not used.
+
+`mvn site` then lists Spotless under *Project Reports*. The page shows, for each format, how many files are clean, need formatting or have lint problems. Each file with a problem gets its own page, with a colored diff of the changes `mvn spotless:apply` would make and a table of its lint problems.
+
+The report checks the same files as `spotless:check`, so `ratchetFrom`, `spotlessFiles` and `<lintSuppressions>` apply to it. It never changes your files, never fails the build because of violations, and ignores the [up-to-date index](#incremental-up-to-date-checking-and-formatting), so every file is checked.
+
+- `mvn spotless:report` writes the report to `target/site/spotless.html` without building the whole site. Run this way, it reads only the configuration in `<build>`, because Maven never applies `<reporting>` to goals you run directly. If you use both, put report options such as `<maxDiffLines>` in `<build>`.
+- `<maxDiffLines>` (default `1000`, `0` for no limit) limits how many lines of diff each file's page shows. `-Dspotless.report.maxDiffLines` sets it from the command line.
+- `-Dspotless.report.skip=true` skips the report, and so does `-Dspotless.skip=true`.
+
+The report works with `maven-site-plugin` 3.12.1, which Maven 3.9 uses by default, and with 3.20.0 or later.
 
 ## Can I apply Spotless to specific files?
 

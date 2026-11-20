@@ -117,7 +117,7 @@ public class TypescriptExtension extends FormatExtension {
 			final Project project = getProject();
 
 			return TsFmtFormatterStep
-					.create(devDependencies, provisioner(), project.getProjectDir(),
+					.create(devDependencies, dependencyOverrides, provisioner(), project.getProjectDir(),
 							project.getLayout().getBuildDirectory().getAsFile().get(), npmModulesCacheOrNull(),
 							new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(),
 									Arrays.asList(project.getProjectDir(), project.getRootDir())),
@@ -212,7 +212,7 @@ public class TypescriptExtension extends FormatExtension {
 		public FormatterStep createStep() {
 			final Project project = getProject();
 
-			return EslintFormatterStep.create(devDependencies, provisioner(), project.getProjectDir(),
+			return EslintFormatterStep.create(devDependencies, dependencyOverrides, provisioner(), project.getProjectDir(),
 					project.getLayout().getBuildDirectory().getAsFile().get(), npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(),
 							Arrays.asList(project.getProjectDir(), project.getRootDir())),

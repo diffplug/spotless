@@ -649,9 +649,7 @@ class ShortenFullyQualifiedTypesStepTest {
 
 	@Test
 	void multipleAnnotationsWithFqn() throws Exception {
-		// FQNs used as annotation types should NOT be treated as type references
-		// (annotations start with @, not handled by ClassOrInterfaceType)
-		// but FQN types in annotation values or alongside annotations should work
+		// FQN types alongside annotations should work (see issue3159_annotationsShortened for annotation names)
 		String before = String.join("\n",
 				"package com.example;",
 				"",
@@ -662,6 +660,50 @@ class ShortenFullyQualifiedTypesStepTest {
 		String result = apply(before);
 		assertFalse(codeBody(result).contains("java.util.List"), "FQN should be shortened");
 		assertTrue(result.contains("import java.util.List;"), "should import List");
+	}
+
+	@Test
+	void issue3159_annotationsShortened() throws Exception {
+		String before = String.join("\n",
+				"package com.example;",
+				"",
+				"@com.fasterxml.jackson.annotation.JsonIgnoreProperties({\"traceId\"})",
+				"public record SuccessResponse<T>() {",
+				"    @com.fasterxml.jackson.annotation.JsonCreator",
+				"    SuccessResponse(@com.fasterxml.jackson.annotation.JsonProperty(\"code\") String code, int x) {",
+				"        this();",
+				"    }",
+				"    @com.example.other.Marker(name = \"a\")",
+				"    void m() {}",
+				"}",
+				"");
+		String result = apply(before);
+		assertFalse(codeBody(result).contains("com.fasterxml"), result);
+		assertFalse(codeBody(result).contains("com.example.other"), result);
+		assertTrue(result.contains("@JsonIgnoreProperties({\"traceId\"})"), result);
+		assertTrue(result.contains("@JsonCreator"), result);
+		assertTrue(result.contains("@JsonProperty(\"code\")"), result);
+		assertTrue(result.contains("@Marker(name = \"a\")"), result);
+		assertTrue(result.contains("import com.fasterxml.jackson.annotation.JsonCreator;"), result);
+		assertTrue(result.contains("import com.fasterxml.jackson.annotation.JsonIgnoreProperties;"), result);
+		assertTrue(result.contains("import com.fasterxml.jackson.annotation.JsonProperty;"), result);
+		assertTrue(result.contains("import com.example.other.Marker;"), result);
+	}
+
+	@Test
+	void annotationNotShortenedWhenSimpleNameClashes() throws Exception {
+		String before = String.join("\n",
+				"package com.example;",
+				"",
+				"@Marker",
+				"public class Foo {",
+				"    @org.other.Marker",
+				"    void m() {}",
+				"}",
+				"");
+		String result = apply(before);
+		assertTrue(result.contains("@org.other.Marker"), result);
+		assertFalse(result.contains("import org.other.Marker;"), result);
 	}
 
 	@Test
