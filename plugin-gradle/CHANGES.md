@@ -10,6 +10,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Add `replaceStaticImports()` for Java, which replaces static imports with regular imports and qualified references, such as `Assertions.assertTrue(x)`, using the compile classpath to resolve names. Pass the static imports to keep, such as `'org.assertj.core.api.Assertions.*'`. ([#1379](https://github.com/diffplug/spotless/issues/1379))
 ### Changes
 - Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
+- Bump default `tabletest-formatter` version `1.1.2` -> `1.1.3`. ([#3167](https://github.com/diffplug/spotless/pull/3167))
 - `SpotlessApply` now only reports that it did work (and is otherwise `UP-TO-DATE`) when it actually rewrote a file. ([#2715](https://github.com/diffplug/spotless/issues/2715))
 ### Fixed
 - `shortenFullyQualifiedTypes()` now also shortens fully qualified annotation names such as `@com.example.Foo`. ([#3159](https://github.com/diffplug/spotless/issues/3159))

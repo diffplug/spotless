@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Changes
 - Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
+- Bump default `tabletest-formatter` version `1.1.2` -> `1.1.3`. ([#3167](https://github.com/diffplug/spotless/pull/3167))
 
 ### Added
 - Add `dependencyOverrides` to the npm-based formatter steps (`PrettierFormatterStep`, `EslintFormatterStep`, `TsFmtFormatterStep`), written to the npm `overrides` field of the generated `package.json` to pin transitive dependencies. ([#2534](https://github.com/diffplug/spotless/issues/2534))
