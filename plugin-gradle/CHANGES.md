@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Changes
 - Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
 - Bump default `tabletest-formatter` version `1.1.2` -> `1.1.3`. ([#3167](https://github.com/diffplug/spotless/pull/3167))
+- Bump default `gson` version `2.14.0` -> `2.15.0`. ([#3168](https://github.com/diffplug/spotless/pull/3168))
 - `SpotlessApply` now only reports that it did work (and is otherwise `UP-TO-DATE`) when it actually rewrote a file. ([#2715](https://github.com/diffplug/spotless/issues/2715))
 ### Fixed
 - `shortenFullyQualifiedTypes()` now also shortens fully qualified annotation names such as `@com.example.Foo`. ([#3159](https://github.com/diffplug/spotless/issues/3159))
