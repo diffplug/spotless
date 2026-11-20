@@ -15,3 +15,9 @@ google-java-format = "com.google.googlejavaformat:google-java-format:1.28.0"
 diktat-rules = "org.cqfn.diktat:diktat-rules:1.2.5"
 aether-api = "org.eclipse.aether:aether-api:1.1.0"
 plexus-build-api = "org.sonatype.plexus:plexus-build-api:0.0.7"
+# API floor for the spotless:report goal. maven-site-plugin supplies its own copy at runtime, and the report
+# only calls methods that Doxia 1 (maven-site-plugin 3.12.x) has too, so don't raise these casually.
+maven-reporting-api = "org.apache.maven.reporting:maven-reporting-api:4.0.0"
+doxia-sink-api = "org.apache.maven.doxia:doxia-sink-api:2.0.0"
+# Xpp3Dom, which Maven 3 supplies at runtime; plexus-utils 4 moved it out into plexus-xml.
+plexus-xml = "org.codehaus.plexus:plexus-xml:3.0.1"

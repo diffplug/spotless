@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import com.google.googlejavaformat.java.RemoveUnusedImports;
-
 import com.diffplug.spotless.FormatterFunc;
 
 public class GoogleJavaFormatRemoveUnusedImporterFormatterFunc implements FormatterFunc {
@@ -35,6 +33,6 @@ public class GoogleJavaFormatRemoveUnusedImporterFormatterFunc implements Format
 	@Override
 	@Nonnull
 	public String apply(@Nonnull String input) throws Exception {
-		return RemoveUnusedImports.removeUnusedImports(input);
+		return GoogleJavaFormatUnusedImports.removeUnusedImports(input);
 	}
 }

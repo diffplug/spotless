@@ -1,0 +1,7 @@
+package p;
+
+class A {
+    double f(double a, double b) {
+        return Math.max(a, b) * Math.PI;
+    }
+}

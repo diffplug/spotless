@@ -431,6 +431,10 @@ public class SQLTokenizedFormatter {
 			boolean isDelimiter = statementDelimiters.contains(token.getString().toUpperCase(Locale.ENGLISH));
 
 			if (!isDelimiter) {
+				if (argIndex == 0) {
+					// nothing precedes the first token, so there is no line to break
+					return 0;
+				}
 				token = argList.get(argIndex - 1);
 				if (token.getType() == TokenType.SPACE) {
 					token.setString(s.toString());

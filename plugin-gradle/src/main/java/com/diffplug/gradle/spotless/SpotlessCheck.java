@@ -80,12 +80,15 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 								getEncoding().get())
 						.problemFiles(unformattedFiles)
 						.getMessage());
-			} else {
+			} else if (!lintsFiles.isEmpty()) {
 				// We only show lints if there are no unformatted files.
 				// This is because lint line numbers are relative to the
 				// formatted content, and formatting often fixes lints.
 				boolean detailed = false;
 				throw new GradleException(super.allLintsErrorMsgDetailed(lintsFiles, detailed));
+			} else {
+				// the clean files are stale copies of what is already on disk (see getUncleanFiles)
+				getState().setDidWork(sourceDidWork());
 			}
 		}
 	}

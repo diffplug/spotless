@@ -79,7 +79,7 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Git hook (optional)](#git-hook)
   - [Linting](#linting)
 - **Languages**
-  - [Java](#java) ([removeUnusedImports](#removeunusedimports), [forbidWildcardImports](#forbidwildcardimports), [expandWildcardImports](#expandwildcardimports), [forbidModuleImports](#forbidmoduleimports), [shortenFullyQualifiedTypes](#shortenfullyqualifiedtypes), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
+  - [Java](#java) ([removeUnusedImports](#removeunusedimports), [forbidWildcardImports](#forbidwildcardimports), [expandWildcardImports](#expandwildcardimports), [forbidModuleImports](#forbidmoduleimports), [shortenFullyQualifiedTypes](#shortenfullyqualifiedtypes), [replaceStaticImports](#replacestaticimports), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [clang-format](#clang-format), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -234,6 +234,7 @@ spotless {
     forbidWildcardImports() // or expandWildcardImports, see below
     forbidModuleImports()
     shortenFullyQualifiedTypes() // replaces fully-qualified type names with simple names + imports
+    replaceStaticImports() // replaces static imports with qualified references + imports, see below
 
     // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
     cleanthat()          // has its own section below
@@ -371,6 +372,71 @@ A name is left fully-qualified whenever shortening it could change what the code
 
 Types in `java.lang` and in the file's own package are shortened without adding an import.
 
+### replaceStaticImports
+
+Replaces static imports with regular imports and qualified references, for codebases that prefer `Assertions.assertTrue(x)` to a bare `assertTrue(x)`.
+
+Like [`expandWildcardImports`](#expandwildcardimports), it uses [JavaParser](https://javaparser.org/) and your compile classpath to work out what each name refers to, so it needs the `java` plugin. New imports are appended after the existing ones, so run it before `importOrder()`:
+
+```gradle
+spotless {
+  java {
+    replaceStaticImports()
+    importOrder()
+    removeUnusedImports()
+  }
+}
+```
+
+Before:
+
+```java
+package com.acme;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class TimeoutTest {
+  void defaultTimeout() {
+    assertEquals(30_000, SECONDS.toMillis(30));
+  }
+}
+```
+
+After:
+
+```java
+package com.acme;
+
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Assertions;
+
+class TimeoutTest {
+  void defaultTimeout() {
+    Assertions.assertEquals(30_000, TimeUnit.SECONDS.toMillis(30));
+  }
+}
+```
+
+It never changes what the code means, so a static import is only replaced when every use of it can be resolved:
+
+- a name hidden by a local variable, or by a method, field or nested class of the enclosing class, is not a use of the import and stays as it is
+- an enum constant used as a `case` label of a `switch` on that enum stays unqualified, since qualified ones only compile from Java 21 on
+- when the simple name of the class is already taken in the file, the fully qualified name is used, e.g. `java.util.Date.from(instant)`
+- a static import of a nested class becomes a regular import of that class, e.g. `import java.util.Map.Entry;`
+- a static import that the classpath cannot resolve, or whose names are also supplied by another imported class, is left alone
+- so is a static import with a use that cannot be resolved with certainty, for example in a class whose supertypes are not on the classpath or that uses Lombok, inside a `spotless:off` region, or in a Javadoc reference
+
+It relies on the classpath to know what names mean:
+
+- JDK classes are those of the JDK that runs the build, so run the build with the JDK that the project compiles against, or a newer one
+- all source sets share one classpath, as with `expandWildcardImports`
+- classes that are not on the classpath, such as generated sources, are assumed not to exist: a generated class in the same package named like a class that it qualifies with, such as `Math`, would take over `Math.max`
+- of the regions that `toggleOffOn` restores, it only recognises those between `spotless:off` and `spotless:on`, or `@formatter:off` and `@formatter:on`
+
+To keep some static imports, such as AssertJ's, list them: `replaceStaticImports('org.assertj.core.api.Assertions.*', 'java.util.concurrent.TimeUnit.SECONDS')`. `Type.*`, or just `Type`, keeps every static import from that class. `Type.member` keeps the static import of that member, and an on-demand `import static Type.*;` if the file uses that member through it.
+
+
 ### google-java-format
 
 [homepage](https://github.com/google/google-java-format). [changelog](https://github.com/google/google-java-format/releases).
@@ -397,6 +463,8 @@ spotless {
     palantirJavaFormat('2.9.0').style("GOOGLE")
     // optional: you can also format Javadocs, requires at least Palantir 2.39.0
     palantirJavaFormat('2.39.0').formatJavadoc(true)
+    // optional: you can also use custom group artifact (you probably don't need this)
+    palantirJavaFormat('2.39.0').groupArtifact('com.palantir.javaformat:palantir-java-format')
 ```
 
 ### prince-of-space
@@ -1501,6 +1569,7 @@ spotless {
 
     prettier('2.0.4') // version is optional
     prettier(['my-prettier-fork': '1.16.4']) // can specify exactly which npm packages to use
+    prettier().dependencyOverrides(['sql-formatter': '15.7.0']) // pin transitive npm dependencies via npm `overrides` (also for tsfmt and eslint)
 
     // by default, prettier uses the file's extension to guess a parser
     // but you can override that and specify the parser manually
@@ -2142,15 +2211,34 @@ Note that this feature is also incompatible with Isolated projects, because ever
 - If you don't like what spotless did, `git reset --hard`
 - If you'd like to remove the "checkpoint" commit, `git reset --soft head~1` will make the checkpoint commit "disappear" from history, but keeps the changes in your working directory.
 
+### Which files did `spotlessApply` change?
+
+Every `SpotlessApply` task (e.g. `spotlessJavaApply`) writes the files its most recent run rewrote to `build/spotless/<taskName>-changed-files.txt` (one project-relative path per line, empty if nothing changed). The task only reports that it did work when it actually rewrote a file, so you can use this to tell developers what was fixed:
+
+```gradle
+tasks.withType(com.diffplug.gradle.spotless.SpotlessApply).configureEach {
+  // optional, this is the default location
+  changedFilesReport = layout.buildDirectory.file("spotless/${name}-changed-files.txt")
+  def report = changedFilesReport
+  doLast {
+    if (didWork) {
+      logger.lifecycle("Spotless fixed:\n" + report.get().asFile.text)
+    }
+  }
+}
+```
+
+`changedFilesReport` is an output of the apply task, so another task can declare it as an input (e.g. `inputs.file(tasks.named('spotlessJavaApply').flatMap { it.changedFilesReport })`) and Gradle will run the apply task first, without an explicit `dependsOn`.
+
 ## Can I apply Spotless to specific files?
 
-You can target specific files by setting the `spotlessFiles` project property to a comma-separated list of file patterns:
+The Gradle plugin does not read a `spotlessFiles` property like the Maven plugin does (`-PspotlessFiles` was deprecated in `4.3.0` and removed in `5.0.0`). To format one or a few files, pass their absolute paths to the [IDE hook](IDE_HOOK.md) as a comma-separated list:
 
 ```
-cmd> gradle spotlessApply -PspotlessFiles=my/file/pattern.java,more/generic/.*-pattern.java
+cmd> gradle spotlessApply -PspotlessIdeHook=/abs/path/to/A.java,/abs/path/to/B.java
 ```
 
-The patterns are matched using `String#matches(String)` against the absolute file path.
+In this mode `spotlessCheck` is disabled, and `spotlessApply` formats only the listed files that are part of a target. To limit formatting to the files changed on a branch, use [`ratchetFrom`](#ratchet).
 
 <a name="central-configuration"></a>
 
