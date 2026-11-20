@@ -1,0 +1,8 @@
+package q;
+
+import static p.A.*;
+import static p.B.X;
+
+class Main {
+    String s = X + a();
+}

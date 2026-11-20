@@ -1,0 +1,9 @@
+package p;
+
+import static java.lang.Math.*;
+
+class A {
+    double f(double a, double b) {
+        return max(a, b) * PI;
+    }
+}

@@ -1,0 +1,11 @@
+package p;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+
+class A {
+    Object f() {
+        return List.of(1);
+    }
+}

@@ -40,7 +40,7 @@ user@machine repo % mvn spotless:check
   - [Git hook (optional)](#git-hook)
   - [Binding to maven phase](#binding-to-maven-phase)
 - **Languages**
-  - [Java](#java) ([removeUnusedImports](#removeunusedimports), [forbidWildcardImports](#forbidwildcardimports), [expandWildcardImports](#expandwildcardimports), [forbidModuleImports](#forbidmoduleimports), [shortenFullyQualifiedTypes](#shortenfullyqualifiedtypes), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
+  - [Java](#java) ([removeUnusedImports](#removeunusedimports), [forbidWildcardImports](#forbidwildcardimports), [expandWildcardImports](#expandwildcardimports), [forbidModuleImports](#forbidmoduleimports), [shortenFullyQualifiedTypes](#shortenfullyqualifiedtypes), [replaceStaticImports](#replacestaticimports), [google-java-format](#google-java-format), [eclipse jdt](#eclipse-jdt), [prettier](#prettier), [palantir-java-format](#palantir-java-format), [prince-of-space](#prince-of-space), [formatAnnotations](#formatAnnotations), [cleanthat](#cleanthat), [tabletest-formatter](#tabletest-formatter), [IntelliJ IDEA](#intellij-idea))
   - [Groovy](#groovy) ([eclipse groovy](#eclipse-groovy))
   - [Kotlin](#kotlin) ([ktfmt](#ktfmt), [ktlint](#ktlint), [diktat](#diktat), [tabletest-formatter](#tabletest-formatter-1), [prettier](#prettier))
   - [Scala](#scala) ([scalafmt](#scalafmt))
@@ -238,6 +238,7 @@ any other maven phase (i.e. compile) then it can be configured as below;
     <forbidWildcardImports /> <!-- yell if any import ends with '*'; or use expandWildcardImports, see below -->
     <forbidModuleImports /> <!-- yell if any module imports are found (Java 25+) -->
     <shortenFullyQualifiedTypes /> <!-- replaces fully-qualified type names with simple names + imports, see below -->
+    <replaceStaticImports /> <!-- replaces static imports with qualified references + imports, see below -->
 
     <formatAnnotations />  <!-- fixes formatting of type annotations, see below -->
 
@@ -334,6 +335,76 @@ A name is left fully-qualified whenever shortening it could change what the code
 - the file does not parse
 
 Types in `java.lang` and in the file's own package are shortened without adding an import.
+
+### replaceStaticImports
+
+Replaces static imports with regular imports and qualified references, for codebases that prefer `Assertions.assertTrue(x)` to a bare `assertTrue(x)`.
+
+Like [`expandWildcardImports`](#expandwildcardimports), it uses [JavaParser](https://javaparser.org/) and your project's source roots and dependencies to work out what each name refers to. New imports are appended after the existing ones, so run it before `<importOrder>`:
+
+```xml
+<replaceStaticImports/>
+<importOrder/>
+<removeUnusedImports/>
+```
+
+Before:
+
+```java
+package com.acme;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class TimeoutTest {
+  void defaultTimeout() {
+    assertEquals(30_000, SECONDS.toMillis(30));
+  }
+}
+```
+
+After:
+
+```java
+package com.acme;
+
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Assertions;
+
+class TimeoutTest {
+  void defaultTimeout() {
+    Assertions.assertEquals(30_000, TimeUnit.SECONDS.toMillis(30));
+  }
+}
+```
+
+It never changes what the code means, so a static import is only replaced when every use of it can be resolved:
+
+- a name hidden by a local variable, or by a method, field or nested class of the enclosing class, is not a use of the import and stays as it is
+- an enum constant used as a `case` label of a `switch` on that enum stays unqualified, since qualified ones only compile from Java 21 on
+- when the simple name of the class is already taken in the file, the fully qualified name is used, e.g. `java.util.Date.from(instant)`
+- a static import of a nested class becomes a regular import of that class, e.g. `import java.util.Map.Entry;`
+- a static import that the classpath cannot resolve, or whose names are also supplied by another imported class, is left alone
+- so is a static import with a use that cannot be resolved with certainty, for example in a class whose supertypes are not on the classpath or that uses Lombok, inside a `spotless:off` region, or in a Javadoc reference
+
+It relies on the classpath to know what names mean:
+
+- JDK classes are those of the JDK that runs Maven, so run Maven with the JDK that the project compiles against, or a newer one
+- main and test sources share one classpath, as with `expandWildcardImports`
+- classes that are not on the classpath, such as generated sources, are assumed not to exist: a generated class in the same package named like a class that it qualifies with, such as `Math`, would take over `Math.max`
+- of the regions that `<toggleOffOn>` restores, it only recognises those between `spotless:off` and `spotless:on`, or `@formatter:off` and `@formatter:on`
+
+To keep some static imports, such as AssertJ's, list them. `Type.*`, or just `Type`, keeps every static import from that class. `Type.member` keeps the static import of that member, and an on-demand `import static Type.*;` if the file uses that member through it:
+
+```xml
+<replaceStaticImports>
+  <excludes>
+    <exclude>org.assertj.core.api.Assertions.*</exclude>
+    <exclude>java.util.concurrent.TimeUnit.SECONDS</exclude>
+  </excludes>
+</replaceStaticImports>
+```
+
 
 ### google-java-format
 

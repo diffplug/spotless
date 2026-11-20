@@ -428,8 +428,19 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 		final Optional<String> userRatchetFrom = Optional.ofNullable((String) mavenSession.getUserProperties().get("ratchetFrom"));
 		final Optional<String> optionalRatchetFrom = Optional.ofNullable(this.ratchetFrom)
 				.filter(ratchet -> !RATCHETFROM_NONE.equals(ratchet));
-		// Lazy: only resolve dependencies when the expandWildcardImports step actually requests the classpath.
-		Supplier<Set<File>> projectClasspathSupplier = () -> computeTypeSolverClasspath(resolver);
+		// Lazy: only resolve dependencies when a step that resolves names, such as expandWildcardImports, actually requests the
+		// classpath, and only once, however many steps request it.
+		Supplier<Set<File>> projectClasspathSupplier = new Supplier<>() {
+			private Set<File> classpath;
+
+			@Override
+			public synchronized Set<File> get() {
+				if (classpath == null) {
+					classpath = computeTypeSolverClasspath(resolver);
+				}
+				return classpath;
+			}
+		};
 		return new FormatterConfig(baseDir, encoding, lineEndings, userRatchetFrom, optionalRatchetFrom, provisioner, p2Provisioner, fileLocator, formatterStepFactories, Optional.ofNullable(setLicenseHeaderYearsFromGitHistory), lintSuppressions, Optional.of(projectClasspathSupplier));
 	}
 
@@ -455,7 +466,7 @@ public abstract class AbstractSpotlessMojo extends AbstractMojo {
 			Set<File> dependencyJars = resolver.resolveProjectDependencies(project, repositories);
 			classpath.addAll(dependencyJars);
 		} catch (Exception e) {
-			getLog().warn("Could not resolve project dependencies for expandWildcardImports: " + e.getMessage());
+			getLog().warn("Could not resolve project dependencies for expandWildcardImports or replaceStaticImports: " + e.getMessage());
 		}
 
 		return classpath;
