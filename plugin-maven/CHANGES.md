@@ -10,6 +10,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
   List `spotless-maven-plugin` under `<reporting>` and run `mvn site`: the page shows which files need formatting, with a colored diff for each, and their lint problems. It works with `maven-site-plugin` 3.12.1 and 3.20.0 or later.
 - Add `<replaceStaticImports>` for Java, which replaces static imports with regular imports and qualified references, such as `Assertions.assertTrue(x)`, using the project's source roots and dependencies to resolve names. Static imports to keep go in `<excludes>`. ([#1379](https://github.com/diffplug/spotless/issues/1379))
 ### Fixed
+- `<shortenFullyQualifiedTypes/>` now also shortens fully qualified annotation names such as `@com.example.Foo`. ([#3159](https://github.com/diffplug/spotless/issues/3159))
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
 - DBeaver SQL formatter no longer prints an `IndexOutOfBoundsException` when a file starts with a keyword like `SET`. ([#1552](https://github.com/diffplug/spotless/issues/1552))
 - DBeaver SQL formatter no longer adds spaces inside backtick-quoted identifiers such as `` `MyCol.1` ``. ([#2250](https://github.com/diffplug/spotless/issues/2250))

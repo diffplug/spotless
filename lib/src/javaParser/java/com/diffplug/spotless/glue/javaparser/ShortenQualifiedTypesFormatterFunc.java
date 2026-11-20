@@ -40,11 +40,16 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.RecordDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.MethodReferenceExpr;
+import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.NormalAnnotationExpr;
+import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -149,6 +154,9 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 		cu.findAll(ClassOrInterfaceType.class).stream()
 				.filter(type -> type.getScope().isEmpty())
 				.forEach(type -> unqualifiedTypeNames.add(type.getNameAsString()));
+		cu.findAll(AnnotationExpr.class).stream()
+				.filter(annotation -> annotation.getName().getQualifier().isEmpty())
+				.forEach(annotation -> unqualifiedTypeNames.add(annotation.getNameAsString()));
 
 		// 5. Build set of known packages from existing imports, own package, and java.lang
 		Set<String> knownPackages = new LinkedHashSet<>();
@@ -308,6 +316,49 @@ public class ShortenQualifiedTypesFormatterFunc implements FormatterFunc {
 				Position nameStart = type.getName().getBegin().get();
 				qualifiedRefs.add(new QualifiedTypeRef(rawName, simple, scopeStart, nameStart, type));
 			}
+		}
+
+		@Override
+		public void visit(MarkerAnnotationExpr annotation, Void arg) {
+			super.visit(annotation, arg);
+			processAnnotation(annotation);
+		}
+
+		@Override
+		public void visit(SingleMemberAnnotationExpr annotation, Void arg) {
+			super.visit(annotation, arg);
+			processAnnotation(annotation);
+		}
+
+		@Override
+		public void visit(NormalAnnotationExpr annotation, Void arg) {
+			super.visit(annotation, arg);
+			processAnnotation(annotation);
+		}
+
+		/** An annotation name is always a type, so {@code @pkg.Foo} can be shortened to {@code @Foo}. */
+		private void processAnnotation(AnnotationExpr annotation) {
+			Name name = annotation.getName();
+			if (name.getQualifier().isEmpty()) {
+				return;
+			}
+			String rawName = name.asString();
+			if (!startsWithPackage(rawName)) {
+				return;
+			}
+			if (name.getBegin().isEmpty() || name.getEnd().isEmpty()) {
+				return;
+			}
+			Position scopeStart = name.getBegin().get();
+			Position end = name.getEnd().get();
+			String simple = name.getIdentifier();
+			if (scopeStart.line != end.line) {
+				// qualifier and identifier are split across lines; leave it alone
+				return;
+			}
+			Position nameStart = new Position(end.line, end.column - simple.length() + 1);
+			simpleToFqns.computeIfAbsent(simple, k -> new LinkedHashSet<>()).add(rawName);
+			qualifiedRefs.add(new QualifiedTypeRef(rawName, simple, scopeStart, nameStart, annotation));
 		}
 
 		@Override

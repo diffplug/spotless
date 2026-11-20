@@ -15,6 +15,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Add a `groupArtifact` option to `PalantirJavaFormatStep`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
 - Add `ReplaceStaticImportsStep`, which replaces static imports with regular imports and qualified references, such as `Assertions.assertTrue(x)`. Static imports to keep can be excluded. ([#1379](https://github.com/diffplug/spotless/issues/1379))
 ### Fixed
+- `shortenFullyQualifiedTypes` now also shortens fully qualified annotation names such as `@com.example.Foo`. ([#3159](https://github.com/diffplug/spotless/issues/3159))
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
 - DBeaver SQL formatter no longer prints an `IndexOutOfBoundsException` when a file starts with a keyword like `SET`. ([#1552](https://github.com/diffplug/spotless/issues/1552))
 - DBeaver SQL formatter no longer adds spaces inside backtick-quoted identifiers such as `` `MyCol.1` ``. ([#2250](https://github.com/diffplug/spotless/issues/2250))
