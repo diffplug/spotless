@@ -9,6 +9,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - `SpotlessApply` writes a report of the files it rewrote to `build/spotless/<taskName>-changed-files.txt`, configurable via `changedFilesReport`. The report is a task output, so tasks which take it as an input automatically depend on the apply task. ([#2715](https://github.com/diffplug/spotless/issues/2715))
 - Add `replaceStaticImports()` for Java, which replaces static imports with regular imports and qualified references, such as `Assertions.assertTrue(x)`, using the compile classpath to resolve names. Pass the static imports to keep, such as `'org.assertj.core.api.Assertions.*'`. ([#1379](https://github.com/diffplug/spotless/issues/1379))
 ### Changes
+- Bump default `adocfmt` version `0.3.1` -> `0.3.2`. ([#3180](https://github.com/diffplug/spotless/pull/3180))
 - Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
 - Bump default `tabletest-formatter` version `1.1.2` -> `1.1.3`. ([#3167](https://github.com/diffplug/spotless/pull/3167))
 - Bump default `gson` version `2.14.0` -> `2.15.0`. ([#3168](https://github.com/diffplug/spotless/pull/3168))
