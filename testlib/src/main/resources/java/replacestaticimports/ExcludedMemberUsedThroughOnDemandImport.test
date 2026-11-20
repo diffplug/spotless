@@ -1,0 +1,9 @@
+package p;
+
+import static java.util.concurrent.TimeUnit.*;
+
+class A {
+    long f() {
+        return SECONDS.toMillis(1);
+    }
+}

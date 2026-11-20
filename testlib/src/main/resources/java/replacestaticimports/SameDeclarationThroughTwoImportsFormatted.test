@@ -1,0 +1,8 @@
+package p;
+
+import q.Matchers;
+import q.Mocks;
+
+class A {
+    String s = Mocks.when(Matchers.any());
+}

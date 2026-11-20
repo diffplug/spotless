@@ -1,0 +1,10 @@
+package p;
+
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.*;
+
+class A {
+    Object f(Object o) {
+        return requireNonNull(isNull(o) ? null : o);
+    }
+}

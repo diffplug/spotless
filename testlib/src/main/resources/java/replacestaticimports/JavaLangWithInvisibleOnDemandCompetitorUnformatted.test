@@ -1,0 +1,9 @@
+package q;
+
+import x.*;
+
+import static java.lang.Math.max;
+
+class Main {
+    int m = max(1, 2);
+}

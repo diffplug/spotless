@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringJoiner;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -150,6 +152,32 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 	}
 
 	protected static String replaceDevDependencies(String template, Map<String, String> devDependencies) {
+		return replaceDependencies(template, devDependencies, Map.of());
+	}
+
+	/**
+	 * Renders the {@code package.json} template.
+	 *
+	 * @param dependencyOverrides written to the npm <a href="https://docs.npmjs.com/cli/configuring-npm/package-json#overrides">{@code overrides}</a>
+	 *        field, sorted by name. When empty, no {@code overrides} field is written, so the result is identical
+	 *        to the one of earlier versions (and existing {@code node_modules} directories stay valid).
+	 */
+	protected static String replaceDependencies(String template, Map<String, String> devDependencies, Map<String, String> dependencyOverrides) {
+		return replacePlaceholders(template, Map.of(
+				"devDependencies", devDependenciesBlock(devDependencies),
+				"dependencyOverrides", dependencyOverridesBlock(dependencyOverrides)));
+	}
+
+	private static String dependencyOverridesBlock(Map<String, String> dependencyOverrides) {
+		if (dependencyOverrides.isEmpty()) {
+			return "";
+		}
+		StringJoiner entries = new StringJoiner(",\n", "\n\t\"overrides\": {\n", "\n\t},");
+		new TreeMap<>(dependencyOverrides).forEach((name, spec) -> entries.add("\t\t" + JsonEscaper.jsonEscape(name) + ": " + JsonEscaper.jsonEscape(spec)));
+		return entries.toString();
+	}
+
+	private static String devDependenciesBlock(Map<String, String> devDependencies) {
 		StringBuilder builder = new StringBuilder();
 		Iterator<Map.Entry<String, String>> entryIter = devDependencies.entrySet().iterator();
 		while (entryIter.hasNext()) {
@@ -163,13 +191,14 @@ abstract class NpmFormatterStepStateBase implements Serializable {
 				builder.append(",\n");
 			}
 		}
-		return replacePlaceholders(template, Map.of("devDependencies", builder.toString()));
+		return builder.toString();
 	}
 
 	private static String replacePlaceholders(String template, Map<String, String> replacements) {
 		String result = template;
 		for (Entry<String, String> entry : replacements.entrySet()) {
-			result = result.replaceAll("\\Q${" + entry.getKey() + "}\\E", entry.getValue());
+			// literal replacement: values may contain '$' (e.g. npm override references like "$prettier")
+			result = result.replace("${" + entry.getKey() + "}", entry.getValue());
 		}
 		return result;
 	}

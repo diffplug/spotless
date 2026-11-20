@@ -16,6 +16,7 @@
 package com.diffplug.gradle.spotless;
 
 import static com.diffplug.common.base.Strings.isNullOrEmpty;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -186,6 +187,18 @@ public class GradleIntegrationHarness extends ResourceHarness {
 
 	public void checkIsUpToDate(boolean upToDate) throws IOException {
 		taskIsUpToDate("spotlessCheck", upToDate);
+	}
+
+	/**
+	 * Runs {@code spotlessApply} after a previous apply rewrote files: the format task runs again
+	 * (its input was rewritten), but there is nothing left to apply, so the apply tasks report
+	 * no work (#2715).
+	 */
+	public void applyOnlyRerunsFormatTask(String formatTaskPath) throws IOException {
+		pauseForFilesystem();
+		BuildResult buildResult = gradleRunner().withArguments("spotlessApply").build();
+		assertThat(outcomes(buildResult, TaskOutcome.SUCCESS)).containsExactly(formatTaskPath);
+		assertThat(outcomes(buildResult, TaskOutcome.UP_TO_DATE)).containsExactly(formatTaskPath + "Apply", ":spotlessApply");
 	}
 
 	private static final int FILESYSTEM_RESOLUTION_MS = FileSignature.machineIsWin() ? 150 : 2000;

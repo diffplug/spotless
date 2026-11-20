@@ -107,6 +107,10 @@ public class Java extends FormatterFactory {
 		addStepFactory(shortenFullyQualifiedTypes);
 	}
 
+	public void addReplaceStaticImports(ReplaceStaticImports replaceStaticImports) {
+		addStepFactory(replaceStaticImports);
+	}
+
 	private static String fileMask(Path path) {
 		String dir = path.toString();
 		if (!dir.endsWith(File.separator)) {

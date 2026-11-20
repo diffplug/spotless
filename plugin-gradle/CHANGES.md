@@ -3,11 +3,33 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `dependencyOverrides(Map)` to `prettier()`, `eslint()` and `tsfmt()` to pin transitive npm dependencies via npm `overrides`. ([#2534](https://github.com/diffplug/spotless/issues/2534))
+- Add `groupArtifact(String)` to `palantirJavaFormat()`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
+- `SpotlessApply` writes a report of the files it rewrote to `build/spotless/<taskName>-changed-files.txt`, configurable via `changedFilesReport`. The report is a task output, so tasks which take it as an input automatically depend on the apply task. ([#2715](https://github.com/diffplug/spotless/issues/2715))
+- Add `replaceStaticImports()` for Java, which replaces static imports with regular imports and qualified references, such as `Assertions.assertTrue(x)`, using the compile classpath to resolve names. Pass the static imports to keep, such as `'org.assertj.core.api.Assertions.*'`. ([#1379](https://github.com/diffplug/spotless/issues/1379))
 ### Changes
+- Bump default `adocfmt` version `0.3.1` -> `0.3.2`. ([#3180](https://github.com/diffplug/spotless/pull/3180))
+- Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
 - Bump default `palantir-java-format` version `2.102.0` -> `2.103.0`. ([#3172](https://github.com/diffplug/spotless/pull/3172))
+- Bump default `prince-of-space` version `2.2.0` -> `2.3.1`. ([#3181](https://github.com/diffplug/spotless/pull/3181))
+- Bump default `tabletest-formatter` version `1.1.2` -> `1.1.3`. ([#3167](https://github.com/diffplug/spotless/pull/3167))
+- Bump default `gson` version `2.14.0` -> `2.15.0`. ([#3168](https://github.com/diffplug/spotless/pull/3168))
+- `SpotlessApply` now only reports that it did work (and is otherwise `UP-TO-DATE`) when it actually rewrote a file. ([#2715](https://github.com/diffplug/spotless/issues/2715))
+- Bump default `jackson` version `2.22.4` -> `2.23.0`. ([#3193](https://github.com/diffplug/spotless/pull/3193))
 
 ### Fixed
+- `shortenFullyQualifiedTypes()` now also shortens fully qualified annotation names such as `@com.example.Foo`. ([#3159](https://github.com/diffplug/spotless/issues/3159))
+- The README section "Can I apply Spotless to specific files?" no longer documents `-PspotlessFiles`, which the Gradle plugin does not read; it points to `-PspotlessIdeHook` and `ratchetFrom` instead. ([#3183](https://github.com/diffplug/spotless/issues/3183))
 - GrEclipse no longer leaves a `file%3A...` directory in the working directory. ([#2019](https://github.com/diffplug/spotless/issues/2019))
+- DBeaver SQL formatter no longer prints an `IndexOutOfBoundsException` when a file starts with a keyword like `SET`. ([#1552](https://github.com/diffplug/spotless/issues/1552))
+- DBeaver SQL formatter no longer adds spaces inside backtick-quoted identifiers such as `` `MyCol.1` ``. ([#2250](https://github.com/diffplug/spotless/issues/2250))
+- `expandWildcardImports()` no longer fails with `Symbol resolution not configured` on records and other syntax newer than Java 11, and leaves files JavaParser cannot validate unchanged. ([#2946](https://github.com/diffplug/spotless/issues/2946))
+- String `targetExclude` patterns ending in `/**` (e.g. `**/build/**`) are now applied as exclude patterns on String `target`s, so excluded directories are skipped while walking the target instead of walking the whole project directory, which made configuration cache store and reuse scale with the size of the project. ([#3147](https://github.com/diffplug/spotless/issues/3147))
+- `removeSemicolons()` no longer removes semicolons inside dollar-slashy strings (`$/ ... /$`), after escaped triple quotes in multiline strings, or in multi-line `for (init; cond; update)` headers. ([#2780](https://github.com/diffplug/spotless/issues/2780))
+- `removeUnusedImports()` and `googleJavaFormat()` no longer remove imports that are only used by links in Markdown doc comments (`///`, JDK 23+). ([#3161](https://github.com/diffplug/spotless/issues/3161))
+- `forbidWildcardImports` no longer reports import statements inside Java text blocks or comments. ([#2997](https://github.com/diffplug/spotless/issues/2997))
+- `spotlessCheck` no longer fails with `There were 0 lint error(s)` when `spotless-clean` only contains stale files which already match the source on disk. ([#2992](https://github.com/diffplug/spotless/issues/2992))
 
 ## [8.11.0] - 2026-11-02
 ### Added
