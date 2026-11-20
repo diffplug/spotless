@@ -755,6 +755,8 @@ public class FormatExtension {
 
 		@Nullable protected Object npmrcFile;
 
+		protected Map<String, String> dependencyOverrides = Map.of();
+
 		protected Project project;
 
 		private Consumer<FormatterStep> replaceStep;
@@ -780,6 +782,17 @@ public class FormatExtension {
 
 		public T npmrc(final Object npmrcFile) {
 			this.npmrcFile = npmrcFile;
+			replaceStep();
+			return (T) this;
+		}
+
+		/**
+		 * Writes the given entries to the npm <a href="https://docs.npmjs.com/cli/configuring-npm/package-json#overrides">{@code overrides}</a>
+		 * field of the generated {@code package.json}, e.g. to pin a transitive dependency of a formatter plugin to an exact version.
+		 */
+		@SuppressWarnings("unchecked")
+		public T dependencyOverrides(final Map<String, String> dependencyOverrides) {
+			this.dependencyOverrides = new TreeMap<>(requireNonNull(dependencyOverrides));
 			replaceStep();
 			return (T) this;
 		}
@@ -853,7 +866,7 @@ public class FormatExtension {
 		@Override
 		protected FormatterStep createStep() {
 			final Project project = getProject();
-			return PrettierFormatterStep.create(devDependencies, provisioner(), project.getProjectDir(),
+			return PrettierFormatterStep.create(devDependencies, dependencyOverrides, provisioner(), project.getProjectDir(),
 					project.getLayout().getBuildDirectory().getAsFile().get(), npmModulesCacheOrNull(),
 					new NpmPathResolver(npmFileOrNull(), nodeFileOrNull(), npmrcFileOrNull(),
 							Arrays.asList(project.getProjectDir(), project.getRootDir())),

@@ -72,6 +72,6 @@ class NodeServerLayoutTest extends ResourceHarness {
 				.reduce((a, b) -> a + ",\n  " + b)
 				.orElse("");
 
-		return templateContent.replace("${devDependencies}", dependenciesList);
+		return templateContent.replace("${devDependencies}", dependenciesList).replace("${dependencyOverrides}", "");
 	}
 }

@@ -1569,6 +1569,7 @@ spotless {
 
     prettier('2.0.4') // version is optional
     prettier(['my-prettier-fork': '1.16.4']) // can specify exactly which npm packages to use
+    prettier().dependencyOverrides(['sql-formatter': '15.7.0']) // pin transitive npm dependencies via npm `overrides` (also for tsfmt and eslint)
 
     // by default, prettier uses the file's extension to guess a parser
     // but you can override that and specify the parser manually

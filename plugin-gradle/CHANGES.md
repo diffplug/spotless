@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+- Add `dependencyOverrides(Map)` to `prettier()`, `eslint()` and `tsfmt()` to pin transitive npm dependencies via npm `overrides`. ([#2534](https://github.com/diffplug/spotless/issues/2534))
 - Add `groupArtifact(String)` to `palantirJavaFormat()`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
 - `SpotlessApply` writes a report of the files it rewrote to `build/spotless/<taskName>-changed-files.txt`, configurable via `changedFilesReport`. The report is a task output, so tasks which take it as an input automatically depend on the apply task. ([#2715](https://github.com/diffplug/spotless/issues/2715))
 - Add `replaceStaticImports()` for Java, which replaces static imports with regular imports and qualified references, such as `Assertions.assertTrue(x)`, using the compile classpath to resolve names. Pass the static imports to keep, such as `'org.assertj.core.api.Assertions.*'`. ([#1379](https://github.com/diffplug/spotless/issues/1379))

@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Added
+- Add `dependencyOverrides` to the npm-based formatter steps (`PrettierFormatterStep`, `EslintFormatterStep`, `TsFmtFormatterStep`), written to the npm `overrides` field of the generated `package.json` to pin transitive dependencies. ([#2534](https://github.com/diffplug/spotless/issues/2534))
 - Add a `groupArtifact` option to `PalantirJavaFormatStep`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
 - Add `ReplaceStaticImportsStep`, which replaces static imports with regular imports and qualified references, such as `Assertions.assertTrue(x)`. Static imports to keep can be excluded. ([#1379](https://github.com/diffplug/spotless/issues/1379))
 ### Fixed

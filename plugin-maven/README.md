@@ -1623,6 +1623,10 @@ You can use prettier in any language-specific format, but usually you will be cr
             <value>0.19.6</value>
           </property>
         </devDependencyProperties>
+        <!-- Optional: pin transitive npm dependencies via npm `overrides` (also for tsfmt and eslint) -->
+        <dependencyOverrides>
+            <sql-formatter>15.7.0</sql-formatter>
+        </dependencyOverrides>
         <!-- Specify config file and/or inline config, the inline always trumps file -->
         <configFile>${project.basedir}/path/to/configfile</configFile>
         <config>
