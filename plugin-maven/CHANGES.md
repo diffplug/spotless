@@ -3,6 +3,9 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Changes
+- Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
+
 ### Added
 - Add `<dependencyOverrides>` to `<prettier>`, `<eslint>` and `<tsfmt>` to pin transitive npm dependencies via npm `overrides`. ([#2534](https://github.com/diffplug/spotless/issues/2534))
 - Add a `<groupArtifact>` parameter to `<palantirJavaFormat>`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
