@@ -31,7 +31,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: "temurin"
-          java-version: 21
+          java-version: 25
       - uses: gradle/actions/setup-gradle@v6
       - name: Check release publication ordering
         run: python3 .github/scripts/test_publish_release.py
@@ -112,7 +112,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: "temurin"
-          java-version: 17
+          java-version: 25
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew testNpm
       - name: junit result
@@ -135,7 +135,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: "temurin"
-          java-version: 17
+          java-version: 25
       - uses: gradle/actions/setup-gradle@v6
       - uses: actions/setup-go@v7
         with:
@@ -165,7 +165,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: "temurin"
-          java-version: 17
+          java-version: 25
       - uses: gradle/actions/setup-gradle@v6
       - name: Test idea
         run: |
