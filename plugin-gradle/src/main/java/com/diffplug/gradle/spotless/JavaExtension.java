@@ -312,13 +312,21 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 
 	public class PalantirJavaFormatConfig {
 		final String version;
+		String groupArtifact;
 		String style;
 		boolean formatJavadoc;
 
 		PalantirJavaFormatConfig(String version) {
 			this.version = Objects.requireNonNull(version);
+			this.groupArtifact = PalantirJavaFormatStep.defaultGroupArtifact();
 			this.style = PalantirJavaFormatStep.defaultStyle();
 			addStep(createStep());
+		}
+
+		public PalantirJavaFormatConfig groupArtifact(String groupArtifact) {
+			this.groupArtifact = Objects.requireNonNull(groupArtifact);
+			replaceStep(createStep());
+			return this;
 		}
 
 		public PalantirJavaFormatConfig style(String style) {
@@ -334,7 +342,7 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 		}
 
 		private FormatterStep createStep() {
-			return PalantirJavaFormatStep.create(version, style, formatJavadoc, provisioner());
+			return PalantirJavaFormatStep.create(groupArtifact, version, style, formatJavadoc, provisioner());
 		}
 	}
 

@@ -1,0 +1,7 @@
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.function.Predicate;
+
+/// Markdown doc comment linking to [ArrayList#add] and [Collection#removeIf(Predicate)].
+class MarkdownJavadoc {}

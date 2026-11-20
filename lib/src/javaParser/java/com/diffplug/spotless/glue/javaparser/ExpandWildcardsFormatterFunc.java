@@ -33,6 +33,9 @@ import java.util.regex.Pattern;
 import javassist.ClassPool;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseResult;
+import com.github.javaparser.ParserConfiguration;
+import com.github.javaparser.ParserConfiguration.LanguageLevel;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
@@ -71,7 +74,8 @@ public class ExpandWildcardsFormatterFunc implements FormatterFunc.NeedsFile {
 	}
 
 	public ExpandWildcardsFormatterFunc(Collection<File> typeSolverClasspath) throws IOException {
-		this.parser = new JavaParser();
+		// JavaParser defaults to Java 11 and rejects newer syntax such as records; align with JavaParserTypeSolver's default.
+		this.parser = new JavaParser(new ParserConfiguration().setLanguageLevel(LanguageLevel.BLEEDING_EDGE));
 
 		CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();
 		combinedTypeSolver.add(new ReflectionTypeSolver(ReflectionTypeSolver.JCL_ONLY));
@@ -89,11 +93,12 @@ public class ExpandWildcardsFormatterFunc implements FormatterFunc.NeedsFile {
 
 	@Override
 	public String applyWithFile(String rawUnix, File file) throws Exception {
-		Optional<CompilationUnit> parseResult = parser.parse(rawUnix).getResult();
-		if (parseResult.isEmpty()) {
+		ParseResult<CompilationUnit> parseResult = parser.parse(rawUnix);
+		if (!parseResult.isSuccessful()) {
+			// JavaParser only attaches the symbol resolver to successfully parsed compilation units
 			return rawUnix;
 		}
-		CompilationUnit cu = parseResult.get();
+		CompilationUnit cu = parseResult.getResult().orElseThrow();
 		Map<ImportDeclaration, Set<ImportDeclaration>> importMap = findWildcardImports(cu)
 				.stream()
 				.collect(toMap(Function.identity(),
