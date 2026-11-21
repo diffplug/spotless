@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2025 DiffPlug
+ * Copyright 2020-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,8 @@ final class FileFinder {
 	private static class FileIsExecutableFilter implements Predicate<File> {
 		@Override
 		public boolean test(File file) {
-			return file.canExecute();
+			// a directory is also "executable" (searchable), but is never a valid executable
+			return file.isFile() && file.canExecute();
 		}
 
 		static Predicate<File> executable() {
