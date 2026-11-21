@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+
+## [8.12.0] - 2026-11-21
 ### Added
 - Add `dependencyOverrides(Map)` to `prettier()`, `eslint()` and `tsfmt()` to pin transitive npm dependencies via npm `overrides`. ([#2534](https://github.com/diffplug/spotless/issues/2534))
 - Add `groupArtifact(String)` to `palantirJavaFormat()`. ([#3179](https://github.com/diffplug/spotless/pull/3179))
