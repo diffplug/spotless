@@ -10,6 +10,8 @@ This document is intended for Spotless developers.
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+
+## [4.12.0] - 2026-11-21
 ### Changes
 - Bump default `adocfmt` version `0.3.1` -> `0.3.2`. ([#3180](https://github.com/diffplug/spotless/pull/3180))
 - Bump default `jackson` version `2.22.3` -> `2.22.4`. ([#3146](https://github.com/diffplug/spotless/pull/3146))
