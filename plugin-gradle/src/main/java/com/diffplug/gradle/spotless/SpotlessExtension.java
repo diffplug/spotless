@@ -51,7 +51,7 @@ public abstract class SpotlessExtension {
 
 	protected SpotlessExtension(Project project) {
 		this.project = requireNonNull(project);
-		this.spotlessTaskService = SpotlessTaskService.registerIfAbsent(project, "");
+		this.spotlessTaskService = SpotlessTaskService.registerIfAbsent(project);
 	}
 
 	Provider<SpotlessTaskService> getSpotlessTaskService() {

@@ -38,6 +38,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
+import org.gradle.api.services.BuildServiceRegistry;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.tooling.events.FinishEvent;
@@ -154,9 +155,24 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		}
 	}
 
-	public static Provider<SpotlessTaskService> registerIfAbsent(Project project, String suffix) {
-		return project.getGradle().getSharedServices()
-				.registerIfAbsent("SpotlessTaskService" + suffix, SpotlessTaskService.class, spec -> {});
+	/**
+	 * Returns the service of this copy of the plugin, registering it if needed.
+	 * <p>
+	 * Gradle loads a separate copy of the plugin for each buildscript classloader, e.g. for sibling
+	 * projects which apply Spotless without a common parent (#2877), or for a composite build (#1001).
+	 * A service instance from another copy can't be assigned to our {@code Property<SpotlessTaskService>},
+	 * so each copy uses the first service name which isn't taken by another copy.
+	 */
+	public static Provider<SpotlessTaskService> registerIfAbsent(Project project) {
+		BuildServiceRegistry services = project.getGradle().getSharedServices();
+		for (int copy = 0;; ++copy) {
+			String name = copy == 0 ? "SpotlessTaskService" : "SpotlessTaskService" + copy;
+			Provider<SpotlessTaskService> service = services.registerIfAbsent(name, SpotlessTaskService.class, spec -> {});
+			// raw access, to avoid a ClassCastException if the service is from another copy
+			if (((Provider<?>) service).get() instanceof SpotlessTaskService) {
+				return service;
+			}
+		}
 	}
 
 	abstract static class ClientTask extends DefaultTask {

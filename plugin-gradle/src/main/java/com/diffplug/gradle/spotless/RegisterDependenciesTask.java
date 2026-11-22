@@ -63,8 +63,8 @@ public abstract class RegisterDependenciesTask extends DefaultTask {
 
 	void setup() {
 		Preconditions.checkArgument(getProject().getRootProject() == getProject(), "Can only be used on the root project");
-		String compositeBuildSuffix = getName().substring(TASK_NAME.length()); // see https://github.com/diffplug/spotless/pull/1001
-		taskService = SpotlessTaskService.registerIfAbsent(getProject(), compositeBuildSuffix);
+		// the same service as the SpotlessExtension of this copy of the plugin, see https://github.com/diffplug/spotless/pull/1001
+		taskService = SpotlessTaskService.registerIfAbsent(getProject());
 		usesService(taskService);
 		getBuildEventsListenerRegistry().onTaskCompletion(taskService);
 		// lazy, so a build directory set later in the buildscript still counts
