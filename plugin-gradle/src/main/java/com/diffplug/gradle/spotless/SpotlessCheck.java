@@ -51,6 +51,12 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 	@Input
 	public abstract Property<String> getRunToFixMessage();
 
+	/** Lists every failing file instead of a count once there are too many, defaults to {@code -PspotlessShowAllFailures}. */
+	@Input
+	public abstract Property<Boolean> getShowAllFailures();
+
+	static final String SHOW_ALL_FAILURES = "spotlessShowAllFailures";
+
 	public void performActionTest() throws IOException {
 		performAction(true);
 	}
@@ -79,6 +85,7 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 								getSpotlessCleanDirectory().get().toPath(),
 								getEncoding().get())
 						.problemFiles(unformattedFiles)
+						.showAllFailures(getShowAllFailures().get())
 						.getMessage());
 			} else if (!lintsFiles.isEmpty()) {
 				// We only show lints if there are no unformatted files.
@@ -146,6 +153,8 @@ public abstract class SpotlessCheck extends SpotlessTaskService.ClientTask {
 		getEncoding().set(impl.map(SpotlessTask::getEncoding));
 		getRunToFixMessage().convention(
 				"Run '" + calculateGradleCommand() + " " + spotlessApplySelector(getProject()) + "' to fix all violations.");
+		String showAllFailures = GradleCompat.findOptionalProperty(getProject(), SHOW_ALL_FAILURES);
+		getShowAllFailures().convention(showAllFailures != null && !showAllFailures.equalsIgnoreCase("false"));
 	}
 
 	private static String calculateGradleCommand() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,6 +118,7 @@ public final class DiffMessageFormatter {
 		private String runToFix;
 		private CleanProvider formatter;
 		private List<File> problemFiles;
+		private boolean showAllFailures;
 
 		/** "Run 'gradlew spotlessApply' to fix these violations." */
 		public Builder runToFix(String runToFix) {
@@ -141,13 +142,22 @@ public final class DiffMessageFormatter {
 			return this;
 		}
 
+		/**
+		 * If true, every problem file which didn't fit in the diff is listed by name, instead of
+		 * only counting them once there are {@link DiffMessageFormatter#MAX_FILES_TO_LIST} or more. Defaults to false.
+		 */
+		public Builder showAllFailures(boolean showAllFailures) {
+			this.showAllFailures = showAllFailures;
+			return this;
+		}
+
 		/** Returns the error message. */
 		public String getMessage() {
 			try {
 				Objects.requireNonNull(runToFix, "runToFix");
 				Objects.requireNonNull(formatter, "formatter");
 				Objects.requireNonNull(problemFiles, "problemFiles");
-				DiffMessageFormatter diffFormater = new DiffMessageFormatter(formatter, problemFiles);
+				DiffMessageFormatter diffFormater = new DiffMessageFormatter(formatter, problemFiles, showAllFailures);
 				return "The following files had format violations:\n"
 						+ diffFormater.buffer
 						+ runToFix;
@@ -165,7 +175,7 @@ public final class DiffMessageFormatter {
 
 	private final CleanProvider formatter;
 
-	private DiffMessageFormatter(CleanProvider formatter, List<File> problemFiles) throws IOException {
+	private DiffMessageFormatter(CleanProvider formatter, List<File> problemFiles, boolean showAllFailures) throws IOException {
 		this.formatter = Objects.requireNonNull(formatter, "formatter");
 		ListIterator<File> problemIter = problemFiles.listIterator();
 		while (problemIter.hasNext() && numLines < MAX_CHECK_MESSAGE_LINES) {
@@ -174,7 +184,7 @@ public final class DiffMessageFormatter {
 		}
 		if (problemIter.hasNext()) {
 			int remainingFiles = problemFiles.size() - problemIter.nextIndex();
-			if (remainingFiles >= MAX_FILES_TO_LIST) {
+			if (remainingFiles >= MAX_FILES_TO_LIST && !showAllFailures) {
 				buffer.append("Violations also present in ").append(remainingFiles).append(" other files.\n");
 			} else {
 				buffer.append("Violations also present in:\n");

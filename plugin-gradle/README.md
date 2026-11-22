@@ -2235,6 +2235,14 @@ tasks.withType(com.diffplug.gradle.spotless.SpotlessApply).configureEach {
 
 `changedFilesReport` is an output of the apply task, so another task can declare it as an input (e.g. `inputs.file(tasks.named('spotlessJavaApply').flatMap { it.changedFilesReport })`) and Gradle will run the apply task first, without an explicit `dependsOn`.
 
+### Which files does `spotlessCheck` complain about?
+
+When many files are misformatted, `spotlessCheck` shows a diff for the first few and then only says `Violations also present in N other files.` To list every one of them by name, pass `-PspotlessShowAllFailures` (or put `spotlessShowAllFailures=true` in `gradle.properties`):
+
+```console
+user@machine repo % ./gradlew spotlessCheck -PspotlessShowAllFailures
+```
+
 ## Can I apply Spotless to specific files?
 
 The Gradle plugin does not read a `spotlessFiles` property like the Maven plugin does (`-PspotlessFiles` was deprecated in `4.3.0` and removed in `5.0.0`). To format one or a few files, pass their absolute paths to the [IDE hook](IDE_HOOK.md) as a comma-separated list:
