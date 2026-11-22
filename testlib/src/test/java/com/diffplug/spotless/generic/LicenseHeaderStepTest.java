@@ -336,4 +336,29 @@ class LicenseHeaderStepTest extends ResourceHarness {
 		StepHarnessWithFile.forStep(this, step)
 				.test("Foo.java", getTestResource(FILE_NO_LICENSE), hasHeaderYear(currentYear()));
 	}
+
+	@Test
+	@ClearGitConfig
+	void should_setFromGit_year_after_skipped_lines() throws Exception {
+		try (Git git = Git.init().setDirectory(rootFolder()).call()) {
+			setFile("run.sh").toContent("#!/bin/bash\necho hello\n");
+			git.add()
+					.addFilepattern("run.sh")
+					.call();
+			git.commit()
+					.setMessage("add")
+					.setAuthor("Test User", "test@example.com")
+					.setCommitter("Test User", "test@example.com")
+					.setSign(false)
+					.call();
+		}
+
+		FormatterStep step = LicenseHeaderStep.headerDelimiter("# Copyright $YEAR ACME corp.\n", "echo")
+				.withYearMode(YearMode.SET_FROM_GIT)
+				.withSkipLinesMatching("^#!")
+				.build();
+
+		StepHarnessWithFile.forStep(this, step)
+				.test("run.sh", "#!/bin/bash\necho hello\n", "#!/bin/bash\n# Copyright " + currentYear() + " ACME corp.\necho hello\n");
+	}
 }

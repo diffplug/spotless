@@ -132,7 +132,7 @@ public final class LicenseHeaderStep {
 
 		@Override
 		public FormatterFunc apply(Runtime input) throws Exception {
-			return FormatterFunc.needsFile(input::setLicenseHeaderYearsFromGitHistory);
+			return FormatterFunc.needsFile((raw, file) -> input.formatAfterSkippedLines(raw, file, input::setLicenseHeaderYearsFromGitHistory));
 		}
 	}
 
@@ -286,9 +286,14 @@ public final class LicenseHeaderStep {
 		}
 
 		/** Formats the given string. */
-		private String format(String raw, File file) {
+		private String format(String raw, File file) throws Exception {
+			return formatAfterSkippedLines(raw, file, this::addOrUpdateLicenseHeader);
+		}
+
+		/** Applies the given formatter to the content which follows the lines matching {@code skipLinesMatching}. */
+		private String formatAfterSkippedLines(String raw, File file, FormatterFunc.NeedsFile formatter) throws Exception {
 			if (skipLinesMatching == null) {
-				return addOrUpdateLicenseHeader(raw, file);
+				return formatter.applyWithFile(raw, file);
 			} else {
 				String[] lines = raw.split("\n");
 				StringBuilder skippedLinesBuilder = new StringBuilder();
@@ -307,7 +312,7 @@ public final class LicenseHeaderStep {
 						remainingLinesBuilder.append(line).append('\n');
 					}
 				}
-				return skippedLinesBuilder + addOrUpdateLicenseHeader(remainingLinesBuilder.toString(), file);
+				return skippedLinesBuilder + formatter.applyWithFile(remainingLinesBuilder.toString(), file);
 			}
 		}
 

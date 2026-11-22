@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
+- `licenseHeader` no longer drops the lines matched by `skipLinesMatching` (such as a shebang) when run with `-PspotlessSetLicenseHeaderYearsFromGitHistory=true`. ([#2270](https://github.com/diffplug/spotless/issues/2270))
 
 ## [8.12.0] - 2026-11-21
 ### Added
