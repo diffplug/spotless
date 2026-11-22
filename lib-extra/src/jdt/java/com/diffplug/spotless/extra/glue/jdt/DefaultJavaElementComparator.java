@@ -62,13 +62,15 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 	private final int[] memberCategoryOffsets;
 	private final boolean sortByVisibility;
 	private final int[] visibilityOffsets;
+	private final boolean sortByName;
 	private final Collator collator;
 
 	static DefaultJavaElementComparator of(
 			boolean doNotSortFields,
 			String memberCategoryPreferences,
 			boolean sortByVisibility,
-			String visibilityPreferences) {
+			String visibilityPreferences,
+			boolean sortByName) {
 
 		int[] memberCategoryOffsets = new int[9];
 		boolean success = fillMemberCategoryOffsets(memberCategoryPreferences, memberCategoryOffsets);
@@ -84,19 +86,21 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 			fillVisibilityOffsets(defaultValue, visibilityOffsets);
 		}
 
-		return new DefaultJavaElementComparator(doNotSortFields, memberCategoryOffsets, sortByVisibility, visibilityOffsets);
+		return new DefaultJavaElementComparator(doNotSortFields, memberCategoryOffsets, sortByVisibility, visibilityOffsets, sortByName);
 	}
 
 	DefaultJavaElementComparator(
 			boolean doNotSortFields,
 			int[] memberCategoryOffsets,
 			boolean sortByVisibility,
-			int[] visibilityOffsets) {
+			int[] visibilityOffsets,
+			boolean sortByName) {
 
 		this.doNotSortFields = doNotSortFields;
 		this.memberCategoryOffsets = memberCategoryOffsets;
 		this.sortByVisibility = sortByVisibility;
 		this.visibilityOffsets = visibilityOffsets;
+		this.sortByName = sortByName;
 		this.collator = Collator.getInstance();
 	}
 
@@ -257,6 +261,10 @@ class DefaultJavaElementComparator implements Comparator<BodyDeclaration> {
 			if (vis != 0) {
 				return vis;
 			}
+		}
+
+		if (!sortByName) {
+			return preserveRelativeOrder(bodyDeclaration1, bodyDeclaration2);
 		}
 
 		switch (bodyDeclaration1.getNodeType()) {

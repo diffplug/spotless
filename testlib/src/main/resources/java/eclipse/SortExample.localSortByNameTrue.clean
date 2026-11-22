@@ -1,0 +1,42 @@
+package com.diffplug.spotless.extra.glue.jdt;
+
+// @SortMembers:sortByName = true
+public class SortExample {
+	static final int Z = 1;
+	static final int A = 1;
+	static void s1() {
+	}
+	static void s2() {
+	}
+	final int z = 1;
+	public final int y = 1;
+	final int a = 1;
+	SortExample() {
+	}
+	SortExample(int b) {
+	}
+	public void alpha() {
+	}
+	private void beta() {
+	}
+	void foo(int i) {
+	}
+	void foo(String s) {
+	}
+	@BeforeEach
+	void setUp() {
+	}
+	public void zeta() {
+	}
+	class Abc {
+	}
+	enum Color {
+		RED, GREEN, BLUE
+	}
+	@interface Meta {
+		String a();
+		String z();
+	}
+	class Zed {
+	}
+}

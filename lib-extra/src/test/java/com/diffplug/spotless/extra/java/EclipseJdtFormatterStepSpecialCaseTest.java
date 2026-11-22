@@ -115,4 +115,57 @@ class EclipseJdtFormatterStepSpecialCaseTest {
 		StepHarness.forStep(builder.build())
 				.testResource("java/eclipse/SortExample.collator.test", "java/eclipse/SortExample.collator.clean");
 	}
+
+	/** https://github.com/diffplug/spotless/issues/3184 - also covers overloaded methods and constructors */
+	@Test
+	void sort_members_global_by_name_disabled_preserves_relative_order() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		builder.sortMembersByName(false);
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.sortByName.test", "java/eclipse/SortExample.sortByNameDisabled.clean");
+	}
+
+	@Test
+	void sort_members_global_by_name_disabled_keeps_visibility_order() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		builder.sortMembersVisibilityOrderEnabled(true);
+		builder.sortMembersVisibilityOrder("B,R,D,V");
+		builder.sortMembersByName(false);
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.sortByName.test", "java/eclipse/SortExample.sortByNameDisabledByVisibility.clean");
+	}
+
+	@Test
+	void sort_members_global_by_name_disabled_preserves_field_order() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		builder.sortMembersDoNotSortFields(false);
+		builder.sortMembersByName(false);
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.sortByName.test", "java/eclipse/SortExample.sortByNameDisabled.clean");
+	}
+
+	@Test
+	void sort_members_local_by_name_false() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.localSortByNameFalse.test", "java/eclipse/SortExample.localSortByNameFalse.clean");
+	}
+
+	@Test
+	void sort_members_local_by_name_true() {
+		EclipseJdtFormatterStep.Builder builder = EclipseJdtFormatterStep.createBuilder(TestProvisioner.mavenCentral(), TestP2Provisioner.defaultProvisioner());
+		builder.sortMembersEnabled(true);
+		builder.sortMembersOrder("SF,SI,SM,F,I,C,M,T");
+		builder.sortMembersByName(false);
+		StepHarness.forStep(builder.build())
+				.testResource("java/eclipse/SortExample.localSortByNameTrue.test", "java/eclipse/SortExample.localSortByNameTrue.clean");
+	}
 }

@@ -39,23 +39,27 @@ public final class EclipseJdtSortMembers {
 	private static final Pattern PATTERN_DO_NOT_SORT_FIELDS = Pattern.compile("@SortMembers:doNotSortFields\\s*=\\s*(false|true)");
 	private static final Pattern PATTERN_ENABLED = Pattern.compile("@SortMembers:enabled\\s*=\\s*(false|true)");
 	private static final Pattern PATTERN_SORT_BY_VISIBILITY = Pattern.compile("@SortMembers:sortByVisibility\\s*=\\s*(false|true)");
+	private static final Pattern PATTERN_SORT_BY_NAME = Pattern.compile("@SortMembers:sortByName\\s*=\\s*(false|true)");
 
 	static SortProperties localProperties(SortProperties globalProperties, String code) {
 		Optional<Boolean> localDoNotSortFields = testOverwriteProperty(PATTERN_DO_NOT_SORT_FIELDS, code);
 		Optional<Boolean> localEnabled = testOverwriteProperty(PATTERN_ENABLED, code);
 		Optional<Boolean> localSortByVisibility = testOverwriteProperty(PATTERN_SORT_BY_VISIBILITY, code);
-		if (localDoNotSortFields.isEmpty() && localEnabled.isEmpty() && localSortByVisibility.isEmpty()) {
+		Optional<Boolean> localSortByName = testOverwriteProperty(PATTERN_SORT_BY_NAME, code);
+		if (localDoNotSortFields.isEmpty() && localEnabled.isEmpty() && localSortByVisibility.isEmpty() && localSortByName.isEmpty()) {
 			return globalProperties;
 		}
 		boolean doNotSortFields = localDoNotSortFields.orElse(globalProperties.doNotSortFields);
 		boolean enabled = localEnabled.orElse(globalProperties.enabled);
 		boolean sortByVisibility = localSortByVisibility.orElse(globalProperties.sortByVisibility);
+		boolean sortByName = localSortByName.orElse(globalProperties.sortByName);
 		return new SortProperties(
 				enabled,
 				globalProperties.membersOrder,
 				doNotSortFields,
 				sortByVisibility,
-				globalProperties.visibilityOrder);
+				globalProperties.visibilityOrder,
+				sortByName);
 	}
 
 	static String sortMember(String code, SortProperties globalProperties) {
@@ -70,7 +74,8 @@ public final class EclipseJdtSortMembers {
 					localProperties.doNotSortFields,
 					localProperties.membersOrder,
 					localProperties.sortByVisibility,
-					localProperties.visibilityOrder);
+					localProperties.visibilityOrder,
+					localProperties.sortByName);
 			new Sorter(AST.getJLSLatest(), compilationUnit, null, comparator).sort();
 			String content = compilationUnit.getBuffer().getContents();
 			if (content != null) {
@@ -288,18 +293,21 @@ public final class EclipseJdtSortMembers {
 		final String membersOrder;
 		final boolean sortByVisibility;
 		final String visibilityOrder;
+		final boolean sortByName;
 
 		SortProperties(
 				boolean enabled,
 				String membersOrder,
 				boolean doNotSortFields,
 				boolean sortByVisibility,
-				String visibilityOrder) {
+				String visibilityOrder,
+				boolean sortByName) {
 			this.enabled = enabled;
 			this.membersOrder = membersOrder;
 			this.doNotSortFields = doNotSortFields;
 			this.sortByVisibility = sortByVisibility;
 			this.visibilityOrder = visibilityOrder;
+			this.sortByName = sortByName;
 		}
 
 		static SortProperties from(Map<String, String> properties) {
@@ -308,7 +316,8 @@ public final class EclipseJdtSortMembers {
 			boolean doNotSortFields = !Boolean.parseBoolean(properties.getOrDefault("sp_cleanup.sort_members_all", "false"));
 			boolean sortByVisibility = Boolean.parseBoolean(properties.getOrDefault("org.eclipse.jdt.ui.enable.visibility.order", "false"));
 			String visibilityOrder = properties.getOrDefault("org.eclipse.jdt.ui.visibility.order", "");
-			return new SortProperties(enabled, membersOrder, doNotSortFields, sortByVisibility, visibilityOrder);
+			boolean sortByName = Boolean.parseBoolean(properties.getOrDefault("spotless.sort_members.by_name", "true"));
+			return new SortProperties(enabled, membersOrder, doNotSortFields, sortByVisibility, visibilityOrder, sortByName);
 		}
 	}
 
