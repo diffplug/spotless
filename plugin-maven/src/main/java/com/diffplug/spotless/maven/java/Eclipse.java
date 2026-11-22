@@ -56,6 +56,9 @@ public class Eclipse implements FormatterStepFactory {
 	private Boolean sortMembersVisibilityOrderEnabled = false;
 
 	@Parameter
+	private Boolean sortMembersByName = true;
+
+	@Parameter
 	private File cacheDirectory;
 
 	@Override
@@ -84,6 +87,9 @@ public class Eclipse implements FormatterStepFactory {
 		}
 		if (sortMembersVisibilityOrderEnabled != null) {
 			eclipseConfig.sortMembersVisibilityOrderEnabled(sortMembersVisibilityOrderEnabled);
+		}
+		if (sortMembersByName != null) {
+			eclipseConfig.sortMembersByName(sortMembersByName);
 		}
 		return eclipseConfig.build();
 	}

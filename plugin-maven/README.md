@@ -502,6 +502,8 @@ file `.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs` in y
   <!-- Optional: Specify the ordering of members of the same category by the visibility within the category. (default: B,V,R,D)
        B,R,D,V = Public, Protected, Package, Private -->
   <sortMembersVisibilityOrder>B,R,D,V</sortMembersVisibilityOrder>
+  <!-- Optional: Sort members of the same category (and visibility) alphabetically by name. If false, their original relative order is preserved. (default: true) -->
+  <sortMembersByName>false</sortMembersByName>
 </eclipse>
 ```
 
@@ -509,6 +511,7 @@ You can enable/disable the globally defined sort properties on file level by add
 - `// @SortMembers:enabled=false` - disable the Sort Members feature for this file
 - `// @SortMembers:doNotSortFields=true` - disable the sorting of static and instance fields
 - `// @SortMembers:sortByVisibility=false` - don't sort members by its visibility modifier
+- `// @SortMembers:sortByName=false` - don't sort members alphabetically by name, preserve their original relative order instead
 
 ### formatAnnotations
 

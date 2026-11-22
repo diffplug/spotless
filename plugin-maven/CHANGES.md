@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `<sortMembersByName>` to `<eclipse>` for Java. If `false`, members of the same category (and visibility) keep their original relative order instead of being sorted alphabetically. Can be overridden per file with `// @SortMembers:sortByName=false`. ([#3184](https://github.com/diffplug/spotless/issues/3184))
 ### Fixed
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
 
