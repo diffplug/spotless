@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class LintSuppression implements Serializable {
 
 	public boolean suppresses(String relativePath, FormatterStep formatterStep, Lint lint) {
 		if (ALL.equals(path) || path.equals(relativePath)) {
-			if (ALL.equals(step) || formatterStep.getName().equals(this.step)) {
+			if (ALL.equals(step) || formatterStep.getName().equals(this.step) || this.step.equals(lint.getStepName())) {
 				if (ALL.equals(shortCode) || lint.getShortCode().equals(this.shortCode)) {
 					return true;
 				}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,11 +72,34 @@ public class LintSuppressionTest {
 		}).isTrue();
 	}
 
+	@Test
+	public void testMatchForwardedLintByOriginatingOrWrappingStep() {
+		removesForwardedLint(s -> s.setStep("forbidWildcardImports")).isTrue();
+		removesForwardedLint(s -> s.setStep("endWithNewline")).isTrue();
+		removesForwardedLint(s -> s.setStep("blah")).isFalse();
+		removesForwardedLint(s -> {
+			s.setStep("forbidWildcardImports");
+			s.setShortCode("blah");
+		}).isFalse();
+	}
+
 	private AbstractBooleanAssert<?> removesLint(Consumer<LintSuppression> suppression) {
+		return removesLint(dummyLintState(), suppression);
+	}
+
+	private AbstractBooleanAssert<?> removesForwardedLint(Consumer<LintSuppression> suppression) {
+		var lints = new ArrayList<Lint>();
+		lints.add(Lint.atLine(2, "66", "Order 66").withStepName("forbidWildcardImports"));
+		var perStep = new ArrayList<List<Lint>>();
+		perStep.add(lints);
+		return removesLint(new LintState(DirtyState.clean(), perStep), suppression);
+	}
+
+	private AbstractBooleanAssert<?> removesLint(LintState lintState, Consumer<LintSuppression> suppression) {
 		var s = new LintSuppression();
 		suppression.accept(s);
 
-		var ls = dummyLintState().withRemovedSuppressions(formatter(), "testFile", List.of(s));
+		var ls = lintState.withRemovedSuppressions(formatter(), "testFile", List.of(s));
 		return assertThat(!ls.isHasLints());
 	}
 }

@@ -12,6 +12,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
+- Lints forwarded by `FenceStep.preserveWithin` now keep the name of the step that produced them, so they are reported and suppressible under that step instead of the fence step. ([#2859](https://github.com/diffplug/spotless/issues/2859))
 
 ## [4.12.0] - 2026-11-21
 ### Changes
