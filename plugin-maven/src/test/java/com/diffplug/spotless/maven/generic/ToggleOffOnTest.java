@@ -74,6 +74,7 @@ class ToggleOffOnTest extends MavenIntegrationHarness {
 				"//on",
 				"	But this will get tabbed.");
 	}
+
 	private static final String WILDCARD_LINT = "Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this";
 
 	private void writeWildcardImports() {

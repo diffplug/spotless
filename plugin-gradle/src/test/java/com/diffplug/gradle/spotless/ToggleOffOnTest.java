@@ -116,6 +116,7 @@ abstract class ToggleOffOnTest extends GradleIntegrationHarness {
 		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 		gradleRunner().withArguments("spotlessCheck").build();
 	}
+
 	private void writeWildcardImportsBuild(String... suppression) throws IOException {
 		String[] header = {
 				"plugins { id 'com.diffplug.spotless' }",
