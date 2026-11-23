@@ -111,7 +111,7 @@ versionCompatibility {
       // we will support no more than 2 breaking changes at a time = 3 incompatible versions
       // we will try to drop down to only one version if a stable API can be maintained for a full
       // year
-      versions = listOf("1.0.0")
+      versions = listOf("1.0.0", "2.0.0")
       targetSourceSetName = "ktlint"
     }
     namespaces.register("Diktat") {
@@ -165,10 +165,14 @@ dependencies {
   "ktfmtCompileOnly"(libs.ktfmt)
   "ktfmtCompileOnly"(pinnedLibs.google.java.format) // for JDK 8 compatibility
   "ktfmtCompileOnly"(libs.jsr305)
-  // ktlint latest supported version
+  // ktlint 1.x (com.pinterest.ktlint)
   "compatKtLint1Dot0Dot0CompileAndTestOnly"(libs.ktlint.rule.engine)
   "compatKtLint1Dot0Dot0CompileAndTestOnly"(libs.ktlint.ruleset.standard)
   "compatKtLint1Dot0Dot0CompileAndTestOnly"(libs.slf4j.api)
+  // ktlint 2.x (io.github.ktlint.core)
+  "compatKtLint2Dot0Dot0CompileAndTestOnly"(libs.ktlint2.rule.engine)
+  "compatKtLint2Dot0Dot0CompileAndTestOnly"(libs.ktlint2.ruleset.standard)
+  "compatKtLint2Dot0Dot0CompileAndTestOnly"(libs.slf4j.api)
   // palantirJavaFormat
   "palantirJavaFormatCompileOnly"(
       pinnedLibs.palantir.java.format,
@@ -199,6 +203,12 @@ spotbugs {
 tasks.withType<Test>().configureEach {
   jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
   failOnNoDiscoveredTests = false
+}
+
+// the adapter test tasks registered by the version-compatibility plugin default to JUnit 4,
+// which silently discovers none of our JUnit 5 tests
+tasks.withType<Test>().matching { it.name.startsWith("testCompat") }.configureEach {
+  useJUnitPlatform()
 }
 
 tasks.jar {

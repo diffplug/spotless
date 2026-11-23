@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `1.27.0`).
 
 ## [Unreleased]
+### Added
+- Support ktlint `2.x` (Maven group `io.github.ktlint.core`), e.g. `ktlint("2.0.0-ALPHA-5")`. The default version stays `1.8.0`. Note that ktlint `2.x` renamed some rules (e.g. `no-semi` is now `semicolon`) and only runs custom rule sets built for ktlint `2.x`. ([#3156](https://github.com/diffplug/spotless/issues/3156))
 ### Fixed
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
 

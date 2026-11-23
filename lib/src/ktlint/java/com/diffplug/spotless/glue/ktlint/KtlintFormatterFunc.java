@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 DiffPlug
+ * Copyright 2021-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import com.diffplug.spotless.FileSignature;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat1Dot0Dot0Adapter;
+import com.diffplug.spotless.glue.ktlint.compat.KtLintCompat2Dot0Dot0Adapter;
 import com.diffplug.spotless.glue.ktlint.compat.KtLintCompatAdapter;
 import com.diffplug.spotless.glue.ktlint.compat.KtLintCompatReporting;
 
@@ -37,7 +38,9 @@ public class KtlintFormatterFunc implements FormatterFunc.NeedsFile {
 			Map<String, Object> editorConfigOverrideMap) {
 		String[] versions = version.split("\\.");
 		int majorVersion = Integer.parseInt(versions[0]);
-		if (majorVersion == 1) {
+		if (majorVersion >= 2) {
+			this.adapter = new KtLintCompat2Dot0Dot0Adapter();
+		} else if (majorVersion == 1) {
 			this.adapter = new KtLintCompat1Dot0Dot0Adapter();
 		} else {
 			throw new IllegalStateException("Ktlint versions < 1.0.0 not supported!");

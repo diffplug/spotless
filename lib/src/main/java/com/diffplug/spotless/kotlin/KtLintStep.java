@@ -42,6 +42,7 @@ public final class KtLintStep implements Serializable {
 	private static final String NAME = "ktlint";
 	private static final String MAVEN_COORDINATE_0_DOT = "com.pinterest:ktlint:";
 	private static final String MAVEN_COORDINATE_1_DOT = "com.pinterest.ktlint:ktlint-cli:";
+	private static final String MAVEN_COORDINATE_2_DOT = "io.github.ktlint.core:ktlint-cli:";
 
 	private final JarState.Promised jarState;
 	@Nullable private final FileSignature.Promised config;
@@ -73,13 +74,23 @@ public final class KtLintStep implements Serializable {
 			List<String> customRuleSets) {
 		Objects.requireNonNull(version, "version");
 		Objects.requireNonNull(provisioner, "provisioner");
-		String ktlintCoordinate = (version.startsWith("0.") ? MAVEN_COORDINATE_0_DOT : MAVEN_COORDINATE_1_DOT) + version;
 		Set<String> mavenCoordinates = new HashSet<>(customRuleSets);
-		mavenCoordinates.add(ktlintCoordinate);
+		mavenCoordinates.add(ktlintCoordinate(version));
 		return FormatterStep.create(NAME,
 				new KtLintStep(version, JarState.promise(() -> JarState.from(mavenCoordinates, provisioner)), editorConfig, editorConfigOverride),
 				KtLintStep::equalityState,
 				State::createFormat);
+	}
+
+	private static String ktlintCoordinate(String version) {
+		if (version.startsWith("0.")) {
+			return MAVEN_COORDINATE_0_DOT + version;
+		} else if (version.startsWith("1.")) {
+			return MAVEN_COORDINATE_1_DOT + version;
+		} else {
+			// ktlint 2.x moved from the com.pinterest.ktlint group to io.github.ktlint.core
+			return MAVEN_COORDINATE_2_DOT + version;
+		}
 	}
 
 	public static String defaultVersion() {
