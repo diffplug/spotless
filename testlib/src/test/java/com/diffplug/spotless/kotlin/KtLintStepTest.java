@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,14 @@ class KtLintStepTest extends ResourceHarness {
 	@Test
 	void works1_0_0() {
 		FormatterStep step = KtLintStep.create("1.0.0", TestProvisioner.mavenCentral());
+		StepHarnessWithFile.forStep(this, step)
+				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
+				.expectLintsOfResource("kotlin/ktlint/unsolvable.dirty").toBe("L1 ktlint(standard:no-empty-file) File 'unsolvable.dirty' should not be empty");
+	}
+
+	@Test
+	void works2_0_0() {
+		FormatterStep step = KtLintStep.create("2.0.0-ALPHA-5", TestProvisioner.mavenCentral());
 		StepHarnessWithFile.forStep(this, step)
 				.testResource("kotlin/ktlint/basic.dirty", "kotlin/ktlint/basic.clean")
 				.expectLintsOfResource("kotlin/ktlint/unsolvable.dirty").toBe("L1 ktlint(standard:no-empty-file) File 'unsolvable.dirty' should not be empty");

@@ -4,6 +4,7 @@ durian = "1.2.0"
 selfie = "3.1.2"
 jackson = "2.23.0"
 ktlint = "1.8.0"
+ktlint2 = "2.0.0-ALPHA-5"
 javaparser = "3.28.2"
 
 [libraries]
@@ -22,6 +23,8 @@ jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-d
 
 ktlint-rule-engine = { module = "com.pinterest.ktlint:ktlint-rule-engine", version.ref = "ktlint" }
 ktlint-ruleset-standard = { module = "com.pinterest.ktlint:ktlint-ruleset-standard", version.ref = "ktlint" }
+ktlint2-rule-engine = { module = "io.github.ktlint.core:ktlint-rule-engine", version.ref = "ktlint2" }
+ktlint2-ruleset-standard = { module = "io.github.ktlint.core:ktlint-ruleset-standard", version.ref = "ktlint2" }
 
 javaparser-core = { module = "com.github.javaparser:javaparser-core", version.ref = "javaparser" }
 javaparser-symbol-solver-core = { module = "com.github.javaparser:javaparser-symbol-solver-core", version.ref = "javaparser" }
