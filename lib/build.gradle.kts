@@ -201,6 +201,12 @@ tasks.withType<Test>().configureEach {
   failOnNoDiscoveredTests = false
 }
 
+// the adapter test tasks registered by the version-compatibility plugin default to JUnit 4,
+// which silently discovers none of our JUnit 5 tests
+tasks.withType<Test>().matching { it.name.startsWith("testCompat") }.configureEach {
+  useJUnitPlatform()
+}
+
 tasks.jar {
   for (glue in needsGlue) {
     from(sourceSets.getByName(glue).output.classesDirs)
