@@ -244,7 +244,7 @@ public final class FenceStep {
 				}
 				for (Lint lint : lintsForStep) {
 					if (!isPreserved(preservedRanges, lint)) {
-						lints.add(lint);
+						lints.add(lint.withStepName(step.getName()));
 					}
 				}
 			}

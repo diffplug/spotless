@@ -6,6 +6,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ### Fixed
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
 - Fix `Cannot set the value of task ... property 'taskService'` when Spotless is applied to sibling projects but not to their parent, a regression since `8.3.0`. Applying it to the root project with `apply false` is no longer necessary. ([#2877](https://github.com/diffplug/spotless/issues/2877))
+- `toggleOffOn` now reports lints under the step that produced them (e.g. `forbidWildcardImports` instead of `toggle`), so `suppressLintsFor { step = ... }` matches that step again. ([#2859](https://github.com/diffplug/spotless/issues/2859))
 
 ## [8.12.0] - 2026-11-21
 ### Added

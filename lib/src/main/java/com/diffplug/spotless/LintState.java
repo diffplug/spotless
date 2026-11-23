@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 DiffPlug
+ * Copyright 2024-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,10 +58,18 @@ public class LintState {
 			List<Lint> lints = lintsPerStep.get(i);
 			if (lints != null) {
 				FormatterStep step = formatter.getSteps().get(i);
-				result.put(step.getName(), lints);
+				for (Lint lint : lints) {
+					result.computeIfAbsent(stepNameFor(step, lint), k -> new ArrayList<>()).add(lint);
+				}
 			}
 		}
 		return result;
+	}
+
+	/** The name of the step which produced the lint, which is not {@code step} if {@code step} wraps other steps. */
+	private static String stepNameFor(FormatterStep step, Lint lint) {
+		String stepName = lint.getStepName();
+		return stepName != null ? stepName : step.getName();
 	}
 
 	public LintState withRemovedSuppressions(Formatter formatter, String relativePath, List<LintSuppression> suppressions) {
@@ -120,7 +128,7 @@ public class LintState {
 					FormatterStep step = formatter.getSteps().get(i);
 					for (Lint lint : lints) {
 						result.append(file.getName()).append(":");
-						lint.addWarningMessageTo(result, step.getName(), oneLine);
+						lint.addWarningMessageTo(result, stepNameFor(step, lint), oneLine);
 						result.append("\n");
 					}
 				}

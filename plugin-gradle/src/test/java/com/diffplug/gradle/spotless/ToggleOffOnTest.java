@@ -15,6 +15,8 @@
  */
 package com.diffplug.gradle.spotless;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 
 import org.gradle.testkit.runner.GradleRunner;
@@ -112,6 +114,49 @@ abstract class ToggleOffOnTest extends GradleIntegrationHarness {
 		setFile("test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 		gradleRunner().withArguments("spotlessApply").build();
 		assertFile("test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+		gradleRunner().withArguments("spotlessCheck").build();
+	}
+	private void writeWildcardImportsBuild(String... suppression) throws IOException {
+		String[] header = {
+				"plugins { id 'com.diffplug.spotless' }",
+				"spotless {",
+				"  java {",
+				"    target file('test.java')",
+				"    toggleOffOn()",
+				"    forbidWildcardImports()"};
+		String[] footer = {"  }", "}"};
+		String[] lines = new String[header.length + suppression.length + footer.length];
+		System.arraycopy(header, 0, lines, 0, header.length);
+		System.arraycopy(suppression, 0, lines, header.length, suppression.length);
+		System.arraycopy(footer, 0, lines, header.length + suppression.length, footer.length);
+		setFile("build.gradle").toLines(lines);
+		setFile("test.java").toLines(
+				"import java.util.*;",
+				"// spotless:off",
+				"import java.io.*;",
+				"// spotless:on",
+				"",
+				"public class Test {}");
+	}
+
+	@Test
+	void lintsInsideToggleAreReportedUnderTheirOwnStep() throws IOException {
+		writeWildcardImportsBuild();
+		String output = gradleRunner().withArguments("spotlessCheck").buildAndFail().getOutput();
+		assertThat(output).contains("There were 1 lint error(s), they must be fixed or suppressed.");
+		assertThat(output).contains("test.java:L1 forbidWildcardImports(import java.util.*;) ");
+		assertThat(output).doesNotContain(" toggle(");
+	}
+
+	@Test
+	void lintsInsideToggleAreSuppressibleByTheirOwnStep() throws IOException {
+		writeWildcardImportsBuild("    suppressLintsFor { step = 'forbidWildcardImports' }");
+		gradleRunner().withArguments("spotlessCheck").build();
+	}
+
+	@Test
+	void lintsInsideToggleAreStillSuppressibleByToggleStep() throws IOException {
+		writeWildcardImportsBuild("    suppressLintsFor { step = 'toggle' }");
 		gradleRunner().withArguments("spotlessCheck").build();
 	}
 }

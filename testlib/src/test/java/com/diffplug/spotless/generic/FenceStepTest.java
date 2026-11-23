@@ -15,14 +15,22 @@
  */
 package com.diffplug.spotless.generic;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.base.StringPrinter;
+import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LintState;
+import com.diffplug.spotless.LintSuppression;
 import com.diffplug.spotless.ResourceHarness;
 import com.diffplug.spotless.StepHarness;
 import com.diffplug.spotless.StepHarnessWithFile;
@@ -106,8 +114,48 @@ class FenceStepTest extends ResourceHarness {
 				"import java.io.*;",
 				"// spotless:on",
 				"import static java.util.Collections.*;"))
-				.toBe("L1 toggle(import java.util.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this",
-						"L5 toggle(import static java.util.Collections.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this");
+				.toBe("L1 forbidWildcardImports(import java.util.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this",
+						"L5 forbidWildcardImports(import static java.util.Collections.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this");
+	}
+
+	@Test
+	void nestedPreserveWithinAttributesLintsToInnermostStep() {
+		FormatterStep toggle = FenceStep.named(FenceStep.defaultToggleName())
+				.openClose(FenceStep.defaultToggleOff(), FenceStep.defaultToggleOn())
+				.preserveWithin(Arrays.asList(ForbidWildcardImportsStep.create()));
+		FormatterStep outer = FenceStep.named("outer").openClose("<keep>", "</keep>")
+				.preserveWithin(Arrays.asList(toggle));
+		StepHarnessWithFile.forStep(this, outer).expectLintsOfFileAndContent("Test.java", StringPrinter.buildStringFromLines(
+				"import java.util.*;",
+				"// <keep>",
+				"import java.io.*;",
+				"// </keep>"))
+				.toBe("L1 forbidWildcardImports(import java.util.*;) Do not use wildcard imports (e.g. java.util.*) - replace with specific class imports (e.g. java.util.List) as 'spotlessApply' cannot auto-fix this");
+	}
+
+	@Test
+	void preserveWithinLintsAreSuppressibleByInnerOrFenceStepName() throws Exception {
+		FormatterStep fence = FenceStep.named(FenceStep.defaultToggleName())
+				.openClose(FenceStep.defaultToggleOff(), FenceStep.defaultToggleOn())
+				.preserveWithin(Arrays.asList(ForbidWildcardImportsStep.create()));
+		File file = setFile("Test.java").toLines("import java.util.*;");
+		try (Formatter formatter = Formatter.builder()
+				.lineEndingsPolicy(LineEnding.UNIX.createPolicy())
+				.encoding(StandardCharsets.UTF_8)
+				.steps(List.of(fence))
+				.build()) {
+			LintState lintState = LintState.of(formatter, file);
+			assertThat(lintState.getLintsByStep(formatter)).containsOnlyKeys("forbidWildcardImports");
+			assertThat(isSuppressedByStep(lintState, formatter, "forbidWildcardImports")).isTrue();
+			assertThat(isSuppressedByStep(lintState, formatter, FenceStep.defaultToggleName())).isTrue();
+			assertThat(isSuppressedByStep(lintState, formatter, "somethingElse")).isFalse();
+		}
+	}
+
+	private static boolean isSuppressedByStep(LintState lintState, Formatter formatter, String step) {
+		LintSuppression suppression = new LintSuppression();
+		suppression.setStep(step);
+		return !lintState.withRemovedSuppressions(formatter, "Test.java", List.of(suppression)).isHasLints();
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2025 DiffPlug
+ * Copyright 2022-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 /**
  * Models a linted line or line range. Note that there is no concept of severity level - responsibility
@@ -49,6 +51,7 @@ public final class Lint implements Serializable {
 	private int lineEnd; // 1-indexed, inclusive
 	private String shortCode; // e.g. CN_IDIOM https://spotbugs.readthedocs.io/en/stable/bugDescriptions.html#cn-class-implements-cloneable-but-does-not-define-or-use-clone-method-cn-idiom
 	private String detail;
+	private @Nullable String stepName; // not part of equals/hashCode, see getStepName()
 
 	private Lint(int lineStart, int lineEnd, String shortCode, String detail) {
 		if (lineEnd < lineStart) {
@@ -78,6 +81,31 @@ public final class Lint implements Serializable {
 
 	public String getDetail() {
 		return detail;
+	}
+
+	/**
+	 * The name of the step which produced this lint, if it was produced by a step nested inside another step
+	 * (e.g. a step wrapped by {@link com.diffplug.spotless.generic.FenceStep}). Returns null if the lint was
+	 * produced by the step which reported it. This is reporting metadata only, it is not part of
+	 * {@link #equals(Object)} or {@link #hashCode()}.
+	 */
+	public @Nullable String getStepName() {
+		return stepName;
+	}
+
+	/**
+	 * Returns a copy of this lint which records the name of the step that produced it. Steps which wrap other
+	 * steps use this so that lints are reported under the step that actually produced them. If a step name is
+	 * already recorded, this lint is returned unchanged, so the innermost step wins.
+	 */
+	public Lint withStepName(String stepName) {
+		Objects.requireNonNull(stepName, "stepName");
+		if (this.stepName != null) {
+			return this;
+		}
+		Lint copy = new Lint(lineStart, lineEnd, shortCode, detail);
+		copy.stepName = stepName;
+		return copy;
 	}
 
 	/** Any exception which implements this interface will have its lints extracted and reported cleanly to the user. */

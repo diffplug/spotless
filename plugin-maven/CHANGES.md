@@ -5,6 +5,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 ## [Unreleased]
 ### Fixed
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
+- `<toggleOffOn>` now reports lints under the step that produced them (e.g. `forbidWildcardImports` instead of `toggle`), so `<lintSuppression><step>` matches that step again. ([#2859](https://github.com/diffplug/spotless/issues/2859))
 
 ## [3.12.0] - 2026-11-21
 ### Changes
