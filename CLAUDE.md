@@ -85,7 +85,7 @@ black, buf, gofmt, idea, shfmt). Optional `testenv.properties` at repo root (git
 4. Maven DSL: `plugin-maven/.../maven/<lang>/Foo.java implements FormatterStepFactory` + `addFoo(Foo)` in
    the language class; integration test extends `MavenIntegrationHarness` (`writePomWithJavaSteps(...)` etc.).
 5. Docs: `plugin-gradle/README.md`, `plugin-maven/README.md`, and the feature matrix in root `README.md` —
-   edit the `lib('...')` / `extra('...')` source lines inside `<!---freshmark matrix ... -->`, then run
+   edit the `lib('...')` / `extra('...')` source lines inside the hidden `freshmark matrix` comment block, then run
    `./gradlew spotlessApply` to regenerate the table. Never hand-edit the generated table.
 6. Changelogs (below), then `./gradlew spotlessApply`.
 
@@ -105,8 +105,8 @@ Tabs (4), UTF-8, final newline (`.editorconfig`). Java: Eclipse formatter `gradl
 import order `gradle/spotless.importorder` (java, javax, org, com, com.diffplug, then rest), no wildcard
 imports, no unused imports, license header from `gradle/spotless.license` (new files get it automatically).
 Java formatting uses `ratchetFrom 'origin/main'`: only files changed vs `origin/main` are formatted/checked,
-so `origin/main` must exist locally (`git fetch origin main`). In a fork, `origin` is the fork — keep its
-`main` synced with upstream or the ratchet base is stale.
+so `origin/main` must exist locally (`git fetch origin main`). When working from a fork, keep the fork's
+`main` in sync with `diffplug/spotless` or the ratchet base is stale.
 
 ## Definition of done (before PR)
 
@@ -126,5 +126,3 @@ so `origin/main` must exist locally (`git fetch origin main`). In a fork, `origi
   unreleased changes); otherwise on the last *published* lib version (see `plugin-gradle/build.gradle`).
 - Some `testlib` tests need `--add-opens` (already configured in `testlib/build.gradle`); don't remove them.
 - Snapshot tests use selfie; to overwrite snapshots run tests with `-Pselfie=overwrite`.
-- Cloud sessions behind a rate-limited proxy: dependency downloads can fail with HTTP 429
-  ("Could not resolve ..."). Re-run with `--no-parallel --max-workers=1`; each run caches more artifacts.
