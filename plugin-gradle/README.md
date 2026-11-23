@@ -1627,6 +1627,11 @@ spotless {
     prettier(['prettier': '3.0.3', '@prettier/plugin-php': '0.20.1'])
       .config(['parser': 'php', 'tabWidth': 3, 'plugins': ['@prettier/plugin-php']])
   }
+  format 'dockerfile', {
+    target 'Dockerfile', 'docker/*.Dockerfile'
+    prettier(['prettier': '3.6.2', 'prettier-plugin-sh': '0.20.2'])
+      .config(['parser': 'dockerfile', 'plugins': ['prettier-plugin-sh']])
+  }
 }
 ```
 
