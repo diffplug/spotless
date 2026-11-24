@@ -91,6 +91,11 @@ public final class EclipseJdtFormatterStep {
 			stepProperties.put("sp_cleanup.sort_members_all", String.valueOf(sortAllMembers));
 		}
 
+		public void sortMembersByName(boolean enabled) {
+			// Spotless-specific key, there is no corresponding Eclipse preference
+			stepProperties.put("spotless.sort_members.by_name", String.valueOf(enabled));
+		}
+
 		public void sortMembersEnabled(boolean enabled) {
 			stepProperties.put("sp_cleanup.sort_members", String.valueOf(enabled));
 		}

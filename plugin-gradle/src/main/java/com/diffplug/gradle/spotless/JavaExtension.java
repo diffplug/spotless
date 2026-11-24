@@ -501,6 +501,12 @@ public class JavaExtension extends FormatExtension implements HasBuiltinDelimite
 			return this;
 		}
 
+		public EclipseConfig sortMembersByName(boolean enabled) {
+			builder.sortMembersByName(enabled);
+			replaceStep(builder.build());
+			return this;
+		}
+
 		public EclipseConfig withP2Mirrors(Map<String, String> mirrors) {
 			builder.setP2Mirrors(mirrors);
 			replaceStep(builder.build());

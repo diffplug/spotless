@@ -1,0 +1,41 @@
+package com.diffplug.spotless.extra.glue.jdt;
+
+public class SortExample {
+	public void zeta() {
+	}
+	@BeforeEach
+	void setUp() {
+	}
+	private void beta() {
+	}
+	public void alpha() {
+	}
+	void foo(String s) {
+	}
+	void foo(int i) {
+	}
+	SortExample(int b) {
+	}
+	SortExample() {
+	}
+	final int z = 1;
+	public final int y = 1;
+	final int a = 1;
+	static void s2() {
+	}
+	static void s1() {
+	}
+	class Zed {
+	}
+	enum Color {
+		RED, GREEN, BLUE
+	}
+	@interface Meta {
+		String z();
+		String a();
+	}
+	class Abc {
+	}
+	static final int Z = 1;
+	static final int A = 1;
+}

@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `sortMembersByName(boolean)` to `eclipse()` for Java. If `false`, members of the same category (and visibility) keep their original relative order instead of being sorted alphabetically. Can be overridden per file with `// @SortMembers:sortByName=false`. ([#3184](https://github.com/diffplug/spotless/issues/3184))
 ### Fixed
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
 - Fix `Cannot set the value of task ... property 'taskService'` when Spotless is applied to sibling projects but not to their parent, a regression since `8.3.0`. Applying it to the root project with `apply false` is no longer necessary. ([#2877](https://github.com/diffplug/spotless/issues/2877))
