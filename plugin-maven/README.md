@@ -1709,6 +1709,25 @@ Since spotless uses the actual npm prettier package behind the scenes, it is pos
       </prettier>
     </format>
 
+    <!-- prettier with sh-plugin, for Dockerfiles -->
+    <format>
+      <includes>
+        <include>Dockerfile</include>
+        <include>docker/*.Dockerfile</include>
+      </includes>
+
+      <prettier>
+        <devDependencies>
+            <prettier>3.6.2</prettier>
+            <prettier-plugin-sh>0.20.2</prettier-plugin-sh>
+        </devDependencies>
+        <config>
+            <parser>dockerfile</parser>
+            <plugins>prettier-plugin-sh</plugins>
+        </config>
+      </prettier>
+    </format>
+
   </formats>
 </configuration>
 ```
