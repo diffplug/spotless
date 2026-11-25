@@ -8,6 +8,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Fix `Cannot set the value of task ... property 'taskService'` when Spotless is applied to sibling projects but not to their parent, a regression since `8.3.0`. Applying it to the root project with `apply false` is no longer necessary. ([#2877](https://github.com/diffplug/spotless/issues/2877))
 ### Changes
 - README: example for formatting Dockerfiles with prettier and `prettier-plugin-sh`. ([#3158](https://github.com/diffplug/spotless/issues/3158))
+- Bump default `ktfmt` version `0.65` -> `0.65.1`. ([#3209](https://github.com/diffplug/spotless/pull/3209))
+
 
 ## [8.12.0] - 2026-11-21
 ### Added

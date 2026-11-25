@@ -7,6 +7,8 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
 ### Changes
 - README: example for formatting Dockerfiles with prettier and `prettier-plugin-sh`. ([#3158](https://github.com/diffplug/spotless/issues/3158))
+- Bump default `ktfmt` version `0.65` -> `0.65.1`. ([#3209](https://github.com/diffplug/spotless/pull/3209))
+
 
 ## [3.12.0] - 2026-11-21
 ### Changes
