@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
@@ -29,6 +30,7 @@ import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileVisitDetails;
@@ -48,6 +50,7 @@ import com.diffplug.common.base.Preconditions;
 import com.diffplug.common.base.Unhandled;
 import com.diffplug.spotless.Lint;
 import com.diffplug.spotless.Provisioner;
+import com.diffplug.spotless.SpotlessCache;
 import com.diffplug.spotless.extra.P2Provisioner;
 
 /**
@@ -60,6 +63,7 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 	private final Map<String, SpotlessApply> apply = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, SpotlessTask> source = Collections.synchronizedMap(new HashMap<>());
 	private final Map<String, Provisioner> provisioner = Collections.synchronizedMap(new HashMap<>());
+	private final AtomicBoolean clearCacheOnClose = new AtomicBoolean();
 
 	@Nullable GradleProvisioner.DedupingProvisioner predeclaredProvisioner;
 	@Nullable GradleProvisioner.DedupingP2Provisioner predeclaredP2Provisioner;
@@ -131,15 +135,27 @@ public abstract class SpotlessTaskService implements BuildService<BuildServicePa
 		// NOOP
 	}
 
+	void clearCacheOnClose() {
+		clearCacheOnClose.set(true);
+	}
+
 	@Override
 	public void close() throws Exception {
-		ratchet.close();
+		try {
+			ratchet.close();
+		} finally {
+			if (clearCacheOnClose.getAndSet(false)) {
+				// Pass null so every build that runs clean clears the cache
+				// and SpotlessCache.lastClear does not retain this closed service.
+				SpotlessCache.clearOnce(null);
+			}
+		}
 	}
 	// </GitRatchet>
 
 	static String INDEPENDENT_HELPER = "Helper";
 
-	static void usesServiceTolerateTestFailure(DefaultTask task, Provider<SpotlessTaskService> serviceProvider) {
+	static void usesServiceTolerateTestFailure(Task task, Provider<SpotlessTaskService> serviceProvider) {
 		try {
 			task.usesService(serviceProvider);
 		} catch (ClassCastException e) {
