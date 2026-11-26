@@ -35,7 +35,7 @@ public class SpotlessExtensionPredeclare extends SpotlessExtension {
 
 	public SpotlessExtensionPredeclare(Project project) {
 		super(project);
-		project.afterEvaluate(unused -> {
+		project.getGradle().getTaskGraph().whenReady(graph -> {
 			if (policy == null) {
 				return;
 			}
@@ -43,14 +43,17 @@ public class SpotlessExtensionPredeclare extends SpotlessExtension {
 			if (task == null) {
 				throw new IllegalStateException("spotlessPredeclare was enabled without a register dependencies task.");
 			}
+			if (!graph.hasTask(task)) {
+				return;
+			}
 			toSetup.forEach((name, formatExtension) -> {
 				for (Action<FormatExtension> lazyAction : formatExtension.lazyActions) {
 					lazyAction.execute(formatExtension);
 				}
 				task.steps.addAll(formatExtension.steps);
-				// needed to fix Deemon memory leaks (#1194), but this line came from https://github.com/diffplug/spotless/pull/1206
-				LazyForwardingEquality.unlazy(task.steps);
 			});
+			// Resolve root steps before subproject serialization and prevent daemon leaks (#1194, #1206).
+			LazyForwardingEquality.unlazy(task.steps);
 		});
 	}
 

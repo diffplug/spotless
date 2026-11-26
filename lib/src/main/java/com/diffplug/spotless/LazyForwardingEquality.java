@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,6 +127,8 @@ public abstract class LazyForwardingEquality<T extends Serializable> implements 
 	public static void unlazy(Object in) {
 		if (in instanceof LazyForwardingEquality<?> equality) {
 			equality.state();
+		} else if (in instanceof FormatterStepSerializationRoundtrip<?, ?> step) {
+			ThrowingEx.run(step::stateSupplier);
 		} else if (in instanceof DelegateFormatterStep step) {
 			unlazy(step.delegateStep);
 		} else if (in instanceof Iterable) {

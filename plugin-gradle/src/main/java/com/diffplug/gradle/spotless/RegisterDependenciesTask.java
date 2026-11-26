@@ -44,8 +44,8 @@ import com.diffplug.spotless.FormatterStep;
  * - Gradle wants us to resolve all our dependencies in the root project - no new dependencies in subprojects
  * - So, whenever a SpotlessTask in a subproject gets configured, we call {@link #hookSubprojectTask(SpotlessTask)},
  *   which makes this task a dependency of the SpotlessTask
- * - When this "registerDependencies" task does its up-to-date check, it queries the task execution graph to see which
- *   SpotlessTasks are at risk of being executed, and causes them all to be evaluated safely in the root buildscript.
+ * - When this task is scheduled, {@link SpotlessExtensionPredeclare} resolves predeclared dependencies in its
+ *   {@code taskGraph.whenReady} callback, before subproject Spotless tasks use them.
  */
 @DisableCachingByDefault(because = "This task coordinates the setup and execution of other tasks, and should not be cached")
 public abstract class RegisterDependenciesTask extends DefaultTask {

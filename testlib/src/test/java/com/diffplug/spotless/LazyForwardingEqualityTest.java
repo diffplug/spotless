@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 package com.diffplug.spotless;
 
 import static com.diffplug.common.testing.SerializableTester.reserializeAndAssert;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
@@ -48,6 +51,19 @@ class LazyForwardingEqualityTest {
 		Other(String state) {
 			super(state);
 		}
+	}
+
+	@Test
+	void unlazyEvaluatesRoundtripStepState() {
+		AtomicInteger stateCalculations = new AtomicInteger();
+		FormatterStep step = FormatterStep.create("test", "state", state -> {
+			stateCalculations.incrementAndGet();
+			return state;
+		}, state -> input -> input);
+
+		LazyForwardingEquality.unlazy(step);
+
+		assertThat(stateCalculations).hasValue(1);
 	}
 
 	@Test
