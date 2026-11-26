@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
+- Fix `spotlessPredeclare` with configuration cache for Maven/P2 formatter dependencies, including `googleJavaFormat()`, `greclipse()` and steps nested in `withinBlocks`, and skip provisioning for unrelated tasks. ([#2459](https://github.com/diffplug/spotless/issues/2459), [#3211](https://github.com/diffplug/spotless/pull/3211))
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
 - Fix `Cannot set the value of task ... property 'taskService'` when Spotless is applied to sibling projects but not to their parent, a regression since `8.3.0`. Applying it to the root project with `apply false` is no longer necessary. ([#2877](https://github.com/diffplug/spotless/issues/2877))
 ### Changes

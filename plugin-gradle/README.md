@@ -2200,6 +2200,8 @@ spotlessPredeclare {
 }
 ```
 
+Predeclaration initializes formatter steps that use Spotless's Maven or Eclipse P2 provisioners, including steps inside `withinBlocks`. Format configuration closures run when the task graph is ready and only when a Spotless task is scheduled. Configuration-cache hits reuse the initialized formatter state.
+
 The older `spotless { predeclareDeps() }` and `spotless { predeclareDepsFromBuildscript() }` APIs are still supported.
 
 If you use this feature, you will get an error if you use a formatter in a subproject which is not declared in the `spotlessPredeclare` block.

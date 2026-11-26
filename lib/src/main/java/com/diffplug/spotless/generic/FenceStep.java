@@ -28,6 +28,7 @@ import com.diffplug.spotless.ConfigurationCacheHackList;
 import com.diffplug.spotless.Formatter;
 import com.diffplug.spotless.FormatterFunc;
 import com.diffplug.spotless.FormatterStep;
+import com.diffplug.spotless.LazyForwardingEquality;
 import com.diffplug.spotless.LineEnding;
 import com.diffplug.spotless.Lint;
 
@@ -125,7 +126,10 @@ public final class FenceStep {
 		}
 
 		public RoundtripAndEqualityState toEqualityState() {
-			return new RoundtripAndEqualityState(kind, regex(), steps(), true);
+			List<FormatterStep> nestedSteps = steps();
+			// Evaluate nested step state together with the fence.
+			LazyForwardingEquality.unlazy(nestedSteps);
+			return new RoundtripAndEqualityState(kind, regex(), nestedSteps, true);
 		}
 
 		public BaseFormatter toFormatterFunc() {

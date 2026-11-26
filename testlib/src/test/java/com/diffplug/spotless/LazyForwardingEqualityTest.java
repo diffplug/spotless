@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
 package com.diffplug.spotless;
 
 import static com.diffplug.common.testing.SerializableTester.reserializeAndAssert;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.testing.EqualsTester;
+import com.diffplug.spotless.generic.FenceStep;
 
 @SuppressWarnings("serial")
 class LazyForwardingEqualityTest {
@@ -48,6 +53,46 @@ class LazyForwardingEqualityTest {
 		Other(String state) {
 			super(state);
 		}
+	}
+
+	@Test
+	void unlazyEvaluatesRoundtripStepState() {
+		AtomicInteger stateCalculations = new AtomicInteger();
+		FormatterStep step = countingStep(stateCalculations);
+
+		LazyForwardingEquality.unlazy(step);
+
+		assertThat(stateCalculations).hasValue(1);
+	}
+
+	@Test
+	void unlazyEvaluatesFilteredSteps() {
+		AtomicInteger stateCalculations = new AtomicInteger();
+		FormatterStep step = countingStep(stateCalculations)
+				.filterByFile(SerializableFileFilter.skipFilesNamed("skip"))
+				.filterByContent(OnMatch.INCLUDE, ".*");
+
+		LazyForwardingEquality.unlazy(List.of(step));
+
+		assertThat(stateCalculations).hasValue(1);
+	}
+
+	@Test
+	void unlazyEvaluatesFencedSteps() {
+		AtomicInteger stateCalculations = new AtomicInteger();
+		FormatterStep step = FenceStep.named("nested").openClose("begin", "end")
+				.applyWithin(List.of(countingStep(stateCalculations)));
+
+		LazyForwardingEquality.unlazy(List.of(step));
+
+		assertThat(stateCalculations).hasValue(1);
+	}
+
+	private static FormatterStep countingStep(AtomicInteger stateCalculations) {
+		return FormatterStep.create("test", "state", state -> {
+			stateCalculations.incrementAndGet();
+			return state;
+		}, state -> input -> input);
 	}
 
 	@Test
