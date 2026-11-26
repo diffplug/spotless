@@ -4,6 +4,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
+- Fix initialization of nested formatter state in the shared formatter library. ([#3211](https://github.com/diffplug/spotless/pull/3211))
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
 ### Changes
 - README: example for formatting Dockerfiles with prettier and `prettier-plugin-sh`. ([#3158](https://github.com/diffplug/spotless/issues/3158))

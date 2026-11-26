@@ -11,6 +11,7 @@ We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (
 
 ## [Unreleased]
 ### Fixed
+- Ensure `LazyForwardingEquality.unlazy()` initializes roundtrip formatter steps and their nested formatter state. ([#3211](https://github.com/diffplug/spotless/pull/3211))
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
 
 ## [4.12.0] - 2026-11-21
