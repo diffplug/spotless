@@ -18,6 +18,8 @@ package com.diffplug.gradle.spotless;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
@@ -36,13 +38,16 @@ import com.diffplug.spotless.java.GoogleJavaFormatStep;
 class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 	private static final String GRADLE_VERSION = "9.5.1";
 
-	/** Writes gradle.properties when configuration caching is enabled, then creates the runner. */
-	private GradleRunner runner(boolean configurationCache, String task) throws IOException {
+	/** Creates a runner and enables parallel caching through gradle.properties when requested. */
+	private GradleRunner runner(boolean configurationCache, String... arguments) throws IOException {
+		GradleRunner runner = gradleRunner();
 		if (configurationCache) {
 			setFile("gradle.properties").toContent("org.gradle.configuration-cache.parallel=true");
+			runner.withGradleVersion(GRADLE_VERSION);
 		}
-		String cacheOption = configurationCache ? "--configuration-cache" : "--no-configuration-cache";
-		return gradleRunner().withGradleVersion(GRADLE_VERSION).withArguments(task, cacheOption);
+		List<String> args = new ArrayList<>(List.of(arguments));
+		args.add(configurationCache ? "--configuration-cache" : "--no-configuration-cache");
+		return runner.withArguments(args);
 	}
 
 	@Nested
@@ -61,6 +66,8 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					        }
 					    }
 					}
+					// Resolution must finish in Spotless's earlier graph-ready callback.
+					gradle.taskGraph.whenReady { repositories.clear() }
 					""");
 			setFile("settings.gradle").toContent("include 'sub'");
 			setFile("sub/build.gradle").toContent("""
@@ -222,6 +229,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 			assertFile("sub1/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 			assertFile("sub2/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+			}
 		}
 	}
 
@@ -341,6 +351,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 
 			BuildResult result = runner(configurationCache, "spotlessApply").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+			}
 		}
 
 		@ParameterizedTest(name = "configurationCache={0}")
@@ -375,6 +388,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 
 			BuildResult result = runner(configurationCache, "spotlessApply").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+			}
 			// Verify all files were formatted
 			for (int i = 1; i <= 3; i++) {
 				String formatted = read("sub" + i + "/test.java");
@@ -559,6 +575,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 
 			BuildResult result = runner(configurationCache, "spotlessApply").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+			}
 			// Verify Java file was formatted
 			String javaFormatted = read("sub1/test.java");
 			assertThat(javaFormatted).contains("main(String[] args)");
@@ -616,6 +635,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 			BuildResult result = runner(configurationCache, "spotlessApply").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 			assertFile("sub1/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+			}
 			// Verify Eclipse formatted file has proper indentation
 			String eclipseFormatted = read("sub2/test.java");
 			assertThat(eclipseFormatted).contains("main(String[] args)");
@@ -652,7 +674,7 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					""");
 			setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
 
-			GradleRunner runner = runner(configurationCache, "spotlessApply");
+			GradleRunner runner = runner(configurationCache, "spotlessApply", "--stacktrace").withGradleVersion(GRADLE_VERSION);
 			BuildResult result = runner.build();
 
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
@@ -667,8 +689,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 			}
 		}
 
-		@Test
-		void gradle951CanUsePredeclareWithProjectRepositories() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void gradle951CanUsePredeclareWithProjectRepositories(boolean configurationCache) throws IOException {
 			setFile("build.gradle.kts").toContent("""
 					import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 
@@ -691,27 +714,26 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					""");
 			setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
 
-			BuildResult withoutConfigurationCache = gradleRunner()
-					.withGradleVersion(GRADLE_VERSION)
-					.withArguments("spotlessApply", "--stacktrace")
-					.build();
-			assertThat(withoutConfigurationCache.getOutput()).contains("BUILD SUCCESSFUL");
+			GradleRunner runner = runner(configurationCache, "spotlessApply", "--stacktrace").withGradleVersion(GRADLE_VERSION);
+			BuildResult result = runner.build();
+			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 			assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic.clean");
 
-			setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
-			BuildResult withConfigurationCache = gradleRunner()
-					.withGradleVersion(GRADLE_VERSION)
-					.withArguments("spotlessApply", "--configuration-cache", "--stacktrace")
-					.build();
-			assertThat(withConfigurationCache.getOutput()).contains("BUILD SUCCESSFUL");
-			assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic.clean");
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+				setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
+				BuildResult reused = runner.build();
+				assertThat(reused.getOutput()).contains("Configuration cache entry reused");
+				assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic.clean");
+			}
 		}
 	}
 
 	@Nested
 	class EdgeCases {
-		@Test
-		void unrelatedTasksDoNotResolvePredeclaredDependencies() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void unrelatedTasksDoNotResolvePredeclaredDependencies(boolean configurationCache) throws IOException {
 			// Omitting repositories makes any formatter dependency resolution fail.
 			setFile("build.gradle").toContent("""
 					plugins {
@@ -722,10 +744,15 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					}
 					""");
 
-			BuildResult result = gradleRunner().withArguments("help").build();
+			GradleRunner runner = runner(configurationCache, "help");
+			BuildResult result = runner.build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+				assertThat(runner.build().getOutput()).contains("Configuration cache entry reused");
+			}
 
-			BuildResult provisioning = gradleRunner().withArguments(RegisterDependenciesTask.TASK_NAME).buildAndFail();
+			BuildResult provisioning = runner(configurationCache, RegisterDependenciesTask.TASK_NAME).buildAndFail();
 			assertThat(provisioning.getOutput()).contains("com.google.googlejavaformat:google-java-format:", "because no repositories are defined");
 		}
 
@@ -795,8 +822,13 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					}
 					""");
 
-			BuildResult result = runner(configurationCache, RegisterDependenciesTask.TASK_NAME).build();
+			GradleRunner runner = runner(configurationCache, RegisterDependenciesTask.TASK_NAME);
+			BuildResult result = runner.build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+				assertThat(runner.build().getOutput()).contains("Configuration cache entry reused");
+			}
 		}
 
 		@Test

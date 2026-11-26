@@ -127,7 +127,7 @@ public final class FenceStep {
 
 		public RoundtripAndEqualityState toEqualityState() {
 			List<FormatterStep> nestedSteps = steps();
-			// Predeclaration must initialize the steps inside the fence too.
+			// Evaluate nested step state together with the fence.
 			LazyForwardingEquality.unlazy(nestedSteps);
 			return new RoundtripAndEqualityState(kind, regex(), nestedSteps, true);
 		}
