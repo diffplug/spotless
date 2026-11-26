@@ -18,11 +18,13 @@ package com.diffplug.spotless;
 import static com.diffplug.common.testing.SerializableTester.reserializeAndAssert;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
 import com.diffplug.common.testing.EqualsTester;
+import com.diffplug.spotless.generic.FenceStep;
 
 @SuppressWarnings("serial")
 class LazyForwardingEqualityTest {
@@ -56,14 +58,41 @@ class LazyForwardingEqualityTest {
 	@Test
 	void unlazyEvaluatesRoundtripStepState() {
 		AtomicInteger stateCalculations = new AtomicInteger();
-		FormatterStep step = FormatterStep.create("test", "state", state -> {
-			stateCalculations.incrementAndGet();
-			return state;
-		}, state -> input -> input);
+		FormatterStep step = countingStep(stateCalculations);
 
 		LazyForwardingEquality.unlazy(step);
 
 		assertThat(stateCalculations).hasValue(1);
+	}
+
+	@Test
+	void unlazyEvaluatesFilteredSteps() {
+		AtomicInteger stateCalculations = new AtomicInteger();
+		FormatterStep step = countingStep(stateCalculations)
+				.filterByFile(SerializableFileFilter.skipFilesNamed("skip"))
+				.filterByContent(OnMatch.INCLUDE, ".*");
+
+		LazyForwardingEquality.unlazy(List.of(step));
+
+		assertThat(stateCalculations).hasValue(1);
+	}
+
+	@Test
+	void unlazyEvaluatesFencedSteps() {
+		AtomicInteger stateCalculations = new AtomicInteger();
+		FormatterStep step = FenceStep.named("nested").openClose("begin", "end")
+				.applyWithin(List.of(countingStep(stateCalculations)));
+
+		LazyForwardingEquality.unlazy(List.of(step));
+
+		assertThat(stateCalculations).hasValue(1);
+	}
+
+	private static FormatterStep countingStep(AtomicInteger stateCalculations) {
+		return FormatterStep.create("test", "state", state -> {
+			stateCalculations.incrementAndGet();
+			return state;
+		}, state -> input -> input);
 	}
 
 	@Test

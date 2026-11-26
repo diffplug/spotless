@@ -36,10 +36,65 @@ import com.diffplug.spotless.java.GoogleJavaFormatStep;
 class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 	private static final String GRADLE_VERSION = "9.5.1";
 
+	/** Writes gradle.properties when configuration caching is enabled, then creates the runner. */
+	private GradleRunner runner(boolean configurationCache, String task) throws IOException {
+		if (configurationCache) {
+			setFile("gradle.properties").toContent("org.gradle.configuration-cache.parallel=true");
+		}
+		String cacheOption = configurationCache ? "--configuration-cache" : "--no-configuration-cache";
+		return gradleRunner().withGradleVersion(GRADLE_VERSION).withArguments(task, cacheOption);
+	}
+
 	@Nested
 	class MavenDependencies {
 		@Test
-		void predeclareSucceedsWithMavenDependencies() throws IOException {
+		void predeclareSupportsNestedFormattersWithConfigurationCache() throws IOException {
+			setFile("build.gradle").toContent("""
+					import com.diffplug.gradle.spotless.JavaExtension
+					plugins { id 'com.diffplug.spotless' }
+					repositories { mavenCentral() }
+					spotlessPredeclare {
+					    format('docs') {
+					        withinBlocks('java', 'BEGIN', 'END', JavaExtension) {
+					            googleJavaFormat()
+					            custom('identity') { input -> input }
+					        }
+					    }
+					}
+					""");
+			setFile("settings.gradle").toContent("include 'sub'");
+			setFile("sub/build.gradle").toContent("""
+					import com.diffplug.gradle.spotless.JavaExtension
+					plugins { id 'com.diffplug.spotless' }
+					spotless {
+					    format('docs') {
+					        target 'test.md'
+					        toggleOffOn()
+					        withinBlocks('java', 'BEGIN', 'END', JavaExtension) {
+					            googleJavaFormat()
+					            custom('identity') { input -> input }
+					        }
+					    }
+					}
+					""");
+			String unformatted = "Header\nBEGIN\nclass Foo{void bar(){}}\nEND\nFooter\n";
+			setFile("sub/test.md").toContent(unformatted);
+
+			GradleRunner runner = runner(true, ":sub:spotlessDocsApply");
+			BuildResult result = runner.build();
+			assertThat(result.getOutput()).contains("Configuration cache entry stored");
+			String formatted = read("sub/test.md");
+			assertThat(formatted).isNotEqualTo(unformatted).contains("Header", "Footer", "class Foo {", "void bar() {}");
+
+			setFile("sub/test.md").toContent(unformatted);
+			BuildResult reused = runner.build();
+			assertThat(reused.getOutput()).contains("Configuration cache entry reused");
+			assertThat(read("sub/test.md")).isEqualTo(formatted);
+		}
+
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void predeclareSucceedsWithMavenDependencies(boolean configurationCache) throws IOException {
 			setFile("build.gradle").toContent("""
 					plugins {
 					    id 'com.diffplug.spotless'
@@ -48,6 +103,7 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					spotless { predeclareDeps() }
 					spotlessPredeclare {
 					    java { googleJavaFormat() }
+					    kotlin { ktfmt('0.56') }
 					}
 					""");
 			setFile("settings.gradle").toContent("include 'sub'");
@@ -61,17 +117,35 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					        target file('test.java')
 					        googleJavaFormat()
 					    }
+					    kotlin {
+					        target file('test.kt')
+					        ktfmt('0.56')
+					    }
 					}
 					""");
 			setFile("sub/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+			setFile("sub/test.kt").toResource("kotlin/ktfmt/basic.dirty");
 
-			BuildResult result = gradleRunner().withArguments("spotlessApply").build();
+			GradleRunner runner = runner(configurationCache, "spotlessApply");
+			BuildResult result = runner.build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 			assertFile("sub/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+			assertFile("sub/test.kt").sameAsResource("kotlin/ktfmt/basic.clean");
+
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+				setFile("sub/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
+				setFile("sub/test.kt").toResource("kotlin/ktfmt/basic.dirty");
+				BuildResult reused = runner.build();
+				assertThat(reused.getOutput()).contains("Configuration cache entry reused");
+				assertFile("sub/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
+				assertFile("sub/test.kt").sameAsResource("kotlin/ktfmt/basic.clean");
+			}
 		}
 
-		@Test
-		void predeclareFailsWhenDependencyNotPredeclared() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void predeclareFailsWhenDependencyNotPredeclared(boolean configurationCache) throws IOException {
 			setFile("build.gradle").toContent("""
 					plugins {
 					    id 'com.diffplug.spotless'
@@ -97,14 +171,15 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					""");
 			setFile("sub/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
-			BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
+			BuildResult result = runner(configurationCache, "spotlessApply").buildAndFail();
 			assertThat(result.getOutput())
 					.contains("Add a step with [com.google.googlejavaformat:google-java-format:" + GoogleJavaFormatStep.defaultVersion() + "]")
 					.contains("into the `spotlessPredeclare` block in the root project");
 		}
 
-		@Test
-		void predeclareWorksWithMultipleVersions() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void predeclareWorksWithMultipleVersions(boolean configurationCache) throws IOException {
 			setFile("build.gradle").toContent("""
 					plugins {
 					    id 'com.diffplug.spotless'
@@ -143,7 +218,7 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					""");
 			setFile("sub2/test.java").toResource("java/googlejavaformat/JavaCodeUnformatted.test");
 
-			BuildResult result = gradleRunner().withArguments("spotlessApply").build();
+			BuildResult result = runner(configurationCache, "spotlessApply").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 			assertFile("sub1/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 			assertFile("sub2/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
@@ -152,8 +227,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 
 	@Nested
 	class P2Dependencies {
-		@Test
-		void predeclareSucceedsWithEclipseFormatter() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void predeclareSucceedsWithEclipseFormatter(boolean configurationCache) throws IOException {
 			setFile("build.gradle").toContent("""
 					plugins {
 					    id 'com.diffplug.spotless'
@@ -179,16 +255,26 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					""");
 			setFile("sub/test.java").toResource("java/eclipse/JavaCodeUnformatted.test");
 
-			BuildResult result = gradleRunner().withArguments("spotlessApply").build();
+			GradleRunner runner = runner(configurationCache, "spotlessApply");
+			BuildResult result = runner.build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 			// Verify the file was formatted (has proper indentation now)
 			String formatted = read("sub/test.java");
 			assertThat(formatted).contains("main(String[] args)");
 			assertThat(formatted).as("Should be indented").doesNotStartWith("public static void main");
+
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+				setFile("sub/test.java").toResource("java/eclipse/JavaCodeUnformatted.test");
+				BuildResult reused = runner.build();
+				assertThat(reused.getOutput()).contains("Configuration cache entry reused");
+				assertThat(read("sub/test.java")).isEqualTo(formatted);
+			}
 		}
 
-		@Test
-		void predeclareFailsWhenEclipseFormatterNotPredeclared() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void predeclareFailsWhenEclipseFormatterNotPredeclared(boolean configurationCache) throws IOException {
 			setFile("build.gradle").toContent("""
 					plugins {
 					    id 'com.diffplug.spotless'
@@ -214,7 +300,7 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					""");
 			setFile("sub/test.java").toResource("java/eclipse/JavaCodeUnformatted.test");
 
-			BuildResult result = gradleRunner().withArguments("spotlessApply").buildAndFail();
+			BuildResult result = runner(configurationCache, "spotlessApply").buildAndFail();
 			// Eclipse JDT resolves from an embedded lockfile rather than a P2 query, so an
 			// un-predeclared subproject fails on the Maven coordinates instead of on P2.
 			// greclipse still has no lockfile, so it keeps the P2 message - see
@@ -224,8 +310,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					.contains("org.eclipse.jdt:org.eclipse.jdt.core");
 		}
 
-		@Test
-		void predeclareWorksWithEclipseConfigFile() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void predeclareWorksWithEclipseConfigFile(boolean configurationCache) throws IOException {
 			setFile("eclipse-formatter.xml").toResource("java/eclipse/formatter.xml");
 			setFile("build.gradle").toContent("""
 					plugins {
@@ -252,12 +339,13 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					""");
 			setFile("sub/test.java").toResource("java/eclipse/JavaCodeUnformatted.test");
 
-			BuildResult result = gradleRunner().withArguments("spotlessApply").build();
+			BuildResult result = runner(configurationCache, "spotlessApply").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 		}
 
-		@Test
-		void predeclareWorksWithMultipleEclipseProjects() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void predeclareWorksWithMultipleEclipseProjects(boolean configurationCache) throws IOException {
 			setFile("build.gradle").toContent("""
 					plugins {
 					    id 'com.diffplug.spotless'
@@ -285,7 +373,7 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 				setFile("sub" + i + "/test.java").toResource("java/eclipse/JavaCodeUnformatted.test");
 			}
 
-			BuildResult result = gradleRunner().withArguments("spotlessApply").build();
+			BuildResult result = runner(configurationCache, "spotlessApply").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 			// Verify all files were formatted
 			for (int i = 1; i <= 3; i++) {
@@ -422,20 +510,13 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 			}
 		}
 
-		/** Writes gradle.properties when configuration caching is enabled, then creates the runner. */
-		private GradleRunner runner(boolean configurationCache, String task) throws IOException {
-			if (configurationCache) {
-				setFile("gradle.properties").toContent("org.gradle.configuration-cache.parallel=true");
-			}
-			String cacheOption = configurationCache ? "--configuration-cache" : "--no-configuration-cache";
-			return gradleRunner().withGradleVersion(GRADLE_VERSION).withArguments(task, cacheOption);
-		}
 	}
 
 	@Nested
 	class MixedDependencies {
-		@Test
-		void predeclareWorksWithJavaAndGroovyFormatters() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void predeclareWorksWithJavaAndGroovyFormatters(boolean configurationCache) throws IOException {
 			setFile("build.gradle").toContent("""
 					plugins {
 					    id 'com.diffplug.spotless'
@@ -476,7 +557,7 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					""");
 			setFile("sub2/test.groovy").toResource("groovy/greclipse/format/unformatted.test");
 
-			BuildResult result = gradleRunner().withArguments("spotlessApply").build();
+			BuildResult result = runner(configurationCache, "spotlessApply").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 			// Verify Java file was formatted
 			String javaFormatted = read("sub1/test.java");
@@ -488,8 +569,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 			assertThat(groovyFormatted).contains("def callBar()");
 		}
 
-		@Test
-		void predeclareWorksWithBothMavenAndP2Dependencies() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void predeclareWorksWithBothMavenAndP2Dependencies(boolean configurationCache) throws IOException {
 			setFile("build.gradle").toContent("""
 					plugins {
 					    id 'com.diffplug.spotless'
@@ -531,7 +613,7 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					""");
 			setFile("sub2/test.java").toResource("java/eclipse/JavaCodeUnformatted.test");
 
-			BuildResult result = gradleRunner().withArguments("spotlessApply").build();
+			BuildResult result = runner(configurationCache, "spotlessApply").build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 			assertFile("sub1/test.java").sameAsResource("java/googlejavaformat/JavaCodeFormatted.test");
 			// Verify Eclipse formatted file has proper indentation
@@ -543,8 +625,9 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 
 	@Nested
 	class Gradle9Compatibility {
-		@Test
-		void issue2599_Gradle951_CanUsePredeclareDepsFromBuildscript() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void issue2599_Gradle951_CanUsePredeclareDepsFromBuildscript(boolean configurationCache) throws IOException {
 			setFile("build.gradle.kts").toContent("""
 					import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 
@@ -569,13 +652,19 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 					""");
 			setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
 
-			BuildResult result = gradleRunner()
-					.withGradleVersion(GRADLE_VERSION)
-					.withArguments("spotlessApply", "--stacktrace")
-					.build();
+			GradleRunner runner = runner(configurationCache, "spotlessApply");
+			BuildResult result = runner.build();
 
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 			assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic.clean");
+
+			if (configurationCache) {
+				assertThat(result.getOutput()).contains("Configuration cache entry stored");
+				setFile("src/main/kotlin/basic.kt").toResource("kotlin/ktfmt/basic.dirty");
+				BuildResult reused = runner.build();
+				assertThat(reused.getOutput()).contains("Configuration cache entry reused");
+				assertFile("src/main/kotlin/basic.kt").sameAsResource("kotlin/ktfmt/basic.clean");
+			}
 		}
 
 		@Test
@@ -689,19 +778,24 @@ class SpotlessPredeclareIntegrationTest extends GradleIntegrationHarness {
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 		}
 
-		@Test
-		void predeclareBlockCanSelectBuildscriptRepositories() throws IOException {
+		@ParameterizedTest(name = "configurationCache={0}")
+		@ValueSource(booleans = {false, true})
+		void predeclareBlockCanSelectBuildscriptRepositories(boolean configurationCache) throws IOException {
 			setFile("build.gradle.kts").toContent("""
+					buildscript {
+					    repositories { mavenCentral() }
+					}
 					plugins {
 					    id("com.diffplug.spotless")
 					}
 					spotlessPredeclare {
 					    format("misc") { trimTrailingWhitespace() }
+					    java { googleJavaFormat() }
 					    fromBuildscriptRepositories()
 					}
 					""");
 
-			BuildResult result = gradleRunner().withArguments(RegisterDependenciesTask.TASK_NAME).build();
+			BuildResult result = runner(configurationCache, RegisterDependenciesTask.TASK_NAME).build();
 			assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
 		}
 
