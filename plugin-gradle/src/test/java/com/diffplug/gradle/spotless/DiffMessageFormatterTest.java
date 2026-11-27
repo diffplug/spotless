@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -315,6 +315,33 @@ class DiffMessageFormatterTest extends ResourceHarness {
 				"        -2\\r\\n",
 				"    ... (2 more lines that didn't fit)",
 				"Violations also present in " + DiffMessageFormatter.MAX_FILES_TO_LIST + " other files.");
+	}
+
+	@Test
+	void manyManyFilesShowAllFailures() throws Exception {
+		List<File> testFiles = new ArrayList<>();
+		for (int i = 0; i < 9 + DiffMessageFormatter.MAX_FILES_TO_LIST; i++) {
+			String fileName = "%02d".formatted(i) + ".txt";
+			testFiles.add(setFile(fileName).toContent("1\r\n2\r\n"));
+		}
+		Bundle spotless = create(testFiles);
+		spotless.check.get().getShowAllFailures().set(true);
+		String msg = spotless.checkFailureMsg();
+		Assertions.assertThat(msg)
+				.doesNotContain("other files.")
+				.contains(StringPrinter.buildStringFromLines(
+						"    ... (2 more lines that didn't fit)",
+						"Violations also present in:",
+						"    09.txt",
+						"    10.txt",
+						"    11.txt",
+						"    12.txt",
+						"    13.txt",
+						"    14.txt",
+						"    15.txt",
+						"    16.txt",
+						"    17.txt",
+						"    18.txt"));
 	}
 
 	@Test
