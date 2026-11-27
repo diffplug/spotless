@@ -911,6 +911,8 @@ public class FormatExtension {
 		 * <li>css (CSS, requires biome &gt;= 1.9.0)</li>
 		 * <li>json (JSON)</li>
 		 * <li>jsonc (JSON + comments)</li>
+		 * <li>yaml (YAML, requires biome &gt;= 2.6.2)</li>
+		 * <li>md (Markdown, requires biome &gt;= 2.6.2)</li>
 		 * </ul>
 		 *
 		 * @param language The language of the files to format.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2025 DiffPlug
+ * Copyright 2016-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,25 @@ public class YamlExtension extends FormatExtension {
 		return new JacksonYamlGradleConfig(this);
 	}
 
+	/**
+	 * Formatting YAML requires Biome 2.6.2 or later.
+	 */
+	@Override
+	public BiomeYaml biome() {
+		return biome(null);
+	}
+
+	/**
+	 * Formatting YAML requires Biome 2.6.2 or later.
+	 * @param version Biome version to use.
+	 */
+	@Override
+	public BiomeYaml biome(String version) {
+		var biomeConfig = new BiomeYaml(version);
+		addStep(biomeConfig.createStep());
+		return biomeConfig;
+	}
+
 	public class JacksonYamlGradleConfig extends AJacksonGradleConfig<JacksonYamlGradleConfig> {
 		protected JacksonYamlConfig jacksonConfig;
 
@@ -76,6 +95,23 @@ public class YamlExtension extends FormatExtension {
 		@Override
 		protected final FormatterStep createStep() {
 			return JacksonYamlStep.create(jacksonConfig, version, provisioner());
+		}
+	}
+
+	public class BiomeYaml extends BiomeStepConfig<BiomeYaml> {
+
+		public BiomeYaml(String version) {
+			super(getProject(), YamlExtension.this::replaceStep, version);
+		}
+
+		@Override
+		protected String getLanguage() {
+			return "yaml";
+		}
+
+		@Override
+		protected BiomeYaml getThis() {
+			return this;
 		}
 	}
 }
