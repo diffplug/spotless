@@ -3,6 +3,8 @@
 We adhere to the [keepachangelog](https://keepachangelog.com/en/1.0.0/) format (starting after version `3.27.0`).
 
 ## [Unreleased]
+### Added
+- Add `biome()` to `yaml` and `flexmark` for formatting YAML and Markdown with Biome (requires Biome `2.6.2` or later). ([#3155](https://github.com/diffplug/spotless/issues/3155))
 ### Fixed
 - Fix npm/node executable discovery treating a directory (e.g. an `npm` folder inside `NODE_PATH`) as an executable. ([#3190](https://github.com/diffplug/spotless/issues/3190))
 - Fix `Cannot set the value of task ... property 'taskService'` when Spotless is applied to sibling projects but not to their parent, a regression since `8.3.0`. Applying it to the root project with `apply false` is no longer necessary. ([#2877](https://github.com/diffplug/spotless/issues/2877))

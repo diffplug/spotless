@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 DiffPlug
+ * Copyright 2023-2026 DiffPlug
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,58 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("biome_test.css").sameAsResource("biome/css/fileAfter.css");
+	}
+
+	/**
+	 * Tests that biome can be used as a Markdown formatting step, which requires
+	 * biome 2.6.2 or later.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void asFlexmarkStep() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    flexmark {",
+				"        target '**/*.md'",
+				"        biome('2.6.9')",
+				"    }",
+				"}");
+		setFile("biome_test.md").toResource("biome/md/fileBefore.md");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("biome_test.md").sameAsResource("biome/md/fileAfter.md");
+	}
+
+	/**
+	 * Tests that the Markdown formatting step formats files as Markdown even when
+	 * they do not have a Markdown file extension.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void asFlexmarkStepWithOtherExtension() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    flexmark {",
+				"        target '**/*.txt'",
+				"        biome('2.6.9')",
+				"    }",
+				"}");
+		setFile("biome_test.txt").toResource("biome/md/fileBefore.md");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("biome_test.txt").sameAsResource("biome/md/fileAfter.md");
 	}
 
 	/**
@@ -178,6 +230,58 @@ class BiomeIntegrationTest extends GradleIntegrationHarness {
 		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
 		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
 		assertFile("biome_test.ts").sameAsResource("biome/ts/fileAfter.ts");
+	}
+
+	/**
+	 * Tests that biome can be used as a YAML formatting step, which requires biome
+	 * 2.6.2 or later.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void asYamlStep() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    yaml {",
+				"        target '**/*.yaml'",
+				"        biome('2.6.9')",
+				"    }",
+				"}");
+		setFile("biome_test.yaml").toResource("biome/yaml/fileBefore.yaml");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("biome_test.yaml").sameAsResource("biome/yaml/fileAfter.yaml");
+	}
+
+	/**
+	 * Tests that the YAML formatting step formats files as YAML even when they
+	 * do not have a YAML file extension.
+	 *
+	 * @throws Exception When a test failure occurs.
+	 */
+	@Test
+	void asYamlStepWithOtherExtension() throws Exception {
+		setFile("build.gradle").toLines(
+				"plugins {",
+				"    id 'com.diffplug.spotless'",
+				"}",
+				"repositories { mavenCentral() }",
+				"spotless {",
+				"    yaml {",
+				"        target '**/*.tmpl'",
+				"        biome('2.6.9')",
+				"    }",
+				"}");
+		setFile("biome_test.yaml.tmpl").toResource("biome/yaml/fileBefore.yaml");
+
+		var spotlessApply = gradleRunner().withArguments("--stacktrace", "spotlessApply").build();
+		assertThat(spotlessApply.getOutput()).contains("BUILD SUCCESSFUL");
+		assertFile("biome_test.yaml.tmpl").sameAsResource("biome/yaml/fileAfter.yaml");
 	}
 
 	/**

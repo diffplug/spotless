@@ -41,6 +41,25 @@ public class FlexmarkExtension extends FormatExtension {
 		return new FlexmarkFormatterConfig(version);
 	}
 
+	/**
+	 * Formatting Markdown requires Biome 2.6.2 or later.
+	 */
+	@Override
+	public BiomeFlexmark biome() {
+		return biome(null);
+	}
+
+	/**
+	 * Formatting Markdown requires Biome 2.6.2 or later.
+	 * @param version Biome version to use.
+	 */
+	@Override
+	public BiomeFlexmark biome(String version) {
+		var biomeConfig = new BiomeFlexmark(version);
+		addStep(biomeConfig.createStep());
+		return biomeConfig;
+	}
+
 	@Override
 	protected void setupTask(SpotlessTask task) {
 		// defaults to all markdown files
@@ -90,4 +109,20 @@ public class FlexmarkExtension extends FormatExtension {
 		}
 	}
 
+	public class BiomeFlexmark extends BiomeStepConfig<BiomeFlexmark> {
+
+		public BiomeFlexmark(String version) {
+			super(getProject(), FlexmarkExtension.this::replaceStep, version);
+		}
+
+		@Override
+		protected String getLanguage() {
+			return "md";
+		}
+
+		@Override
+		protected BiomeFlexmark getThis() {
+			return this;
+		}
+	}
 }

@@ -1,0 +1,8 @@
+name: spotless
+version: 1.0
+languages:
+  - java
+  - kotlin
+nested:
+  key: "value"
+  list: [a, b, c]

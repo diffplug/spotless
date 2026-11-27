@@ -88,14 +88,14 @@ Spotless supports all of Gradle's built-in performance features (incremental bui
   - [Protobuf](#protobuf) ([buf](#buf), [clang-format](#clang-format))
   - [Python](#python) ([black](#black))
   - [FreshMark](#freshmark) aka markdown
-  - [Flexmark](#flexmark) aka markdown
+  - [Flexmark](#flexmark) aka markdown ([flexmark](#flexmark), [Biome](#biome))
   - [Antlr4](#antlr4) ([antlr4formatter](#antlr4formatter))
   - [SQL](#sql) ([dbeaver](#dbeaver), [prettier](#prettier), [IntelliJ IDEA](#intellij-idea))
   - [Maven POM](#maven-pom) ([sortPom](#sortpom))
   - [Typescript](#typescript) ([tsfmt](#tsfmt), [prettier](#prettier), [ESLint](#eslint-typescript), [Biome](#biome))
   - [Javascript](#javascript) ([prettier](#prettier), [ESLint](#eslint-javascript), [Biome](#biome))
   - [JSON](#json) ([simple](#simple), [gson](#gson), [jackson](#jackson), [Biome](#biome), [jsonPatch](#jsonPatch))
-  - [YAML](#yaml)
+  - [YAML](#yaml) ([jackson](#jackson-1), [prettier](#prettier), [Biome](#biome))
   - [Shell](#shell)
   - [Gherkin](#gherkin)
   - Multiple languages
@@ -985,6 +985,19 @@ spotless {
 }
 ```
 
+Instead of flexmark, you can also use [Biome](#biome) to format Markdown files:
+
+```gradle
+spotless {
+  flexmark {
+    target '**/*.md'
+    biome('2.6.9') // has its own section below
+  }
+}
+```
+
+Note regarding biome: Biome supports formatting Markdown as of 2.6.2.
+
 ## Antlr4
 
 `com.diffplug.gradle.spotless.Antlr4Extension` [javadoc](https://javadoc.io/doc/com.diffplug.spotless/spotless-plugin-gradle/8.12.0/com/diffplug/gradle/spotless/Antlr4Extension.html), [code](https://github.com/diffplug/spotless/blob/main/plugin-gradle/src/main/java/com/diffplug/gradle/spotless/Antlr4Extension.java)
@@ -1424,9 +1437,12 @@ spotless {
     target 'src/**/*.yaml'                // you have to set the target manually
     jackson()                             // has its own section below
     prettier()                            // has its own section below
+    biome('2.6.9')                        // has its own section below
   }
 }
 ```
+
+Note regarding biome: Biome supports formatting YAML as of 2.6.2.
 
 ### Jackson
 
@@ -1761,7 +1777,9 @@ is pretty fast. It can currently format JavaScript, TypeScript, JSX, and JSON, a
 You can use Biome in any language-specific format for supported languages, but
 usually you will be creating a generic format.
 
-Note regarding biome: Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable).
+Note regarding biome: Biome supports formatting CSS as of 1.8.0 (experimental, opt-in) and 1.9.0 (stable),
+and formatting YAML and Markdown as of 2.6.2. Biome 2.6.0 and 2.6.1 were not published as GitHub releases
+and therefore cannot be downloaded by Spotless.
 
 ```gradle
 spotless {
@@ -1944,6 +1962,10 @@ The following languages are currently recognized:
 * `tsx` -- TypeScript + JSX (React)
 * `ts?` -- TypeScript, with or without JSX, depending on the file extension
 * `json` -- JSON
+* `jsonc` -- JSON + comments
+* `css` -- CSS (requires Biome >= 1.9.0)
+* `yaml` -- YAML (requires Biome >= 2.6.2)
+* `md` -- Markdown (requires Biome >= 2.6.2)
 
 ## IntelliJ IDEA
 
